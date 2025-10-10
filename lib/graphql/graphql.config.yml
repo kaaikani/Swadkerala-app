@@ -1,0 +1,11 @@
+schema: vendureSchema.graphql
+extensions:
+
+  endpoints:
+    Vendure GraphQL Endpoint:
+      url: https://kaaikani.co.in/shop-api
+
+      headers:
+        user-agent: JS GraphQL
+      introspect: true
+

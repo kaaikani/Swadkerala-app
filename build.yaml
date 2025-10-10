@@ -1,0 +1,20 @@
+targets:
+  $default:
+    builders:
+      graphql_codegen:
+        options:
+          schema:
+            - lib/graphql/schema.graphql
+            - https://kaaikani.co.in/shop-api
+          output_dir: lib/generated
+          documents:
+            - lib/graphql/**/*.graphql   # This will include authenticate.graphql
+          scalars:
+            DateTime:
+              type: DateTime
+            JSON:
+              type: Map<String, dynamic>
+            Money:
+              type: double
+          clients:
+            - graphql_flutter
