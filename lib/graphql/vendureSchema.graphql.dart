@@ -1,8 +1,12 @@
+import 'schema.graphql.dart';
+
 class Input$AuthenticationInput {
   factory Input$AuthenticationInput({
+    Input$GoogleAuthInput? google,
     Input$NativeAuthInput? native,
     Input$PhoneOtpInput? phoneOtp,
   }) => Input$AuthenticationInput._({
+    if (google != null) r'google': google,
     if (native != null) r'native': native,
     if (phoneOtp != null) r'phoneOtp': phoneOtp,
   });
@@ -11,6 +15,12 @@ class Input$AuthenticationInput {
 
   factory Input$AuthenticationInput.fromJson(Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
+    if (data.containsKey('google')) {
+      final l$google = data['google'];
+      result$data['google'] = l$google == null
+          ? null
+          : Input$GoogleAuthInput.fromJson((l$google as Map<String, dynamic>));
+    }
     if (data.containsKey('native')) {
       final l$native = data['native'];
       result$data['native'] = l$native == null
@@ -28,6 +38,9 @@ class Input$AuthenticationInput {
 
   Map<String, dynamic> _$data;
 
+  Input$GoogleAuthInput? get google =>
+      (_$data['google'] as Input$GoogleAuthInput?);
+
   Input$NativeAuthInput? get native =>
       (_$data['native'] as Input$NativeAuthInput?);
 
@@ -36,6 +49,10 @@ class Input$AuthenticationInput {
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
+    if (_$data.containsKey('google')) {
+      final l$google = google;
+      result$data['google'] = l$google?.toJson();
+    }
     if (_$data.containsKey('native')) {
       final l$native = native;
       result$data['native'] = l$native?.toJson();
@@ -57,6 +74,14 @@ class Input$AuthenticationInput {
     }
     if (other is! Input$AuthenticationInput ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$google = google;
+    final lOther$google = other.google;
+    if (_$data.containsKey('google') != other._$data.containsKey('google')) {
+      return false;
+    }
+    if (l$google != lOther$google) {
       return false;
     }
     final l$native = native;
@@ -81,9 +106,11 @@ class Input$AuthenticationInput {
 
   @override
   int get hashCode {
+    final l$google = google;
     final l$native = native;
     final l$phoneOtp = phoneOtp;
     return Object.hashAll([
+      _$data.containsKey('google') ? l$google : const {},
       _$data.containsKey('native') ? l$native : const {},
       _$data.containsKey('phoneOtp') ? l$phoneOtp : const {},
     ]);
@@ -99,7 +126,12 @@ abstract class CopyWith$Input$AuthenticationInput<TRes> {
   factory CopyWith$Input$AuthenticationInput.stub(TRes res) =
       _CopyWithStubImpl$Input$AuthenticationInput;
 
-  TRes call({Input$NativeAuthInput? native, Input$PhoneOtpInput? phoneOtp});
+  TRes call({
+    Input$GoogleAuthInput? google,
+    Input$NativeAuthInput? native,
+    Input$PhoneOtpInput? phoneOtp,
+  });
+  CopyWith$Input$GoogleAuthInput<TRes> get google;
   CopyWith$Input$NativeAuthInput<TRes> get native;
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp;
 }
@@ -114,16 +146,26 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? native = _undefined, Object? phoneOtp = _undefined}) =>
-      _then(
-        Input$AuthenticationInput._({
-          ..._instance._$data,
-          if (native != _undefined)
-            'native': (native as Input$NativeAuthInput?),
-          if (phoneOtp != _undefined)
-            'phoneOtp': (phoneOtp as Input$PhoneOtpInput?),
-        }),
-      );
+  TRes call({
+    Object? google = _undefined,
+    Object? native = _undefined,
+    Object? phoneOtp = _undefined,
+  }) => _then(
+    Input$AuthenticationInput._({
+      ..._instance._$data,
+      if (google != _undefined) 'google': (google as Input$GoogleAuthInput?),
+      if (native != _undefined) 'native': (native as Input$NativeAuthInput?),
+      if (phoneOtp != _undefined)
+        'phoneOtp': (phoneOtp as Input$PhoneOtpInput?),
+    }),
+  );
+
+  CopyWith$Input$GoogleAuthInput<TRes> get google {
+    final local$google = _instance.google;
+    return local$google == null
+        ? CopyWith$Input$GoogleAuthInput.stub(_then(_instance))
+        : CopyWith$Input$GoogleAuthInput(local$google, (e) => call(google: e));
+  }
 
   CopyWith$Input$NativeAuthInput<TRes> get native {
     final local$native = _instance.native;
@@ -149,7 +191,14 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
 
   TRes _res;
 
-  call({Input$NativeAuthInput? native, Input$PhoneOtpInput? phoneOtp}) => _res;
+  call({
+    Input$GoogleAuthInput? google,
+    Input$NativeAuthInput? native,
+    Input$PhoneOtpInput? phoneOtp,
+  }) => _res;
+
+  CopyWith$Input$GoogleAuthInput<TRes> get google =>
+      CopyWith$Input$GoogleAuthInput.stub(_res);
 
   CopyWith$Input$NativeAuthInput<TRes> get native =>
       CopyWith$Input$NativeAuthInput.stub(_res);
@@ -7241,6 +7290,95 @@ class _CopyWithStubImpl$Input$FavoriteSortParameter<TRes>
     Enum$SortOrder? id,
     Enum$SortOrder? updatedAt,
   }) => _res;
+}
+
+class Input$GoogleAuthInput {
+  factory Input$GoogleAuthInput({required String token}) =>
+      Input$GoogleAuthInput._({r'token': token});
+
+  Input$GoogleAuthInput._(this._$data);
+
+  factory Input$GoogleAuthInput.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$token = data['token'];
+    result$data['token'] = (l$token as String);
+    return Input$GoogleAuthInput._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get token => (_$data['token'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$token = token;
+    result$data['token'] = l$token;
+    return result$data;
+  }
+
+  CopyWith$Input$GoogleAuthInput<Input$GoogleAuthInput> get copyWith =>
+      CopyWith$Input$GoogleAuthInput(this, (i) => i);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$GoogleAuthInput || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$token = token;
+    return Object.hashAll([l$token]);
+  }
+}
+
+abstract class CopyWith$Input$GoogleAuthInput<TRes> {
+  factory CopyWith$Input$GoogleAuthInput(
+    Input$GoogleAuthInput instance,
+    TRes Function(Input$GoogleAuthInput) then,
+  ) = _CopyWithImpl$Input$GoogleAuthInput;
+
+  factory CopyWith$Input$GoogleAuthInput.stub(TRes res) =
+      _CopyWithStubImpl$Input$GoogleAuthInput;
+
+  TRes call({String? token});
+}
+
+class _CopyWithImpl$Input$GoogleAuthInput<TRes>
+    implements CopyWith$Input$GoogleAuthInput<TRes> {
+  _CopyWithImpl$Input$GoogleAuthInput(this._instance, this._then);
+
+  final Input$GoogleAuthInput _instance;
+
+  final TRes Function(Input$GoogleAuthInput) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? token = _undefined}) => _then(
+    Input$GoogleAuthInput._({
+      ..._instance._$data,
+      if (token != _undefined && token != null) 'token': (token as String),
+    }),
+  );
+}
+
+class _CopyWithStubImpl$Input$GoogleAuthInput<TRes>
+    implements CopyWith$Input$GoogleAuthInput<TRes> {
+  _CopyWithStubImpl$Input$GoogleAuthInput(this._res);
+
+  TRes _res;
+
+  call({String? token}) => _res;
 }
 
 class Input$HistoryEntryFilterParameter {

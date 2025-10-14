@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
-import 'vendureSchema.graphql.dart';
+import 'schema.graphql.dart';
 
 class Variables$Mutation$Authenticate {
   factory Variables$Mutation$Authenticate({
@@ -4053,4 +4053,512 @@ class _CopyWithStubImpl$Mutation$LogoutUser$logout<TRes>
   TRes _res;
 
   call({bool? success, String? $__typename}) => _res;
+}
+
+class Query$GetChannelList {
+  Query$GetChannelList({
+    required this.getChannelList,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$GetChannelList.fromJson(Map<String, dynamic> json) {
+    final l$getChannelList = json['getChannelList'];
+    final l$$__typename = json['__typename'];
+    return Query$GetChannelList(
+      getChannelList: (l$getChannelList as List<dynamic>)
+          .map(
+            (e) => Query$GetChannelList$getChannelList.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Query$GetChannelList$getChannelList> getChannelList;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$getChannelList = getChannelList;
+    _resultData['getChannelList'] = l$getChannelList
+        .map((e) => e.toJson())
+        .toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$getChannelList = getChannelList;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$getChannelList.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetChannelList || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$getChannelList = getChannelList;
+    final lOther$getChannelList = other.getChannelList;
+    if (l$getChannelList.length != lOther$getChannelList.length) {
+      return false;
+    }
+    for (int i = 0; i < l$getChannelList.length; i++) {
+      final l$getChannelList$entry = l$getChannelList[i];
+      final lOther$getChannelList$entry = lOther$getChannelList[i];
+      if (l$getChannelList$entry != lOther$getChannelList$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetChannelList on Query$GetChannelList {
+  CopyWith$Query$GetChannelList<Query$GetChannelList> get copyWith =>
+      CopyWith$Query$GetChannelList(this, (i) => i);
+}
+
+abstract class CopyWith$Query$GetChannelList<TRes> {
+  factory CopyWith$Query$GetChannelList(
+    Query$GetChannelList instance,
+    TRes Function(Query$GetChannelList) then,
+  ) = _CopyWithImpl$Query$GetChannelList;
+
+  factory CopyWith$Query$GetChannelList.stub(TRes res) =
+      _CopyWithStubImpl$Query$GetChannelList;
+
+  TRes call({
+    List<Query$GetChannelList$getChannelList>? getChannelList,
+    String? $__typename,
+  });
+  TRes getChannelList(
+    Iterable<Query$GetChannelList$getChannelList> Function(
+      Iterable<
+        CopyWith$Query$GetChannelList$getChannelList<
+          Query$GetChannelList$getChannelList
+        >
+      >,
+    )
+    _fn,
+  );
+}
+
+class _CopyWithImpl$Query$GetChannelList<TRes>
+    implements CopyWith$Query$GetChannelList<TRes> {
+  _CopyWithImpl$Query$GetChannelList(this._instance, this._then);
+
+  final Query$GetChannelList _instance;
+
+  final TRes Function(Query$GetChannelList) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? getChannelList = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$GetChannelList(
+      getChannelList: getChannelList == _undefined || getChannelList == null
+          ? _instance.getChannelList
+          : (getChannelList as List<Query$GetChannelList$getChannelList>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+
+  TRes getChannelList(
+    Iterable<Query$GetChannelList$getChannelList> Function(
+      Iterable<
+        CopyWith$Query$GetChannelList$getChannelList<
+          Query$GetChannelList$getChannelList
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    getChannelList: _fn(
+      _instance.getChannelList.map(
+        (e) => CopyWith$Query$GetChannelList$getChannelList(e, (i) => i),
+      ),
+    ).toList(),
+  );
+}
+
+class _CopyWithStubImpl$Query$GetChannelList<TRes>
+    implements CopyWith$Query$GetChannelList<TRes> {
+  _CopyWithStubImpl$Query$GetChannelList(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$GetChannelList$getChannelList>? getChannelList,
+    String? $__typename,
+  }) => _res;
+
+  getChannelList(_fn) => _res;
+}
+
+const documentNodeQueryGetChannelList = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'GetChannelList'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'getChannelList'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'code'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'token'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
+      ),
+    ),
+  ],
+);
+Query$GetChannelList _parserFn$Query$GetChannelList(
+  Map<String, dynamic> data,
+) => Query$GetChannelList.fromJson(data);
+typedef OnQueryComplete$Query$GetChannelList =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$GetChannelList?);
+
+class Options$Query$GetChannelList
+    extends graphql.QueryOptions<Query$GetChannelList> {
+  Options$Query$GetChannelList({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetChannelList? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$GetChannelList? onComplete,
+    graphql.OnQueryError? onError,
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null ? null : _parserFn$Query$GetChannelList(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryGetChannelList,
+         parserFn: _parserFn$Query$GetChannelList,
+       );
+
+  final OnQueryComplete$Query$GetChannelList? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
+}
+
+class WatchOptions$Query$GetChannelList
+    extends graphql.WatchQueryOptions<Query$GetChannelList> {
+  WatchOptions$Query$GetChannelList({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetChannelList? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryGetChannelList,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$GetChannelList,
+       );
+}
+
+class FetchMoreOptions$Query$GetChannelList extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$GetChannelList({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryGetChannelList,
+       );
+}
+
+extension ClientExtension$Query$GetChannelList on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$GetChannelList>> query$GetChannelList([
+    Options$Query$GetChannelList? options,
+  ]) async => await this.query(options ?? Options$Query$GetChannelList());
+
+  graphql.ObservableQuery<Query$GetChannelList> watchQuery$GetChannelList([
+    WatchOptions$Query$GetChannelList? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$GetChannelList());
+
+  void writeQuery$GetChannelList({
+    required Query$GetChannelList data,
+    bool broadcast = true,
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(document: documentNodeQueryGetChannelList),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$GetChannelList? readQuery$GetChannelList({bool optimistic = true}) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(document: documentNodeQueryGetChannelList),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$GetChannelList.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$GetChannelList> useQuery$GetChannelList([
+  Options$Query$GetChannelList? options,
+]) => graphql_flutter.useQuery(options ?? Options$Query$GetChannelList());
+graphql.ObservableQuery<Query$GetChannelList> useWatchQuery$GetChannelList([
+  WatchOptions$Query$GetChannelList? options,
+]) => graphql_flutter.useWatchQuery(
+  options ?? WatchOptions$Query$GetChannelList(),
+);
+
+class Query$GetChannelList$Widget
+    extends graphql_flutter.Query<Query$GetChannelList> {
+  Query$GetChannelList$Widget({
+    widgets.Key? key,
+    Options$Query$GetChannelList? options,
+    required graphql_flutter.QueryBuilder<Query$GetChannelList> builder,
+  }) : super(
+         key: key,
+         options: options ?? Options$Query$GetChannelList(),
+         builder: builder,
+       );
+}
+
+class Query$GetChannelList$getChannelList {
+  Query$GetChannelList$getChannelList({
+    required this.id,
+    required this.code,
+    required this.token,
+    this.$__typename = 'Channel',
+  });
+
+  factory Query$GetChannelList$getChannelList.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    final l$id = json['id'];
+    final l$code = json['code'];
+    final l$token = json['token'];
+    final l$$__typename = json['__typename'];
+    return Query$GetChannelList$getChannelList(
+      id: (l$id as String),
+      code: (l$code as String),
+      token: (l$token as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String code;
+
+  final String token;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$token = token;
+    _resultData['token'] = l$token;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$code = code;
+    final l$token = token;
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$id, l$code, l$token, l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetChannelList$getChannelList ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetChannelList$getChannelList
+    on Query$GetChannelList$getChannelList {
+  CopyWith$Query$GetChannelList$getChannelList<
+    Query$GetChannelList$getChannelList
+  >
+  get copyWith => CopyWith$Query$GetChannelList$getChannelList(this, (i) => i);
+}
+
+abstract class CopyWith$Query$GetChannelList$getChannelList<TRes> {
+  factory CopyWith$Query$GetChannelList$getChannelList(
+    Query$GetChannelList$getChannelList instance,
+    TRes Function(Query$GetChannelList$getChannelList) then,
+  ) = _CopyWithImpl$Query$GetChannelList$getChannelList;
+
+  factory CopyWith$Query$GetChannelList$getChannelList.stub(TRes res) =
+      _CopyWithStubImpl$Query$GetChannelList$getChannelList;
+
+  TRes call({String? id, String? code, String? token, String? $__typename});
+}
+
+class _CopyWithImpl$Query$GetChannelList$getChannelList<TRes>
+    implements CopyWith$Query$GetChannelList$getChannelList<TRes> {
+  _CopyWithImpl$Query$GetChannelList$getChannelList(this._instance, this._then);
+
+  final Query$GetChannelList$getChannelList _instance;
+
+  final TRes Function(Query$GetChannelList$getChannelList) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? code = _undefined,
+    Object? token = _undefined,
+    Object? $__typename = _undefined,
+  }) => _then(
+    Query$GetChannelList$getChannelList(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      token: token == _undefined || token == null
+          ? _instance.token
+          : (token as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
+}
+
+class _CopyWithStubImpl$Query$GetChannelList$getChannelList<TRes>
+    implements CopyWith$Query$GetChannelList$getChannelList<TRes> {
+  _CopyWithStubImpl$Query$GetChannelList$getChannelList(this._res);
+
+  TRes _res;
+
+  call({String? id, String? code, String? token, String? $__typename}) => _res;
 }

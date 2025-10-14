@@ -147,3 +147,30 @@ class _AppTextButtonState extends State<AppTextButton> {
     );
   }
 }
+
+
+class CustomCheckboxTile extends StatelessWidget {
+  final String title;
+  final bool value;
+  final ValueChanged<bool?> onChanged;
+  final Color activeColor;
+
+  const CustomCheckboxTile({
+    Key? key,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.activeColor = Colors.blue,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CheckboxListTile(
+      title: Text(title),
+      value: value,
+      onChanged: onChanged,
+      activeColor: activeColor,
+      contentPadding: EdgeInsets.zero,
+    );
+  }
+}

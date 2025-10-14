@@ -6,6 +6,7 @@ import '../services/graphql_client.dart';
 import '../theme/colors.dart';
 import '../theme/sizes.dart';
 import '../widgets/button.dart';
+import '../widgets/snackbar.dart';
 import '../widgets/textbox.dart';
 import 'homepage.dart';
 
@@ -298,34 +299,34 @@ class _SignupPageState extends State<SignupPage> {
 
     // Validate first name
     if (_authController.firstname.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your first name'),
-          backgroundColor: AppColors.error,
-        ),
+      SnackBarWidget.show(
+        context,
+        'Please enter your first name',
+        backgroundColor: AppColors.error,
       );
+
       return;
     }
 
     // Validate last name
     if (_authController.lastname.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your last name'),
-          backgroundColor: AppColors.error,
-        ),
+      SnackBarWidget.show(
+        context,
+        'Please enter your last name',
+        backgroundColor: AppColors.error,
       );
+
       return;
     }
 
     // Validate phone number
     if (_authController.phoneNumber.text.length != 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid 10-digit phone number'),
-          backgroundColor: AppColors.error,
-        ),
+      SnackBarWidget.show(
+        context,
+        'Please enter a valid 10-digit phone number',
+        backgroundColor: AppColors.error, // optional, uses AppColors.background by default
       );
+
       return;
     }
 
@@ -335,14 +336,14 @@ class _SignupPageState extends State<SignupPage> {
     final userExists = await _authController.checkUserExists();
 
     if (userExists) {
-      final channelCode = _authController.currentChannelCode ?? defaultCityName;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('You are already registered in $channelCode. Please login.'),
-          backgroundColor: AppColors.error,
-          duration: const Duration(seconds: 5),
-        ),
+      final channelCode = _authController.currentChannelCode;
+      SnackBarWidget.show(
+        context,
+        'You are already registered in $channelCode. Please login.',
+        backgroundColor: AppColors.error, // optional, override default
+        duration: const Duration(seconds: 5), // optional, override default
       );
+
       debugPrint('[Signup] User already registered in channel: $channelCode');
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
@@ -355,8 +356,7 @@ class _SignupPageState extends State<SignupPage> {
     // Set hardcoded channel token BEFORE sending OTP
     _authController.setChannelCode(defaultCityName);
     _authController.setChannelToken(defaultChannelToken);
-    await GraphqlService.setChannelToken(defaultChannelToken);
-
+    await GraphqlService.setToken(key: 'channel', token: defaultChannelToken);
     debugPrint('[Signup] New user - Sending OTP with channel: $defaultCityName, token: $defaultChannelToken');
 
     final success = await _authController.sendOtp(context);
@@ -367,12 +367,12 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> _verifyOtp() async {
     if (_authController.otpController.text.length != 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid 4-digit OTP'),
-          backgroundColor: AppColors.error,
-        ),
+      SnackBarWidget.show(
+        context,
+        'Please enter a valid 4-digit OTP',
+        backgroundColor: AppColors.error,
       );
+
       return;
     }
 

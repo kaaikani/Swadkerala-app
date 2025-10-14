@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:untitled2/services/graphql_client.dart';
 import 'routes.dart';
 import 'controllers/utilitycontroller/utilitycontroller.dart';
 import 'controllers/authentication/authenticationcontroller.dart';
@@ -10,15 +11,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize GetStorage
+
   await GetStorage.init();
-  
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env"); // <-- load dotenv first
+  await GraphqlService.initialize();
   
   // Initialize controllers
   Get.put(UtilityController());
   Get.put<AuthController>(AuthController());
-  
+
   runApp(const MyApp());
 }
 

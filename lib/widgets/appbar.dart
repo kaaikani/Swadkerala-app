@@ -30,12 +30,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               color: AppColors.buttonText,
             ),
           ),
-          IconButton(
-            onPressed: () {
-              // Handle location button press
-            },
-            icon: const Icon(Icons.location_on_outlined),
-          )
+
 
         ],
       ),

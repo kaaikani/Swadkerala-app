@@ -36,7 +36,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  double _bottomCardTop = 0.6; // fraction of screen height
 
   @override
   Widget build(BuildContext context) {

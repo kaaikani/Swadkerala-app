@@ -123,7 +123,7 @@ class AuthController extends GetxController {
 
       await _storage.write('channel_code', channel.code);
       await _storage.write('channel_token', channel.token);
-      await GraphqlService.setChannelToken(channel.token);
+      await GraphqlService.setToken(key: 'channel', token: channel.token);
 
       debugPrint('[AuthController] Channel saved - Code: ${channel.code}, Token: ${channel.token}');
       SnackBarWidget.show(context, 'Phone number verified!', backgroundColor: AppColors.accent);
@@ -153,7 +153,7 @@ class AuthController extends GetxController {
     try {
       // First, clear any channel token to search across ALL channels
       final originalChannelToken = GraphqlService.channelToken;
-      await GraphqlService.setChannelToken(''); // Empty token to search globally
+      await GraphqlService.setToken(key: 'channel', token: originalChannelToken);
       debugPrint('[AuthController] Cleared channel token for global search');
 
       final response = await GraphqlService.client.value.query$GetChannelsByCustomerEmail(
@@ -164,7 +164,7 @@ class AuthController extends GetxController {
 
       // Restore original channel token
       if (originalChannelToken.isNotEmpty) {
-        await GraphqlService.setChannelToken(originalChannelToken);
+        await GraphqlService.setToken(key: 'channel', token: originalChannelToken);
         debugPrint('[AuthController] Restored channel token: $originalChannelToken');
       }
 
@@ -271,10 +271,11 @@ class AuthController extends GetxController {
     debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
 
     try {
-      // Use separate controllers instead of nameParts
+      // Trim first and last name
       final firstName = firstname.text.trim();
       final lastName = lastname.text.trim();
 
+      // Perform OTP verification mutation
       final response = await GraphqlService.client.value.mutate$Authenticate(
         Options$Mutation$Authenticate(
           variables: Variables$Mutation$Authenticate(
@@ -282,14 +283,11 @@ class AuthController extends GetxController {
             code: otpController.text,
             firstName: firstName,
             lastName: lastName,
-
-
-
-
           ),
         ),
       );
 
+      // Handle GraphQL errors
       if (response.hasException) {
         final msg = response.exception!.graphqlErrors.isNotEmpty
             ? response.exception!.graphqlErrors.first.message
@@ -301,28 +299,45 @@ class AuthController extends GetxController {
 
       final data = response.parsedData?.authenticate;
 
+      // OTP verified successfully
       if (data is Mutation$Authenticate$authenticate$$CurrentUser) {
-        final token =
-        response.context.entry<HttpLinkResponseContext>()?.headers?['vendure-auth-token'];
-        if (token != null) {
-          await GraphqlService.setAuthToken(token);
+        // Extract auth token from response headers
+        final authToken = response.context.entry<HttpLinkResponseContext>()
+            ?.headers?['vendure-auth-token'];
+
+        if (authToken != null && authToken.isNotEmpty) {
+          // 1️⃣ Save auth token
+          await GraphqlService.setToken(key: 'auth', token: authToken);
+
+          // 2️⃣ Fetch channels for this user using email
+          final channelFetched = await checkEmailAndGetChannel(context);
+
+          if (!channelFetched) {
+            // Channel fetch failed
+            return false;
+          }
+
+          // 3️⃣ Mark user as logged in and reset form
           setLoggedIn(true);
           resetFormField();
+
           debugPrint('[AuthController] Login successful');
-          SnackBarWidget.show(context, 'Login successful!', backgroundColor: AppColors.accent);
+          SnackBarWidget.show(
+            context,
+            'Login successful!',
+            backgroundColor: AppColors.accent,
+          );
           return true;
         }
       }
 
+      // Handle invalid credentials
       if (data is Mutation$Authenticate$authenticate$$InvalidCredentialsError) {
-        SnackBarWidget.show(
-          context,
-          data.message,
-          backgroundColor: AppColors.error,
-        );
+        SnackBarWidget.show(context, data.message, backgroundColor: AppColors.error);
         return false;
       }
 
+      // Fallback error
       SnackBarWidget.show(context, 'OTP verification failed', backgroundColor: AppColors.error);
       return false;
 
@@ -403,7 +418,7 @@ class AuthController extends GetxController {
       }
 
       // Clear all stored data
-      await GraphqlService.clearAuthToken();
+      await GraphqlService.clearToken('auth');
       await _storage.remove('channel_code');
       await _storage.remove('channel_token');
 

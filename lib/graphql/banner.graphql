@@ -1,0 +1,44 @@
+query customBanners {
+    customBanners{
+        id
+        assets {
+            id
+            name
+            source
+        }
+        channels {
+            id
+            code
+        }
+    }
+}
+
+
+
+
+# lib/graphql/search.graphql
+query Search($input: SearchInput!) {
+    search(input: $input) {
+        items {
+            productVariantId
+            productId
+            slug
+            productName
+            productVariantName
+            description
+            collectionIds
+            priceWithTax {
+                ... on PriceRange {
+                    min
+                    max
+                }
+            }
+            productAsset {
+                id
+                preview
+                focalPoint { x y }
+            }
+        }
+        totalItems
+    }
+}

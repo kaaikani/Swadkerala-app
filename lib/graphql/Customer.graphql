@@ -1,0 +1,223 @@
+mutation UpdateCustomer($input: UpdateCustomerInput!){
+    updateCustomer(input: $input){
+        ... on Customer{
+            firstName
+            lastName
+
+        }
+    }
+}
+
+mutation CreateCustomerAddress($input: CreateAddressInput!) {
+    createCustomerAddress(input: $input) {
+        id
+        createdAt
+        updatedAt
+        fullName
+        company
+        streetLine1
+        streetLine2
+        city
+        province
+        postalCode
+
+        phoneNumber
+        defaultShippingAddress
+        defaultBillingAddress
+        country{
+            id
+            name
+        }
+    }
+}
+
+mutation UpdateCustomerAddress($input: UpdateAddressInput!){
+    updateCustomerAddress(input: $input){
+        createdAt
+        city
+        country {
+            name
+            code
+            id
+            languageCode
+        }
+        id
+        company
+        defaultBillingAddress
+        defaultShippingAddress
+        fullName
+        phoneNumber
+        streetLine1
+        streetLine2
+
+    }
+}
+mutation DeleteCustomerAddress($id: ID!) {
+    deleteCustomerAddress(id: $id) {
+        success
+    }
+}
+query GetCurrentUser{
+    me {
+        ... on CurrentUser{
+            id
+            identifier
+
+            channels {
+                ... on CurrentUserChannel{
+                    id
+                    permissions
+                    token
+                }
+            }
+        }
+    }
+}
+query LoyaltyPointsConfig {
+    loyaltyPointsConfig {
+        id
+        createdAt
+        updatedAt
+        rupeesPerPoint
+        pointsPerRupee
+    }
+}
+
+query GetActiveCustomer {
+    activeCustomer {
+        __typename
+        ... on Customer {
+            id
+
+            emailAddress
+            firstName
+            lastName
+            phoneNumber
+
+
+            customFields {
+
+                loyaltyPointsAvailable
+            }
+            addresses {
+                id
+                postalCode
+                streetLine1
+                streetLine2
+                fullName
+                country {
+                    id
+                    name
+                    code
+                    languageCode
+                }
+                phoneNumber
+                company
+                city
+                streetLine2
+                streetLine1
+                fullName
+                postalCode
+
+                defaultShippingAddress
+                defaultBillingAddress
+            }
+            orders {
+
+                totalItems
+                items {
+                    id
+                    currencyCode
+                    orderPlacedAt
+                    lines {
+                        id
+                        quantity
+                        productVariant {
+                            name
+                        }
+                        featuredAsset {
+                            name
+                            preview
+                        }
+                    }
+                    active
+                    discounts {
+                        amount
+                    }
+                    code
+                    state
+                    customer {
+                        firstName
+                        lastName
+                    }
+                    shippingAddress {
+                        country
+                        city
+                        phoneNumber
+                        streetLine1
+                        streetLine2
+                        postalCode
+                        fullName
+                    }
+                    surcharges {
+                        price
+                        priceWithTax
+                    }
+                    couponCodes
+                    payments {
+                        state
+                        createdAt
+                        method
+                        amount
+                        transactionId
+                    }
+                    totalQuantity
+                    totalWithTax
+                    billingAddress {
+                        postalCode
+                        streetLine2
+                        fullName
+                        city
+                        phoneNumber
+
+                        streetLine1
+                    }
+                    customFields {
+
+                        loyaltyPointsUsed
+                        loyaltyPointsEarned
+                        otherInstructions
+                        clientRequestToCancel
+
+                    }
+                }
+            }
+        }
+    }
+}
+query GetLoyaltyPointTransactions {
+    activeCustomer {
+        __typename
+        ... on Customer {
+            orders {
+
+                items {
+                    code
+
+                    state
+                    orderPlacedAt
+                    customFields {
+
+                        loyaltyPointsEarned
+                        loyaltyPointsUsed
+                    }
+
+                }
+
+            }
+        }
+    }
+}
+
+
+

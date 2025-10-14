@@ -10,7 +10,7 @@ class GraphqlService {
   // Tokens
   static String _authToken = "";
   static String _channelToken = "";
-  static String _channelTokenKey = dotenv.env['CHANNEL_TOKEN_KEY'] ?? 'vendure-token';
+  static final String _channelTokenKey = dotenv.env['CHANNEL_TOKEN_KEY'] ?? 'vendure-token';
 
   // Storage
   static final GetStorage _storage = GetStorage();
@@ -18,78 +18,67 @@ class GraphqlService {
   // GraphQL client
   static ValueNotifier<GraphQLClient>? _client;
 
-  /// Get GraphQL client
   static ValueNotifier<GraphQLClient> get client {
     _client ??= ValueNotifier(_createClient());
+    print("📦 GraphQL Client created with channelToken: $_channelToken");
     return _client!;
   }
 
-  /// Create GraphQL client with current tokens
   static GraphQLClient _createClient() {
-    final AuthLink authLink = AuthLink(
-      getToken: () async => _authToken.isNotEmpty ? 'Bearer $_authToken' : null,
-    );
+    print("🔧 _createClient called with authToken: $_authToken, channelToken: $_channelToken");
 
-    final HttpLink httpLink = HttpLink(
+    final authLink = AuthLink(getToken: () async => _authToken.isNotEmpty ? 'Bearer $_authToken' : null);
+    // Only include channelToken if it's not empty
+    final httpLink = HttpLink(
       dotenv.env['SHOP_API_URL'] ?? '',
       httpClient: http.Client(),
       defaultHeaders: {
-        _channelTokenKey: _channelToken,
-        'x-device-medium': 'android', // TODO: make dynamic for iOS
+        if (_channelToken.isNotEmpty) _channelTokenKey: _channelToken,
+        'x-device-medium': 'android',
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
     );
 
-    final Link link = authLink.concat(httpLink);
 
-    return GraphQLClient(
-      link: link,
-      cache: GraphQLCache(),
-    );
+
+    return GraphQLClient(link: authLink.concat(httpLink), cache: GraphQLCache());
   }
 
-  /// Initialize service from stored tokens
+  // Initialize from storage
   static Future<void> initialize() async {
+    print("⚡ Initializing GraphqlService...");
     await GetStorage.init();
     _authToken = _storage.read('auth_token') ?? "";
     _channelToken = _storage.read('channel_token') ?? "";
+    print("✅ Tokens loaded - authToken: $_authToken, channelToken: $_channelToken");
     _client ??= ValueNotifier(_createClient());
   }
 
-  /// Set authentication token
-  static Future<void> setAuthToken(String token) async {
-    if (_authToken != token) {
-      _authToken = token;
-      await _storage.write('auth_token', token);
-      _client?.value = _createClient();
+  // Generic setter for token
+  static Future<void> setToken({required String key, required String token}) async {
+    print("📝 setToken called for $key: $token");
+    if (key == 'auth') {
+      if (_authToken != token) _authToken = token;
+    } else if (key == 'channel') {
+      if (_channelToken != token) _channelToken = token;
     }
-  }
-
-  /// Set channel token
-  static Future<void> setChannelToken(String token) async {
-    if (_channelToken != token) {
-      _channelToken = token;
-      await _storage.write('channel_token', token);
-      _client?.value = _createClient();
-    }
-  }
-
-  /// Remove authentication token
-  static Future<void> clearAuthToken() async {
-    _authToken = "";
-    await _storage.remove('auth_token');
+    await _storage.write('${key}_token', token);
     _client?.value = _createClient();
+    print("✅ $key token updated and client recreated");
   }
 
-  /// Remove channel token
-  static Future<void> clearChannelToken() async {
-    _channelToken = "";
-    await _storage.remove('channel_token');
+  // Generic clear token
+  static Future<void> clearToken(String key) async {
+    print("🗑️ clearToken called for $key");
+    if (key == 'auth') _authToken = "";
+    if (key == 'channel') _channelToken = "";
+    await _storage.remove('${key}_token');
     _client?.value = _createClient();
+    print("✅ $key token cleared and client recreated");
   }
 
-  /// Getters
+  // Getters
   static String get authToken => _authToken;
   static String get channelToken => _channelToken;
 }
