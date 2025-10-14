@@ -1,0 +1,144 @@
+query GetCartTotals {
+    activeOrder {
+        id
+        active
+        totalQuantity
+        totalWithTax
+        __typename
+    }
+}
+
+query UpdatedPrice {
+    activeOrder {
+        id
+        lines {
+            id
+            productVariant {
+                id
+                price
+            }
+            unitPrice
+            quantity
+        }
+    }
+}
+
+mutation AddToCart($variantId: ID!, $qty: Int!) {
+    addItemToOrder(productVariantId: $variantId, quantity: $qty) {
+        ...Cart
+        ...ErrorResult
+        ... on InsufficientStockError {
+            order {
+                ...Cart
+                __typename
+            }
+            __typename
+        }
+        __typename
+    }
+}
+
+fragment Cart on Order {
+    id
+    code
+    state
+    active
+    couponCodes
+    promotions {
+        couponCode
+        name
+        enabled
+        actions {
+            args {
+                value
+                name
+            }
+            code
+        }
+        conditions {
+            code
+            args {
+                name
+                value
+            }
+        }
+    }
+    lines {
+        id
+        featuredAsset {
+            ...Asset
+            __typename
+        }
+        unitPrice
+        unitPriceWithTax
+        quantity
+        linePriceWithTax
+        discountedLinePriceWithTax
+        productVariant {
+            id
+            name
+            __typename
+        }
+        discounts {
+            amount
+            amountWithTax
+            description
+            adjustmentSource
+            type
+            __typename
+        }
+        customFields
+        __typename
+    }
+    totalQuantity
+    subTotal
+    subTotalWithTax
+    total
+    totalWithTax
+    shipping
+    shippingWithTax
+    shippingLines {
+        priceWithTax
+        shippingMethod {
+            id
+            code
+            name
+            description
+            __typename
+        }
+        __typename
+    }
+    discounts {
+        amount
+        amountWithTax
+        description
+        adjustmentSource
+        type
+        __typename
+    }
+    customFields {
+
+        clientRequestToCancel
+    }
+    __typename
+}
+
+fragment Asset on Asset {
+    id
+    width
+    height
+    name
+    preview
+    focalPoint {
+        x
+        y
+        __typename
+    }
+    __typename
+}
+
+fragment ErrorResult on ErrorResult {
+    errorCode
+    message
+    __typename
+}

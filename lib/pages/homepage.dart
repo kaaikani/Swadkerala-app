@@ -12,47 +12,35 @@ import 'Collectionprodcutpage.dart';
 
 
 class MyHomePage extends StatelessWidget {
-  // Removed const constructor
   MyHomePage({Key? key}) : super(key: key);
-  final box = GetStorage(); // Can’t be const
+
+  final box = GetStorage();
   final BannerController bannerController = Get.put(BannerController());
-  final CollectionsController collectioncontroller = Get.put(CollectionsController());
-
-
+  final CollectionsController collectionController = Get.put(CollectionsController());
 
   @override
   Widget build(BuildContext context) {
-    final cityName = box.read('channel_code') ?? 'Default City'; // runtime value
-    Get.put(BannerController());
+    final cityName = box.read('channel_code') ?? 'Default City'; // safe to read here
+
     return Scaffold(
       appBar: AppBarWidget(
         title: cityName,
         actions: [
           IconButton(
-            onPressed: () {
-              Get.toNamed('/search');
-
-            },
+            onPressed: () => Get.toNamed('/search'),
             icon: const Icon(Icons.search),
           ),
           IconButton(
-            onPressed: () {
-              Get.toNamed('/favourite');
-
-            },
+            onPressed: () => Get.toNamed('/favourite'),
             icon: const Icon(Icons.favorite),
           ),
           IconButton(
-            onPressed: () {
-              Get.toNamed('/account');
-            },
+            onPressed: () => Get.toNamed('/account'),
             icon: const Icon(Icons.person),
           ),
         ],
-
       ),
-      body:
-      SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             SearchComponent(
@@ -61,23 +49,20 @@ class MyHomePage extends StatelessWidget {
                 bannerController.searchProducts({'term': query});
               },
             ),
-            BannerComponent(),
-
-             CollectionGrid(
-                  onCollectionTap: (collection) {
-                    debugPrint('Collection clicked: ${collection.name}, ID: ${collection.id}');
-                    Get.to(() => CollectionProductsPage(
-                      collectionId: collection.id,
-                      collectionName: collection.name,
-                    ));
-                  },
-
-              ),
-
+            BannerComponent(), // Obx inside BannerComponent is fine
+            CollectionGrid(
+              onCollectionTap: (collection) {
+                debugPrint('Collection clicked: ${collection.name}, ID: ${collection.id}');
+                Get.to(() => CollectionProductsPage(
+                  collectionId: collection.id,
+                  collectionName: collection.name,
+                ));
+              },
+            ),
           ],
         ),
       ),
-    bottomNavigationBar: BottomNavComponent(),
+      bottomNavigationBar: BottomNavComponent(),
     );
   }
 }

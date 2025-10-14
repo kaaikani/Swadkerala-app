@@ -4,6 +4,13 @@ query Collections($options: CollectionListOptions) {
             id
             name
 
+children {
+    id
+    slug
+    name
+
+}
+
             productVariants{
                 totalItems
             }
@@ -17,4 +24,49 @@ query Collections($options: CollectionListOptions) {
             }
         }
     }
+}
+
+query Products ($slug: String, $id: ID){
+    collection(slug: $slug, id: $id) {
+        id
+        name
+
+
+
+        productVariants{
+
+            items{
+                product{
+                    id
+                    name
+                    enabled
+                    featuredAsset {
+                        ...Asset
+                    }
+                }
+                priceWithTax
+                stockLevel
+                productId
+
+                name
+            }
+        }
+
+    }
+}
+
+
+
+fragment Asset on Asset {
+    id
+    width
+    height
+    name
+    preview
+    focalPoint {
+        x
+        y
+        __typename
+    }
+    __typename
 }

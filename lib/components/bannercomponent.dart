@@ -76,14 +76,16 @@ class _BannerComponentState extends State<BannerComponent> {
           child: Center(child: CircularProgressIndicator()),
         );
       }
-      if (bannerController.bannerList.isEmpty) {
-        bannerController.getBannersForChannel();
-
-        return const SizedBox(
-            height: 200, child: Center(child: Text("No banners available")));
-      }
 
       final banners = bannerController.bannerList;
+
+      if (banners.isEmpty) {
+        // Do NOT call getBannersForChannel() here
+        return const SizedBox(
+          height: 200,
+          child: Center(child: Text("No banners available")),
+        );
+      }
 
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -101,7 +103,6 @@ class _BannerComponentState extends State<BannerComponent> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Material(
                     elevation: 6,
-
                     shadowColor: Colors.black38,
                     child: ClipRRect(
                       child: Stack(
@@ -152,31 +153,26 @@ class _BannerComponentState extends State<BannerComponent> {
             ),
           ),
           const SizedBox(height: 12),
-
-          // ================== NEW AND IMPROVED DOTS INDICATOR ==================
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               banners.length,
                   (index) {
-                bool isActive = ( _currentPage % banners.length) == index;
+                bool isActive = (_currentPage % banners.length) == index;
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 350),
                   curve: Curves.easeOutCubic,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  // Animate width to create the pill shape
                   width: isActive ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
                     color: isActive ? Colors.blueAccent : Colors.grey.shade400,
-                    // Use BorderRadius to make it a circle or a pill
                     borderRadius: BorderRadius.circular(12),
                   ),
                 );
               },
             ),
           ),
-          // =======================================================================
         ],
       );
     });
