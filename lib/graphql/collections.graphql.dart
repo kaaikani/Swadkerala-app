@@ -2433,6 +2433,13 @@ const documentNodeQueryProducts = DocumentNode(
                         selectionSet: SelectionSetNode(
                           selections: [
                             FieldNode(
+                              name: NameNode(value: 'id'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
                               name: NameNode(value: 'product'),
                               alias: null,
                               arguments: [],
@@ -3051,6 +3058,7 @@ class _CopyWithStubImpl$Query$Products$collection$productVariants<TRes>
 
 class Query$Products$collection$productVariants$items {
   Query$Products$collection$productVariants$items({
+    required this.id,
     required this.product,
     required this.priceWithTax,
     required this.stockLevel,
@@ -3062,6 +3070,7 @@ class Query$Products$collection$productVariants$items {
   factory Query$Products$collection$productVariants$items.fromJson(
     Map<String, dynamic> json,
   ) {
+    final l$id = json['id'];
     final l$product = json['product'];
     final l$priceWithTax = json['priceWithTax'];
     final l$stockLevel = json['stockLevel'];
@@ -3069,6 +3078,7 @@ class Query$Products$collection$productVariants$items {
     final l$name = json['name'];
     final l$$__typename = json['__typename'];
     return Query$Products$collection$productVariants$items(
+      id: (l$id as String),
       product: Query$Products$collection$productVariants$items$product.fromJson(
         (l$product as Map<String, dynamic>),
       ),
@@ -3079,6 +3089,8 @@ class Query$Products$collection$productVariants$items {
       $__typename: (l$$__typename as String),
     );
   }
+
+  final String id;
 
   final Query$Products$collection$productVariants$items$product product;
 
@@ -3094,6 +3106,8 @@ class Query$Products$collection$productVariants$items {
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
     final l$product = product;
     _resultData['product'] = l$product.toJson();
     final l$priceWithTax = priceWithTax;
@@ -3111,6 +3125,7 @@ class Query$Products$collection$productVariants$items {
 
   @override
   int get hashCode {
+    final l$id = id;
     final l$product = product;
     final l$priceWithTax = priceWithTax;
     final l$stockLevel = stockLevel;
@@ -3118,6 +3133,7 @@ class Query$Products$collection$productVariants$items {
     final l$name = name;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$id,
       l$product,
       l$priceWithTax,
       l$stockLevel,
@@ -3134,6 +3150,11 @@ class Query$Products$collection$productVariants$items {
     }
     if (other is! Query$Products$collection$productVariants$items ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
       return false;
     }
     final l$product = product;
@@ -3190,6 +3211,7 @@ abstract class CopyWith$Query$Products$collection$productVariants$items<TRes> {
   ) = _CopyWithStubImpl$Query$Products$collection$productVariants$items;
 
   TRes call({
+    String? id,
     Query$Products$collection$productVariants$items$product? product,
     double? priceWithTax,
     String? stockLevel,
@@ -3215,6 +3237,7 @@ class _CopyWithImpl$Query$Products$collection$productVariants$items<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? id = _undefined,
     Object? product = _undefined,
     Object? priceWithTax = _undefined,
     Object? stockLevel = _undefined,
@@ -3223,6 +3246,7 @@ class _CopyWithImpl$Query$Products$collection$productVariants$items<TRes>
     Object? $__typename = _undefined,
   }) => _then(
     Query$Products$collection$productVariants$items(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
       product: product == _undefined || product == null
           ? _instance.product
           : (product
@@ -3262,6 +3286,7 @@ class _CopyWithStubImpl$Query$Products$collection$productVariants$items<TRes>
   TRes _res;
 
   call({
+    String? id,
     Query$Products$collection$productVariants$items$product? product,
     double? priceWithTax,
     String? stockLevel,

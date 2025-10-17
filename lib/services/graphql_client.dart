@@ -2,15 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/http.dart' as http;
-
-
 import 'package:get_storage/get_storage.dart';
 
 class GraphqlService {
   // Tokens
   static String _authToken = "";
   static String _channelToken = "";
-  static final String _channelTokenKey = dotenv.env['CHANNEL_TOKEN_KEY'] ?? 'vendure-token';
+  static final String _channelTokenKey =  'vendure-token';
 
   // Storage
   static final GetStorage _storage = GetStorage();
@@ -28,7 +26,7 @@ class GraphqlService {
     print("🔧 _createClient called with authToken: $_authToken, channelToken: $_channelToken");
 
     final authLink = AuthLink(getToken: () async => _authToken.isNotEmpty ? 'Bearer $_authToken' : null);
-    // Only include channelToken if it's not empty
+
     final httpLink = HttpLink(
       dotenv.env['SHOP_API_URL'] ?? '',
       httpClient: http.Client(),
@@ -40,9 +38,15 @@ class GraphqlService {
       },
     );
 
-
-
-    return GraphQLClient(link: authLink.concat(httpLink), cache: GraphQLCache());
+    return GraphQLClient(
+      link: authLink.concat(httpLink),
+      cache: GraphQLCache(store: null), // fully disabled cache
+      defaultPolicies: DefaultPolicies(
+        watchQuery: Policies(fetch: FetchPolicy.networkOnly),
+        query: Policies(fetch: FetchPolicy.networkOnly),
+        mutate: Policies(fetch: FetchPolicy.networkOnly),
+      ),
+    );
   }
 
   // Initialize from storage

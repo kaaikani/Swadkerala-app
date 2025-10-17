@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:get_storage/get_storage.dart';
@@ -87,8 +88,9 @@ class AuthController extends GetxController {
     }
 
     setLoading(true);
+    final domain = dotenv.env['EMAIL_DOMAIN'] ?? '@kaikani.com';
+    final email = '${phoneNumber.text}$domain';
 
-    final email = '${phoneNumber.text}@kaikani.com';
     debugPrint('[AuthController] Using email: $email');
 
     try {
@@ -146,8 +148,9 @@ class AuthController extends GetxController {
     }
 
     setLoading(true);
+    final domain = dotenv.env['EMAIL_DOMAIN'] ?? '@kaikani.com';
+    final email = '${phoneNumber.text}$domain';
 
-    final email = '${phoneNumber.text}@kaikani.com';
     debugPrint('[AuthController] Checking if user exists with email: $email');
 
     try {

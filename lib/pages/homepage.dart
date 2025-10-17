@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:untitled2/controllers/banner/bannercontroller.dart';
-import 'package:untitled2/controllers/collection%20controller/collectioncontroller.dart';
+import '../controllers/banner/bannercontroller.dart';
+import '../controllers/cart/Cartcontroller.dart';
+import '../controllers/collection controller/collectioncontroller.dart';
 import '../components/bannercomponent.dart';
 import '../components/bottomnavigationbar.dart';
 import '../components/collectioncomponent.dart';
@@ -10,17 +11,33 @@ import '../components/searchbarcomponent.dart';
 import '../widgets/appbar.dart';
 import 'Collectionprodcutpage.dart';
 
-
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
 
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   final box = GetStorage();
   final BannerController bannerController = Get.put(BannerController());
   final CollectionsController collectionController = Get.put(CollectionsController());
+  final CartController cartController = Get.put(CartController());
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch active cart to show correct count
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cartController.getActiveOrder();
+      // Show notification permission dialog after a short delay
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    final cityName = box.read('channel_code') ?? 'Default City'; // safe to read here
+    final cityName = box.read('channel_code') ?? 'Default City';
 
     return Scaffold(
       appBar: AppBarWidget(
@@ -34,6 +51,7 @@ class MyHomePage extends StatelessWidget {
             onPressed: () => Get.toNamed('/favourite'),
             icon: const Icon(Icons.favorite),
           ),
+
           IconButton(
             onPressed: () => Get.toNamed('/account'),
             icon: const Icon(Icons.person),
@@ -49,7 +67,7 @@ class MyHomePage extends StatelessWidget {
                 bannerController.searchProducts({'term': query});
               },
             ),
-            BannerComponent(), // Obx inside BannerComponent is fine
+            BannerComponent(),
             CollectionGrid(
               onCollectionTap: (collection) {
                 debugPrint('Collection clicked: ${collection.name}, ID: ${collection.id}');
@@ -62,7 +80,9 @@ class MyHomePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavComponent(),
+      bottomNavigationBar: Obx(() => BottomNavComponent(
+        cartCount: cartController.cartItemCount,
+      )),
     );
   }
 }

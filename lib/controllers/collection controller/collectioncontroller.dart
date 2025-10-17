@@ -2,21 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../graphql/collections.graphql.dart';
 import '../../services/graphql_client.dart';
+import '../utilitycontroller/utilitycontroller.dart';
 import 'Collectionmodel.dart';
 
 class CollectionsController extends GetxController {
   RxList<Collection> allCollections = <Collection>[].obs;
-  RxBool isLoading = false.obs;
   RxList<Product> allProducts = <Product>[].obs;
+  final UtilityController utilityController = Get.find();
 
   Rx<Collection?> currentCollection = Rx<Collection?>(null);
 
   RxList<Query$Products$collection$productVariants$items> uniqueProductVariants = <Query$Products$collection$productVariants$items>[].obs;
+  
+  // Map to store all variants by product ID for quick lookup
+  RxMap<String, List<Query$Products$collection$productVariants$items>> variantsByProductId = <String, List<Query$Products$collection$productVariants$items>>{}.obs;
 
-  Future<bool> fetchAllCollections() async {
+  // Flag to prevent multiple simultaneous fetches
+  bool _isFetching = false;
+
+  /// Get all variants for a specific product ID
+  List<Query$Products$collection$productVariants$items> getVariantsForProduct(String productId) {
+    return variantsByProductId[productId] ?? [];
+  }
+
+  Future<bool> fetchAllCollections({bool force = false}) async {
+    // Prevent multiple simultaneous fetches
+    if (_isFetching) {
+      debugPrint('[Collection] Already fetching, skipping duplicate request');
+      return false;
+    }
+
+    // Don't fetch again if we already have collections (unless forced)
+    if (!force && allCollections.isNotEmpty) {
+      debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
+      return true;
+    }
+
     debugPrint('[Collection] Starting fetchAllCollections...');
+    _isFetching = true;
 
-    isLoading.value = true;
+    utilityController.setLoadingState(true);
 
     try {
       final response = await GraphqlService.client.value.query$Collections(
@@ -31,7 +56,7 @@ class CollectionsController extends GetxController {
         return false;
       }
 
-      final itemsJson = response.parsedData?.collections?.items;
+      final itemsJson = response.parsedData?.collections.items;
       if (itemsJson != null) {
         allCollections.value = itemsJson
             .map((e) => Collection.fromJson(e.toJson()))
@@ -47,7 +72,8 @@ class CollectionsController extends GetxController {
       debugPrint('[Collection] Stacktrace: $stacktrace');
       return false;
     } finally {
-      isLoading.value = false;
+      _isFetching = false;
+      utilityController.setLoadingState(false);
       debugPrint('[Collection] fetchAllCollections finished.');
     }
   }
@@ -57,7 +83,12 @@ class CollectionsController extends GetxController {
     debugPrint('=== [Collection] fetchCollectionproducts START ===');
     debugPrint('[Collection] Parameters: slug="$slug", id="$id"');
 
-    isLoading.value = true;
+    // Clear previous data before loading new collection
+    currentCollection.value = null;
+    uniqueProductVariants.clear();
+    variantsByProductId.clear();
+
+    utilityController.setLoadingState(true);
 
     try {
       final response = await GraphqlService.client.value.query$Products(
@@ -77,18 +108,29 @@ class CollectionsController extends GetxController {
         currentCollection.value = Collection.fromJson(collectionData.toJson());
         debugPrint('✅ [Collection] Loaded Collection: ${currentCollection.value?.name}');
 
-        final productItems = collectionData.productVariants?.items ?? [];
+        final productItems = collectionData.productVariants.items;
         debugPrint('📦 Product Variants count: ${productItems.length}');
 
-        // Filter unique products by product.id
+        // Filter unique products by product.id and group variants
         final loggedProductIds = <String>{};
         uniqueProductVariants.clear();
+        variantsByProductId.clear();
+        
         for (var item in productItems) {
           final product = item.product;
-          if (product != null && !loggedProductIds.contains(product.id)) {
-            loggedProductIds.add(product.id);
-            uniqueProductVariants.add(item); // Store the variant
-            debugPrint('• Product: ${product.name} | ID: ${product.id}');
+          final productId = product.id;
+          
+          // Add to variants map
+          if (!variantsByProductId.containsKey(productId)) {
+            variantsByProductId[productId] = [];
+          }
+          variantsByProductId[productId]!.add(item);
+          
+          // Add first variant to unique list for display
+          if (!loggedProductIds.contains(productId)) {
+            loggedProductIds.add(productId);
+            uniqueProductVariants.add(item); // Store the first variant
+            debugPrint('• Product: ${product.name} | ID: ${productId} | Variants: ${variantsByProductId[productId]!.length}');
           }
         }
       } else {
@@ -101,7 +143,7 @@ class CollectionsController extends GetxController {
       debugPrint('❌ [Collection] Stacktrace: $stacktrace');
       return false;
     } finally {
-      isLoading.value = false;
+      utilityController.setLoadingState(false);
       debugPrint('=== [Collection] fetchCollectionproducts END ===');
     }
   }

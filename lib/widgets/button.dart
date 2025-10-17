@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/sizes.dart';
 
+
 class AppButton extends StatefulWidget {
   final String text;
   final Future<void> Function()? onPressed;
+  final IconData? icon; // ✅ optional icon
   final Color backgroundColor;
   final Color textColor;
   final double? borderRadius;
@@ -16,11 +18,12 @@ class AppButton extends StatefulWidget {
     Key? key,
     required this.text,
     required this.onPressed,
-    this.backgroundColor = AppColors.primary,
-    this.textColor = AppColors.buttonText,
-    this.borderRadius,
-    this.padding,
-    this.elevation = AppSizes.cardElevation,
+    this.icon,
+    this.backgroundColor = AppColors.primary,      // Change based on your AppColors
+    this.textColor = Colors.white,
+    this.borderRadius = 8,
+    this.padding = const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+    this.elevation = 2,
   }) : super(key: key);
 
   @override
@@ -28,55 +31,50 @@ class AppButton extends StatefulWidget {
 }
 
 class _AppButtonState extends State<AppButton> {
-  bool _isWaiting = false;
+  bool _isLoading = false;
 
   Future<void> _handlePress() async {
-    if (_isWaiting || widget.onPressed == null) return;
-
-    setState(() {
-      _isWaiting = true;
-    });
-
-    try {
-      await widget.onPressed!();
-    } catch (e) {
-      debugPrint('[AppButton] Error in onPressed: $e');
-    }
-
-    // Wait 3 seconds before allowing next press
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (mounted) {
-      setState(() {
-        _isWaiting = false;
-      });
-    }
+    if (widget.onPressed == null) return;
+    setState(() => _isLoading = true);
+    await widget.onPressed!();
+    if (mounted) setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: _handlePress,
+      onPressed: _isLoading ? null : _handlePress,
       style: ElevatedButton.styleFrom(
         backgroundColor: widget.backgroundColor,
         foregroundColor: widget.textColor,
-        padding: widget.padding ??
-            EdgeInsets.symmetric(
-              vertical: AppSizes.buttonVerticalPadding,
-              horizontal: AppSizes.buttonHorizontalPadding,
-            ),
+        padding: widget.padding,
         elevation: widget.elevation,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius ?? AppSizes.cardRadius),
+          borderRadius: BorderRadius.circular(widget.borderRadius ?? 8),
         ),
       ),
-      child: Text(
-        widget.text,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+      child: _isLoading
+          ? const SizedBox(
+        height: 18,
+        width: 18,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      )
+          : Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.icon != null)
+            Icon(widget.icon, size: 16, color: widget.textColor),
+          if (widget.icon != null) const SizedBox(width: 6),
+          Text(
+            widget.text,
+            style: TextStyle(color: widget.textColor, fontSize: 14),
+          ),
+        ],
       ),
     );
   }
 }
+
 
 class AppTextButton extends StatefulWidget {
   final String text;

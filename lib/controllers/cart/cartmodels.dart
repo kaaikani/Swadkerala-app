@@ -1,5 +1,5 @@
 class Asset {
-  final int id;
+  final String id;
   final int width;
   final int height;
   final String name;
@@ -17,9 +17,9 @@ class Asset {
 
   factory Asset.fromJson(Map<String, dynamic> json) {
     return Asset(
-      id: json['id'],
-      width: json['width'],
-      height: json['height'],
+      id: json['id'].toString(),
+      width: json['width'] is int ? json['width'] : int.parse(json['width'].toString()),
+      height: json['height'] is int ? json['height'] : int.parse(json['height'].toString()),
       name: json['name'],
       preview: json['preview'],
       focalPoint: json['focalPoint'] != null ? FocalPoint.fromJson(json['focalPoint']) : null,
@@ -34,7 +34,10 @@ class FocalPoint {
   FocalPoint({required this.x, required this.y});
 
   factory FocalPoint.fromJson(Map<String, dynamic> json) {
-    return FocalPoint(x: json['x'], y: json['y']);
+    return FocalPoint(
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+    );
   }
 }
 
@@ -57,8 +60,8 @@ class Discount {
 
   factory Discount.fromJson(Map<String, dynamic> json) {
     return Discount(
-      amount: json['amount'].toDouble(),
-      amountWithTax: json['amountWithTax'].toDouble(),
+      amount: (json['amount'] as num).toDouble(),
+      amountWithTax: (json['amountWithTax'] as num).toDouble(),
       description: json['description'],
       adjustmentSource: json['adjustmentSource'],
       type: json['type'],
@@ -66,20 +69,20 @@ class Discount {
   }
 }
 class ProductVariant {
-  final int id;
+  final String id;
   final String name;
 
   ProductVariant({required this.id, required this.name});
 
   factory ProductVariant.fromJson(Map<String, dynamic> json) {
     return ProductVariant(
-      id: json['id'],
+      id: json['id'].toString(),
       name: json['name'],
     );
   }
 }
 class OrderLine {
-  final int id;
+  final String id;
   final Asset? featuredAsset;
   final double unitPrice;
   final double unitPriceWithTax;
@@ -103,13 +106,13 @@ class OrderLine {
 
   factory OrderLine.fromJson(Map<String, dynamic> json) {
     return OrderLine(
-      id: json['id'],
+      id: json['id'].toString(),
       featuredAsset: json['featuredAsset'] != null ? Asset.fromJson(json['featuredAsset']) : null,
-      unitPrice: json['unitPrice'].toDouble(),
-      unitPriceWithTax: json['unitPriceWithTax'].toDouble(),
-      quantity: json['quantity'],
-      linePriceWithTax: json['linePriceWithTax'].toDouble(),
-      discountedLinePriceWithTax: json['discountedLinePriceWithTax'].toDouble(),
+      unitPrice: (json['unitPrice'] as num).toDouble(),
+      unitPriceWithTax: (json['unitPriceWithTax'] as num).toDouble(),
+      quantity: json['quantity'] is int ? json['quantity'] : int.parse(json['quantity'].toString()),
+      linePriceWithTax: (json['linePriceWithTax'] as num).toDouble(),
+      discountedLinePriceWithTax: (json['discountedLinePriceWithTax'] as num).toDouble(),
       productVariant: ProductVariant.fromJson(json['productVariant']),
       discounts: json['discounts'] != null
           ? List<Discount>.from(json['discounts'].map((x) => Discount.fromJson(x)))
@@ -118,7 +121,7 @@ class OrderLine {
   }
 }
 class Order {
-  final int id;
+  final String id;
   final String code;
   final String state;
   final bool active;
@@ -146,7 +149,7 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
-      id: json['id'],
+      id: json['id'].toString(),
       code: json['code'],
       state: json['state'],
       active: json['active'],
@@ -154,11 +157,11 @@ class Order {
       lines: json['lines'] != null
           ? List<OrderLine>.from(json['lines'].map((x) => OrderLine.fromJson(x)))
           : [],
-      totalQuantity: json['totalQuantity'],
-      subTotal: json['subTotal'].toDouble(),
-      subTotalWithTax: json['subTotalWithTax'].toDouble(),
-      total: json['total'].toDouble(),
-      totalWithTax: json['totalWithTax'].toDouble(),
+      totalQuantity: json['totalQuantity'] is int ? json['totalQuantity'] : int.parse(json['totalQuantity'].toString()),
+      subTotal: (json['subTotal'] as num).toDouble(),
+      subTotalWithTax: (json['subTotalWithTax'] as num).toDouble(),
+      total: (json['total'] as num).toDouble(),
+      totalWithTax: (json['totalWithTax'] as num).toDouble(),
     );
   }
 }

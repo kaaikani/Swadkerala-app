@@ -34,6 +34,21 @@
 -dontwarn com.google.android.play.core.**
 -dontwarn io.flutter.embedding.engine.deferredcomponents.**
 
+# Razorpay ProGuard rules
+-keep class com.razorpay.** { *; }
+-dontwarn com.razorpay.**
+-keepclassmembers class com.razorpay.** {
+    *;
+}
+
+# Keep ProGuard annotations that Razorpay uses
+-keep class proguard.annotation.Keep
+-keep class proguard.annotation.KeepClassMembers
+
+# Keep Razorpay Analytics
+-keep class com.razorpay.AnalyticsEvent { *; }
+-keep class com.razorpay.AnalyticsEvent$* { *; }
+
 # Optimization & access modifications
 -optimizationpasses 5
 -allowaccessmodification

@@ -1,5 +1,6 @@
 import 'collections.graphql.dart';
 import 'dart:async';
+import 'order.graphql.dart';
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
@@ -13189,15 +13190,15 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     implements Fragment$Cart$lines {
   Mutation$AddToCart$addItemToOrder$$Order$lines({
     required this.id,
+    required this.quantity,
+    this.customFields,
     this.featuredAsset,
     required this.unitPrice,
     required this.unitPriceWithTax,
-    required this.quantity,
     required this.linePriceWithTax,
     required this.discountedLinePriceWithTax,
     required this.productVariant,
     required this.discounts,
-    this.customFields,
     this.$__typename = 'OrderLine',
   });
 
@@ -13205,24 +13206,25 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     Map<String, dynamic> json,
   ) {
     final l$id = json['id'];
+    final l$quantity = json['quantity'];
+    final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
     final l$unitPriceWithTax = json['unitPriceWithTax'];
-    final l$quantity = json['quantity'];
     final l$linePriceWithTax = json['linePriceWithTax'];
     final l$discountedLinePriceWithTax = json['discountedLinePriceWithTax'];
     final l$productVariant = json['productVariant'];
     final l$discounts = json['discounts'];
-    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$AddToCart$addItemToOrder$$Order$lines(
       id: (l$id as String),
+      quantity: (l$quantity as int),
+      customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
           : Fragment$Asset.fromJson((l$featuredAsset as Map<String, dynamic>)),
       unitPrice: (l$unitPrice as num).toDouble(),
       unitPriceWithTax: (l$unitPriceWithTax as num).toDouble(),
-      quantity: (l$quantity as int),
       linePriceWithTax: (l$linePriceWithTax as num).toDouble(),
       discountedLinePriceWithTax: (l$discountedLinePriceWithTax as num)
           .toDouble(),
@@ -13238,20 +13240,21 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
                 ),
           )
           .toList(),
-      customFields: (l$customFields as Map<String, dynamic>?),
       $__typename: (l$$__typename as String),
     );
   }
 
   final String id;
 
+  final int quantity;
+
+  final Map<String, dynamic>? customFields;
+
   final Fragment$Asset? featuredAsset;
 
   final double unitPrice;
 
   final double unitPriceWithTax;
-
-  final int quantity;
 
   final double linePriceWithTax;
 
@@ -13263,22 +13266,22 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
   final List<Mutation$AddToCart$addItemToOrder$$Order$lines$discounts>
   discounts;
 
-  final Map<String, dynamic>? customFields;
-
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
     _resultData['id'] = l$id;
+    final l$quantity = quantity;
+    _resultData['quantity'] = l$quantity;
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
     _resultData['featuredAsset'] = l$featuredAsset?.toJson();
     final l$unitPrice = unitPrice;
     _resultData['unitPrice'] = l$unitPrice;
     final l$unitPriceWithTax = unitPriceWithTax;
     _resultData['unitPriceWithTax'] = l$unitPriceWithTax;
-    final l$quantity = quantity;
-    _resultData['quantity'] = l$quantity;
     final l$linePriceWithTax = linePriceWithTax;
     _resultData['linePriceWithTax'] = l$linePriceWithTax;
     final l$discountedLinePriceWithTax = discountedLinePriceWithTax;
@@ -13287,8 +13290,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     _resultData['productVariant'] = l$productVariant.toJson();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
-    final l$customFields = customFields;
-    _resultData['customFields'] = l$customFields;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -13297,27 +13298,27 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
   @override
   int get hashCode {
     final l$id = id;
+    final l$quantity = quantity;
+    final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
     final l$unitPriceWithTax = unitPriceWithTax;
-    final l$quantity = quantity;
     final l$linePriceWithTax = linePriceWithTax;
     final l$discountedLinePriceWithTax = discountedLinePriceWithTax;
     final l$productVariant = productVariant;
     final l$discounts = discounts;
-    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
+      l$quantity,
+      l$customFields,
       l$featuredAsset,
       l$unitPrice,
       l$unitPriceWithTax,
-      l$quantity,
       l$linePriceWithTax,
       l$discountedLinePriceWithTax,
       l$productVariant,
       Object.hashAll(l$discounts.map((v) => v)),
-      l$customFields,
       l$$__typename,
     ]);
   }
@@ -13336,6 +13337,16 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     if (l$id != lOther$id) {
       return false;
     }
+    final l$quantity = quantity;
+    final lOther$quantity = other.quantity;
+    if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$featuredAsset = featuredAsset;
     final lOther$featuredAsset = other.featuredAsset;
     if (l$featuredAsset != lOther$featuredAsset) {
@@ -13349,11 +13360,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     final l$unitPriceWithTax = unitPriceWithTax;
     final lOther$unitPriceWithTax = other.unitPriceWithTax;
     if (l$unitPriceWithTax != lOther$unitPriceWithTax) {
-      return false;
-    }
-    final l$quantity = quantity;
-    final lOther$quantity = other.quantity;
-    if (l$quantity != lOther$quantity) {
       return false;
     }
     final l$linePriceWithTax = linePriceWithTax;
@@ -13382,11 +13388,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
       if (l$discounts$entry != lOther$discounts$entry) {
         return false;
       }
-    }
-    final l$customFields = customFields;
-    final lOther$customFields = other.customFields;
-    if (l$customFields != lOther$customFields) {
-      return false;
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -13418,16 +13419,16 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes> {
 
   TRes call({
     String? id,
+    int? quantity,
+    Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
     double? unitPriceWithTax,
-    int? quantity,
     double? linePriceWithTax,
     double? discountedLinePriceWithTax,
     Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant?
     productVariant,
     List<Mutation$AddToCart$addItemToOrder$$Order$lines$discounts>? discounts,
-    Map<String, dynamic>? customFields,
     String? $__typename,
   });
   CopyWith$Fragment$Asset<TRes> get featuredAsset;
@@ -13460,19 +13461,25 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
 
   TRes call({
     Object? id = _undefined,
+    Object? quantity = _undefined,
+    Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
     Object? unitPriceWithTax = _undefined,
-    Object? quantity = _undefined,
     Object? linePriceWithTax = _undefined,
     Object? discountedLinePriceWithTax = _undefined,
     Object? productVariant = _undefined,
     Object? discounts = _undefined,
-    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) => _then(
     Mutation$AddToCart$addItemToOrder$$Order$lines(
       id: id == _undefined || id == null ? _instance.id : (id as String),
+      quantity: quantity == _undefined || quantity == null
+          ? _instance.quantity
+          : (quantity as int),
+      customFields: customFields == _undefined
+          ? _instance.customFields
+          : (customFields as Map<String, dynamic>?),
       featuredAsset: featuredAsset == _undefined
           ? _instance.featuredAsset
           : (featuredAsset as Fragment$Asset?),
@@ -13483,9 +13490,6 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
           unitPriceWithTax == _undefined || unitPriceWithTax == null
           ? _instance.unitPriceWithTax
           : (unitPriceWithTax as double),
-      quantity: quantity == _undefined || quantity == null
-          ? _instance.quantity
-          : (quantity as int),
       linePriceWithTax:
           linePriceWithTax == _undefined || linePriceWithTax == null
           ? _instance.linePriceWithTax
@@ -13505,9 +13509,6 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
                 as List<
                   Mutation$AddToCart$addItemToOrder$$Order$lines$discounts
                 >),
-      customFields: customFields == _undefined
-          ? _instance.customFields
-          : (customFields as Map<String, dynamic>?),
       $__typename: $__typename == _undefined || $__typename == null
           ? _instance.$__typename
           : ($__typename as String),
@@ -13563,16 +13564,16 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
 
   call({
     String? id,
+    int? quantity,
+    Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
     double? unitPriceWithTax,
-    int? quantity,
     double? linePriceWithTax,
     double? discountedLinePriceWithTax,
     Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant?
     productVariant,
     List<Mutation$AddToCart$addItemToOrder$$Order$lines$discounts>? discounts,
-    Map<String, dynamic>? customFields,
     String? $__typename,
   }) => _res;
 

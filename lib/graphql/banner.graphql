@@ -42,3 +42,80 @@ query Search($input: SearchInput!) {
         totalItems
     }
 }
+
+
+
+
+mutation ToggleFavorite($productId: ID!) {
+    toggleFavorite(productId: $productId) {
+        items {
+            id
+            product {
+                id
+                name
+            }
+        }
+        totalItems
+    }
+}
+
+
+query GetCustomerFavorites {
+    activeCustomer {
+
+        __typename
+        ... on Customer {
+
+            favorites {
+                items {
+
+                    id
+                    product {
+                        id
+                        featuredAsset{
+                            name
+                            preview
+                            __typename
+                        }
+
+
+                        enabled
+                        variants{
+                            id
+                        }
+
+
+                        name
+
+                    }
+
+                }
+                totalItems
+            }
+        }
+    }
+}
+
+
+
+query GetFrequentlyOrderedProducts {
+    frequentlyOrderedProducts {
+        product {
+            enabled
+            id
+            name
+            slug
+            variants {
+                id
+                name
+                price
+                priceWithTax
+                currencyCode
+            }
+            featuredAsset {
+                preview
+            }
+        }
+        orderCount
+    }
+}

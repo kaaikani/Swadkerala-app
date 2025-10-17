@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../context/context.dart';
 import '../theme/colors.dart';
 import '../theme/sizes.dart';
@@ -22,7 +23,22 @@ class _BottomNavComponentState extends State<BottomNavComponent> {
 
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);
-    if (widget.onTap != null) widget.onTap!(index);
+    
+    // Handle navigation based on index
+    switch (index) {
+      case 0:
+        // Home - already on home page
+        if (widget.onTap != null) widget.onTap!(index);
+        break;
+      case 1:
+        // Categories - can be implemented later
+        if (widget.onTap != null) widget.onTap!(index);
+        break;
+      case 2:
+        // Cart - navigate to cart page
+        Get.toNamed('/cart');
+        break;
+    }
   }
 
   @override

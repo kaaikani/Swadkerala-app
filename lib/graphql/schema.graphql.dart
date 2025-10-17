@@ -12761,6 +12761,7 @@ class Input$ProductFilterParameter {
     Input$BooleanOperators? enabled,
     List<Input$ProductFilterParameter>? $_and,
     List<Input$ProductFilterParameter>? $_or,
+    Input$StringOperators? hsnCode,
   }) => Input$ProductFilterParameter._({
     if (id != null) r'id': id,
     if (createdAt != null) r'createdAt': createdAt,
@@ -12772,6 +12773,7 @@ class Input$ProductFilterParameter {
     if (enabled != null) r'enabled': enabled,
     if ($_and != null) r'_and': $_and,
     if ($_or != null) r'_or': $_or,
+    if (hsnCode != null) r'hsnCode': hsnCode,
   });
 
   Input$ProductFilterParameter._(this._$data);
@@ -12852,6 +12854,12 @@ class Input$ProductFilterParameter {
           )
           .toList();
     }
+    if (data.containsKey('hsnCode')) {
+      final l$hsnCode = data['hsnCode'];
+      result$data['hsnCode'] = l$hsnCode == null
+          ? null
+          : Input$StringOperators.fromJson((l$hsnCode as Map<String, dynamic>));
+    }
     return Input$ProductFilterParameter._(result$data);
   }
 
@@ -12883,6 +12891,9 @@ class Input$ProductFilterParameter {
 
   List<Input$ProductFilterParameter>? get $_or =>
       (_$data['_or'] as List<Input$ProductFilterParameter>?);
+
+  Input$StringOperators? get hsnCode =>
+      (_$data['hsnCode'] as Input$StringOperators?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -12925,6 +12936,10 @@ class Input$ProductFilterParameter {
     if (_$data.containsKey('_or')) {
       final l$$_or = $_or;
       result$data['_or'] = l$$_or?.map((e) => e.toJson()).toList();
+    }
+    if (_$data.containsKey('hsnCode')) {
+      final l$hsnCode = hsnCode;
+      result$data['hsnCode'] = l$hsnCode?.toJson();
     }
     return result$data;
   }
@@ -13047,6 +13062,14 @@ class Input$ProductFilterParameter {
     } else if (l$$_or != lOther$$_or) {
       return false;
     }
+    final l$hsnCode = hsnCode;
+    final lOther$hsnCode = other.hsnCode;
+    if (_$data.containsKey('hsnCode') != other._$data.containsKey('hsnCode')) {
+      return false;
+    }
+    if (l$hsnCode != lOther$hsnCode) {
+      return false;
+    }
     return true;
   }
 
@@ -13062,6 +13085,7 @@ class Input$ProductFilterParameter {
     final l$enabled = enabled;
     final l$$_and = $_and;
     final l$$_or = $_or;
+    final l$hsnCode = hsnCode;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('createdAt') ? l$createdAt : const {},
@@ -13081,6 +13105,7 @@ class Input$ProductFilterParameter {
                 ? null
                 : Object.hashAll(l$$_or.map((v) => v))
           : const {},
+      _$data.containsKey('hsnCode') ? l$hsnCode : const {},
     ]);
   }
 }
@@ -13105,6 +13130,7 @@ abstract class CopyWith$Input$ProductFilterParameter<TRes> {
     Input$BooleanOperators? enabled,
     List<Input$ProductFilterParameter>? $_and,
     List<Input$ProductFilterParameter>? $_or,
+    Input$StringOperators? hsnCode,
   });
   CopyWith$Input$IDOperators<TRes> get id;
   CopyWith$Input$DateOperators<TRes> get createdAt;
@@ -13130,6 +13156,7 @@ abstract class CopyWith$Input$ProductFilterParameter<TRes> {
     )
     _fn,
   );
+  CopyWith$Input$StringOperators<TRes> get hsnCode;
 }
 
 class _CopyWithImpl$Input$ProductFilterParameter<TRes>
@@ -13153,6 +13180,7 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     Object? enabled = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
+    Object? hsnCode = _undefined,
   }) => _then(
     Input$ProductFilterParameter._({
       ..._instance._$data,
@@ -13173,6 +13201,7 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
         '_and': ($_and as List<Input$ProductFilterParameter>?),
       if ($_or != _undefined)
         '_or': ($_or as List<Input$ProductFilterParameter>?),
+      if (hsnCode != _undefined) 'hsnCode': (hsnCode as Input$StringOperators?),
     }),
   );
 
@@ -13276,6 +13305,16 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
       ),
     )?.toList(),
   );
+
+  CopyWith$Input$StringOperators<TRes> get hsnCode {
+    final local$hsnCode = _instance.hsnCode;
+    return local$hsnCode == null
+        ? CopyWith$Input$StringOperators.stub(_then(_instance))
+        : CopyWith$Input$StringOperators(
+            local$hsnCode,
+            (e) => call(hsnCode: e),
+          );
+  }
 }
 
 class _CopyWithStubImpl$Input$ProductFilterParameter<TRes>
@@ -13295,6 +13334,7 @@ class _CopyWithStubImpl$Input$ProductFilterParameter<TRes>
     Input$BooleanOperators? enabled,
     List<Input$ProductFilterParameter>? $_and,
     List<Input$ProductFilterParameter>? $_or,
+    Input$StringOperators? hsnCode,
   }) => _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
@@ -13324,6 +13364,9 @@ class _CopyWithStubImpl$Input$ProductFilterParameter<TRes>
   $_and(_fn) => _res;
 
   $_or(_fn) => _res;
+
+  CopyWith$Input$StringOperators<TRes> get hsnCode =>
+      CopyWith$Input$StringOperators.stub(_res);
 }
 
 class Input$ProductListOptions {
@@ -13589,6 +13632,7 @@ class Input$ProductSortParameter {
     Enum$SortOrder? name,
     Enum$SortOrder? slug,
     Enum$SortOrder? description,
+    Enum$SortOrder? hsnCode,
   }) => Input$ProductSortParameter._({
     if (id != null) r'id': id,
     if (createdAt != null) r'createdAt': createdAt,
@@ -13596,6 +13640,7 @@ class Input$ProductSortParameter {
     if (name != null) r'name': name,
     if (slug != null) r'slug': slug,
     if (description != null) r'description': description,
+    if (hsnCode != null) r'hsnCode': hsnCode,
   });
 
   Input$ProductSortParameter._(this._$data);
@@ -13638,6 +13683,12 @@ class Input$ProductSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$description as String));
     }
+    if (data.containsKey('hsnCode')) {
+      final l$hsnCode = data['hsnCode'];
+      result$data['hsnCode'] = l$hsnCode == null
+          ? null
+          : fromJson$Enum$SortOrder((l$hsnCode as String));
+    }
     return Input$ProductSortParameter._(result$data);
   }
 
@@ -13654,6 +13705,8 @@ class Input$ProductSortParameter {
   Enum$SortOrder? get slug => (_$data['slug'] as Enum$SortOrder?);
 
   Enum$SortOrder? get description => (_$data['description'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get hsnCode => (_$data['hsnCode'] as Enum$SortOrder?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -13690,6 +13743,12 @@ class Input$ProductSortParameter {
       result$data['description'] = l$description == null
           ? null
           : toJson$Enum$SortOrder(l$description);
+    }
+    if (_$data.containsKey('hsnCode')) {
+      final l$hsnCode = hsnCode;
+      result$data['hsnCode'] = l$hsnCode == null
+          ? null
+          : toJson$Enum$SortOrder(l$hsnCode);
     }
     return result$data;
   }
@@ -13757,6 +13816,14 @@ class Input$ProductSortParameter {
     if (l$description != lOther$description) {
       return false;
     }
+    final l$hsnCode = hsnCode;
+    final lOther$hsnCode = other.hsnCode;
+    if (_$data.containsKey('hsnCode') != other._$data.containsKey('hsnCode')) {
+      return false;
+    }
+    if (l$hsnCode != lOther$hsnCode) {
+      return false;
+    }
     return true;
   }
 
@@ -13768,6 +13835,7 @@ class Input$ProductSortParameter {
     final l$name = name;
     final l$slug = slug;
     final l$description = description;
+    final l$hsnCode = hsnCode;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('createdAt') ? l$createdAt : const {},
@@ -13775,6 +13843,7 @@ class Input$ProductSortParameter {
       _$data.containsKey('name') ? l$name : const {},
       _$data.containsKey('slug') ? l$slug : const {},
       _$data.containsKey('description') ? l$description : const {},
+      _$data.containsKey('hsnCode') ? l$hsnCode : const {},
     ]);
   }
 }
@@ -13795,6 +13864,7 @@ abstract class CopyWith$Input$ProductSortParameter<TRes> {
     Enum$SortOrder? name,
     Enum$SortOrder? slug,
     Enum$SortOrder? description,
+    Enum$SortOrder? hsnCode,
   });
 }
 
@@ -13815,6 +13885,7 @@ class _CopyWithImpl$Input$ProductSortParameter<TRes>
     Object? name = _undefined,
     Object? slug = _undefined,
     Object? description = _undefined,
+    Object? hsnCode = _undefined,
   }) => _then(
     Input$ProductSortParameter._({
       ..._instance._$data,
@@ -13825,6 +13896,7 @@ class _CopyWithImpl$Input$ProductSortParameter<TRes>
       if (slug != _undefined) 'slug': (slug as Enum$SortOrder?),
       if (description != _undefined)
         'description': (description as Enum$SortOrder?),
+      if (hsnCode != _undefined) 'hsnCode': (hsnCode as Enum$SortOrder?),
     }),
   );
 }
@@ -13842,6 +13914,7 @@ class _CopyWithStubImpl$Input$ProductSortParameter<TRes>
     Enum$SortOrder? name,
     Enum$SortOrder? slug,
     Enum$SortOrder? description,
+    Enum$SortOrder? hsnCode,
   }) => _res;
 }
 
@@ -13860,7 +13933,6 @@ class Input$ProductVariantFilterParameter {
     Input$StringOperators? stockLevel,
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
-    Input$StringOperators? hsnCode,
   }) => Input$ProductVariantFilterParameter._({
     if (id != null) r'id': id,
     if (productId != null) r'productId': productId,
@@ -13875,7 +13947,6 @@ class Input$ProductVariantFilterParameter {
     if (stockLevel != null) r'stockLevel': stockLevel,
     if ($_and != null) r'_and': $_and,
     if ($_or != null) r'_or': $_or,
-    if (hsnCode != null) r'hsnCode': hsnCode,
   });
 
   Input$ProductVariantFilterParameter._(this._$data);
@@ -13978,12 +14049,6 @@ class Input$ProductVariantFilterParameter {
           )
           .toList();
     }
-    if (data.containsKey('hsnCode')) {
-      final l$hsnCode = data['hsnCode'];
-      result$data['hsnCode'] = l$hsnCode == null
-          ? null
-          : Input$StringOperators.fromJson((l$hsnCode as Map<String, dynamic>));
-    }
     return Input$ProductVariantFilterParameter._(result$data);
   }
 
@@ -14024,9 +14089,6 @@ class Input$ProductVariantFilterParameter {
 
   List<Input$ProductVariantFilterParameter>? get $_or =>
       (_$data['_or'] as List<Input$ProductVariantFilterParameter>?);
-
-  Input$StringOperators? get hsnCode =>
-      (_$data['hsnCode'] as Input$StringOperators?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -14081,10 +14143,6 @@ class Input$ProductVariantFilterParameter {
     if (_$data.containsKey('_or')) {
       final l$$_or = $_or;
       result$data['_or'] = l$$_or?.map((e) => e.toJson()).toList();
-    }
-    if (_$data.containsKey('hsnCode')) {
-      final l$hsnCode = hsnCode;
-      result$data['hsnCode'] = l$hsnCode?.toJson();
     }
     return result$data;
   }
@@ -14236,14 +14294,6 @@ class Input$ProductVariantFilterParameter {
     } else if (l$$_or != lOther$$_or) {
       return false;
     }
-    final l$hsnCode = hsnCode;
-    final lOther$hsnCode = other.hsnCode;
-    if (_$data.containsKey('hsnCode') != other._$data.containsKey('hsnCode')) {
-      return false;
-    }
-    if (l$hsnCode != lOther$hsnCode) {
-      return false;
-    }
     return true;
   }
 
@@ -14262,7 +14312,6 @@ class Input$ProductVariantFilterParameter {
     final l$stockLevel = stockLevel;
     final l$$_and = $_and;
     final l$$_or = $_or;
-    final l$hsnCode = hsnCode;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -14285,7 +14334,6 @@ class Input$ProductVariantFilterParameter {
                 ? null
                 : Object.hashAll(l$$_or.map((v) => v))
           : const {},
-      _$data.containsKey('hsnCode') ? l$hsnCode : const {},
     ]);
   }
 }
@@ -14313,7 +14361,6 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
     Input$StringOperators? stockLevel,
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
-    Input$StringOperators? hsnCode,
   });
   CopyWith$Input$IDOperators<TRes> get id;
   CopyWith$Input$IDOperators<TRes> get productId;
@@ -14346,7 +14393,6 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
     )
     _fn,
   );
-  CopyWith$Input$StringOperators<TRes> get hsnCode;
 }
 
 class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
@@ -14373,7 +14419,6 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     Object? stockLevel = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-    Object? hsnCode = _undefined,
   }) => _then(
     Input$ProductVariantFilterParameter._({
       ..._instance._$data,
@@ -14399,7 +14444,6 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
         '_and': ($_and as List<Input$ProductVariantFilterParameter>?),
       if ($_or != _undefined)
         '_or': ($_or as List<Input$ProductVariantFilterParameter>?),
-      if (hsnCode != _undefined) 'hsnCode': (hsnCode as Input$StringOperators?),
     }),
   );
 
@@ -14534,16 +14578,6 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
       ),
     )?.toList(),
   );
-
-  CopyWith$Input$StringOperators<TRes> get hsnCode {
-    final local$hsnCode = _instance.hsnCode;
-    return local$hsnCode == null
-        ? CopyWith$Input$StringOperators.stub(_then(_instance))
-        : CopyWith$Input$StringOperators(
-            local$hsnCode,
-            (e) => call(hsnCode: e),
-          );
-  }
 }
 
 class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
@@ -14566,7 +14600,6 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
     Input$StringOperators? stockLevel,
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
-    Input$StringOperators? hsnCode,
   }) => _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
@@ -14605,9 +14638,6 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
   $_and(_fn) => _res;
 
   $_or(_fn) => _res;
-
-  CopyWith$Input$StringOperators<TRes> get hsnCode =>
-      CopyWith$Input$StringOperators.stub(_res);
 }
 
 class Input$ProductVariantListOptions {
@@ -14880,7 +14910,6 @@ class Input$ProductVariantSortParameter {
     Enum$SortOrder? price,
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
-    Enum$SortOrder? hsnCode,
   }) => Input$ProductVariantSortParameter._({
     if (id != null) r'id': id,
     if (productId != null) r'productId': productId,
@@ -14891,7 +14920,6 @@ class Input$ProductVariantSortParameter {
     if (price != null) r'price': price,
     if (priceWithTax != null) r'priceWithTax': priceWithTax,
     if (stockLevel != null) r'stockLevel': stockLevel,
-    if (hsnCode != null) r'hsnCode': hsnCode,
   });
 
   Input$ProductVariantSortParameter._(this._$data);
@@ -14954,12 +14982,6 @@ class Input$ProductVariantSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$stockLevel as String));
     }
-    if (data.containsKey('hsnCode')) {
-      final l$hsnCode = data['hsnCode'];
-      result$data['hsnCode'] = l$hsnCode == null
-          ? null
-          : fromJson$Enum$SortOrder((l$hsnCode as String));
-    }
     return Input$ProductVariantSortParameter._(result$data);
   }
 
@@ -14983,8 +15005,6 @@ class Input$ProductVariantSortParameter {
       (_$data['priceWithTax'] as Enum$SortOrder?);
 
   Enum$SortOrder? get stockLevel => (_$data['stockLevel'] as Enum$SortOrder?);
-
-  Enum$SortOrder? get hsnCode => (_$data['hsnCode'] as Enum$SortOrder?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -15037,12 +15057,6 @@ class Input$ProductVariantSortParameter {
       result$data['stockLevel'] = l$stockLevel == null
           ? null
           : toJson$Enum$SortOrder(l$stockLevel);
-    }
-    if (_$data.containsKey('hsnCode')) {
-      final l$hsnCode = hsnCode;
-      result$data['hsnCode'] = l$hsnCode == null
-          ? null
-          : toJson$Enum$SortOrder(l$hsnCode);
     }
     return result$data;
   }
@@ -15136,14 +15150,6 @@ class Input$ProductVariantSortParameter {
     if (l$stockLevel != lOther$stockLevel) {
       return false;
     }
-    final l$hsnCode = hsnCode;
-    final lOther$hsnCode = other.hsnCode;
-    if (_$data.containsKey('hsnCode') != other._$data.containsKey('hsnCode')) {
-      return false;
-    }
-    if (l$hsnCode != lOther$hsnCode) {
-      return false;
-    }
     return true;
   }
 
@@ -15158,7 +15164,6 @@ class Input$ProductVariantSortParameter {
     final l$price = price;
     final l$priceWithTax = priceWithTax;
     final l$stockLevel = stockLevel;
-    final l$hsnCode = hsnCode;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -15169,7 +15174,6 @@ class Input$ProductVariantSortParameter {
       _$data.containsKey('price') ? l$price : const {},
       _$data.containsKey('priceWithTax') ? l$priceWithTax : const {},
       _$data.containsKey('stockLevel') ? l$stockLevel : const {},
-      _$data.containsKey('hsnCode') ? l$hsnCode : const {},
     ]);
   }
 }
@@ -15193,7 +15197,6 @@ abstract class CopyWith$Input$ProductVariantSortParameter<TRes> {
     Enum$SortOrder? price,
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
-    Enum$SortOrder? hsnCode,
   });
 }
 
@@ -15217,7 +15220,6 @@ class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
     Object? price = _undefined,
     Object? priceWithTax = _undefined,
     Object? stockLevel = _undefined,
-    Object? hsnCode = _undefined,
   }) => _then(
     Input$ProductVariantSortParameter._({
       ..._instance._$data,
@@ -15232,7 +15234,6 @@ class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
         'priceWithTax': (priceWithTax as Enum$SortOrder?),
       if (stockLevel != _undefined)
         'stockLevel': (stockLevel as Enum$SortOrder?),
-      if (hsnCode != _undefined) 'hsnCode': (hsnCode as Enum$SortOrder?),
     }),
   );
 }
@@ -15253,7 +15254,6 @@ class _CopyWithStubImpl$Input$ProductVariantSortParameter<TRes>
     Enum$SortOrder? price,
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
-    Enum$SortOrder? hsnCode,
   }) => _res;
 }
 
@@ -20070,6 +20070,12 @@ enum Enum$Permission {
   ReadZone,
   UpdateZone,
   DeleteZone,
+  ManualCustomerChannel,
+  CreateBanner,
+  ReadBanner,
+  UpdateBanner,
+  DeleteBanner,
+  LoyaltyPoints,
   $unknown;
 
   factory Enum$Permission.fromJson(String value) =>
@@ -20266,6 +20272,18 @@ String toJson$Enum$Permission(Enum$Permission e) {
       return r'UpdateZone';
     case Enum$Permission.DeleteZone:
       return r'DeleteZone';
+    case Enum$Permission.ManualCustomerChannel:
+      return r'ManualCustomerChannel';
+    case Enum$Permission.CreateBanner:
+      return r'CreateBanner';
+    case Enum$Permission.ReadBanner:
+      return r'ReadBanner';
+    case Enum$Permission.UpdateBanner:
+      return r'UpdateBanner';
+    case Enum$Permission.DeleteBanner:
+      return r'DeleteBanner';
+    case Enum$Permission.LoyaltyPoints:
+      return r'LoyaltyPoints';
     case Enum$Permission.$unknown:
       return r'$unknown';
   }
@@ -20459,6 +20477,18 @@ Enum$Permission fromJson$Enum$Permission(String value) {
       return Enum$Permission.UpdateZone;
     case r'DeleteZone':
       return Enum$Permission.DeleteZone;
+    case r'ManualCustomerChannel':
+      return Enum$Permission.ManualCustomerChannel;
+    case r'CreateBanner':
+      return Enum$Permission.CreateBanner;
+    case r'ReadBanner':
+      return Enum$Permission.ReadBanner;
+    case r'UpdateBanner':
+      return Enum$Permission.UpdateBanner;
+    case r'DeleteBanner':
+      return Enum$Permission.DeleteBanner;
+    case r'LoyaltyPoints':
+      return Enum$Permission.LoyaltyPoints;
     default:
       return Enum$Permission.$unknown;
   }

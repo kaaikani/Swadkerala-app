@@ -36,6 +36,7 @@ query Products ($slug: String, $id: ID){
         productVariants{
 
             items{
+                id
                 product{
                     id
                     name

@@ -1,3 +1,351 @@
+query ActiveOrder {
+    activeOrder {
+
+        currencyCode
+        ...Cart
+        ... on Order {
+            id
+            shippingWithTax
+            couponCodes
+            state
 
 
+            customFields {
+                loyaltyPointsEarned
+                loyaltyPointsUsed
+                razorpay_order_id
+                otherInstructions
+                clientRequestToCancel
+            }
+            total
+        }
+        __typename
+    }
+}
+
+mutation RemoveOrderLine($orderLineId: ID!){
+    removeOrderLine(orderLineId: $orderLineId){
+        ...Cart
+        __typename
+        ...on ErrorResult{
+            errorCode
+            message
+        }
+    }
+}
+
+mutation RemoveAllOrderLines{
+    removeAllOrderLines {
+        __typename
+        ...Cart
+        ...on ErrorResult{
+            errorCode
+            message
+        }
+    }
+}
+mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!){
+    adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity){
+        __typename
+        ...Cart
+        ...on ErrorResult{
+            message
+            errorCode
+            __typename
+        }
+    }
+}
+
+
+mutation SetShippingAddress($input: CreateAddressInput!) {
+    setOrderShippingAddress(input: $input) {
+        ...Cart
+        ... on Order {
+            shippingAddress {
+                ...OrderAddress
+                customFields
+                __typename
+            }
+            __typename
+        }
+        ...ErrorResult
+        __typename
+    }
+}
+
+mutation SetOtherInstruction($orderId: ID!,$value: String!){
+    otherInstructions(value: $value,orderId: $orderId){
+        customFields {
+            otherInstructions
+        }
+    }
+}
+mutation SetShippingMethod($id: [ID!]!) {
+    setOrderShippingMethod(shippingMethodId: $id) {
+
+        ...Cart
+        ...ErrorResult
+        __typename
+    }
+}
+query GetEligiblePaymentMethods {
+    eligiblePaymentMethods {
+        id
+        code
+        eligibilityMessage
+        isEligible
+        __typename
+    }
+}
+query GetEligibleShippingMethods {
+    eligibleShippingMethods {
+        id
+        name
+        code
+        description
+        price
+        priceWithTax
+        metadata
+        __typename
+    }
+}
+
+query GetOrderByCode($code: String!) {
+    orderByCode(code: $code) {
+        ...Cart
+        updatedAt
+        orderPlacedAt
+        currencyCode
+        shippingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            phoneNumber
+            country
+        }
+        billingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            phoneNumber
+            country
+        }
+        payments {
+            state
+            createdAt
+            method
+            amount
+            transactionId
+        }
+        customFields {
+            loyaltyPointsEarned
+            loyaltyPointsUsed
+        }
+        customer {
+            id
+            emailAddress
+            firstName
+            lastName
+            user {
+                id
+                identifier
+                verified
+                __typename
+            }
+            __typename
+        }
+        __typename
+    }
+}
+
+mutation AddPayment($input: PaymentInput!) {
+    addPaymentToOrder(input: $input) {
+        ...Cart
+        ...ErrorResult
+        __typename
+    }
+}
+
+mutation CancelOrderOnClientRequest($orderId: ID!,$value: Int!){
+    cancelOrderOnClientRequest(orderId: $orderId, value: $value){
+        ...Cart
+    }
+}
+query NextOrderStates{
+    nextOrderStates
+}
+mutation TransitionOrderToState($state: String!){
+    transitionOrderToState(state: $state){
+        ...Cart
+
+        ...ErrorResult
+        __typename
+    }
+}
+
+mutation TransitionToArrangingPayment {
+    transitionOrderToState(state: "ArrangingPayment") {
+        ...Cart
+        ...ErrorResult
+        __typename
+    }
+}
+mutation TransitionToAddingItems {
+    transitionOrderToState(state: "AddingItems") {
+        ...Cart
+        ...ErrorResult
+        __typename
+    }
+}
+
+mutation GenerateRazorpayOrderId($orderId: ID!) {
+    generateRazorpayOrderId(orderId: $orderId) {
+        ... on RazorpayOrderIdSuccess {
+            razorpayOrderId
+            keyId
+            keySecret
+        }
+        ... on RazorpayOrderIdGenerationError {
+            errorCode
+            message
+        }
+    }
+}
+
+
+fragment OrderAddress on OrderAddress {
+    fullName
+    company
+    streetLine1
+    streetLine2
+    city
+    province
+    postalCode
+    country
+    countryCode
+    phoneNumber
+    __typename
+}
+
+fragment ErrorResult on ErrorResult {
+    errorCode
+    message
+    __typename
+}
+
+
+fragment Cart on Order {
+    id
+    code
+    state
+    active
+
+
+    couponCodes
+    promotions {
+        couponCode
+        name
+        enabled
+        actions {
+            args {
+                value
+                name
+            }
+            code
+        }
+        conditions {
+            code
+            args {
+                name
+                value
+            }
+        }
+    }
+    lines {
+        id
+        quantity
+
+        customFields
+        featuredAsset {
+            ...Asset
+            __typename
+        }
+        unitPrice
+        unitPriceWithTax
+        quantity
+        linePriceWithTax
+        discountedLinePriceWithTax
+        productVariant {
+            id
+
+            name
+            __typename
+        }
+        discounts {
+            amount
+            amountWithTax
+            description
+            adjustmentSource
+            type
+            __typename
+        }
+        __typename
+    }
+    totalQuantity
+    subTotal
+    subTotalWithTax
+    total
+
+    totalWithTax
+    shipping
+
+    shippingWithTax
+    shippingLines {
+        priceWithTax
+        shippingMethod {
+            id
+            code
+            name
+            description
+            __typename
+        }
+        __typename
+    }
+    discounts {
+        amount
+        amountWithTax
+        description
+        adjustmentSource
+        type
+        __typename
+    }
+
+    customFields {
+
+        clientRequestToCancel
+    }
+    __typename
+}
+
+fragment Asset on Asset {
+    id
+    width
+    height
+    name
+    preview
+    focalPoint {
+        x
+        y
+        __typename
+    }
+    __typename
+}
 

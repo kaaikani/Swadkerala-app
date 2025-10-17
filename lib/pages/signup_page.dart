@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
@@ -42,7 +43,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     return GestureDetector(
       onTap: () {
         // Dismiss keyboard when tapping anywhere on screen
@@ -129,7 +130,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
             ),
-            
+
             // Bottom card with form
             Positioned(
               top: screenHeight * 0.40,
@@ -294,8 +295,9 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> _sendOtp() async {
 
-    const String defaultCityName = "Trichy";
-    const String defaultChannelToken = "ind-trichy";
+    final String defaultCityName = dotenv.env['DEFAULT_CITY_NAME'] ?? "";
+    final String defaultChannelToken = "";
+
 
     // Validate first name
     if (_authController.firstname.text.trim().isEmpty) {

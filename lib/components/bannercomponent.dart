@@ -80,11 +80,18 @@ class _BannerComponentState extends State<BannerComponent> {
       final banners = bannerController.bannerList;
 
       if (banners.isEmpty) {
-        // Do NOT call getBannersForChannel() here
+        // Trigger fetch again when no banners present
+        Future.microtask(() {
+          if (!utilityController.isLoadingRx.value) {
+            bannerController.getBannersForChannel();
+          }
+        });
+
         return const SizedBox(
           height: 200,
-          child: Center(child: Text("No banners available")),
+
         );
+
       }
 
       return Column(

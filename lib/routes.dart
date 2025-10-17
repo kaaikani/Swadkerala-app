@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
-import 'package:untitled2/pages/account_page.dart';
-import 'package:untitled2/pages/favourites.dart';
+import 'package:unified_ecomapp/pages/cart_page.dart';
+import 'package:unified_ecomapp/pages/checkout_page.dart';
+import 'package:unified_ecomapp/pages/favourites.dart';
+import 'package:unified_ecomapp/pages/account_page.dart';
+import 'package:unified_ecomapp/pages/order_confirmation_page.dart';
 import 'components/searchbarcomponent.dart';
 import 'pages/login_page.dart';
 import 'pages/signup_page.dart';
@@ -14,9 +17,12 @@ class AppRoutes {
   static const String signup = '/signup';
   static const String home = '/home';
   static const String intro = '/intro';
-  static const String account = '/account';
   static const String favourite = '/favourite';
   static const String search = '/search';
+  static const String cart = '/cart';
+  static const String checkout = '/checkout';
+  static const String account = '/account';
+  static const String orderConfirmation = '/order-confirmation';
 
   static List<GetPage> routes = [
     GetPage(
@@ -44,11 +50,6 @@ class AppRoutes {
       transition: Transition.fadeIn,
     ),
     GetPage(
-      name: account,
-      page: () => const AccountPage(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
       name: favourite,
       page: () => const FavoritesPage(),
       transition: Transition.fadeIn,
@@ -64,6 +65,27 @@ class AppRoutes {
       ),
       transition: Transition.fadeIn,
     ),
-
+    GetPage(
+      name: cart,
+      page: () => const CartPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: checkout,
+      page: () => const CheckoutPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: account,
+      page: () => const AccountPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: orderConfirmation,
+      page: () => OrderConfirmationPage(
+        orderId: Get.arguments as String,
+      ),
+      transition: Transition.fadeIn,
+    ),
   ];
 }

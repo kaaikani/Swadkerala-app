@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:untitled2/controllers/collection%20controller/collectioncontroller.dart';
+import 'package:unified_ecomapp/controllers/collection%20controller/collectioncontroller.dart';
 
 import '../controllers/collection controller/Collectionmodel.dart';
+import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../widgets/card.dart' show AppCard;
 
 
-class CollectionGrid extends StatelessWidget {
+class CollectionGrid extends StatefulWidget {
   final Function(Collection) onCollectionTap;
-  final CollectionsController collectionsController = Get.put(CollectionsController());
 
-  CollectionGrid({Key? key, required this.onCollectionTap}) : super(key: key) {
-    // Fetch all collections after widget is initialized
+  const CollectionGrid({Key? key, required this.onCollectionTap}) : super(key: key);
+
+  @override
+  State<CollectionGrid> createState() => _CollectionGridState();
+}
+
+class _CollectionGridState extends State<CollectionGrid> {
+  final CollectionsController collectionsController = Get.find<CollectionsController>();
+  final UtilityController utilityController = Get.find<UtilityController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch collections only if empty (controller handles duplicate prevention)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       collectionsController.fetchAllCollections();
     });
@@ -20,12 +32,14 @@ class CollectionGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (collectionsController.isLoading.value) {
-        return Center(child: CircularProgressIndicator());
+      if (utilityController.isLoadingRx.value) {
+        return const Center(child: CircularProgressIndicator());
       }
 
       if (collectionsController.allCollections.isEmpty) {
-        return Center(child: Text('No collections found'));
+        return const Center(
+          child: Text('No collections found'),
+        );
       }
 
       return GridView.builder(
@@ -42,7 +56,7 @@ class CollectionGrid extends StatelessWidget {
         itemBuilder: (context, index) {
           final collection = collectionsController.allCollections[index];
           return GestureDetector(
-            onTap: () => onCollectionTap(collection),
+            onTap: () => widget.onCollectionTap(collection),
             child: CollectionCard(collection: collection),
           );
         },

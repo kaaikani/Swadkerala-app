@@ -3167,6 +3167,24 @@ enum Permission {
 
   """Grants permission to delete Zone"""
   DeleteZone
+
+  """Allows viewing and managing manual customer channel assignments"""
+  ManualCustomerChannel
+
+  """Grants permission to create Banner"""
+  CreateBanner
+
+  """Grants permission to read Banner"""
+  ReadBanner
+
+  """Grants permission to update Banner"""
+  UpdateBanner
+
+  """Grants permission to delete Banner"""
+  DeleteBanner
+
+  """Allows viewing and managing loyalty points configurations"""
+  LoyaltyPoints
 }
 
 input PhoneOtpInput {
@@ -3203,7 +3221,11 @@ type Product implements Node {
   facetValues: [FacetValue!]!
   translations: [ProductTranslation!]!
   collections: [Collection!]!
-  customFields: JSON
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  hsnCode: String
 }
 
 input ProductFilterParameter {
@@ -3217,6 +3239,7 @@ input ProductFilterParameter {
   enabled: BooleanOperators
   _and: [ProductFilterParameter!]
   _or: [ProductFilterParameter!]
+  hsnCode: StringOperators
 }
 
 type ProductList implements PaginatedList {
@@ -3292,6 +3315,7 @@ input ProductSortParameter {
   name: SortOrder
   slug: SortOrder
   description: SortOrder
+  hsnCode: SortOrder
 }
 
 type ProductTranslation {
@@ -3324,11 +3348,7 @@ type ProductVariant implements Node {
   options: [ProductOption!]!
   facetValues: [FacetValue!]!
   translations: [ProductVariantTranslation!]!
-  customFields: ProductVariantCustomFields
-}
-
-type ProductVariantCustomFields {
-  hsnCode: String
+  customFields: JSON
 }
 
 input ProductVariantFilterParameter {
@@ -3345,7 +3365,6 @@ input ProductVariantFilterParameter {
   stockLevel: StringOperators
   _and: [ProductVariantFilterParameter!]
   _or: [ProductVariantFilterParameter!]
-  hsnCode: StringOperators
 }
 
 type ProductVariantList implements PaginatedList {
@@ -3383,7 +3402,6 @@ input ProductVariantSortParameter {
   price: SortOrder
   priceWithTax: SortOrder
   stockLevel: SortOrder
-  hsnCode: SortOrder
 }
 
 type ProductVariantTranslation {

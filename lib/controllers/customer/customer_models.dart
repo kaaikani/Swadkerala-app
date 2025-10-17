@@ -1,170 +1,578 @@
 
-/// Customer profile model
-class CustomerProfile {
+class CustomerModel {
   final String id;
+  final String emailAddress;
   final String firstName;
   final String lastName;
-  final String emailAddress;
-  final String phoneNumber;
-  final bool verified;
-  final int? loyaltyPoints;
+  final String? phoneNumber;
+  final CustomerCustomFields? customFields;
+  final List<AddressModel> addresses;
+  final OrderListModel? orders;
 
-  CustomerProfile({
+  CustomerModel({
     required this.id,
+    required this.emailAddress,
     required this.firstName,
     required this.lastName,
-    required this.emailAddress,
-    required this.phoneNumber,
-    required this.verified,
-    this.loyaltyPoints,
+    this.phoneNumber,
+    this.customFields,
+    required this.addresses,
+    this.orders,
   });
 
-  factory CustomerProfile.fromJson(Map<String, dynamic> json) {
-
-    final phone = json['phoneNumber'];
-
-    // Extract loyalty points safely from customFields
-    int? loyaltyPoints;
-    if (json['customFields'] != null && json['customFields'] is Map<String, dynamic>) {
-      loyaltyPoints = json['customFields']['loyaltyPointsAvailable'] as int?;
+  factory CustomerModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return CustomerModel(
+        id: json['id']?.toString() ?? '',
+        emailAddress: json['emailAddress']?.toString() ?? '',
+        firstName: json['firstName']?.toString() ?? '',
+        lastName: json['lastName']?.toString() ?? '',
+        phoneNumber: json['phoneNumber']?.toString(),
+        customFields: json['customFields'] != null && json['customFields'] is Map<String, dynamic>
+          ? CustomerCustomFields.fromJson(json['customFields']) 
+          : null,
+        addresses: (json['addresses'] as List<dynamic>?)
+          ?.map((address) => AddressModel.fromJson(address is Map<String, dynamic> 
+              ? address 
+              : {}))
+          .toList() ?? [],
+        orders: json['orders'] != null && json['orders'] is Map<String, dynamic>
+          ? OrderListModel.fromJson(json['orders']) 
+          : null,
+      );
+    } catch (e) {
+      rethrow;
     }
-
-    return CustomerProfile(
-      id: json['id'] as String? ?? '', // fallback to empty string if null
-      firstName: json['firstName'] as String? ?? '',
-      lastName: json['lastName'] as String? ?? '',
-      emailAddress: json['emailAddress'] as String? ?? '',
-      phoneNumber: phone is String
-          ? phone
-          : phone is Map<String, dynamic>
-          ? phone['number'] ?? ''
-          : '',
-      verified: json['verified'] as bool? ?? false,
-      loyaltyPoints: loyaltyPoints,
-    );
   }
-
-
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
-      'emailAddress': emailAddress,
-      'phoneNumber': phoneNumber,
-      'verified': verified,
-      if (loyaltyPoints != null) 'loyaltyPoints': loyaltyPoints,
-    };
-  }
-
-  String get fullName => '$firstName $lastName'.trim();
-
-  @override
-  String toString() => 'CustomerProfile(name: $fullName, phone: $phoneNumber, points: $loyaltyPoints)';
 }
 
-/// Address model
-class CustomerAddress {
-  final String? id;
+class CustomerCustomFields {
+  final int? loyaltyPointsAvailable;
+
+  CustomerCustomFields({
+    this.loyaltyPointsAvailable,
+  });
+
+  factory CustomerCustomFields.fromJson(Map<String, dynamic> json) {
+    return CustomerCustomFields(
+      loyaltyPointsAvailable: json['loyaltyPointsAvailable'],
+    );
+  }
+}
+
+class AddressModel {
+  final String id;
   final String fullName;
   final String streetLine1;
-  final String? streetLine2;
+  final String streetLine2;
   final String city;
-  final String? province;
+  final String province;
   final String postalCode;
-  final String country;
-  final String? phoneNumber;
+  final String phoneNumber;
+  final String company;
   final bool defaultShippingAddress;
   final bool defaultBillingAddress;
+  final CountryModel country;
 
-  CustomerAddress({
-    this.id,
+  AddressModel({
+    required this.id,
     required this.fullName,
     required this.streetLine1,
-    this.streetLine2,
+    required this.streetLine2,
     required this.city,
-    this.province,
+    required this.province,
     required this.postalCode,
+    required this.phoneNumber,
+    required this.company,
+    required this.defaultShippingAddress,
+    required this.defaultBillingAddress,
     required this.country,
-    this.phoneNumber,
-    this.defaultShippingAddress = false,
-    this.defaultBillingAddress = false,
   });
 
-  factory CustomerAddress.fromJson(Map<String, dynamic> json) {
-    // Handle country safely
-    String countryName = 'India';
-    if (json['country'] != null) {
-      if (json['country'] is String) {
-        countryName = json['country'];
-      } else if (json['country'] is Map<String, dynamic>) {
-        countryName = json['country']['name']?.toString() ?? 'India';
-      }
-    }
-
-    return CustomerAddress(
-      id: json['id']?.toString(),                           // safe conversion
-      fullName: json['fullName']?.toString() ?? '',         // default empty string
-      streetLine1: json['streetLine1']?.toString() ?? '',   // default empty string
-      streetLine2: json['streetLine2']?.toString(),         // nullable
-      city: json['city']?.toString() ?? '',                 // default empty string
-      province: json['province']?.toString(),               // nullable
-      postalCode: json['postalCode']?.toString() ?? '',     // default empty string
-      country: countryName,
-      phoneNumber: json['phoneNumber']?.toString(),         // nullable
-      defaultShippingAddress: json['defaultShippingAddress'] as bool? ?? false,
-      defaultBillingAddress: json['defaultBillingAddress'] as bool? ?? false,
+  factory AddressModel.fromJson(Map<String, dynamic> json) {
+    return AddressModel(
+      id: json['id'] ?? '',
+      fullName: json['fullName'] ?? '',
+      streetLine1: json['streetLine1'] ?? '',
+      streetLine2: json['streetLine2'] ?? '',
+      city: json['city'] ?? '',
+      province: json['province'] ?? '',
+      postalCode: json['postalCode'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
+      company: json['company'] ?? '',
+      defaultShippingAddress: json['defaultShippingAddress'] ?? false,
+      defaultBillingAddress: json['defaultBillingAddress'] ?? false,
+      country: CountryModel.fromJson(json['country'] ?? {}),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    String safeString(String? value) => value ?? '';
-
-    return {
-      'id': safeString(id),                 // send empty string if null
-      'fullName': fullName,
-      'streetLine1': streetLine1,
-      'streetLine2': safeString(streetLine2),
-      'city': city,
-      'province': safeString(province),
-      'postalCode': postalCode,
-      'country': country,
-      'phoneNumber': safeString(phoneNumber),
-      'defaultShippingAddress': defaultShippingAddress,
-      'defaultBillingAddress': defaultBillingAddress,
-    };
+  String get fullAddress {
+    final parts = <String>[];
+    if (streetLine1.isNotEmpty) parts.add(streetLine1);
+    if (streetLine2.isNotEmpty) parts.add(streetLine2);
+    if (city.isNotEmpty) parts.add(city);
+    if (province.isNotEmpty) parts.add(province);
+    if (postalCode.isNotEmpty) parts.add(postalCode);
+    if (country.name.isNotEmpty) parts.add(country.name);
+    return parts.join(', ');
   }
-
-  CustomerAddress copyWith({
-    String? id,
-    String? fullName,
-    String? streetLine1,
-    String? streetLine2,
-    String? city,
-    String? province,
-    String? postalCode,
-    String? country,
-    String? phoneNumber,
-    bool? defaultShippingAddress,
-    bool? defaultBillingAddress,
-  }) {
-    return CustomerAddress(
-      id: id ?? this.id,
-      fullName: fullName ?? this.fullName,
-      streetLine1: streetLine1 ?? this.streetLine1,
-      streetLine2: streetLine2 ?? this.streetLine2,
-      city: city ?? this.city,
-      province: province ?? this.province,
-      postalCode: postalCode ?? this.postalCode,
-      country: country ?? this.country,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      defaultShippingAddress: defaultShippingAddress ?? this.defaultShippingAddress,
-      defaultBillingAddress: defaultBillingAddress ?? this.defaultBillingAddress,
-    );
-  }
-
-  @override
-  String toString() => 'Address($city, $postalCode)';
 }
 
+class CountryModel {
+  final String id;
+  final String name;
+  final String code;
+  final String languageCode;
+
+  CountryModel({
+    required this.id,
+    required this.name,
+    required this.code,
+    required this.languageCode,
+  });
+
+  factory CountryModel.fromJson(Map<String, dynamic> json) {
+    return CountryModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      code: json['code'] ?? '',
+      languageCode: json['languageCode'] ?? '',
+    );
+  }
+}
+
+class OrderListModel {
+  final int totalItems;
+  final List<OrderModel> items;
+
+  OrderListModel({
+    required this.totalItems,
+    required this.items,
+  });
+
+  factory OrderListModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return OrderListModel(
+        totalItems: (json['totalItems'] as num?)?.toInt() ?? 0,
+        items: (json['items'] as List<dynamic>?)
+          ?.map((order) => OrderModel.fromJson(order is Map<String, dynamic> 
+              ? order 
+              : {}))
+          .toList() ?? [],
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
+
+class OrderModel {
+  final String id;
+  final String code;
+  final String currencyCode;
+  final DateTime orderPlacedAt;
+  final bool active;
+  final String state;
+  final int totalQuantity;
+  final double totalWithTax;
+  final List<OrderLineModel> lines;
+  final List<DiscountModel> discounts;
+  final List<SurchargeModel> surcharges;
+  final List<String> couponCodes;
+  final List<PaymentModel> payments;
+  final CustomerModel? customer;
+  final AddressModel? shippingAddress;
+  final AddressModel? billingAddress;
+  final OrderCustomFields? customFields;
+
+  OrderModel({
+    required this.id,
+    required this.code,
+    required this.currencyCode,
+    required this.orderPlacedAt,
+    required this.active,
+    required this.state,
+    required this.totalQuantity,
+    required this.totalWithTax,
+    required this.lines,
+    required this.discounts,
+    required this.surcharges,
+    required this.couponCodes,
+    required this.payments,
+    this.customer,
+    this.shippingAddress,
+    this.billingAddress,
+    this.customFields,
+  });
+
+  factory OrderModel.fromJson(Map<String, dynamic> json) {
+    try {
+
+      // Parse basic fields
+      final id = json['id']?.toString() ?? '';
+      final code = json['code']?.toString() ?? '';
+      final currencyCode = json['currencyCode']?.toString() ?? '';
+      final orderPlacedAt = DateTime.tryParse(json['orderPlacedAt']?.toString() ?? '') ?? DateTime.now();
+      final active = json['active'] ?? false;
+      final state = json['state']?.toString() ?? '';
+      final totalQuantity = (json['totalQuantity'] as num?)?.toInt() ?? 0;
+      final totalWithTax = (json['totalWithTax'] as num?)?.toDouble() ?? 0.0;
+      
+
+      // Parse lines
+      List<OrderLineModel> lines = [];
+      try {
+        lines = (json['lines'] as List<dynamic>?)
+          ?.map((line) => OrderLineModel.fromJson(line is Map<String, dynamic> 
+              ? line 
+              : {}))
+          .toList() ?? [];
+      } catch (e) {
+        lines = [];
+      }
+      
+      // Parse discounts
+      List<DiscountModel> discounts = [];
+      try {
+        discounts = (json['discounts'] as List<dynamic>?)
+          ?.map((discount) => DiscountModel.fromJson(discount is Map<String, dynamic> 
+              ? discount 
+              : {}))
+          .toList() ?? [];
+      } catch (e) {
+        discounts = [];
+      }
+      
+      // Parse surcharges
+      List<SurchargeModel> surcharges = [];
+      try {
+        surcharges = (json['surcharges'] as List<dynamic>?)
+          ?.map((surcharge) => SurchargeModel.fromJson(surcharge is Map<String, dynamic> 
+              ? surcharge 
+              : {}))
+          .toList() ?? [];
+      } catch (e) {
+        surcharges = [];
+      }
+      
+      // Parse coupon codes
+      List<String> couponCodes = [];
+      try {
+        couponCodes = (json['couponCodes'] as List<dynamic>?)
+          ?.map((code) => code.toString())
+          .toList() ?? [];
+      } catch (e) {
+        couponCodes = [];
+      }
+      
+      // Parse payments
+      List<PaymentModel> payments = [];
+      try {
+        payments = (json['payments'] as List<dynamic>?)
+          ?.map((payment) => PaymentModel.fromJson(payment is Map<String, dynamic> 
+              ? payment 
+              : {}))
+          .toList() ?? [];
+      } catch (e) {
+        payments = [];
+      }
+      
+      // Parse customer
+      CustomerModel? customer;
+      try {
+        customer = json['customer'] != null && json['customer'] is Map<String, dynamic>
+          ? CustomerModel.fromJson(json['customer']) 
+          : null;
+
+      } catch (e) {
+        customer = null;
+      }
+      
+      // Parse shipping address
+      AddressModel? shippingAddress;
+      try {
+        if (json['shippingAddress'] != null) {
+          if (json['shippingAddress'] is Map<String, dynamic>) {
+            shippingAddress = AddressModel.fromJson(json['shippingAddress']);
+          } else {
+            shippingAddress = null;
+          }
+        } else {
+          shippingAddress = null;
+        }
+      } catch (e) {
+        shippingAddress = null;
+      }
+      
+      // Parse billing address
+      AddressModel? billingAddress;
+      try {
+        if (json['billingAddress'] != null) {
+          if (json['billingAddress'] is Map<String, dynamic>) {
+            billingAddress = AddressModel.fromJson(json['billingAddress']);
+          } else {
+            billingAddress = null;
+          }
+        } else {
+          billingAddress = null;
+        }
+      } catch (e) {
+        billingAddress = null;
+      }
+      
+      // Parse custom fields
+      OrderCustomFields? customFields;
+      try {
+        if (json['customFields'] != null) {
+          if (json['customFields'] is Map<String, dynamic>) {
+            customFields = OrderCustomFields.fromJson(json['customFields']);
+          } else {
+            customFields = null;
+          }
+        } else {
+          customFields = null;
+        }
+      } catch (e) {
+        customFields = null;
+      }
+      
+      return OrderModel(
+        id: id,
+        code: code,
+        currencyCode: currencyCode,
+        orderPlacedAt: orderPlacedAt,
+        active: active,
+        state: state,
+        totalQuantity: totalQuantity,
+        totalWithTax: totalWithTax,
+        lines: lines,
+        discounts: discounts,
+        surcharges: surcharges,
+        couponCodes: couponCodes,
+        payments: payments,
+        customer: customer,
+        shippingAddress: shippingAddress,
+        billingAddress: billingAddress,
+        customFields: customFields,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
+
+class OrderLineModel {
+  final String id;
+  final int quantity;
+  final ProductVariantModel productVariant;
+  final AssetModel? featuredAsset;
+
+  OrderLineModel({
+    required this.id,
+    required this.quantity,
+    required this.productVariant,
+    this.featuredAsset,
+  });
+
+  factory OrderLineModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return OrderLineModel(
+        id: json['id']?.toString() ?? '',
+        quantity: (json['quantity'] as num?)?.toInt() ?? 0,
+        productVariant: json['productVariant'] != null && json['productVariant'] is Map<String, dynamic>
+          ? ProductVariantModel.fromJson(json['productVariant']) 
+          : ProductVariantModel(name: ''),
+        featuredAsset: json['featuredAsset'] != null && json['featuredAsset'] is Map<String, dynamic>
+          ? AssetModel.fromJson(json['featuredAsset']) 
+          : null,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
+
+class ProductVariantModel {
+  final String name;
+
+  ProductVariantModel({
+    required this.name,
+  });
+
+  factory ProductVariantModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return ProductVariantModel(
+        name: json['name']?.toString() ?? '',
+      );
+    } catch (e) {
+      return ProductVariantModel(name: '');
+    }
+  }
+}
+
+class AssetModel {
+  final String name;
+  final String preview;
+
+  AssetModel({
+    required this.name,
+    required this.preview,
+  });
+
+  factory AssetModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return AssetModel(
+        name: json['name']?.toString() ?? '',
+        preview: json['preview']?.toString() ?? '',
+      );
+    } catch (e) {
+      return AssetModel(name: '', preview: '');
+    }
+  }
+}
+
+class DiscountModel {
+  final double amount;
+
+  DiscountModel({
+    required this.amount,
+  });
+
+  factory DiscountModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return DiscountModel(
+        amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      );
+    } catch (e) {
+      return DiscountModel(amount: 0.0);
+    }
+  }
+}
+
+class SurchargeModel {
+  final double price;
+  final double priceWithTax;
+
+  SurchargeModel({
+    required this.price,
+    required this.priceWithTax,
+  });
+
+  factory SurchargeModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return SurchargeModel(
+        price: (json['price'] as num?)?.toDouble() ?? 0.0,
+        priceWithTax: (json['priceWithTax'] as num?)?.toDouble() ?? 0.0,
+      );
+    } catch (e) {
+      return SurchargeModel(price: 0.0, priceWithTax: 0.0);
+    }
+  }
+}
+
+class PaymentModel {
+  final String state;
+  final DateTime createdAt;
+  final String method;
+  final double amount;
+  final String? transactionId;
+
+  PaymentModel({
+    required this.state,
+    required this.createdAt,
+    required this.method,
+    required this.amount,
+    this.transactionId,
+  });
+
+  factory PaymentModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return PaymentModel(
+        state: json['state']?.toString() ?? '',
+        createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
+        method: json['method']?.toString() ?? '',
+        amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+        transactionId: json['transactionId']?.toString(),
+      );
+    } catch (e) {
+      return PaymentModel(
+        state: '',
+        createdAt: DateTime.now(),
+        method: '',
+        amount: 0.0,
+        transactionId: null,
+      );
+    }
+  }
+}
+
+class OrderCustomFields {
+  final int? loyaltyPointsUsed;
+  final int? loyaltyPointsEarned;
+  final String? otherInstructions;
+  final bool? clientRequestToCancel;
+
+  OrderCustomFields({
+    this.loyaltyPointsUsed,
+    this.loyaltyPointsEarned,
+    this.otherInstructions,
+    this.clientRequestToCancel,
+  });
+
+  factory OrderCustomFields.fromJson(Map<String, dynamic> json) {
+    try {
+      return OrderCustomFields(
+        loyaltyPointsUsed: _parseIntField(json['loyaltyPointsUsed']),
+        loyaltyPointsEarned: _parseIntField(json['loyaltyPointsEarned']),
+        otherInstructions: json['otherInstructions']?.toString(),
+        clientRequestToCancel: _parseBoolField(json['clientRequestToCancel']),
+      );
+    } catch (e) {
+      return OrderCustomFields();
+    }
+  }
+
+  static int? _parseIntField(dynamic value) {
+    if (value == null) return null;
+    
+    try {
+      if (value is int) {
+        return value;
+      } else if (value is num) {
+        return value.toInt();
+      } else if (value is String) {
+        return int.tryParse(value);
+      } else if (value is bool) {
+        return value ? 1 : 0;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static bool? _parseBoolField(dynamic value) {
+    if (value == null) return null;
+    
+    try {
+      if (value is bool) {
+        return value;
+      } else if (value is int) {
+        return value != 0;
+      } else if (value is String) {
+        final lowerValue = value.toLowerCase();
+        if (lowerValue == 'true' || lowerValue == '1') {
+          return true;
+        } else if (lowerValue == 'false' || lowerValue == '0') {
+          return false;
+        }
+        return null;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+}
