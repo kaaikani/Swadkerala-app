@@ -119,3 +119,99 @@ query GetFrequentlyOrderedProducts {
         orderCount
     }
 }
+
+
+
+
+mutation ApplyLoyaltyPoints($amount: Int!) {
+    applyLoyaltyPointsToActiveOrder(amount: $amount) {
+        id
+        createdAt
+        customFields {
+            loyaltyPointsUsed
+            loyaltyPointsEarned
+        }
+        discounts {
+            amountWithTax
+        }
+    }
+}
+
+
+
+
+
+mutation RemoveLoyaltyPointsFromActiveOrder {
+    removeLoyaltyPointsFromActiveOrder {
+        id
+    }
+}
+
+
+
+
+
+query GetCouponCodeList{
+    getCouponCodeList{
+
+        items {
+            id
+            name
+
+            couponCode
+            description
+            enabled
+            endsAt
+            startsAt
+            createdAt
+            updatedAt
+
+            perCustomerUsageLimit
+            actions {
+                code
+                args {
+
+                    name
+                    value
+                }
+            }
+
+            conditions{
+                code
+                args{
+                    name
+                    value
+                }
+            }
+            usageLimit
+        }
+        totalItems
+        __typename
+    }
+}
+
+
+mutation ApplyCouponCode($input: String!) {
+    applyCouponCode(couponCode: $input) {
+        __typename
+        ... on Order {
+            id
+            couponCodes
+            customFields {
+                razorpay_order_id
+                otherInstructions
+                clientRequestToCancel
+            }
+            total
+        }
+        ... on CouponCodeInvalidError {
+            message
+        }
+    }
+}
+
+mutation RemoveCouponCode($couponCode: String!){
+    removeCouponCode(couponCode: $couponCode){
+        __typename
+    }
+}

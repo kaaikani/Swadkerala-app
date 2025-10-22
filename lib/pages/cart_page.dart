@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../controllers/banner/bannercontroller.dart';
 import '../widgets/appbar.dart';
 import '../widgets/button.dart';
 import '../widgets/empty_state.dart';
@@ -20,6 +21,7 @@ class _CartPageState extends State<CartPage> {
   final CartController cartController = Get.find<CartController>();
   final OrderController orderController = Get.find<OrderController>();
   final UtilityController utilityController = Get.find<UtilityController>();
+  final BannerController bannerController = Get.find<BannerController>();
 
   @override
   void initState() {
@@ -257,6 +259,102 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ],
                     ),
+                    // Applied Coupon Codes
+                    Obx(() {
+                      if (bannerController.appliedCouponCodes.isNotEmpty) {
+                        return Column(
+                          children: [
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Applied Coupon Codes:',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '${bannerController.appliedCouponCodes.length} applied',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            ...bannerController.appliedCouponCodes.map((code) => 
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '• $code',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      final success = await bannerController.removeCouponCode(code);
+                                      if (success) {
+                                        showSuccessSnackbar('Coupon code removed');
+                                        setState(() {}); // Refresh UI
+                                      } else {
+                                        showErrorSnackbar('Failed to remove coupon code');
+                                      }
+                                    },
+                                    child: const Text(
+                                      'Remove',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ).toList(),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                    // Loyalty Points Applied
+                    Obx(() {
+                      if (bannerController.loyaltyPointsApplied.value && bannerController.loyaltyPointsUsed.value > 0) {
+                        return Column(
+                          children: [
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Loyalty Points Discount:',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '-${cartController.formatPrice(bannerController.loyaltyPointsUsed.value)}',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
                     // Shipping will be calculated at checkout
                     const Divider(height: 24),
                     Row(
@@ -269,13 +367,21 @@ class _CartPageState extends State<CartPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          cartController.formatPrice(cart.totalWithTax.toInt()),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Obx(() {
+                          final cartTotal = cart.totalWithTax.toInt();
+                          final loyaltyDiscount = bannerController.loyaltyPointsApplied.value 
+                              ? bannerController.loyaltyPointsUsed.value 
+                              : 0;
+                          final finalTotal = cartTotal - loyaltyDiscount;
+                          
+                          return Text(
+                            cartController.formatPrice(finalTotal),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }),
                       ],
                     ),
                     const SizedBox(height: 16),

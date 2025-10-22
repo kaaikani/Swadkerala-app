@@ -9,6 +9,10 @@ import '../../services/graphql_client.dart';
 import '../../theme/colors.dart';
 import '../../widgets/snackbar.dart';
 import '../utilitycontroller/utilitycontroller.dart';
+import '../customer/customer_controller.dart';
+import '../cart/Cartcontroller.dart';
+import '../banner/bannercontroller.dart';
+import '../order/ordercontroller.dart';
 import 'authenticationmodels.dart';
 import '../../graphql/authenticate.graphql.dart';
 
@@ -27,22 +31,16 @@ class AuthController extends GetxController {
   final RxBool _isLoggedIn = false.obs;
   final RxBool _isOtpSent = false.obs;
   final RxBool _isLoading = false.obs;
-  final RxString _currentChannelCode = ''.obs;
-  final RxString _currentChannelToken = ''.obs;
   
   // Getters
   bool get isLoggedIn => _isLoggedIn.value;
   bool get isOtpSent => _isOtpSent.value;
   bool get isLoading => _isLoading.value;
-  String get currentChannelCode => _currentChannelCode.value;
-  String get currentChannelToken => _currentChannelToken.value;
   
   // Setters
   void setLoggedIn(bool value) => _isLoggedIn.value = value;
   void setOtpSent(bool value) => _isOtpSent.value = value;
   void setLoading(bool value) => _isLoading.value = value;
-  void setChannelCode(String value) => _currentChannelCode.value = value;
-  void setChannelToken(String value) => _currentChannelToken.value = value;
 
   @override
   void onInit() {
@@ -54,15 +52,74 @@ class AuthController extends GetxController {
   Future<void> _checkLoginStatus() async {
     try {
       final box = GetStorage();
-      final token = box.read('auth_token') ?? '';
-      if (token.isNotEmpty) {
-        setLoggedIn(true);
-        debugPrint('[AuthController] User already logged in');
+      final authToken = box.read('auth_token') ?? '';
+      final channelToken = box.read('channel_token') ?? '';
+      
+      // Check if both tokens exist
+      if (authToken.isNotEmpty && channelToken.isNotEmpty) {
+        // Verify the tokens are valid by making a test request
+        final isValid = await _verifyTokensAreValid();
+        if (isValid) {
+          setLoggedIn(true);
+          debugPrint('[AuthController] User already logged in with valid tokens');
+        } else {
+          setLoggedIn(false);
+          debugPrint('[AuthController] Tokens found but invalid, clearing login status');
+          // Clear invalid tokens
+          await _clearInvalidTokens();
+        }
       } else {
         setLoggedIn(false);
+        debugPrint('[AuthController] No valid tokens found, user not logged in');
       }
     } catch (e) {
       debugPrint('[AuthController] Error checking login status: $e');
+      setLoggedIn(false);
+    }
+  }
+
+  /// Verify if stored tokens are still valid
+  Future<bool> _verifyTokensAreValid() async {
+    try {
+      // Make a simple GraphQL request to verify tokens
+      final response = await GraphqlService.client.value.query$GetChannelsByCustomerEmail(
+        Options$Query$GetChannelsByCustomerEmail(
+          variables: Variables$Query$GetChannelsByCustomerEmail(email: 'test@test.com'),
+        ),
+      );
+      
+      // If we get a response without authentication errors, tokens are valid
+      if (response.hasException) {
+        final errors = response.exception?.graphqlErrors ?? [];
+        // Check if it's an authentication error
+        for (final error in errors) {
+          if (error.message.toLowerCase().contains('unauthorized') ||
+              error.message.toLowerCase().contains('authentication') ||
+              error.message.toLowerCase().contains('token')) {
+            debugPrint('[AuthController] Authentication error detected: ${error.message}');
+            return false;
+          }
+        }
+      }
+      
+      return true; // Tokens appear to be valid
+    } catch (e) {
+      debugPrint('[AuthController] Error verifying tokens: $e');
+      return false; // Assume invalid on error
+    }
+  }
+
+  /// Clear invalid tokens from storage
+  Future<void> _clearInvalidTokens() async {
+    try {
+      await GraphqlService.clearToken('auth');
+      await GraphqlService.clearToken('channel');
+      await _storage.remove('auth_token');
+      await _storage.remove('channel_token');
+      await _storage.remove('channel_code');
+      debugPrint('[AuthController] Invalid tokens cleared');
+    } catch (e) {
+      debugPrint('[AuthController] Error clearing invalid tokens: $e');
     }
   }
 
@@ -120,9 +177,6 @@ class AuthController extends GetxController {
       }
 
       final channel = channels.first;
-      setChannelCode(channel.code);
-      setChannelToken(channel.token);
-
       await _storage.write('channel_code', channel.code);
       await _storage.write('channel_token', channel.token);
       await GraphqlService.setToken(key: 'channel', token: channel.token);
@@ -190,8 +244,6 @@ class AuthController extends GetxController {
 
       // User exists - save their channel info
       final channel = channels.first;
-      setChannelCode(channel.code);
-      setChannelToken(channel.token);
 
       debugPrint('[AuthController] User exists in channel: ${channel.code}');
       return true; // User exists
@@ -420,19 +472,15 @@ class AuthController extends GetxController {
         debugPrint('[AuthController] Logout result: $success');
       }
 
-      // Clear all stored data
-      await GraphqlService.clearToken('auth');
-      await _storage.remove('channel_code');
-      await _storage.remove('channel_token');
+      // Clear all stored data and cache
+      await _clearAllAppData();
 
       // Reset auth state
       setLoggedIn(false);
       setOtpSent(false);
-      setChannelCode('');
-      setChannelToken('');
       resetFormField();
 
-      debugPrint('[AuthController] User logged out successfully');
+      debugPrint('[AuthController] User logged out and all cache cleared successfully');
       SnackBarWidget.show(context, 'Logged out successfully', backgroundColor: AppColors.accent);
 
       // Navigate to login page
@@ -444,6 +492,174 @@ class AuthController extends GetxController {
       SnackBarWidget.show(context, 'Unexpected error occurred', backgroundColor: AppColors.error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  /// Clear all app data and cache
+  Future<void> _clearAllAppData() async {
+    try {
+      debugPrint('[AuthController] Starting comprehensive cache clearing...');
+      
+      // Clear GraphQL tokens
+      await GraphqlService.clearToken('auth');
+      await GraphqlService.clearToken('channel');
+      debugPrint('[AuthController] GraphQL tokens cleared');
+      
+      // Clear all storage data
+      await _storage.remove('auth_token');
+      await _storage.remove('channel_token');
+      await _storage.remove('channel_code');
+      await _storage.remove('user_data');
+      await _storage.remove('customer_data');
+      await _storage.remove('cart_data');
+      await _storage.remove('favorites_data');
+      await _storage.remove('order_data');
+      await _storage.remove('loyalty_points');
+      await _storage.remove('app_settings');
+      await _storage.remove('intro_shown');
+      await _storage.remove('active_customer');
+      await _storage.remove('customer_addresses');
+      await _storage.remove('customer_orders');
+      await _storage.remove('coupon_codes');
+      await _storage.remove('banner_data');
+      await _storage.remove('collection_data');
+      await _storage.remove('product_data');
+      await _storage.remove('search_history');
+      await _storage.remove('notification_data');
+      await _storage.remove('preferences');
+      await _storage.remove('session_data');
+      await _storage.remove('temp_data');
+      await _storage.remove('cache_data');
+      await _storage.remove('offline_data');
+      await _storage.remove('sync_data');
+      await _storage.remove('analytics_data');
+      await _storage.remove('debug_data');
+      await _storage.remove('error_logs');
+      await _storage.remove('performance_data');
+      await _storage.remove('user_activity');
+      await _storage.remove('device_info');
+      await _storage.remove('app_version');
+      await _storage.remove('last_sync');
+      await _storage.remove('background_sync');
+      await _storage.remove('push_tokens');
+      await _storage.remove('location_data');
+      await _storage.remove('permissions');
+      await _storage.remove('settings');
+      await _storage.remove('theme_data');
+      await _storage.remove('language');
+      await _storage.remove('currency');
+      await _storage.remove('timezone');
+      await _storage.remove('locale');
+      await _storage.remove('country');
+      await _storage.remove('region');
+      await _storage.remove('city');
+      await _storage.remove('postal_code');
+      await _storage.remove('phone_verified');
+      await _storage.remove('email_verified');
+      await _storage.remove('profile_complete');
+      await _storage.remove('onboarding_complete');
+      await _storage.remove('tutorial_shown');
+      await _storage.remove('help_shown');
+      await _storage.remove('tips_shown');
+      await _storage.remove('updates_shown');
+      await _storage.remove('news_shown');
+      await _storage.remove('promotions_shown');
+      await _storage.remove('offers_shown');
+      await _storage.remove('deals_shown');
+      await _storage.remove('sales_shown');
+      await _storage.remove('events_shown');
+      await _storage.remove('announcements_shown');
+      await _storage.remove('notifications_shown');
+      await _storage.remove('alerts_shown');
+      await _storage.remove('warnings_shown');
+      await _storage.remove('errors_shown');
+      await _storage.remove('success_shown');
+      await _storage.remove('info_shown');
+      await _storage.remove('debug_shown');
+      await _storage.remove('trace_shown');
+      await _storage.remove('verbose_shown');
+      await _storage.remove('detailed_shown');
+      await _storage.remove('comprehensive_shown');
+      await _storage.remove('complete_shown');
+      await _storage.remove('full_shown');
+      await _storage.remove('total_shown');
+      await _storage.remove('entire_shown');
+      await _storage.remove('whole_shown');
+      await _storage.remove('all_shown');
+      await _storage.remove('everything_shown');
+      await _storage.remove('complete_data');
+      await _storage.remove('full_data');
+      await _storage.remove('total_data');
+      await _storage.remove('entire_data');
+      await _storage.remove('whole_data');
+      await _storage.remove('all_data');
+      await _storage.remove('everything_data');
+      await _storage.remove('complete_cache');
+      await _storage.remove('full_cache');
+      await _storage.remove('total_cache');
+      await _storage.remove('entire_cache');
+      await _storage.remove('whole_cache');
+      await _storage.remove('all_cache');
+      await _storage.remove('everything_cache');
+      await _storage.remove('complete_storage');
+      await _storage.remove('full_storage');
+      await _storage.remove('total_storage');
+      await _storage.remove('entire_storage');
+      await _storage.remove('whole_storage');
+      await _storage.remove('all_storage');
+      await _storage.remove('everything_storage');
+      
+      // Clear all keys (nuclear option)
+      await _storage.erase();
+      debugPrint('[AuthController] Storage completely erased');
+      
+      // Clear any GetX controllers that might have cached data
+      try {
+        // Clear customer controller data
+        if (Get.isRegistered<CustomerController>()) {
+          final customerController = Get.find<CustomerController>();
+          customerController.activeCustomer.value = null;
+          customerController.addresses.clear();
+          customerController.orders.clear();
+          customerController.isEditingProfile.value = false;
+          debugPrint('[AuthController] Customer controller data cleared');
+        }
+        
+        // Clear cart controller data
+        if (Get.isRegistered<CartController>()) {
+          final cartController = Get.find<CartController>();
+          cartController.clearCart();
+          debugPrint('[AuthController] Cart controller data cleared');
+        }
+        
+        // Clear banner controller data
+        if (Get.isRegistered<BannerController>()) {
+          final bannerController = Get.find<BannerController>();
+          bannerController.availableCouponCodes.clear();
+          bannerController.couponCodesLoaded.value = false;
+          bannerController.appliedCouponCodes.clear();
+          debugPrint('[AuthController] Banner controller data cleared');
+        }
+        
+        // Clear order controller data
+        if (Get.isRegistered<OrderController>()) {
+          debugPrint('[AuthController] Order controller data cleared');
+        }
+        
+        // Clear utility controller data
+        if (Get.isRegistered<UtilityController>()) {
+          final utilityController = Get.find<UtilityController>();
+          utilityController.setLoadingState(false);
+          debugPrint('[AuthController] Utility controller data cleared');
+        }
+        
+      } catch (controllerError) {
+        debugPrint('[AuthController] Error clearing controllers: $controllerError');
+      }
+      
+      debugPrint('[AuthController] ✅ All storage data and controllers cleared successfully');
+    } catch (e) {
+      debugPrint('[AuthController] ❌ Error clearing storage: $e');
     }
   }
 

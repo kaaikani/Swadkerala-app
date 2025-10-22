@@ -217,3 +217,153 @@ class ToggleFavoriteResult {
     );
   }
 }
+
+// Coupon Code Models
+class CouponCodeModel {
+  final String id;
+  final String name;
+  final String couponCode;
+  final String? description;
+  final bool enabled;
+  final String? endsAt;
+  final String? startsAt;
+  final String createdAt;
+  final String updatedAt;
+  final int? perCustomerUsageLimit;
+  final List<CouponActionModel> actions;
+  final List<CouponConditionModel> conditions;
+  final int? usageLimit;
+  final List<CouponProductModel>? products; // Products associated with this coupon
+
+  CouponCodeModel({
+    required this.id,
+    required this.name,
+    required this.couponCode,
+    this.description,
+    required this.enabled,
+    this.endsAt,
+    this.startsAt,
+    required this.createdAt,
+    required this.updatedAt,
+    this.perCustomerUsageLimit,
+    required this.actions,
+    required this.conditions,
+    this.usageLimit,
+    this.products,
+  });
+
+  factory CouponCodeModel.fromJson(Map<String, dynamic> json) {
+    return CouponCodeModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      couponCode: json['couponCode'] ?? '',
+      description: json['description'],
+      enabled: json['enabled'] ?? false,
+      endsAt: json['endsAt'],
+      startsAt: json['startsAt'],
+      createdAt: json['createdAt'] ?? '',
+      updatedAt: json['updatedAt'] ?? '',
+      perCustomerUsageLimit: json['perCustomerUsageLimit'],
+      actions: (json['actions'] as List<dynamic>?)
+          ?.map((action) => CouponActionModel.fromJson(action))
+          .toList() ?? [],
+      conditions: (json['conditions'] as List<dynamic>?)
+          ?.map((condition) => CouponConditionModel.fromJson(condition))
+          .toList() ?? [],
+      usageLimit: json['usageLimit'],
+      products: (json['products'] as List<dynamic>?)
+          ?.map((product) => CouponProductModel.fromJson(product))
+          .toList(),
+    );
+  }
+}
+
+class CouponActionModel {
+  final String code;
+  final List<CouponArgModel> args;
+
+  CouponActionModel({
+    required this.code,
+    required this.args,
+  });
+
+  factory CouponActionModel.fromJson(Map<String, dynamic> json) {
+    return CouponActionModel(
+      code: json['code'] ?? '',
+      args: (json['args'] as List<dynamic>?)
+          ?.map((arg) => CouponArgModel.fromJson(arg))
+          .toList() ?? [],
+    );
+  }
+}
+
+class CouponConditionModel {
+  final String code;
+  final List<CouponArgModel> args;
+
+  CouponConditionModel({
+    required this.code,
+    required this.args,
+  });
+
+  factory CouponConditionModel.fromJson(Map<String, dynamic> json) {
+    return CouponConditionModel(
+      code: json['code'] ?? '',
+      args: (json['args'] as List<dynamic>?)
+          ?.map((arg) => CouponArgModel.fromJson(arg))
+          .toList() ?? [],
+    );
+  }
+}
+
+class CouponArgModel {
+  final String name;
+  final dynamic value;
+
+  CouponArgModel({
+    required this.name,
+    required this.value,
+  });
+
+  factory CouponArgModel.fromJson(Map<String, dynamic> json) {
+    return CouponArgModel(
+      name: json['name'] ?? '',
+      value: json['value'],
+    );
+  }
+}
+
+class CouponProductModel {
+  final String id;
+  final String name;
+  final String productVariantId;
+  final double price;
+  final double priceWithTax;
+  final String? imageUrl;
+  final int quantity;
+  final String? description;
+
+  CouponProductModel({
+    required this.id,
+    required this.name,
+    required this.productVariantId,
+    required this.price,
+    required this.priceWithTax,
+    this.imageUrl,
+    required this.quantity,
+    this.description,
+  });
+
+  factory CouponProductModel.fromJson(Map<String, dynamic> json) {
+    return CouponProductModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      productVariantId: json['productVariantId'] ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      priceWithTax: (json['priceWithTax'] as num?)?.toDouble() ?? 0.0,
+      imageUrl: json['imageUrl'],
+      quantity: json['quantity'] ?? 1,
+      description: json['description'],
+    );
+  }
+}

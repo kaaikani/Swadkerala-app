@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/order/ordercontroller.dart';
-import '../controllers/order/ordermodels.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../widgets/appbar.dart';
 import '../widgets/button.dart';
 import '../widgets/card.dart';
-import '../widgets/snackbar.dart';
 import '../theme/colors.dart';
 
 class OrderConfirmationPage extends StatefulWidget {
@@ -504,125 +502,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   }
 
 
-  Future<void> _shareReceipt(OrderModel order) async {
-    try {
-      // Generate text receipt
-      final receiptText = _generateTextReceipt(order);
-      
-      // Copy to clipboard
-      await Clipboard.setData(ClipboardData(text: receiptText));
-      
-      // Show dialog with receipt
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Receipt for Order #${order.code}'),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 400,
-            child: SingleChildScrollView(
-              child: Text(
-                receiptText,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                showSuccessSnackbar('Receipt copied to clipboard!');
-              },
-              child: const Text('Copy'),
-            ),
-          ],
-        ),
-      );
-      
-    } catch (e) {
-      showErrorSnackbar('Failed to generate receipt: $e');
-    }
-  }
 
-  String _generateTextReceipt(OrderModel order) {
-    final buffer = StringBuffer();
-    
-    buffer.writeln('ORDER RECEIPT');
-    buffer.writeln('=============');
-    buffer.writeln();
-    buffer.writeln('Order #${order.code}');
-    buffer.writeln('Date: ${order.orderPlacedAt?.toLocal().toString().split(' ')[0] ?? 'N/A'}');
-    buffer.writeln('Status: ${order.state}');
-    buffer.writeln('Total Items: ${order.totalQuantity}');
-    if (order.currencyCode != null) {
-      buffer.writeln('Currency: ${order.currencyCode}');
-    }
-    buffer.writeln();
-    
-    buffer.writeln('PRODUCTS');
-    buffer.writeln('--------');
-    for (final line in order.lines) {
-      buffer.writeln('${line.productVariant.name}');
-      buffer.writeln('Qty: ${line.quantity} x Rs.${(line.unitPriceWithTax / 100).toStringAsFixed(2)} = Rs.${(line.linePriceWithTax / 100).toStringAsFixed(2)}');
-      buffer.writeln();
-    }
-    
-    if (order.shippingAddress != null) {
-      buffer.writeln('SHIPPING ADDRESS');
-      buffer.writeln('---------------');
-      final address = order.shippingAddress!;
-      buffer.writeln(address.fullName);
-      buffer.writeln(address.streetLine1);
-      if (address.streetLine2?.isNotEmpty == true) {
-        buffer.writeln(address.streetLine2!);
-      }
-      buffer.writeln('${address.city}, ${address.province ?? ''} ${address.postalCode}');
-      if (address.country != null) {
-        buffer.writeln(address.country!);
-      }
-      if (address.phoneNumber?.isNotEmpty == true) {
-        buffer.writeln('Phone: ${address.phoneNumber!}');
-      }
-      buffer.writeln();
-    }
-    
-    if (order.payments.isNotEmpty) {
-      buffer.writeln('PAYMENT DETAILS');
-      buffer.writeln('---------------');
-      for (final payment in order.payments) {
-        buffer.writeln('${payment.method.toUpperCase()} - Rs.${(payment.amount / 100).toStringAsFixed(2)} (${payment.state})');
-      }
-      buffer.writeln();
-    }
-    
-    if (order.customFields != null) {
-      buffer.writeln('LOYALTY POINTS');
-      buffer.writeln('-------------');
-      if (order.customFields!.loyaltyPointsUsed != null) {
-        buffer.writeln('Points Used: ${order.customFields!.loyaltyPointsUsed}');
-      }
-      if (order.customFields!.loyaltyPointsEarned != null) {
-        buffer.writeln('Points Earned: ${order.customFields!.loyaltyPointsEarned}');
-      }
-      buffer.writeln();
-    }
-    
-    buffer.writeln('ORDER SUMMARY');
-    buffer.writeln('-------------');
-    buffer.writeln('Subtotal: Rs.${(order.subTotalWithTax / 100).toStringAsFixed(2)}');
-    if (order.shippingWithTax > 0) {
-      buffer.writeln('Shipping: Rs.${(order.shippingWithTax / 100).toStringAsFixed(2)}');
-    }
-    buffer.writeln('Total: Rs.${(order.totalWithTax / 100).toStringAsFixed(2)}');
-    buffer.writeln();
-    buffer.writeln('Thank you for your order!');
-    
-    return buffer.toString();
-  }
 
   void _viewOrderDetails(dynamic order) {
     // TODO: Navigate to detailed order view

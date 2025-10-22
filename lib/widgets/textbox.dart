@@ -13,6 +13,7 @@ class TextButtonField extends StatelessWidget {
   final bool enabled;
   final TextCapitalization textCapitalization;
   final VoidCallback? onTap;
+  final ValueChanged<String>? onChanged;
 
   const TextButtonField({
     Key? key,
@@ -25,6 +26,7 @@ class TextButtonField extends StatelessWidget {
     this.enabled = true,
     this.textCapitalization = TextCapitalization.none,
     this.onTap,
+    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -50,6 +52,7 @@ class TextButtonField extends StatelessWidget {
           textCapitalization: textCapitalization,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => FocusScope.of(context).unfocus(),
+          onChanged: onChanged,
           decoration: InputDecoration(
             prefixText: prefixText,
             hintText: hint,

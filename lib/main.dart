@@ -3,7 +3,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:unified_ecomapp/services/graphql_client.dart';
-import 'package:unified_ecomapp/services/notification_service.dart';
 import 'controllers/customer/customer_controller.dart';
 import 'routes.dart';
 import 'controllers/utilitycontroller/utilitycontroller.dart';

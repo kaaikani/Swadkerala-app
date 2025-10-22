@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
+import '../services/graphql_client.dart';
 import '../services/sim_detection_service.dart';
+import '../services/sms_autofill_service.dart';
 import '../theme/colors.dart';
 import '../theme/sizes.dart';
 import '../widgets/button.dart';
@@ -20,6 +23,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _authController = Get.find<AuthController>();
+  final _smsAutofillService = SmsAutofillService();
   bool _isOtpVisible = false;
   bool _isDetectingSim = false;
   String _statusMessage = 'Detecting SIM cards...';
@@ -28,14 +32,28 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    
+    // Initialize SMS autofill service
+    _initializeSmsAutofill();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _clearAllCache();
       _resetState();
       // Add delay for first-time app installs to let mobile_number package initialize
       Future.delayed(const Duration(milliseconds: 1500), () {
         _autoFillPhoneNumberWrapper();
       });
     });
+  }
+
+  /// Initialize SMS autofill service
+  Future<void> _initializeSmsAutofill() async {
+    try {
+      await _smsAutofillService.initialize();
+      debugPrint('[LoginPage] SMS autofill service initialized');
+    } catch (e) {
+      debugPrint('[LoginPage] Error initializing SMS autofill: $e');
+    }
   }
 
   /// Fire-and-forget async wrapper
@@ -48,6 +66,29 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _isOtpVisible = false;
     });
+  }
+
+  /// Clear all local cache and storage when login page loads
+  Future<void> _clearAllCache() async {
+    try {
+      debugPrint('[LoginPage] Clearing all local cache and storage...');
+      
+      // Clear GraphQL tokens
+      await GraphqlService.clearToken('auth');
+      await GraphqlService.clearToken('channel');
+      
+      // Clear all storage data
+      final storage = GetStorage();
+      await storage.erase();
+      
+      // Reset authentication state
+      _authController.setLoggedIn(false);
+      _authController.setOtpSent(false);
+      
+      debugPrint('[LoginPage] ✅ All cache and storage cleared successfully');
+    } catch (e) {
+      debugPrint('[LoginPage] ❌ Error clearing cache: $e');
+    }
   }
 
   /// Automatically detect SIM numbers and handle OTP triggering with timeout
@@ -108,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
       // Try to get cached SIM info first (should be available from splash screen)
       debugPrint('[LoginPage] Getting cached SIM info...');
       List<SimInfo> simInfoList = await simService.getAllSimInfo().timeout(
-        const Duration(seconds: 3),
+        const Duration(seconds: 15),
         onTimeout: () {
           debugPrint('[LoginPage] SIM detection timeout');
           return <SimInfo>[];
@@ -249,6 +290,31 @@ class _LoginPageState extends State<LoginPage> {
         duration: const Duration(seconds: 3),
       ),
     );
+  }
+
+  /// Start SMS autofill listening
+  Future<void> _startSmsAutofill() async {
+    try {
+      await _smsAutofillService.startListening((otp) {
+        debugPrint('[LoginPage] OTP received from SMS: $otp');
+        _authController.otpController.text = otp;
+        // Auto-verify OTP
+        _verifyOtp();
+      });
+      debugPrint('[LoginPage] SMS autofill listening started');
+    } catch (e) {
+      debugPrint('[LoginPage] Error starting SMS autofill: $e');
+    }
+  }
+
+  /// Stop SMS autofill listening
+  void _stopSmsAutofill() {
+    try {
+      _smsAutofillService.stopListening();
+      debugPrint('[LoginPage] SMS autofill listening stopped');
+    } catch (e) {
+      debugPrint('[LoginPage] Error stopping SMS autofill: $e');
+    }
   }
 
   @override
@@ -480,12 +546,26 @@ class _LoginPageState extends State<LoginPage> {
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(4),
             ],
+            onChanged: (value) {
+              // Auto-verify OTP when 4 digits are entered
+              if (value.length == 4) {
+                _verifyOtp();
+              }
+            },
           ),
           const SizedBox(height: 8),
           Text(
             'OTP sent to +91 ${_authController.phoneNumber.text}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'SMS will be auto-filled when received',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.green[600],
+              fontSize: 12,
             ),
           ),
         ],
@@ -578,7 +658,11 @@ class _LoginPageState extends State<LoginPage> {
     if (_authController.phoneNumber.text.length != 10) return;
 
     final success = await _authController.startLoginFlow(context);
-    if (success) setState(() => _isOtpVisible = true);
+    if (success) {
+      setState(() => _isOtpVisible = true);
+      // Start listening for SMS autofill
+      _startSmsAutofill();
+    }
   }
 
   Future<void> _verifyOtp() async {
@@ -594,6 +678,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    // Stop SMS autofill listening
+    _stopSmsAutofill();
     super.dispose();
   }
 }

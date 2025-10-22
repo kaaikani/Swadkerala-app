@@ -34,7 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final cityName = box.read('channel_code') ?? 'Default City';
