@@ -109,46 +109,59 @@ class _LoginPageState extends State<LoginPage> {
           _statusMessage = 'Requesting phone permission...';
         });
         
-        // Try permission_handler first (more reliable)
-        PermissionStatus phoneStatus = await Permission.phone.request();
-        debugPrint('[LoginPage] Permission_handler result: $phoneStatus');
+        // Use the retry logic from SimDetectionService
+        debugPrint('[LoginPage] Using SIM service retry logic...');
+        List<SimInfo> simInfoList = await simService.getAllSimInfoWithRetry().timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            debugPrint('[LoginPage] SIM detection with retry timeout');
+            return <SimInfo>[];
+          },
+        );
         
-        hasPermission = phoneStatus.isGranted;
-        
-        if (!hasPermission) {
-          // Fallback to mobile_number package
-          debugPrint('[LoginPage] Trying mobile_number package fallback...');
-          hasPermission = await simService.requestPhonePermission().timeout(
-            const Duration(seconds: 5),
-            onTimeout: () {
-              debugPrint('[LoginPage] Permission request timeout');
-              return false;
-            },
-          );
-        }
-        
-        if (!hasPermission) {
-          debugPrint('[LoginPage] Permission denied, showing manual entry option');
-          _showSnackBar('Phone permission denied. Please enter your phone number manually.', isError: false);
+        if (simInfoList.isEmpty) {
+          debugPrint('[LoginPage] No SIMs found after permission retry');
+          
+          // Try system permission request directly
+          debugPrint('[LoginPage] Requesting system permission directly...');
+          setState(() {
+            _statusMessage = 'Requesting permission...';
+          });
+          
+          // Use system permission request
+          final simService = SimDetectionService();
+          bool permissionGranted = await simService.requestPhonePermission();
+          
+          if (permissionGranted) {
+            debugPrint('[LoginPage] System permission granted, trying SIM detection again...');
+            // Try SIM detection again
+            List<SimInfo> retrySimInfoList = await simService.getAllSimInfoWithRetry().timeout(
+              const Duration(seconds: 10),
+              onTimeout: () => <SimInfo>[],
+            );
+            
+            if (retrySimInfoList.isNotEmpty) {
+              await _processSimInfo(retrySimInfoList);
+              return;
+            }
+          }
+          
+          debugPrint('[LoginPage] Permission still denied, showing manual entry option');
+          _showSnackBar('Permission denied. Please enter your phone number manually.', isError: false);
           setState(() {
             _isDetectingSim = false;
           });
           return;
         }
         
-        debugPrint('[LoginPage] Permission granted, proceeding with SIM detection');
-        setState(() {
-          _statusMessage = 'Permission granted! Detecting SIM cards...';
-        });
-        
-        // Restart SIM detection (like initState)
-        await _restartSimDetection();
+        // Process the SIM info
+        await _processSimInfo(simInfoList);
         return;
       }
 
       // Try to get cached SIM info first (should be available from splash screen)
       debugPrint('[LoginPage] Getting cached SIM info...');
-      List<SimInfo> simInfoList = await simService.getAllSimInfo().timeout(
+      List<SimInfo> simInfoList = await simService.getAllSimInfoWithRetry().timeout(
         const Duration(seconds: 15),
         onTimeout: () {
           debugPrint('[LoginPage] SIM detection timeout');
@@ -156,46 +169,8 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
       
-      if (simInfoList.isEmpty) {
-        debugPrint('[LoginPage] No SIM cards found');
-        _showSnackBar('No SIM cards detected. Please enter your phone number manually.', isError: false);
-        return;
-      }
-
-      debugPrint('[LoginPage] Found ${simInfoList.length} SIM cards');
-
-      if (simInfoList.length == 1) {
-        // Single SIM - auto-fill and send OTP
-        final simInfo = simInfoList.first;
-        _authController.phoneNumber.text = simInfo.last10Digits;
-        debugPrint('[LoginPage] Auto-filling single SIM: ${simInfo.last10Digits}');
-        
-        _showSnackBar('SIM detected! Sending OTP to +91 ${simInfo.last10Digits}', isError: false);
-        
-        // Automatically trigger OTP send
-        await _sendOtp();
-      } else {
-        // Multiple SIMs - show selection dialog
-        final selectedSim = await simService.showSimSelectionDialog(context, simInfoList);
-        
-        if (selectedSim != null) {
-          if (selectedSim.phoneNumber.isNotEmpty) {
-            _authController.phoneNumber.text = selectedSim.last10Digits;
-            debugPrint('[LoginPage] Selected SIM: ${selectedSim.last10Digits}');
-            
-            _showSnackBar('Sending OTP to +91 ${selectedSim.last10Digits}', isError: false);
-            
-            // Automatically trigger OTP send
-            await _sendOtp();
-          } else {
-            _showSnackBar('Selected SIM has no phone number. Please enter your phone number manually.', isError: false);
-            // Focus on phone number field for manual entry
-            _authController.phoneNumber.clear();
-          }
-        } else {
-          _showSnackBar('Please select a SIM card or enter your phone number manually', isError: false);
-        }
-      }
+      // Process the SIM info
+      await _processSimInfo(simInfoList);
     } catch (e) {
       debugPrint('[LoginPage] Failed to detect SIM numbers: $e');
       _showSnackBar('Failed to detect SIM numbers. Please enter your phone number manually.', isError: true);
@@ -206,6 +181,44 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  /// Process SIM info and handle single/multiple SIM scenarios
+  Future<void> _processSimInfo(List<SimInfo> simInfoList) async {
+    if (simInfoList.isEmpty) {
+      debugPrint('[LoginPage] No SIM cards found');
+      _showSnackBar('No SIM cards detected. Please enter your phone number manually.', isError: false);
+      setState(() {
+        _isDetectingSim = false;
+      });
+      return;
+    }
+
+    debugPrint('[LoginPage] Found ${simInfoList.length} SIM cards');
+
+    if (simInfoList.length == 1) {
+      // Single SIM - auto-fill phone number only
+      final simInfo = simInfoList.first;
+      _authController.phoneNumber.text = simInfo.last10Digits;
+      debugPrint('[LoginPage] Auto-filling single SIM: ${simInfo.last10Digits}');
+      
+      _showSnackBar('SIM detected! Phone number filled. Press "Send OTP" to continue.', isError: false);
+    } else {
+      // Multiple SIMs - show selection dialog
+      final selectedSim = await SimDetectionService().showSimSelectionDialog(context, simInfoList);
+      
+      if (selectedSim != null) {
+        if (selectedSim.phoneNumber.isNotEmpty) {
+          _authController.phoneNumber.text = selectedSim.last10Digits;
+          debugPrint('[LoginPage] Selected SIM: ${selectedSim.last10Digits}');
+          
+          _showSnackBar('Phone number filled. Press "Send OTP" to continue.', isError: false);
+        } else {
+          _showSnackBar('Selected SIM has no phone number. Please enter your phone number manually.', isError: false);
+        }
+      } else {
+        _showSnackBar('No SIM selected. Please enter your phone number manually.', isError: false);
+      }
+    }
+  }
 
   /// Restart SIM detection (like initState)
   Future<void> _restartSimDetection() async {
@@ -286,7 +299,7 @@ class _LoginPageState extends State<LoginPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
+        backgroundColor: isError ? AppColors.error : AppColors.primary,
         duration: const Duration(seconds: 3),
       ),
     );
@@ -323,7 +336,7 @@ class _LoginPageState extends State<LoginPage> {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: Stack(
         children: [
           // Top gradient container
@@ -352,11 +365,11 @@ class _LoginPageState extends State<LoginPage> {
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.card,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: AppColors.icon.withOpacity(0.1),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -379,15 +392,15 @@ class _LoginPageState extends State<LoginPage> {
             maxChildSize: 0.95,
             builder: (context, scrollController) {
               return Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black12,
+                      color: AppColors.icon.withOpacity(0.12),
                       blurRadius: 10,
                     ),
                   ],
@@ -470,7 +483,7 @@ class _LoginPageState extends State<LoginPage> {
                 Text(
                   _statusMessage,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: AppColors.icon.withOpacity(0.6),
                   ),
                 ),
                     const SizedBox(width: 8),
@@ -501,7 +514,7 @@ class _LoginPageState extends State<LoginPage> {
                 Text(
                   'First time? This may take a moment...',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[500],
+                    color: AppColors.icon.withOpacity(0.5),
                     fontSize: 11,
                   ),
                 ),
@@ -557,14 +570,14 @@ class _LoginPageState extends State<LoginPage> {
           Text(
             'OTP sent to +91 ${_authController.phoneNumber.text}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
+              color: AppColors.icon.withOpacity(0.6),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'SMS will be auto-filled when received',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.green[600],
+              color: AppColors.primary,
               fontSize: 12,
             ),
           ),
@@ -596,7 +609,7 @@ class _LoginPageState extends State<LoginPage> {
           Text(
             "Didn't receive OTP? ",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
+              color: AppColors.icon.withOpacity(0.6),
             ),
           ),
           TextButton(
@@ -624,7 +637,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           "Don't have an account? ",
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.grey[600],
+            color: AppColors.icon.withOpacity(0.6),
           ),
         ),
         TextButton(
@@ -657,11 +670,12 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _sendOtp() async {
     if (_authController.phoneNumber.text.length != 10) return;
 
+    // Start listening BEFORE waiting for SMS
+    await _startSmsAutofill();
+
     final success = await _authController.startLoginFlow(context);
     if (success) {
       setState(() => _isOtpVisible = true);
-      // Start listening for SMS autofill
-      _startSmsAutofill();
     }
   }
 

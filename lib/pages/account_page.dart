@@ -168,7 +168,7 @@ class _AccountPageState extends State<AccountPage> {
                     radius: 40,
                     backgroundColor: AppColors.primary.withOpacity(0.1),
                     child: Text(
-                      '${customer.firstName[0]}${customer.lastName[0]}',
+                      _getInitials(customer.firstName, customer.lastName),
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -183,7 +183,7 @@ class _AccountPageState extends State<AccountPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${customer.firstName} ${customer.lastName}',
+                        '${customer.firstName.isNotEmpty ? customer.firstName : 'User'} ${customer.lastName.isNotEmpty ? customer.lastName : ''}',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -468,6 +468,37 @@ class _AccountPageState extends State<AccountPage> {
         ],
       ),
     );
+  }
+
+  String _getInitials(String firstName, String lastName) {
+    String firstInitial = '';
+    String lastInitial = '';
+    
+    if (firstName.isNotEmpty) {
+      firstInitial = firstName[0].toUpperCase();
+    }
+    
+    if (lastName.isNotEmpty) {
+      lastInitial = lastName[0].toUpperCase();
+    }
+    
+    // If both names are empty, return 'U' for User
+    if (firstInitial.isEmpty && lastInitial.isEmpty) {
+      return 'U';
+    }
+    
+    // If only first name is empty, use last name initial
+    if (firstInitial.isEmpty) {
+      return lastInitial;
+    }
+    
+    // If only last name is empty, use first name initial
+    if (lastInitial.isEmpty) {
+      return firstInitial;
+    }
+    
+    // Both names have initials
+    return '$firstInitial$lastInitial';
   }
 
   void _showSupportDialog() {

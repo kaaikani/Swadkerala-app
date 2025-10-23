@@ -144,4 +144,59 @@ class CartController extends GetxController {
     error.value = null;
     debugPrint('[Cart] Cart cleared');
   }
+
+  /// Check if any applied coupon has free_shipping action
+  bool hasFreeShippingCoupon() {
+    if (cart.value == null) return false;
+    
+    final order = cart.value!;
+    
+    debugPrint('[Cart] Checking for free shipping coupon...');
+    debugPrint('[Cart] Current shipping cost: ${order.shipping}, ${order.shippingWithTax}');
+    debugPrint('[Cart] Applied coupon codes: ${order.couponCodes}');
+    debugPrint('[Cart] Promotions count: ${order.promotions.length}');
+    
+    // Check if shipping cost is 0
+    if (order.shipping == 0 && order.shippingWithTax == 0) {
+      debugPrint('[Cart] Shipping cost is 0 - free shipping detected');
+      return true;
+    }
+    
+    // Check promotions for free_shipping action
+    for (final promotion in order.promotions) {
+      debugPrint('[Cart] Checking promotion: ${promotion.name}');
+      debugPrint('[Cart] Promotion actions count: ${promotion.actions.length}');
+      
+      for (final action in promotion.actions) {
+        debugPrint('[Cart] Action code: ${action.code}');
+        if (action.code == 'free_shipping') {
+          debugPrint('[Cart] Found free_shipping action in promotion: ${promotion.name}');
+          return true;
+        }
+      }
+    }
+    
+    debugPrint('[Cart] No free shipping coupon found');
+    return false;
+  }
+
+  /// Get shipping display text
+  String getShippingDisplayText() {
+    if (hasFreeShippingCoupon()) {
+      debugPrint('[Cart] Returning Free for shipping display');
+      return 'Free';
+    }
+    
+    if (cart.value == null) return 'Rs.0.00';
+    
+    final shippingCost = cart.value!.shippingWithTax;
+    debugPrint('[Cart] Returning shipping cost: ${formatPrice(shippingCost.toInt())}');
+    return formatPrice(shippingCost.toInt());
+  }
+
+  /// Force refresh cart data to get updated shipping costs
+  Future<void> refreshCartData() async {
+    debugPrint('[Cart] Refreshing cart data...');
+    await getActiveOrder();
+  }
 }

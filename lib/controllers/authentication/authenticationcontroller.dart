@@ -48,6 +48,24 @@ class AuthController extends GetxController {
     _checkLoginStatus();
   }
 
+  /// Manually check login status from GraphqlService tokens
+  void checkLoginStatusFromGraphqlService() {
+    final authToken = GraphqlService.authToken;
+    final channelToken = GraphqlService.channelToken;
+    
+    debugPrint('[AuthController] Checking login status from GraphqlService...');
+    debugPrint('[AuthController] Auth token: ${authToken.isNotEmpty ? 'present' : 'missing'}');
+    debugPrint('[AuthController] Channel token: ${channelToken.isNotEmpty ? 'present' : 'missing'}');
+    
+    if (authToken.isNotEmpty && channelToken.isNotEmpty) {
+      setLoggedIn(true);
+      debugPrint('[AuthController] Login status updated to true based on GraphqlService tokens');
+    } else {
+      setLoggedIn(false);
+      debugPrint('[AuthController] Login status updated to false - tokens missing');
+    }
+  }
+
   /// Check if user is already logged in
   Future<void> _checkLoginStatus() async {
     try {

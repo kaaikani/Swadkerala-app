@@ -367,3 +367,29 @@ class CouponProductModel {
     );
   }
 }
+
+class LoyaltyPointsConfigModel {
+  final String id;
+  final String createdAt;
+  final String updatedAt;
+  final int rupeesPerPoint;
+  final int pointsPerRupee;
+
+  LoyaltyPointsConfigModel({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.rupeesPerPoint,
+    required this.pointsPerRupee,
+  });
+
+  factory LoyaltyPointsConfigModel.fromJson(Map<String, dynamic> json) {
+    return LoyaltyPointsConfigModel(
+      id: json['id'] ?? '',
+      createdAt: json['createdAt'] ?? '',
+      updatedAt: json['updatedAt'] ?? '',
+      rupeesPerPoint: json['rupeesPerPoint'] ?? 0,
+      pointsPerRupee: json['pointsPerRupee'] ?? 0,
+    );
+  }
+}

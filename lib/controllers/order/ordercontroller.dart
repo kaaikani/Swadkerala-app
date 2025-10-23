@@ -176,6 +176,39 @@ class OrderController extends GetxController {
     }
   }
 
+  /// Check if any applied coupon has free_shipping action
+  bool hasFreeShippingCoupon() {
+    if (currentOrder.value == null) return false;
+    
+    final order = currentOrder.value!;
+    
+    // Check if shipping cost is 0
+    if (order.shipping == 0 && order.shippingWithTax == 0) {
+      return true;
+    }
+    
+    // Check if any coupon codes are applied that might provide free shipping
+    if (order.couponCodes.isNotEmpty) {
+      // This is a simple check - in a real implementation, you'd check the promotion actions
+      // For now, we'll assume if shipping is 0, it's free due to coupon
+      return order.shipping == 0;
+    }
+    
+    return false;
+  }
+
+  /// Get shipping display text
+  String getShippingDisplayText() {
+    if (hasFreeShippingCoupon()) {
+      return 'Free';
+    }
+    
+    if (currentOrder.value == null) return 'Rs.0.00';
+    
+    final shippingCost = currentOrder.value!.shippingWithTax;
+    return 'Rs.${(shippingCost / 100).toStringAsFixed(2)}';
+  }
+
   /// Set shipping address
   Future<bool> setShippingAddress({
     required String fullName,

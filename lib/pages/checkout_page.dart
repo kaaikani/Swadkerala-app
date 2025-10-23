@@ -58,6 +58,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
       debugPrint('[CheckoutPage] About to call _loadCouponCodes()');
       _loadCouponCodes();
       debugPrint('[CheckoutPage] _loadCouponCodes() call completed');
+      debugPrint('[CheckoutPage] About to call _loadLoyaltyPointsConfig()');
+      _loadLoyaltyPointsConfig();
+      debugPrint('[CheckoutPage] _loadLoyaltyPointsConfig() call completed');
     });
   }
 
@@ -117,6 +120,31 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
     
     debugPrint('[CheckoutPage] ===== COUPON CODE LOADING COMPLETED =====');
+  }
+
+  Future<void> _loadLoyaltyPointsConfig() async {
+    debugPrint('[CheckoutPage] ===== LOADING LOYALTY POINTS CONFIG =====');
+    
+    try {
+      debugPrint('[CheckoutPage] Calling bannerController.fetchLoyaltyPointsConfig()...');
+      await bannerController.fetchLoyaltyPointsConfig();
+      debugPrint('[CheckoutPage] bannerController.fetchLoyaltyPointsConfig() completed');
+      
+      final config = bannerController.loyaltyPointsConfig.value;
+      if (config != null) {
+        debugPrint('[CheckoutPage] ✅ Successfully loaded loyalty points config');
+        debugPrint('[CheckoutPage] Rupees per point: ${config.rupeesPerPoint}');
+        debugPrint('[CheckoutPage] Points per rupee: ${config.pointsPerRupee}');
+      } else {
+        debugPrint('[CheckoutPage] ❌ No loyalty points config loaded');
+      }
+    } catch (e) {
+      debugPrint('[CheckoutPage] ❌ Error loading loyalty points config: $e');
+      debugPrint('[CheckoutPage] Error type: ${e.runtimeType}');
+      debugPrint('[CheckoutPage] Stack trace: ${StackTrace.current}');
+    }
+    
+    debugPrint('[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====');
   }
 
   Future<void> _handleAddressSubmit() async {
@@ -221,11 +249,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     // Calculate total (cart total + shipping if available)
     final cartTotal = cart.totalWithTax.toInt();
-    final shippingCost = orderController.selectedShippingMethod.value?.priceWithTax ?? 0;
+    final shippingCost = cartController.hasFreeShippingCoupon() 
+        ? 0 
+        : (orderController.selectedShippingMethod.value?.priceWithTax ?? 0);
     final amount = cartTotal + shippingCost;
     final orderId = cart.id;
     
     debugPrint('[Checkout] Cart Total: $cartTotal, Shipping: $shippingCost, Final Amount: $amount');
+    debugPrint('[Checkout] Free shipping coupon applied: ${cartController.hasFreeShippingCoupon()}');
 
     // Generate Razorpay Order ID from backend
     showSuccessSnackbar('Generating payment order...');
@@ -321,14 +352,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
-  /// Apply loyalty points (only after coupon codes are applied)
+  /// Apply loyalty points
   Future<void> _applyLoyaltyPoints() async {
-    // Check if any coupon codes are applied first
-    if (bannerController.appliedCouponCodes.isEmpty) {
-      showErrorSnackbar('Please apply coupon codes before using loyalty points');
-      return;
-    }
-
     final pointsText = _loyaltyPointsController.text.trim();
     if (pointsText.isEmpty) {
       showErrorSnackbar('Please enter loyalty points amount');
@@ -338,6 +363,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final points = int.tryParse(pointsText);
     if (points == null || points <= 0) {
       showErrorSnackbar('Please enter a valid loyalty points amount');
+      return;
+    }
+
+    // Check if user has enough loyalty points available
+    final availablePoints = customerController.loyaltyPoints;
+    if (points > availablePoints) {
+      showErrorSnackbar('Insufficient loyalty points! You have $availablePoints points available. Earn more points to apply loyalty points.');
+      return;
+    }
+
+    // Check minimum points requirement from config
+    final config = bannerController.loyaltyPointsConfig.value;
+    if (config != null && points < config.pointsPerRupee) {
+      showErrorSnackbar('Minimum loyalty points required: ${config.pointsPerRupee} points. Please enter ${config.pointsPerRupee} or more points.');
       return;
     }
 
@@ -483,7 +522,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   ),
                                   child: Text(
                                     coupon.couponCode,
-                                    style: const TextStyle(
+                                      style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
@@ -561,58 +600,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               const SizedBox(height: 8),
                             ],
                             
-                            // Products included
-                            if (bannerController.hasCouponProducts(coupon.couponCode)) ...[
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade50,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.blue.shade200),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(Icons.shopping_bag, size: 16, color: Colors.blue.shade600),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Products included:',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue.shade600,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    ...bannerController.getCouponProducts(coupon.couponCode).map((product) => 
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 20, bottom: 4),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.check_circle, size: 12, color: Colors.blue.shade600),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: Text(
-                                                '${product['name']} (Qty: ${product['quantity']})',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: Colors.blue.shade600,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ).toList(),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                            ],
+
                             
                             // Validation status
                             if (!isApplied) ...[
@@ -1156,31 +1144,69 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
+                          // Show available loyalty points and minimum requirement
                           Obx(() {
-                            if (bannerController.appliedCouponCodes.isEmpty) {
-                              return Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange.shade50,
-                                  border: Border.all(color: Colors.orange.shade200),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Row(
-                                  children: [
-                                    Icon(Icons.info_outline, color: Colors.orange),
-                                    SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        'Please apply coupon codes first before using loyalty points',
-                                        style: TextStyle(color: Colors.orange),
-                                      ),
+                            final availablePoints = customerController.loyaltyPoints;
+                            final config = bannerController.loyaltyPointsConfig.value;
+                            final minimumPoints = config?.pointsPerRupee ?? 0;
+                            
+                            return Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: availablePoints > 0 ? Colors.blue.shade50 : Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: availablePoints > 0 ? Colors.blue.shade200 : Colors.grey.shade300,
                                     ),
-                                  ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.stars,
+                                        color: availablePoints > 0 ? Colors.blue : Colors.grey,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Available Points: $availablePoints',
+                                        style: TextStyle(
+                                          color: availablePoints > 0 ? Colors.blue.shade700 : Colors.grey.shade600,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              );
-                            }
-                            return const SizedBox.shrink();
+                                if (minimumPoints > 0) ...[
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.shade50,
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: Colors.orange.shade200),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.info_outline, color: Colors.orange.shade600, size: 16),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Minimum points required: $minimumPoints',
+                                          style: TextStyle(
+                                            color: Colors.orange.shade700,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            );
                           }),
                           const SizedBox(height: 12),
                           Row(
@@ -1197,12 +1223,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Obx(() => ElevatedButton(
-                                onPressed: bannerController.appliedCouponCodes.isNotEmpty 
-                                    ? _applyLoyaltyPoints 
-                                    : null,
+                              ElevatedButton(
+                                onPressed: _applyLoyaltyPoints,
                                 child: const Text('Apply'),
-                              )),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -1271,13 +1295,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text('Shipping'),
-                              Text(
-                                orderController.selectedShippingMethod.value != null
-                                    ? cartController.formatPrice(
-                                        orderController.selectedShippingMethod.value!.priceWithTax,
-                                      )
-                                    : 'TBD',
-                              ),
+                              Obx(() {
+                                // Check if free shipping coupon is applied
+                                if (cartController.hasFreeShippingCoupon()) {
+                                  return const Text(
+                                    'Free',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                }
+                                
+                                // Show shipping method price or TBD
+                                return Text(
+                                  orderController.selectedShippingMethod.value != null
+                                      ? cartController.formatPrice(
+                                          orderController.selectedShippingMethod.value!.priceWithTax,
+                                        )
+                                      : 'TBD',
+                                );
+                              }),
                             ],
                           ),
                           const Divider(),

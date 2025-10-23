@@ -120,6 +120,15 @@ query GetFrequentlyOrderedProducts {
     }
 }
 
+query LoyaltyPointsConfig {
+    loyaltyPointsConfig {
+        id
+        createdAt
+        updatedAt
+        rupeesPerPoint
+        pointsPerRupee
+    }
+}
 
 
 

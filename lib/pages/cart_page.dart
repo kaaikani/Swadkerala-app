@@ -259,6 +259,31 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 8),
+                    // Shipping Cost
+                    Obx(() {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Shipping',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          Text(
+                            cartController.getShippingDisplayText(),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: cartController.hasFreeShippingCoupon() 
+                                  ? Colors.green 
+                                  : Colors.black,
+                              fontWeight: cartController.hasFreeShippingCoupon() 
+                                  ? FontWeight.bold 
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
                     // Applied Coupon Codes
                     Obx(() {
                       if (bannerController.appliedCouponCodes.isNotEmpty) {

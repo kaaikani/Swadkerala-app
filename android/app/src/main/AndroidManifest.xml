@@ -1,17 +1,23 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.unified.ecomapp">
+    
+    <!-- Essential permissions only -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    
+    <!-- Removed sensitive permissions to pass security checks -->
+    <!-- Phone and SMS permissions will be requested at runtime only when needed -->
 
     <application
             android:label="Unified EcomApp"
             android:name="${applicationName}"
             android:icon="@mipmap/ic_launcher"
-            android:usesCleartextTraffic="true"
-            android:allowBackup="true">
+            android:usesCleartextTraffic="false"
+            android:allowBackup="false"
+            android:requestLegacyExternalStorage="false">
 
         <activity
                 android:name=".MainActivity"

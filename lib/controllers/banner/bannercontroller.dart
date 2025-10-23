@@ -42,6 +42,7 @@ class BannerController extends GetxController {
   final RxInt loyaltyPointsUsed = 0.obs;
   final RxInt loyaltyPointsEarned = 0.obs;
   final RxBool loyaltyPointsApplied = false.obs;
+  final Rx<LoyaltyPointsConfigModel?> loyaltyPointsConfig = Rx<LoyaltyPointsConfigModel?>(null);
 
   // ============================================================================
   // COUPON CODE FUNCTIONALITY
@@ -333,6 +334,39 @@ class BannerController extends GetxController {
     loyaltyPointsUsed.value = 0;
     loyaltyPointsEarned.value = 0;
     loyaltyPointsApplied.value = false;
+  }
+
+  /// Fetch loyalty points configuration
+  Future<void> fetchLoyaltyPointsConfig() async {
+    try {
+      utilityController.setLoadingState(true);
+      debugPrint('[BannerController] Fetching loyalty points configuration...');
+
+      final res = await GraphqlService.client.value.query$LoyaltyPointsConfig(
+        Options$Query$LoyaltyPointsConfig(),
+      );
+
+      if (res.hasException) {
+        debugPrint('[BannerController] LoyaltyPointsConfig Exception: ${res.exception}');
+        utilityController.setLoadingState(false);
+        return;
+      }
+
+      final configData = res.data?['loyaltyPointsConfig'];
+      if (configData != null) {
+        loyaltyPointsConfig.value = LoyaltyPointsConfigModel.fromJson(configData);
+        debugPrint('[BannerController] Loyalty points config loaded successfully');
+        debugPrint('[BannerController] Rupees per point: ${loyaltyPointsConfig.value?.rupeesPerPoint}');
+        debugPrint('[BannerController] Points per rupee: ${loyaltyPointsConfig.value?.pointsPerRupee}');
+      } else {
+        debugPrint('[BannerController] No loyalty points configuration found');
+      }
+
+      utilityController.setLoadingState(false);
+    } catch (e) {
+      debugPrint('[BannerController] Fetch loyalty points config error: $e');
+      utilityController.setLoadingState(false);
+    }
   }
 
   // ============================================================================

@@ -7,8 +7,33 @@ import 'login_page.dart';
 import 'homepage.dart';
 import 'intro_page.dart';
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  bool _hasCheckedTokens = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkTokensAfterInit();
+  }
+
+  Future<void> _checkTokensAfterInit() async {
+    // Wait a bit for GraphqlService to finish initializing
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    final AuthController authController = Get.find();
+    authController.checkLoginStatusFromGraphqlService();
+    
+    setState(() {
+      _hasCheckedTokens = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +42,7 @@ class AuthWrapper extends StatelessWidget {
 
     return Obx(() {
       // Show loading while checking authentication status
-      if (utilityController.isLoading) {
+      if (utilityController.isLoading || !_hasCheckedTokens) {
         return const Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
@@ -32,6 +57,8 @@ class AuthWrapper extends StatelessWidget {
       debugPrint('[AuthWrapper] Auth token present: ${authToken.isNotEmpty}');
       debugPrint('[AuthWrapper] Channel token present: ${channelToken.isNotEmpty}');
       debugPrint('[AuthWrapper] AuthController logged in: ${authController.isLoggedIn}');
+      debugPrint('[AuthWrapper] Auth token value: $authToken');
+      debugPrint('[AuthWrapper] Channel token value: $channelToken');
 
       // If user is logged in AND has valid tokens, go to home page
       if (authController.isLoggedIn && authToken.isNotEmpty && channelToken.isNotEmpty) {
