@@ -6,20 +6,20 @@ import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
 import 'schema.graphql.dart';
 
 class Variables$Mutation$UpdateCustomer {
-  factory Variables$Mutation$UpdateCustomer(
-          {required Input$UpdateCustomerInput input}) =>
-      Variables$Mutation$UpdateCustomer._({
-        r'input': input,
-      });
+  factory Variables$Mutation$UpdateCustomer({
+    required Input$UpdateCustomerInput input,
+  }) => Variables$Mutation$UpdateCustomer._({r'input': input});
 
   Variables$Mutation$UpdateCustomer._(this._$data);
 
   factory Variables$Mutation$UpdateCustomer.fromJson(
-      Map<String, dynamic> data) {
+    Map<String, dynamic> data,
+  ) {
     final result$data = <String, dynamic>{};
     final l$input = data['input'];
-    result$data['input'] =
-        Input$UpdateCustomerInput.fromJson((l$input as Map<String, dynamic>));
+    result$data['input'] = Input$UpdateCustomerInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
     return Variables$Mutation$UpdateCustomer._(result$data);
   }
 
@@ -36,10 +36,7 @@ class Variables$Mutation$UpdateCustomer {
   }
 
   CopyWith$Variables$Mutation$UpdateCustomer<Variables$Mutation$UpdateCustomer>
-      get copyWith => CopyWith$Variables$Mutation$UpdateCustomer(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Variables$Mutation$UpdateCustomer(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -79,10 +76,7 @@ abstract class CopyWith$Variables$Mutation$UpdateCustomer<TRes> {
 
 class _CopyWithImpl$Variables$Mutation$UpdateCustomer<TRes>
     implements CopyWith$Variables$Mutation$UpdateCustomer<TRes> {
-  _CopyWithImpl$Variables$Mutation$UpdateCustomer(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Variables$Mutation$UpdateCustomer(this._instance, this._then);
 
   final Variables$Mutation$UpdateCustomer _instance;
 
@@ -90,12 +84,13 @@ class _CopyWithImpl$Variables$Mutation$UpdateCustomer<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? input = _undefined}) =>
-      _then(Variables$Mutation$UpdateCustomer._({
-        ..._instance._$data,
-        if (input != _undefined && input != null)
-          'input': (input as Input$UpdateCustomerInput),
-      }));
+  TRes call({Object? input = _undefined}) => _then(
+    Variables$Mutation$UpdateCustomer._({
+      ..._instance._$data,
+      if (input != _undefined && input != null)
+        'input': (input as Input$UpdateCustomerInput),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Mutation$UpdateCustomer<TRes>
@@ -118,7 +113,8 @@ class Mutation$UpdateCustomer {
     final l$$__typename = json['__typename'];
     return Mutation$UpdateCustomer(
       updateCustomer: Mutation$UpdateCustomer$updateCustomer.fromJson(
-          (l$updateCustomer as Map<String, dynamic>)),
+        (l$updateCustomer as Map<String, dynamic>),
+      ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -140,10 +136,7 @@ class Mutation$UpdateCustomer {
   int get hashCode {
     final l$updateCustomer = updateCustomer;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$updateCustomer,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$updateCustomer, l$$__typename]);
   }
 
   @override
@@ -170,10 +163,7 @@ class Mutation$UpdateCustomer {
 
 extension UtilityExtension$Mutation$UpdateCustomer on Mutation$UpdateCustomer {
   CopyWith$Mutation$UpdateCustomer<Mutation$UpdateCustomer> get copyWith =>
-      CopyWith$Mutation$UpdateCustomer(
-        this,
-        (i) => i,
-      );
+      CopyWith$Mutation$UpdateCustomer(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$UpdateCustomer<TRes> {
@@ -194,10 +184,7 @@ abstract class CopyWith$Mutation$UpdateCustomer<TRes> {
 
 class _CopyWithImpl$Mutation$UpdateCustomer<TRes>
     implements CopyWith$Mutation$UpdateCustomer<TRes> {
-  _CopyWithImpl$Mutation$UpdateCustomer(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$UpdateCustomer(this._instance, this._then);
 
   final Mutation$UpdateCustomer _instance;
 
@@ -208,20 +195,23 @@ class _CopyWithImpl$Mutation$UpdateCustomer<TRes>
   TRes call({
     Object? updateCustomer = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$UpdateCustomer(
-        updateCustomer: updateCustomer == _undefined || updateCustomer == null
-            ? _instance.updateCustomer
-            : (updateCustomer as Mutation$UpdateCustomer$updateCustomer),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$UpdateCustomer(
+      updateCustomer: updateCustomer == _undefined || updateCustomer == null
+          ? _instance.updateCustomer
+          : (updateCustomer as Mutation$UpdateCustomer$updateCustomer),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Mutation$UpdateCustomer$updateCustomer<TRes> get updateCustomer {
     final local$updateCustomer = _instance.updateCustomer;
     return CopyWith$Mutation$UpdateCustomer$updateCustomer(
-        local$updateCustomer, (e) => call(updateCustomer: e));
+      local$updateCustomer,
+      (e) => call(updateCustomer: e),
+    );
   }
 }
 
@@ -234,71 +224,86 @@ class _CopyWithStubImpl$Mutation$UpdateCustomer<TRes>
   call({
     Mutation$UpdateCustomer$updateCustomer? updateCustomer,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Mutation$UpdateCustomer$updateCustomer<TRes> get updateCustomer =>
       CopyWith$Mutation$UpdateCustomer$updateCustomer.stub(_res);
 }
 
-const documentNodeMutationUpdateCustomer = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'UpdateCustomer'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'input')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'UpdateCustomerInput'),
-          isNonNull: true,
+const documentNodeMutationUpdateCustomer = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'UpdateCustomer'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'UpdateCustomerInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'updateCustomer'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'input'),
-            value: VariableNode(name: NameNode(value: 'input')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'Customer'),
-              isNonNull: false,
-            )),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'updateCustomer'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
+              ),
+            ],
             directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'firstName'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'lastName'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
+            selectionSet: SelectionSetNode(
+              selections: [
+                InlineFragmentNode(
+                  typeCondition: TypeConditionNode(
+                    on: NamedTypeNode(
+                      name: NameNode(value: 'Customer'),
+                      isNonNull: false,
+                    ),
+                  ),
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'firstName'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'lastName'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -307,25 +312,16 @@ const documentNodeMutationUpdateCustomer = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Mutation$UpdateCustomer _parserFn$Mutation$UpdateCustomer(
-        Map<String, dynamic> data) =>
-    Mutation$UpdateCustomer.fromJson(data);
-typedef OnMutationCompleted$Mutation$UpdateCustomer = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Mutation$UpdateCustomer?,
+    ),
+  ],
 );
+Mutation$UpdateCustomer _parserFn$Mutation$UpdateCustomer(
+  Map<String, dynamic> data,
+) => Mutation$UpdateCustomer.fromJson(data);
+typedef OnMutationCompleted$Mutation$UpdateCustomer =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$UpdateCustomer?);
 
 class Options$Mutation$UpdateCustomer
     extends graphql.MutationOptions<Mutation$UpdateCustomer> {
@@ -341,38 +337,36 @@ class Options$Mutation$UpdateCustomer
     OnMutationCompleted$Mutation$UpdateCustomer? onCompleted,
     graphql.OnMutationUpdate<Mutation$UpdateCustomer>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$UpdateCustomer(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationUpdateCustomer,
-          parserFn: _parserFn$Mutation$UpdateCustomer,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$UpdateCustomer(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdateCustomer,
+         parserFn: _parserFn$Mutation$UpdateCustomer,
+       );
 
   final OnMutationCompleted$Mutation$UpdateCustomer? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$UpdateCustomer
@@ -391,60 +385,59 @@ class WatchOptions$Mutation$UpdateCustomer
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationUpdateCustomer,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$UpdateCustomer,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationUpdateCustomer,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$UpdateCustomer,
+       );
 }
 
 extension ClientExtension$Mutation$UpdateCustomer on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$UpdateCustomer>> mutate$UpdateCustomer(
-          Options$Mutation$UpdateCustomer options) async =>
-      await this.mutate(options);
+    Options$Mutation$UpdateCustomer options,
+  ) async => await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$UpdateCustomer> watchMutation$UpdateCustomer(
-          WatchOptions$Mutation$UpdateCustomer options) =>
-      this.watchMutation(options);
+    WatchOptions$Mutation$UpdateCustomer options,
+  ) => this.watchMutation(options);
 }
 
 class Mutation$UpdateCustomer$HookResult {
-  Mutation$UpdateCustomer$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$UpdateCustomer$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$UpdateCustomer runMutation;
 
   final graphql.QueryResult<Mutation$UpdateCustomer> result;
 }
 
-Mutation$UpdateCustomer$HookResult useMutation$UpdateCustomer(
-    [WidgetOptions$Mutation$UpdateCustomer? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$UpdateCustomer());
+Mutation$UpdateCustomer$HookResult useMutation$UpdateCustomer([
+  WidgetOptions$Mutation$UpdateCustomer? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$UpdateCustomer(),
+  );
   return Mutation$UpdateCustomer$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
-      variables.toJson(),
-      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-    ),
+          variables.toJson(),
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+        ),
     result.result,
   );
 }
 
 graphql.ObservableQuery<Mutation$UpdateCustomer>
-    useWatchMutation$UpdateCustomer(
-            WatchOptions$Mutation$UpdateCustomer options) =>
-        graphql_flutter.useWatchMutation(options);
+useWatchMutation$UpdateCustomer(WatchOptions$Mutation$UpdateCustomer options) =>
+    graphql_flutter.useWatchMutation(options);
 
 class WidgetOptions$Mutation$UpdateCustomer
     extends graphql.MutationOptions<Mutation$UpdateCustomer> {
@@ -459,49 +452,48 @@ class WidgetOptions$Mutation$UpdateCustomer
     OnMutationCompleted$Mutation$UpdateCustomer? onCompleted,
     graphql.OnMutationUpdate<Mutation$UpdateCustomer>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$UpdateCustomer(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationUpdateCustomer,
-          parserFn: _parserFn$Mutation$UpdateCustomer,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$UpdateCustomer(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdateCustomer,
+         parserFn: _parserFn$Mutation$UpdateCustomer,
+       );
 
   final OnMutationCompleted$Mutation$UpdateCustomer? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$UpdateCustomer
-    = graphql.MultiSourceResult<Mutation$UpdateCustomer> Function(
-  Variables$Mutation$UpdateCustomer, {
-  Object? optimisticResult,
-  Mutation$UpdateCustomer? typedOptimisticResult,
-});
-typedef Builder$Mutation$UpdateCustomer = widgets.Widget Function(
-  RunMutation$Mutation$UpdateCustomer,
-  graphql.QueryResult<Mutation$UpdateCustomer>?,
-);
+typedef RunMutation$Mutation$UpdateCustomer =
+    graphql.MultiSourceResult<Mutation$UpdateCustomer> Function(
+      Variables$Mutation$UpdateCustomer, {
+      Object? optimisticResult,
+      Mutation$UpdateCustomer? typedOptimisticResult,
+    });
+typedef Builder$Mutation$UpdateCustomer =
+    widgets.Widget Function(
+      RunMutation$Mutation$UpdateCustomer,
+      graphql.QueryResult<Mutation$UpdateCustomer>?,
+    );
 
 class Mutation$UpdateCustomer$Widget
     extends graphql_flutter.Mutation<Mutation$UpdateCustomer> {
@@ -510,26 +502,17 @@ class Mutation$UpdateCustomer$Widget
     WidgetOptions$Mutation$UpdateCustomer? options,
     required Builder$Mutation$UpdateCustomer builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$UpdateCustomer(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            (
-              variables, {
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              variables.toJson(),
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$UpdateCustomer(),
+         builder: (run, result) => builder(
+           (variables, {optimisticResult, typedOptimisticResult}) => run(
+             variables.toJson(),
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Mutation$UpdateCustomer$updateCustomer {
@@ -540,7 +523,8 @@ class Mutation$UpdateCustomer$updateCustomer {
   });
 
   factory Mutation$UpdateCustomer$updateCustomer.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$firstName = json['firstName'];
     final l$lastName = json['lastName'];
     final l$$__typename = json['__typename'];
@@ -573,11 +557,7 @@ class Mutation$UpdateCustomer$updateCustomer {
     final l$firstName = firstName;
     final l$lastName = lastName;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$firstName,
-      l$lastName,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$firstName, l$lastName, l$$__typename]);
   }
 
   @override
@@ -611,11 +591,10 @@ class Mutation$UpdateCustomer$updateCustomer {
 extension UtilityExtension$Mutation$UpdateCustomer$updateCustomer
     on Mutation$UpdateCustomer$updateCustomer {
   CopyWith$Mutation$UpdateCustomer$updateCustomer<
-          Mutation$UpdateCustomer$updateCustomer>
-      get copyWith => CopyWith$Mutation$UpdateCustomer$updateCustomer(
-            this,
-            (i) => i,
-          );
+    Mutation$UpdateCustomer$updateCustomer
+  >
+  get copyWith =>
+      CopyWith$Mutation$UpdateCustomer$updateCustomer(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$UpdateCustomer$updateCustomer<TRes> {
@@ -627,11 +606,7 @@ abstract class CopyWith$Mutation$UpdateCustomer$updateCustomer<TRes> {
   factory CopyWith$Mutation$UpdateCustomer$updateCustomer.stub(TRes res) =
       _CopyWithStubImpl$Mutation$UpdateCustomer$updateCustomer;
 
-  TRes call({
-    String? firstName,
-    String? lastName,
-    String? $__typename,
-  });
+  TRes call({String? firstName, String? lastName, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
@@ -651,18 +626,19 @@ class _CopyWithImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
     Object? firstName = _undefined,
     Object? lastName = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$UpdateCustomer$updateCustomer(
-        firstName: firstName == _undefined || firstName == null
-            ? _instance.firstName
-            : (firstName as String),
-        lastName: lastName == _undefined || lastName == null
-            ? _instance.lastName
-            : (lastName as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$UpdateCustomer$updateCustomer(
+      firstName: firstName == _undefined || firstName == null
+          ? _instance.firstName
+          : (firstName as String),
+      lastName: lastName == _undefined || lastName == null
+          ? _instance.lastName
+          : (lastName as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
@@ -671,29 +647,24 @@ class _CopyWithStubImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
 
   TRes _res;
 
-  call({
-    String? firstName,
-    String? lastName,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? firstName, String? lastName, String? $__typename}) => _res;
 }
 
 class Variables$Mutation$CreateCustomerAddress {
-  factory Variables$Mutation$CreateCustomerAddress(
-          {required Input$CreateAddressInput input}) =>
-      Variables$Mutation$CreateCustomerAddress._({
-        r'input': input,
-      });
+  factory Variables$Mutation$CreateCustomerAddress({
+    required Input$CreateAddressInput input,
+  }) => Variables$Mutation$CreateCustomerAddress._({r'input': input});
 
   Variables$Mutation$CreateCustomerAddress._(this._$data);
 
   factory Variables$Mutation$CreateCustomerAddress.fromJson(
-      Map<String, dynamic> data) {
+    Map<String, dynamic> data,
+  ) {
     final result$data = <String, dynamic>{};
     final l$input = data['input'];
-    result$data['input'] =
-        Input$CreateAddressInput.fromJson((l$input as Map<String, dynamic>));
+    result$data['input'] = Input$CreateAddressInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
     return Variables$Mutation$CreateCustomerAddress._(result$data);
   }
 
@@ -710,11 +681,10 @@ class Variables$Mutation$CreateCustomerAddress {
   }
 
   CopyWith$Variables$Mutation$CreateCustomerAddress<
-          Variables$Mutation$CreateCustomerAddress>
-      get copyWith => CopyWith$Variables$Mutation$CreateCustomerAddress(
-            this,
-            (i) => i,
-          );
+    Variables$Mutation$CreateCustomerAddress
+  >
+  get copyWith =>
+      CopyWith$Variables$Mutation$CreateCustomerAddress(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -765,12 +735,13 @@ class _CopyWithImpl$Variables$Mutation$CreateCustomerAddress<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? input = _undefined}) =>
-      _then(Variables$Mutation$CreateCustomerAddress._({
-        ..._instance._$data,
-        if (input != _undefined && input != null)
-          'input': (input as Input$CreateAddressInput),
-      }));
+  TRes call({Object? input = _undefined}) => _then(
+    Variables$Mutation$CreateCustomerAddress._({
+      ..._instance._$data,
+      if (input != _undefined && input != null)
+        'input': (input as Input$CreateAddressInput),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Mutation$CreateCustomerAddress<TRes>
@@ -794,13 +765,14 @@ class Mutation$CreateCustomerAddress {
     return Mutation$CreateCustomerAddress(
       createCustomerAddress:
           Mutation$CreateCustomerAddress$createCustomerAddress.fromJson(
-              (l$createCustomerAddress as Map<String, dynamic>)),
+            (l$createCustomerAddress as Map<String, dynamic>),
+          ),
       $__typename: (l$$__typename as String),
     );
   }
 
   final Mutation$CreateCustomerAddress$createCustomerAddress
-      createCustomerAddress;
+  createCustomerAddress;
 
   final String $__typename;
 
@@ -817,10 +789,7 @@ class Mutation$CreateCustomerAddress {
   int get hashCode {
     final l$createCustomerAddress = createCustomerAddress;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$createCustomerAddress,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$createCustomerAddress, l$$__typename]);
   }
 
   @override
@@ -849,10 +818,7 @@ class Mutation$CreateCustomerAddress {
 extension UtilityExtension$Mutation$CreateCustomerAddress
     on Mutation$CreateCustomerAddress {
   CopyWith$Mutation$CreateCustomerAddress<Mutation$CreateCustomerAddress>
-      get copyWith => CopyWith$Mutation$CreateCustomerAddress(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Mutation$CreateCustomerAddress(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$CreateCustomerAddress<TRes> {
@@ -869,15 +835,12 @@ abstract class CopyWith$Mutation$CreateCustomerAddress<TRes> {
     String? $__typename,
   });
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
-      get createCustomerAddress;
+  get createCustomerAddress;
 }
 
 class _CopyWithImpl$Mutation$CreateCustomerAddress<TRes>
     implements CopyWith$Mutation$CreateCustomerAddress<TRes> {
-  _CopyWithImpl$Mutation$CreateCustomerAddress(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$CreateCustomerAddress(this._instance, this._then);
 
   final Mutation$CreateCustomerAddress _instance;
 
@@ -888,23 +851,26 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress<TRes>
   TRes call({
     Object? createCustomerAddress = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$CreateCustomerAddress(
-        createCustomerAddress:
-            createCustomerAddress == _undefined || createCustomerAddress == null
-                ? _instance.createCustomerAddress
-                : (createCustomerAddress
-                    as Mutation$CreateCustomerAddress$createCustomerAddress),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$CreateCustomerAddress(
+      createCustomerAddress:
+          createCustomerAddress == _undefined || createCustomerAddress == null
+          ? _instance.createCustomerAddress
+          : (createCustomerAddress
+                as Mutation$CreateCustomerAddress$createCustomerAddress),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
-      get createCustomerAddress {
+  get createCustomerAddress {
     final local$createCustomerAddress = _instance.createCustomerAddress;
     return CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress(
-        local$createCustomerAddress, (e) => call(createCustomerAddress: e));
+      local$createCustomerAddress,
+      (e) => call(createCustomerAddress: e),
+    );
   }
 }
 
@@ -917,162 +883,175 @@ class _CopyWithStubImpl$Mutation$CreateCustomerAddress<TRes>
   call({
     Mutation$CreateCustomerAddress$createCustomerAddress? createCustomerAddress,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
-      get createCustomerAddress =>
-          CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress.stub(
-              _res);
+  get createCustomerAddress =>
+      CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress.stub(_res);
 }
 
-const documentNodeMutationCreateCustomerAddress = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'CreateCustomerAddress'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'input')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'CreateAddressInput'),
-          isNonNull: true,
+const documentNodeMutationCreateCustomerAddress = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'CreateCustomerAddress'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'CreateAddressInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'createCustomerAddress'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'input'),
-            value: VariableNode(name: NameNode(value: 'input')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'id'),
+            name: NameNode(value: 'createCustomerAddress'),
             alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'createdAt'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'updatedAt'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'fullName'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'company'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'streetLine1'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'streetLine2'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'city'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'province'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'postalCode'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'phoneNumber'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultShippingAddress'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultBillingAddress'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'country'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'id'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
               ),
-              FieldNode(
-                name: NameNode(value: 'name'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'createdAt'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'updatedAt'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'fullName'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'company'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'streetLine1'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'streetLine2'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'city'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'province'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'postalCode'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'phoneNumber'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'defaultShippingAddress'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'defaultBillingAddress'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'country'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -1081,26 +1060,19 @@ const documentNodeMutationCreateCustomerAddress = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Mutation$CreateCustomerAddress _parserFn$Mutation$CreateCustomerAddress(
-        Map<String, dynamic> data) =>
-    Mutation$CreateCustomerAddress.fromJson(data);
-typedef OnMutationCompleted$Mutation$CreateCustomerAddress = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Mutation$CreateCustomerAddress?,
+    ),
+  ],
 );
+Mutation$CreateCustomerAddress _parserFn$Mutation$CreateCustomerAddress(
+  Map<String, dynamic> data,
+) => Mutation$CreateCustomerAddress.fromJson(data);
+typedef OnMutationCompleted$Mutation$CreateCustomerAddress =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Mutation$CreateCustomerAddress?,
+    );
 
 class Options$Mutation$CreateCustomerAddress
     extends graphql.MutationOptions<Mutation$CreateCustomerAddress> {
@@ -1116,39 +1088,39 @@ class Options$Mutation$CreateCustomerAddress
     OnMutationCompleted$Mutation$CreateCustomerAddress? onCompleted,
     graphql.OnMutationUpdate<Mutation$CreateCustomerAddress>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$CreateCustomerAddress(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationCreateCustomerAddress,
-          parserFn: _parserFn$Mutation$CreateCustomerAddress,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$CreateCustomerAddress(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationCreateCustomerAddress,
+         parserFn: _parserFn$Mutation$CreateCustomerAddress,
+       );
 
   final OnMutationCompleted$Mutation$CreateCustomerAddress?
-      onCompletedWithParsed;
+  onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$CreateCustomerAddress
@@ -1167,63 +1139,63 @@ class WatchOptions$Mutation$CreateCustomerAddress
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationCreateCustomerAddress,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$CreateCustomerAddress,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationCreateCustomerAddress,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$CreateCustomerAddress,
+       );
 }
 
 extension ClientExtension$Mutation$CreateCustomerAddress
     on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$CreateCustomerAddress>>
-      mutate$CreateCustomerAddress(
-              Options$Mutation$CreateCustomerAddress options) async =>
-          await this.mutate(options);
+  mutate$CreateCustomerAddress(
+    Options$Mutation$CreateCustomerAddress options,
+  ) async => await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$CreateCustomerAddress>
-      watchMutation$CreateCustomerAddress(
-              WatchOptions$Mutation$CreateCustomerAddress options) =>
-          this.watchMutation(options);
+  watchMutation$CreateCustomerAddress(
+    WatchOptions$Mutation$CreateCustomerAddress options,
+  ) => this.watchMutation(options);
 }
 
 class Mutation$CreateCustomerAddress$HookResult {
-  Mutation$CreateCustomerAddress$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$CreateCustomerAddress$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$CreateCustomerAddress runMutation;
 
   final graphql.QueryResult<Mutation$CreateCustomerAddress> result;
 }
 
-Mutation$CreateCustomerAddress$HookResult useMutation$CreateCustomerAddress(
-    [WidgetOptions$Mutation$CreateCustomerAddress? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$CreateCustomerAddress());
+Mutation$CreateCustomerAddress$HookResult useMutation$CreateCustomerAddress([
+  WidgetOptions$Mutation$CreateCustomerAddress? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$CreateCustomerAddress(),
+  );
   return Mutation$CreateCustomerAddress$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
-      variables.toJson(),
-      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-    ),
+          variables.toJson(),
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+        ),
     result.result,
   );
 }
 
 graphql.ObservableQuery<Mutation$CreateCustomerAddress>
-    useWatchMutation$CreateCustomerAddress(
-            WatchOptions$Mutation$CreateCustomerAddress options) =>
-        graphql_flutter.useWatchMutation(options);
+useWatchMutation$CreateCustomerAddress(
+  WatchOptions$Mutation$CreateCustomerAddress options,
+) => graphql_flutter.useWatchMutation(options);
 
 class WidgetOptions$Mutation$CreateCustomerAddress
     extends graphql.MutationOptions<Mutation$CreateCustomerAddress> {
@@ -1238,50 +1210,51 @@ class WidgetOptions$Mutation$CreateCustomerAddress
     OnMutationCompleted$Mutation$CreateCustomerAddress? onCompleted,
     graphql.OnMutationUpdate<Mutation$CreateCustomerAddress>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$CreateCustomerAddress(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationCreateCustomerAddress,
-          parserFn: _parserFn$Mutation$CreateCustomerAddress,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$CreateCustomerAddress(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationCreateCustomerAddress,
+         parserFn: _parserFn$Mutation$CreateCustomerAddress,
+       );
 
   final OnMutationCompleted$Mutation$CreateCustomerAddress?
-      onCompletedWithParsed;
+  onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$CreateCustomerAddress
-    = graphql.MultiSourceResult<Mutation$CreateCustomerAddress> Function(
-  Variables$Mutation$CreateCustomerAddress, {
-  Object? optimisticResult,
-  Mutation$CreateCustomerAddress? typedOptimisticResult,
-});
-typedef Builder$Mutation$CreateCustomerAddress = widgets.Widget Function(
-  RunMutation$Mutation$CreateCustomerAddress,
-  graphql.QueryResult<Mutation$CreateCustomerAddress>?,
-);
+typedef RunMutation$Mutation$CreateCustomerAddress =
+    graphql.MultiSourceResult<Mutation$CreateCustomerAddress> Function(
+      Variables$Mutation$CreateCustomerAddress, {
+      Object? optimisticResult,
+      Mutation$CreateCustomerAddress? typedOptimisticResult,
+    });
+typedef Builder$Mutation$CreateCustomerAddress =
+    widgets.Widget Function(
+      RunMutation$Mutation$CreateCustomerAddress,
+      graphql.QueryResult<Mutation$CreateCustomerAddress>?,
+    );
 
 class Mutation$CreateCustomerAddress$Widget
     extends graphql_flutter.Mutation<Mutation$CreateCustomerAddress> {
@@ -1290,26 +1263,17 @@ class Mutation$CreateCustomerAddress$Widget
     WidgetOptions$Mutation$CreateCustomerAddress? options,
     required Builder$Mutation$CreateCustomerAddress builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$CreateCustomerAddress(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            (
-              variables, {
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              variables.toJson(),
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$CreateCustomerAddress(),
+         builder: (run, result) => builder(
+           (variables, {optimisticResult, typedOptimisticResult}) => run(
+             variables.toJson(),
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Mutation$CreateCustomerAddress$createCustomerAddress {
@@ -1332,7 +1296,8 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
   });
 
   factory Mutation$CreateCustomerAddress$createCustomerAddress.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$createdAt = json['createdAt'];
     final l$updatedAt = json['updatedAt'];
@@ -1364,7 +1329,8 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
       defaultBillingAddress: (l$defaultBillingAddress as bool?),
       country:
           Mutation$CreateCustomerAddress$createCustomerAddress$country.fromJson(
-              (l$country as Map<String, dynamic>)),
+            (l$country as Map<String, dynamic>),
+          ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -1561,24 +1527,25 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
 extension UtilityExtension$Mutation$CreateCustomerAddress$createCustomerAddress
     on Mutation$CreateCustomerAddress$createCustomerAddress {
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<
-          Mutation$CreateCustomerAddress$createCustomerAddress>
-      get copyWith =>
-          CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress(
-            this,
-            (i) => i,
-          );
+    Mutation$CreateCustomerAddress$createCustomerAddress
+  >
+  get copyWith => CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress(
+    this,
+    (i) => i,
+  );
 }
 
 abstract class CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress(
     Mutation$CreateCustomerAddress$createCustomerAddress instance,
     TRes Function(Mutation$CreateCustomerAddress$createCustomerAddress) then,
   ) = _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress;
 
   factory CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress;
 
   TRes call({
     String? id,
@@ -1598,7 +1565,7 @@ abstract class CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<
     String? $__typename,
   });
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<TRes>
-      get country;
+  get country;
 }
 
 class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
@@ -1612,7 +1579,7 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
   final Mutation$CreateCustomerAddress$createCustomerAddress _instance;
 
   final TRes Function(Mutation$CreateCustomerAddress$createCustomerAddress)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -1632,63 +1599,69 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
     Object? defaultBillingAddress = _undefined,
     Object? country = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$CreateCustomerAddress$createCustomerAddress(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        createdAt: createdAt == _undefined || createdAt == null
-            ? _instance.createdAt
-            : (createdAt as DateTime),
-        updatedAt: updatedAt == _undefined || updatedAt == null
-            ? _instance.updatedAt
-            : (updatedAt as DateTime),
-        fullName:
-            fullName == _undefined ? _instance.fullName : (fullName as String?),
-        company:
-            company == _undefined ? _instance.company : (company as String?),
-        streetLine1: streetLine1 == _undefined || streetLine1 == null
-            ? _instance.streetLine1
-            : (streetLine1 as String),
-        streetLine2: streetLine2 == _undefined
-            ? _instance.streetLine2
-            : (streetLine2 as String?),
-        city: city == _undefined ? _instance.city : (city as String?),
-        province:
-            province == _undefined ? _instance.province : (province as String?),
-        postalCode: postalCode == _undefined
-            ? _instance.postalCode
-            : (postalCode as String?),
-        phoneNumber: phoneNumber == _undefined
-            ? _instance.phoneNumber
-            : (phoneNumber as String?),
-        defaultShippingAddress: defaultShippingAddress == _undefined
-            ? _instance.defaultShippingAddress
-            : (defaultShippingAddress as bool?),
-        defaultBillingAddress: defaultBillingAddress == _undefined
-            ? _instance.defaultBillingAddress
-            : (defaultBillingAddress as bool?),
-        country: country == _undefined || country == null
-            ? _instance.country
-            : (country
+  }) => _then(
+    Mutation$CreateCustomerAddress$createCustomerAddress(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      createdAt: createdAt == _undefined || createdAt == null
+          ? _instance.createdAt
+          : (createdAt as DateTime),
+      updatedAt: updatedAt == _undefined || updatedAt == null
+          ? _instance.updatedAt
+          : (updatedAt as DateTime),
+      fullName: fullName == _undefined
+          ? _instance.fullName
+          : (fullName as String?),
+      company: company == _undefined ? _instance.company : (company as String?),
+      streetLine1: streetLine1 == _undefined || streetLine1 == null
+          ? _instance.streetLine1
+          : (streetLine1 as String),
+      streetLine2: streetLine2 == _undefined
+          ? _instance.streetLine2
+          : (streetLine2 as String?),
+      city: city == _undefined ? _instance.city : (city as String?),
+      province: province == _undefined
+          ? _instance.province
+          : (province as String?),
+      postalCode: postalCode == _undefined
+          ? _instance.postalCode
+          : (postalCode as String?),
+      phoneNumber: phoneNumber == _undefined
+          ? _instance.phoneNumber
+          : (phoneNumber as String?),
+      defaultShippingAddress: defaultShippingAddress == _undefined
+          ? _instance.defaultShippingAddress
+          : (defaultShippingAddress as bool?),
+      defaultBillingAddress: defaultBillingAddress == _undefined
+          ? _instance.defaultBillingAddress
+          : (defaultBillingAddress as bool?),
+      country: country == _undefined || country == null
+          ? _instance.country
+          : (country
                 as Mutation$CreateCustomerAddress$createCustomerAddress$country),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<TRes>
-      get country {
+  get country {
     final local$country = _instance.country;
     return CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country(
-        local$country, (e) => call(country: e));
+      local$country,
+      (e) => call(country: e),
+    );
   }
 }
 
 class _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<TRes> {
   _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -1708,13 +1681,13 @@ class _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress<
     bool? defaultBillingAddress,
     Mutation$CreateCustomerAddress$createCustomerAddress$country? country,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<TRes>
-      get country =>
-          CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country
-              .stub(_res);
+  get country =>
+      CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country.stub(
+        _res,
+      );
 }
 
 class Mutation$CreateCustomerAddress$createCustomerAddress$country {
@@ -1725,7 +1698,8 @@ class Mutation$CreateCustomerAddress$createCustomerAddress$country {
   });
 
   factory Mutation$CreateCustomerAddress$createCustomerAddress$country.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$name = json['name'];
     final l$$__typename = json['__typename'];
@@ -1758,11 +1732,7 @@ class Mutation$CreateCustomerAddress$createCustomerAddress$country {
     final l$id = id;
     final l$name = name;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$id,
-      l$name,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$id, l$name, l$$__typename]);
   }
 
   @override
@@ -1797,38 +1767,38 @@ class Mutation$CreateCustomerAddress$createCustomerAddress$country {
 extension UtilityExtension$Mutation$CreateCustomerAddress$createCustomerAddress$country
     on Mutation$CreateCustomerAddress$createCustomerAddress$country {
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<
-          Mutation$CreateCustomerAddress$createCustomerAddress$country>
-      get copyWith =>
-          CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country(
-            this,
-            (i) => i,
-          );
+    Mutation$CreateCustomerAddress$createCustomerAddress$country
+  >
+  get copyWith =>
+      CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country(
     Mutation$CreateCustomerAddress$createCustomerAddress$country instance,
     TRes Function(Mutation$CreateCustomerAddress$createCustomerAddress$country)
-        then,
+    then,
   ) = _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country;
 
   factory CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country;
 
-  TRes call({
-    String? id,
-    String? name,
-    String? $__typename,
-  });
+  TRes call({String? id, String? name, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country(
     this._instance,
     this._then,
@@ -1837,7 +1807,9 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country
   final Mutation$CreateCustomerAddress$createCustomerAddress$country _instance;
 
   final TRes Function(
-      Mutation$CreateCustomerAddress$createCustomerAddress$country) _then;
+    Mutation$CreateCustomerAddress$createCustomerAddress$country,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -1845,51 +1817,50 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country
     Object? id = _undefined,
     Object? name = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$CreateCustomerAddress$createCustomerAddress$country(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$CreateCustomerAddress$createCustomerAddress$country(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$country(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    String? id,
-    String? name,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? id, String? name, String? $__typename}) => _res;
 }
 
 class Variables$Mutation$UpdateCustomerAddress {
-  factory Variables$Mutation$UpdateCustomerAddress(
-          {required Input$UpdateAddressInput input}) =>
-      Variables$Mutation$UpdateCustomerAddress._({
-        r'input': input,
-      });
+  factory Variables$Mutation$UpdateCustomerAddress({
+    required Input$UpdateAddressInput input,
+  }) => Variables$Mutation$UpdateCustomerAddress._({r'input': input});
 
   Variables$Mutation$UpdateCustomerAddress._(this._$data);
 
   factory Variables$Mutation$UpdateCustomerAddress.fromJson(
-      Map<String, dynamic> data) {
+    Map<String, dynamic> data,
+  ) {
     final result$data = <String, dynamic>{};
     final l$input = data['input'];
-    result$data['input'] =
-        Input$UpdateAddressInput.fromJson((l$input as Map<String, dynamic>));
+    result$data['input'] = Input$UpdateAddressInput.fromJson(
+      (l$input as Map<String, dynamic>),
+    );
     return Variables$Mutation$UpdateCustomerAddress._(result$data);
   }
 
@@ -1906,11 +1877,10 @@ class Variables$Mutation$UpdateCustomerAddress {
   }
 
   CopyWith$Variables$Mutation$UpdateCustomerAddress<
-          Variables$Mutation$UpdateCustomerAddress>
-      get copyWith => CopyWith$Variables$Mutation$UpdateCustomerAddress(
-            this,
-            (i) => i,
-          );
+    Variables$Mutation$UpdateCustomerAddress
+  >
+  get copyWith =>
+      CopyWith$Variables$Mutation$UpdateCustomerAddress(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -1961,12 +1931,13 @@ class _CopyWithImpl$Variables$Mutation$UpdateCustomerAddress<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? input = _undefined}) =>
-      _then(Variables$Mutation$UpdateCustomerAddress._({
-        ..._instance._$data,
-        if (input != _undefined && input != null)
-          'input': (input as Input$UpdateAddressInput),
-      }));
+  TRes call({Object? input = _undefined}) => _then(
+    Variables$Mutation$UpdateCustomerAddress._({
+      ..._instance._$data,
+      if (input != _undefined && input != null)
+        'input': (input as Input$UpdateAddressInput),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Mutation$UpdateCustomerAddress<TRes>
@@ -1990,13 +1961,14 @@ class Mutation$UpdateCustomerAddress {
     return Mutation$UpdateCustomerAddress(
       updateCustomerAddress:
           Mutation$UpdateCustomerAddress$updateCustomerAddress.fromJson(
-              (l$updateCustomerAddress as Map<String, dynamic>)),
+            (l$updateCustomerAddress as Map<String, dynamic>),
+          ),
       $__typename: (l$$__typename as String),
     );
   }
 
   final Mutation$UpdateCustomerAddress$updateCustomerAddress
-      updateCustomerAddress;
+  updateCustomerAddress;
 
   final String $__typename;
 
@@ -2013,10 +1985,7 @@ class Mutation$UpdateCustomerAddress {
   int get hashCode {
     final l$updateCustomerAddress = updateCustomerAddress;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$updateCustomerAddress,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$updateCustomerAddress, l$$__typename]);
   }
 
   @override
@@ -2045,10 +2014,7 @@ class Mutation$UpdateCustomerAddress {
 extension UtilityExtension$Mutation$UpdateCustomerAddress
     on Mutation$UpdateCustomerAddress {
   CopyWith$Mutation$UpdateCustomerAddress<Mutation$UpdateCustomerAddress>
-      get copyWith => CopyWith$Mutation$UpdateCustomerAddress(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Mutation$UpdateCustomerAddress(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$UpdateCustomerAddress<TRes> {
@@ -2065,15 +2031,12 @@ abstract class CopyWith$Mutation$UpdateCustomerAddress<TRes> {
     String? $__typename,
   });
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
-      get updateCustomerAddress;
+  get updateCustomerAddress;
 }
 
 class _CopyWithImpl$Mutation$UpdateCustomerAddress<TRes>
     implements CopyWith$Mutation$UpdateCustomerAddress<TRes> {
-  _CopyWithImpl$Mutation$UpdateCustomerAddress(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$UpdateCustomerAddress(this._instance, this._then);
 
   final Mutation$UpdateCustomerAddress _instance;
 
@@ -2084,23 +2047,26 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress<TRes>
   TRes call({
     Object? updateCustomerAddress = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$UpdateCustomerAddress(
-        updateCustomerAddress:
-            updateCustomerAddress == _undefined || updateCustomerAddress == null
-                ? _instance.updateCustomerAddress
-                : (updateCustomerAddress
-                    as Mutation$UpdateCustomerAddress$updateCustomerAddress),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$UpdateCustomerAddress(
+      updateCustomerAddress:
+          updateCustomerAddress == _undefined || updateCustomerAddress == null
+          ? _instance.updateCustomerAddress
+          : (updateCustomerAddress
+                as Mutation$UpdateCustomerAddress$updateCustomerAddress),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
-      get updateCustomerAddress {
+  get updateCustomerAddress {
     final local$updateCustomerAddress = _instance.updateCustomerAddress;
     return CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress(
-        local$updateCustomerAddress, (e) => call(updateCustomerAddress: e));
+      local$updateCustomerAddress,
+      (e) => call(updateCustomerAddress: e),
+    );
   }
 }
 
@@ -2113,155 +2079,168 @@ class _CopyWithStubImpl$Mutation$UpdateCustomerAddress<TRes>
   call({
     Mutation$UpdateCustomerAddress$updateCustomerAddress? updateCustomerAddress,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
-      get updateCustomerAddress =>
-          CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress.stub(
-              _res);
+  get updateCustomerAddress =>
+      CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress.stub(_res);
 }
 
-const documentNodeMutationUpdateCustomerAddress = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'UpdateCustomerAddress'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'input')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'UpdateAddressInput'),
-          isNonNull: true,
+const documentNodeMutationUpdateCustomerAddress = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'UpdateCustomerAddress'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'input')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'UpdateAddressInput'),
+            isNonNull: true,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'updateCustomerAddress'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'input'),
-            value: VariableNode(name: NameNode(value: 'input')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'createdAt'),
+            name: NameNode(value: 'updateCustomerAddress'),
             alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'city'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'country'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'name'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: VariableNode(name: NameNode(value: 'input')),
               ),
-              FieldNode(
-                name: NameNode(value: 'code'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'id'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'languageCode'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
-          ),
-          FieldNode(
-            name: NameNode(value: 'id'),
-            alias: null,
-            arguments: [],
+            ],
             directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'company'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultBillingAddress'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultShippingAddress'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'fullName'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'phoneNumber'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'streetLine1'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'streetLine2'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'createdAt'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'city'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'country'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'code'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'languageCode'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'company'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'defaultBillingAddress'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'defaultShippingAddress'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'fullName'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'phoneNumber'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'streetLine1'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'streetLine2'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -2270,26 +2249,19 @@ const documentNodeMutationUpdateCustomerAddress = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Mutation$UpdateCustomerAddress _parserFn$Mutation$UpdateCustomerAddress(
-        Map<String, dynamic> data) =>
-    Mutation$UpdateCustomerAddress.fromJson(data);
-typedef OnMutationCompleted$Mutation$UpdateCustomerAddress = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Mutation$UpdateCustomerAddress?,
+    ),
+  ],
 );
+Mutation$UpdateCustomerAddress _parserFn$Mutation$UpdateCustomerAddress(
+  Map<String, dynamic> data,
+) => Mutation$UpdateCustomerAddress.fromJson(data);
+typedef OnMutationCompleted$Mutation$UpdateCustomerAddress =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Mutation$UpdateCustomerAddress?,
+    );
 
 class Options$Mutation$UpdateCustomerAddress
     extends graphql.MutationOptions<Mutation$UpdateCustomerAddress> {
@@ -2305,39 +2277,39 @@ class Options$Mutation$UpdateCustomerAddress
     OnMutationCompleted$Mutation$UpdateCustomerAddress? onCompleted,
     graphql.OnMutationUpdate<Mutation$UpdateCustomerAddress>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$UpdateCustomerAddress(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationUpdateCustomerAddress,
-          parserFn: _parserFn$Mutation$UpdateCustomerAddress,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$UpdateCustomerAddress(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdateCustomerAddress,
+         parserFn: _parserFn$Mutation$UpdateCustomerAddress,
+       );
 
   final OnMutationCompleted$Mutation$UpdateCustomerAddress?
-      onCompletedWithParsed;
+  onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$UpdateCustomerAddress
@@ -2356,63 +2328,63 @@ class WatchOptions$Mutation$UpdateCustomerAddress
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationUpdateCustomerAddress,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$UpdateCustomerAddress,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationUpdateCustomerAddress,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$UpdateCustomerAddress,
+       );
 }
 
 extension ClientExtension$Mutation$UpdateCustomerAddress
     on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$UpdateCustomerAddress>>
-      mutate$UpdateCustomerAddress(
-              Options$Mutation$UpdateCustomerAddress options) async =>
-          await this.mutate(options);
+  mutate$UpdateCustomerAddress(
+    Options$Mutation$UpdateCustomerAddress options,
+  ) async => await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$UpdateCustomerAddress>
-      watchMutation$UpdateCustomerAddress(
-              WatchOptions$Mutation$UpdateCustomerAddress options) =>
-          this.watchMutation(options);
+  watchMutation$UpdateCustomerAddress(
+    WatchOptions$Mutation$UpdateCustomerAddress options,
+  ) => this.watchMutation(options);
 }
 
 class Mutation$UpdateCustomerAddress$HookResult {
-  Mutation$UpdateCustomerAddress$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$UpdateCustomerAddress$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$UpdateCustomerAddress runMutation;
 
   final graphql.QueryResult<Mutation$UpdateCustomerAddress> result;
 }
 
-Mutation$UpdateCustomerAddress$HookResult useMutation$UpdateCustomerAddress(
-    [WidgetOptions$Mutation$UpdateCustomerAddress? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$UpdateCustomerAddress());
+Mutation$UpdateCustomerAddress$HookResult useMutation$UpdateCustomerAddress([
+  WidgetOptions$Mutation$UpdateCustomerAddress? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$UpdateCustomerAddress(),
+  );
   return Mutation$UpdateCustomerAddress$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
-      variables.toJson(),
-      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-    ),
+          variables.toJson(),
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+        ),
     result.result,
   );
 }
 
 graphql.ObservableQuery<Mutation$UpdateCustomerAddress>
-    useWatchMutation$UpdateCustomerAddress(
-            WatchOptions$Mutation$UpdateCustomerAddress options) =>
-        graphql_flutter.useWatchMutation(options);
+useWatchMutation$UpdateCustomerAddress(
+  WatchOptions$Mutation$UpdateCustomerAddress options,
+) => graphql_flutter.useWatchMutation(options);
 
 class WidgetOptions$Mutation$UpdateCustomerAddress
     extends graphql.MutationOptions<Mutation$UpdateCustomerAddress> {
@@ -2427,50 +2399,51 @@ class WidgetOptions$Mutation$UpdateCustomerAddress
     OnMutationCompleted$Mutation$UpdateCustomerAddress? onCompleted,
     graphql.OnMutationUpdate<Mutation$UpdateCustomerAddress>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$UpdateCustomerAddress(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationUpdateCustomerAddress,
-          parserFn: _parserFn$Mutation$UpdateCustomerAddress,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$UpdateCustomerAddress(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationUpdateCustomerAddress,
+         parserFn: _parserFn$Mutation$UpdateCustomerAddress,
+       );
 
   final OnMutationCompleted$Mutation$UpdateCustomerAddress?
-      onCompletedWithParsed;
+  onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$UpdateCustomerAddress
-    = graphql.MultiSourceResult<Mutation$UpdateCustomerAddress> Function(
-  Variables$Mutation$UpdateCustomerAddress, {
-  Object? optimisticResult,
-  Mutation$UpdateCustomerAddress? typedOptimisticResult,
-});
-typedef Builder$Mutation$UpdateCustomerAddress = widgets.Widget Function(
-  RunMutation$Mutation$UpdateCustomerAddress,
-  graphql.QueryResult<Mutation$UpdateCustomerAddress>?,
-);
+typedef RunMutation$Mutation$UpdateCustomerAddress =
+    graphql.MultiSourceResult<Mutation$UpdateCustomerAddress> Function(
+      Variables$Mutation$UpdateCustomerAddress, {
+      Object? optimisticResult,
+      Mutation$UpdateCustomerAddress? typedOptimisticResult,
+    });
+typedef Builder$Mutation$UpdateCustomerAddress =
+    widgets.Widget Function(
+      RunMutation$Mutation$UpdateCustomerAddress,
+      graphql.QueryResult<Mutation$UpdateCustomerAddress>?,
+    );
 
 class Mutation$UpdateCustomerAddress$Widget
     extends graphql_flutter.Mutation<Mutation$UpdateCustomerAddress> {
@@ -2479,26 +2452,17 @@ class Mutation$UpdateCustomerAddress$Widget
     WidgetOptions$Mutation$UpdateCustomerAddress? options,
     required Builder$Mutation$UpdateCustomerAddress builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$UpdateCustomerAddress(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            (
-              variables, {
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              variables.toJson(),
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$UpdateCustomerAddress(),
+         builder: (run, result) => builder(
+           (variables, {optimisticResult, typedOptimisticResult}) => run(
+             variables.toJson(),
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Mutation$UpdateCustomerAddress$updateCustomerAddress {
@@ -2518,7 +2482,8 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
   });
 
   factory Mutation$UpdateCustomerAddress$updateCustomerAddress.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$createdAt = json['createdAt'];
     final l$city = json['city'];
     final l$country = json['country'];
@@ -2536,7 +2501,8 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
       city: (l$city as String?),
       country:
           Mutation$UpdateCustomerAddress$updateCustomerAddress$country.fromJson(
-              (l$country as Map<String, dynamic>)),
+            (l$country as Map<String, dynamic>),
+          ),
       id: (l$id as String),
       company: (l$company as String?),
       defaultBillingAddress: (l$defaultBillingAddress as bool?),
@@ -2708,24 +2674,25 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
 extension UtilityExtension$Mutation$UpdateCustomerAddress$updateCustomerAddress
     on Mutation$UpdateCustomerAddress$updateCustomerAddress {
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<
-          Mutation$UpdateCustomerAddress$updateCustomerAddress>
-      get copyWith =>
-          CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress(
-            this,
-            (i) => i,
-          );
+    Mutation$UpdateCustomerAddress$updateCustomerAddress
+  >
+  get copyWith => CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress(
+    this,
+    (i) => i,
+  );
 }
 
 abstract class CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress(
     Mutation$UpdateCustomerAddress$updateCustomerAddress instance,
     TRes Function(Mutation$UpdateCustomerAddress$updateCustomerAddress) then,
   ) = _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress;
 
   factory CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress;
 
   TRes call({
     DateTime? createdAt,
@@ -2742,7 +2709,7 @@ abstract class CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<
     String? $__typename,
   });
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<TRes>
-      get country;
+  get country;
 }
 
 class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
@@ -2756,7 +2723,7 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
   final Mutation$UpdateCustomerAddress$updateCustomerAddress _instance;
 
   final TRes Function(Mutation$UpdateCustomerAddress$updateCustomerAddress)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -2773,55 +2740,60 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
     Object? streetLine1 = _undefined,
     Object? streetLine2 = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$UpdateCustomerAddress$updateCustomerAddress(
-        createdAt: createdAt == _undefined || createdAt == null
-            ? _instance.createdAt
-            : (createdAt as DateTime),
-        city: city == _undefined ? _instance.city : (city as String?),
-        country: country == _undefined || country == null
-            ? _instance.country
-            : (country
+  }) => _then(
+    Mutation$UpdateCustomerAddress$updateCustomerAddress(
+      createdAt: createdAt == _undefined || createdAt == null
+          ? _instance.createdAt
+          : (createdAt as DateTime),
+      city: city == _undefined ? _instance.city : (city as String?),
+      country: country == _undefined || country == null
+          ? _instance.country
+          : (country
                 as Mutation$UpdateCustomerAddress$updateCustomerAddress$country),
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        company:
-            company == _undefined ? _instance.company : (company as String?),
-        defaultBillingAddress: defaultBillingAddress == _undefined
-            ? _instance.defaultBillingAddress
-            : (defaultBillingAddress as bool?),
-        defaultShippingAddress: defaultShippingAddress == _undefined
-            ? _instance.defaultShippingAddress
-            : (defaultShippingAddress as bool?),
-        fullName:
-            fullName == _undefined ? _instance.fullName : (fullName as String?),
-        phoneNumber: phoneNumber == _undefined
-            ? _instance.phoneNumber
-            : (phoneNumber as String?),
-        streetLine1: streetLine1 == _undefined || streetLine1 == null
-            ? _instance.streetLine1
-            : (streetLine1 as String),
-        streetLine2: streetLine2 == _undefined
-            ? _instance.streetLine2
-            : (streetLine2 as String?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      company: company == _undefined ? _instance.company : (company as String?),
+      defaultBillingAddress: defaultBillingAddress == _undefined
+          ? _instance.defaultBillingAddress
+          : (defaultBillingAddress as bool?),
+      defaultShippingAddress: defaultShippingAddress == _undefined
+          ? _instance.defaultShippingAddress
+          : (defaultShippingAddress as bool?),
+      fullName: fullName == _undefined
+          ? _instance.fullName
+          : (fullName as String?),
+      phoneNumber: phoneNumber == _undefined
+          ? _instance.phoneNumber
+          : (phoneNumber as String?),
+      streetLine1: streetLine1 == _undefined || streetLine1 == null
+          ? _instance.streetLine1
+          : (streetLine1 as String),
+      streetLine2: streetLine2 == _undefined
+          ? _instance.streetLine2
+          : (streetLine2 as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<TRes>
-      get country {
+  get country {
     final local$country = _instance.country;
     return CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
-        local$country, (e) => call(country: e));
+      local$country,
+      (e) => call(country: e),
+    );
   }
 }
 
 class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes> {
   _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -2838,13 +2810,13 @@ class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<
     String? streetLine1,
     String? streetLine2,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<TRes>
-      get country =>
-          CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country
-              .stub(_res);
+  get country =>
+      CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country.stub(
+        _res,
+      );
 }
 
 class Mutation$UpdateCustomerAddress$updateCustomerAddress$country {
@@ -2857,7 +2829,8 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress$country {
   });
 
   factory Mutation$UpdateCustomerAddress$updateCustomerAddress$country.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$name = json['name'];
     final l$code = json['code'];
     final l$id = json['id'];
@@ -2955,25 +2928,27 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress$country {
 extension UtilityExtension$Mutation$UpdateCustomerAddress$updateCustomerAddress$country
     on Mutation$UpdateCustomerAddress$updateCustomerAddress$country {
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<
-          Mutation$UpdateCustomerAddress$updateCustomerAddress$country>
-      get copyWith =>
-          CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
-            this,
-            (i) => i,
-          );
+    Mutation$UpdateCustomerAddress$updateCustomerAddress$country
+  >
+  get copyWith =>
+      CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
     Mutation$UpdateCustomerAddress$updateCustomerAddress$country instance,
     TRes Function(Mutation$UpdateCustomerAddress$updateCustomerAddress$country)
-        then,
+    then,
   ) = _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country;
 
   factory CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country;
 
   TRes call({
     String? name,
@@ -2985,10 +2960,12 @@ abstract class CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$cou
 }
 
 class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
     this._instance,
     this._then,
@@ -2997,7 +2974,9 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country
   final Mutation$UpdateCustomerAddress$updateCustomerAddress$country _instance;
 
   final TRes Function(
-      Mutation$UpdateCustomerAddress$updateCustomerAddress$country) _then;
+    Mutation$UpdateCustomerAddress$updateCustomerAddress$country,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -3007,31 +2986,35 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country
     Object? id = _undefined,
     Object? languageCode = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        languageCode: languageCode == _undefined || languageCode == null
-            ? _instance.languageCode
-            : (languageCode as Enum$LanguageCode),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      languageCode: languageCode == _undefined || languageCode == null
+          ? _instance.languageCode
+          : (languageCode as Enum$LanguageCode),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -3041,20 +3024,18 @@ class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$cou
     String? id,
     Enum$LanguageCode? languageCode,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Variables$Mutation$DeleteCustomerAddress {
   factory Variables$Mutation$DeleteCustomerAddress({required String id}) =>
-      Variables$Mutation$DeleteCustomerAddress._({
-        r'id': id,
-      });
+      Variables$Mutation$DeleteCustomerAddress._({r'id': id});
 
   Variables$Mutation$DeleteCustomerAddress._(this._$data);
 
   factory Variables$Mutation$DeleteCustomerAddress.fromJson(
-      Map<String, dynamic> data) {
+    Map<String, dynamic> data,
+  ) {
     final result$data = <String, dynamic>{};
     final l$id = data['id'];
     result$data['id'] = (l$id as String);
@@ -3073,11 +3054,10 @@ class Variables$Mutation$DeleteCustomerAddress {
   }
 
   CopyWith$Variables$Mutation$DeleteCustomerAddress<
-          Variables$Mutation$DeleteCustomerAddress>
-      get copyWith => CopyWith$Variables$Mutation$DeleteCustomerAddress(
-            this,
-            (i) => i,
-          );
+    Variables$Mutation$DeleteCustomerAddress
+  >
+  get copyWith =>
+      CopyWith$Variables$Mutation$DeleteCustomerAddress(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -3128,11 +3108,12 @@ class _CopyWithImpl$Variables$Mutation$DeleteCustomerAddress<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? id = _undefined}) =>
-      _then(Variables$Mutation$DeleteCustomerAddress._({
-        ..._instance._$data,
-        if (id != _undefined && id != null) 'id': (id as String),
-      }));
+  TRes call({Object? id = _undefined}) => _then(
+    Variables$Mutation$DeleteCustomerAddress._({
+      ..._instance._$data,
+      if (id != _undefined && id != null) 'id': (id as String),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Mutation$DeleteCustomerAddress<TRes>
@@ -3156,13 +3137,14 @@ class Mutation$DeleteCustomerAddress {
     return Mutation$DeleteCustomerAddress(
       deleteCustomerAddress:
           Mutation$DeleteCustomerAddress$deleteCustomerAddress.fromJson(
-              (l$deleteCustomerAddress as Map<String, dynamic>)),
+            (l$deleteCustomerAddress as Map<String, dynamic>),
+          ),
       $__typename: (l$$__typename as String),
     );
   }
 
   final Mutation$DeleteCustomerAddress$deleteCustomerAddress
-      deleteCustomerAddress;
+  deleteCustomerAddress;
 
   final String $__typename;
 
@@ -3179,10 +3161,7 @@ class Mutation$DeleteCustomerAddress {
   int get hashCode {
     final l$deleteCustomerAddress = deleteCustomerAddress;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$deleteCustomerAddress,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$deleteCustomerAddress, l$$__typename]);
   }
 
   @override
@@ -3211,10 +3190,7 @@ class Mutation$DeleteCustomerAddress {
 extension UtilityExtension$Mutation$DeleteCustomerAddress
     on Mutation$DeleteCustomerAddress {
   CopyWith$Mutation$DeleteCustomerAddress<Mutation$DeleteCustomerAddress>
-      get copyWith => CopyWith$Mutation$DeleteCustomerAddress(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Mutation$DeleteCustomerAddress(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$DeleteCustomerAddress<TRes> {
@@ -3231,15 +3207,12 @@ abstract class CopyWith$Mutation$DeleteCustomerAddress<TRes> {
     String? $__typename,
   });
   CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress<TRes>
-      get deleteCustomerAddress;
+  get deleteCustomerAddress;
 }
 
 class _CopyWithImpl$Mutation$DeleteCustomerAddress<TRes>
     implements CopyWith$Mutation$DeleteCustomerAddress<TRes> {
-  _CopyWithImpl$Mutation$DeleteCustomerAddress(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$DeleteCustomerAddress(this._instance, this._then);
 
   final Mutation$DeleteCustomerAddress _instance;
 
@@ -3250,23 +3223,26 @@ class _CopyWithImpl$Mutation$DeleteCustomerAddress<TRes>
   TRes call({
     Object? deleteCustomerAddress = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$DeleteCustomerAddress(
-        deleteCustomerAddress:
-            deleteCustomerAddress == _undefined || deleteCustomerAddress == null
-                ? _instance.deleteCustomerAddress
-                : (deleteCustomerAddress
-                    as Mutation$DeleteCustomerAddress$deleteCustomerAddress),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$DeleteCustomerAddress(
+      deleteCustomerAddress:
+          deleteCustomerAddress == _undefined || deleteCustomerAddress == null
+          ? _instance.deleteCustomerAddress
+          : (deleteCustomerAddress
+                as Mutation$DeleteCustomerAddress$deleteCustomerAddress),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress<TRes>
-      get deleteCustomerAddress {
+  get deleteCustomerAddress {
     final local$deleteCustomerAddress = _instance.deleteCustomerAddress;
     return CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress(
-        local$deleteCustomerAddress, (e) => call(deleteCustomerAddress: e));
+      local$deleteCustomerAddress,
+      (e) => call(deleteCustomerAddress: e),
+    );
   }
 }
 
@@ -3279,49 +3255,57 @@ class _CopyWithStubImpl$Mutation$DeleteCustomerAddress<TRes>
   call({
     Mutation$DeleteCustomerAddress$deleteCustomerAddress? deleteCustomerAddress,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress<TRes>
-      get deleteCustomerAddress =>
-          CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress.stub(
-              _res);
+  get deleteCustomerAddress =>
+      CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress.stub(_res);
 }
 
-const documentNodeMutationDeleteCustomerAddress = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'DeleteCustomerAddress'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'id')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'ID'),
-          isNonNull: true,
+const documentNodeMutationDeleteCustomerAddress = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'DeleteCustomerAddress'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'id')),
+          type: NamedTypeNode(name: NameNode(value: 'ID'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'deleteCustomerAddress'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'id'),
-            value: VariableNode(name: NameNode(value: 'id')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'success'),
+            name: NameNode(value: 'deleteCustomerAddress'),
             alias: null,
-            arguments: [],
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'id'),
+                value: VariableNode(name: NameNode(value: 'id')),
+              ),
+            ],
             directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'success'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -3330,26 +3314,19 @@ const documentNodeMutationDeleteCustomerAddress = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Mutation$DeleteCustomerAddress _parserFn$Mutation$DeleteCustomerAddress(
-        Map<String, dynamic> data) =>
-    Mutation$DeleteCustomerAddress.fromJson(data);
-typedef OnMutationCompleted$Mutation$DeleteCustomerAddress = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Mutation$DeleteCustomerAddress?,
+    ),
+  ],
 );
+Mutation$DeleteCustomerAddress _parserFn$Mutation$DeleteCustomerAddress(
+  Map<String, dynamic> data,
+) => Mutation$DeleteCustomerAddress.fromJson(data);
+typedef OnMutationCompleted$Mutation$DeleteCustomerAddress =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Mutation$DeleteCustomerAddress?,
+    );
 
 class Options$Mutation$DeleteCustomerAddress
     extends graphql.MutationOptions<Mutation$DeleteCustomerAddress> {
@@ -3365,39 +3342,39 @@ class Options$Mutation$DeleteCustomerAddress
     OnMutationCompleted$Mutation$DeleteCustomerAddress? onCompleted,
     graphql.OnMutationUpdate<Mutation$DeleteCustomerAddress>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$DeleteCustomerAddress(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationDeleteCustomerAddress,
-          parserFn: _parserFn$Mutation$DeleteCustomerAddress,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$DeleteCustomerAddress(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationDeleteCustomerAddress,
+         parserFn: _parserFn$Mutation$DeleteCustomerAddress,
+       );
 
   final OnMutationCompleted$Mutation$DeleteCustomerAddress?
-      onCompletedWithParsed;
+  onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$DeleteCustomerAddress
@@ -3416,63 +3393,63 @@ class WatchOptions$Mutation$DeleteCustomerAddress
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationDeleteCustomerAddress,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$DeleteCustomerAddress,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationDeleteCustomerAddress,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$DeleteCustomerAddress,
+       );
 }
 
 extension ClientExtension$Mutation$DeleteCustomerAddress
     on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$DeleteCustomerAddress>>
-      mutate$DeleteCustomerAddress(
-              Options$Mutation$DeleteCustomerAddress options) async =>
-          await this.mutate(options);
+  mutate$DeleteCustomerAddress(
+    Options$Mutation$DeleteCustomerAddress options,
+  ) async => await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$DeleteCustomerAddress>
-      watchMutation$DeleteCustomerAddress(
-              WatchOptions$Mutation$DeleteCustomerAddress options) =>
-          this.watchMutation(options);
+  watchMutation$DeleteCustomerAddress(
+    WatchOptions$Mutation$DeleteCustomerAddress options,
+  ) => this.watchMutation(options);
 }
 
 class Mutation$DeleteCustomerAddress$HookResult {
-  Mutation$DeleteCustomerAddress$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$DeleteCustomerAddress$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$DeleteCustomerAddress runMutation;
 
   final graphql.QueryResult<Mutation$DeleteCustomerAddress> result;
 }
 
-Mutation$DeleteCustomerAddress$HookResult useMutation$DeleteCustomerAddress(
-    [WidgetOptions$Mutation$DeleteCustomerAddress? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$DeleteCustomerAddress());
+Mutation$DeleteCustomerAddress$HookResult useMutation$DeleteCustomerAddress([
+  WidgetOptions$Mutation$DeleteCustomerAddress? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$DeleteCustomerAddress(),
+  );
   return Mutation$DeleteCustomerAddress$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
-      variables.toJson(),
-      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-    ),
+          variables.toJson(),
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+        ),
     result.result,
   );
 }
 
 graphql.ObservableQuery<Mutation$DeleteCustomerAddress>
-    useWatchMutation$DeleteCustomerAddress(
-            WatchOptions$Mutation$DeleteCustomerAddress options) =>
-        graphql_flutter.useWatchMutation(options);
+useWatchMutation$DeleteCustomerAddress(
+  WatchOptions$Mutation$DeleteCustomerAddress options,
+) => graphql_flutter.useWatchMutation(options);
 
 class WidgetOptions$Mutation$DeleteCustomerAddress
     extends graphql.MutationOptions<Mutation$DeleteCustomerAddress> {
@@ -3487,50 +3464,51 @@ class WidgetOptions$Mutation$DeleteCustomerAddress
     OnMutationCompleted$Mutation$DeleteCustomerAddress? onCompleted,
     graphql.OnMutationUpdate<Mutation$DeleteCustomerAddress>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$DeleteCustomerAddress(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationDeleteCustomerAddress,
-          parserFn: _parserFn$Mutation$DeleteCustomerAddress,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Mutation$DeleteCustomerAddress(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationDeleteCustomerAddress,
+         parserFn: _parserFn$Mutation$DeleteCustomerAddress,
+       );
 
   final OnMutationCompleted$Mutation$DeleteCustomerAddress?
-      onCompletedWithParsed;
+  onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$DeleteCustomerAddress
-    = graphql.MultiSourceResult<Mutation$DeleteCustomerAddress> Function(
-  Variables$Mutation$DeleteCustomerAddress, {
-  Object? optimisticResult,
-  Mutation$DeleteCustomerAddress? typedOptimisticResult,
-});
-typedef Builder$Mutation$DeleteCustomerAddress = widgets.Widget Function(
-  RunMutation$Mutation$DeleteCustomerAddress,
-  graphql.QueryResult<Mutation$DeleteCustomerAddress>?,
-);
+typedef RunMutation$Mutation$DeleteCustomerAddress =
+    graphql.MultiSourceResult<Mutation$DeleteCustomerAddress> Function(
+      Variables$Mutation$DeleteCustomerAddress, {
+      Object? optimisticResult,
+      Mutation$DeleteCustomerAddress? typedOptimisticResult,
+    });
+typedef Builder$Mutation$DeleteCustomerAddress =
+    widgets.Widget Function(
+      RunMutation$Mutation$DeleteCustomerAddress,
+      graphql.QueryResult<Mutation$DeleteCustomerAddress>?,
+    );
 
 class Mutation$DeleteCustomerAddress$Widget
     extends graphql_flutter.Mutation<Mutation$DeleteCustomerAddress> {
@@ -3539,26 +3517,17 @@ class Mutation$DeleteCustomerAddress$Widget
     WidgetOptions$Mutation$DeleteCustomerAddress? options,
     required Builder$Mutation$DeleteCustomerAddress builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$DeleteCustomerAddress(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            (
-              variables, {
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              variables.toJson(),
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$DeleteCustomerAddress(),
+         builder: (run, result) => builder(
+           (variables, {optimisticResult, typedOptimisticResult}) => run(
+             variables.toJson(),
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Mutation$DeleteCustomerAddress$deleteCustomerAddress {
@@ -3568,7 +3537,8 @@ class Mutation$DeleteCustomerAddress$deleteCustomerAddress {
   });
 
   factory Mutation$DeleteCustomerAddress$deleteCustomerAddress.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$success = json['success'];
     final l$$__typename = json['__typename'];
     return Mutation$DeleteCustomerAddress$deleteCustomerAddress(
@@ -3594,10 +3564,7 @@ class Mutation$DeleteCustomerAddress$deleteCustomerAddress {
   int get hashCode {
     final l$success = success;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$success,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$success, l$$__typename]);
   }
 
   @override
@@ -3626,29 +3593,27 @@ class Mutation$DeleteCustomerAddress$deleteCustomerAddress {
 extension UtilityExtension$Mutation$DeleteCustomerAddress$deleteCustomerAddress
     on Mutation$DeleteCustomerAddress$deleteCustomerAddress {
   CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress<
-          Mutation$DeleteCustomerAddress$deleteCustomerAddress>
-      get copyWith =>
-          CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress(
-            this,
-            (i) => i,
-          );
+    Mutation$DeleteCustomerAddress$deleteCustomerAddress
+  >
+  get copyWith => CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress(
+    this,
+    (i) => i,
+  );
 }
 
 abstract class CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress(
     Mutation$DeleteCustomerAddress$deleteCustomerAddress instance,
     TRes Function(Mutation$DeleteCustomerAddress$deleteCustomerAddress) then,
   ) = _CopyWithImpl$Mutation$DeleteCustomerAddress$deleteCustomerAddress;
 
   factory CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$DeleteCustomerAddress$deleteCustomerAddress;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$DeleteCustomerAddress$deleteCustomerAddress;
 
-  TRes call({
-    bool? success,
-    String? $__typename,
-  });
+  TRes call({bool? success, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$DeleteCustomerAddress$deleteCustomerAddress<TRes>
@@ -3662,45 +3627,39 @@ class _CopyWithImpl$Mutation$DeleteCustomerAddress$deleteCustomerAddress<TRes>
   final Mutation$DeleteCustomerAddress$deleteCustomerAddress _instance;
 
   final TRes Function(Mutation$DeleteCustomerAddress$deleteCustomerAddress)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? success = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$DeleteCustomerAddress$deleteCustomerAddress(
-        success: success == _undefined || success == null
-            ? _instance.success
-            : (success as bool),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? success = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Mutation$DeleteCustomerAddress$deleteCustomerAddress(
+          success: success == _undefined || success == null
+              ? _instance.success
+              : (success as bool),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
 }
 
 class _CopyWithStubImpl$Mutation$DeleteCustomerAddress$deleteCustomerAddress<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$DeleteCustomerAddress$deleteCustomerAddress<TRes> {
   _CopyWithStubImpl$Mutation$DeleteCustomerAddress$deleteCustomerAddress(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    bool? success,
-    String? $__typename,
-  }) =>
-      _res;
+  call({bool? success, String? $__typename}) => _res;
 }
 
 class Query$GetCurrentUser {
-  Query$GetCurrentUser({
-    this.me,
-    this.$__typename = 'Query',
-  });
+  Query$GetCurrentUser({this.me, this.$__typename = 'Query'});
 
   factory Query$GetCurrentUser.fromJson(Map<String, dynamic> json) {
     final l$me = json['me'];
@@ -3730,10 +3689,7 @@ class Query$GetCurrentUser {
   int get hashCode {
     final l$me = me;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$me,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$me, l$$__typename]);
   }
 
   @override
@@ -3760,10 +3716,7 @@ class Query$GetCurrentUser {
 
 extension UtilityExtension$Query$GetCurrentUser on Query$GetCurrentUser {
   CopyWith$Query$GetCurrentUser<Query$GetCurrentUser> get copyWith =>
-      CopyWith$Query$GetCurrentUser(
-        this,
-        (i) => i,
-      );
+      CopyWith$Query$GetCurrentUser(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetCurrentUser<TRes> {
@@ -3775,19 +3728,13 @@ abstract class CopyWith$Query$GetCurrentUser<TRes> {
   factory CopyWith$Query$GetCurrentUser.stub(TRes res) =
       _CopyWithStubImpl$Query$GetCurrentUser;
 
-  TRes call({
-    Query$GetCurrentUser$me? me,
-    String? $__typename,
-  });
+  TRes call({Query$GetCurrentUser$me? me, String? $__typename});
   CopyWith$Query$GetCurrentUser$me<TRes> get me;
 }
 
 class _CopyWithImpl$Query$GetCurrentUser<TRes>
     implements CopyWith$Query$GetCurrentUser<TRes> {
-  _CopyWithImpl$Query$GetCurrentUser(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetCurrentUser(this._instance, this._then);
 
   final Query$GetCurrentUser _instance;
 
@@ -3795,16 +3742,17 @@ class _CopyWithImpl$Query$GetCurrentUser<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? me = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetCurrentUser(
-        me: me == _undefined ? _instance.me : (me as Query$GetCurrentUser$me?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? me = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$GetCurrentUser(
+          me: me == _undefined
+              ? _instance.me
+              : (me as Query$GetCurrentUser$me?),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
 
   CopyWith$Query$GetCurrentUser$me<TRes> get me {
     final local$me = _instance.me;
@@ -3820,65 +3768,38 @@ class _CopyWithStubImpl$Query$GetCurrentUser<TRes>
 
   TRes _res;
 
-  call({
-    Query$GetCurrentUser$me? me,
-    String? $__typename,
-  }) =>
-      _res;
+  call({Query$GetCurrentUser$me? me, String? $__typename}) => _res;
 
   CopyWith$Query$GetCurrentUser$me<TRes> get me =>
       CopyWith$Query$GetCurrentUser$me.stub(_res);
 }
 
-const documentNodeQueryGetCurrentUser = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetCurrentUser'),
-    variableDefinitions: [],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'me'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'CurrentUser'),
-              isNonNull: false,
-            )),
+const documentNodeQueryGetCurrentUser = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'GetCurrentUser'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'me'),
+            alias: null,
+            arguments: [],
             directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'id'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'identifier'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'channels'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  InlineFragmentNode(
-                    typeCondition: TypeConditionNode(
-                        on: NamedTypeNode(
-                      name: NameNode(value: 'CurrentUserChannel'),
+            selectionSet: SelectionSetNode(
+              selections: [
+                InlineFragmentNode(
+                  typeCondition: TypeConditionNode(
+                    on: NamedTypeNode(
+                      name: NameNode(value: 'CurrentUser'),
                       isNonNull: false,
-                    )),
-                    directives: [],
-                    selectionSet: SelectionSetNode(selections: [
+                    ),
+                  ),
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
                       FieldNode(
                         name: NameNode(value: 'id'),
                         alias: null,
@@ -3887,18 +3808,69 @@ const documentNodeQueryGetCurrentUser = DocumentNode(definitions: [
                         selectionSet: null,
                       ),
                       FieldNode(
-                        name: NameNode(value: 'permissions'),
+                        name: NameNode(value: 'identifier'),
                         alias: null,
                         arguments: [],
                         directives: [],
                         selectionSet: null,
                       ),
                       FieldNode(
-                        name: NameNode(value: 'token'),
+                        name: NameNode(value: 'channels'),
                         alias: null,
                         arguments: [],
                         directives: [],
-                        selectionSet: null,
+                        selectionSet: SelectionSetNode(
+                          selections: [
+                            InlineFragmentNode(
+                              typeCondition: TypeConditionNode(
+                                on: NamedTypeNode(
+                                  name: NameNode(value: 'CurrentUserChannel'),
+                                  isNonNull: false,
+                                ),
+                              ),
+                              directives: [],
+                              selectionSet: SelectionSetNode(
+                                selections: [
+                                  FieldNode(
+                                    name: NameNode(value: 'id'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'permissions'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'token'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: '__typename'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            FieldNode(
+                              name: NameNode(value: '__typename'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                          ],
+                        ),
                       ),
                       FieldNode(
                         name: NameNode(value: '__typename'),
@@ -3907,25 +3879,18 @@ const documentNodeQueryGetCurrentUser = DocumentNode(definitions: [
                         directives: [],
                         selectionSet: null,
                       ),
-                    ]),
+                    ],
                   ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -3934,25 +3899,16 @@ const documentNodeQueryGetCurrentUser = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetCurrentUser _parserFn$Query$GetCurrentUser(
-        Map<String, dynamic> data) =>
-    Query$GetCurrentUser.fromJson(data);
-typedef OnQueryComplete$Query$GetCurrentUser = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Query$GetCurrentUser?,
+    ),
+  ],
 );
+Query$GetCurrentUser _parserFn$Query$GetCurrentUser(
+  Map<String, dynamic> data,
+) => Query$GetCurrentUser.fromJson(data);
+typedef OnQueryComplete$Query$GetCurrentUser =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$GetCurrentUser?);
 
 class Options$Query$GetCurrentUser
     extends graphql.QueryOptions<Query$GetCurrentUser> {
@@ -3967,35 +3923,35 @@ class Options$Query$GetCurrentUser
     graphql.Context? context,
     OnQueryComplete$Query$GetCurrentUser? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null ? null : _parserFn$Query$GetCurrentUser(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetCurrentUser,
-          parserFn: _parserFn$Query$GetCurrentUser,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null ? null : _parserFn$Query$GetCurrentUser(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryGetCurrentUser,
+         parserFn: _parserFn$Query$GetCurrentUser,
+       );
 
   final OnQueryComplete$Query$GetCurrentUser? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$GetCurrentUser
@@ -4013,66 +3969,69 @@ class WatchOptions$Query$GetCurrentUser
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetCurrentUser,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetCurrentUser,
-        );
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryGetCurrentUser,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$GetCurrentUser,
+       );
 }
 
 class FetchMoreOptions$Query$GetCurrentUser extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetCurrentUser(
-      {required graphql.UpdateQuery updateQuery})
-      : super(
-          updateQuery: updateQuery,
-          document: documentNodeQueryGetCurrentUser,
-        );
+  FetchMoreOptions$Query$GetCurrentUser({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryGetCurrentUser,
+       );
 }
 
 extension ClientExtension$Query$GetCurrentUser on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Query$GetCurrentUser>> query$GetCurrentUser(
-          [Options$Query$GetCurrentUser? options]) async =>
-      await this.query(options ?? Options$Query$GetCurrentUser());
-  graphql.ObservableQuery<Query$GetCurrentUser> watchQuery$GetCurrentUser(
-          [WatchOptions$Query$GetCurrentUser? options]) =>
-      this.watchQuery(options ?? WatchOptions$Query$GetCurrentUser());
+  Future<graphql.QueryResult<Query$GetCurrentUser>> query$GetCurrentUser([
+    Options$Query$GetCurrentUser? options,
+  ]) async => await this.query(options ?? Options$Query$GetCurrentUser());
+
+  graphql.ObservableQuery<Query$GetCurrentUser> watchQuery$GetCurrentUser([
+    WatchOptions$Query$GetCurrentUser? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$GetCurrentUser());
+
   void writeQuery$GetCurrentUser({
     required Query$GetCurrentUser data,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-            operation:
-                graphql.Operation(document: documentNodeQueryGetCurrentUser)),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(document: documentNodeQueryGetCurrentUser),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
   Query$GetCurrentUser? readQuery$GetCurrentUser({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
-          operation:
-              graphql.Operation(document: documentNodeQueryGetCurrentUser)),
+        operation: graphql.Operation(document: documentNodeQueryGetCurrentUser),
+      ),
       optimistic: optimistic,
     );
     return result == null ? null : Query$GetCurrentUser.fromJson(result);
   }
 }
 
-graphql_flutter.QueryHookResult<Query$GetCurrentUser> useQuery$GetCurrentUser(
-        [Options$Query$GetCurrentUser? options]) =>
-    graphql_flutter.useQuery(options ?? Options$Query$GetCurrentUser());
-graphql.ObservableQuery<Query$GetCurrentUser> useWatchQuery$GetCurrentUser(
-        [WatchOptions$Query$GetCurrentUser? options]) =>
-    graphql_flutter
-        .useWatchQuery(options ?? WatchOptions$Query$GetCurrentUser());
+graphql_flutter.QueryHookResult<Query$GetCurrentUser> useQuery$GetCurrentUser([
+  Options$Query$GetCurrentUser? options,
+]) => graphql_flutter.useQuery(options ?? Options$Query$GetCurrentUser());
+graphql.ObservableQuery<Query$GetCurrentUser> useWatchQuery$GetCurrentUser([
+  WatchOptions$Query$GetCurrentUser? options,
+]) => graphql_flutter.useWatchQuery(
+  options ?? WatchOptions$Query$GetCurrentUser(),
+);
 
 class Query$GetCurrentUser$Widget
     extends graphql_flutter.Query<Query$GetCurrentUser> {
@@ -4081,10 +4040,10 @@ class Query$GetCurrentUser$Widget
     Options$Query$GetCurrentUser? options,
     required graphql_flutter.QueryBuilder<Query$GetCurrentUser> builder,
   }) : super(
-          key: key,
-          options: options ?? Options$Query$GetCurrentUser(),
-          builder: builder,
-        );
+         key: key,
+         options: options ?? Options$Query$GetCurrentUser(),
+         builder: builder,
+       );
 }
 
 class Query$GetCurrentUser$me {
@@ -4104,8 +4063,11 @@ class Query$GetCurrentUser$me {
       id: (l$id as String),
       identifier: (l$identifier as String),
       channels: (l$channels as List<dynamic>)
-          .map((e) => Query$GetCurrentUser$me$channels.fromJson(
-              (e as Map<String, dynamic>)))
+          .map(
+            (e) => Query$GetCurrentUser$me$channels.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       $__typename: (l$$__typename as String),
     );
@@ -4187,10 +4149,7 @@ class Query$GetCurrentUser$me {
 
 extension UtilityExtension$Query$GetCurrentUser$me on Query$GetCurrentUser$me {
   CopyWith$Query$GetCurrentUser$me<Query$GetCurrentUser$me> get copyWith =>
-      CopyWith$Query$GetCurrentUser$me(
-        this,
-        (i) => i,
-      );
+      CopyWith$Query$GetCurrentUser$me(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetCurrentUser$me<TRes> {
@@ -4209,19 +4168,20 @@ abstract class CopyWith$Query$GetCurrentUser$me<TRes> {
     String? $__typename,
   });
   TRes channels(
-      Iterable<Query$GetCurrentUser$me$channels> Function(
-              Iterable<
-                  CopyWith$Query$GetCurrentUser$me$channels<
-                      Query$GetCurrentUser$me$channels>>)
-          _fn);
+    Iterable<Query$GetCurrentUser$me$channels> Function(
+      Iterable<
+        CopyWith$Query$GetCurrentUser$me$channels<
+          Query$GetCurrentUser$me$channels
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Query$GetCurrentUser$me<TRes>
     implements CopyWith$Query$GetCurrentUser$me<TRes> {
-  _CopyWithImpl$Query$GetCurrentUser$me(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetCurrentUser$me(this._instance, this._then);
 
   final Query$GetCurrentUser$me _instance;
 
@@ -4234,32 +4194,37 @@ class _CopyWithImpl$Query$GetCurrentUser$me<TRes>
     Object? identifier = _undefined,
     Object? channels = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetCurrentUser$me(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        identifier: identifier == _undefined || identifier == null
-            ? _instance.identifier
-            : (identifier as String),
-        channels: channels == _undefined || channels == null
-            ? _instance.channels
-            : (channels as List<Query$GetCurrentUser$me$channels>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetCurrentUser$me(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      identifier: identifier == _undefined || identifier == null
+          ? _instance.identifier
+          : (identifier as String),
+      channels: channels == _undefined || channels == null
+          ? _instance.channels
+          : (channels as List<Query$GetCurrentUser$me$channels>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   TRes channels(
-          Iterable<Query$GetCurrentUser$me$channels> Function(
-                  Iterable<
-                      CopyWith$Query$GetCurrentUser$me$channels<
-                          Query$GetCurrentUser$me$channels>>)
-              _fn) =>
-      call(
-          channels: _fn(_instance.channels
-              .map((e) => CopyWith$Query$GetCurrentUser$me$channels(
-                    e,
-                    (i) => i,
-                  ))).toList());
+    Iterable<Query$GetCurrentUser$me$channels> Function(
+      Iterable<
+        CopyWith$Query$GetCurrentUser$me$channels<
+          Query$GetCurrentUser$me$channels
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    channels: _fn(
+      _instance.channels.map(
+        (e) => CopyWith$Query$GetCurrentUser$me$channels(e, (i) => i),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetCurrentUser$me<TRes>
@@ -4273,8 +4238,7 @@ class _CopyWithStubImpl$Query$GetCurrentUser$me<TRes>
     String? identifier,
     List<Query$GetCurrentUser$me$channels>? channels,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   channels(_fn) => _res;
 }
@@ -4315,8 +4279,9 @@ class Query$GetCurrentUser$me$channels {
     final l$id = id;
     _resultData['id'] = l$id;
     final l$permissions = permissions;
-    _resultData['permissions'] =
-        l$permissions.map((e) => toJson$Enum$Permission(e)).toList();
+    _resultData['permissions'] = l$permissions
+        .map((e) => toJson$Enum$Permission(e))
+        .toList();
     final l$token = token;
     _resultData['token'] = l$token;
     final l$$__typename = $__typename;
@@ -4381,10 +4346,7 @@ class Query$GetCurrentUser$me$channels {
 extension UtilityExtension$Query$GetCurrentUser$me$channels
     on Query$GetCurrentUser$me$channels {
   CopyWith$Query$GetCurrentUser$me$channels<Query$GetCurrentUser$me$channels>
-      get copyWith => CopyWith$Query$GetCurrentUser$me$channels(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Query$GetCurrentUser$me$channels(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetCurrentUser$me$channels<TRes> {
@@ -4406,10 +4368,7 @@ abstract class CopyWith$Query$GetCurrentUser$me$channels<TRes> {
 
 class _CopyWithImpl$Query$GetCurrentUser$me$channels<TRes>
     implements CopyWith$Query$GetCurrentUser$me$channels<TRes> {
-  _CopyWithImpl$Query$GetCurrentUser$me$channels(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetCurrentUser$me$channels(this._instance, this._then);
 
   final Query$GetCurrentUser$me$channels _instance;
 
@@ -4422,19 +4381,20 @@ class _CopyWithImpl$Query$GetCurrentUser$me$channels<TRes>
     Object? permissions = _undefined,
     Object? token = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetCurrentUser$me$channels(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        permissions: permissions == _undefined || permissions == null
-            ? _instance.permissions
-            : (permissions as List<Enum$Permission>),
-        token: token == _undefined || token == null
-            ? _instance.token
-            : (token as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetCurrentUser$me$channels(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      permissions: permissions == _undefined || permissions == null
+          ? _instance.permissions
+          : (permissions as List<Enum$Permission>),
+      token: token == _undefined || token == null
+          ? _instance.token
+          : (token as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetCurrentUser$me$channels<TRes>
@@ -4448,8 +4408,7 @@ class _CopyWithStubImpl$Query$GetCurrentUser$me$channels<TRes>
     List<Enum$Permission>? permissions,
     String? token,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Query$LoyaltyPointsConfig {
@@ -4465,7 +4424,8 @@ class Query$LoyaltyPointsConfig {
       loyaltyPointsConfig: l$loyaltyPointsConfig == null
           ? null
           : Query$LoyaltyPointsConfig$loyaltyPointsConfig.fromJson(
-              (l$loyaltyPointsConfig as Map<String, dynamic>)),
+              (l$loyaltyPointsConfig as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -4487,10 +4447,7 @@ class Query$LoyaltyPointsConfig {
   int get hashCode {
     final l$loyaltyPointsConfig = loyaltyPointsConfig;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$loyaltyPointsConfig,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$loyaltyPointsConfig, l$$__typename]);
   }
 
   @override
@@ -4519,10 +4476,7 @@ class Query$LoyaltyPointsConfig {
 extension UtilityExtension$Query$LoyaltyPointsConfig
     on Query$LoyaltyPointsConfig {
   CopyWith$Query$LoyaltyPointsConfig<Query$LoyaltyPointsConfig> get copyWith =>
-      CopyWith$Query$LoyaltyPointsConfig(
-        this,
-        (i) => i,
-      );
+      CopyWith$Query$LoyaltyPointsConfig(this, (i) => i);
 }
 
 abstract class CopyWith$Query$LoyaltyPointsConfig<TRes> {
@@ -4539,15 +4493,12 @@ abstract class CopyWith$Query$LoyaltyPointsConfig<TRes> {
     String? $__typename,
   });
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
-      get loyaltyPointsConfig;
+  get loyaltyPointsConfig;
 }
 
 class _CopyWithImpl$Query$LoyaltyPointsConfig<TRes>
     implements CopyWith$Query$LoyaltyPointsConfig<TRes> {
-  _CopyWithImpl$Query$LoyaltyPointsConfig(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$LoyaltyPointsConfig(this._instance, this._then);
 
   final Query$LoyaltyPointsConfig _instance;
 
@@ -4558,25 +4509,29 @@ class _CopyWithImpl$Query$LoyaltyPointsConfig<TRes>
   TRes call({
     Object? loyaltyPointsConfig = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$LoyaltyPointsConfig(
-        loyaltyPointsConfig: loyaltyPointsConfig == _undefined
-            ? _instance.loyaltyPointsConfig
-            : (loyaltyPointsConfig
+  }) => _then(
+    Query$LoyaltyPointsConfig(
+      loyaltyPointsConfig: loyaltyPointsConfig == _undefined
+          ? _instance.loyaltyPointsConfig
+          : (loyaltyPointsConfig
                 as Query$LoyaltyPointsConfig$loyaltyPointsConfig?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
-      get loyaltyPointsConfig {
+  get loyaltyPointsConfig {
     final local$loyaltyPointsConfig = _instance.loyaltyPointsConfig;
     return local$loyaltyPointsConfig == null
         ? CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(
-            _then(_instance))
+            _then(_instance),
+          )
         : CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig(
-            local$loyaltyPointsConfig, (e) => call(loyaltyPointsConfig: e));
+            local$loyaltyPointsConfig,
+            (e) => call(loyaltyPointsConfig: e),
+          );
   }
 }
 
@@ -4589,61 +4544,73 @@ class _CopyWithStubImpl$Query$LoyaltyPointsConfig<TRes>
   call({
     Query$LoyaltyPointsConfig$loyaltyPointsConfig? loyaltyPointsConfig,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
-      get loyaltyPointsConfig =>
-          CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(_res);
+  get loyaltyPointsConfig =>
+      CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(_res);
 }
 
-const documentNodeQueryLoyaltyPointsConfig = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'LoyaltyPointsConfig'),
-    variableDefinitions: [],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'loyaltyPointsConfig'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+const documentNodeQueryLoyaltyPointsConfig = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'LoyaltyPointsConfig'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'id'),
+            name: NameNode(value: 'loyaltyPointsConfig'),
             alias: null,
             arguments: [],
             directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'createdAt'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'updatedAt'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'rupeesPerPoint'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'pointsPerRupee'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'createdAt'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'updatedAt'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'rupeesPerPoint'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'pointsPerRupee'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -4652,25 +4619,16 @@ const documentNodeQueryLoyaltyPointsConfig = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$LoyaltyPointsConfig _parserFn$Query$LoyaltyPointsConfig(
-        Map<String, dynamic> data) =>
-    Query$LoyaltyPointsConfig.fromJson(data);
-typedef OnQueryComplete$Query$LoyaltyPointsConfig = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Query$LoyaltyPointsConfig?,
+    ),
+  ],
 );
+Query$LoyaltyPointsConfig _parserFn$Query$LoyaltyPointsConfig(
+  Map<String, dynamic> data,
+) => Query$LoyaltyPointsConfig.fromJson(data);
+typedef OnQueryComplete$Query$LoyaltyPointsConfig =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$LoyaltyPointsConfig?);
 
 class Options$Query$LoyaltyPointsConfig
     extends graphql.QueryOptions<Query$LoyaltyPointsConfig> {
@@ -4685,37 +4643,37 @@ class Options$Query$LoyaltyPointsConfig
     graphql.Context? context,
     OnQueryComplete$Query$LoyaltyPointsConfig? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$LoyaltyPointsConfig(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryLoyaltyPointsConfig,
-          parserFn: _parserFn$Query$LoyaltyPointsConfig,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$LoyaltyPointsConfig(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryLoyaltyPointsConfig,
+         parserFn: _parserFn$Query$LoyaltyPointsConfig,
+       );
 
   final OnQueryComplete$Query$LoyaltyPointsConfig? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$LoyaltyPointsConfig
@@ -4733,57 +4691,64 @@ class WatchOptions$Query$LoyaltyPointsConfig
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryLoyaltyPointsConfig,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$LoyaltyPointsConfig,
-        );
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryLoyaltyPointsConfig,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$LoyaltyPointsConfig,
+       );
 }
 
 class FetchMoreOptions$Query$LoyaltyPointsConfig
     extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$LoyaltyPointsConfig(
-      {required graphql.UpdateQuery updateQuery})
-      : super(
-          updateQuery: updateQuery,
-          document: documentNodeQueryLoyaltyPointsConfig,
-        );
+  FetchMoreOptions$Query$LoyaltyPointsConfig({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryLoyaltyPointsConfig,
+       );
 }
 
 extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$LoyaltyPointsConfig>>
-      query$LoyaltyPointsConfig(
-              [Options$Query$LoyaltyPointsConfig? options]) async =>
-          await this.query(options ?? Options$Query$LoyaltyPointsConfig());
+  query$LoyaltyPointsConfig([
+    Options$Query$LoyaltyPointsConfig? options,
+  ]) async => await this.query(options ?? Options$Query$LoyaltyPointsConfig());
+
   graphql.ObservableQuery<Query$LoyaltyPointsConfig>
-      watchQuery$LoyaltyPointsConfig(
-              [WatchOptions$Query$LoyaltyPointsConfig? options]) =>
-          this.watchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+  watchQuery$LoyaltyPointsConfig([
+    WatchOptions$Query$LoyaltyPointsConfig? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+
   void writeQuery$LoyaltyPointsConfig({
     required Query$LoyaltyPointsConfig data,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-            operation: graphql.Operation(
-                document: documentNodeQueryLoyaltyPointsConfig)),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
-  Query$LoyaltyPointsConfig? readQuery$LoyaltyPointsConfig(
-      {bool optimistic = true}) {
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryLoyaltyPointsConfig,
+      ),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$LoyaltyPointsConfig? readQuery$LoyaltyPointsConfig({
+    bool optimistic = true,
+  }) {
     final result = this.readQuery(
       graphql.Request(
-          operation: graphql.Operation(
-              document: documentNodeQueryLoyaltyPointsConfig)),
+        operation: graphql.Operation(
+          document: documentNodeQueryLoyaltyPointsConfig,
+        ),
+      ),
       optimistic: optimistic,
     );
     return result == null ? null : Query$LoyaltyPointsConfig.fromJson(result);
@@ -4791,15 +4756,14 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
 }
 
 graphql_flutter.QueryHookResult<Query$LoyaltyPointsConfig>
-    useQuery$LoyaltyPointsConfig(
-            [Options$Query$LoyaltyPointsConfig? options]) =>
-        graphql_flutter
-            .useQuery(options ?? Options$Query$LoyaltyPointsConfig());
+useQuery$LoyaltyPointsConfig([Options$Query$LoyaltyPointsConfig? options]) =>
+    graphql_flutter.useQuery(options ?? Options$Query$LoyaltyPointsConfig());
 graphql.ObservableQuery<Query$LoyaltyPointsConfig>
-    useWatchQuery$LoyaltyPointsConfig(
-            [WatchOptions$Query$LoyaltyPointsConfig? options]) =>
-        graphql_flutter
-            .useWatchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+useWatchQuery$LoyaltyPointsConfig([
+  WatchOptions$Query$LoyaltyPointsConfig? options,
+]) => graphql_flutter.useWatchQuery(
+  options ?? WatchOptions$Query$LoyaltyPointsConfig(),
+);
 
 class Query$LoyaltyPointsConfig$Widget
     extends graphql_flutter.Query<Query$LoyaltyPointsConfig> {
@@ -4808,10 +4772,10 @@ class Query$LoyaltyPointsConfig$Widget
     Options$Query$LoyaltyPointsConfig? options,
     required graphql_flutter.QueryBuilder<Query$LoyaltyPointsConfig> builder,
   }) : super(
-          key: key,
-          options: options ?? Options$Query$LoyaltyPointsConfig(),
-          builder: builder,
-        );
+         key: key,
+         options: options ?? Options$Query$LoyaltyPointsConfig(),
+         builder: builder,
+       );
 }
 
 class Query$LoyaltyPointsConfig$loyaltyPointsConfig {
@@ -4825,7 +4789,8 @@ class Query$LoyaltyPointsConfig$loyaltyPointsConfig {
   });
 
   factory Query$LoyaltyPointsConfig$loyaltyPointsConfig.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$createdAt = json['createdAt'];
     final l$updatedAt = json['updatedAt'];
@@ -4935,11 +4900,10 @@ class Query$LoyaltyPointsConfig$loyaltyPointsConfig {
 extension UtilityExtension$Query$LoyaltyPointsConfig$loyaltyPointsConfig
     on Query$LoyaltyPointsConfig$loyaltyPointsConfig {
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<
-          Query$LoyaltyPointsConfig$loyaltyPointsConfig>
-      get copyWith => CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig(
-            this,
-            (i) => i,
-          );
+    Query$LoyaltyPointsConfig$loyaltyPointsConfig
+  >
+  get copyWith =>
+      CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig(this, (i) => i);
 }
 
 abstract class CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes> {
@@ -4949,8 +4913,8 @@ abstract class CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes> {
   ) = _CopyWithImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig;
 
   factory CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig;
 
   TRes call({
     String? id,
@@ -4982,25 +4946,26 @@ class _CopyWithImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
     Object? rupeesPerPoint = _undefined,
     Object? pointsPerRupee = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$LoyaltyPointsConfig$loyaltyPointsConfig(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        createdAt: createdAt == _undefined || createdAt == null
-            ? _instance.createdAt
-            : (createdAt as DateTime),
-        updatedAt: updatedAt == _undefined || updatedAt == null
-            ? _instance.updatedAt
-            : (updatedAt as DateTime),
-        rupeesPerPoint: rupeesPerPoint == _undefined || rupeesPerPoint == null
-            ? _instance.rupeesPerPoint
-            : (rupeesPerPoint as int),
-        pointsPerRupee: pointsPerRupee == _undefined || pointsPerRupee == null
-            ? _instance.pointsPerRupee
-            : (pointsPerRupee as int),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$LoyaltyPointsConfig$loyaltyPointsConfig(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      createdAt: createdAt == _undefined || createdAt == null
+          ? _instance.createdAt
+          : (createdAt as DateTime),
+      updatedAt: updatedAt == _undefined || updatedAt == null
+          ? _instance.updatedAt
+          : (updatedAt as DateTime),
+      rupeesPerPoint: rupeesPerPoint == _undefined || rupeesPerPoint == null
+          ? _instance.rupeesPerPoint
+          : (rupeesPerPoint as int),
+      pointsPerRupee: pointsPerRupee == _undefined || pointsPerRupee == null
+          ? _instance.pointsPerRupee
+          : (pointsPerRupee as int),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
@@ -5016,15 +4981,11 @@ class _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
     int? rupeesPerPoint,
     int? pointsPerRupee,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Query$GetActiveCustomer {
-  Query$GetActiveCustomer({
-    this.activeCustomer,
-    this.$__typename = 'Query',
-  });
+  Query$GetActiveCustomer({this.activeCustomer, this.$__typename = 'Query'});
 
   factory Query$GetActiveCustomer.fromJson(Map<String, dynamic> json) {
     final l$activeCustomer = json['activeCustomer'];
@@ -5033,7 +4994,8 @@ class Query$GetActiveCustomer {
       activeCustomer: l$activeCustomer == null
           ? null
           : Query$GetActiveCustomer$activeCustomer.fromJson(
-              (l$activeCustomer as Map<String, dynamic>)),
+              (l$activeCustomer as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -5055,10 +5017,7 @@ class Query$GetActiveCustomer {
   int get hashCode {
     final l$activeCustomer = activeCustomer;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$activeCustomer,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$activeCustomer, l$$__typename]);
   }
 
   @override
@@ -5085,10 +5044,7 @@ class Query$GetActiveCustomer {
 
 extension UtilityExtension$Query$GetActiveCustomer on Query$GetActiveCustomer {
   CopyWith$Query$GetActiveCustomer<Query$GetActiveCustomer> get copyWith =>
-      CopyWith$Query$GetActiveCustomer(
-        this,
-        (i) => i,
-      );
+      CopyWith$Query$GetActiveCustomer(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetActiveCustomer<TRes> {
@@ -5109,10 +5065,7 @@ abstract class CopyWith$Query$GetActiveCustomer<TRes> {
 
 class _CopyWithImpl$Query$GetActiveCustomer<TRes>
     implements CopyWith$Query$GetActiveCustomer<TRes> {
-  _CopyWithImpl$Query$GetActiveCustomer(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetActiveCustomer(this._instance, this._then);
 
   final Query$GetActiveCustomer _instance;
 
@@ -5123,22 +5076,25 @@ class _CopyWithImpl$Query$GetActiveCustomer<TRes>
   TRes call({
     Object? activeCustomer = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer(
-        activeCustomer: activeCustomer == _undefined
-            ? _instance.activeCustomer
-            : (activeCustomer as Query$GetActiveCustomer$activeCustomer?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer(
+      activeCustomer: activeCustomer == _undefined
+          ? _instance.activeCustomer
+          : (activeCustomer as Query$GetActiveCustomer$activeCustomer?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> get activeCustomer {
     final local$activeCustomer = _instance.activeCustomer;
     return local$activeCustomer == null
         ? CopyWith$Query$GetActiveCustomer$activeCustomer.stub(_then(_instance))
         : CopyWith$Query$GetActiveCustomer$activeCustomer(
-            local$activeCustomer, (e) => call(activeCustomer: e));
+            local$activeCustomer,
+            (e) => call(activeCustomer: e),
+          );
   }
 }
 
@@ -5151,26 +5107,795 @@ class _CopyWithStubImpl$Query$GetActiveCustomer<TRes>
   call({
     Query$GetActiveCustomer$activeCustomer? activeCustomer,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> get activeCustomer =>
       CopyWith$Query$GetActiveCustomer$activeCustomer.stub(_res);
 }
 
-const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetActiveCustomer'),
-    variableDefinitions: [],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'activeCustomer'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+const documentNodeQueryGetActiveCustomer = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'GetActiveCustomer'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'activeCustomer'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                InlineFragmentNode(
+                  typeCondition: TypeConditionNode(
+                    on: NamedTypeNode(
+                      name: NameNode(value: 'Customer'),
+                      isNonNull: false,
+                    ),
+                  ),
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'emailAddress'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'firstName'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'lastName'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'phoneNumber'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'customFields'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(
+                          selections: [
+                            FieldNode(
+                              name: NameNode(value: 'loyaltyPointsAvailable'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: '__typename'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                          ],
+                        ),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'addresses'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(
+                          selections: [
+                            FieldNode(
+                              name: NameNode(value: 'id'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'postalCode'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'streetLine1'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'streetLine2'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'fullName'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'country'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: SelectionSetNode(
+                                selections: [
+                                  FieldNode(
+                                    name: NameNode(value: 'id'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'name'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'code'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'languageCode'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: '__typename'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'phoneNumber'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'company'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'city'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'streetLine2'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'streetLine1'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'fullName'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'postalCode'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'defaultShippingAddress'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'defaultBillingAddress'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: '__typename'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                          ],
+                        ),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'orders'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(
+                          selections: [
+                            FieldNode(
+                              name: NameNode(value: 'totalItems'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                            FieldNode(
+                              name: NameNode(value: 'items'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: SelectionSetNode(
+                                selections: [
+                                  FieldNode(
+                                    name: NameNode(value: 'id'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'currencyCode'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'orderPlacedAt'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'lines'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(value: 'id'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'quantity'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'productVariant',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: SelectionSetNode(
+                                            selections: [
+                                              FieldNode(
+                                                name: NameNode(value: 'name'),
+                                                alias: null,
+                                                arguments: [],
+                                                directives: [],
+                                                selectionSet: null,
+                                              ),
+                                              FieldNode(
+                                                name: NameNode(
+                                                  value: '__typename',
+                                                ),
+                                                alias: null,
+                                                arguments: [],
+                                                directives: [],
+                                                selectionSet: null,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'featuredAsset',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: SelectionSetNode(
+                                            selections: [
+                                              FieldNode(
+                                                name: NameNode(value: 'name'),
+                                                alias: null,
+                                                arguments: [],
+                                                directives: [],
+                                                selectionSet: null,
+                                              ),
+                                              FieldNode(
+                                                name: NameNode(
+                                                  value: 'preview',
+                                                ),
+                                                alias: null,
+                                                arguments: [],
+                                                directives: [],
+                                                selectionSet: null,
+                                              ),
+                                              FieldNode(
+                                                name: NameNode(
+                                                  value: '__typename',
+                                                ),
+                                                alias: null,
+                                                arguments: [],
+                                                directives: [],
+                                                selectionSet: null,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'active'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'discounts'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(value: 'amount'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'code'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'state'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'customer'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(value: 'firstName'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'lastName'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'shippingAddress'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(value: 'country'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'city'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'phoneNumber'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'streetLine1'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'streetLine2'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'postalCode'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'fullName'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'surcharges'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(value: 'price'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'priceWithTax'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'couponCodes'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'payments'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(value: 'state'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'createdAt'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'method'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'amount'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'transactionId',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'totalQuantity'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'totalWithTax'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'billingAddress'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(value: 'postalCode'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'streetLine2'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'fullName'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'city'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'phoneNumber'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: 'streetLine1'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'customFields'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'loyaltyPointsUsed',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'loyaltyPointsEarned',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'otherInstructions',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'clientRequestToCancel',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: '__typename'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            FieldNode(
+                              name: NameNode(value: '__typename'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                          ],
+                        ),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
@@ -5178,729 +5903,16 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'Customer'),
-              isNonNull: false,
-            )),
-            directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'id'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'emailAddress'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'firstName'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'lastName'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'phoneNumber'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'customFields'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  FieldNode(
-                    name: NameNode(value: 'loyaltyPointsAvailable'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: 'addresses'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  FieldNode(
-                    name: NameNode(value: 'id'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'postalCode'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'streetLine1'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'streetLine2'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'fullName'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'country'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: SelectionSetNode(selections: [
-                      FieldNode(
-                        name: NameNode(value: 'id'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'name'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'code'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'languageCode'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: '__typename'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                    ]),
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'phoneNumber'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'company'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'city'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'streetLine2'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'streetLine1'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'fullName'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'postalCode'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'defaultShippingAddress'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'defaultBillingAddress'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: 'orders'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  FieldNode(
-                    name: NameNode(value: 'totalItems'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'items'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: SelectionSetNode(selections: [
-                      FieldNode(
-                        name: NameNode(value: 'id'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'currencyCode'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'orderPlacedAt'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'lines'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'id'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'quantity'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'productVariant'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: SelectionSetNode(selections: [
-                              FieldNode(
-                                name: NameNode(value: 'name'),
-                                alias: null,
-                                arguments: [],
-                                directives: [],
-                                selectionSet: null,
-                              ),
-                              FieldNode(
-                                name: NameNode(value: '__typename'),
-                                alias: null,
-                                arguments: [],
-                                directives: [],
-                                selectionSet: null,
-                              ),
-                            ]),
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'featuredAsset'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: SelectionSetNode(selections: [
-                              FieldNode(
-                                name: NameNode(value: 'name'),
-                                alias: null,
-                                arguments: [],
-                                directives: [],
-                                selectionSet: null,
-                              ),
-                              FieldNode(
-                                name: NameNode(value: 'preview'),
-                                alias: null,
-                                arguments: [],
-                                directives: [],
-                                selectionSet: null,
-                              ),
-                              FieldNode(
-                                name: NameNode(value: '__typename'),
-                                alias: null,
-                                arguments: [],
-                                directives: [],
-                                selectionSet: null,
-                              ),
-                            ]),
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'active'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'discounts'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'amount'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'code'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'state'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'customer'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'firstName'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'lastName'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'shippingAddress'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'country'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'city'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'phoneNumber'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'streetLine1'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'streetLine2'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'postalCode'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'fullName'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'surcharges'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'price'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'priceWithTax'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'couponCodes'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'payments'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'state'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'createdAt'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'method'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'amount'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'transactionId'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'totalQuantity'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'totalWithTax'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'billingAddress'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'postalCode'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'streetLine2'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'fullName'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'city'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'phoneNumber'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'streetLine1'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'customFields'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'loyaltyPointsUsed'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'loyaltyPointsEarned'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'otherInstructions'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'clientRequestToCancel'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
-                      ),
-                      FieldNode(
-                        name: NameNode(value: '__typename'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                    ]),
-                  ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
-          ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetActiveCustomer _parserFn$Query$GetActiveCustomer(
-        Map<String, dynamic> data) =>
-    Query$GetActiveCustomer.fromJson(data);
-typedef OnQueryComplete$Query$GetActiveCustomer = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Query$GetActiveCustomer?,
+    ),
+  ],
 );
+Query$GetActiveCustomer _parserFn$Query$GetActiveCustomer(
+  Map<String, dynamic> data,
+) => Query$GetActiveCustomer.fromJson(data);
+typedef OnQueryComplete$Query$GetActiveCustomer =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$GetActiveCustomer?);
 
 class Options$Query$GetActiveCustomer
     extends graphql.QueryOptions<Query$GetActiveCustomer> {
@@ -5915,37 +5927,35 @@ class Options$Query$GetActiveCustomer
     graphql.Context? context,
     OnQueryComplete$Query$GetActiveCustomer? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$GetActiveCustomer(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetActiveCustomer,
-          parserFn: _parserFn$Query$GetActiveCustomer,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null ? null : _parserFn$Query$GetActiveCustomer(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryGetActiveCustomer,
+         parserFn: _parserFn$Query$GetActiveCustomer,
+       );
 
   final OnQueryComplete$Query$GetActiveCustomer? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$GetActiveCustomer
@@ -5963,55 +5973,63 @@ class WatchOptions$Query$GetActiveCustomer
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetActiveCustomer,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetActiveCustomer,
-        );
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryGetActiveCustomer,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$GetActiveCustomer,
+       );
 }
 
 class FetchMoreOptions$Query$GetActiveCustomer
     extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetActiveCustomer(
-      {required graphql.UpdateQuery updateQuery})
-      : super(
-          updateQuery: updateQuery,
-          document: documentNodeQueryGetActiveCustomer,
-        );
+  FetchMoreOptions$Query$GetActiveCustomer({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryGetActiveCustomer,
+       );
 }
 
 extension ClientExtension$Query$GetActiveCustomer on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Query$GetActiveCustomer>> query$GetActiveCustomer(
-          [Options$Query$GetActiveCustomer? options]) async =>
-      await this.query(options ?? Options$Query$GetActiveCustomer());
-  graphql.ObservableQuery<Query$GetActiveCustomer> watchQuery$GetActiveCustomer(
-          [WatchOptions$Query$GetActiveCustomer? options]) =>
-      this.watchQuery(options ?? WatchOptions$Query$GetActiveCustomer());
+  Future<graphql.QueryResult<Query$GetActiveCustomer>> query$GetActiveCustomer([
+    Options$Query$GetActiveCustomer? options,
+  ]) async => await this.query(options ?? Options$Query$GetActiveCustomer());
+
+  graphql.ObservableQuery<Query$GetActiveCustomer>
+  watchQuery$GetActiveCustomer([
+    WatchOptions$Query$GetActiveCustomer? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$GetActiveCustomer());
+
   void writeQuery$GetActiveCustomer({
     required Query$GetActiveCustomer data,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-            operation: graphql.Operation(
-                document: documentNodeQueryGetActiveCustomer)),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
-  Query$GetActiveCustomer? readQuery$GetActiveCustomer(
-      {bool optimistic = true}) {
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryGetActiveCustomer,
+      ),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$GetActiveCustomer? readQuery$GetActiveCustomer({
+    bool optimistic = true,
+  }) {
     final result = this.readQuery(
       graphql.Request(
-          operation:
-              graphql.Operation(document: documentNodeQueryGetActiveCustomer)),
+        operation: graphql.Operation(
+          document: documentNodeQueryGetActiveCustomer,
+        ),
+      ),
       optimistic: optimistic,
     );
     return result == null ? null : Query$GetActiveCustomer.fromJson(result);
@@ -6019,13 +6037,14 @@ extension ClientExtension$Query$GetActiveCustomer on graphql.GraphQLClient {
 }
 
 graphql_flutter.QueryHookResult<Query$GetActiveCustomer>
-    useQuery$GetActiveCustomer([Options$Query$GetActiveCustomer? options]) =>
-        graphql_flutter.useQuery(options ?? Options$Query$GetActiveCustomer());
+useQuery$GetActiveCustomer([Options$Query$GetActiveCustomer? options]) =>
+    graphql_flutter.useQuery(options ?? Options$Query$GetActiveCustomer());
 graphql.ObservableQuery<Query$GetActiveCustomer>
-    useWatchQuery$GetActiveCustomer(
-            [WatchOptions$Query$GetActiveCustomer? options]) =>
-        graphql_flutter
-            .useWatchQuery(options ?? WatchOptions$Query$GetActiveCustomer());
+useWatchQuery$GetActiveCustomer([
+  WatchOptions$Query$GetActiveCustomer? options,
+]) => graphql_flutter.useWatchQuery(
+  options ?? WatchOptions$Query$GetActiveCustomer(),
+);
 
 class Query$GetActiveCustomer$Widget
     extends graphql_flutter.Query<Query$GetActiveCustomer> {
@@ -6034,10 +6053,10 @@ class Query$GetActiveCustomer$Widget
     Options$Query$GetActiveCustomer? options,
     required graphql_flutter.QueryBuilder<Query$GetActiveCustomer> builder,
   }) : super(
-          key: key,
-          options: options ?? Options$Query$GetActiveCustomer(),
-          builder: builder,
-        );
+         key: key,
+         options: options ?? Options$Query$GetActiveCustomer(),
+         builder: builder,
+       );
 }
 
 class Query$GetActiveCustomer$activeCustomer {
@@ -6054,7 +6073,8 @@ class Query$GetActiveCustomer$activeCustomer {
   });
 
   factory Query$GetActiveCustomer$activeCustomer.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$$__typename = json['__typename'];
     final l$id = json['id'];
     final l$emailAddress = json['emailAddress'];
@@ -6074,14 +6094,18 @@ class Query$GetActiveCustomer$activeCustomer {
       customFields: l$customFields == null
           ? null
           : Query$GetActiveCustomer$activeCustomer$customFields.fromJson(
-              (l$customFields as Map<String, dynamic>)),
+              (l$customFields as Map<String, dynamic>),
+            ),
       addresses: (l$addresses as List<dynamic>?)
-          ?.map((e) =>
-              Query$GetActiveCustomer$activeCustomer$addresses.fromJson(
-                  (e as Map<String, dynamic>)))
+          ?.map(
+            (e) => Query$GetActiveCustomer$activeCustomer$addresses.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       orders: Query$GetActiveCustomer$activeCustomer$orders.fromJson(
-          (l$orders as Map<String, dynamic>)),
+        (l$orders as Map<String, dynamic>),
+      ),
     );
   }
 
@@ -6222,11 +6246,10 @@ class Query$GetActiveCustomer$activeCustomer {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer
     on Query$GetActiveCustomer$activeCustomer {
   CopyWith$Query$GetActiveCustomer$activeCustomer<
-          Query$GetActiveCustomer$activeCustomer>
-      get copyWith => CopyWith$Query$GetActiveCustomer$activeCustomer(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> {
@@ -6250,13 +6273,17 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> {
     Query$GetActiveCustomer$activeCustomer$orders? orders,
   });
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
-      get customFields;
+  get customFields;
   TRes addresses(
-      Iterable<Query$GetActiveCustomer$activeCustomer$addresses>? Function(
-              Iterable<
-                  CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<
-                      Query$GetActiveCustomer$activeCustomer$addresses>>?)
-          _fn);
+    Iterable<Query$GetActiveCustomer$activeCustomer$addresses>? Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<
+          Query$GetActiveCustomer$activeCustomer$addresses
+        >
+      >?,
+    )
+    _fn,
+  );
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders<TRes> get orders;
 }
 
@@ -6283,64 +6310,77 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
     Object? customFields = _undefined,
     Object? addresses = _undefined,
     Object? orders = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer(
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        emailAddress: emailAddress == _undefined || emailAddress == null
-            ? _instance.emailAddress
-            : (emailAddress as String),
-        firstName: firstName == _undefined || firstName == null
-            ? _instance.firstName
-            : (firstName as String),
-        lastName: lastName == _undefined || lastName == null
-            ? _instance.lastName
-            : (lastName as String),
-        phoneNumber: phoneNumber == _undefined
-            ? _instance.phoneNumber
-            : (phoneNumber as String?),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer(
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      emailAddress: emailAddress == _undefined || emailAddress == null
+          ? _instance.emailAddress
+          : (emailAddress as String),
+      firstName: firstName == _undefined || firstName == null
+          ? _instance.firstName
+          : (firstName as String),
+      lastName: lastName == _undefined || lastName == null
+          ? _instance.lastName
+          : (lastName as String),
+      phoneNumber: phoneNumber == _undefined
+          ? _instance.phoneNumber
+          : (phoneNumber as String?),
+      customFields: customFields == _undefined
+          ? _instance.customFields
+          : (customFields
                 as Query$GetActiveCustomer$activeCustomer$customFields?),
-        addresses: addresses == _undefined
-            ? _instance.addresses
-            : (addresses
+      addresses: addresses == _undefined
+          ? _instance.addresses
+          : (addresses
                 as List<Query$GetActiveCustomer$activeCustomer$addresses>?),
-        orders: orders == _undefined || orders == null
-            ? _instance.orders
-            : (orders as Query$GetActiveCustomer$activeCustomer$orders),
-      ));
+      orders: orders == _undefined || orders == null
+          ? _instance.orders
+          : (orders as Query$GetActiveCustomer$activeCustomer$orders),
+    ),
+  );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
-      get customFields {
+  get customFields {
     final local$customFields = _instance.customFields;
     return local$customFields == null
         ? CopyWith$Query$GetActiveCustomer$activeCustomer$customFields.stub(
-            _then(_instance))
+            _then(_instance),
+          )
         : CopyWith$Query$GetActiveCustomer$activeCustomer$customFields(
-            local$customFields, (e) => call(customFields: e));
+            local$customFields,
+            (e) => call(customFields: e),
+          );
   }
 
   TRes addresses(
-          Iterable<Query$GetActiveCustomer$activeCustomer$addresses>? Function(
-                  Iterable<
-                      CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<
-                          Query$GetActiveCustomer$activeCustomer$addresses>>?)
-              _fn) =>
-      call(
-          addresses: _fn(_instance.addresses?.map(
-              (e) => CopyWith$Query$GetActiveCustomer$activeCustomer$addresses(
-                    e,
-                    (i) => i,
-                  )))?.toList());
+    Iterable<Query$GetActiveCustomer$activeCustomer$addresses>? Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<
+          Query$GetActiveCustomer$activeCustomer$addresses
+        >
+      >?,
+    )
+    _fn,
+  ) => call(
+    addresses: _fn(
+      _instance.addresses?.map(
+        (e) => CopyWith$Query$GetActiveCustomer$activeCustomer$addresses(
+          e,
+          (i) => i,
+        ),
+      ),
+    )?.toList(),
+  );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders<TRes> get orders {
     final local$orders = _instance.orders;
     return CopyWith$Query$GetActiveCustomer$activeCustomer$orders(
-        local$orders, (e) => call(orders: e));
+      local$orders,
+      (e) => call(orders: e),
+    );
   }
 }
 
@@ -6360,13 +6400,11 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer<TRes>
     Query$GetActiveCustomer$activeCustomer$customFields? customFields,
     List<Query$GetActiveCustomer$activeCustomer$addresses>? addresses,
     Query$GetActiveCustomer$activeCustomer$orders? orders,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
-      get customFields =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$customFields.stub(
-              _res);
+  get customFields =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$customFields.stub(_res);
 
   addresses(_fn) => _res;
 
@@ -6381,7 +6419,8 @@ class Query$GetActiveCustomer$activeCustomer$customFields {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$customFields.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$loyaltyPointsAvailable = json['loyaltyPointsAvailable'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$customFields(
@@ -6407,10 +6446,7 @@ class Query$GetActiveCustomer$activeCustomer$customFields {
   int get hashCode {
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$loyaltyPointsAvailable,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$loyaltyPointsAvailable, l$$__typename]);
   }
 
   @override
@@ -6439,29 +6475,27 @@ class Query$GetActiveCustomer$activeCustomer$customFields {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$customFields
     on Query$GetActiveCustomer$activeCustomer$customFields {
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<
-          Query$GetActiveCustomer$activeCustomer$customFields>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$customFields(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$customFields
+  >
+  get copyWith => CopyWith$Query$GetActiveCustomer$activeCustomer$customFields(
+    this,
+    (i) => i,
+  );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$customFields(
     Query$GetActiveCustomer$activeCustomer$customFields instance,
     TRes Function(Query$GetActiveCustomer$activeCustomer$customFields) then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$customFields;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$customFields.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$customFields;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$customFields;
 
-  TRes call({
-    int? loyaltyPointsAvailable,
-    String? $__typename,
-  });
+  TRes call({int? loyaltyPointsAvailable, String? $__typename});
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
@@ -6475,38 +6509,37 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
   final Query$GetActiveCustomer$activeCustomer$customFields _instance;
 
   final TRes Function(Query$GetActiveCustomer$activeCustomer$customFields)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
     Object? loyaltyPointsAvailable = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$customFields(
-        loyaltyPointsAvailable: loyaltyPointsAvailable == _undefined
-            ? _instance.loyaltyPointsAvailable
-            : (loyaltyPointsAvailable as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$customFields(
+      loyaltyPointsAvailable: loyaltyPointsAvailable == _undefined
+          ? _instance.loyaltyPointsAvailable
+          : (loyaltyPointsAvailable as int?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$customFields<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes> {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$customFields(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    int? loyaltyPointsAvailable,
-    String? $__typename,
-  }) =>
-      _res;
+  call({int? loyaltyPointsAvailable, String? $__typename}) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$addresses {
@@ -6526,7 +6559,8 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$addresses.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$postalCode = json['postalCode'];
     final l$streetLine1 = json['streetLine1'];
@@ -6547,7 +6581,8 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
       fullName: (l$fullName as String?),
       country:
           Query$GetActiveCustomer$activeCustomer$addresses$country.fromJson(
-              (l$country as Map<String, dynamic>)),
+            (l$country as Map<String, dynamic>),
+          ),
       phoneNumber: (l$phoneNumber as String?),
       company: (l$company as String?),
       city: (l$city as String?),
@@ -6716,11 +6751,10 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$addresses
     on Query$GetActiveCustomer$activeCustomer$addresses {
   CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<
-          Query$GetActiveCustomer$activeCustomer$addresses>
-      get copyWith => CopyWith$Query$GetActiveCustomer$activeCustomer$addresses(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$addresses
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$addresses(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<TRes> {
@@ -6730,8 +6764,8 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<TRes> {
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$addresses.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses;
 
   TRes call({
     String? id,
@@ -6748,7 +6782,7 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<TRes> {
     String? $__typename,
   });
   CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<TRes>
-      get country;
+  get country;
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
@@ -6777,46 +6811,49 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
     Object? defaultShippingAddress = _undefined,
     Object? defaultBillingAddress = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$addresses(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        postalCode: postalCode == _undefined
-            ? _instance.postalCode
-            : (postalCode as String?),
-        streetLine1: streetLine1 == _undefined || streetLine1 == null
-            ? _instance.streetLine1
-            : (streetLine1 as String),
-        streetLine2: streetLine2 == _undefined
-            ? _instance.streetLine2
-            : (streetLine2 as String?),
-        fullName:
-            fullName == _undefined ? _instance.fullName : (fullName as String?),
-        country: country == _undefined || country == null
-            ? _instance.country
-            : (country
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$addresses(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      postalCode: postalCode == _undefined
+          ? _instance.postalCode
+          : (postalCode as String?),
+      streetLine1: streetLine1 == _undefined || streetLine1 == null
+          ? _instance.streetLine1
+          : (streetLine1 as String),
+      streetLine2: streetLine2 == _undefined
+          ? _instance.streetLine2
+          : (streetLine2 as String?),
+      fullName: fullName == _undefined
+          ? _instance.fullName
+          : (fullName as String?),
+      country: country == _undefined || country == null
+          ? _instance.country
+          : (country
                 as Query$GetActiveCustomer$activeCustomer$addresses$country),
-        phoneNumber: phoneNumber == _undefined
-            ? _instance.phoneNumber
-            : (phoneNumber as String?),
-        company:
-            company == _undefined ? _instance.company : (company as String?),
-        city: city == _undefined ? _instance.city : (city as String?),
-        defaultShippingAddress: defaultShippingAddress == _undefined
-            ? _instance.defaultShippingAddress
-            : (defaultShippingAddress as bool?),
-        defaultBillingAddress: defaultBillingAddress == _undefined
-            ? _instance.defaultBillingAddress
-            : (defaultBillingAddress as bool?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      phoneNumber: phoneNumber == _undefined
+          ? _instance.phoneNumber
+          : (phoneNumber as String?),
+      company: company == _undefined ? _instance.company : (company as String?),
+      city: city == _undefined ? _instance.city : (city as String?),
+      defaultShippingAddress: defaultShippingAddress == _undefined
+          ? _instance.defaultShippingAddress
+          : (defaultShippingAddress as bool?),
+      defaultBillingAddress: defaultBillingAddress == _undefined
+          ? _instance.defaultBillingAddress
+          : (defaultBillingAddress as bool?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<TRes>
-      get country {
+  get country {
     final local$country = _instance.country;
     return CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country(
-        local$country, (e) => call(country: e));
+      local$country,
+      (e) => call(country: e),
+    );
   }
 }
 
@@ -6839,13 +6876,13 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<TRes>
-      get country =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country
-              .stub(_res);
+  get country =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country.stub(
+        _res,
+      );
 }
 
 class Query$GetActiveCustomer$activeCustomer$addresses$country {
@@ -6858,7 +6895,8 @@ class Query$GetActiveCustomer$activeCustomer$addresses$country {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$addresses$country.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$name = json['name'];
     final l$code = json['code'];
@@ -6955,25 +6993,27 @@ class Query$GetActiveCustomer$activeCustomer$addresses$country {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$addresses$country
     on Query$GetActiveCustomer$activeCustomer$addresses$country {
   CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<
-          Query$GetActiveCustomer$activeCustomer$addresses$country>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$addresses$country
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country(
     Query$GetActiveCustomer$activeCustomer$addresses$country instance,
     TRes Function(Query$GetActiveCustomer$activeCustomer$addresses$country)
-        then,
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$country;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$country;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$country;
 
   TRes call({
     String? id,
@@ -6985,10 +7025,12 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$country<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$country(
     this._instance,
     this._then,
@@ -6997,7 +7039,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$country<
   final Query$GetActiveCustomer$activeCustomer$addresses$country _instance;
 
   final TRes Function(Query$GetActiveCustomer$activeCustomer$addresses$country)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -7007,31 +7049,35 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$country<
     Object? code = _undefined,
     Object? languageCode = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$addresses$country(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        languageCode: languageCode == _undefined || languageCode == null
-            ? _instance.languageCode
-            : (languageCode as Enum$LanguageCode),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$addresses$country(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      languageCode: languageCode == _undefined || languageCode == null
+          ? _instance.languageCode
+          : (languageCode as Enum$LanguageCode),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$country<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$country(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -7041,8 +7087,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$country
     String? code,
     Enum$LanguageCode? languageCode,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders {
@@ -7053,16 +7098,19 @@ class Query$GetActiveCustomer$activeCustomer$orders {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$totalItems = json['totalItems'];
     final l$items = json['items'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$orders(
       totalItems: (l$totalItems as int),
       items: (l$items as List<dynamic>)
-          .map((e) =>
-              Query$GetActiveCustomer$activeCustomer$orders$items.fromJson(
-                  (e as Map<String, dynamic>)))
+          .map(
+            (e) => Query$GetActiveCustomer$activeCustomer$orders$items.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       $__typename: (l$$__typename as String),
     );
@@ -7135,11 +7183,10 @@ class Query$GetActiveCustomer$activeCustomer$orders {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders
     on Query$GetActiveCustomer$activeCustomer$orders {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders<
-          Query$GetActiveCustomer$activeCustomer$orders>
-      get copyWith => CopyWith$Query$GetActiveCustomer$activeCustomer$orders(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders<TRes> {
@@ -7149,8 +7196,8 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders<TRes> {
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders;
 
   TRes call({
     int? totalItems,
@@ -7158,11 +7205,15 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders<TRes> {
     String? $__typename,
   });
   TRes items(
-      Iterable<Query$GetActiveCustomer$activeCustomer$orders$items> Function(
-              Iterable<
-                  CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<
-                      Query$GetActiveCustomer$activeCustomer$orders$items>>)
-          _fn);
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items> Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<
+          Query$GetActiveCustomer$activeCustomer$orders$items
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders<TRes>
@@ -7182,32 +7233,40 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders<TRes>
     Object? totalItems = _undefined,
     Object? items = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders(
-        totalItems: totalItems == _undefined || totalItems == null
-            ? _instance.totalItems
-            : (totalItems as int),
-        items: items == _undefined || items == null
-            ? _instance.items
-            : (items
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders(
+      totalItems: totalItems == _undefined || totalItems == null
+          ? _instance.totalItems
+          : (totalItems as int),
+      items: items == _undefined || items == null
+          ? _instance.items
+          : (items
                 as List<Query$GetActiveCustomer$activeCustomer$orders$items>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   TRes items(
-          Iterable<Query$GetActiveCustomer$activeCustomer$orders$items> Function(
-                  Iterable<
-                      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<
-                          Query$GetActiveCustomer$activeCustomer$orders$items>>)
-              _fn) =>
-      call(
-          items: _fn(_instance.items.map((e) =>
-              CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items(
-                e,
-                (i) => i,
-              ))).toList());
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items> Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<
+          Query$GetActiveCustomer$activeCustomer$orders$items
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    items: _fn(
+      _instance.items.map(
+        (e) => CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items(
+          e,
+          (i) => i,
+        ),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders<TRes>
@@ -7220,8 +7279,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders<TRes>
     int? totalItems,
     List<Query$GetActiveCustomer$activeCustomer$orders$items>? items,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   items(_fn) => _res;
 }
@@ -7249,7 +7307,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$currencyCode = json['currencyCode'];
     final l$orderPlacedAt = json['orderPlacedAt'];
@@ -7275,47 +7334,65 @@ class Query$GetActiveCustomer$activeCustomer$orders$items {
           ? null
           : DateTime.parse((l$orderPlacedAt as String)),
       lines: (l$lines as List<dynamic>)
-          .map((e) => Query$GetActiveCustomer$activeCustomer$orders$items$lines
-              .fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) =>
+                Query$GetActiveCustomer$activeCustomer$orders$items$lines.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
           .toList(),
       active: (l$active as bool),
       discounts: (l$discounts as List<dynamic>)
-          .map((e) =>
-              Query$GetActiveCustomer$activeCustomer$orders$items$discounts
-                  .fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) =>
+                Query$GetActiveCustomer$activeCustomer$orders$items$discounts.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
           .toList(),
       code: (l$code as String),
       state: (l$state as String),
       customer: l$customer == null
           ? null
-          : Query$GetActiveCustomer$activeCustomer$orders$items$customer
-              .fromJson((l$customer as Map<String, dynamic>)),
+          : Query$GetActiveCustomer$activeCustomer$orders$items$customer.fromJson(
+              (l$customer as Map<String, dynamic>),
+            ),
       shippingAddress: l$shippingAddress == null
           ? null
-          : Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress
-              .fromJson((l$shippingAddress as Map<String, dynamic>)),
+          : Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress.fromJson(
+              (l$shippingAddress as Map<String, dynamic>),
+            ),
       surcharges: (l$surcharges as List<dynamic>)
-          .map((e) =>
-              Query$GetActiveCustomer$activeCustomer$orders$items$surcharges
-                  .fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) =>
+                Query$GetActiveCustomer$activeCustomer$orders$items$surcharges.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
           .toList(),
-      couponCodes:
-          (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
+      couponCodes: (l$couponCodes as List<dynamic>)
+          .map((e) => (e as String))
+          .toList(),
       payments: (l$payments as List<dynamic>?)
-          ?.map((e) =>
-              Query$GetActiveCustomer$activeCustomer$orders$items$payments
-                  .fromJson((e as Map<String, dynamic>)))
+          ?.map(
+            (e) =>
+                Query$GetActiveCustomer$activeCustomer$orders$items$payments.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
           .toList(),
       totalQuantity: (l$totalQuantity as int),
       totalWithTax: (l$totalWithTax as num).toDouble(),
       billingAddress: l$billingAddress == null
           ? null
-          : Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress
-              .fromJson((l$billingAddress as Map<String, dynamic>)),
+          : Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress.fromJson(
+              (l$billingAddress as Map<String, dynamic>),
+            ),
       customFields: l$customFields == null
           ? null
-          : Query$GetActiveCustomer$activeCustomer$orders$items$customFields
-              .fromJson((l$customFields as Map<String, dynamic>)),
+          : Query$GetActiveCustomer$activeCustomer$orders$items$customFields.fromJson(
+              (l$customFields as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -7331,7 +7408,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items {
   final bool active;
 
   final List<Query$GetActiveCustomer$activeCustomer$orders$items$discounts>
-      discounts;
+  discounts;
 
   final String code;
 
@@ -7340,25 +7417,25 @@ class Query$GetActiveCustomer$activeCustomer$orders$items {
   final Query$GetActiveCustomer$activeCustomer$orders$items$customer? customer;
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress?
-      shippingAddress;
+  shippingAddress;
 
   final List<Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>
-      surcharges;
+  surcharges;
 
   final List<String> couponCodes;
 
   final List<Query$GetActiveCustomer$activeCustomer$orders$items$payments>?
-      payments;
+  payments;
 
   final int totalQuantity;
 
   final double totalWithTax;
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress?
-      billingAddress;
+  billingAddress;
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$customFields?
-      customFields;
+  customFields;
 
   final String $__typename;
 
@@ -7590,24 +7667,25 @@ class Query$GetActiveCustomer$activeCustomer$orders$items {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items
     on Query$GetActiveCustomer$activeCustomer$orders$items {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<
-          Query$GetActiveCustomer$activeCustomer$orders$items>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items
+  >
+  get copyWith => CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items(
+    this,
+    (i) => i,
+  );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items(
     Query$GetActiveCustomer$activeCustomer$orders$items instance,
     TRes Function(Query$GetActiveCustomer$activeCustomer$orders$items) then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items;
 
   TRes call({
     String? id,
@@ -7616,57 +7694,83 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<
     List<Query$GetActiveCustomer$activeCustomer$orders$items$lines>? lines,
     bool? active,
     List<Query$GetActiveCustomer$activeCustomer$orders$items$discounts>?
-        discounts,
+    discounts,
     String? code,
     String? state,
     Query$GetActiveCustomer$activeCustomer$orders$items$customer? customer,
     Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress?
-        shippingAddress,
+    shippingAddress,
     List<Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>?
-        surcharges,
+    surcharges,
     List<String>? couponCodes,
     List<Query$GetActiveCustomer$activeCustomer$orders$items$payments>?
-        payments,
+    payments,
     int? totalQuantity,
     double? totalWithTax,
     Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress?
-        billingAddress,
+    billingAddress,
     Query$GetActiveCustomer$activeCustomer$orders$items$customFields?
-        customFields,
+    customFields,
     String? $__typename,
   });
   TRes lines(
-      Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$lines> Function(
-              Iterable<
-                  CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-                      Query$GetActiveCustomer$activeCustomer$orders$items$lines>>)
-          _fn);
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$lines>
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
+          Query$GetActiveCustomer$activeCustomer$orders$items$lines
+        >
+      >,
+    )
+    _fn,
+  );
   TRes discounts(
-      Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$discounts> Function(
-              Iterable<
-                  CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-                      Query$GetActiveCustomer$activeCustomer$orders$items$discounts>>)
-          _fn);
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$discounts>
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
+          Query$GetActiveCustomer$activeCustomer$orders$items$discounts
+        >
+      >,
+    )
+    _fn,
+  );
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer<TRes>
-      get customer;
+  get customer;
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-      TRes> get shippingAddress;
+    TRes
+  >
+  get shippingAddress;
   TRes surcharges(
-      Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$surcharges> Function(
-              Iterable<
-                  CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-                      Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>>)
-          _fn);
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
+          Query$GetActiveCustomer$activeCustomer$orders$items$surcharges
+        >
+      >,
+    )
+    _fn,
+  );
   TRes payments(
-      Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$payments>? Function(
-              Iterable<
-                  CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-                      Query$GetActiveCustomer$activeCustomer$orders$items$payments>>?)
-          _fn);
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$payments>?
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
+          Query$GetActiveCustomer$activeCustomer$orders$items$payments
+        >
+      >?,
+    )
+    _fn,
+  );
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-      TRes> get billingAddress;
+    TRes
+  >
+  get billingAddress;
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-      TRes> get customFields;
+    TRes
+  >
+  get customFields;
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items<TRes>
@@ -7680,7 +7784,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items<TRes>
   final Query$GetActiveCustomer$activeCustomer$orders$items _instance;
 
   final TRes Function(Query$GetActiveCustomer$activeCustomer$orders$items)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -7703,169 +7807,234 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items<TRes>
     Object? billingAddress = _undefined,
     Object? customFields = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        currencyCode: currencyCode == _undefined || currencyCode == null
-            ? _instance.currencyCode
-            : (currencyCode as Enum$CurrencyCode),
-        orderPlacedAt: orderPlacedAt == _undefined
-            ? _instance.orderPlacedAt
-            : (orderPlacedAt as DateTime?),
-        lines: lines == _undefined || lines == null
-            ? _instance.lines
-            : (lines as List<
-                Query$GetActiveCustomer$activeCustomer$orders$items$lines>),
-        active: active == _undefined || active == null
-            ? _instance.active
-            : (active as bool),
-        discounts: discounts == _undefined || discounts == null
-            ? _instance.discounts
-            : (discounts as List<
-                Query$GetActiveCustomer$activeCustomer$orders$items$discounts>),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        state: state == _undefined || state == null
-            ? _instance.state
-            : (state as String),
-        customer: customer == _undefined
-            ? _instance.customer
-            : (customer
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      currencyCode: currencyCode == _undefined || currencyCode == null
+          ? _instance.currencyCode
+          : (currencyCode as Enum$CurrencyCode),
+      orderPlacedAt: orderPlacedAt == _undefined
+          ? _instance.orderPlacedAt
+          : (orderPlacedAt as DateTime?),
+      lines: lines == _undefined || lines == null
+          ? _instance.lines
+          : (lines
+                as List<
+                  Query$GetActiveCustomer$activeCustomer$orders$items$lines
+                >),
+      active: active == _undefined || active == null
+          ? _instance.active
+          : (active as bool),
+      discounts: discounts == _undefined || discounts == null
+          ? _instance.discounts
+          : (discounts
+                as List<
+                  Query$GetActiveCustomer$activeCustomer$orders$items$discounts
+                >),
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      state: state == _undefined || state == null
+          ? _instance.state
+          : (state as String),
+      customer: customer == _undefined
+          ? _instance.customer
+          : (customer
                 as Query$GetActiveCustomer$activeCustomer$orders$items$customer?),
-        shippingAddress: shippingAddress == _undefined
-            ? _instance.shippingAddress
-            : (shippingAddress
+      shippingAddress: shippingAddress == _undefined
+          ? _instance.shippingAddress
+          : (shippingAddress
                 as Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress?),
-        surcharges: surcharges == _undefined || surcharges == null
-            ? _instance.surcharges
-            : (surcharges as List<
-                Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>),
-        couponCodes: couponCodes == _undefined || couponCodes == null
-            ? _instance.couponCodes
-            : (couponCodes as List<String>),
-        payments: payments == _undefined
-            ? _instance.payments
-            : (payments as List<
-                Query$GetActiveCustomer$activeCustomer$orders$items$payments>?),
-        totalQuantity: totalQuantity == _undefined || totalQuantity == null
-            ? _instance.totalQuantity
-            : (totalQuantity as int),
-        totalWithTax: totalWithTax == _undefined || totalWithTax == null
-            ? _instance.totalWithTax
-            : (totalWithTax as double),
-        billingAddress: billingAddress == _undefined
-            ? _instance.billingAddress
-            : (billingAddress
+      surcharges: surcharges == _undefined || surcharges == null
+          ? _instance.surcharges
+          : (surcharges
+                as List<
+                  Query$GetActiveCustomer$activeCustomer$orders$items$surcharges
+                >),
+      couponCodes: couponCodes == _undefined || couponCodes == null
+          ? _instance.couponCodes
+          : (couponCodes as List<String>),
+      payments: payments == _undefined
+          ? _instance.payments
+          : (payments
+                as List<
+                  Query$GetActiveCustomer$activeCustomer$orders$items$payments
+                >?),
+      totalQuantity: totalQuantity == _undefined || totalQuantity == null
+          ? _instance.totalQuantity
+          : (totalQuantity as int),
+      totalWithTax: totalWithTax == _undefined || totalWithTax == null
+          ? _instance.totalWithTax
+          : (totalWithTax as double),
+      billingAddress: billingAddress == _undefined
+          ? _instance.billingAddress
+          : (billingAddress
                 as Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress?),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields
+      customFields: customFields == _undefined
+          ? _instance.customFields
+          : (customFields
                 as Query$GetActiveCustomer$activeCustomer$orders$items$customFields?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   TRes lines(
-          Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$lines> Function(
-                  Iterable<
-                      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-                          Query$GetActiveCustomer$activeCustomer$orders$items$lines>>)
-              _fn) =>
-      call(
-          lines: _fn(_instance.lines.map((e) =>
-              CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines(
-                e,
-                (i) => i,
-              ))).toList());
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$lines>
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
+          Query$GetActiveCustomer$activeCustomer$orders$items$lines
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    lines: _fn(
+      _instance.lines.map(
+        (e) =>
+            CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
 
   TRes discounts(
-          Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$discounts> Function(
-                  Iterable<
-                      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-                          Query$GetActiveCustomer$activeCustomer$orders$items$discounts>>)
-              _fn) =>
-      call(
-          discounts: _fn(_instance.discounts.map((e) =>
-              CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
-                e,
-                (i) => i,
-              ))).toList());
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$discounts>
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
+          Query$GetActiveCustomer$activeCustomer$orders$items$discounts
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    discounts: _fn(
+      _instance.discounts.map(
+        (e) =>
+            CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer<TRes>
-      get customer {
+  get customer {
     final local$customer = _instance.customer;
     return local$customer == null
-        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer
-            .stub(_then(_instance))
+        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer.stub(
+            _then(_instance),
+          )
         : CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer(
-            local$customer, (e) => call(customer: e));
+            local$customer,
+            (e) => call(customer: e),
+          );
   }
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-      TRes> get shippingAddress {
+    TRes
+  >
+  get shippingAddress {
     final local$shippingAddress = _instance.shippingAddress;
     return local$shippingAddress == null
-        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress
-            .stub(_then(_instance))
+        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress.stub(
+            _then(_instance),
+          )
         : CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
-            local$shippingAddress, (e) => call(shippingAddress: e));
+            local$shippingAddress,
+            (e) => call(shippingAddress: e),
+          );
   }
 
   TRes surcharges(
-          Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$surcharges> Function(
-                  Iterable<
-                      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-                          Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>>)
-              _fn) =>
-      call(
-          surcharges: _fn(_instance.surcharges.map((e) =>
-              CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
-                e,
-                (i) => i,
-              ))).toList());
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
+          Query$GetActiveCustomer$activeCustomer$orders$items$surcharges
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    surcharges: _fn(
+      _instance.surcharges.map(
+        (e) =>
+            CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
 
   TRes payments(
-          Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$payments>? Function(
-                  Iterable<
-                      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-                          Query$GetActiveCustomer$activeCustomer$orders$items$payments>>?)
-              _fn) =>
-      call(
-          payments: _fn(_instance.payments?.map((e) =>
-              CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments(
-                e,
-                (i) => i,
-              )))?.toList());
+    Iterable<Query$GetActiveCustomer$activeCustomer$orders$items$payments>?
+    Function(
+      Iterable<
+        CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
+          Query$GetActiveCustomer$activeCustomer$orders$items$payments
+        >
+      >?,
+    )
+    _fn,
+  ) => call(
+    payments: _fn(
+      _instance.payments?.map(
+        (e) =>
+            CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments(
+              e,
+              (i) => i,
+            ),
+      ),
+    )?.toList(),
+  );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-      TRes> get billingAddress {
+    TRes
+  >
+  get billingAddress {
     final local$billingAddress = _instance.billingAddress;
     return local$billingAddress == null
-        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress
-            .stub(_then(_instance))
+        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress.stub(
+            _then(_instance),
+          )
         : CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
-            local$billingAddress, (e) => call(billingAddress: e));
+            local$billingAddress,
+            (e) => call(billingAddress: e),
+          );
   }
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-      TRes> get customFields {
+    TRes
+  >
+  get customFields {
     final local$customFields = _instance.customFields;
     return local$customFields == null
-        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields
-            .stub(_then(_instance))
+        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields.stub(
+            _then(_instance),
+          )
         : CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
-            local$customFields, (e) => call(customFields: e));
+            local$customFields,
+            (e) => call(customFields: e),
+          );
   }
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items<TRes> {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -7876,57 +8045,63 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items<
     List<Query$GetActiveCustomer$activeCustomer$orders$items$lines>? lines,
     bool? active,
     List<Query$GetActiveCustomer$activeCustomer$orders$items$discounts>?
-        discounts,
+    discounts,
     String? code,
     String? state,
     Query$GetActiveCustomer$activeCustomer$orders$items$customer? customer,
     Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress?
-        shippingAddress,
+    shippingAddress,
     List<Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>?
-        surcharges,
+    surcharges,
     List<String>? couponCodes,
     List<Query$GetActiveCustomer$activeCustomer$orders$items$payments>?
-        payments,
+    payments,
     int? totalQuantity,
     double? totalWithTax,
     Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress?
-        billingAddress,
+    billingAddress,
     Query$GetActiveCustomer$activeCustomer$orders$items$customFields?
-        customFields,
+    customFields,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   lines(_fn) => _res;
 
   discounts(_fn) => _res;
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer<TRes>
-      get customer =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer
-              .stub(_res);
+  get customer =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer.stub(
+        _res,
+      );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-          TRes>
-      get shippingAddress =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress
-              .stub(_res);
+    TRes
+  >
+  get shippingAddress =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress.stub(
+        _res,
+      );
 
   surcharges(_fn) => _res;
 
   payments(_fn) => _res;
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-          TRes>
-      get billingAddress =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress
-              .stub(_res);
+    TRes
+  >
+  get billingAddress =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress.stub(
+        _res,
+      );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-          TRes>
-      get customFields =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields
-              .stub(_res);
+    TRes
+  >
+  get customFields =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields.stub(
+        _res,
+      );
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$lines {
@@ -7939,7 +8114,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$lines.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
     final l$productVariant = json['productVariant'];
@@ -7949,12 +8125,14 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines {
       id: (l$id as String),
       quantity: (l$quantity as int),
       productVariant:
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant
-              .fromJson((l$productVariant as Map<String, dynamic>)),
+          Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant.fromJson(
+            (l$productVariant as Map<String, dynamic>),
+          ),
       featuredAsset: l$featuredAsset == null
           ? null
-          : Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset
-              .fromJson((l$featuredAsset as Map<String, dynamic>)),
+          : Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset.fromJson(
+              (l$featuredAsset as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -7964,10 +8142,10 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines {
   final int quantity;
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant
-      productVariant;
+  productVariant;
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset?
-      featuredAsset;
+  featuredAsset;
 
   final String $__typename;
 
@@ -8043,46 +8221,54 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$lines
     on Query$GetActiveCustomer$activeCustomer$orders$items$lines {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines(
     Query$GetActiveCustomer$activeCustomer$orders$items$lines instance,
     TRes Function(Query$GetActiveCustomer$activeCustomer$orders$items$lines)
-        then,
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines;
 
   TRes call({
     String? id,
     int? quantity,
     Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant?
-        productVariant,
+    productVariant,
     Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset?
-        featuredAsset,
+    featuredAsset,
     String? $__typename,
   });
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-      TRes> get productVariant;
+    TRes
+  >
+  get productVariant;
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-      TRes> get featuredAsset;
+    TRes
+  >
+  get featuredAsset;
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines(
     this._instance,
     this._then,
@@ -8091,7 +8277,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
   final Query$GetActiveCustomer$activeCustomer$orders$items$lines _instance;
 
   final TRes Function(Query$GetActiveCustomer$activeCustomer$orders$items$lines)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -8101,50 +8287,63 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
     Object? productVariant = _undefined,
     Object? featuredAsset = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$lines(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        quantity: quantity == _undefined || quantity == null
-            ? _instance.quantity
-            : (quantity as int),
-        productVariant: productVariant == _undefined || productVariant == null
-            ? _instance.productVariant
-            : (productVariant
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      quantity: quantity == _undefined || quantity == null
+          ? _instance.quantity
+          : (quantity as int),
+      productVariant: productVariant == _undefined || productVariant == null
+          ? _instance.productVariant
+          : (productVariant
                 as Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant),
-        featuredAsset: featuredAsset == _undefined
-            ? _instance.featuredAsset
-            : (featuredAsset
+      featuredAsset: featuredAsset == _undefined
+          ? _instance.featuredAsset
+          : (featuredAsset
                 as Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-      TRes> get productVariant {
+    TRes
+  >
+  get productVariant {
     final local$productVariant = _instance.productVariant;
     return CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
-        local$productVariant, (e) => call(productVariant: e));
+      local$productVariant,
+      (e) => call(productVariant: e),
+    );
   }
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-      TRes> get featuredAsset {
+    TRes
+  >
+  get featuredAsset {
     final local$featuredAsset = _instance.featuredAsset;
     return local$featuredAsset == null
-        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset
-            .stub(_then(_instance))
+        ? CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset.stub(
+            _then(_instance),
+          )
         : CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
-            local$featuredAsset, (e) => call(featuredAsset: e));
+            local$featuredAsset,
+            (e) => call(featuredAsset: e),
+          );
   }
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -8152,24 +8351,27 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$line
     String? id,
     int? quantity,
     Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant?
-        productVariant,
+    productVariant,
     Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset?
-        featuredAsset,
+    featuredAsset,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-          TRes>
-      get productVariant =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant
-              .stub(_res);
+    TRes
+  >
+  get productVariant =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant.stub(
+        _res,
+      );
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-          TRes>
-      get featuredAsset =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset
-              .stub(_res);
+    TRes
+  >
+  get featuredAsset =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset.stub(
+        _res,
+      );
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant {
@@ -8179,7 +8381,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$name = json['name'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
@@ -8205,10 +8408,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant {
   int get hashCode {
     final l$name = name;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$name,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$name, l$$__typename]);
   }
 
   @override
@@ -8238,83 +8438,85 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant
     on Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
     Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant
-        instance,
+    instance,
     TRes Function(
-            Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant)
-        then,
+      Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant;
 
-  TRes call({
-    String? name,
-    String? $__typename,
-  });
+  TRes call({String? name, String? $__typename});
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
     this._instance,
     this._then,
   );
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant
-      _instance;
+  _instance;
 
   final TRes Function(
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant)
-      _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
     Object? name = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$productVariant(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    String? name,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? name, String? $__typename}) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset {
@@ -8325,7 +8527,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$name = json['name'];
     final l$preview = json['preview'];
     final l$$__typename = json['__typename'];
@@ -8358,11 +8561,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset {
     final l$name = name;
     final l$preview = preview;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$name,
-      l$preview,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$name, l$preview, l$$__typename]);
   }
 
   @override
@@ -8397,51 +8596,53 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset
     on Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
     Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset
-        instance,
+    instance,
     TRes Function(
-            Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset)
-        then,
+      Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset;
 
-  TRes call({
-    String? name,
-    String? preview,
-    String? $__typename,
-  });
+  TRes call({String? name, String? preview, String? $__typename});
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
     this._instance,
     this._then,
   );
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset
-      _instance;
+  _instance;
 
   final TRes Function(
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset)
-      _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -8449,37 +8650,35 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$fe
     Object? name = _undefined,
     Object? preview = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        preview: preview == _undefined || preview == null
-            ? _instance.preview
-            : (preview as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
+      name: name == _undefined || name == null
+          ? _instance.name
+          : (name as String),
+      preview: preview == _undefined || preview == null
+          ? _instance.preview
+          : (preview as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$lines$featuredAsset(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    String? name,
-    String? preview,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? name, String? preview, String? $__typename}) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$discounts {
@@ -8489,7 +8688,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$discounts {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$discounts.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$amount = json['amount'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
@@ -8515,10 +8715,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$discounts {
   int get hashCode {
     final l$amount = amount;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$amount,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$amount, l$$__typename]);
   }
 
   @override
@@ -8548,37 +8745,38 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$discounts {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$discounts
     on Query$GetActiveCustomer$activeCustomer$orders$items$discounts {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-          Query$GetActiveCustomer$activeCustomer$orders$items$discounts>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$discounts
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
     Query$GetActiveCustomer$activeCustomer$orders$items$discounts instance,
     TRes Function(Query$GetActiveCustomer$activeCustomer$orders$items$discounts)
-        then,
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discounts;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discounts;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discounts;
 
-  TRes call({
-    double? amount,
-    String? $__typename,
-  });
+  TRes call({double? amount, String? $__typename});
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
     this._instance,
     this._then,
@@ -8587,39 +8785,39 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discount
   final Query$GetActiveCustomer$activeCustomer$orders$items$discounts _instance;
 
   final TRes Function(
-      Query$GetActiveCustomer$activeCustomer$orders$items$discounts) _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$discounts,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? amount = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
-        amount: amount == _undefined || amount == null
-            ? _instance.amount
-            : (amount as double),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? amount = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
+          amount: amount == _undefined || amount == null
+              ? _instance.amount
+              : (amount as double),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$discounts<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$discounts(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    double? amount,
-    String? $__typename,
-  }) =>
-      _res;
+  call({double? amount, String? $__typename}) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$customer {
@@ -8630,7 +8828,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customer {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$customer.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$firstName = json['firstName'];
     final l$lastName = json['lastName'];
     final l$$__typename = json['__typename'];
@@ -8663,11 +8862,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customer {
     final l$firstName = firstName;
     final l$lastName = lastName;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$firstName,
-      l$lastName,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$firstName, l$lastName, l$$__typename]);
   }
 
   @override
@@ -8702,38 +8897,38 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customer {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$customer
     on Query$GetActiveCustomer$activeCustomer$orders$items$customer {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer<
-          Query$GetActiveCustomer$activeCustomer$orders$items$customer>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$customer
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer(
     Query$GetActiveCustomer$activeCustomer$orders$items$customer instance,
     TRes Function(Query$GetActiveCustomer$activeCustomer$orders$items$customer)
-        then,
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer;
 
-  TRes call({
-    String? firstName,
-    String? lastName,
-    String? $__typename,
-  });
+  TRes call({String? firstName, String? lastName, String? $__typename});
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer(
     this._instance,
     this._then,
@@ -8742,7 +8937,9 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer
   final Query$GetActiveCustomer$activeCustomer$orders$items$customer _instance;
 
   final TRes Function(
-      Query$GetActiveCustomer$activeCustomer$orders$items$customer) _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$customer,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -8750,36 +8947,35 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer
     Object? firstName = _undefined,
     Object? lastName = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$customer(
-        firstName: firstName == _undefined || firstName == null
-            ? _instance.firstName
-            : (firstName as String),
-        lastName: lastName == _undefined || lastName == null
-            ? _instance.lastName
-            : (lastName as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$customer(
+      firstName: firstName == _undefined || firstName == null
+          ? _instance.firstName
+          : (firstName as String),
+      lastName: lastName == _undefined || lastName == null
+          ? _instance.lastName
+          : (lastName as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customer<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customer(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    String? firstName,
-    String? lastName,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? firstName, String? lastName, String? $__typename}) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress {
@@ -8795,7 +8991,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$country = json['country'];
     final l$city = json['city'];
     final l$phoneNumber = json['phoneNumber'];
@@ -8932,27 +9129,30 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress
     on Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-          Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
     Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress
-        instance,
+    instance,
     TRes Function(
-            Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress)
-        then,
+      Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress;
 
   TRes call({
     String? country,
@@ -8967,21 +9167,24 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$ship
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
     this._instance,
     this._then,
   );
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress
-      _instance;
+  _instance;
 
   final TRes Function(
-          Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress)
-      _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -8994,38 +9197,42 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shipping
     Object? postalCode = _undefined,
     Object? fullName = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
-        country:
-            country == _undefined ? _instance.country : (country as String?),
-        city: city == _undefined ? _instance.city : (city as String?),
-        phoneNumber: phoneNumber == _undefined
-            ? _instance.phoneNumber
-            : (phoneNumber as String?),
-        streetLine1: streetLine1 == _undefined
-            ? _instance.streetLine1
-            : (streetLine1 as String?),
-        streetLine2: streetLine2 == _undefined
-            ? _instance.streetLine2
-            : (streetLine2 as String?),
-        postalCode: postalCode == _undefined
-            ? _instance.postalCode
-            : (postalCode as String?),
-        fullName:
-            fullName == _undefined ? _instance.fullName : (fullName as String?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
+      country: country == _undefined ? _instance.country : (country as String?),
+      city: city == _undefined ? _instance.city : (city as String?),
+      phoneNumber: phoneNumber == _undefined
+          ? _instance.phoneNumber
+          : (phoneNumber as String?),
+      streetLine1: streetLine1 == _undefined
+          ? _instance.streetLine1
+          : (streetLine1 as String?),
+      streetLine2: streetLine2 == _undefined
+          ? _instance.streetLine2
+          : (streetLine2 as String?),
+      postalCode: postalCode == _undefined
+          ? _instance.postalCode
+          : (postalCode as String?),
+      fullName: fullName == _undefined
+          ? _instance.fullName
+          : (fullName as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$shippingAddress(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -9038,8 +9245,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$ship
     String? postalCode,
     String? fullName,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$surcharges {
@@ -9050,7 +9256,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$surcharges {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$surcharges.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$price = json['price'];
     final l$priceWithTax = json['priceWithTax'];
     final l$$__typename = json['__typename'];
@@ -9083,11 +9290,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$surcharges {
     final l$price = price;
     final l$priceWithTax = priceWithTax;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$price,
-      l$priceWithTax,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$price, l$priceWithTax, l$$__typename]);
   }
 
   @override
@@ -9122,49 +9325,52 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$surcharges {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges
     on Query$GetActiveCustomer$activeCustomer$orders$items$surcharges {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-          Query$GetActiveCustomer$activeCustomer$orders$items$surcharges>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$surcharges
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
     Query$GetActiveCustomer$activeCustomer$orders$items$surcharges instance,
     TRes Function(
-            Query$GetActiveCustomer$activeCustomer$orders$items$surcharges)
-        then,
+      Query$GetActiveCustomer$activeCustomer$orders$items$surcharges,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges;
 
-  TRes call({
-    double? price,
-    double? priceWithTax,
-    String? $__typename,
-  });
+  TRes call({double? price, double? priceWithTax, String? $__typename});
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
     this._instance,
     this._then,
   );
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$surcharges
-      _instance;
+  _instance;
 
   final TRes Function(
-      Query$GetActiveCustomer$activeCustomer$orders$items$surcharges) _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$surcharges,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -9172,36 +9378,35 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharg
     Object? price = _undefined,
     Object? priceWithTax = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
-        price: price == _undefined || price == null
-            ? _instance.price
-            : (price as double),
-        priceWithTax: priceWithTax == _undefined || priceWithTax == null
-            ? _instance.priceWithTax
-            : (priceWithTax as double),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
+      price: price == _undefined || price == null
+          ? _instance.price
+          : (price as double),
+      priceWithTax: priceWithTax == _undefined || priceWithTax == null
+          ? _instance.priceWithTax
+          : (priceWithTax as double),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$surcharges(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    double? price,
-    double? priceWithTax,
-    String? $__typename,
-  }) =>
-      _res;
+  call({double? price, double? priceWithTax, String? $__typename}) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$payments {
@@ -9215,7 +9420,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$payments {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$payments.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$state = json['state'];
     final l$createdAt = json['createdAt'];
     final l$method = json['method'];
@@ -9326,25 +9532,27 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$payments {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$payments
     on Query$GetActiveCustomer$activeCustomer$orders$items$payments {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-          Query$GetActiveCustomer$activeCustomer$orders$items$payments>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$payments
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments(
     Query$GetActiveCustomer$activeCustomer$orders$items$payments instance,
     TRes Function(Query$GetActiveCustomer$activeCustomer$orders$items$payments)
-        then,
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments;
 
   TRes call({
     String? state,
@@ -9357,10 +9565,12 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$paym
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments(
     this._instance,
     this._then,
@@ -9369,7 +9579,9 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments
   final Query$GetActiveCustomer$activeCustomer$orders$items$payments _instance;
 
   final TRes Function(
-      Query$GetActiveCustomer$activeCustomer$orders$items$payments) _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$payments,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -9380,36 +9592,40 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments
     Object? amount = _undefined,
     Object? transactionId = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$payments(
-        state: state == _undefined || state == null
-            ? _instance.state
-            : (state as String),
-        createdAt: createdAt == _undefined || createdAt == null
-            ? _instance.createdAt
-            : (createdAt as DateTime),
-        method: method == _undefined || method == null
-            ? _instance.method
-            : (method as String),
-        amount: amount == _undefined || amount == null
-            ? _instance.amount
-            : (amount as double),
-        transactionId: transactionId == _undefined
-            ? _instance.transactionId
-            : (transactionId as String?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$payments(
+      state: state == _undefined || state == null
+          ? _instance.state
+          : (state as String),
+      createdAt: createdAt == _undefined || createdAt == null
+          ? _instance.createdAt
+          : (createdAt as DateTime),
+      method: method == _undefined || method == null
+          ? _instance.method
+          : (method as String),
+      amount: amount == _undefined || amount == null
+          ? _instance.amount
+          : (amount as double),
+      transactionId: transactionId == _undefined
+          ? _instance.transactionId
+          : (transactionId as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$payments<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$payments(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -9420,8 +9636,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$paym
     double? amount,
     String? transactionId,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress {
@@ -9436,7 +9651,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$postalCode = json['postalCode'];
     final l$streetLine2 = json['streetLine2'];
     final l$fullName = json['fullName'];
@@ -9560,26 +9776,29 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress
     on Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-          Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
     Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress instance,
     TRes Function(
-            Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress)
-        then,
+      Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress;
 
   TRes call({
     String? postalCode,
@@ -9593,20 +9812,24 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$bill
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
     this._instance,
     this._then,
   );
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress
-      _instance;
+  _instance;
 
   final TRes Function(
-      Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress) _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -9618,36 +9841,41 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingA
     Object? phoneNumber = _undefined,
     Object? streetLine1 = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
-        postalCode: postalCode == _undefined
-            ? _instance.postalCode
-            : (postalCode as String?),
-        streetLine2: streetLine2 == _undefined
-            ? _instance.streetLine2
-            : (streetLine2 as String?),
-        fullName:
-            fullName == _undefined ? _instance.fullName : (fullName as String?),
-        city: city == _undefined ? _instance.city : (city as String?),
-        phoneNumber: phoneNumber == _undefined
-            ? _instance.phoneNumber
-            : (phoneNumber as String?),
-        streetLine1: streetLine1 == _undefined
-            ? _instance.streetLine1
-            : (streetLine1 as String?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
+      postalCode: postalCode == _undefined
+          ? _instance.postalCode
+          : (postalCode as String?),
+      streetLine2: streetLine2 == _undefined
+          ? _instance.streetLine2
+          : (streetLine2 as String?),
+      fullName: fullName == _undefined
+          ? _instance.fullName
+          : (fullName as String?),
+      city: city == _undefined ? _instance.city : (city as String?),
+      phoneNumber: phoneNumber == _undefined
+          ? _instance.phoneNumber
+          : (phoneNumber as String?),
+      streetLine1: streetLine1 == _undefined
+          ? _instance.streetLine1
+          : (streetLine1 as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$billingAddress(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -9659,8 +9887,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$bill
     String? phoneNumber,
     String? streetLine1,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
@@ -9673,7 +9900,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
   });
 
   factory Query$GetActiveCustomer$activeCustomer$orders$items$customFields.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$otherInstructions = json['otherInstructions'];
@@ -9771,26 +9999,29 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
 extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$orders$items$customFields
     on Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-          Query$GetActiveCustomer$activeCustomer$orders$items$customFields>
-      get copyWith =>
-          CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
-            this,
-            (i) => i,
-          );
+    Query$GetActiveCustomer$activeCustomer$orders$items$customFields
+  >
+  get copyWith =>
+      CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
     Query$GetActiveCustomer$activeCustomer$orders$items$customFields instance,
     TRes Function(
-            Query$GetActiveCustomer$activeCustomer$orders$items$customFields)
-        then,
+      Query$GetActiveCustomer$activeCustomer$orders$items$customFields,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFields;
 
   factory CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFields;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFields;
 
   TRes call({
     int? loyaltyPointsUsed,
@@ -9802,20 +10033,24 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$cust
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
     this._instance,
     this._then,
   );
 
   final Query$GetActiveCustomer$activeCustomer$orders$items$customFields
-      _instance;
+  _instance;
 
   final TRes Function(
-      Query$GetActiveCustomer$activeCustomer$orders$items$customFields) _then;
+    Query$GetActiveCustomer$activeCustomer$orders$items$customFields,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -9825,33 +10060,37 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFi
     Object? otherInstructions = _undefined,
     Object? clientRequestToCancel = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
-        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
-            ? _instance.loyaltyPointsUsed
-            : (loyaltyPointsUsed as int?),
-        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
-            ? _instance.loyaltyPointsEarned
-            : (loyaltyPointsEarned as int?),
-        otherInstructions: otherInstructions == _undefined
-            ? _instance.otherInstructions
-            : (otherInstructions as String?),
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
+      loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+          ? _instance.loyaltyPointsUsed
+          : (loyaltyPointsUsed as int?),
+      loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+          ? _instance.loyaltyPointsEarned
+          : (loyaltyPointsEarned as int?),
+      otherInstructions: otherInstructions == _undefined
+          ? _instance.otherInstructions
+          : (otherInstructions as String?),
+      clientRequestToCancel: clientRequestToCancel == _undefined
+          ? _instance.clientRequestToCancel
+          : (clientRequestToCancel as int?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$customFields<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -9861,8 +10100,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$cust
     String? otherInstructions,
     int? clientRequestToCancel,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Query$GetLoyaltyPointTransactions {
@@ -9872,14 +10110,16 @@ class Query$GetLoyaltyPointTransactions {
   });
 
   factory Query$GetLoyaltyPointTransactions.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$activeCustomer = json['activeCustomer'];
     final l$$__typename = json['__typename'];
     return Query$GetLoyaltyPointTransactions(
       activeCustomer: l$activeCustomer == null
           ? null
           : Query$GetLoyaltyPointTransactions$activeCustomer.fromJson(
-              (l$activeCustomer as Map<String, dynamic>)),
+              (l$activeCustomer as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -9901,10 +10141,7 @@ class Query$GetLoyaltyPointTransactions {
   int get hashCode {
     final l$activeCustomer = activeCustomer;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$activeCustomer,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$activeCustomer, l$$__typename]);
   }
 
   @override
@@ -9933,10 +10170,7 @@ class Query$GetLoyaltyPointTransactions {
 extension UtilityExtension$Query$GetLoyaltyPointTransactions
     on Query$GetLoyaltyPointTransactions {
   CopyWith$Query$GetLoyaltyPointTransactions<Query$GetLoyaltyPointTransactions>
-      get copyWith => CopyWith$Query$GetLoyaltyPointTransactions(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Query$GetLoyaltyPointTransactions(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetLoyaltyPointTransactions<TRes> {
@@ -9953,15 +10187,12 @@ abstract class CopyWith$Query$GetLoyaltyPointTransactions<TRes> {
     String? $__typename,
   });
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer<TRes>
-      get activeCustomer;
+  get activeCustomer;
 }
 
 class _CopyWithImpl$Query$GetLoyaltyPointTransactions<TRes>
     implements CopyWith$Query$GetLoyaltyPointTransactions<TRes> {
-  _CopyWithImpl$Query$GetLoyaltyPointTransactions(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetLoyaltyPointTransactions(this._instance, this._then);
 
   final Query$GetLoyaltyPointTransactions _instance;
 
@@ -9972,25 +10203,29 @@ class _CopyWithImpl$Query$GetLoyaltyPointTransactions<TRes>
   TRes call({
     Object? activeCustomer = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetLoyaltyPointTransactions(
-        activeCustomer: activeCustomer == _undefined
-            ? _instance.activeCustomer
-            : (activeCustomer
+  }) => _then(
+    Query$GetLoyaltyPointTransactions(
+      activeCustomer: activeCustomer == _undefined
+          ? _instance.activeCustomer
+          : (activeCustomer
                 as Query$GetLoyaltyPointTransactions$activeCustomer?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer<TRes>
-      get activeCustomer {
+  get activeCustomer {
     final local$activeCustomer = _instance.activeCustomer;
     return local$activeCustomer == null
         ? CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer.stub(
-            _then(_instance))
+            _then(_instance),
+          )
         : CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer(
-            local$activeCustomer, (e) => call(activeCustomer: e));
+            local$activeCustomer,
+            (e) => call(activeCustomer: e),
+          );
   }
 }
 
@@ -10003,103 +10238,135 @@ class _CopyWithStubImpl$Query$GetLoyaltyPointTransactions<TRes>
   call({
     Query$GetLoyaltyPointTransactions$activeCustomer? activeCustomer,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer<TRes>
-      get activeCustomer =>
-          CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer.stub(_res);
+  get activeCustomer =>
+      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer.stub(_res);
 }
 
-const documentNodeQueryGetLoyaltyPointTransactions = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetLoyaltyPointTransactions'),
-    variableDefinitions: [],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'activeCustomer'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+const documentNodeQueryGetLoyaltyPointTransactions = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'GetLoyaltyPointTransactions'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: '__typename'),
+            name: NameNode(value: 'activeCustomer'),
             alias: null,
             arguments: [],
             directives: [],
-            selectionSet: null,
-          ),
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'Customer'),
-              isNonNull: false,
-            )),
-            directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'orders'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  FieldNode(
-                    name: NameNode(value: 'items'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: SelectionSetNode(selections: [
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                InlineFragmentNode(
+                  typeCondition: TypeConditionNode(
+                    on: NamedTypeNode(
+                      name: NameNode(value: 'Customer'),
+                      isNonNull: false,
+                    ),
+                  ),
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
                       FieldNode(
-                        name: NameNode(value: 'code'),
+                        name: NameNode(value: 'orders'),
                         alias: null,
                         arguments: [],
                         directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'state'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'orderPlacedAt'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'customFields'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: SelectionSetNode(selections: [
-                          FieldNode(
-                            name: NameNode(value: 'loyaltyPointsEarned'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: 'loyaltyPointsUsed'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
-                            name: NameNode(value: '__typename'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                        ]),
+                        selectionSet: SelectionSetNode(
+                          selections: [
+                            FieldNode(
+                              name: NameNode(value: 'items'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: SelectionSetNode(
+                                selections: [
+                                  FieldNode(
+                                    name: NameNode(value: 'code'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'state'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'orderPlacedAt'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'customFields'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(
+                                      selections: [
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'loyaltyPointsEarned',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(
+                                            value: 'loyaltyPointsUsed',
+                                          ),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                        FieldNode(
+                                          name: NameNode(value: '__typename'),
+                                          alias: null,
+                                          arguments: [],
+                                          directives: [],
+                                          selectionSet: null,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: '__typename'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            FieldNode(
+                              name: NameNode(value: '__typename'),
+                              alias: null,
+                              arguments: [],
+                              directives: [],
+                              selectionSet: null,
+                            ),
+                          ],
+                        ),
                       ),
                       FieldNode(
                         name: NameNode(value: '__typename'),
@@ -10108,46 +10375,32 @@ const documentNodeQueryGetLoyaltyPointTransactions = DocumentNode(definitions: [
                         directives: [],
                         selectionSet: null,
                       ),
-                    ]),
+                    ],
                   ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
+                ),
+              ],
+            ),
           ),
-        ]),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetLoyaltyPointTransactions _parserFn$Query$GetLoyaltyPointTransactions(
-        Map<String, dynamic> data) =>
-    Query$GetLoyaltyPointTransactions.fromJson(data);
-typedef OnQueryComplete$Query$GetLoyaltyPointTransactions = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Query$GetLoyaltyPointTransactions?,
+    ),
+  ],
 );
+Query$GetLoyaltyPointTransactions _parserFn$Query$GetLoyaltyPointTransactions(
+  Map<String, dynamic> data,
+) => Query$GetLoyaltyPointTransactions.fromJson(data);
+typedef OnQueryComplete$Query$GetLoyaltyPointTransactions =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Query$GetLoyaltyPointTransactions?,
+    );
 
 class Options$Query$GetLoyaltyPointTransactions
     extends graphql.QueryOptions<Query$GetLoyaltyPointTransactions> {
@@ -10162,37 +10415,37 @@ class Options$Query$GetLoyaltyPointTransactions
     graphql.Context? context,
     OnQueryComplete$Query$GetLoyaltyPointTransactions? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$GetLoyaltyPointTransactions(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetLoyaltyPointTransactions,
-          parserFn: _parserFn$Query$GetLoyaltyPointTransactions,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$GetLoyaltyPointTransactions(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryGetLoyaltyPointTransactions,
+         parserFn: _parserFn$Query$GetLoyaltyPointTransactions,
+       );
 
   final OnQueryComplete$Query$GetLoyaltyPointTransactions? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$GetLoyaltyPointTransactions
@@ -10210,60 +10463,68 @@ class WatchOptions$Query$GetLoyaltyPointTransactions
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetLoyaltyPointTransactions,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetLoyaltyPointTransactions,
-        );
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryGetLoyaltyPointTransactions,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$GetLoyaltyPointTransactions,
+       );
 }
 
 class FetchMoreOptions$Query$GetLoyaltyPointTransactions
     extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetLoyaltyPointTransactions(
-      {required graphql.UpdateQuery updateQuery})
-      : super(
-          updateQuery: updateQuery,
-          document: documentNodeQueryGetLoyaltyPointTransactions,
-        );
+  FetchMoreOptions$Query$GetLoyaltyPointTransactions({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryGetLoyaltyPointTransactions,
+       );
 }
 
 extension ClientExtension$Query$GetLoyaltyPointTransactions
     on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetLoyaltyPointTransactions>>
-      query$GetLoyaltyPointTransactions(
-              [Options$Query$GetLoyaltyPointTransactions? options]) async =>
-          await this
-              .query(options ?? Options$Query$GetLoyaltyPointTransactions());
+  query$GetLoyaltyPointTransactions([
+    Options$Query$GetLoyaltyPointTransactions? options,
+  ]) async =>
+      await this.query(options ?? Options$Query$GetLoyaltyPointTransactions());
+
   graphql.ObservableQuery<Query$GetLoyaltyPointTransactions>
-      watchQuery$GetLoyaltyPointTransactions(
-              [WatchOptions$Query$GetLoyaltyPointTransactions? options]) =>
-          this.watchQuery(
-              options ?? WatchOptions$Query$GetLoyaltyPointTransactions());
+  watchQuery$GetLoyaltyPointTransactions([
+    WatchOptions$Query$GetLoyaltyPointTransactions? options,
+  ]) => this.watchQuery(
+    options ?? WatchOptions$Query$GetLoyaltyPointTransactions(),
+  );
+
   void writeQuery$GetLoyaltyPointTransactions({
     required Query$GetLoyaltyPointTransactions data,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-            operation: graphql.Operation(
-                document: documentNodeQueryGetLoyaltyPointTransactions)),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
-  Query$GetLoyaltyPointTransactions? readQuery$GetLoyaltyPointTransactions(
-      {bool optimistic = true}) {
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryGetLoyaltyPointTransactions,
+      ),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$GetLoyaltyPointTransactions? readQuery$GetLoyaltyPointTransactions({
+    bool optimistic = true,
+  }) {
     final result = this.readQuery(
       graphql.Request(
-          operation: graphql.Operation(
-              document: documentNodeQueryGetLoyaltyPointTransactions)),
+        operation: graphql.Operation(
+          document: documentNodeQueryGetLoyaltyPointTransactions,
+        ),
+      ),
       optimistic: optimistic,
     );
     return result == null
@@ -10273,15 +10534,17 @@ extension ClientExtension$Query$GetLoyaltyPointTransactions
 }
 
 graphql_flutter.QueryHookResult<Query$GetLoyaltyPointTransactions>
-    useQuery$GetLoyaltyPointTransactions(
-            [Options$Query$GetLoyaltyPointTransactions? options]) =>
-        graphql_flutter
-            .useQuery(options ?? Options$Query$GetLoyaltyPointTransactions());
+useQuery$GetLoyaltyPointTransactions([
+  Options$Query$GetLoyaltyPointTransactions? options,
+]) => graphql_flutter.useQuery(
+  options ?? Options$Query$GetLoyaltyPointTransactions(),
+);
 graphql.ObservableQuery<Query$GetLoyaltyPointTransactions>
-    useWatchQuery$GetLoyaltyPointTransactions(
-            [WatchOptions$Query$GetLoyaltyPointTransactions? options]) =>
-        graphql_flutter.useWatchQuery(
-            options ?? WatchOptions$Query$GetLoyaltyPointTransactions());
+useWatchQuery$GetLoyaltyPointTransactions([
+  WatchOptions$Query$GetLoyaltyPointTransactions? options,
+]) => graphql_flutter.useWatchQuery(
+  options ?? WatchOptions$Query$GetLoyaltyPointTransactions(),
+);
 
 class Query$GetLoyaltyPointTransactions$Widget
     extends graphql_flutter.Query<Query$GetLoyaltyPointTransactions> {
@@ -10289,12 +10552,12 @@ class Query$GetLoyaltyPointTransactions$Widget
     widgets.Key? key,
     Options$Query$GetLoyaltyPointTransactions? options,
     required graphql_flutter.QueryBuilder<Query$GetLoyaltyPointTransactions>
-        builder,
+    builder,
   }) : super(
-          key: key,
-          options: options ?? Options$Query$GetLoyaltyPointTransactions(),
-          builder: builder,
-        );
+         key: key,
+         options: options ?? Options$Query$GetLoyaltyPointTransactions(),
+         builder: builder,
+       );
 }
 
 class Query$GetLoyaltyPointTransactions$activeCustomer {
@@ -10304,13 +10567,15 @@ class Query$GetLoyaltyPointTransactions$activeCustomer {
   });
 
   factory Query$GetLoyaltyPointTransactions$activeCustomer.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$$__typename = json['__typename'];
     final l$orders = json['orders'];
     return Query$GetLoyaltyPointTransactions$activeCustomer(
       $__typename: (l$$__typename as String),
       orders: Query$GetLoyaltyPointTransactions$activeCustomer$orders.fromJson(
-          (l$orders as Map<String, dynamic>)),
+        (l$orders as Map<String, dynamic>),
+      ),
     );
   }
 
@@ -10331,10 +10596,7 @@ class Query$GetLoyaltyPointTransactions$activeCustomer {
   int get hashCode {
     final l$$__typename = $__typename;
     final l$orders = orders;
-    return Object.hashAll([
-      l$$__typename,
-      l$orders,
-    ]);
+    return Object.hashAll([l$$__typename, l$orders]);
   }
 
   @override
@@ -10363,11 +10625,10 @@ class Query$GetLoyaltyPointTransactions$activeCustomer {
 extension UtilityExtension$Query$GetLoyaltyPointTransactions$activeCustomer
     on Query$GetLoyaltyPointTransactions$activeCustomer {
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer<
-          Query$GetLoyaltyPointTransactions$activeCustomer>
-      get copyWith => CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer(
-            this,
-            (i) => i,
-          );
+    Query$GetLoyaltyPointTransactions$activeCustomer
+  >
+  get copyWith =>
+      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer<TRes> {
@@ -10377,15 +10638,15 @@ abstract class CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer<TRes> {
   ) = _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer;
 
   factory CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer;
 
   TRes call({
     String? $__typename,
     Query$GetLoyaltyPointTransactions$activeCustomer$orders? orders,
   });
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders<TRes>
-      get orders;
+  get orders;
 }
 
 class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer<TRes>
@@ -10401,25 +10662,26 @@ class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? $__typename = _undefined,
-    Object? orders = _undefined,
-  }) =>
-      _then(Query$GetLoyaltyPointTransactions$activeCustomer(
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-        orders: orders == _undefined || orders == null
-            ? _instance.orders
-            : (orders
-                as Query$GetLoyaltyPointTransactions$activeCustomer$orders),
-      ));
+  TRes call({Object? $__typename = _undefined, Object? orders = _undefined}) =>
+      _then(
+        Query$GetLoyaltyPointTransactions$activeCustomer(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+          orders: orders == _undefined || orders == null
+              ? _instance.orders
+              : (orders
+                    as Query$GetLoyaltyPointTransactions$activeCustomer$orders),
+        ),
+      );
 
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders<TRes>
-      get orders {
+  get orders {
     final local$orders = _instance.orders;
     return CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders(
-        local$orders, (e) => call(orders: e));
+      local$orders,
+      (e) => call(orders: e),
+    );
   }
 }
 
@@ -10432,13 +10694,13 @@ class _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer<TRes>
   call({
     String? $__typename,
     Query$GetLoyaltyPointTransactions$activeCustomer$orders? orders,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders<TRes>
-      get orders =>
-          CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders.stub(
-              _res);
+  get orders =>
+      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders.stub(
+        _res,
+      );
 }
 
 class Query$GetLoyaltyPointTransactions$activeCustomer$orders {
@@ -10448,21 +10710,25 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders {
   });
 
   factory Query$GetLoyaltyPointTransactions$activeCustomer$orders.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$items = json['items'];
     final l$$__typename = json['__typename'];
     return Query$GetLoyaltyPointTransactions$activeCustomer$orders(
       items: (l$items as List<dynamic>)
-          .map((e) =>
-              Query$GetLoyaltyPointTransactions$activeCustomer$orders$items
-                  .fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) =>
+                Query$GetLoyaltyPointTransactions$activeCustomer$orders$items.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
           .toList(),
       $__typename: (l$$__typename as String),
     );
   }
 
   final List<Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>
-      items;
+  items;
 
   final String $__typename;
 
@@ -10518,39 +10784,47 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders {
 extension UtilityExtension$Query$GetLoyaltyPointTransactions$activeCustomer$orders
     on Query$GetLoyaltyPointTransactions$activeCustomer$orders {
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders<
-          Query$GetLoyaltyPointTransactions$activeCustomer$orders>
-      get copyWith =>
-          CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders(
-            this,
-            (i) => i,
-          );
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders
+  >
+  get copyWith =>
+      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders(
     Query$GetLoyaltyPointTransactions$activeCustomer$orders instance,
     TRes Function(Query$GetLoyaltyPointTransactions$activeCustomer$orders) then,
   ) = _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders;
 
   factory CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders;
 
   TRes call({
     List<Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>? items,
     String? $__typename,
   });
   TRes items(
-      Iterable<Query$GetLoyaltyPointTransactions$activeCustomer$orders$items> Function(
-              Iterable<
-                  CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-                      Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>>)
-          _fn);
+    Iterable<Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>
+    Function(
+      Iterable<
+        CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
+          Query$GetLoyaltyPointTransactions$activeCustomer$orders$items
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders<TRes> {
   _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders(
@@ -10561,52 +10835,65 @@ class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders<
   final Query$GetLoyaltyPointTransactions$activeCustomer$orders _instance;
 
   final TRes Function(Query$GetLoyaltyPointTransactions$activeCustomer$orders)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
     Object? items = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetLoyaltyPointTransactions$activeCustomer$orders(
-        items: items == _undefined || items == null
-            ? _instance.items
-            : (items as List<
-                Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders(
+      items: items == _undefined || items == null
+          ? _instance.items
+          : (items
+                as List<
+                  Query$GetLoyaltyPointTransactions$activeCustomer$orders$items
+                >),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   TRes items(
-          Iterable<Query$GetLoyaltyPointTransactions$activeCustomer$orders$items> Function(
-                  Iterable<
-                      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-                          Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>>)
-              _fn) =>
-      call(
-          items: _fn(_instance.items.map((e) =>
-              CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
-                e,
-                (i) => i,
-              ))).toList());
+    Iterable<Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>
+    Function(
+      Iterable<
+        CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
+          Query$GetLoyaltyPointTransactions$activeCustomer$orders$items
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    items: _fn(
+      _instance.items.map(
+        (e) =>
+            CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders<TRes> {
   _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
   call({
     List<Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>? items,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   items(_fn) => _res;
 }
@@ -10621,7 +10908,8 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders$items {
   });
 
   factory Query$GetLoyaltyPointTransactions$activeCustomer$orders$items.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$code = json['code'];
     final l$state = json['state'];
     final l$orderPlacedAt = json['orderPlacedAt'];
@@ -10635,8 +10923,9 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders$items {
           : DateTime.parse((l$orderPlacedAt as String)),
       customFields: l$customFields == null
           ? null
-          : Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
-              .fromJson((l$customFields as Map<String, dynamic>)),
+          : Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields.fromJson(
+              (l$customFields as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -10648,7 +10937,7 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders$items {
   final DateTime? orderPlacedAt;
 
   final Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields?
-      customFields;
+  customFields;
 
   final String $__typename;
 
@@ -10725,43 +11014,49 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders$items {
 extension UtilityExtension$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items
     on Query$GetLoyaltyPointTransactions$activeCustomer$orders$items {
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-          Query$GetLoyaltyPointTransactions$activeCustomer$orders$items>
-      get copyWith =>
-          CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
-            this,
-            (i) => i,
-          );
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders$items
+  >
+  get copyWith =>
+      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
     Query$GetLoyaltyPointTransactions$activeCustomer$orders$items instance,
     TRes Function(Query$GetLoyaltyPointTransactions$activeCustomer$orders$items)
-        then,
+    then,
   ) = _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items;
 
   factory CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items;
 
   TRes call({
     String? code,
     String? state,
     DateTime? orderPlacedAt,
     Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields?
-        customFields,
+    customFields,
     String? $__typename,
   });
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-      TRes> get customFields;
+    TRes
+  >
+  get customFields;
 }
 
 class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
     this._instance,
     this._then,
@@ -10770,7 +11065,9 @@ class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$item
   final Query$GetLoyaltyPointTransactions$activeCustomer$orders$items _instance;
 
   final TRes Function(
-      Query$GetLoyaltyPointTransactions$activeCustomer$orders$items) _then;
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders$items,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -10780,44 +11077,53 @@ class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$item
     Object? orderPlacedAt = _undefined,
     Object? customFields = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        state: state == _undefined || state == null
-            ? _instance.state
-            : (state as String),
-        orderPlacedAt: orderPlacedAt == _undefined
-            ? _instance.orderPlacedAt
-            : (orderPlacedAt as DateTime?),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields
+  }) => _then(
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      state: state == _undefined || state == null
+          ? _instance.state
+          : (state as String),
+      orderPlacedAt: orderPlacedAt == _undefined
+          ? _instance.orderPlacedAt
+          : (orderPlacedAt as DateTime?),
+      customFields: customFields == _undefined
+          ? _instance.customFields
+          : (customFields
                 as Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-      TRes> get customFields {
+    TRes
+  >
+  get customFields {
     final local$customFields = _instance.customFields;
     return local$customFields == null
-        ? CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
-            .stub(_then(_instance))
+        ? CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields.stub(
+            _then(_instance),
+          )
         : CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
-            local$customFields, (e) => call(customFields: e));
+            local$customFields,
+            (e) => call(customFields: e),
+          );
   }
 }
 
 class _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -10826,16 +11132,17 @@ class _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$
     String? state,
     DateTime? orderPlacedAt,
     Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields?
-        customFields,
+    customFields,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-          TRes>
-      get customFields =>
-          CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
-              .stub(_res);
+    TRes
+  >
+  get customFields =>
+      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields.stub(
+        _res,
+      );
 }
 
 class Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields {
@@ -10846,7 +11153,8 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
   });
 
   factory Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$$__typename = json['__typename'];
@@ -10918,27 +11226,30 @@ class Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
 extension UtilityExtension$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
     on Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields {
   CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-          Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields>
-      get copyWith =>
-          CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
-            this,
-            (i) => i,
-          );
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
+  >
+  get copyWith =>
+      CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
     Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
-        instance,
+    instance,
     TRes Function(
-            Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields)
-        then,
+      Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields;
 
   factory CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields;
 
   TRes call({
     int? loyaltyPointsEarned,
@@ -10948,21 +11259,24 @@ abstract class CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$
 }
 
 class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
     this._instance,
     this._then,
   );
 
   final Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields
-      _instance;
+  _instance;
 
   final TRes Function(
-          Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields)
-      _then;
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -10970,28 +11284,31 @@ class _CopyWithImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$item
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
-        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
-            ? _instance.loyaltyPointsEarned
-            : (loyaltyPointsEarned as int?),
-        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
-            ? _instance.loyaltyPointsUsed
-            : (loyaltyPointsUsed as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
+      loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+          ? _instance.loyaltyPointsEarned
+          : (loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+          ? _instance.loyaltyPointsUsed
+          : (loyaltyPointsUsed as int?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$items$customFields(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -10999,6 +11316,5 @@ class _CopyWithStubImpl$Query$GetLoyaltyPointTransactions$activeCustomer$orders$
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }

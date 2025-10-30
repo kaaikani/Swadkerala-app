@@ -11,13 +11,12 @@ class Variables$Mutation$Authenticate {
     required String code,
     String? firstName,
     String? lastName,
-  }) =>
-      Variables$Mutation$Authenticate._({
-        r'phoneNumber': phoneNumber,
-        r'code': code,
-        if (firstName != null) r'firstName': firstName,
-        if (lastName != null) r'lastName': lastName,
-      });
+  }) => Variables$Mutation$Authenticate._({
+    r'phoneNumber': phoneNumber,
+    r'code': code,
+    if (firstName != null) r'firstName': firstName,
+    if (lastName != null) r'lastName': lastName,
+  });
 
   Variables$Mutation$Authenticate._(this._$data);
 
@@ -66,10 +65,7 @@ class Variables$Mutation$Authenticate {
   }
 
   CopyWith$Variables$Mutation$Authenticate<Variables$Mutation$Authenticate>
-      get copyWith => CopyWith$Variables$Mutation$Authenticate(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Variables$Mutation$Authenticate(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -145,10 +141,7 @@ abstract class CopyWith$Variables$Mutation$Authenticate<TRes> {
 
 class _CopyWithImpl$Variables$Mutation$Authenticate<TRes>
     implements CopyWith$Variables$Mutation$Authenticate<TRes> {
-  _CopyWithImpl$Variables$Mutation$Authenticate(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Variables$Mutation$Authenticate(this._instance, this._then);
 
   final Variables$Mutation$Authenticate _instance;
 
@@ -161,15 +154,16 @@ class _CopyWithImpl$Variables$Mutation$Authenticate<TRes>
     Object? code = _undefined,
     Object? firstName = _undefined,
     Object? lastName = _undefined,
-  }) =>
-      _then(Variables$Mutation$Authenticate._({
-        ..._instance._$data,
-        if (phoneNumber != _undefined && phoneNumber != null)
-          'phoneNumber': (phoneNumber as String),
-        if (code != _undefined && code != null) 'code': (code as String),
-        if (firstName != _undefined) 'firstName': (firstName as String?),
-        if (lastName != _undefined) 'lastName': (lastName as String?),
-      }));
+  }) => _then(
+    Variables$Mutation$Authenticate._({
+      ..._instance._$data,
+      if (phoneNumber != _undefined && phoneNumber != null)
+        'phoneNumber': (phoneNumber as String),
+      if (code != _undefined && code != null) 'code': (code as String),
+      if (firstName != _undefined) 'firstName': (firstName as String?),
+      if (lastName != _undefined) 'lastName': (lastName as String?),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Mutation$Authenticate<TRes>
@@ -183,8 +177,7 @@ class _CopyWithStubImpl$Variables$Mutation$Authenticate<TRes>
     String? code,
     String? firstName,
     String? lastName,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Mutation$Authenticate {
@@ -198,7 +191,8 @@ class Mutation$Authenticate {
     final l$$__typename = json['__typename'];
     return Mutation$Authenticate(
       authenticate: Mutation$Authenticate$authenticate.fromJson(
-          (l$authenticate as Map<String, dynamic>)),
+        (l$authenticate as Map<String, dynamic>),
+      ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -220,10 +214,7 @@ class Mutation$Authenticate {
   int get hashCode {
     final l$authenticate = authenticate;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$authenticate,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$authenticate, l$$__typename]);
   }
 
   @override
@@ -250,10 +241,7 @@ class Mutation$Authenticate {
 
 extension UtilityExtension$Mutation$Authenticate on Mutation$Authenticate {
   CopyWith$Mutation$Authenticate<Mutation$Authenticate> get copyWith =>
-      CopyWith$Mutation$Authenticate(
-        this,
-        (i) => i,
-      );
+      CopyWith$Mutation$Authenticate(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$Authenticate<TRes> {
@@ -274,10 +262,7 @@ abstract class CopyWith$Mutation$Authenticate<TRes> {
 
 class _CopyWithImpl$Mutation$Authenticate<TRes>
     implements CopyWith$Mutation$Authenticate<TRes> {
-  _CopyWithImpl$Mutation$Authenticate(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$Authenticate(this._instance, this._then);
 
   final Mutation$Authenticate _instance;
 
@@ -288,20 +273,23 @@ class _CopyWithImpl$Mutation$Authenticate<TRes>
   TRes call({
     Object? authenticate = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$Authenticate(
-        authenticate: authenticate == _undefined || authenticate == null
-            ? _instance.authenticate
-            : (authenticate as Mutation$Authenticate$authenticate),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$Authenticate(
+      authenticate: authenticate == _undefined || authenticate == null
+          ? _instance.authenticate
+          : (authenticate as Mutation$Authenticate$authenticate),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Mutation$Authenticate$authenticate<TRes> get authenticate {
     final local$authenticate = _instance.authenticate;
     return CopyWith$Mutation$Authenticate$authenticate(
-        local$authenticate, (e) => call(authenticate: e));
+      local$authenticate,
+      (e) => call(authenticate: e),
+    );
   }
 }
 
@@ -314,90 +302,167 @@ class _CopyWithStubImpl$Mutation$Authenticate<TRes>
   call({
     Mutation$Authenticate$authenticate? authenticate,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Mutation$Authenticate$authenticate<TRes> get authenticate =>
       CopyWith$Mutation$Authenticate$authenticate.stub(_res);
 }
 
-const documentNodeMutationAuthenticate = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'Authenticate'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'phoneNumber')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
+const documentNodeMutationAuthenticate = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'Authenticate'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'phoneNumber')),
+          type: NamedTypeNode(name: NameNode(value: 'String'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      ),
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'code')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'code')),
+          type: NamedTypeNode(name: NameNode(value: 'String'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      ),
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'firstName')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: false,
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'firstName')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'String'),
+            isNonNull: false,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      ),
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'lastName')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: false,
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'lastName')),
+          type: NamedTypeNode(
+            name: NameNode(value: 'String'),
+            isNonNull: false,
+          ),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      ),
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'authenticate'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'input'),
-            value: ObjectValueNode(fields: [
-              ObjectFieldNode(
-                name: NameNode(value: 'phoneOtp'),
-                value: ObjectValueNode(fields: [
-                  ObjectFieldNode(
-                    name: NameNode(value: 'phoneNumber'),
-                    value: VariableNode(name: NameNode(value: 'phoneNumber')),
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'authenticate'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'input'),
+                value: ObjectValueNode(
+                  fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'phoneOtp'),
+                      value: ObjectValueNode(
+                        fields: [
+                          ObjectFieldNode(
+                            name: NameNode(value: 'phoneNumber'),
+                            value: VariableNode(
+                              name: NameNode(value: 'phoneNumber'),
+                            ),
+                          ),
+                          ObjectFieldNode(
+                            name: NameNode(value: 'code'),
+                            value: VariableNode(name: NameNode(value: 'code')),
+                          ),
+                          ObjectFieldNode(
+                            name: NameNode(value: 'firstName'),
+                            value: VariableNode(
+                              name: NameNode(value: 'firstName'),
+                            ),
+                          ),
+                          ObjectFieldNode(
+                            name: NameNode(value: 'lastName'),
+                            value: VariableNode(
+                              name: NameNode(value: 'lastName'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            directives: [],
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                InlineFragmentNode(
+                  typeCondition: TypeConditionNode(
+                    on: NamedTypeNode(
+                      name: NameNode(value: 'CurrentUser'),
+                      isNonNull: false,
+                    ),
                   ),
-                  ObjectFieldNode(
-                    name: NameNode(value: 'code'),
-                    value: VariableNode(name: NameNode(value: 'code')),
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'identifier'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
                   ),
-                  ObjectFieldNode(
-                    name: NameNode(value: 'firstName'),
-                    value: VariableNode(name: NameNode(value: 'firstName')),
+                ),
+                InlineFragmentNode(
+                  typeCondition: TypeConditionNode(
+                    on: NamedTypeNode(
+                      name: NameNode(value: 'InvalidCredentialsError'),
+                      isNonNull: false,
+                    ),
                   ),
-                  ObjectFieldNode(
-                    name: NameNode(value: 'lastName'),
-                    value: VariableNode(name: NameNode(value: 'lastName')),
+                  directives: [],
+                  selectionSet: SelectionSetNode(
+                    selections: [
+                      FieldNode(
+                        name: NameNode(value: 'message'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ],
                   ),
-                ]),
-              )
-            ]),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+                ),
+              ],
+            ),
+          ),
           FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
@@ -405,80 +470,16 @@ const documentNodeMutationAuthenticate = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'CurrentUser'),
-              isNonNull: false,
-            )),
-            directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'id'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'identifier'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
-          ),
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'InvalidCredentialsError'),
-              isNonNull: false,
-            )),
-            directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'message'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
-          ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Mutation$Authenticate _parserFn$Mutation$Authenticate(
-        Map<String, dynamic> data) =>
-    Mutation$Authenticate.fromJson(data);
-typedef OnMutationCompleted$Mutation$Authenticate = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Mutation$Authenticate?,
+    ),
+  ],
 );
+Mutation$Authenticate _parserFn$Mutation$Authenticate(
+  Map<String, dynamic> data,
+) => Mutation$Authenticate.fromJson(data);
+typedef OnMutationCompleted$Mutation$Authenticate =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$Authenticate?);
 
 class Options$Mutation$Authenticate
     extends graphql.MutationOptions<Mutation$Authenticate> {
@@ -494,36 +495,36 @@ class Options$Mutation$Authenticate
     OnMutationCompleted$Mutation$Authenticate? onCompleted,
     graphql.OnMutationUpdate<Mutation$Authenticate>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null ? null : _parserFn$Mutation$Authenticate(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationAuthenticate,
-          parserFn: _parserFn$Mutation$Authenticate,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$Authenticate(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationAuthenticate,
+         parserFn: _parserFn$Mutation$Authenticate,
+       );
 
   final OnMutationCompleted$Mutation$Authenticate? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$Authenticate
@@ -542,59 +543,59 @@ class WatchOptions$Mutation$Authenticate
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationAuthenticate,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$Authenticate,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationAuthenticate,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$Authenticate,
+       );
 }
 
 extension ClientExtension$Mutation$Authenticate on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$Authenticate>> mutate$Authenticate(
-          Options$Mutation$Authenticate options) async =>
-      await this.mutate(options);
+    Options$Mutation$Authenticate options,
+  ) async => await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$Authenticate> watchMutation$Authenticate(
-          WatchOptions$Mutation$Authenticate options) =>
-      this.watchMutation(options);
+    WatchOptions$Mutation$Authenticate options,
+  ) => this.watchMutation(options);
 }
 
 class Mutation$Authenticate$HookResult {
-  Mutation$Authenticate$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$Authenticate$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$Authenticate runMutation;
 
   final graphql.QueryResult<Mutation$Authenticate> result;
 }
 
-Mutation$Authenticate$HookResult useMutation$Authenticate(
-    [WidgetOptions$Mutation$Authenticate? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$Authenticate());
+Mutation$Authenticate$HookResult useMutation$Authenticate([
+  WidgetOptions$Mutation$Authenticate? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$Authenticate(),
+  );
   return Mutation$Authenticate$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
-      variables.toJson(),
-      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-    ),
+          variables.toJson(),
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+        ),
     result.result,
   );
 }
 
 graphql.ObservableQuery<Mutation$Authenticate> useWatchMutation$Authenticate(
-        WatchOptions$Mutation$Authenticate options) =>
-    graphql_flutter.useWatchMutation(options);
+  WatchOptions$Mutation$Authenticate options,
+) => graphql_flutter.useWatchMutation(options);
 
 class WidgetOptions$Mutation$Authenticate
     extends graphql.MutationOptions<Mutation$Authenticate> {
@@ -609,47 +610,48 @@ class WidgetOptions$Mutation$Authenticate
     OnMutationCompleted$Mutation$Authenticate? onCompleted,
     graphql.OnMutationUpdate<Mutation$Authenticate>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null ? null : _parserFn$Mutation$Authenticate(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationAuthenticate,
-          parserFn: _parserFn$Mutation$Authenticate,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$Authenticate(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationAuthenticate,
+         parserFn: _parserFn$Mutation$Authenticate,
+       );
 
   final OnMutationCompleted$Mutation$Authenticate? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$Authenticate
-    = graphql.MultiSourceResult<Mutation$Authenticate> Function(
-  Variables$Mutation$Authenticate, {
-  Object? optimisticResult,
-  Mutation$Authenticate? typedOptimisticResult,
-});
-typedef Builder$Mutation$Authenticate = widgets.Widget Function(
-  RunMutation$Mutation$Authenticate,
-  graphql.QueryResult<Mutation$Authenticate>?,
-);
+typedef RunMutation$Mutation$Authenticate =
+    graphql.MultiSourceResult<Mutation$Authenticate> Function(
+      Variables$Mutation$Authenticate, {
+      Object? optimisticResult,
+      Mutation$Authenticate? typedOptimisticResult,
+    });
+typedef Builder$Mutation$Authenticate =
+    widgets.Widget Function(
+      RunMutation$Mutation$Authenticate,
+      graphql.QueryResult<Mutation$Authenticate>?,
+    );
 
 class Mutation$Authenticate$Widget
     extends graphql_flutter.Mutation<Mutation$Authenticate> {
@@ -658,49 +660,44 @@ class Mutation$Authenticate$Widget
     WidgetOptions$Mutation$Authenticate? options,
     required Builder$Mutation$Authenticate builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$Authenticate(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            (
-              variables, {
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              variables.toJson(),
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$Authenticate(),
+         builder: (run, result) => builder(
+           (variables, {optimisticResult, typedOptimisticResult}) => run(
+             variables.toJson(),
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Mutation$Authenticate$authenticate {
   Mutation$Authenticate$authenticate({required this.$__typename});
 
   factory Mutation$Authenticate$authenticate.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     switch (json["__typename"] as String) {
       case "CurrentUser":
         return Mutation$Authenticate$authenticate$$CurrentUser.fromJson(json);
 
       case "InvalidCredentialsError":
-        return Mutation$Authenticate$authenticate$$InvalidCredentialsError
-            .fromJson(json);
+        return Mutation$Authenticate$authenticate$$InvalidCredentialsError.fromJson(
+          json,
+        );
 
       case "NotVerifiedError":
         return Mutation$Authenticate$authenticate$$NotVerifiedError.fromJson(
-            json);
+          json,
+        );
 
       default:
         final l$$__typename = json['__typename'];
         return Mutation$Authenticate$authenticate(
-            $__typename: (l$$__typename as String));
+          $__typename: (l$$__typename as String),
+        );
     }
   }
 
@@ -740,33 +737,36 @@ class Mutation$Authenticate$authenticate {
 extension UtilityExtension$Mutation$Authenticate$authenticate
     on Mutation$Authenticate$authenticate {
   CopyWith$Mutation$Authenticate$authenticate<
-          Mutation$Authenticate$authenticate>
-      get copyWith => CopyWith$Mutation$Authenticate$authenticate(
-            this,
-            (i) => i,
-          );
+    Mutation$Authenticate$authenticate
+  >
+  get copyWith => CopyWith$Mutation$Authenticate$authenticate(this, (i) => i);
+
   _T when<_T>({
     required _T Function(Mutation$Authenticate$authenticate$$CurrentUser)
-        currentUser,
+    currentUser,
     required _T Function(
-            Mutation$Authenticate$authenticate$$InvalidCredentialsError)
-        invalidCredentialsError,
+      Mutation$Authenticate$authenticate$$InvalidCredentialsError,
+    )
+    invalidCredentialsError,
     required _T Function(Mutation$Authenticate$authenticate$$NotVerifiedError)
-        notVerifiedError,
+    notVerifiedError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
       case "CurrentUser":
         return currentUser(
-            this as Mutation$Authenticate$authenticate$$CurrentUser);
+          this as Mutation$Authenticate$authenticate$$CurrentUser,
+        );
 
       case "InvalidCredentialsError":
-        return invalidCredentialsError(this
-            as Mutation$Authenticate$authenticate$$InvalidCredentialsError);
+        return invalidCredentialsError(
+          this as Mutation$Authenticate$authenticate$$InvalidCredentialsError,
+        );
 
       case "NotVerifiedError":
         return notVerifiedError(
-            this as Mutation$Authenticate$authenticate$$NotVerifiedError);
+          this as Mutation$Authenticate$authenticate$$NotVerifiedError,
+        );
 
       default:
         return orElse();
@@ -776,24 +776,26 @@ extension UtilityExtension$Mutation$Authenticate$authenticate
   _T maybeWhen<_T>({
     _T Function(Mutation$Authenticate$authenticate$$CurrentUser)? currentUser,
     _T Function(Mutation$Authenticate$authenticate$$InvalidCredentialsError)?
-        invalidCredentialsError,
+    invalidCredentialsError,
     _T Function(Mutation$Authenticate$authenticate$$NotVerifiedError)?
-        notVerifiedError,
+    notVerifiedError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
       case "CurrentUser":
         if (currentUser != null) {
           return currentUser(
-              this as Mutation$Authenticate$authenticate$$CurrentUser);
+            this as Mutation$Authenticate$authenticate$$CurrentUser,
+          );
         } else {
           return orElse();
         }
 
       case "InvalidCredentialsError":
         if (invalidCredentialsError != null) {
-          return invalidCredentialsError(this
-              as Mutation$Authenticate$authenticate$$InvalidCredentialsError);
+          return invalidCredentialsError(
+            this as Mutation$Authenticate$authenticate$$InvalidCredentialsError,
+          );
         } else {
           return orElse();
         }
@@ -801,7 +803,8 @@ extension UtilityExtension$Mutation$Authenticate$authenticate
       case "NotVerifiedError":
         if (notVerifiedError != null) {
           return notVerifiedError(
-              this as Mutation$Authenticate$authenticate$$NotVerifiedError);
+            this as Mutation$Authenticate$authenticate$$NotVerifiedError,
+          );
         } else {
           return orElse();
         }
@@ -826,10 +829,7 @@ abstract class CopyWith$Mutation$Authenticate$authenticate<TRes> {
 
 class _CopyWithImpl$Mutation$Authenticate$authenticate<TRes>
     implements CopyWith$Mutation$Authenticate$authenticate<TRes> {
-  _CopyWithImpl$Mutation$Authenticate$authenticate(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$Authenticate$authenticate(this._instance, this._then);
 
   final Mutation$Authenticate$authenticate _instance;
 
@@ -837,11 +837,13 @@ class _CopyWithImpl$Mutation$Authenticate$authenticate<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? $__typename = _undefined}) =>
-      _then(Mutation$Authenticate$authenticate(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
+  TRes call({Object? $__typename = _undefined}) => _then(
+    Mutation$Authenticate$authenticate(
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$Authenticate$authenticate<TRes>
@@ -862,7 +864,8 @@ class Mutation$Authenticate$authenticate$$CurrentUser
   });
 
   factory Mutation$Authenticate$authenticate$$CurrentUser.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$identifier = json['identifier'];
     final l$$__typename = json['__typename'];
@@ -895,11 +898,7 @@ class Mutation$Authenticate$authenticate$$CurrentUser
     final l$id = id;
     final l$identifier = identifier;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$id,
-      l$identifier,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$id, l$identifier, l$$__typename]);
   }
 
   @override
@@ -933,11 +932,10 @@ class Mutation$Authenticate$authenticate$$CurrentUser
 extension UtilityExtension$Mutation$Authenticate$authenticate$$CurrentUser
     on Mutation$Authenticate$authenticate$$CurrentUser {
   CopyWith$Mutation$Authenticate$authenticate$$CurrentUser<
-          Mutation$Authenticate$authenticate$$CurrentUser>
-      get copyWith => CopyWith$Mutation$Authenticate$authenticate$$CurrentUser(
-            this,
-            (i) => i,
-          );
+    Mutation$Authenticate$authenticate$$CurrentUser
+  >
+  get copyWith =>
+      CopyWith$Mutation$Authenticate$authenticate$$CurrentUser(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$Authenticate$authenticate$$CurrentUser<TRes> {
@@ -947,14 +945,10 @@ abstract class CopyWith$Mutation$Authenticate$authenticate$$CurrentUser<TRes> {
   ) = _CopyWithImpl$Mutation$Authenticate$authenticate$$CurrentUser;
 
   factory CopyWith$Mutation$Authenticate$authenticate$$CurrentUser.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$Authenticate$authenticate$$CurrentUser;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$Authenticate$authenticate$$CurrentUser;
 
-  TRes call({
-    String? id,
-    String? identifier,
-    String? $__typename,
-  });
+  TRes call({String? id, String? identifier, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$Authenticate$authenticate$$CurrentUser<TRes>
@@ -974,16 +968,17 @@ class _CopyWithImpl$Mutation$Authenticate$authenticate$$CurrentUser<TRes>
     Object? id = _undefined,
     Object? identifier = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$Authenticate$authenticate$$CurrentUser(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        identifier: identifier == _undefined || identifier == null
-            ? _instance.identifier
-            : (identifier as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$Authenticate$authenticate$$CurrentUser(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      identifier: identifier == _undefined || identifier == null
+          ? _instance.identifier
+          : (identifier as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$Authenticate$authenticate$$CurrentUser<TRes>
@@ -992,12 +987,7 @@ class _CopyWithStubImpl$Mutation$Authenticate$authenticate$$CurrentUser<TRes>
 
   TRes _res;
 
-  call({
-    String? id,
-    String? identifier,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? id, String? identifier, String? $__typename}) => _res;
 }
 
 class Mutation$Authenticate$authenticate$$InvalidCredentialsError
@@ -1008,7 +998,8 @@ class Mutation$Authenticate$authenticate$$InvalidCredentialsError
   });
 
   factory Mutation$Authenticate$authenticate$$InvalidCredentialsError.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$message = json['message'];
     final l$$__typename = json['__typename'];
     return Mutation$Authenticate$authenticate$$InvalidCredentialsError(
@@ -1034,10 +1025,7 @@ class Mutation$Authenticate$authenticate$$InvalidCredentialsError
   int get hashCode {
     final l$message = message;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$message,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$message, l$$__typename]);
   }
 
   @override
@@ -1066,37 +1054,38 @@ class Mutation$Authenticate$authenticate$$InvalidCredentialsError
 extension UtilityExtension$Mutation$Authenticate$authenticate$$InvalidCredentialsError
     on Mutation$Authenticate$authenticate$$InvalidCredentialsError {
   CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError<
-          Mutation$Authenticate$authenticate$$InvalidCredentialsError>
-      get copyWith =>
-          CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError(
-            this,
-            (i) => i,
-          );
+    Mutation$Authenticate$authenticate$$InvalidCredentialsError
+  >
+  get copyWith =>
+      CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError(
     Mutation$Authenticate$authenticate$$InvalidCredentialsError instance,
     TRes Function(Mutation$Authenticate$authenticate$$InvalidCredentialsError)
-        then,
+    then,
   ) = _CopyWithImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError;
 
   factory CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError;
 
-  TRes call({
-    String? message,
-    String? $__typename,
-  });
+  TRes call({String? message, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError(
     this._instance,
     this._then,
@@ -1105,51 +1094,54 @@ class _CopyWithImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError<
   final Mutation$Authenticate$authenticate$$InvalidCredentialsError _instance;
 
   final TRes Function(
-      Mutation$Authenticate$authenticate$$InvalidCredentialsError) _then;
+    Mutation$Authenticate$authenticate$$InvalidCredentialsError,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? message = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$Authenticate$authenticate$$InvalidCredentialsError(
-        message: message == _undefined || message == null
-            ? _instance.message
-            : (message as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? message = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Mutation$Authenticate$authenticate$$InvalidCredentialsError(
+          message: message == _undefined || message == null
+              ? _instance.message
+              : (message as String),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
 }
 
 class _CopyWithStubImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$Authenticate$authenticate$$InvalidCredentialsError<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Mutation$Authenticate$authenticate$$InvalidCredentialsError(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
-  call({
-    String? message,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? message, String? $__typename}) => _res;
 }
 
 class Mutation$Authenticate$authenticate$$NotVerifiedError
     implements Mutation$Authenticate$authenticate {
-  Mutation$Authenticate$authenticate$$NotVerifiedError(
-      {this.$__typename = 'NotVerifiedError'});
+  Mutation$Authenticate$authenticate$$NotVerifiedError({
+    this.$__typename = 'NotVerifiedError',
+  });
 
   factory Mutation$Authenticate$authenticate$$NotVerifiedError.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$$__typename = json['__typename'];
     return Mutation$Authenticate$authenticate$$NotVerifiedError(
-        $__typename: (l$$__typename as String));
+      $__typename: (l$$__typename as String),
+    );
   }
 
   final String $__typename;
@@ -1188,24 +1180,25 @@ class Mutation$Authenticate$authenticate$$NotVerifiedError
 extension UtilityExtension$Mutation$Authenticate$authenticate$$NotVerifiedError
     on Mutation$Authenticate$authenticate$$NotVerifiedError {
   CopyWith$Mutation$Authenticate$authenticate$$NotVerifiedError<
-          Mutation$Authenticate$authenticate$$NotVerifiedError>
-      get copyWith =>
-          CopyWith$Mutation$Authenticate$authenticate$$NotVerifiedError(
-            this,
-            (i) => i,
-          );
+    Mutation$Authenticate$authenticate$$NotVerifiedError
+  >
+  get copyWith => CopyWith$Mutation$Authenticate$authenticate$$NotVerifiedError(
+    this,
+    (i) => i,
+  );
 }
 
 abstract class CopyWith$Mutation$Authenticate$authenticate$$NotVerifiedError<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Mutation$Authenticate$authenticate$$NotVerifiedError(
     Mutation$Authenticate$authenticate$$NotVerifiedError instance,
     TRes Function(Mutation$Authenticate$authenticate$$NotVerifiedError) then,
   ) = _CopyWithImpl$Mutation$Authenticate$authenticate$$NotVerifiedError;
 
   factory CopyWith$Mutation$Authenticate$authenticate$$NotVerifiedError.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$Authenticate$authenticate$$NotVerifiedError;
+    TRes res,
+  ) = _CopyWithStubImpl$Mutation$Authenticate$authenticate$$NotVerifiedError;
 
   TRes call({String? $__typename});
 }
@@ -1221,23 +1214,27 @@ class _CopyWithImpl$Mutation$Authenticate$authenticate$$NotVerifiedError<TRes>
   final Mutation$Authenticate$authenticate$$NotVerifiedError _instance;
 
   final TRes Function(Mutation$Authenticate$authenticate$$NotVerifiedError)
-      _then;
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? $__typename = _undefined}) =>
-      _then(Mutation$Authenticate$authenticate$$NotVerifiedError(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
+  TRes call({Object? $__typename = _undefined}) => _then(
+    Mutation$Authenticate$authenticate$$NotVerifiedError(
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$Authenticate$authenticate$$NotVerifiedError<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Mutation$Authenticate$authenticate$$NotVerifiedError<TRes> {
   _CopyWithStubImpl$Mutation$Authenticate$authenticate$$NotVerifiedError(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -1246,9 +1243,7 @@ class _CopyWithStubImpl$Mutation$Authenticate$authenticate$$NotVerifiedError<
 
 class Variables$Mutation$SendPhoneOtp {
   factory Variables$Mutation$SendPhoneOtp({required String phoneNumber}) =>
-      Variables$Mutation$SendPhoneOtp._({
-        r'phoneNumber': phoneNumber,
-      });
+      Variables$Mutation$SendPhoneOtp._({r'phoneNumber': phoneNumber});
 
   Variables$Mutation$SendPhoneOtp._(this._$data);
 
@@ -1271,10 +1266,7 @@ class Variables$Mutation$SendPhoneOtp {
   }
 
   CopyWith$Variables$Mutation$SendPhoneOtp<Variables$Mutation$SendPhoneOtp>
-      get copyWith => CopyWith$Variables$Mutation$SendPhoneOtp(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Variables$Mutation$SendPhoneOtp(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -1314,10 +1306,7 @@ abstract class CopyWith$Variables$Mutation$SendPhoneOtp<TRes> {
 
 class _CopyWithImpl$Variables$Mutation$SendPhoneOtp<TRes>
     implements CopyWith$Variables$Mutation$SendPhoneOtp<TRes> {
-  _CopyWithImpl$Variables$Mutation$SendPhoneOtp(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Variables$Mutation$SendPhoneOtp(this._instance, this._then);
 
   final Variables$Mutation$SendPhoneOtp _instance;
 
@@ -1325,12 +1314,13 @@ class _CopyWithImpl$Variables$Mutation$SendPhoneOtp<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? phoneNumber = _undefined}) =>
-      _then(Variables$Mutation$SendPhoneOtp._({
-        ..._instance._$data,
-        if (phoneNumber != _undefined && phoneNumber != null)
-          'phoneNumber': (phoneNumber as String),
-      }));
+  TRes call({Object? phoneNumber = _undefined}) => _then(
+    Variables$Mutation$SendPhoneOtp._({
+      ..._instance._$data,
+      if (phoneNumber != _undefined && phoneNumber != null)
+        'phoneNumber': (phoneNumber as String),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Mutation$SendPhoneOtp<TRes>
@@ -1343,10 +1333,7 @@ class _CopyWithStubImpl$Variables$Mutation$SendPhoneOtp<TRes>
 }
 
 class Mutation$SendPhoneOtp {
-  Mutation$SendPhoneOtp({
-    this.sendPhoneOtp,
-    this.$__typename = 'Mutation',
-  });
+  Mutation$SendPhoneOtp({this.sendPhoneOtp, this.$__typename = 'Mutation'});
 
   factory Mutation$SendPhoneOtp.fromJson(Map<String, dynamic> json) {
     final l$sendPhoneOtp = json['sendPhoneOtp'];
@@ -1374,10 +1361,7 @@ class Mutation$SendPhoneOtp {
   int get hashCode {
     final l$sendPhoneOtp = sendPhoneOtp;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$sendPhoneOtp,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$sendPhoneOtp, l$$__typename]);
   }
 
   @override
@@ -1404,10 +1388,7 @@ class Mutation$SendPhoneOtp {
 
 extension UtilityExtension$Mutation$SendPhoneOtp on Mutation$SendPhoneOtp {
   CopyWith$Mutation$SendPhoneOtp<Mutation$SendPhoneOtp> get copyWith =>
-      CopyWith$Mutation$SendPhoneOtp(
-        this,
-        (i) => i,
-      );
+      CopyWith$Mutation$SendPhoneOtp(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$SendPhoneOtp<TRes> {
@@ -1419,18 +1400,12 @@ abstract class CopyWith$Mutation$SendPhoneOtp<TRes> {
   factory CopyWith$Mutation$SendPhoneOtp.stub(TRes res) =
       _CopyWithStubImpl$Mutation$SendPhoneOtp;
 
-  TRes call({
-    String? sendPhoneOtp,
-    String? $__typename,
-  });
+  TRes call({String? sendPhoneOtp, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$SendPhoneOtp<TRes>
     implements CopyWith$Mutation$SendPhoneOtp<TRes> {
-  _CopyWithImpl$Mutation$SendPhoneOtp(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$SendPhoneOtp(this._instance, this._then);
 
   final Mutation$SendPhoneOtp _instance;
 
@@ -1441,15 +1416,16 @@ class _CopyWithImpl$Mutation$SendPhoneOtp<TRes>
   TRes call({
     Object? sendPhoneOtp = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$SendPhoneOtp(
-        sendPhoneOtp: sendPhoneOtp == _undefined
-            ? _instance.sendPhoneOtp
-            : (sendPhoneOtp as String?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$SendPhoneOtp(
+      sendPhoneOtp: sendPhoneOtp == _undefined
+          ? _instance.sendPhoneOtp
+          : (sendPhoneOtp as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$SendPhoneOtp<TRes>
@@ -1458,59 +1434,54 @@ class _CopyWithStubImpl$Mutation$SendPhoneOtp<TRes>
 
   TRes _res;
 
-  call({
-    String? sendPhoneOtp,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? sendPhoneOtp, String? $__typename}) => _res;
 }
 
-const documentNodeMutationSendPhoneOtp = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'SendPhoneOtp'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'phoneNumber')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
+const documentNodeMutationSendPhoneOtp = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'SendPhoneOtp'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'phoneNumber')),
+          type: NamedTypeNode(name: NameNode(value: 'String'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'sendPhoneOtp'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'phoneNumber'),
-            value: VariableNode(name: NameNode(value: 'phoneNumber')),
-          )
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'sendPhoneOtp'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'phoneNumber'),
+                value: VariableNode(name: NameNode(value: 'phoneNumber')),
+              ),
+            ],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
         ],
-        directives: [],
-        selectionSet: null,
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Mutation$SendPhoneOtp _parserFn$Mutation$SendPhoneOtp(
-        Map<String, dynamic> data) =>
-    Mutation$SendPhoneOtp.fromJson(data);
-typedef OnMutationCompleted$Mutation$SendPhoneOtp = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Mutation$SendPhoneOtp?,
+    ),
+  ],
 );
+Mutation$SendPhoneOtp _parserFn$Mutation$SendPhoneOtp(
+  Map<String, dynamic> data,
+) => Mutation$SendPhoneOtp.fromJson(data);
+typedef OnMutationCompleted$Mutation$SendPhoneOtp =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$SendPhoneOtp?);
 
 class Options$Mutation$SendPhoneOtp
     extends graphql.MutationOptions<Mutation$SendPhoneOtp> {
@@ -1526,36 +1497,36 @@ class Options$Mutation$SendPhoneOtp
     OnMutationCompleted$Mutation$SendPhoneOtp? onCompleted,
     graphql.OnMutationUpdate<Mutation$SendPhoneOtp>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null ? null : _parserFn$Mutation$SendPhoneOtp(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationSendPhoneOtp,
-          parserFn: _parserFn$Mutation$SendPhoneOtp,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$SendPhoneOtp(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationSendPhoneOtp,
+         parserFn: _parserFn$Mutation$SendPhoneOtp,
+       );
 
   final OnMutationCompleted$Mutation$SendPhoneOtp? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$SendPhoneOtp
@@ -1574,59 +1545,59 @@ class WatchOptions$Mutation$SendPhoneOtp
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationSendPhoneOtp,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$SendPhoneOtp,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationSendPhoneOtp,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$SendPhoneOtp,
+       );
 }
 
 extension ClientExtension$Mutation$SendPhoneOtp on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$SendPhoneOtp>> mutate$SendPhoneOtp(
-          Options$Mutation$SendPhoneOtp options) async =>
-      await this.mutate(options);
+    Options$Mutation$SendPhoneOtp options,
+  ) async => await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$SendPhoneOtp> watchMutation$SendPhoneOtp(
-          WatchOptions$Mutation$SendPhoneOtp options) =>
-      this.watchMutation(options);
+    WatchOptions$Mutation$SendPhoneOtp options,
+  ) => this.watchMutation(options);
 }
 
 class Mutation$SendPhoneOtp$HookResult {
-  Mutation$SendPhoneOtp$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$SendPhoneOtp$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$SendPhoneOtp runMutation;
 
   final graphql.QueryResult<Mutation$SendPhoneOtp> result;
 }
 
-Mutation$SendPhoneOtp$HookResult useMutation$SendPhoneOtp(
-    [WidgetOptions$Mutation$SendPhoneOtp? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$SendPhoneOtp());
+Mutation$SendPhoneOtp$HookResult useMutation$SendPhoneOtp([
+  WidgetOptions$Mutation$SendPhoneOtp? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$SendPhoneOtp(),
+  );
   return Mutation$SendPhoneOtp$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
-      variables.toJson(),
-      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-    ),
+          variables.toJson(),
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+        ),
     result.result,
   );
 }
 
 graphql.ObservableQuery<Mutation$SendPhoneOtp> useWatchMutation$SendPhoneOtp(
-        WatchOptions$Mutation$SendPhoneOtp options) =>
-    graphql_flutter.useWatchMutation(options);
+  WatchOptions$Mutation$SendPhoneOtp options,
+) => graphql_flutter.useWatchMutation(options);
 
 class WidgetOptions$Mutation$SendPhoneOtp
     extends graphql.MutationOptions<Mutation$SendPhoneOtp> {
@@ -1641,47 +1612,48 @@ class WidgetOptions$Mutation$SendPhoneOtp
     OnMutationCompleted$Mutation$SendPhoneOtp? onCompleted,
     graphql.OnMutationUpdate<Mutation$SendPhoneOtp>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null ? null : _parserFn$Mutation$SendPhoneOtp(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationSendPhoneOtp,
-          parserFn: _parserFn$Mutation$SendPhoneOtp,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$SendPhoneOtp(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationSendPhoneOtp,
+         parserFn: _parserFn$Mutation$SendPhoneOtp,
+       );
 
   final OnMutationCompleted$Mutation$SendPhoneOtp? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$SendPhoneOtp
-    = graphql.MultiSourceResult<Mutation$SendPhoneOtp> Function(
-  Variables$Mutation$SendPhoneOtp, {
-  Object? optimisticResult,
-  Mutation$SendPhoneOtp? typedOptimisticResult,
-});
-typedef Builder$Mutation$SendPhoneOtp = widgets.Widget Function(
-  RunMutation$Mutation$SendPhoneOtp,
-  graphql.QueryResult<Mutation$SendPhoneOtp>?,
-);
+typedef RunMutation$Mutation$SendPhoneOtp =
+    graphql.MultiSourceResult<Mutation$SendPhoneOtp> Function(
+      Variables$Mutation$SendPhoneOtp, {
+      Object? optimisticResult,
+      Mutation$SendPhoneOtp? typedOptimisticResult,
+    });
+typedef Builder$Mutation$SendPhoneOtp =
+    widgets.Widget Function(
+      RunMutation$Mutation$SendPhoneOtp,
+      graphql.QueryResult<Mutation$SendPhoneOtp>?,
+    );
 
 class Mutation$SendPhoneOtp$Widget
     extends graphql_flutter.Mutation<Mutation$SendPhoneOtp> {
@@ -1690,38 +1662,28 @@ class Mutation$SendPhoneOtp$Widget
     WidgetOptions$Mutation$SendPhoneOtp? options,
     required Builder$Mutation$SendPhoneOtp builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$SendPhoneOtp(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            (
-              variables, {
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              variables.toJson(),
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$SendPhoneOtp(),
+         builder: (run, result) => builder(
+           (variables, {optimisticResult, typedOptimisticResult}) => run(
+             variables.toJson(),
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Variables$Mutation$ResendPhoneOtp {
   factory Variables$Mutation$ResendPhoneOtp({required String phoneNumber}) =>
-      Variables$Mutation$ResendPhoneOtp._({
-        r'phoneNumber': phoneNumber,
-      });
+      Variables$Mutation$ResendPhoneOtp._({r'phoneNumber': phoneNumber});
 
   Variables$Mutation$ResendPhoneOtp._(this._$data);
 
   factory Variables$Mutation$ResendPhoneOtp.fromJson(
-      Map<String, dynamic> data) {
+    Map<String, dynamic> data,
+  ) {
     final result$data = <String, dynamic>{};
     final l$phoneNumber = data['phoneNumber'];
     result$data['phoneNumber'] = (l$phoneNumber as String);
@@ -1740,10 +1702,7 @@ class Variables$Mutation$ResendPhoneOtp {
   }
 
   CopyWith$Variables$Mutation$ResendPhoneOtp<Variables$Mutation$ResendPhoneOtp>
-      get copyWith => CopyWith$Variables$Mutation$ResendPhoneOtp(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Variables$Mutation$ResendPhoneOtp(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -1783,10 +1742,7 @@ abstract class CopyWith$Variables$Mutation$ResendPhoneOtp<TRes> {
 
 class _CopyWithImpl$Variables$Mutation$ResendPhoneOtp<TRes>
     implements CopyWith$Variables$Mutation$ResendPhoneOtp<TRes> {
-  _CopyWithImpl$Variables$Mutation$ResendPhoneOtp(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Variables$Mutation$ResendPhoneOtp(this._instance, this._then);
 
   final Variables$Mutation$ResendPhoneOtp _instance;
 
@@ -1794,12 +1750,13 @@ class _CopyWithImpl$Variables$Mutation$ResendPhoneOtp<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? phoneNumber = _undefined}) =>
-      _then(Variables$Mutation$ResendPhoneOtp._({
-        ..._instance._$data,
-        if (phoneNumber != _undefined && phoneNumber != null)
-          'phoneNumber': (phoneNumber as String),
-      }));
+  TRes call({Object? phoneNumber = _undefined}) => _then(
+    Variables$Mutation$ResendPhoneOtp._({
+      ..._instance._$data,
+      if (phoneNumber != _undefined && phoneNumber != null)
+        'phoneNumber': (phoneNumber as String),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Mutation$ResendPhoneOtp<TRes>
@@ -1812,10 +1769,7 @@ class _CopyWithStubImpl$Variables$Mutation$ResendPhoneOtp<TRes>
 }
 
 class Mutation$ResendPhoneOtp {
-  Mutation$ResendPhoneOtp({
-    this.resendPhoneOtp,
-    this.$__typename = 'Mutation',
-  });
+  Mutation$ResendPhoneOtp({this.resendPhoneOtp, this.$__typename = 'Mutation'});
 
   factory Mutation$ResendPhoneOtp.fromJson(Map<String, dynamic> json) {
     final l$resendPhoneOtp = json['resendPhoneOtp'];
@@ -1843,10 +1797,7 @@ class Mutation$ResendPhoneOtp {
   int get hashCode {
     final l$resendPhoneOtp = resendPhoneOtp;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$resendPhoneOtp,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$resendPhoneOtp, l$$__typename]);
   }
 
   @override
@@ -1873,10 +1824,7 @@ class Mutation$ResendPhoneOtp {
 
 extension UtilityExtension$Mutation$ResendPhoneOtp on Mutation$ResendPhoneOtp {
   CopyWith$Mutation$ResendPhoneOtp<Mutation$ResendPhoneOtp> get copyWith =>
-      CopyWith$Mutation$ResendPhoneOtp(
-        this,
-        (i) => i,
-      );
+      CopyWith$Mutation$ResendPhoneOtp(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$ResendPhoneOtp<TRes> {
@@ -1888,18 +1836,12 @@ abstract class CopyWith$Mutation$ResendPhoneOtp<TRes> {
   factory CopyWith$Mutation$ResendPhoneOtp.stub(TRes res) =
       _CopyWithStubImpl$Mutation$ResendPhoneOtp;
 
-  TRes call({
-    String? resendPhoneOtp,
-    String? $__typename,
-  });
+  TRes call({String? resendPhoneOtp, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$ResendPhoneOtp<TRes>
     implements CopyWith$Mutation$ResendPhoneOtp<TRes> {
-  _CopyWithImpl$Mutation$ResendPhoneOtp(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$ResendPhoneOtp(this._instance, this._then);
 
   final Mutation$ResendPhoneOtp _instance;
 
@@ -1910,15 +1852,16 @@ class _CopyWithImpl$Mutation$ResendPhoneOtp<TRes>
   TRes call({
     Object? resendPhoneOtp = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$ResendPhoneOtp(
-        resendPhoneOtp: resendPhoneOtp == _undefined
-            ? _instance.resendPhoneOtp
-            : (resendPhoneOtp as String?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Mutation$ResendPhoneOtp(
+      resendPhoneOtp: resendPhoneOtp == _undefined
+          ? _instance.resendPhoneOtp
+          : (resendPhoneOtp as String?),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Mutation$ResendPhoneOtp<TRes>
@@ -1927,59 +1870,54 @@ class _CopyWithStubImpl$Mutation$ResendPhoneOtp<TRes>
 
   TRes _res;
 
-  call({
-    String? resendPhoneOtp,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? resendPhoneOtp, String? $__typename}) => _res;
 }
 
-const documentNodeMutationResendPhoneOtp = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'ResendPhoneOtp'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'phoneNumber')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
+const documentNodeMutationResendPhoneOtp = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'ResendPhoneOtp'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'phoneNumber')),
+          type: NamedTypeNode(name: NameNode(value: 'String'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'resendPhoneOtp'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'phoneNumber'),
-            value: VariableNode(name: NameNode(value: 'phoneNumber')),
-          )
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
+          FieldNode(
+            name: NameNode(value: 'resendPhoneOtp'),
+            alias: null,
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'phoneNumber'),
+                value: VariableNode(name: NameNode(value: 'phoneNumber')),
+              ),
+            ],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
         ],
-        directives: [],
-        selectionSet: null,
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Mutation$ResendPhoneOtp _parserFn$Mutation$ResendPhoneOtp(
-        Map<String, dynamic> data) =>
-    Mutation$ResendPhoneOtp.fromJson(data);
-typedef OnMutationCompleted$Mutation$ResendPhoneOtp = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Mutation$ResendPhoneOtp?,
+    ),
+  ],
 );
+Mutation$ResendPhoneOtp _parserFn$Mutation$ResendPhoneOtp(
+  Map<String, dynamic> data,
+) => Mutation$ResendPhoneOtp.fromJson(data);
+typedef OnMutationCompleted$Mutation$ResendPhoneOtp =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$ResendPhoneOtp?);
 
 class Options$Mutation$ResendPhoneOtp
     extends graphql.MutationOptions<Mutation$ResendPhoneOtp> {
@@ -1995,38 +1933,36 @@ class Options$Mutation$ResendPhoneOtp
     OnMutationCompleted$Mutation$ResendPhoneOtp? onCompleted,
     graphql.OnMutationUpdate<Mutation$ResendPhoneOtp>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$ResendPhoneOtp(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationResendPhoneOtp,
-          parserFn: _parserFn$Mutation$ResendPhoneOtp,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$ResendPhoneOtp(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationResendPhoneOtp,
+         parserFn: _parserFn$Mutation$ResendPhoneOtp,
+       );
 
   final OnMutationCompleted$Mutation$ResendPhoneOtp? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$ResendPhoneOtp
@@ -2045,60 +1981,59 @@ class WatchOptions$Mutation$ResendPhoneOtp
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationResendPhoneOtp,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$ResendPhoneOtp,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationResendPhoneOtp,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$ResendPhoneOtp,
+       );
 }
 
 extension ClientExtension$Mutation$ResendPhoneOtp on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$ResendPhoneOtp>> mutate$ResendPhoneOtp(
-          Options$Mutation$ResendPhoneOtp options) async =>
-      await this.mutate(options);
+    Options$Mutation$ResendPhoneOtp options,
+  ) async => await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$ResendPhoneOtp> watchMutation$ResendPhoneOtp(
-          WatchOptions$Mutation$ResendPhoneOtp options) =>
-      this.watchMutation(options);
+    WatchOptions$Mutation$ResendPhoneOtp options,
+  ) => this.watchMutation(options);
 }
 
 class Mutation$ResendPhoneOtp$HookResult {
-  Mutation$ResendPhoneOtp$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$ResendPhoneOtp$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$ResendPhoneOtp runMutation;
 
   final graphql.QueryResult<Mutation$ResendPhoneOtp> result;
 }
 
-Mutation$ResendPhoneOtp$HookResult useMutation$ResendPhoneOtp(
-    [WidgetOptions$Mutation$ResendPhoneOtp? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$ResendPhoneOtp());
+Mutation$ResendPhoneOtp$HookResult useMutation$ResendPhoneOtp([
+  WidgetOptions$Mutation$ResendPhoneOtp? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$ResendPhoneOtp(),
+  );
   return Mutation$ResendPhoneOtp$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
-      variables.toJson(),
-      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-    ),
+          variables.toJson(),
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+        ),
     result.result,
   );
 }
 
 graphql.ObservableQuery<Mutation$ResendPhoneOtp>
-    useWatchMutation$ResendPhoneOtp(
-            WatchOptions$Mutation$ResendPhoneOtp options) =>
-        graphql_flutter.useWatchMutation(options);
+useWatchMutation$ResendPhoneOtp(WatchOptions$Mutation$ResendPhoneOtp options) =>
+    graphql_flutter.useWatchMutation(options);
 
 class WidgetOptions$Mutation$ResendPhoneOtp
     extends graphql.MutationOptions<Mutation$ResendPhoneOtp> {
@@ -2113,49 +2048,48 @@ class WidgetOptions$Mutation$ResendPhoneOtp
     OnMutationCompleted$Mutation$ResendPhoneOtp? onCompleted,
     graphql.OnMutationUpdate<Mutation$ResendPhoneOtp>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Mutation$ResendPhoneOtp(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationResendPhoneOtp,
-          parserFn: _parserFn$Mutation$ResendPhoneOtp,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$ResendPhoneOtp(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationResendPhoneOtp,
+         parserFn: _parserFn$Mutation$ResendPhoneOtp,
+       );
 
   final OnMutationCompleted$Mutation$ResendPhoneOtp? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$ResendPhoneOtp
-    = graphql.MultiSourceResult<Mutation$ResendPhoneOtp> Function(
-  Variables$Mutation$ResendPhoneOtp, {
-  Object? optimisticResult,
-  Mutation$ResendPhoneOtp? typedOptimisticResult,
-});
-typedef Builder$Mutation$ResendPhoneOtp = widgets.Widget Function(
-  RunMutation$Mutation$ResendPhoneOtp,
-  graphql.QueryResult<Mutation$ResendPhoneOtp>?,
-);
+typedef RunMutation$Mutation$ResendPhoneOtp =
+    graphql.MultiSourceResult<Mutation$ResendPhoneOtp> Function(
+      Variables$Mutation$ResendPhoneOtp, {
+      Object? optimisticResult,
+      Mutation$ResendPhoneOtp? typedOptimisticResult,
+    });
+typedef Builder$Mutation$ResendPhoneOtp =
+    widgets.Widget Function(
+      RunMutation$Mutation$ResendPhoneOtp,
+      graphql.QueryResult<Mutation$ResendPhoneOtp>?,
+    );
 
 class Mutation$ResendPhoneOtp$Widget
     extends graphql_flutter.Mutation<Mutation$ResendPhoneOtp> {
@@ -2164,38 +2098,28 @@ class Mutation$ResendPhoneOtp$Widget
     WidgetOptions$Mutation$ResendPhoneOtp? options,
     required Builder$Mutation$ResendPhoneOtp builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$ResendPhoneOtp(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            (
-              variables, {
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              variables.toJson(),
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$ResendPhoneOtp(),
+         builder: (run, result) => builder(
+           (variables, {optimisticResult, typedOptimisticResult}) => run(
+             variables.toJson(),
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Variables$Query$GetChannelsByCustomerEmail {
   factory Variables$Query$GetChannelsByCustomerEmail({required String email}) =>
-      Variables$Query$GetChannelsByCustomerEmail._({
-        r'email': email,
-      });
+      Variables$Query$GetChannelsByCustomerEmail._({r'email': email});
 
   Variables$Query$GetChannelsByCustomerEmail._(this._$data);
 
   factory Variables$Query$GetChannelsByCustomerEmail.fromJson(
-      Map<String, dynamic> data) {
+    Map<String, dynamic> data,
+  ) {
     final result$data = <String, dynamic>{};
     final l$email = data['email'];
     result$data['email'] = (l$email as String);
@@ -2214,11 +2138,10 @@ class Variables$Query$GetChannelsByCustomerEmail {
   }
 
   CopyWith$Variables$Query$GetChannelsByCustomerEmail<
-          Variables$Query$GetChannelsByCustomerEmail>
-      get copyWith => CopyWith$Variables$Query$GetChannelsByCustomerEmail(
-            this,
-            (i) => i,
-          );
+    Variables$Query$GetChannelsByCustomerEmail
+  >
+  get copyWith =>
+      CopyWith$Variables$Query$GetChannelsByCustomerEmail(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -2269,11 +2192,12 @@ class _CopyWithImpl$Variables$Query$GetChannelsByCustomerEmail<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? email = _undefined}) =>
-      _then(Variables$Query$GetChannelsByCustomerEmail._({
-        ..._instance._$data,
-        if (email != _undefined && email != null) 'email': (email as String),
-      }));
+  TRes call({Object? email = _undefined}) => _then(
+    Variables$Query$GetChannelsByCustomerEmail._({
+      ..._instance._$data,
+      if (email != _undefined && email != null) 'email': (email as String),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Query$GetChannelsByCustomerEmail<TRes>
@@ -2295,26 +2219,29 @@ class Query$GetChannelsByCustomerEmail {
     final l$getChannelsByCustomerEmail = json['getChannelsByCustomerEmail'];
     final l$$__typename = json['__typename'];
     return Query$GetChannelsByCustomerEmail(
-      getChannelsByCustomerEmail:
-          (l$getChannelsByCustomerEmail as List<dynamic>)
-              .map((e) =>
-                  Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
-                      .fromJson((e as Map<String, dynamic>)))
-              .toList(),
+      getChannelsByCustomerEmail: (l$getChannelsByCustomerEmail as List<dynamic>)
+          .map(
+            (e) =>
+                Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+          )
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
 
   final List<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>
-      getChannelsByCustomerEmail;
+  getChannelsByCustomerEmail;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$getChannelsByCustomerEmail = getChannelsByCustomerEmail;
-    _resultData['getChannelsByCustomerEmail'] =
-        l$getChannelsByCustomerEmail.map((e) => e.toJson()).toList();
+    _resultData['getChannelsByCustomerEmail'] = l$getChannelsByCustomerEmail
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2367,10 +2294,7 @@ class Query$GetChannelsByCustomerEmail {
 extension UtilityExtension$Query$GetChannelsByCustomerEmail
     on Query$GetChannelsByCustomerEmail {
   CopyWith$Query$GetChannelsByCustomerEmail<Query$GetChannelsByCustomerEmail>
-      get copyWith => CopyWith$Query$GetChannelsByCustomerEmail(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Query$GetChannelsByCustomerEmail(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetChannelsByCustomerEmail<TRes> {
@@ -2384,23 +2308,25 @@ abstract class CopyWith$Query$GetChannelsByCustomerEmail<TRes> {
 
   TRes call({
     List<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>?
-        getChannelsByCustomerEmail,
+    getChannelsByCustomerEmail,
     String? $__typename,
   });
   TRes getChannelsByCustomerEmail(
-      Iterable<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail> Function(
-              Iterable<
-                  CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-                      Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>>)
-          _fn);
+    Iterable<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>
+    Function(
+      Iterable<
+        CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
+          Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Query$GetChannelsByCustomerEmail<TRes>
     implements CopyWith$Query$GetChannelsByCustomerEmail<TRes> {
-  _CopyWithImpl$Query$GetChannelsByCustomerEmail(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetChannelsByCustomerEmail(this._instance, this._then);
 
   final Query$GetChannelsByCustomerEmail _instance;
 
@@ -2411,31 +2337,43 @@ class _CopyWithImpl$Query$GetChannelsByCustomerEmail<TRes>
   TRes call({
     Object? getChannelsByCustomerEmail = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByCustomerEmail(
-        getChannelsByCustomerEmail: getChannelsByCustomerEmail == _undefined ||
-                getChannelsByCustomerEmail == null
-            ? _instance.getChannelsByCustomerEmail
-            : (getChannelsByCustomerEmail as List<
-                Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetChannelsByCustomerEmail(
+      getChannelsByCustomerEmail:
+          getChannelsByCustomerEmail == _undefined ||
+              getChannelsByCustomerEmail == null
+          ? _instance.getChannelsByCustomerEmail
+          : (getChannelsByCustomerEmail
+                as List<
+                  Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
+                >),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   TRes getChannelsByCustomerEmail(
-          Iterable<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail> Function(
-                  Iterable<
-                      CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-                          Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>>)
-              _fn) =>
-      call(
-          getChannelsByCustomerEmail: _fn(_instance.getChannelsByCustomerEmail
-              .map((e) =>
-                  CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-                    e,
-                    (i) => i,
-                  ))).toList());
+    Iterable<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>
+    Function(
+      Iterable<
+        CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
+          Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    getChannelsByCustomerEmail: _fn(
+      _instance.getChannelsByCustomerEmail.map(
+        (e) =>
+            CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetChannelsByCustomerEmail<TRes>
@@ -2446,69 +2384,78 @@ class _CopyWithStubImpl$Query$GetChannelsByCustomerEmail<TRes>
 
   call({
     List<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>?
-        getChannelsByCustomerEmail,
+    getChannelsByCustomerEmail,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   getChannelsByCustomerEmail(_fn) => _res;
 }
 
-const documentNodeQueryGetChannelsByCustomerEmail = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetChannelsByCustomerEmail'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'email')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
+const documentNodeQueryGetChannelsByCustomerEmail = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'GetChannelsByCustomerEmail'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'email')),
+          type: NamedTypeNode(name: NameNode(value: 'String'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'getChannelsByCustomerEmail'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'email'),
-            value: VariableNode(name: NameNode(value: 'email')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'id'),
+            name: NameNode(value: 'getChannelsByCustomerEmail'),
             alias: null,
-            arguments: [],
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'email'),
+                value: VariableNode(name: NameNode(value: 'email')),
+              ),
+            ],
             directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'code'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'token'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultCurrencyCode'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'code'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'token'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'defaultCurrencyCode'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -2517,26 +2464,19 @@ const documentNodeQueryGetChannelsByCustomerEmail = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetChannelsByCustomerEmail _parserFn$Query$GetChannelsByCustomerEmail(
-        Map<String, dynamic> data) =>
-    Query$GetChannelsByCustomerEmail.fromJson(data);
-typedef OnQueryComplete$Query$GetChannelsByCustomerEmail = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Query$GetChannelsByCustomerEmail?,
+    ),
+  ],
 );
+Query$GetChannelsByCustomerEmail _parserFn$Query$GetChannelsByCustomerEmail(
+  Map<String, dynamic> data,
+) => Query$GetChannelsByCustomerEmail.fromJson(data);
+typedef OnQueryComplete$Query$GetChannelsByCustomerEmail =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Query$GetChannelsByCustomerEmail?,
+    );
 
 class Options$Query$GetChannelsByCustomerEmail
     extends graphql.QueryOptions<Query$GetChannelsByCustomerEmail> {
@@ -2552,38 +2492,38 @@ class Options$Query$GetChannelsByCustomerEmail
     graphql.Context? context,
     OnQueryComplete$Query$GetChannelsByCustomerEmail? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$GetChannelsByCustomerEmail(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetChannelsByCustomerEmail,
-          parserFn: _parserFn$Query$GetChannelsByCustomerEmail,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$GetChannelsByCustomerEmail(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryGetChannelsByCustomerEmail,
+         parserFn: _parserFn$Query$GetChannelsByCustomerEmail,
+       );
 
   final OnQueryComplete$Query$GetChannelsByCustomerEmail? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$GetChannelsByCustomerEmail
@@ -2602,20 +2542,20 @@ class WatchOptions$Query$GetChannelsByCustomerEmail
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetChannelsByCustomerEmail,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetChannelsByCustomerEmail,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryGetChannelsByCustomerEmail,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$GetChannelsByCustomerEmail,
+       );
 }
 
 class FetchMoreOptions$Query$GetChannelsByCustomerEmail
@@ -2624,36 +2564,39 @@ class FetchMoreOptions$Query$GetChannelsByCustomerEmail
     required graphql.UpdateQuery updateQuery,
     required Variables$Query$GetChannelsByCustomerEmail variables,
   }) : super(
-          updateQuery: updateQuery,
-          variables: variables.toJson(),
-          document: documentNodeQueryGetChannelsByCustomerEmail,
-        );
+         updateQuery: updateQuery,
+         variables: variables.toJson(),
+         document: documentNodeQueryGetChannelsByCustomerEmail,
+       );
 }
 
 extension ClientExtension$Query$GetChannelsByCustomerEmail
     on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetChannelsByCustomerEmail>>
-      query$GetChannelsByCustomerEmail(
-              Options$Query$GetChannelsByCustomerEmail options) async =>
-          await this.query(options);
+  query$GetChannelsByCustomerEmail(
+    Options$Query$GetChannelsByCustomerEmail options,
+  ) async => await this.query(options);
+
   graphql.ObservableQuery<Query$GetChannelsByCustomerEmail>
-      watchQuery$GetChannelsByCustomerEmail(
-              WatchOptions$Query$GetChannelsByCustomerEmail options) =>
-          this.watchQuery(options);
+  watchQuery$GetChannelsByCustomerEmail(
+    WatchOptions$Query$GetChannelsByCustomerEmail options,
+  ) => this.watchQuery(options);
+
   void writeQuery$GetChannelsByCustomerEmail({
     required Query$GetChannelsByCustomerEmail data,
     required Variables$Query$GetChannelsByCustomerEmail variables,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-          operation: graphql.Operation(
-              document: documentNodeQueryGetChannelsByCustomerEmail),
-          variables: variables.toJson(),
-        ),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryGetChannelsByCustomerEmail,
+      ),
+      variables: variables.toJson(),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
   Query$GetChannelsByCustomerEmail? readQuery$GetChannelsByCustomerEmail({
     required Variables$Query$GetChannelsByCustomerEmail variables,
     bool optimistic = true,
@@ -2661,7 +2604,8 @@ extension ClientExtension$Query$GetChannelsByCustomerEmail
     final result = this.readQuery(
       graphql.Request(
         operation: graphql.Operation(
-            document: documentNodeQueryGetChannelsByCustomerEmail),
+          document: documentNodeQueryGetChannelsByCustomerEmail,
+        ),
         variables: variables.toJson(),
       ),
       optimistic: optimistic,
@@ -2673,13 +2617,13 @@ extension ClientExtension$Query$GetChannelsByCustomerEmail
 }
 
 graphql_flutter.QueryHookResult<Query$GetChannelsByCustomerEmail>
-    useQuery$GetChannelsByCustomerEmail(
-            Options$Query$GetChannelsByCustomerEmail options) =>
-        graphql_flutter.useQuery(options);
+useQuery$GetChannelsByCustomerEmail(
+  Options$Query$GetChannelsByCustomerEmail options,
+) => graphql_flutter.useQuery(options);
 graphql.ObservableQuery<Query$GetChannelsByCustomerEmail>
-    useWatchQuery$GetChannelsByCustomerEmail(
-            WatchOptions$Query$GetChannelsByCustomerEmail options) =>
-        graphql_flutter.useWatchQuery(options);
+useWatchQuery$GetChannelsByCustomerEmail(
+  WatchOptions$Query$GetChannelsByCustomerEmail options,
+) => graphql_flutter.useWatchQuery(options);
 
 class Query$GetChannelsByCustomerEmail$Widget
     extends graphql_flutter.Query<Query$GetChannelsByCustomerEmail> {
@@ -2687,12 +2631,8 @@ class Query$GetChannelsByCustomerEmail$Widget
     widgets.Key? key,
     required Options$Query$GetChannelsByCustomerEmail options,
     required graphql_flutter.QueryBuilder<Query$GetChannelsByCustomerEmail>
-        builder,
-  }) : super(
-          key: key,
-          options: options,
-          builder: builder,
-        );
+    builder,
+  }) : super(key: key, options: options, builder: builder);
 }
 
 class Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
@@ -2705,7 +2645,8 @@ class Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
   });
 
   factory Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$code = json['code'];
     final l$token = json['token'];
@@ -2715,8 +2656,9 @@ class Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
       id: (l$id as String),
       code: (l$code as String),
       token: (l$token as String),
-      defaultCurrencyCode:
-          fromJson$Enum$CurrencyCode((l$defaultCurrencyCode as String)),
+      defaultCurrencyCode: fromJson$Enum$CurrencyCode(
+        (l$defaultCurrencyCode as String),
+      ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2740,8 +2682,9 @@ class Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
     final l$token = token;
     _resultData['token'] = l$token;
     final l$defaultCurrencyCode = defaultCurrencyCode;
-    _resultData['defaultCurrencyCode'] =
-        toJson$Enum$CurrencyCode(l$defaultCurrencyCode);
+    _resultData['defaultCurrencyCode'] = toJson$Enum$CurrencyCode(
+      l$defaultCurrencyCode,
+    );
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2804,25 +2747,27 @@ class Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
 extension UtilityExtension$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
     on Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
   CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-          Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>
-      get copyWith =>
-          CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-            this,
-            (i) => i,
-          );
+    Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
+  >
+  get copyWith =>
+      CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
     Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail instance,
     TRes Function(Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail)
-        then,
+    then,
   ) = _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail;
 
   factory CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail;
 
   TRes call({
     String? id,
@@ -2834,10 +2779,12 @@ abstract class CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEm
 }
 
 class _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
     this._instance,
     this._then,
@@ -2846,7 +2793,9 @@ class _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
   final Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail _instance;
 
   final TRes Function(
-      Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail) _then;
+    Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -2856,32 +2805,36 @@ class _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
     Object? token = _undefined,
     Object? defaultCurrencyCode = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        token: token == _undefined || token == null
-            ? _instance.token
-            : (token as String),
-        defaultCurrencyCode:
-            defaultCurrencyCode == _undefined || defaultCurrencyCode == null
-                ? _instance.defaultCurrencyCode
-                : (defaultCurrencyCode as Enum$CurrencyCode),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      token: token == _undefined || token == null
+          ? _instance.token
+          : (token as String),
+      defaultCurrencyCode:
+          defaultCurrencyCode == _undefined || defaultCurrencyCode == null
+          ? _instance.defaultCurrencyCode
+          : (defaultCurrencyCode as Enum$CurrencyCode),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -2891,21 +2844,20 @@ class _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEm
     String? token,
     Enum$CurrencyCode? defaultCurrencyCode,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Variables$Query$GetChannelsByPhoneNumber {
-  factory Variables$Query$GetChannelsByPhoneNumber(
-          {required String phoneNumber}) =>
-      Variables$Query$GetChannelsByPhoneNumber._({
-        r'phoneNumber': phoneNumber,
-      });
+  factory Variables$Query$GetChannelsByPhoneNumber({
+    required String phoneNumber,
+  }) =>
+      Variables$Query$GetChannelsByPhoneNumber._({r'phoneNumber': phoneNumber});
 
   Variables$Query$GetChannelsByPhoneNumber._(this._$data);
 
   factory Variables$Query$GetChannelsByPhoneNumber.fromJson(
-      Map<String, dynamic> data) {
+    Map<String, dynamic> data,
+  ) {
     final result$data = <String, dynamic>{};
     final l$phoneNumber = data['phoneNumber'];
     result$data['phoneNumber'] = (l$phoneNumber as String);
@@ -2924,11 +2876,10 @@ class Variables$Query$GetChannelsByPhoneNumber {
   }
 
   CopyWith$Variables$Query$GetChannelsByPhoneNumber<
-          Variables$Query$GetChannelsByPhoneNumber>
-      get copyWith => CopyWith$Variables$Query$GetChannelsByPhoneNumber(
-            this,
-            (i) => i,
-          );
+    Variables$Query$GetChannelsByPhoneNumber
+  >
+  get copyWith =>
+      CopyWith$Variables$Query$GetChannelsByPhoneNumber(this, (i) => i);
 
   @override
   bool operator ==(Object other) {
@@ -2979,12 +2930,13 @@ class _CopyWithImpl$Variables$Query$GetChannelsByPhoneNumber<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? phoneNumber = _undefined}) =>
-      _then(Variables$Query$GetChannelsByPhoneNumber._({
-        ..._instance._$data,
-        if (phoneNumber != _undefined && phoneNumber != null)
-          'phoneNumber': (phoneNumber as String),
-      }));
+  TRes call({Object? phoneNumber = _undefined}) => _then(
+    Variables$Query$GetChannelsByPhoneNumber._({
+      ..._instance._$data,
+      if (phoneNumber != _undefined && phoneNumber != null)
+        'phoneNumber': (phoneNumber as String),
+    }),
+  );
 }
 
 class _CopyWithStubImpl$Variables$Query$GetChannelsByPhoneNumber<TRes>
@@ -3007,18 +2959,21 @@ class Query$GetChannelsByPhoneNumber {
         json['getChannelsByCustomerPhoneNumber'];
     final l$$__typename = json['__typename'];
     return Query$GetChannelsByPhoneNumber(
-      getChannelsByCustomerPhoneNumber: (l$getChannelsByCustomerPhoneNumber
-              as List<dynamic>)
-          .map((e) =>
-              Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
-                  .fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      getChannelsByCustomerPhoneNumber:
+          (l$getChannelsByCustomerPhoneNumber as List<dynamic>)
+              .map(
+                (e) =>
+                    Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber.fromJson(
+                      (e as Map<String, dynamic>),
+                    ),
+              )
+              .toList(),
       $__typename: (l$$__typename as String),
     );
   }
 
   final List<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>
-      getChannelsByCustomerPhoneNumber;
+  getChannelsByCustomerPhoneNumber;
 
   final String $__typename;
 
@@ -3080,10 +3035,7 @@ class Query$GetChannelsByPhoneNumber {
 extension UtilityExtension$Query$GetChannelsByPhoneNumber
     on Query$GetChannelsByPhoneNumber {
   CopyWith$Query$GetChannelsByPhoneNumber<Query$GetChannelsByPhoneNumber>
-      get copyWith => CopyWith$Query$GetChannelsByPhoneNumber(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Query$GetChannelsByPhoneNumber(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetChannelsByPhoneNumber<TRes> {
@@ -3097,23 +3049,25 @@ abstract class CopyWith$Query$GetChannelsByPhoneNumber<TRes> {
 
   TRes call({
     List<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>?
-        getChannelsByCustomerPhoneNumber,
+    getChannelsByCustomerPhoneNumber,
     String? $__typename,
   });
   TRes getChannelsByCustomerPhoneNumber(
-      Iterable<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber> Function(
-              Iterable<
-                  CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-                      Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>>)
-          _fn);
+    Iterable<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>
+    Function(
+      Iterable<
+        CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
+          Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Query$GetChannelsByPhoneNumber<TRes>
     implements CopyWith$Query$GetChannelsByPhoneNumber<TRes> {
-  _CopyWithImpl$Query$GetChannelsByPhoneNumber(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetChannelsByPhoneNumber(this._instance, this._then);
 
   final Query$GetChannelsByPhoneNumber _instance;
 
@@ -3124,32 +3078,43 @@ class _CopyWithImpl$Query$GetChannelsByPhoneNumber<TRes>
   TRes call({
     Object? getChannelsByCustomerPhoneNumber = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByPhoneNumber(
-        getChannelsByCustomerPhoneNumber: getChannelsByCustomerPhoneNumber ==
-                    _undefined ||
-                getChannelsByCustomerPhoneNumber == null
-            ? _instance.getChannelsByCustomerPhoneNumber
-            : (getChannelsByCustomerPhoneNumber as List<
-                Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetChannelsByPhoneNumber(
+      getChannelsByCustomerPhoneNumber:
+          getChannelsByCustomerPhoneNumber == _undefined ||
+              getChannelsByCustomerPhoneNumber == null
+          ? _instance.getChannelsByCustomerPhoneNumber
+          : (getChannelsByCustomerPhoneNumber
+                as List<
+                  Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
+                >),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   TRes getChannelsByCustomerPhoneNumber(
-          Iterable<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber> Function(
-                  Iterable<
-                      CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-                          Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>>)
-              _fn) =>
-      call(
-          getChannelsByCustomerPhoneNumber: _fn(
-              _instance.getChannelsByCustomerPhoneNumber.map((e) =>
-                  CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-                    e,
-                    (i) => i,
-                  ))).toList());
+    Iterable<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>
+    Function(
+      Iterable<
+        CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
+          Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    getChannelsByCustomerPhoneNumber: _fn(
+      _instance.getChannelsByCustomerPhoneNumber.map(
+        (e) =>
+            CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
+              e,
+              (i) => i,
+            ),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetChannelsByPhoneNumber<TRes>
@@ -3160,69 +3125,78 @@ class _CopyWithStubImpl$Query$GetChannelsByPhoneNumber<TRes>
 
   call({
     List<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>?
-        getChannelsByCustomerPhoneNumber,
+    getChannelsByCustomerPhoneNumber,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   getChannelsByCustomerPhoneNumber(_fn) => _res;
 }
 
-const documentNodeQueryGetChannelsByPhoneNumber = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetChannelsByPhoneNumber'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'phoneNumber')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
+const documentNodeQueryGetChannelsByPhoneNumber = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'GetChannelsByPhoneNumber'),
+      variableDefinitions: [
+        VariableDefinitionNode(
+          variable: VariableNode(name: NameNode(value: 'phoneNumber')),
+          type: NamedTypeNode(name: NameNode(value: 'String'), isNonNull: true),
+          defaultValue: DefaultValueNode(value: null),
+          directives: [],
         ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'getChannelsByCustomerPhoneNumber'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'phoneNumber'),
-            value: VariableNode(name: NameNode(value: 'phoneNumber')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+      ],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'id'),
+            name: NameNode(value: 'getChannelsByCustomerPhoneNumber'),
             alias: null,
-            arguments: [],
+            arguments: [
+              ArgumentNode(
+                name: NameNode(value: 'phoneNumber'),
+                value: VariableNode(name: NameNode(value: 'phoneNumber')),
+              ),
+            ],
             directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'code'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'token'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultCurrencyCode'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'code'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'token'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'defaultCurrencyCode'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -3231,26 +3205,19 @@ const documentNodeQueryGetChannelsByPhoneNumber = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetChannelsByPhoneNumber _parserFn$Query$GetChannelsByPhoneNumber(
-        Map<String, dynamic> data) =>
-    Query$GetChannelsByPhoneNumber.fromJson(data);
-typedef OnQueryComplete$Query$GetChannelsByPhoneNumber = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Query$GetChannelsByPhoneNumber?,
+    ),
+  ],
 );
+Query$GetChannelsByPhoneNumber _parserFn$Query$GetChannelsByPhoneNumber(
+  Map<String, dynamic> data,
+) => Query$GetChannelsByPhoneNumber.fromJson(data);
+typedef OnQueryComplete$Query$GetChannelsByPhoneNumber =
+    FutureOr<void> Function(
+      Map<String, dynamic>?,
+      Query$GetChannelsByPhoneNumber?,
+    );
 
 class Options$Query$GetChannelsByPhoneNumber
     extends graphql.QueryOptions<Query$GetChannelsByPhoneNumber> {
@@ -3266,38 +3233,38 @@ class Options$Query$GetChannelsByPhoneNumber
     graphql.Context? context,
     OnQueryComplete$Query$GetChannelsByPhoneNumber? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$GetChannelsByPhoneNumber(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetChannelsByPhoneNumber,
-          parserFn: _parserFn$Query$GetChannelsByPhoneNumber,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$GetChannelsByPhoneNumber(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryGetChannelsByPhoneNumber,
+         parserFn: _parserFn$Query$GetChannelsByPhoneNumber,
+       );
 
   final OnQueryComplete$Query$GetChannelsByPhoneNumber? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$GetChannelsByPhoneNumber
@@ -3316,20 +3283,20 @@ class WatchOptions$Query$GetChannelsByPhoneNumber
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetChannelsByPhoneNumber,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetChannelsByPhoneNumber,
-        );
+         variables: variables.toJson(),
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryGetChannelsByPhoneNumber,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$GetChannelsByPhoneNumber,
+       );
 }
 
 class FetchMoreOptions$Query$GetChannelsByPhoneNumber
@@ -3338,36 +3305,39 @@ class FetchMoreOptions$Query$GetChannelsByPhoneNumber
     required graphql.UpdateQuery updateQuery,
     required Variables$Query$GetChannelsByPhoneNumber variables,
   }) : super(
-          updateQuery: updateQuery,
-          variables: variables.toJson(),
-          document: documentNodeQueryGetChannelsByPhoneNumber,
-        );
+         updateQuery: updateQuery,
+         variables: variables.toJson(),
+         document: documentNodeQueryGetChannelsByPhoneNumber,
+       );
 }
 
 extension ClientExtension$Query$GetChannelsByPhoneNumber
     on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetChannelsByPhoneNumber>>
-      query$GetChannelsByPhoneNumber(
-              Options$Query$GetChannelsByPhoneNumber options) async =>
-          await this.query(options);
+  query$GetChannelsByPhoneNumber(
+    Options$Query$GetChannelsByPhoneNumber options,
+  ) async => await this.query(options);
+
   graphql.ObservableQuery<Query$GetChannelsByPhoneNumber>
-      watchQuery$GetChannelsByPhoneNumber(
-              WatchOptions$Query$GetChannelsByPhoneNumber options) =>
-          this.watchQuery(options);
+  watchQuery$GetChannelsByPhoneNumber(
+    WatchOptions$Query$GetChannelsByPhoneNumber options,
+  ) => this.watchQuery(options);
+
   void writeQuery$GetChannelsByPhoneNumber({
     required Query$GetChannelsByPhoneNumber data,
     required Variables$Query$GetChannelsByPhoneNumber variables,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-          operation: graphql.Operation(
-              document: documentNodeQueryGetChannelsByPhoneNumber),
-          variables: variables.toJson(),
-        ),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryGetChannelsByPhoneNumber,
+      ),
+      variables: variables.toJson(),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
   Query$GetChannelsByPhoneNumber? readQuery$GetChannelsByPhoneNumber({
     required Variables$Query$GetChannelsByPhoneNumber variables,
     bool optimistic = true,
@@ -3375,7 +3345,8 @@ extension ClientExtension$Query$GetChannelsByPhoneNumber
     final result = this.readQuery(
       graphql.Request(
         operation: graphql.Operation(
-            document: documentNodeQueryGetChannelsByPhoneNumber),
+          document: documentNodeQueryGetChannelsByPhoneNumber,
+        ),
         variables: variables.toJson(),
       ),
       optimistic: optimistic,
@@ -3387,13 +3358,13 @@ extension ClientExtension$Query$GetChannelsByPhoneNumber
 }
 
 graphql_flutter.QueryHookResult<Query$GetChannelsByPhoneNumber>
-    useQuery$GetChannelsByPhoneNumber(
-            Options$Query$GetChannelsByPhoneNumber options) =>
-        graphql_flutter.useQuery(options);
+useQuery$GetChannelsByPhoneNumber(
+  Options$Query$GetChannelsByPhoneNumber options,
+) => graphql_flutter.useQuery(options);
 graphql.ObservableQuery<Query$GetChannelsByPhoneNumber>
-    useWatchQuery$GetChannelsByPhoneNumber(
-            WatchOptions$Query$GetChannelsByPhoneNumber options) =>
-        graphql_flutter.useWatchQuery(options);
+useWatchQuery$GetChannelsByPhoneNumber(
+  WatchOptions$Query$GetChannelsByPhoneNumber options,
+) => graphql_flutter.useWatchQuery(options);
 
 class Query$GetChannelsByPhoneNumber$Widget
     extends graphql_flutter.Query<Query$GetChannelsByPhoneNumber> {
@@ -3401,12 +3372,8 @@ class Query$GetChannelsByPhoneNumber$Widget
     widgets.Key? key,
     required Options$Query$GetChannelsByPhoneNumber options,
     required graphql_flutter.QueryBuilder<Query$GetChannelsByPhoneNumber>
-        builder,
-  }) : super(
-          key: key,
-          options: options,
-          builder: builder,
-        );
+    builder,
+  }) : super(key: key, options: options, builder: builder);
 }
 
 class Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
@@ -3419,7 +3386,8 @@ class Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
   });
 
   factory Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$code = json['code'];
     final l$token = json['token'];
@@ -3429,8 +3397,9 @@ class Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
       id: (l$id as String),
       code: (l$code as String),
       token: (l$token as String),
-      defaultCurrencyCode:
-          fromJson$Enum$CurrencyCode((l$defaultCurrencyCode as String)),
+      defaultCurrencyCode: fromJson$Enum$CurrencyCode(
+        (l$defaultCurrencyCode as String),
+      ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -3454,8 +3423,9 @@ class Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
     final l$token = token;
     _resultData['token'] = l$token;
     final l$defaultCurrencyCode = defaultCurrencyCode;
-    _resultData['defaultCurrencyCode'] =
-        toJson$Enum$CurrencyCode(l$defaultCurrencyCode);
+    _resultData['defaultCurrencyCode'] = toJson$Enum$CurrencyCode(
+      l$defaultCurrencyCode,
+    );
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -3519,26 +3489,29 @@ class Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
 extension UtilityExtension$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
     on Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
   CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-          Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>
-      get copyWith =>
-          CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-            this,
-            (i) => i,
-          );
+    Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
+  >
+  get copyWith =>
+      CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
+        this,
+        (i) => i,
+      );
 }
 
 abstract class CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-    TRes> {
+  TRes
+> {
   factory CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
     Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber instance,
     TRes Function(
-            Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber)
-        then,
+      Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber,
+    )
+    then,
   ) = _CopyWithImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber;
 
   factory CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber;
 
   TRes call({
     String? id,
@@ -3550,20 +3523,24 @@ abstract class CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhon
 }
 
 class _CopyWithImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-            TRes> {
+          TRes
+        > {
   _CopyWithImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
     this._instance,
     this._then,
   );
 
   final Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
-      _instance;
+  _instance;
 
   final TRes Function(
-      Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber) _then;
+    Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber,
+  )
+  _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -3573,32 +3550,36 @@ class _CopyWithImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNum
     Object? token = _undefined,
     Object? defaultCurrencyCode = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        token: token == _undefined || token == null
-            ? _instance.token
-            : (token as String),
-        defaultCurrencyCode:
-            defaultCurrencyCode == _undefined || defaultCurrencyCode == null
-                ? _instance.defaultCurrencyCode
-                : (defaultCurrencyCode as Enum$CurrencyCode),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      token: token == _undefined || token == null
+          ? _instance.token
+          : (token as String),
+      defaultCurrencyCode:
+          defaultCurrencyCode == _undefined || defaultCurrencyCode == null
+          ? _instance.defaultCurrencyCode
+          : (defaultCurrencyCode as Enum$CurrencyCode),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-        TRes>
+  TRes
+>
     implements
         CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-            TRes> {
+          TRes
+        > {
   _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-      this._res);
+    this._res,
+  );
 
   TRes _res;
 
@@ -3608,22 +3589,19 @@ class _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhon
     String? token,
     Enum$CurrencyCode? defaultCurrencyCode,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }
 
 class Mutation$LogoutUser {
-  Mutation$LogoutUser({
-    required this.logout,
-    this.$__typename = 'Mutation',
-  });
+  Mutation$LogoutUser({required this.logout, this.$__typename = 'Mutation'});
 
   factory Mutation$LogoutUser.fromJson(Map<String, dynamic> json) {
     final l$logout = json['logout'];
     final l$$__typename = json['__typename'];
     return Mutation$LogoutUser(
       logout: Mutation$LogoutUser$logout.fromJson(
-          (l$logout as Map<String, dynamic>)),
+        (l$logout as Map<String, dynamic>),
+      ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -3645,10 +3623,7 @@ class Mutation$LogoutUser {
   int get hashCode {
     final l$logout = logout;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$logout,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$logout, l$$__typename]);
   }
 
   @override
@@ -3675,10 +3650,7 @@ class Mutation$LogoutUser {
 
 extension UtilityExtension$Mutation$LogoutUser on Mutation$LogoutUser {
   CopyWith$Mutation$LogoutUser<Mutation$LogoutUser> get copyWith =>
-      CopyWith$Mutation$LogoutUser(
-        this,
-        (i) => i,
-      );
+      CopyWith$Mutation$LogoutUser(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$LogoutUser<TRes> {
@@ -3690,19 +3662,13 @@ abstract class CopyWith$Mutation$LogoutUser<TRes> {
   factory CopyWith$Mutation$LogoutUser.stub(TRes res) =
       _CopyWithStubImpl$Mutation$LogoutUser;
 
-  TRes call({
-    Mutation$LogoutUser$logout? logout,
-    String? $__typename,
-  });
+  TRes call({Mutation$LogoutUser$logout? logout, String? $__typename});
   CopyWith$Mutation$LogoutUser$logout<TRes> get logout;
 }
 
 class _CopyWithImpl$Mutation$LogoutUser<TRes>
     implements CopyWith$Mutation$LogoutUser<TRes> {
-  _CopyWithImpl$Mutation$LogoutUser(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$LogoutUser(this._instance, this._then);
 
   final Mutation$LogoutUser _instance;
 
@@ -3710,23 +3676,24 @@ class _CopyWithImpl$Mutation$LogoutUser<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? logout = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$LogoutUser(
-        logout: logout == _undefined || logout == null
-            ? _instance.logout
-            : (logout as Mutation$LogoutUser$logout),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? logout = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Mutation$LogoutUser(
+          logout: logout == _undefined || logout == null
+              ? _instance.logout
+              : (logout as Mutation$LogoutUser$logout),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
 
   CopyWith$Mutation$LogoutUser$logout<TRes> get logout {
     final local$logout = _instance.logout;
     return CopyWith$Mutation$LogoutUser$logout(
-        local$logout, (e) => call(logout: e));
+      local$logout,
+      (e) => call(logout: e),
+    );
   }
 }
 
@@ -3736,35 +3703,44 @@ class _CopyWithStubImpl$Mutation$LogoutUser<TRes>
 
   TRes _res;
 
-  call({
-    Mutation$LogoutUser$logout? logout,
-    String? $__typename,
-  }) =>
-      _res;
+  call({Mutation$LogoutUser$logout? logout, String? $__typename}) => _res;
 
   CopyWith$Mutation$LogoutUser$logout<TRes> get logout =>
       CopyWith$Mutation$LogoutUser$logout.stub(_res);
 }
 
-const documentNodeMutationLogoutUser = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.mutation,
-    name: NameNode(value: 'LogoutUser'),
-    variableDefinitions: [],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'logout'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+const documentNodeMutationLogoutUser = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.mutation,
+      name: NameNode(value: 'LogoutUser'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'success'),
+            name: NameNode(value: 'logout'),
             alias: null,
             arguments: [],
             directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'success'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -3773,24 +3749,15 @@ const documentNodeMutationLogoutUser = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
+    ),
+  ],
+);
 Mutation$LogoutUser _parserFn$Mutation$LogoutUser(Map<String, dynamic> data) =>
     Mutation$LogoutUser.fromJson(data);
-typedef OnMutationCompleted$Mutation$LogoutUser = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Mutation$LogoutUser?,
-);
+typedef OnMutationCompleted$Mutation$LogoutUser =
+    FutureOr<void> Function(Map<String, dynamic>?, Mutation$LogoutUser?);
 
 class Options$Mutation$LogoutUser
     extends graphql.MutationOptions<Mutation$LogoutUser> {
@@ -3805,35 +3772,35 @@ class Options$Mutation$LogoutUser
     OnMutationCompleted$Mutation$LogoutUser? onCompleted,
     graphql.OnMutationUpdate<Mutation$LogoutUser>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null ? null : _parserFn$Mutation$LogoutUser(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationLogoutUser,
-          parserFn: _parserFn$Mutation$LogoutUser,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$LogoutUser(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationLogoutUser,
+         parserFn: _parserFn$Mutation$LogoutUser,
+       );
 
   final OnMutationCompleted$Mutation$LogoutUser? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
 class WatchOptions$Mutation$LogoutUser
@@ -3851,45 +3818,45 @@ class WatchOptions$Mutation$LogoutUser
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeMutationLogoutUser,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$LogoutUser,
-        );
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeMutationLogoutUser,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Mutation$LogoutUser,
+       );
 }
 
 extension ClientExtension$Mutation$LogoutUser on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Mutation$LogoutUser>> mutate$LogoutUser(
-          [Options$Mutation$LogoutUser? options]) async =>
-      await this.mutate(options ?? Options$Mutation$LogoutUser());
-  graphql.ObservableQuery<Mutation$LogoutUser> watchMutation$LogoutUser(
-          [WatchOptions$Mutation$LogoutUser? options]) =>
-      this.watchMutation(options ?? WatchOptions$Mutation$LogoutUser());
+  Future<graphql.QueryResult<Mutation$LogoutUser>> mutate$LogoutUser([
+    Options$Mutation$LogoutUser? options,
+  ]) async => await this.mutate(options ?? Options$Mutation$LogoutUser());
+
+  graphql.ObservableQuery<Mutation$LogoutUser> watchMutation$LogoutUser([
+    WatchOptions$Mutation$LogoutUser? options,
+  ]) => this.watchMutation(options ?? WatchOptions$Mutation$LogoutUser());
 }
 
 class Mutation$LogoutUser$HookResult {
-  Mutation$LogoutUser$HookResult(
-    this.runMutation,
-    this.result,
-  );
+  Mutation$LogoutUser$HookResult(this.runMutation, this.result);
 
   final RunMutation$Mutation$LogoutUser runMutation;
 
   final graphql.QueryResult<Mutation$LogoutUser> result;
 }
 
-Mutation$LogoutUser$HookResult useMutation$LogoutUser(
-    [WidgetOptions$Mutation$LogoutUser? options]) {
-  final result = graphql_flutter
-      .useMutation(options ?? WidgetOptions$Mutation$LogoutUser());
+Mutation$LogoutUser$HookResult useMutation$LogoutUser([
+  WidgetOptions$Mutation$LogoutUser? options,
+]) {
+  final result = graphql_flutter.useMutation(
+    options ?? WidgetOptions$Mutation$LogoutUser(),
+  );
   return Mutation$LogoutUser$HookResult(
     ({optimisticResult, typedOptimisticResult}) => result.runMutation(
       const {},
@@ -3899,10 +3866,11 @@ Mutation$LogoutUser$HookResult useMutation$LogoutUser(
   );
 }
 
-graphql.ObservableQuery<Mutation$LogoutUser> useWatchMutation$LogoutUser(
-        [WatchOptions$Mutation$LogoutUser? options]) =>
-    graphql_flutter
-        .useWatchMutation(options ?? WatchOptions$Mutation$LogoutUser());
+graphql.ObservableQuery<Mutation$LogoutUser> useWatchMutation$LogoutUser([
+  WatchOptions$Mutation$LogoutUser? options,
+]) => graphql_flutter.useWatchMutation(
+  options ?? WatchOptions$Mutation$LogoutUser(),
+);
 
 class WidgetOptions$Mutation$LogoutUser
     extends graphql.MutationOptions<Mutation$LogoutUser> {
@@ -3917,46 +3885,47 @@ class WidgetOptions$Mutation$LogoutUser
     OnMutationCompleted$Mutation$LogoutUser? onCompleted,
     graphql.OnMutationUpdate<Mutation$LogoutUser>? update,
     graphql.OnError? onError,
-  })  : onCompletedWithParsed = onCompleted,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          onCompleted: onCompleted == null
-              ? null
-              : (data) => onCompleted(
-                    data,
-                    data == null ? null : _parserFn$Mutation$LogoutUser(data),
-                  ),
-          update: update,
-          onError: onError,
-          document: documentNodeMutationLogoutUser,
-          parserFn: _parserFn$Mutation$LogoutUser,
-        );
+  }) : onCompletedWithParsed = onCompleted,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         onCompleted: onCompleted == null
+             ? null
+             : (data) => onCompleted(
+                 data,
+                 data == null ? null : _parserFn$Mutation$LogoutUser(data),
+               ),
+         update: update,
+         onError: onError,
+         document: documentNodeMutationLogoutUser,
+         parserFn: _parserFn$Mutation$LogoutUser,
+       );
 
   final OnMutationCompleted$Mutation$LogoutUser? onCompletedWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onCompleted == null
-            ? super.properties
-            : super.properties.where((property) => property != onCompleted),
-        onCompletedWithParsed,
-      ];
+    ...super.onCompleted == null
+        ? super.properties
+        : super.properties.where((property) => property != onCompleted),
+    onCompletedWithParsed,
+  ];
 }
 
-typedef RunMutation$Mutation$LogoutUser
-    = graphql.MultiSourceResult<Mutation$LogoutUser> Function({
-  Object? optimisticResult,
-  Mutation$LogoutUser? typedOptimisticResult,
-});
-typedef Builder$Mutation$LogoutUser = widgets.Widget Function(
-  RunMutation$Mutation$LogoutUser,
-  graphql.QueryResult<Mutation$LogoutUser>?,
-);
+typedef RunMutation$Mutation$LogoutUser =
+    graphql.MultiSourceResult<Mutation$LogoutUser> Function({
+      Object? optimisticResult,
+      Mutation$LogoutUser? typedOptimisticResult,
+    });
+typedef Builder$Mutation$LogoutUser =
+    widgets.Widget Function(
+      RunMutation$Mutation$LogoutUser,
+      graphql.QueryResult<Mutation$LogoutUser>?,
+    );
 
 class Mutation$LogoutUser$Widget
     extends graphql_flutter.Mutation<Mutation$LogoutUser> {
@@ -3965,25 +3934,17 @@ class Mutation$LogoutUser$Widget
     WidgetOptions$Mutation$LogoutUser? options,
     required Builder$Mutation$LogoutUser builder,
   }) : super(
-          key: key,
-          options: options ?? WidgetOptions$Mutation$LogoutUser(),
-          builder: (
-            run,
-            result,
-          ) =>
-              builder(
-            ({
-              optimisticResult,
-              typedOptimisticResult,
-            }) =>
-                run(
-              const {},
-              optimisticResult:
-                  optimisticResult ?? typedOptimisticResult?.toJson(),
-            ),
-            result,
-          ),
-        );
+         key: key,
+         options: options ?? WidgetOptions$Mutation$LogoutUser(),
+         builder: (run, result) => builder(
+           ({optimisticResult, typedOptimisticResult}) => run(
+             const {},
+             optimisticResult:
+                 optimisticResult ?? typedOptimisticResult?.toJson(),
+           ),
+           result,
+         ),
+       );
 }
 
 class Mutation$LogoutUser$logout {
@@ -4018,10 +3979,7 @@ class Mutation$LogoutUser$logout {
   int get hashCode {
     final l$success = success;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$success,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$success, l$$__typename]);
   }
 
   @override
@@ -4050,10 +4008,7 @@ class Mutation$LogoutUser$logout {
 extension UtilityExtension$Mutation$LogoutUser$logout
     on Mutation$LogoutUser$logout {
   CopyWith$Mutation$LogoutUser$logout<Mutation$LogoutUser$logout>
-      get copyWith => CopyWith$Mutation$LogoutUser$logout(
-            this,
-            (i) => i,
-          );
+  get copyWith => CopyWith$Mutation$LogoutUser$logout(this, (i) => i);
 }
 
 abstract class CopyWith$Mutation$LogoutUser$logout<TRes> {
@@ -4065,18 +4020,12 @@ abstract class CopyWith$Mutation$LogoutUser$logout<TRes> {
   factory CopyWith$Mutation$LogoutUser$logout.stub(TRes res) =
       _CopyWithStubImpl$Mutation$LogoutUser$logout;
 
-  TRes call({
-    bool? success,
-    String? $__typename,
-  });
+  TRes call({bool? success, String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$LogoutUser$logout<TRes>
     implements CopyWith$Mutation$LogoutUser$logout<TRes> {
-  _CopyWithImpl$Mutation$LogoutUser$logout(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Mutation$LogoutUser$logout(this._instance, this._then);
 
   final Mutation$LogoutUser$logout _instance;
 
@@ -4084,18 +4033,17 @@ class _CopyWithImpl$Mutation$LogoutUser$logout<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? success = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$LogoutUser$logout(
-        success: success == _undefined || success == null
-            ? _instance.success
-            : (success as bool),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? success = _undefined, Object? $__typename = _undefined}) =>
+      _then(
+        Mutation$LogoutUser$logout(
+          success: success == _undefined || success == null
+              ? _instance.success
+              : (success as bool),
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String),
+        ),
+      );
 }
 
 class _CopyWithStubImpl$Mutation$LogoutUser$logout<TRes>
@@ -4104,11 +4052,7 @@ class _CopyWithStubImpl$Mutation$LogoutUser$logout<TRes>
 
   TRes _res;
 
-  call({
-    bool? success,
-    String? $__typename,
-  }) =>
-      _res;
+  call({bool? success, String? $__typename}) => _res;
 }
 
 class Query$GetChannelList {
@@ -4122,8 +4066,11 @@ class Query$GetChannelList {
     final l$$__typename = json['__typename'];
     return Query$GetChannelList(
       getChannelList: (l$getChannelList as List<dynamic>)
-          .map((e) => Query$GetChannelList$getChannelList.fromJson(
-              (e as Map<String, dynamic>)))
+          .map(
+            (e) => Query$GetChannelList$getChannelList.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       $__typename: (l$$__typename as String),
     );
@@ -4136,8 +4083,9 @@ class Query$GetChannelList {
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$getChannelList = getChannelList;
-    _resultData['getChannelList'] =
-        l$getChannelList.map((e) => e.toJson()).toList();
+    _resultData['getChannelList'] = l$getChannelList
+        .map((e) => e.toJson())
+        .toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -4184,10 +4132,7 @@ class Query$GetChannelList {
 
 extension UtilityExtension$Query$GetChannelList on Query$GetChannelList {
   CopyWith$Query$GetChannelList<Query$GetChannelList> get copyWith =>
-      CopyWith$Query$GetChannelList(
-        this,
-        (i) => i,
-      );
+      CopyWith$Query$GetChannelList(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetChannelList<TRes> {
@@ -4204,19 +4149,20 @@ abstract class CopyWith$Query$GetChannelList<TRes> {
     String? $__typename,
   });
   TRes getChannelList(
-      Iterable<Query$GetChannelList$getChannelList> Function(
-              Iterable<
-                  CopyWith$Query$GetChannelList$getChannelList<
-                      Query$GetChannelList$getChannelList>>)
-          _fn);
+    Iterable<Query$GetChannelList$getChannelList> Function(
+      Iterable<
+        CopyWith$Query$GetChannelList$getChannelList<
+          Query$GetChannelList$getChannelList
+        >
+      >,
+    )
+    _fn,
+  );
 }
 
 class _CopyWithImpl$Query$GetChannelList<TRes>
     implements CopyWith$Query$GetChannelList<TRes> {
-  _CopyWithImpl$Query$GetChannelList(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetChannelList(this._instance, this._then);
 
   final Query$GetChannelList _instance;
 
@@ -4227,28 +4173,33 @@ class _CopyWithImpl$Query$GetChannelList<TRes>
   TRes call({
     Object? getChannelList = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelList(
-        getChannelList: getChannelList == _undefined || getChannelList == null
-            ? _instance.getChannelList
-            : (getChannelList as List<Query$GetChannelList$getChannelList>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetChannelList(
+      getChannelList: getChannelList == _undefined || getChannelList == null
+          ? _instance.getChannelList
+          : (getChannelList as List<Query$GetChannelList$getChannelList>),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   TRes getChannelList(
-          Iterable<Query$GetChannelList$getChannelList> Function(
-                  Iterable<
-                      CopyWith$Query$GetChannelList$getChannelList<
-                          Query$GetChannelList$getChannelList>>)
-              _fn) =>
-      call(
-          getChannelList: _fn(_instance.getChannelList
-              .map((e) => CopyWith$Query$GetChannelList$getChannelList(
-                    e,
-                    (i) => i,
-                  ))).toList());
+    Iterable<Query$GetChannelList$getChannelList> Function(
+      Iterable<
+        CopyWith$Query$GetChannelList$getChannelList<
+          Query$GetChannelList$getChannelList
+        >
+      >,
+    )
+    _fn,
+  ) => call(
+    getChannelList: _fn(
+      _instance.getChannelList.map(
+        (e) => CopyWith$Query$GetChannelList$getChannelList(e, (i) => i),
+      ),
+    ).toList(),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetChannelList<TRes>
@@ -4260,45 +4211,57 @@ class _CopyWithStubImpl$Query$GetChannelList<TRes>
   call({
     List<Query$GetChannelList$getChannelList>? getChannelList,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   getChannelList(_fn) => _res;
 }
 
-const documentNodeQueryGetChannelList = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetChannelList'),
-    variableDefinitions: [],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'getChannelList'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+const documentNodeQueryGetChannelList = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'GetChannelList'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'id'),
+            name: NameNode(value: 'getChannelList'),
             alias: null,
             arguments: [],
             directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'code'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'token'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'code'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'token'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -4307,25 +4270,16 @@ const documentNodeQueryGetChannelList = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetChannelList _parserFn$Query$GetChannelList(
-        Map<String, dynamic> data) =>
-    Query$GetChannelList.fromJson(data);
-typedef OnQueryComplete$Query$GetChannelList = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Query$GetChannelList?,
+    ),
+  ],
 );
+Query$GetChannelList _parserFn$Query$GetChannelList(
+  Map<String, dynamic> data,
+) => Query$GetChannelList.fromJson(data);
+typedef OnQueryComplete$Query$GetChannelList =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$GetChannelList?);
 
 class Options$Query$GetChannelList
     extends graphql.QueryOptions<Query$GetChannelList> {
@@ -4340,35 +4294,35 @@ class Options$Query$GetChannelList
     graphql.Context? context,
     OnQueryComplete$Query$GetChannelList? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null ? null : _parserFn$Query$GetChannelList(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetChannelList,
-          parserFn: _parserFn$Query$GetChannelList,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null ? null : _parserFn$Query$GetChannelList(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryGetChannelList,
+         parserFn: _parserFn$Query$GetChannelList,
+       );
 
   final OnQueryComplete$Query$GetChannelList? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$GetChannelList
@@ -4386,66 +4340,69 @@ class WatchOptions$Query$GetChannelList
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetChannelList,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetChannelList,
-        );
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryGetChannelList,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$GetChannelList,
+       );
 }
 
 class FetchMoreOptions$Query$GetChannelList extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetChannelList(
-      {required graphql.UpdateQuery updateQuery})
-      : super(
-          updateQuery: updateQuery,
-          document: documentNodeQueryGetChannelList,
-        );
+  FetchMoreOptions$Query$GetChannelList({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryGetChannelList,
+       );
 }
 
 extension ClientExtension$Query$GetChannelList on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Query$GetChannelList>> query$GetChannelList(
-          [Options$Query$GetChannelList? options]) async =>
-      await this.query(options ?? Options$Query$GetChannelList());
-  graphql.ObservableQuery<Query$GetChannelList> watchQuery$GetChannelList(
-          [WatchOptions$Query$GetChannelList? options]) =>
-      this.watchQuery(options ?? WatchOptions$Query$GetChannelList());
+  Future<graphql.QueryResult<Query$GetChannelList>> query$GetChannelList([
+    Options$Query$GetChannelList? options,
+  ]) async => await this.query(options ?? Options$Query$GetChannelList());
+
+  graphql.ObservableQuery<Query$GetChannelList> watchQuery$GetChannelList([
+    WatchOptions$Query$GetChannelList? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$GetChannelList());
+
   void writeQuery$GetChannelList({
     required Query$GetChannelList data,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-            operation:
-                graphql.Operation(document: documentNodeQueryGetChannelList)),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(document: documentNodeQueryGetChannelList),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
   Query$GetChannelList? readQuery$GetChannelList({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
-          operation:
-              graphql.Operation(document: documentNodeQueryGetChannelList)),
+        operation: graphql.Operation(document: documentNodeQueryGetChannelList),
+      ),
       optimistic: optimistic,
     );
     return result == null ? null : Query$GetChannelList.fromJson(result);
   }
 }
 
-graphql_flutter.QueryHookResult<Query$GetChannelList> useQuery$GetChannelList(
-        [Options$Query$GetChannelList? options]) =>
-    graphql_flutter.useQuery(options ?? Options$Query$GetChannelList());
-graphql.ObservableQuery<Query$GetChannelList> useWatchQuery$GetChannelList(
-        [WatchOptions$Query$GetChannelList? options]) =>
-    graphql_flutter
-        .useWatchQuery(options ?? WatchOptions$Query$GetChannelList());
+graphql_flutter.QueryHookResult<Query$GetChannelList> useQuery$GetChannelList([
+  Options$Query$GetChannelList? options,
+]) => graphql_flutter.useQuery(options ?? Options$Query$GetChannelList());
+graphql.ObservableQuery<Query$GetChannelList> useWatchQuery$GetChannelList([
+  WatchOptions$Query$GetChannelList? options,
+]) => graphql_flutter.useWatchQuery(
+  options ?? WatchOptions$Query$GetChannelList(),
+);
 
 class Query$GetChannelList$Widget
     extends graphql_flutter.Query<Query$GetChannelList> {
@@ -4454,10 +4411,10 @@ class Query$GetChannelList$Widget
     Options$Query$GetChannelList? options,
     required graphql_flutter.QueryBuilder<Query$GetChannelList> builder,
   }) : super(
-          key: key,
-          options: options ?? Options$Query$GetChannelList(),
-          builder: builder,
-        );
+         key: key,
+         options: options ?? Options$Query$GetChannelList(),
+         builder: builder,
+       );
 }
 
 class Query$GetChannelList$getChannelList {
@@ -4469,7 +4426,8 @@ class Query$GetChannelList$getChannelList {
   });
 
   factory Query$GetChannelList$getChannelList.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$code = json['code'];
     final l$token = json['token'];
@@ -4509,12 +4467,7 @@ class Query$GetChannelList$getChannelList {
     final l$code = code;
     final l$token = token;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$id,
-      l$code,
-      l$token,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$id, l$code, l$token, l$$__typename]);
   }
 
   @override
@@ -4553,11 +4506,9 @@ class Query$GetChannelList$getChannelList {
 extension UtilityExtension$Query$GetChannelList$getChannelList
     on Query$GetChannelList$getChannelList {
   CopyWith$Query$GetChannelList$getChannelList<
-          Query$GetChannelList$getChannelList>
-      get copyWith => CopyWith$Query$GetChannelList$getChannelList(
-            this,
-            (i) => i,
-          );
+    Query$GetChannelList$getChannelList
+  >
+  get copyWith => CopyWith$Query$GetChannelList$getChannelList(this, (i) => i);
 }
 
 abstract class CopyWith$Query$GetChannelList$getChannelList<TRes> {
@@ -4569,20 +4520,12 @@ abstract class CopyWith$Query$GetChannelList$getChannelList<TRes> {
   factory CopyWith$Query$GetChannelList$getChannelList.stub(TRes res) =
       _CopyWithStubImpl$Query$GetChannelList$getChannelList;
 
-  TRes call({
-    String? id,
-    String? code,
-    String? token,
-    String? $__typename,
-  });
+  TRes call({String? id, String? code, String? token, String? $__typename});
 }
 
 class _CopyWithImpl$Query$GetChannelList$getChannelList<TRes>
     implements CopyWith$Query$GetChannelList$getChannelList<TRes> {
-  _CopyWithImpl$Query$GetChannelList$getChannelList(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$GetChannelList$getChannelList(this._instance, this._then);
 
   final Query$GetChannelList$getChannelList _instance;
 
@@ -4595,19 +4538,20 @@ class _CopyWithImpl$Query$GetChannelList$getChannelList<TRes>
     Object? code = _undefined,
     Object? token = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelList$getChannelList(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        token: token == _undefined || token == null
-            ? _instance.token
-            : (token as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$GetChannelList$getChannelList(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      code: code == _undefined || code == null
+          ? _instance.code
+          : (code as String),
+      token: token == _undefined || token == null
+          ? _instance.token
+          : (token as String),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$GetChannelList$getChannelList<TRes>
@@ -4616,11 +4560,5 @@ class _CopyWithStubImpl$Query$GetChannelList$getChannelList<TRes>
 
   TRes _res;
 
-  call({
-    String? id,
-    String? code,
-    String? token,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? id, String? code, String? token, String? $__typename}) => _res;
 }

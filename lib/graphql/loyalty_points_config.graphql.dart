@@ -17,7 +17,8 @@ class Query$LoyaltyPointsConfig {
       loyaltyPointsConfig: l$loyaltyPointsConfig == null
           ? null
           : Query$LoyaltyPointsConfig$loyaltyPointsConfig.fromJson(
-              (l$loyaltyPointsConfig as Map<String, dynamic>)),
+              (l$loyaltyPointsConfig as Map<String, dynamic>),
+            ),
       $__typename: (l$$__typename as String),
     );
   }
@@ -39,10 +40,7 @@ class Query$LoyaltyPointsConfig {
   int get hashCode {
     final l$loyaltyPointsConfig = loyaltyPointsConfig;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$loyaltyPointsConfig,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$loyaltyPointsConfig, l$$__typename]);
   }
 
   @override
@@ -71,10 +69,7 @@ class Query$LoyaltyPointsConfig {
 extension UtilityExtension$Query$LoyaltyPointsConfig
     on Query$LoyaltyPointsConfig {
   CopyWith$Query$LoyaltyPointsConfig<Query$LoyaltyPointsConfig> get copyWith =>
-      CopyWith$Query$LoyaltyPointsConfig(
-        this,
-        (i) => i,
-      );
+      CopyWith$Query$LoyaltyPointsConfig(this, (i) => i);
 }
 
 abstract class CopyWith$Query$LoyaltyPointsConfig<TRes> {
@@ -91,15 +86,12 @@ abstract class CopyWith$Query$LoyaltyPointsConfig<TRes> {
     String? $__typename,
   });
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
-      get loyaltyPointsConfig;
+  get loyaltyPointsConfig;
 }
 
 class _CopyWithImpl$Query$LoyaltyPointsConfig<TRes>
     implements CopyWith$Query$LoyaltyPointsConfig<TRes> {
-  _CopyWithImpl$Query$LoyaltyPointsConfig(
-    this._instance,
-    this._then,
-  );
+  _CopyWithImpl$Query$LoyaltyPointsConfig(this._instance, this._then);
 
   final Query$LoyaltyPointsConfig _instance;
 
@@ -110,25 +102,29 @@ class _CopyWithImpl$Query$LoyaltyPointsConfig<TRes>
   TRes call({
     Object? loyaltyPointsConfig = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$LoyaltyPointsConfig(
-        loyaltyPointsConfig: loyaltyPointsConfig == _undefined
-            ? _instance.loyaltyPointsConfig
-            : (loyaltyPointsConfig
+  }) => _then(
+    Query$LoyaltyPointsConfig(
+      loyaltyPointsConfig: loyaltyPointsConfig == _undefined
+          ? _instance.loyaltyPointsConfig
+          : (loyaltyPointsConfig
                 as Query$LoyaltyPointsConfig$loyaltyPointsConfig?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
-      get loyaltyPointsConfig {
+  get loyaltyPointsConfig {
     final local$loyaltyPointsConfig = _instance.loyaltyPointsConfig;
     return local$loyaltyPointsConfig == null
         ? CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(
-            _then(_instance))
+            _then(_instance),
+          )
         : CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig(
-            local$loyaltyPointsConfig, (e) => call(loyaltyPointsConfig: e));
+            local$loyaltyPointsConfig,
+            (e) => call(loyaltyPointsConfig: e),
+          );
   }
 }
 
@@ -141,61 +137,73 @@ class _CopyWithStubImpl$Query$LoyaltyPointsConfig<TRes>
   call({
     Query$LoyaltyPointsConfig$loyaltyPointsConfig? loyaltyPointsConfig,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
-      get loyaltyPointsConfig =>
-          CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(_res);
+  get loyaltyPointsConfig =>
+      CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(_res);
 }
 
-const documentNodeQueryLoyaltyPointsConfig = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'LoyaltyPointsConfig'),
-    variableDefinitions: [],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'loyaltyPointsConfig'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
+const documentNodeQueryLoyaltyPointsConfig = DocumentNode(
+  definitions: [
+    OperationDefinitionNode(
+      type: OperationType.query,
+      name: NameNode(value: 'LoyaltyPointsConfig'),
+      variableDefinitions: [],
+      directives: [],
+      selectionSet: SelectionSetNode(
+        selections: [
           FieldNode(
-            name: NameNode(value: 'id'),
+            name: NameNode(value: 'loyaltyPointsConfig'),
             alias: null,
             arguments: [],
             directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'createdAt'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'updatedAt'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'rupeesPerPoint'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'pointsPerRupee'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(
+              selections: [
+                FieldNode(
+                  name: NameNode(value: 'id'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'createdAt'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'updatedAt'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'rupeesPerPoint'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: 'pointsPerRupee'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ],
+            ),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -204,25 +212,16 @@ const documentNodeQueryLoyaltyPointsConfig = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-        ]),
+        ],
       ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$LoyaltyPointsConfig _parserFn$Query$LoyaltyPointsConfig(
-        Map<String, dynamic> data) =>
-    Query$LoyaltyPointsConfig.fromJson(data);
-typedef OnQueryComplete$Query$LoyaltyPointsConfig = FutureOr<void> Function(
-  Map<String, dynamic>?,
-  Query$LoyaltyPointsConfig?,
+    ),
+  ],
 );
+Query$LoyaltyPointsConfig _parserFn$Query$LoyaltyPointsConfig(
+  Map<String, dynamic> data,
+) => Query$LoyaltyPointsConfig.fromJson(data);
+typedef OnQueryComplete$Query$LoyaltyPointsConfig =
+    FutureOr<void> Function(Map<String, dynamic>?, Query$LoyaltyPointsConfig?);
 
 class Options$Query$LoyaltyPointsConfig
     extends graphql.QueryOptions<Query$LoyaltyPointsConfig> {
@@ -237,37 +236,37 @@ class Options$Query$LoyaltyPointsConfig
     graphql.Context? context,
     OnQueryComplete$Query$LoyaltyPointsConfig? onComplete,
     graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$LoyaltyPointsConfig(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryLoyaltyPointsConfig,
-          parserFn: _parserFn$Query$LoyaltyPointsConfig,
-        );
+  }) : onCompleteWithParsed = onComplete,
+       super(
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         pollInterval: pollInterval,
+         context: context,
+         onComplete: onComplete == null
+             ? null
+             : (data) => onComplete(
+                 data,
+                 data == null
+                     ? null
+                     : _parserFn$Query$LoyaltyPointsConfig(data),
+               ),
+         onError: onError,
+         document: documentNodeQueryLoyaltyPointsConfig,
+         parserFn: _parserFn$Query$LoyaltyPointsConfig,
+       );
 
   final OnQueryComplete$Query$LoyaltyPointsConfig? onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
+    ...super.onComplete == null
+        ? super.properties
+        : super.properties.where((property) => property != onComplete),
+    onCompleteWithParsed,
+  ];
 }
 
 class WatchOptions$Query$LoyaltyPointsConfig
@@ -285,57 +284,64 @@ class WatchOptions$Query$LoyaltyPointsConfig
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryLoyaltyPointsConfig,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$LoyaltyPointsConfig,
-        );
+         operationName: operationName,
+         fetchPolicy: fetchPolicy,
+         errorPolicy: errorPolicy,
+         cacheRereadPolicy: cacheRereadPolicy,
+         optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+         context: context,
+         document: documentNodeQueryLoyaltyPointsConfig,
+         pollInterval: pollInterval,
+         eagerlyFetchResults: eagerlyFetchResults,
+         carryForwardDataOnException: carryForwardDataOnException,
+         fetchResults: fetchResults,
+         parserFn: _parserFn$Query$LoyaltyPointsConfig,
+       );
 }
 
 class FetchMoreOptions$Query$LoyaltyPointsConfig
     extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$LoyaltyPointsConfig(
-      {required graphql.UpdateQuery updateQuery})
-      : super(
-          updateQuery: updateQuery,
-          document: documentNodeQueryLoyaltyPointsConfig,
-        );
+  FetchMoreOptions$Query$LoyaltyPointsConfig({
+    required graphql.UpdateQuery updateQuery,
+  }) : super(
+         updateQuery: updateQuery,
+         document: documentNodeQueryLoyaltyPointsConfig,
+       );
 }
 
 extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$LoyaltyPointsConfig>>
-      query$LoyaltyPointsConfig(
-              [Options$Query$LoyaltyPointsConfig? options]) async =>
-          await this.query(options ?? Options$Query$LoyaltyPointsConfig());
+  query$LoyaltyPointsConfig([
+    Options$Query$LoyaltyPointsConfig? options,
+  ]) async => await this.query(options ?? Options$Query$LoyaltyPointsConfig());
+
   graphql.ObservableQuery<Query$LoyaltyPointsConfig>
-      watchQuery$LoyaltyPointsConfig(
-              [WatchOptions$Query$LoyaltyPointsConfig? options]) =>
-          this.watchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+  watchQuery$LoyaltyPointsConfig([
+    WatchOptions$Query$LoyaltyPointsConfig? options,
+  ]) => this.watchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+
   void writeQuery$LoyaltyPointsConfig({
     required Query$LoyaltyPointsConfig data,
     bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-            operation: graphql.Operation(
-                document: documentNodeQueryLoyaltyPointsConfig)),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
-  Query$LoyaltyPointsConfig? readQuery$LoyaltyPointsConfig(
-      {bool optimistic = true}) {
+  }) => this.writeQuery(
+    graphql.Request(
+      operation: graphql.Operation(
+        document: documentNodeQueryLoyaltyPointsConfig,
+      ),
+    ),
+    data: data.toJson(),
+    broadcast: broadcast,
+  );
+
+  Query$LoyaltyPointsConfig? readQuery$LoyaltyPointsConfig({
+    bool optimistic = true,
+  }) {
     final result = this.readQuery(
       graphql.Request(
-          operation: graphql.Operation(
-              document: documentNodeQueryLoyaltyPointsConfig)),
+        operation: graphql.Operation(
+          document: documentNodeQueryLoyaltyPointsConfig,
+        ),
+      ),
       optimistic: optimistic,
     );
     return result == null ? null : Query$LoyaltyPointsConfig.fromJson(result);
@@ -343,15 +349,14 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
 }
 
 graphql_flutter.QueryHookResult<Query$LoyaltyPointsConfig>
-    useQuery$LoyaltyPointsConfig(
-            [Options$Query$LoyaltyPointsConfig? options]) =>
-        graphql_flutter
-            .useQuery(options ?? Options$Query$LoyaltyPointsConfig());
+useQuery$LoyaltyPointsConfig([Options$Query$LoyaltyPointsConfig? options]) =>
+    graphql_flutter.useQuery(options ?? Options$Query$LoyaltyPointsConfig());
 graphql.ObservableQuery<Query$LoyaltyPointsConfig>
-    useWatchQuery$LoyaltyPointsConfig(
-            [WatchOptions$Query$LoyaltyPointsConfig? options]) =>
-        graphql_flutter
-            .useWatchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+useWatchQuery$LoyaltyPointsConfig([
+  WatchOptions$Query$LoyaltyPointsConfig? options,
+]) => graphql_flutter.useWatchQuery(
+  options ?? WatchOptions$Query$LoyaltyPointsConfig(),
+);
 
 class Query$LoyaltyPointsConfig$Widget
     extends graphql_flutter.Query<Query$LoyaltyPointsConfig> {
@@ -360,10 +365,10 @@ class Query$LoyaltyPointsConfig$Widget
     Options$Query$LoyaltyPointsConfig? options,
     required graphql_flutter.QueryBuilder<Query$LoyaltyPointsConfig> builder,
   }) : super(
-          key: key,
-          options: options ?? Options$Query$LoyaltyPointsConfig(),
-          builder: builder,
-        );
+         key: key,
+         options: options ?? Options$Query$LoyaltyPointsConfig(),
+         builder: builder,
+       );
 }
 
 class Query$LoyaltyPointsConfig$loyaltyPointsConfig {
@@ -377,7 +382,8 @@ class Query$LoyaltyPointsConfig$loyaltyPointsConfig {
   });
 
   factory Query$LoyaltyPointsConfig$loyaltyPointsConfig.fromJson(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     final l$id = json['id'];
     final l$createdAt = json['createdAt'];
     final l$updatedAt = json['updatedAt'];
@@ -487,11 +493,10 @@ class Query$LoyaltyPointsConfig$loyaltyPointsConfig {
 extension UtilityExtension$Query$LoyaltyPointsConfig$loyaltyPointsConfig
     on Query$LoyaltyPointsConfig$loyaltyPointsConfig {
   CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<
-          Query$LoyaltyPointsConfig$loyaltyPointsConfig>
-      get copyWith => CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig(
-            this,
-            (i) => i,
-          );
+    Query$LoyaltyPointsConfig$loyaltyPointsConfig
+  >
+  get copyWith =>
+      CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig(this, (i) => i);
 }
 
 abstract class CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes> {
@@ -501,8 +506,8 @@ abstract class CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes> {
   ) = _CopyWithImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig;
 
   factory CopyWith$Query$LoyaltyPointsConfig$loyaltyPointsConfig.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig;
+    TRes res,
+  ) = _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig;
 
   TRes call({
     String? id,
@@ -534,25 +539,26 @@ class _CopyWithImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
     Object? rupeesPerPoint = _undefined,
     Object? pointsPerRupee = _undefined,
     Object? $__typename = _undefined,
-  }) =>
-      _then(Query$LoyaltyPointsConfig$loyaltyPointsConfig(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        createdAt: createdAt == _undefined || createdAt == null
-            ? _instance.createdAt
-            : (createdAt as DateTime),
-        updatedAt: updatedAt == _undefined || updatedAt == null
-            ? _instance.updatedAt
-            : (updatedAt as DateTime),
-        rupeesPerPoint: rupeesPerPoint == _undefined || rupeesPerPoint == null
-            ? _instance.rupeesPerPoint
-            : (rupeesPerPoint as int),
-        pointsPerRupee: pointsPerRupee == _undefined || pointsPerRupee == null
-            ? _instance.pointsPerRupee
-            : (pointsPerRupee as int),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  }) => _then(
+    Query$LoyaltyPointsConfig$loyaltyPointsConfig(
+      id: id == _undefined || id == null ? _instance.id : (id as String),
+      createdAt: createdAt == _undefined || createdAt == null
+          ? _instance.createdAt
+          : (createdAt as DateTime),
+      updatedAt: updatedAt == _undefined || updatedAt == null
+          ? _instance.updatedAt
+          : (updatedAt as DateTime),
+      rupeesPerPoint: rupeesPerPoint == _undefined || rupeesPerPoint == null
+          ? _instance.rupeesPerPoint
+          : (rupeesPerPoint as int),
+      pointsPerRupee: pointsPerRupee == _undefined || pointsPerRupee == null
+          ? _instance.pointsPerRupee
+          : (pointsPerRupee as int),
+      $__typename: $__typename == _undefined || $__typename == null
+          ? _instance.$__typename
+          : ($__typename as String),
+    ),
+  );
 }
 
 class _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
@@ -568,6 +574,5 @@ class _CopyWithStubImpl$Query$LoyaltyPointsConfig$loyaltyPointsConfig<TRes>
     int? rupeesPerPoint,
     int? pointsPerRupee,
     String? $__typename,
-  }) =>
-      _res;
+  }) => _res;
 }

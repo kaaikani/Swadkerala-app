@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:graphql_flutter/graphql_flutter.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:unified_ecomapp/graphql/banner.graphql.dart';
-import 'package:unified_ecomapp/graphql/cart.graphql.dart';
 
+import '../../graphql/banner.graphql.dart';
+import '../../graphql/cart.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
+import '../../services/in_app_update_service.dart';
 import 'bannermodels.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 
@@ -28,7 +30,7 @@ class BannerController extends GetxController {
   // ============================================================================
   final RxList<SearchItemModel> searchResults = <SearchItemModel>[].obs;
   final RxInt totalItems = 0.obs;
-  
+
   // ============================================================================
   // FAVORITES FUNCTIONALITY
   // ============================================================================
@@ -43,6 +45,7 @@ class BannerController extends GetxController {
   final RxInt loyaltyPointsEarned = 0.obs;
   final RxBool loyaltyPointsApplied = false.obs;
   final Rx<LoyaltyPointsConfigModel?> loyaltyPointsConfig = Rx<LoyaltyPointsConfigModel?>(null);
+  final Rx<AppUpdateModel?> appUpdateInfo = Rx<AppUpdateModel?>(null);
 
   // ============================================================================
   // COUPON CODE FUNCTIONALITY
@@ -50,7 +53,7 @@ class BannerController extends GetxController {
   final RxList<CouponCodeModel> availableCouponCodes = <CouponCodeModel>[].obs;
   final RxList<String> appliedCouponCodes = <String>[].obs;
   final RxBool couponCodesLoaded = false.obs;
-  
+
   // Track products added by each coupon
   final RxMap<String, List<String>> couponAddedProducts = <String, List<String>>{}.obs;
 
@@ -177,16 +180,16 @@ class BannerController extends GetxController {
       }
 
       final toggleResult = res.data?['toggleFavorite'];
-      
+
       if (toggleResult != null) {
         final result = ToggleFavoriteResult.fromJson(toggleResult);
         favoritesList.assignAll(result.items);
         favoritesTotalItems.value = result.totalItems;
-        
+
         // Update favorite product IDs set
         favoriteProductIds.clear();
         favoriteProductIds.addAll(result.items.map((item) => item.product.id));
-        
+
         debugPrint('[BannerController] Toggle favorite success. Total favorites: ${result.totalItems}');
         utilityController.setLoadingState(false);
         return true;
@@ -217,21 +220,21 @@ class BannerController extends GetxController {
       }
 
       final activeCustomer = res.data?['activeCustomer'];
-      
+
       if (activeCustomer != null && activeCustomer['__typename'] == 'Customer') {
         final favoritesData = activeCustomer['favorites'];
-        
+
         if (favoritesData != null) {
           final favorites = FavoritesModel.fromJson(favoritesData);
           favoritesList.assignAll(favorites.items);
           favoritesTotalItems.value = favorites.totalItems;
-          
+
           // Update favorite product IDs set
           favoriteProductIds.clear();
           favoriteProductIds.addAll(favorites.items.map((item) => item.product.id));
-          
+
           debugPrint('[BannerController] Fetched ${favorites.totalItems} favorites');
-          
+
           // Debug: Log image URLs
           for (var item in favorites.items) {
             final imageUrl = item.product.featuredAsset?.preview;
@@ -274,12 +277,12 @@ class BannerController extends GetxController {
       }
 
       final result = res.parsedData?.applyLoyaltyPointsToActiveOrder;
-      
+
       if (result != null) {
         loyaltyPointsUsed.value = result.customFields?.loyaltyPointsUsed ?? 0;
         loyaltyPointsEarned.value = result.customFields?.loyaltyPointsEarned ?? 0;
         loyaltyPointsApplied.value = true;
-        
+
         debugPrint('[BannerController] Loyalty points applied successfully: ${loyaltyPointsUsed.value}');
         utilityController.setLoadingState(false);
         return true;
@@ -310,11 +313,11 @@ class BannerController extends GetxController {
       }
 
       final result = res.parsedData?.removeLoyaltyPointsFromActiveOrder;
-      
+
       if (result != null) {
         loyaltyPointsUsed.value = 0;
         loyaltyPointsApplied.value = false;
-        
+
         debugPrint('[BannerController] Loyalty points removed successfully');
         utilityController.setLoadingState(false);
         return true;
@@ -372,7 +375,7 @@ class BannerController extends GetxController {
   // ============================================================================
   // COUPON CODE METHODS
   // ============================================================================
-  
+
   // Static mapping of coupon codes to their associated products
   // This should be maintained based on your business logic
   // You can add more coupon codes and their associated products here
@@ -381,7 +384,7 @@ class BannerController extends GetxController {
     try {
       // Find the coupon in the available list
       final coupon = availableCouponCodes.firstWhere(
-        (c) => c.couponCode.toUpperCase() == couponCode.toUpperCase(),
+            (c) => c.couponCode.toUpperCase() == couponCode.toUpperCase(),
         orElse: () => CouponCodeModel(
           id: '',
           name: '',
@@ -406,7 +409,7 @@ class BannerController extends GetxController {
 
       // Extract products from coupon actions and conditions
       final products = <Map<String, dynamic>>[];
-      
+
       // Check actions for product information
       for (final action in coupon.actions) {
         debugPrint('[BannerController] Action code: ${action.code}');
@@ -415,7 +418,7 @@ class BannerController extends GetxController {
             if (arg.name == 'productVariantIds' && arg.value is List) {
               final variantIds = arg.value as List<dynamic>;
               debugPrint('[BannerController] Found product variant IDs in action: $variantIds');
-              
+
               for (final variantId in variantIds) {
                 products.add({
                   'id': variantId.toString(),
@@ -436,23 +439,23 @@ class BannerController extends GetxController {
       for (final condition in coupon.conditions) {
         debugPrint('[BannerController] Condition code: ${condition.code}');
         debugPrint('[BannerController] Condition args count: ${condition.args.length}');
-        
+
         if (condition.code == 'contains_products') {
           debugPrint('[BannerController] Processing contains_products condition');
           for (final arg in condition.args) {
             debugPrint('[BannerController] Condition arg: ${arg.name} = ${arg.value} (type: ${arg.value.runtimeType})');
-            
+
             // Check for different possible argument names
             if (arg.name == 'productVariantIds') {
               List<dynamic> variantIds = [];
-              
+
               if (arg.value is List) {
                 variantIds = arg.value as List<dynamic>;
                 debugPrint('[BannerController] Found product variant IDs as List: $variantIds');
               } else if (arg.value is String) {
                 final stringValue = arg.value as String;
                 debugPrint('[BannerController] Found product variant IDs as String: $stringValue');
-                
+
                 // Try to parse string representation of list like "[542]" or "542,543"
                 if (stringValue.startsWith('[') && stringValue.endsWith(']')) {
                   // Remove brackets and split by comma
@@ -469,7 +472,7 @@ class BannerController extends GetxController {
                   debugPrint('[BannerController] Parsed single variant ID: $variantIds');
                 }
               }
-              
+
               if (variantIds.isNotEmpty) {
                 debugPrint('[BannerController] Processing ${variantIds.length} variant IDs');
                 for (final variantId in variantIds) {
@@ -487,7 +490,7 @@ class BannerController extends GetxController {
             } else if (arg.name == 'productIds' && arg.value is List) {
               final productIds = arg.value as List<dynamic>;
               debugPrint('[BannerController] Found product IDs in condition: $productIds');
-              
+
               for (final productId in productIds) {
                 products.add({
                   'id': productId.toString(),
@@ -502,7 +505,7 @@ class BannerController extends GetxController {
             } else if (arg.name == 'products' && arg.value is List) {
               final productsList = arg.value as List<dynamic>;
               debugPrint('[BannerController] Found products list in condition: $productsList');
-              
+
               for (final product in productsList) {
                 if (product is Map<String, dynamic>) {
                   products.add({
@@ -545,7 +548,7 @@ class BannerController extends GetxController {
       debugPrint('[BannerController] GraphQL client status: Available');
       debugPrint('[BannerController] GraphQL client value: ${GraphqlService.client.value}');
       debugPrint('[BannerController] Making GraphQL query: GetCouponCodeList');
-      
+
       // Check if we have authentication token
       final authToken = GraphqlService.authToken;
       final channelToken = GraphqlService.channelToken;
@@ -561,43 +564,43 @@ class BannerController extends GetxController {
       } else {
         debugPrint('[BannerController] ⚠️ No channel token available - this might cause GraphQL query to fail');
       }
-      
+
       debugPrint('[BannerController] Executing GraphQL query...');
-      
+
       // Try the query with retry logic
       QueryResult<Query$GetCouponCodeList>? res;
       int retryCount = 0;
       const maxRetries = 3;
-      
+
       while (retryCount < maxRetries) {
         try {
           debugPrint('[BannerController] Attempt ${retryCount + 1} of $maxRetries');
-          
+
           res = await Future.any([
             GraphqlService.client.value.query$GetCouponCodeList(
               Options$Query$GetCouponCodeList(),
             ),
             Future.delayed(Duration(seconds: 15)).then((_) => throw TimeoutException('Query timeout after 15 seconds', Duration(seconds: 15))),
           ]);
-          
+
           debugPrint('[BannerController] Query completed successfully on attempt ${retryCount + 1}');
           break; // Success, exit retry loop
-          
+
         } catch (e) {
           retryCount++;
           debugPrint('[BannerController] Attempt ${retryCount} failed: $e');
-          
+
           if (retryCount >= maxRetries) {
             debugPrint('[BannerController] All $maxRetries attempts failed');
             rethrow;
           }
-          
+
           // Wait before retrying
           debugPrint('[BannerController] Waiting 2 seconds before retry...');
           await Future.delayed(Duration(seconds: 2));
         }
       }
-      
+
       if (res == null) {
         throw Exception('Failed to get coupon codes after $maxRetries attempts');
       }
@@ -622,7 +625,7 @@ class BannerController extends GetxController {
       }
 
       debugPrint('[BannerController] ✅ No GraphQL exceptions');
-      
+
       if (res.data != null) {
         debugPrint('[BannerController] Raw response data keys: ${res.data!.keys.toList()}');
         debugPrint('[BannerController] Full response data: ${res.data}');
@@ -632,23 +635,23 @@ class BannerController extends GetxController {
 
       final couponData = res.parsedData?.getCouponCodeList;
       debugPrint('[BannerController] Parsed coupon data: ${couponData != null ? 'Available' : 'NULL'}');
-      
+
       if (couponData != null) {
         final items = couponData.items;
         debugPrint('[BannerController] Coupon items count: ${items.length}');
         debugPrint('[BannerController] Coupon items type: ${items.runtimeType}');
-        
+
         if (items.isNotEmpty) {
           debugPrint('[BannerController] First coupon raw data:');
           debugPrint('[BannerController] ${items.first.toJson()}');
-          
+
           // Check if items are properly structured
           debugPrint('[BannerController] First item type: ${items.first.runtimeType}');
           debugPrint('[BannerController] First item properties: ${items.first.toString()}');
         } else {
           debugPrint('[BannerController] ❌ No coupon items found in response');
         }
-        
+
         try {
           final fetchedCoupons = items.map((item) {
             debugPrint('[BannerController] Converting item to CouponCodeModel: ${item.runtimeType}');
@@ -656,15 +659,15 @@ class BannerController extends GetxController {
             debugPrint('[BannerController] Item JSON: $json');
             return CouponCodeModel.fromJson(json);
           }).toList();
-          
+
           debugPrint('[BannerController] ✅ Successfully converted ${fetchedCoupons.length} coupons');
-        
-        availableCouponCodes.assignAll(fetchedCoupons);
-        couponCodesLoaded.value = true;
-        
+
+          availableCouponCodes.assignAll(fetchedCoupons);
+          couponCodesLoaded.value = true;
+
           debugPrint('[BannerController] ✅ Updated availableCouponCodes list with ${availableCouponCodes.length} items');
           debugPrint('[BannerController] ✅ Set couponCodesLoaded to true');
-          
+
           // Debug print each coupon details
           for (int i = 0; i < fetchedCoupons.length; i++) {
             final coupon = fetchedCoupons[i];
@@ -677,17 +680,17 @@ class BannerController extends GetxController {
             debugPrint('[BannerController] - Actions count: ${coupon.actions.length}');
             debugPrint('[BannerController] - Conditions count: ${coupon.conditions.length}');
             // debugPrint('[BannerController] - Custom Fields: ${coupon.customFields}');
-            
-          if (coupon.products != null) {
-            debugPrint('[BannerController] - Products count: ${coupon.products!.length}');
+
+            if (coupon.products != null) {
+              debugPrint('[BannerController] - Products count: ${coupon.products!.length}');
               for (int j = 0; j < coupon.products!.length; j++) {
                 final product = coupon.products![j];
                 debugPrint('[BannerController] - Product $j: ${product.name} (Variant: ${product.productVariantId}, Qty: ${product.quantity})');
+              }
+            } else {
+              debugPrint('[BannerController] - No products field found');
             }
-          } else {
-            debugPrint('[BannerController] - No products field found');
           }
-        }
         } catch (conversionError) {
           debugPrint('[BannerController] ❌ Error converting items to CouponCodeModel: $conversionError');
           debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
@@ -714,7 +717,7 @@ class BannerController extends GetxController {
     try {
       // First check if coupon code exists in available list
       final coupon = availableCouponCodes.firstWhere(
-        (c) => c.couponCode.toLowerCase() == couponCode.toLowerCase(),
+            (c) => c.couponCode.toLowerCase() == couponCode.toLowerCase(),
         orElse: () => CouponCodeModel(
           id: '',
           name: '',
@@ -818,7 +821,7 @@ class BannerController extends GetxController {
   Future<Map<String, dynamic>> _validateMinimumOrderAmount(CouponCodeModel coupon) async {
     try {
       debugPrint('[BannerController] Validating minimum order amount for coupon: ${coupon.couponCode}');
-      
+
       // Get current cart total
       final cartTotal = await _getCurrentCartTotal();
       if (cartTotal == null) {
@@ -834,11 +837,11 @@ class BannerController extends GetxController {
       // Check coupon conditions for minimum order amount
       for (final condition in coupon.conditions) {
         debugPrint('[BannerController] Checking condition: ${condition.code}');
-        
+
         if (condition.code == 'minimum_order_amount') {
           for (final arg in condition.args) {
             debugPrint('[BannerController] Condition arg: ${arg.name} = ${arg.value}');
-            
+
             if (arg.name == 'amount') {
               // Handle both string and numeric values for amount
               double requiredAmount;
@@ -850,9 +853,9 @@ class BannerController extends GetxController {
                 debugPrint('[BannerController] Invalid amount type: ${arg.value.runtimeType}');
                 continue;
               }
-              
+
               debugPrint('[BannerController] Required minimum amount: $requiredAmount');
-              
+
               if (cartTotal < requiredAmount) {
                 return {
                   'valid': false,
@@ -896,8 +899,8 @@ class BannerController extends GetxController {
       ''';
 
       final res = await GraphqlService.client.value.query(
-        QueryOptions(
-          document: gql(query),
+        graphql.QueryOptions(
+          document: graphql.gql(query),
         ),
       );
 
@@ -960,7 +963,7 @@ class BannerController extends GetxController {
       }
 
       final result = res.parsedData?.applyCouponCode;
-      
+
       if (result != null) {
         // Check for various error types using pattern matching
         if (result is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeInvalidError) {
@@ -971,7 +974,7 @@ class BannerController extends GetxController {
             'error': 'INVALID_COUPON'
           };
         }
-        
+
         if (result is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError) {
           utilityController.setLoadingState(false);
           return {
@@ -980,7 +983,7 @@ class BannerController extends GetxController {
             'error': 'COUPON_EXPIRED'
           };
         }
-        
+
         if (result is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError) {
           utilityController.setLoadingState(false);
           return {
@@ -989,13 +992,13 @@ class BannerController extends GetxController {
             'error': 'COUPON_LIMIT'
           };
         }
-        
+
         // Success - coupon applied
         if (result is Mutation$ApplyCouponCode$applyCouponCode$$Order) {
           // Ensure only one coupon is applied (one coupon per order policy)
           appliedCouponCodes.clear(); // Remove any existing coupons
           appliedCouponCodes.add(couponCode); // Add the new coupon
-          
+
           debugPrint('[BannerController] Coupon code applied successfully: $couponCode');
           utilityController.setLoadingState(false);
           return {
@@ -1029,7 +1032,7 @@ class BannerController extends GetxController {
     try {
       debugPrint('[BannerController] ===== REMOVING COUPON PRODUCTS =====');
       debugPrint('[BannerController] Coupon code: $couponCode');
-      
+
       if (!couponAddedProducts.containsKey(couponCode)) {
         debugPrint('[BannerController] No products tracked for coupon: $couponCode');
         debugPrint('[BannerController] Available tracked coupons: ${couponAddedProducts.keys.toList()}');
@@ -1049,25 +1052,25 @@ class BannerController extends GetxController {
 
       final cartLines = cart['lines'] as List<dynamic>? ?? [];
       debugPrint('[BannerController] Current cart has ${cartLines.length} order lines');
-      
+
       int removedCount = 0;
       for (final variantId in productVariantIds) {
         debugPrint('[BannerController] Looking for variant ID: $variantId in cart');
         bool found = false;
-        
+
         // Find order lines that match this variant ID
         for (final line in cartLines) {
           final lineData = line as Map<String, dynamic>;
           final lineId = lineData['id'] as String;
           final productVariant = lineData['productVariant'] as Map<String, dynamic>;
           final variantIdFromCart = productVariant['id'] as String;
-          
+
           debugPrint('[BannerController] Checking order line $lineId with variant $variantIdFromCart');
           if (variantIdFromCart == variantId) {
             found = true;
             debugPrint('[BannerController] ✓ Found matching order line $lineId for variant $variantId');
             debugPrint('[BannerController] Removing order line $lineId for variant $variantId');
-            
+
             final success = await _removeOrderLineById(lineId);
             if (success) {
               removedCount++;
@@ -1078,7 +1081,7 @@ class BannerController extends GetxController {
             break; // Remove only one instance per variant ID
           }
         }
-        
+
         if (!found) {
           debugPrint('[BannerController] ⚠ Variant ID $variantId not found in current cart');
         }
@@ -1100,7 +1103,7 @@ class BannerController extends GetxController {
       couponAddedProducts.remove(couponCode);
       debugPrint('[BannerController] ✓ Cleared tracked products for coupon: $couponCode');
       debugPrint('[BannerController] ===== COUPON PRODUCT REMOVAL COMPLETE =====');
-      
+
       return removedCount > 0;
     } catch (e) {
       debugPrint('[BannerController] ✗ Error removing coupon products: $e');
@@ -1112,7 +1115,7 @@ class BannerController extends GetxController {
   Future<dynamic> _getCurrentCart() async {
     try {
       debugPrint('[BannerController] Fetching current cart...');
-      
+
       const query = '''
         query GetActiveOrder {
           activeOrder {
@@ -1130,8 +1133,8 @@ class BannerController extends GetxController {
       ''';
 
       final res = await GraphqlService.client.value.query(
-        QueryOptions(
-          document: gql(query),
+        graphql.QueryOptions(
+          document: graphql.gql(query),
         ),
       );
 
@@ -1144,7 +1147,7 @@ class BannerController extends GetxController {
       if (activeOrder != null) {
         debugPrint('[BannerController] ✓ Found active order: ${activeOrder['id']}');
         debugPrint('[BannerController] Order has ${activeOrder['lines']?.length ?? 0} lines');
-        
+
         // Debug each line
         if (activeOrder['lines'] != null) {
           for (int i = 0; i < activeOrder['lines'].length; i++) {
@@ -1155,7 +1158,7 @@ class BannerController extends GetxController {
       } else {
         debugPrint('[BannerController] ⚠ No active order found');
       }
-      
+
       return activeOrder;
     } catch (e) {
       debugPrint('[BannerController] Exception getting current cart: $e');
@@ -1167,7 +1170,7 @@ class BannerController extends GetxController {
   Future<bool> _removeOrderLineById(String orderLineId) async {
     try {
       debugPrint('[BannerController] Attempting to remove order line: $orderLineId');
-      
+
       const mutation = '''
         mutation RemoveOrderLine(\$orderLineId: ID!) {
           removeOrderLine(orderLineId: \$orderLineId) {
@@ -1183,8 +1186,8 @@ class BannerController extends GetxController {
       ''';
 
       final res = await GraphqlService.client.value.mutate(
-        MutationOptions(
-          document: gql(mutation),
+        graphql.MutationOptions(
+          document: graphql.gql(mutation),
           variables: {'orderLineId': orderLineId},
         ),
       );
@@ -1239,10 +1242,10 @@ class BannerController extends GetxController {
       }
 
       final result = res.parsedData?.removeCouponCode;
-      
+
       if (result != null) {
         appliedCouponCodes.remove(couponCode);
-        
+
         debugPrint('[BannerController] Coupon code removed successfully: $couponCode');
         utilityController.setLoadingState(false);
         return true;
@@ -1319,15 +1322,15 @@ class BannerController extends GetxController {
     try {
       debugPrint('[BannerController] ===== ADDING COUPON PRODUCTS TO CART =====');
       debugPrint('[BannerController] Coupon code: $couponCode');
-      
+
       // Get products from the actual coupon data
       final couponProducts = getCouponProducts(couponCode);
-      
+
       if (couponProducts.isEmpty) {
         debugPrint('[BannerController] ✗ No products found for coupon: $couponCode');
-          return {
-            'success': false,
-            'message': 'No products found for this coupon',
+        return {
+          'success': false,
+          'message': 'No products found for this coupon',
           'error': 'NO_PRODUCTS_DEFINED'
         };
       }
@@ -1350,9 +1353,9 @@ class BannerController extends GetxController {
           final productVariantId = product['productVariantId'] as String;
           final quantity = product['quantity'] as int;
           final priceWithTax = product['priceWithTax'] as double;
-          
+
           debugPrint('[BannerController] Adding product to cart: $productName (Variant ID: $productVariantId, Qty: $quantity)');
-          
+
           final res = await GraphqlService.client.value.mutate$AddToCart(
             Options$Mutation$AddToCart(
               variables: Variables$Mutation$AddToCart(
@@ -1416,7 +1419,7 @@ class BannerController extends GetxController {
       debugPrint('[BannerController] Coupon products addition completed for $couponCode');
       debugPrint('[BannerController] Successfully added: ${addedProducts.length} products');
       debugPrint('[BannerController] Failed to add: ${failedProducts.length} products');
-      
+
       if (addedProducts.isNotEmpty) {
         debugPrint('[BannerController] Added products:');
         final addedProductIds = <String>[];
@@ -1427,12 +1430,12 @@ class BannerController extends GetxController {
             addedProductIds.add(product['productVariantId'].toString());
           }
         }
-        
+
         // Store the products added by this coupon
         couponAddedProducts[couponCode] = addedProductIds;
         debugPrint('[BannerController] Tracked ${addedProductIds.length} products for coupon $couponCode: $addedProductIds');
       }
-      
+
       if (failedProducts.isNotEmpty) {
         debugPrint('[BannerController] Failed products:');
         for (final product in failedProducts) {
@@ -1463,11 +1466,11 @@ class BannerController extends GetxController {
   Future<Map<String, dynamic>> applyCouponCodeWithProducts(String couponCode) async {
     try {
       debugPrint('[BannerController] Starting applyCouponCodeWithProducts for: $couponCode');
-      
+
       // First add coupon products to cart
       debugPrint('[BannerController] Step 1: Adding coupon products to cart...');
       final addResult = await addCouponProductsToCart(couponCode);
-      
+
       if (!addResult['success']) {
         debugPrint('[BannerController] Failed to add products to cart: ${addResult['message']}');
         return addResult;
@@ -1476,7 +1479,7 @@ class BannerController extends GetxController {
       debugPrint('[BannerController] Step 2: Applying coupon code...');
       // Then apply the coupon code
       final couponResult = await applyCouponCode(couponCode);
-      
+
       if (couponResult['success']) {
         debugPrint('[BannerController] Successfully applied coupon with products for: $couponCode');
         return {
@@ -1489,17 +1492,17 @@ class BannerController extends GetxController {
         };
       } else {
         debugPrint('[BannerController] Products added but failed to apply coupon: ${couponResult['message']}');
-        
+
         // ROLLBACK: Remove the products that were added since coupon application failed
         debugPrint('[BannerController] Rolling back: Removing added products due to coupon application failure...');
         final rollbackResult = await _rollbackAddedProducts(couponCode);
-        
+
         if (rollbackResult['success']) {
           debugPrint('[BannerController] Successfully rolled back added products');
         } else {
           debugPrint('[BannerController] Failed to rollback added products: ${rollbackResult['message']}');
         }
-        
+
         return {
           'success': false,
           'message': 'Failed to apply coupon: ${couponResult['message']}. Added products have been removed.',
@@ -1512,7 +1515,7 @@ class BannerController extends GetxController {
       }
     } catch (e) {
       debugPrint('[BannerController] Apply coupon with products error: $e');
-      
+
       // ROLLBACK: If there's an exception, try to remove any products that might have been added
       debugPrint('[BannerController] Exception occurred, attempting rollback...');
       try {
@@ -1521,7 +1524,7 @@ class BannerController extends GetxController {
       } catch (rollbackError) {
         debugPrint('[BannerController] Rollback failed with error: $rollbackError');
       }
-      
+
       return {
         'success': false,
         'message': 'Error applying coupon with products: $e. Any added products have been removed.',
@@ -1536,7 +1539,7 @@ class BannerController extends GetxController {
     try {
       debugPrint('[BannerController] ===== ROLLING BACK ADDED PRODUCTS =====');
       debugPrint('[BannerController] Coupon code: $couponCode');
-      
+
       // Check if we have tracked products for this coupon
       if (!couponAddedProducts.containsKey(couponCode)) {
         debugPrint('[BannerController] No products tracked for coupon: $couponCode - nothing to rollback');
@@ -1564,26 +1567,26 @@ class BannerController extends GetxController {
 
       final cartLines = cart['lines'] as List<dynamic>? ?? [];
       debugPrint('[BannerController] Current cart has ${cartLines.length} order lines');
-      
+
       int removedCount = 0;
       final failedRemovals = <String>[];
-      
+
       for (final variantId in productVariantIds) {
         debugPrint('[BannerController] Looking for variant ID: $variantId in cart for rollback');
         bool found = false;
-        
+
         // Find order lines that match this variant ID
         for (final line in cartLines) {
           final lineData = line as Map<String, dynamic>;
           final lineId = lineData['id'] as String;
           final productVariant = lineData['productVariant'] as Map<String, dynamic>;
           final variantIdFromCart = productVariant['id'] as String;
-          
+
           debugPrint('[BannerController] Checking order line $lineId with variant $variantIdFromCart for rollback');
           if (variantIdFromCart == variantId) {
             found = true;
             debugPrint('[BannerController] ✓ Found matching order line $lineId for variant $variantId - removing for rollback');
-            
+
             final success = await _removeOrderLineById(lineId);
             if (success) {
               removedCount++;
@@ -1595,7 +1598,7 @@ class BannerController extends GetxController {
             break; // Remove only one instance per variant ID
           }
         }
-        
+
         if (!found) {
           debugPrint('[BannerController] ⚠ Variant ID $variantId not found in current cart during rollback');
         }
@@ -1607,11 +1610,11 @@ class BannerController extends GetxController {
       couponAddedProducts.remove(couponCode);
       debugPrint('[BannerController] ✓ Cleared tracked products for coupon: $couponCode after rollback');
       debugPrint('[BannerController] ===== ROLLBACK COMPLETE =====');
-      
+
       return {
         'success': removedCount > 0 || failedRemovals.isEmpty,
-        'message': removedCount > 0 
-            ? 'Successfully rolled back $removedCount products' 
+        'message': removedCount > 0
+            ? 'Successfully rolled back $removedCount products'
             : 'No products were removed during rollback',
         'removedCount': removedCount,
         'failedRemovals': failedRemovals,
@@ -1626,5 +1629,24 @@ class BannerController extends GetxController {
       };
     }
   }
-}
 
+
+
+
+
+  /// Fetch app update information - now delegated to InAppUpdateService
+  Future<void> getAppUpdateInfo() async {
+    try {
+      debugPrint('[BannerController] Delegating update check to InAppUpdateService...');
+
+      // Simply call the service method
+      final updateService = InAppUpdateService();
+      await updateService.checkForUpdatesAndDetermineType();
+
+      debugPrint('[BannerController] Update check completed by InAppUpdateService');
+    } catch (e) {
+      debugPrint('[BannerController] Update check error: $e');
+    }
+  }
+
+}

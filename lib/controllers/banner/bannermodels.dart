@@ -141,8 +141,8 @@ class FavoriteProductModel {
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       enabled: json['enabled'] ?? false,
-      featuredAsset: json['featuredAsset'] != null 
-          ? FeaturedAssetModel.fromJson(json['featuredAsset']) 
+      featuredAsset: json['featuredAsset'] != null
+          ? FeaturedAssetModel.fromJson(json['featuredAsset'])
           : null,
       variants: (json['variants'] as List<dynamic>?)
           ?.map((v) => VariantIdModel.fromJson(v))
@@ -390,6 +390,22 @@ class LoyaltyPointsConfigModel {
       updatedAt: json['updatedAt'] ?? '',
       rupeesPerPoint: json['rupeesPerPoint'] ?? 0,
       pointsPerRupee: json['pointsPerRupee'] ?? 0,
+    );
+  }
+}
+class AppUpdateModel {
+  final String latestVersion;
+  final String updateType;
+
+  AppUpdateModel({
+    required this.latestVersion,
+    required this.updateType,
+  });
+
+  factory AppUpdateModel.fromJson(Map<String, dynamic> json) {
+    return AppUpdateModel(
+      latestVersion: json['latestVersion'] ?? '',
+      updateType: json['updateType'] ?? '',
     );
   }
 }
