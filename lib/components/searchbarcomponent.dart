@@ -25,7 +25,7 @@ class SearchComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => FullScreenSearchPage(onSearch: onSearch, hintText: hintText));
+        Get.toNamed('/search');
       },
       child: Container(
         height: 45,

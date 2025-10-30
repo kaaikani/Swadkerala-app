@@ -3551,6 +3551,8 @@ type Query {
   customBanners: [CustomBanner!]!
   loyaltyPointsConfig: LoyaltyPointsConfig
   frequentlyOrderedProducts: [FrequentlyOrderedProduct!]!
+  getUpdateInfo: UpdateInfo
+  getUpdateInfoForChannel: UpdateInfo
 }
 
 type RazorpayOrderIdGenerationError {
@@ -4017,6 +4019,13 @@ input UpdateCustomerInput {
 }
 
 union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | PasswordValidationError | NativeAuthStrategyError
+
+type UpdateInfo {
+  latestVersion: String!
+  minRequiredVersion: String!
+  updateType: String!
+  isActive: Boolean!
+}
 
 input UpdateOrderCustomFieldsInput {
   deviceMedium: String

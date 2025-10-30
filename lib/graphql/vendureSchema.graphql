@@ -1410,6 +1410,8 @@ type Query {
     getChannelsByCustomerPhoneNumber(phoneNumber: String!): [Channel!]!
     getCouponCodeList: CoupcodesList!
     getPasswordResetToken: String!
+    getUpdateInfo: UpdateInfo
+    getUpdateInfoForChannel: UpdateInfo
     loyaltyPointsConfig: LoyaltyPointsConfig
     "Returns information about the current authenticated User"
     me: CurrentUser
@@ -1751,6 +1753,13 @@ type TextStructFieldConfig implements StructField {
     name: String!
     type: String!
     ui: JSON
+}
+
+type UpdateInfo {
+    isActive: Boolean!
+    latestVersion: String!
+    minRequiredVersion: String!
+    updateType: String!
 }
 
 type User implements Node {
@@ -2591,6 +2600,8 @@ enum Permission {
     CreateAdministrator
     "Grants permission to create Asset"
     CreateAsset
+    "Grants permission to create Banner"
+    CreateBanner
     "Grants permission to create Products, Facets, Assets, Collections"
     CreateCatalog
     "Grants permission to create Channel"
@@ -2635,6 +2646,8 @@ enum Permission {
     DeleteAdministrator
     "Grants permission to delete Asset"
     DeleteAsset
+    "Grants permission to delete Banner"
+    DeleteBanner
     "Grants permission to delete Products, Facets, Assets, Collections"
     DeleteCatalog
     "Grants permission to delete Channel"
@@ -2675,6 +2688,10 @@ enum Permission {
     DeleteTaxRate
     "Grants permission to delete Zone"
     DeleteZone
+    "Allows viewing and managing loyalty points configurations"
+    LoyaltyPoints
+    "Allows viewing and managing manual customer channel assignments"
+    ManualCustomerChannel
     "Owner means the user owns this entity, e.g. a Customer's own Order"
     Owner
     "Public means any unauthenticated user may perform the operation"
@@ -2683,6 +2700,8 @@ enum Permission {
     ReadAdministrator
     "Grants permission to read Asset"
     ReadAsset
+    "Grants permission to read Banner"
+    ReadBanner
     "Grants permission to read Products, Facets, Assets, Collections"
     ReadCatalog
     "Grants permission to read Channel"
@@ -2729,6 +2748,8 @@ enum Permission {
     UpdateAdministrator
     "Grants permission to update Asset"
     UpdateAsset
+    "Grants permission to update Banner"
+    UpdateBanner
     "Grants permission to update Products, Facets, Assets, Collections"
     UpdateCatalog
     "Grants permission to update Channel"

@@ -9,7 +9,6 @@ import '../components/bottomnavigationbar.dart';
 import '../components/collectioncomponent.dart';
 import '../components/searchbarcomponent.dart';
 import '../widgets/appbar.dart';
-import 'Collectionprodcutpage.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -70,10 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
             CollectionGrid(
               onCollectionTap: (collection) {
                 debugPrint('Collection clicked: ${collection.name}, ID: ${collection.id}');
-                Get.to(() => CollectionProductsPage(
-                  collectionId: collection.id,
-                  collectionName: collection.name,
-                ));
+                Get.toNamed('/collection-products', arguments: {
+                  'collectionId': collection.id,
+                  'collectionName': collection.name,
+                });
               },
             ),
           ],
