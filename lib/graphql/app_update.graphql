@@ -1,8 +1,11 @@
-query GetAppUpdate {
-  getUpdateInfoForChannel {
-    latestVersion
-    updateType
-  }
-}
 
+
+
+
+#query GetAppUpdate {
+#    getUpdateInfoForChannel {
+#        latestVersion
+#        updateType
+#    }
+#}
 

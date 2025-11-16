@@ -88,7 +88,7 @@ union SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrd
 
 union StructFieldConfig = BooleanStructFieldConfig | DateTimeStructFieldConfig | FloatStructFieldConfig | IntStructFieldConfig | StringStructFieldConfig | TextStructFieldConfig
 
-union TransitionOrderToStateResult = Order | OrderStateTransitionError
+union TransitionOrderToStateResult = CartContainsUnavailableItemsError | Order | OrderStateTransitionError
 
 union UpdateCustomerEmailAddressResult = IdentifierChangeTokenExpiredError | IdentifierChangeTokenInvalidError | NativeAuthStrategyError | Success
 
@@ -181,6 +181,19 @@ type BooleanStructFieldConfig implements StructField {
     name: String!
     type: String!
     ui: JSON
+}
+
+type CartContainsUnavailableItemsError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    unavailableItems: [UnavailableCartItem!]!
+}
+
+type CartValidationStatus {
+    hasUnavailableItems: Boolean!
+    isValid: Boolean!
+    totalUnavailableItems: Int!
+    unavailableItems: [UnavailableCartItem!]!
 }
 
 type Channel implements Node {
@@ -952,6 +965,7 @@ type Order implements Node {
     totalWithTax: Money!
     type: OrderType!
     updatedAt: DateTime!
+    validationStatus: CartValidationStatus!
 }
 
 type OrderAddress {
@@ -1016,6 +1030,7 @@ type OrderLine implements Node {
     featuredAsset: Asset
     fulfillmentLines: [FulfillmentLine!]
     id: ID!
+    isAvailable: Boolean!
     "The total price of the line excluding tax and discounts."
     linePrice: Money!
     "The total price of the line including tax but excluding discounts."
@@ -1048,6 +1063,7 @@ type OrderLine implements Node {
     quantity: Int!
     taxLines: [TaxLine!]!
     taxRate: Float!
+    unavailableReason: String
     "The price of a single unit, excluding tax and discounts"
     unitPrice: Money!
     "Non-zero if the unitPrice has changed since it was initially added to Order"
@@ -1205,7 +1221,7 @@ type Product implements Node {
     assets: [Asset!]!
     collections: [Collection!]!
     createdAt: DateTime!
-    customFields: JSON
+    customFields: ProductCustomFields
     description: String!
     enabled: Boolean!
     facetValues: [FacetValue!]!
@@ -1221,6 +1237,10 @@ type Product implements Node {
     variantList(options: ProductVariantListOptions): ProductVariantList!
     "Returns all ProductVariants"
     variants: [ProductVariant!]!
+}
+
+type ProductCustomFields {
+    hsnCode: String
 }
 
 type ProductList implements PaginatedList {
@@ -1303,7 +1323,7 @@ type ProductVariant implements Node {
 }
 
 type ProductVariantCustomFields {
-    hsnCode: String
+    shadowPrice: Int
 }
 
 type ProductVariantList implements PaginatedList {
@@ -1410,8 +1430,6 @@ type Query {
     getChannelsByCustomerPhoneNumber(phoneNumber: String!): [Channel!]!
     getCouponCodeList: CoupcodesList!
     getPasswordResetToken: String!
-    getUpdateInfo: UpdateInfo
-    getUpdateInfoForChannel: UpdateInfo
     loyaltyPointsConfig: LoyaltyPointsConfig
     "Returns information about the current authenticated User"
     me: CurrentUser
@@ -1755,11 +1773,11 @@ type TextStructFieldConfig implements StructField {
     ui: JSON
 }
 
-type UpdateInfo {
-    isActive: Boolean!
-    latestVersion: String!
-    minRequiredVersion: String!
-    updateType: String!
+type UnavailableCartItem {
+    orderLineId: ID!
+    productName: String!
+    reason: String!
+    variantName: String!
 }
 
 type User implements Node {
@@ -2148,6 +2166,7 @@ enum DeletionResult {
 
 enum ErrorCode {
     ALREADY_LOGGED_IN_ERROR
+    CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR
     COUPON_CODE_EXPIRED_ERROR
     COUPON_CODE_INVALID_ERROR
     COUPON_CODE_LIMIT_ERROR
@@ -3275,6 +3294,7 @@ input ProductFilterParameter {
     createdAt: DateOperators
     description: StringOperators
     enabled: BooleanOperators
+    hsnCode: StringOperators
     id: IDOperators
     languageCode: StringOperators
     name: StringOperators
@@ -3298,6 +3318,7 @@ input ProductListOptions {
 input ProductSortParameter {
     createdAt: SortOrder
     description: SortOrder
+    hsnCode: SortOrder
     id: SortOrder
     name: SortOrder
     slug: SortOrder
@@ -3309,13 +3330,13 @@ input ProductVariantFilterParameter {
     _or: [ProductVariantFilterParameter!]
     createdAt: DateOperators
     currencyCode: StringOperators
-    hsnCode: StringOperators
     id: IDOperators
     languageCode: StringOperators
     name: StringOperators
     price: NumberOperators
     priceWithTax: NumberOperators
     productId: IDOperators
+    shadowPrice: NumberOperators
     sku: StringOperators
     stockLevel: StringOperators
     updatedAt: DateOperators
@@ -3336,12 +3357,12 @@ input ProductVariantListOptions {
 
 input ProductVariantSortParameter {
     createdAt: SortOrder
-    hsnCode: SortOrder
     id: SortOrder
     name: SortOrder
     price: SortOrder
     priceWithTax: SortOrder
     productId: SortOrder
+    shadowPrice: SortOrder
     sku: SortOrder
     stockLevel: SortOrder
     updatedAt: SortOrder

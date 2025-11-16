@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/banner/bannercontroller.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/banner/bannermodels.dart';
 import 'dart:async';
 
 import '../controllers/utilitycontroller/utilitycontroller.dart';
-
-
-
+import '../theme/colors.dart';
+import '../utils/responsive.dart';
+import '../widgets/responsive_container.dart';
+import '../widgets/responsive_spacing.dart';
+import '../widgets/responsive_icon.dart';
 
 class BannerComponent extends StatefulWidget {
   const BannerComponent({super.key});
@@ -28,7 +31,8 @@ class _BannerComponentState extends State<BannerComponent> {
   void initState() {
     super.initState();
 
-    _pageController = PageController(viewportFraction: 0.85, initialPage: _initialPage);
+    _pageController =
+        PageController(viewportFraction: 1.0, initialPage: _initialPage);
 
     // Schedule banner fetch after build phase to avoid setState during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -70,119 +74,184 @@ class _BannerComponentState extends State<BannerComponent> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (utilityController.isLoadingRx.value) {
-        return const SizedBox(
-          height: 200,
-          child: Center(child: CircularProgressIndicator()),
-        );
-      }
-
+      final isLoading = utilityController.isLoadingRx.value;
       final banners = bannerController.bannerList;
 
-      if (banners.isEmpty) {
-        // Trigger fetch again when no banners present
+      if (banners.isEmpty && !isLoading) {
         Future.microtask(() {
           if (!utilityController.isLoadingRx.value) {
             bannerController.getBannersForChannel();
           }
         });
-
-        return const SizedBox(
-          height: 200,
-
-        );
-
       }
 
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 180,
-            child: PageView.builder(
-              controller: _pageController,
-              itemBuilder: (context, index) {
-                final BannerModel banner = banners[index % banners.length];
-                final String imageUrl =
-                banner.assets.isNotEmpty ? banner.assets.first.source : '';
+      // Handle empty banners case
+      if (banners.isEmpty) {
+        return ResponsiveContainer(
+          height: ResponsiveUtils.rp(200),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.zomatoRed.withValues(alpha: 0.3),
+              AppColors.zomatoRed.withValues(alpha: 0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.zero,
+          child: Center(
+            child: ResponsiveIcon(
+              Icons.image_outlined,
+              size: 50,
+              color: AppColors.textTertiary,
+            ),
+          ),
+        );
+      }
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: Material(
-                    elevation: 6,
-                    shadowColor: Colors.black38,
+      return Skeletonizer(
+        enabled: isLoading,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: ResponsiveUtils.rp(200),
+              child: PageView.builder(
+                controller: _pageController,
+                itemBuilder: (context, index) {
+                  // Safety check to prevent division by zero (defensive programming)
+                  if (banners.isEmpty) {
+                    return ResponsiveContainer(
+                      gradient: LinearGradient(
+                        colors: [AppColors.grey200, AppColors.grey300],
+                      ),
+                      borderRadius: BorderRadius.zero,
+                      child: SizedBox.shrink(),
+                    );
+                  }
+
+                  final BannerModel banner = banners[index % banners.length];
+                  final String imageUrl = banner.assets.isNotEmpty
+                      ? banner.assets.first.source
+                      : '';
+
+                  return Container(
                     child: ClipRRect(
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
                           imageUrl.isNotEmpty
                               ? Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, progress) {
-                              if (progress == null) return child;
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[300],
-                                child: const Center(
-                                  child: Icon(Icons.broken_image, size: 50),
-                                ),
-                              );
-                            },
-                          )
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
+                                    return Container(
+                                      color: AppColors.grey200,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: AppColors.zomatoRed,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            AppColors.grey200,
+                                            AppColors.grey300
+                                          ],
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Icon(Icons.broken_image,
+                                            size: ResponsiveUtils.rp(50),
+                                            color: AppColors.textTertiary),
+                                      ),
+                                    );
+                                  },
+                                )
                               : Container(
-                            color: Colors.grey[300],
-                            child: const Center(
-                              child: Icon(Icons.image, size: 50),
-                            ),
-                          ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.grey200,
+                                        AppColors.grey300
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Icon(Icons.image,
+                                        size: ResponsiveUtils.rp(50),
+                                        color: AppColors.textTertiary),
+                                  ),
+                                ),
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.black.withOpacity(0.25),
-                                  Colors.transparent
+                                  Colors.black.withValues(alpha: 0.1),
+                                  Colors.transparent,
+                                  Colors.transparent,
+                                  Colors.black.withValues(alpha: 0.1),
                                 ],
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              banners.length,
+            ResponsiveSpacing.vertical(20),
+            // Only show dots if banners exist
+            if (banners.isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  banners.length,
                   (index) {
-                bool isActive = (_currentPage % banners.length) == index;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeOutCubic,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: isActive ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: isActive ? Colors.blueAccent : Colors.grey.shade400,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+                    // Calculate active dot (banners is guaranteed non-empty due to outer check)
+                    bool isActive = (_currentPage % banners.length) == index;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOutCubic,
+                      margin: ResponsiveSpacing.padding(horizontal: 5),
+                      width: isActive
+                          ? ResponsiveUtils.rp(32)
+                          : ResponsiveUtils.rp(10),
+                      height: ResponsiveUtils.rp(10),
+                      decoration: BoxDecoration(
+                        color:
+                            isActive ? AppColors.zomatoRed : AppColors.grey300,
+                        borderRadius:
+                            BorderRadius.circular(ResponsiveUtils.rp(16)),
+                        boxShadow: isActive
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.zomatoRed
+                                      .withValues(alpha: 0.5),
+                                  blurRadius: ResponsiveUtils.rp(12),
+                                  offset: Offset(0, ResponsiveUtils.rp(3)),
+                                  spreadRadius: ResponsiveUtils.rp(2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ResponsiveSpacing.vertical(12),
+          ],
+        ),
       );
     });
   }
 }
-

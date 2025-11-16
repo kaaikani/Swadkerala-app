@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../widgets/button.dart';
+import '../widgets/shimmers.dart';
 import '../widgets/snackbar.dart';
 import '../theme/colors.dart';
 
@@ -22,7 +23,7 @@ class ProfileComponent extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -31,7 +32,7 @@ class ProfileComponent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.person_outline, color: AppColors.primary, size: 24),
               SizedBox(width: 12),
@@ -55,14 +56,14 @@ class ProfileComponent extends StatelessWidget {
   Widget _buildEditProfileForm() {
     return Obx(() {
       final customer = customerController.activeCustomer.value;
-      if (customer == null) return const CircularProgressIndicator();
+      if (customer == null) return Skeletons.fullScreen();
 
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withOpacity(0.2)),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         child: Column(
           children: [
@@ -87,13 +88,19 @@ class ProfileComponent extends StatelessWidget {
               children: [
                 Expanded(
                   child: AppButton(
-                    text: customerController.isEditingProfile.value ? 'Save Changes' : 'Edit Profile',
-                    icon: customerController.isEditingProfile.value ? Icons.save : Icons.edit,
+                    text: customerController.isEditingProfile.value
+                        ? 'Save Changes'
+                        : 'Edit Profile',
+                    icon: customerController.isEditingProfile.value
+                        ? Icons.save
+                        : Icons.edit,
                     onPressed: customerController.isEditingProfile.value
                         ? () async {
-                            final success = await customerController.updateCustomer();
+                            final success =
+                                await customerController.updateCustomer();
                             if (success) {
-                              showSuccessSnackbar('Profile updated successfully');
+                              showSuccessSnackbar(
+                                  'Profile updated successfully');
                             } else {
                               showErrorSnackbar('Failed to update profile');
                             }
@@ -131,7 +138,9 @@ class ProfileComponent extends StatelessWidget {
         color: enabled ? Colors.grey[50] : Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: enabled ? AppColors.primary.withOpacity(0.3) : Colors.grey[300]!,
+          color: enabled
+              ? AppColors.primary.withValues(alpha: 0.3)
+              : Colors.grey[300]!,
           width: 1,
         ),
       ),
@@ -147,7 +156,8 @@ class ProfileComponent extends StatelessWidget {
           hintStyle: TextStyle(color: Colors.grey[500]),
           prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );

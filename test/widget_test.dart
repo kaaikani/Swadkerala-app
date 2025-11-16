@@ -5,26 +5,57 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:unified_ecomapp/main.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:recipe.app/controllers/theme_controller.dart';
 
+class _TestPathProvider extends PathProviderPlatform {
+  _TestPathProvider() {
+    _documentsDir = Directory.systemTemp.createTempSync('kaaikani_test_docs');
+  }
+
+  late final Directory _documentsDir;
+
+  @override
+  Future<String?> getApplicationDocumentsPath() async => _documentsDir.path;
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUpAll(() async {
+    Get.testMode = true;
+    PathProviderPlatform.instance = _TestPathProvider();
+    await GetStorage.init();
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('ThemeController toggles between light and dark mode',
+      (WidgetTester tester) async {
+    final themeController = Get.put(ThemeController());
+
+    await tester.pumpWidget(
+      Obx(
+        () => GetMaterialApp(
+          themeMode:
+              themeController.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: Scaffold(
+            body: Text(themeController.isDarkMode ? 'Dark' : 'Light'),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Light'), findsOneWidget);
+
+    themeController.toggleTheme();
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Dark'), findsOneWidget);
   });
 }

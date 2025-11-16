@@ -18,7 +18,7 @@ class IntroPage extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -28,27 +28,27 @@ class IntroPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               // Welcome Text
               Text(
                 'Welcome to Our App!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
-              
+
               Text(
                 'Get started by entering your phone number to receive an OTP for secure authentication.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 60),
-              
+
               // Get Started Button
               SizedBox(
                 width: double.infinity,

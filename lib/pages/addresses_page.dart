@@ -11,7 +11,8 @@ class AddressesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CustomerController customerController = Get.find<CustomerController>();
+    final CustomerController customerController =
+        Get.find<CustomerController>();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -34,12 +35,13 @@ class AddressesPage extends StatelessWidget {
         onPressed: () => _showAddAddressDialog(context, customerController),
         backgroundColor: AppColors.primary,
         icon: Icon(Icons.add_rounded, color: Colors.white),
-        label: Text('Add Address', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        label: Text('Add Address',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
         elevation: 4,
       ),
       body: Obx(() {
         final addresses = customerController.addresses;
-        
+
         if (addresses.isEmpty) {
           return _buildEmptyState(context, customerController);
         }
@@ -48,14 +50,16 @@ class AddressesPage extends StatelessWidget {
           padding: EdgeInsets.all(16),
           itemCount: addresses.length,
           itemBuilder: (context, index) {
-            return _buildAddressCard(context, addresses[index], customerController);
+            return _buildAddressCard(
+                context, addresses[index], customerController);
           },
         );
       }),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, CustomerController customerController) {
+  Widget _buildEmptyState(
+      BuildContext context, CustomerController customerController) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -103,9 +107,10 @@ class AddressesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressCard(BuildContext context, dynamic address, CustomerController customerController) {
+  Widget _buildAddressCard(BuildContext context, dynamic address,
+      CustomerController customerController) {
     final isDefault = address.defaultShippingAddress;
-    
+
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -130,7 +135,9 @@ class AddressesPage extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isDefault ? AppColors.primary.withValues(alpha: 0.1) : Colors.grey[50],
+              color: isDefault
+                  ? AppColors.primary.withValues(alpha: 0.1)
+                  : Colors.grey[50],
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -159,7 +166,8 @@ class AddressesPage extends StatelessWidget {
                       if (isDefault)
                         Container(
                           margin: EdgeInsets.only(top: 4),
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColors.primary,
                             borderRadius: BorderRadius.circular(4),
@@ -178,16 +186,18 @@ class AddressesPage extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.edit_outlined, color: Colors.blue),
-                  onPressed: () => _showEditAddressDialog(context, address, customerController),
+                  onPressed: () => _showEditAddressDialog(
+                      context, address, customerController),
                 ),
                 IconButton(
                   icon: Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () => _showDeleteDialog(context, address.id, customerController),
+                  onPressed: () => _showDeleteDialog(
+                      context, address.id, customerController),
                 ),
               ],
             ),
           ),
-          
+
           // Address Details
           Padding(
             padding: EdgeInsets.all(16),
@@ -195,8 +205,10 @@ class AddressesPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildDetailRow(Icons.home_outlined, address.streetLine1),
-                if (address.streetLine2 != null && address.streetLine2.isNotEmpty)
-                  _buildDetailRow(Icons.home_work_outlined, address.streetLine2),
+                if (address.streetLine2 != null &&
+                    address.streetLine2.isNotEmpty)
+                  _buildDetailRow(
+                      Icons.home_work_outlined, address.streetLine2),
                 _buildDetailRow(
                   Icons.location_city_outlined,
                   '${address.city}, ${address.province ?? ''}',
@@ -205,7 +217,8 @@ class AddressesPage extends StatelessWidget {
                   Icons.map_outlined,
                   '${address.postalCode}, ${address.country.name}',
                 ),
-                if (address.phoneNumber != null && address.phoneNumber.isNotEmpty)
+                if (address.phoneNumber != null &&
+                    address.phoneNumber.isNotEmpty)
                   _buildDetailRow(Icons.phone_outlined, address.phoneNumber),
               ],
             ),
@@ -238,41 +251,49 @@ class AddressesPage extends StatelessWidget {
     );
   }
 
-  void _showAddAddressDialog(BuildContext context, CustomerController customerController) {
+  void _showAddAddressDialog(
+      BuildContext context, CustomerController customerController) {
     _showAddressForm(context, customerController, null);
   }
 
-  void _showEditAddressDialog(BuildContext context, dynamic address, CustomerController customerController) {
+  void _showEditAddressDialog(BuildContext context, dynamic address,
+      CustomerController customerController) {
     _showAddressForm(context, customerController, address);
   }
 
-  void _showAddressForm(BuildContext context, CustomerController customerController, dynamic existingAddress) {
+  void _showAddressForm(BuildContext context,
+      CustomerController customerController, dynamic existingAddress) {
     final isEdit = existingAddress != null;
     final box = GetStorage();
-    
+
     // Get channel code from storage and use it as city
     final channelCode = box.read('channel_code') ?? '';
-    
+
     // Get customer data for auto-fill (only when adding new address)
     final customer = customerController.activeCustomer.value;
-    final autoFullName = !isEdit && customer != null 
-        ? '${customer.firstName} ${customer.lastName}'.trim() 
+    final autoFullName = !isEdit && customer != null
+        ? '${customer.firstName} ${customer.lastName}'.trim()
         : '';
-    final autoPhone = !isEdit && customer != null 
-        ? (customer.phoneNumber ?? '') 
-        : '';
-    
+    final autoPhone =
+        !isEdit && customer != null ? (customer.phoneNumber ?? '') : '';
+
     final fullNameController = TextEditingController(
-      text: existingAddress?.fullName ?? (autoFullName.isNotEmpty ? autoFullName : '')
-    );
-    final streetLine1Controller = TextEditingController(text: existingAddress?.streetLine1 ?? '');
-    final streetLine2Controller = TextEditingController(text: existingAddress?.streetLine2 ?? '');
-    final cityController = TextEditingController(text: channelCode.isNotEmpty ? channelCode : (existingAddress?.city ?? ''));
-    final postalCodeController = TextEditingController(text: existingAddress?.postalCode ?? '');
+        text: existingAddress?.fullName ??
+            (autoFullName.isNotEmpty ? autoFullName : ''));
+    final streetLine1Controller =
+        TextEditingController(text: existingAddress?.streetLine1 ?? '');
+    final streetLine2Controller =
+        TextEditingController(text: existingAddress?.streetLine2 ?? '');
+    final cityController = TextEditingController(
+        text: channelCode.isNotEmpty
+            ? channelCode
+            : (existingAddress?.city ?? ''));
+    final postalCodeController =
+        TextEditingController(text: existingAddress?.postalCode ?? '');
     final phoneController = TextEditingController(
-      text: existingAddress?.phoneNumber ?? (autoPhone.isNotEmpty ? autoPhone : '')
-    );
-    
+        text: existingAddress?.phoneNumber ??
+            (autoPhone.isNotEmpty ? autoPhone : ''));
+
     bool defaultShipping = existingAddress?.defaultShippingAddress ?? false;
 
     showModalBottomSheet(
@@ -326,38 +347,53 @@ class AddressesPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Form
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.all(20),
                     child: Column(
                       children: [
-                        _buildTextField(fullNameController, 'Full Name', Icons.person, required: true),
+                        _buildTextField(
+                            fullNameController, 'Full Name', Icons.person,
+                            required: true),
                         SizedBox(height: 16),
-                        _buildTextField(streetLine1Controller, 'Address Line 1', Icons.home, required: true),
+                        _buildTextField(
+                            streetLine1Controller, 'Address Line 1', Icons.home,
+                            required: true),
                         SizedBox(height: 16),
-                        _buildTextField(streetLine2Controller, 'Address Line 2 (Optional)', Icons.home_work),
+                        _buildTextField(streetLine2Controller,
+                            'Address Line 2 (Optional)', Icons.home_work),
                         SizedBox(height: 16),
-                        _buildTextField(cityController, 'City', Icons.location_city, required: true, keyboardType: TextInputType.text, readOnly: true),
+                        _buildTextField(
+                            cityController, 'City', Icons.location_city,
+                            required: true,
+                            keyboardType: TextInputType.text,
+                            readOnly: true),
                         SizedBox(height: 16),
-
-                         _buildTextField(postalCodeController, 'Postal Code', Icons.markunread_mailbox, required: true),
+                        _buildTextField(postalCodeController, 'Postal Code',
+                            Icons.markunread_mailbox,
+                            required: true),
                         SizedBox(height: 16),
-                             _buildTextField(phoneController, 'Phone', Icons.phone, keyboardType: TextInputType.phone),
-
+                        _buildTextField(phoneController, 'Phone', Icons.phone,
+                            keyboardType: TextInputType.phone),
                         SizedBox(height: 20),
                         Container(
                           decoration: BoxDecoration(
-                            color: defaultShipping ? AppColors.primary.withValues(alpha: 0.1) : Colors.grey[100],
+                            color: defaultShipping
+                                ? AppColors.primary.withValues(alpha: 0.1)
+                                : Colors.grey[100],
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: defaultShipping ? AppColors.primary : Colors.grey[300]!,
+                              color: defaultShipping
+                                  ? AppColors.primary
+                                  : Colors.grey[300]!,
                             ),
                           ),
                           child: CheckboxListTile(
                             value: defaultShipping,
-                            onChanged: (value) => setState(() => defaultShipping = value ?? false),
+                            onChanged: (value) => setState(
+                                () => defaultShipping = value ?? false),
                             title: Text(
                               'Set as default address',
                               style: TextStyle(
@@ -366,14 +402,15 @@ class AddressesPage extends StatelessWidget {
                               ),
                             ),
                             activeColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                
+
                 // Actions
                 Container(
                   padding: EdgeInsets.all(20),
@@ -395,9 +432,12 @@ class AddressesPage extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 16),
                             side: BorderSide(color: Colors.grey[300]!),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: Text('Cancel', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          child: Text('Cancel',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
                         ),
                       ),
                       SizedBox(width: 12),
@@ -408,7 +448,8 @@ class AddressesPage extends StatelessWidget {
                                 streetLine1Controller.text.isEmpty ||
                                 cityController.text.isEmpty ||
                                 postalCodeController.text.isEmpty) {
-                              showErrorSnackbar('Please fill in all required fields');
+                              showErrorSnackbar(
+                                  'Please fill in all required fields');
                               return;
                             }
 
@@ -418,44 +459,52 @@ class AddressesPage extends StatelessWidget {
                               streetLine1: streetLine1Controller.text,
                               streetLine2: streetLine2Controller.text,
                               city: cityController.text,
-                              province: '',  // No state needed
+                              province: '', // No state needed
                               postalCode: postalCodeController.text,
                               phoneNumber: phoneController.text,
                               company: '',
                               defaultShippingAddress: defaultShipping,
                               defaultBillingAddress: defaultShipping,
-                              country: existingAddress?.country ?? CountryModel(
-                                id: 'IN',
-                                name: 'India',
-                                code: 'IN',
-                                languageCode: 'en',
-                              ),
+                              country: existingAddress?.country ??
+                                  CountryModel(
+                                    id: 'IN',
+                                    name: 'India',
+                                    code: 'IN',
+                                    languageCode: 'en',
+                                  ),
                             );
 
                             bool success;
                             if (isEdit) {
-                              success = await customerController.updateAddress(addressData);
+                              success = await customerController
+                                  .updateAddress(addressData);
                             } else {
-                              success = await customerController.createAddress(addressData);
+                              success = await customerController
+                                  .createAddress(addressData);
                             }
 
                             if (success) {
                               Navigator.pop(context);
-                              showSuccessSnackbar(isEdit ? 'Address updated!' : 'Address added!');
+                              showSuccessSnackbar(isEdit
+                                  ? 'Address updated!'
+                                  : 'Address added!');
                               customerController.refreshAddresses();
                             } else {
-                              showErrorSnackbar('Failed to ${isEdit ? 'update' : 'add'} address');
+                              showErrorSnackbar(
+                                  'Failed to ${isEdit ? 'update' : 'add'} address');
                             }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                           ),
                           child: Text(
                             isEdit ? 'Update' : 'Add Address',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
@@ -488,8 +537,11 @@ class AddressesPage extends StatelessWidget {
       ),
       decoration: InputDecoration(
         labelText: label + (required ? ' *' : '') + (readOnly ? ' (Auto)' : ''),
-        prefixIcon: Icon(icon, color: readOnly ? Colors.grey[400] : AppColors.primary),
-        suffixIcon: readOnly ? Icon(Icons.lock_outline, color: Colors.grey[400], size: 18) : null,
+        prefixIcon:
+            Icon(icon, color: readOnly ? Colors.grey[400] : AppColors.primary),
+        suffixIcon: readOnly
+            ? Icon(Icons.lock_outline, color: Colors.grey[400], size: 18)
+            : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!),
@@ -500,7 +552,9 @@ class AddressesPage extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: readOnly ? Colors.grey[300]! : AppColors.primary, width: 2),
+          borderSide: BorderSide(
+              color: readOnly ? Colors.grey[300]! : AppColors.primary,
+              width: 2),
         ),
         filled: true,
         fillColor: readOnly ? Colors.grey[100] : Colors.grey[50],
@@ -508,7 +562,8 @@ class AddressesPage extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, String addressId, CustomerController customerController) {
+  void _showDeleteDialog(BuildContext context, String addressId,
+      CustomerController customerController) {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../widgets/shimmers.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../services/graphql_client.dart';
@@ -24,12 +26,18 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   Future<void> _checkTokensAfterInit() async {
-    // Wait a bit for GraphqlService to finish initializing
+    // Small delay to ensure GraphqlService is ready
     await Future.delayed(const Duration(milliseconds: 100));
-    
+
     final AuthController authController = Get.find();
-    authController.checkLoginStatusFromGraphqlService();
-    
+
+    try {
+      await authController.checkLoginStatusFromGraphqlService();
+    } catch (e) {
+      debugPrint('[AuthWrapper] GraphQL auth check failed: $e');
+      authController.setLoggedIn(false);
+    }
+
     setState(() {
       _hasCheckedTokens = true;
     });
@@ -39,51 +47,50 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     final AuthController authController = Get.find();
     final UtilityController utilityController = Get.find();
+    final box = GetStorage();
 
     return Obx(() {
-      // Show loading while checking authentication status
+      // Show loading while checking authentication
       if (utilityController.isLoading || !_hasCheckedTokens) {
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
+        return Scaffold(body: Skeletons.fullScreen());
       }
 
-      // Additional check: Ensure both tokens exist
       final authToken = GraphqlService.authToken;
       final channelToken = GraphqlService.channelToken;
-      
-      debugPrint('[AuthWrapper] Auth token present: ${authToken.isNotEmpty}');
-      debugPrint('[AuthWrapper] Channel token present: ${channelToken.isNotEmpty}');
-      debugPrint('[AuthWrapper] AuthController logged in: ${authController.isLoggedIn}');
-      debugPrint('[AuthWrapper] Auth token value: $authToken');
-      debugPrint('[AuthWrapper] Channel token value: $channelToken');
 
-      // If user is logged in AND has valid tokens, go to home page
-      if (authController.isLoggedIn && authToken.isNotEmpty && channelToken.isNotEmpty) {
+      debugPrint('[AuthWrapper] Auth token present: ${authToken.isNotEmpty}');
+      debugPrint(
+          '[AuthWrapper] Channel token present: ${channelToken.isNotEmpty}');
+      debugPrint(
+          '[AuthWrapper] AuthController logged in: ${authController.isLoggedIn}');
+
+      // User is logged in and tokens are valid → Home
+      if (authController.isLoggedIn &&
+          authToken.isNotEmpty &&
+          channelToken.isNotEmpty) {
         return MyHomePage();
       }
 
-      // If tokens are missing but user thinks they're logged in, clear the state
-      if (authController.isLoggedIn && (authToken.isEmpty || channelToken.isEmpty)) {
-        debugPrint('[AuthWrapper] User marked as logged in but tokens missing, clearing state');
+      // If user is logged in but tokens missing → reset login state
+      if (authController.isLoggedIn &&
+          (authToken.isEmpty || channelToken.isEmpty)) {
+        debugPrint('[AuthWrapper] Tokens missing, clearing login state');
         authController.setLoggedIn(false);
       }
 
-      // Check if intro has been shown
-      if (_hasIntroBeenShown()) {
-        return const LoginPage();
-      } else {
+      // Check if intro page has been shown
+      final bool introShown = box.read('intro_shown') ?? false;
+
+      if (!introShown) {
+        // Mark intro as shown after displaying
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          box.write('intro_shown', true);
+        });
         return const IntroPage();
       }
-    });
-  }
 
-  /// Check if intro page has been shown before
-  bool _hasIntroBeenShown() {
-    // You can implement this logic based on your requirements
-    // For now, we'll assume intro should always be shown for new users
-    return true; // Set to false if you want to show intro page first
+      // Default → show login page
+      return const LoginPage();
+    });
   }
 }

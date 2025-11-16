@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
@@ -9,10 +8,12 @@ import '../widgets/appbar.dart';
 import '../widgets/button.dart';
 import '../widgets/card.dart';
 import '../theme/colors.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import '../utils/responsive.dart';
 
 class OrderConfirmationPage extends StatefulWidget {
   final String orderId;
-  
+
   const OrderConfirmationPage({
     super.key,
     required this.orderId,
@@ -49,11 +50,10 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     return Scaffold(
       appBar: AppBarWidget(
         title: 'Order Confirmation',
-
       ),
       body: Obx(() {
         if (utilityController.isLoadingRx.value) {
-          return const Center(child: CircularProgressIndicator());
+          return _buildShimmerOrderConfirmation();
         }
 
         final order = orderController.currentOrder.value;
@@ -70,38 +70,43 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
           );
         }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Order Success Header
-              _buildOrderSuccessHeader(order),
-              const SizedBox(height: 24),
-              
-              // Order Details
-              _buildOrderDetails(order),
-              const SizedBox(height: 16),
-              
-              // Products Ordered
-              _buildProductsSection(order),
-              const SizedBox(height: 16),
-              
-              // Shipping Address
-              _buildShippingAddressSection(order),
-              const SizedBox(height: 16),
-              
-              // Payment Information
-              _buildPaymentSection(order),
-              const SizedBox(height: 16),
-              
-              // Loyalty Points
-              _buildLoyaltyPointsSection(order),
-              const SizedBox(height: 24),
-              
-              // Action Buttons
-              _buildActionButtons(order),
-            ],
+        return RefreshIndicator(
+          onRefresh: () async {
+            await orderController.getOrderByCode(widget.orderId);
+          },
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Order Success Header
+                _buildOrderSuccessHeader(order),
+                const SizedBox(height: 24),
+
+                // Order Details
+                _buildOrderDetails(order),
+                const SizedBox(height: 16),
+
+                // Products Ordered
+                _buildProductsSection(order),
+                const SizedBox(height: 16),
+
+                // Shipping Address
+                _buildShippingAddressSection(order),
+                const SizedBox(height: 16),
+
+                // Payment Information
+                _buildPaymentSection(order),
+                const SizedBox(height: 16),
+
+                // Loyalty Points
+                _buildLoyaltyPointsSection(order),
+                const SizedBox(height: 24),
+
+                // Action Buttons
+                _buildActionButtons(order),
+              ],
+            ),
           ),
         );
       }),
@@ -120,7 +125,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.3),
+            color: Colors.green.withValues(alpha: 0.3),
             spreadRadius: 2,
             blurRadius: 8,
             offset: const Offset(0, 4),
@@ -181,7 +186,10 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             ),
             const SizedBox(height: 12),
             _buildDetailRow('Order ID', order.code),
-            _buildDetailRow('Date', order.orderPlacedAt?.toLocal().toString().split(' ')[0] ?? 'N/A'),
+            _buildDetailRow(
+                'Date',
+                order.orderPlacedAt?.toLocal().toString().split(' ')[0] ??
+                    'N/A'),
             _buildDetailRow('Status', order.state),
             _buildDetailRow('Total Items', '${order.totalQuantity}'),
             _buildDetailRow('Currency', order.currencyCode ?? 'N/A'),
@@ -269,7 +277,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                 const SizedBox(height: 4),
                 Text(
                   'Price: ${cartController.formatPrice(line.linePriceWithTax.toInt())}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
@@ -304,7 +312,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.location_on, color: AppColors.primary),
+                Icon(Icons.location_on, color: AppColors.primary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -319,8 +327,10 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(address.streetLine1),
-                      if (address.streetLine2.isNotEmpty) Text(address.streetLine2),
-                      Text('${address.city}, ${address.province ?? ''} ${address.postalCode}'),
+                      if (address.streetLine2.isNotEmpty)
+                        Text(address.streetLine2),
+                      Text(
+                          '${address.city}, ${address.province ?? ''} ${address.postalCode}'),
                       Text(address.country ?? ''),
                       if (address.phoneNumber.isNotEmpty)
                         Text('Phone: ${address.phoneNumber}'),
@@ -342,8 +352,8 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     }
 
     final payment = payments.first;
-    final isOnlinePayment = payment.method.toLowerCase().contains('online') || 
-                           payment.method.toLowerCase().contains('razorpay');
+    final isOnlinePayment = payment.method.toLowerCase().contains('online') ||
+        payment.method.toLowerCase().contains('razorpay');
 
     return AppCard(
       child: Padding(
@@ -380,7 +390,8 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                       const SizedBox(height: 4),
                       Text('Method: ${payment.method}'),
                       Text('Status: ${payment.state}'),
-                      Text('Amount: ${cartController.formatPrice(payment.amount.toInt())}'),
+                      Text(
+                          'Amount: ${cartController.formatPrice(payment.amount.toInt())}'),
                       if (payment.transactionId != null)
                         Text('Transaction ID: ${payment.transactionId}'),
                     ],
@@ -411,21 +422,25 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             ),
             const SizedBox(height: 12),
             if (pointsUsed > 0) ...[
-              _buildLoyaltyPointRow('Points Used', '$pointsUsed', Icons.remove_circle, Colors.red),
+              _buildLoyaltyPointRow('Points Used', '$pointsUsed',
+                  Icons.remove_circle, Colors.red),
               const SizedBox(height: 8),
             ],
             if (pointsEarned > 0) ...[
-              _buildLoyaltyPointRow('Points Earned', '$pointsEarned', Icons.add_circle, Colors.green),
+              _buildLoyaltyPointRow('Points Earned', '$pointsEarned',
+                  Icons.add_circle, Colors.green),
             ],
             if (pointsUsed == 0 && pointsEarned == 0)
-              const Text('No loyalty points activity for this order', style: TextStyle(color: Colors.grey)),
+              const Text('No loyalty points activity for this order',
+                  style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLoyaltyPointRow(String label, String value, IconData icon, Color color) {
+  Widget _buildLoyaltyPointRow(
+      String label, String value, IconData icon, Color color) {
     return Row(
       children: [
         Icon(icon, color: color, size: 20),
@@ -501,9 +516,6 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     );
   }
 
-
-
-
   void _viewOrderDetails(dynamic order) {
     // TODO: Navigate to detailed order view
     Get.snackbar('Order Details', 'Detailed order view coming soon');
@@ -512,5 +524,76 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   void _downloadReceipt(dynamic order) {
     // TODO: Implement receipt download
     Get.snackbar('Download', 'Receipt download feature coming soon');
+  }
+
+  Widget _buildShimmerOrderConfirmation() {
+    return Skeletonizer(
+      enabled: true,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Success header shimmer
+            Container(
+              height: ResponsiveUtils.rp(120),
+              decoration: BoxDecoration(
+                color: AppColors.shimmerBase,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            // Order details shimmer
+            Container(
+              height: ResponsiveUtils.rp(20),
+              width: ResponsiveUtils.rp(150),
+              decoration: BoxDecoration(
+                color: AppColors.shimmerBase,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(16)),
+            ...List.generate(
+                3,
+                (index) => Container(
+                      height: ResponsiveUtils.rp(60),
+                      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+                      decoration: BoxDecoration(
+                        color: AppColors.shimmerBase,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    )),
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            // Shipping address shimmer
+            Container(
+              height: ResponsiveUtils.rp(20),
+              width: ResponsiveUtils.rp(150),
+              decoration: BoxDecoration(
+                color: AppColors.shimmerBase,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            Container(
+              height: ResponsiveUtils.rp(100),
+              decoration: BoxDecoration(
+                color: AppColors.shimmerBase,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            // Button shimmer
+            Container(
+              height: ResponsiveUtils.rp(48),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.shimmerBase,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

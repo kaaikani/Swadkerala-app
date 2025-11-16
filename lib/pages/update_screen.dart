@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/shimmers.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:in_app_update/in_app_update.dart';
@@ -34,16 +35,17 @@ class _UpdateScreenState extends State<UpdateScreen> {
       setState(() {
         _updateInProgress = false;
       });
-      
+
       // If immediate update fails (e.g., app not from Play Store), open Play Store
       debugPrint('[UpdateScreen] Immediate update failed: $e');
       debugPrint('[UpdateScreen] Falling back to Play Store...');
-      
+
       try {
         await _openPlayStoreForUpdate();
       } catch (playStoreError) {
-        debugPrint('[UpdateScreen] Play Store fallback also failed: $playStoreError');
-        
+        debugPrint(
+            '[UpdateScreen] Play Store fallback also failed: $playStoreError');
+
         // Show error dialog with only retry option (no bypass)
         showDialog(
           context: context,
@@ -52,7 +54,8 @@ class _UpdateScreenState extends State<UpdateScreen> {
             _retryCount++;
             return AlertDialog(
               title: Text('Update Required'),
-              content: Text('Unable to update the app. This may happen if the app is not installed from Play Store.\n\nPlease try again or install the app from Play Store.'),
+              content: Text(
+                  'Unable to update the app. This may happen if the app is not installed from Play Store.\n\nPlease try again or install the app from Play Store.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -78,7 +81,8 @@ class _UpdateScreenState extends State<UpdateScreen> {
                         MaterialPageRoute(builder: (context) => AuthWrapper()),
                       );
                     },
-                    child: Text('Skip (Not Recommended)', style: TextStyle(color: Colors.red)),
+                    child: Text('Skip (Not Recommended)',
+                        style: TextStyle(color: Colors.red)),
                   ),
               ],
             );
@@ -93,10 +97,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
     try {
       const packageName = 'com.kaaikani.kaaikani';
       final Uri playStoreUrl = Uri.parse('market://details?id=$packageName');
-      final Uri webStoreUrl = Uri.parse('https://play.google.com/store/apps/details?id=$packageName');
-      
+      final Uri webStoreUrl = Uri.parse(
+          'https://play.google.com/store/apps/details?id=$packageName');
+
       debugPrint('[UpdateScreen] Opening Play Store...');
-      
+
       // Try to open Play Store app
       if (await canLaunchUrl(playStoreUrl)) {
         await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
@@ -104,7 +109,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         // Fallback to web browser
         await launchUrl(webStoreUrl, mode: LaunchMode.externalApplication);
       }
-      
+
       // Show message that user should return after updating
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -113,7 +118,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
           backgroundColor: Colors.blue,
         ),
       );
-      
     } catch (e) {
       debugPrint('[UpdateScreen] Error opening Play Store: $e');
       rethrow; // Re-throw to be caught by the calling method
@@ -136,7 +140,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         children: [
           Center(
             child: _updateInProgress
-                ? CircularProgressIndicator()
+                ? SizedBox(height: 20, child: Skeletons.smallBox(size: 20))
                 : Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
@@ -329,7 +333,8 @@ class AppErrorWidget extends StatelessWidget {
       } catch (e) {
         print('Error launching call: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An error occurred while making the call')),
+          const SnackBar(
+              content: Text('An error occurred while making the call')),
         );
       }
     } else {

@@ -126,6 +126,19 @@ type BooleanStructFieldConfig implements StructField {
   ui: JSON
 }
 
+type CartContainsUnavailableItemsError implements ErrorResult {
+  errorCode: ErrorCode!
+  message: String!
+  unavailableItems: [UnavailableCartItem!]!
+}
+
+type CartValidationStatus {
+  isValid: Boolean!
+  hasUnavailableItems: Boolean!
+  totalUnavailableItems: Int!
+  unavailableItems: [UnavailableCartItem!]!
+}
+
 type Channel implements Node {
   id: ID!
   createdAt: DateTime!
@@ -1100,6 +1113,7 @@ enum ErrorCode {
   PASSWORD_RESET_TOKEN_INVALID_ERROR
   PASSWORD_RESET_TOKEN_EXPIRED_ERROR
   NOT_VERIFIED_ERROR
+  CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR
 }
 
 interface ErrorResult {
@@ -1462,6 +1476,7 @@ enum HistoryEntryType {
   ORDER_COUPON_REMOVED
   ORDER_MODIFIED
   ORDER_CUSTOMER_UPDATED
+  ORDER_LINE_PRICE_UPDATED
 }
 
 """
@@ -2469,6 +2484,7 @@ type Order implements Node {
   """A summary of the taxes being applied to this Order"""
   taxSummary: [OrderTaxSummary!]!
   history(options: HistoryEntryListOptions): HistoryEntryList!
+  validationStatus: CartValidationStatus!
   customFields: OrderCustomFields
 }
 
@@ -2623,6 +2639,8 @@ type OrderLine implements Node {
   taxLines: [TaxLine!]!
   order: Order!
   fulfillmentLines: [FulfillmentLine!]
+  isAvailable: Boolean!
+  unavailableReason: String
   customFields: JSON
 }
 
@@ -3348,7 +3366,11 @@ type ProductVariant implements Node {
   options: [ProductOption!]!
   facetValues: [FacetValue!]!
   translations: [ProductVariantTranslation!]!
-  customFields: JSON
+  customFields: ProductVariantCustomFields
+}
+
+type ProductVariantCustomFields {
+  shadowPrice: Int
 }
 
 input ProductVariantFilterParameter {
@@ -3365,6 +3387,7 @@ input ProductVariantFilterParameter {
   stockLevel: StringOperators
   _and: [ProductVariantFilterParameter!]
   _or: [ProductVariantFilterParameter!]
+  shadowPrice: NumberOperators
 }
 
 type ProductVariantList implements PaginatedList {
@@ -3402,6 +3425,7 @@ input ProductVariantSortParameter {
   price: SortOrder
   priceWithTax: SortOrder
   stockLevel: SortOrder
+  shadowPrice: SortOrder
 }
 
 type ProductVariantTranslation {
@@ -3551,8 +3575,6 @@ type Query {
   customBanners: [CustomBanner!]!
   loyaltyPointsConfig: LoyaltyPointsConfig
   frequentlyOrderedProducts: [FrequentlyOrderedProduct!]!
-  getUpdateInfo: UpdateInfo
-  getUpdateInfoForChannel: UpdateInfo
 }
 
 type RazorpayOrderIdGenerationError {
@@ -3979,7 +4001,14 @@ type TextStructFieldConfig implements StructField {
   ui: JSON
 }
 
-union TransitionOrderToStateResult = Order | OrderStateTransitionError
+union TransitionOrderToStateResult = Order | OrderStateTransitionError | CartContainsUnavailableItemsError
+
+type UnavailableCartItem {
+  orderLineId: ID!
+  productName: String!
+  variantName: String!
+  reason: String!
+}
 
 """
 Input used to update an Address.
@@ -4019,13 +4048,6 @@ input UpdateCustomerInput {
 }
 
 union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | PasswordValidationError | NativeAuthStrategyError
-
-type UpdateInfo {
-  latestVersion: String!
-  minRequiredVersion: String!
-  updateType: String!
-  isActive: Boolean!
-}
 
 input UpdateOrderCustomFieldsInput {
   deviceMedium: String

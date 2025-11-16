@@ -1,0 +1,147 @@
+fragment Asset on Asset {
+    id
+    width
+    height
+    name
+    preview
+    focalPoint {
+        x
+        y
+        __typename
+    }
+    __typename
+}
+
+fragment Options on ProductOption {
+    id
+    code
+    name
+    __typename
+}
+
+query GetProductDetail($id: ID!) {
+    product(id: $id) {
+        id
+        name
+        description
+        variants {
+            id
+            name
+            stockLevel
+            options {
+                ...Options
+            }
+            featuredAsset {
+                ...Asset
+            }
+            price
+            priceWithTax
+            currencyCode
+            languageCode
+            assets {
+                name
+                preview
+            }
+            options {
+                name
+                group {
+                    name
+
+                }
+            }
+            sku
+            __typename
+            customFields {
+                shadowPrice
+                __typename
+            }
+        }
+
+        featuredAsset {
+            ...Asset
+            __typename
+        }
+        assets {
+            ...Asset
+            __typename
+        }
+        collections {
+            id
+            slug
+            breadcrumbs {
+                id
+                name
+                slug
+                __typename
+            }
+            __typename
+        }
+        __typename
+    }
+}
+
+query Collections($options: CollectionListOptions) {
+    collections(options: $options) {
+        items {
+            id
+            name
+            children {
+                id
+                slug
+                name
+            }
+            productVariants{
+                totalItems
+            }
+            slug
+            parent {
+                name
+            }
+            featuredAsset {
+                ...Asset
+            }
+        }
+    }
+}
+
+query Products ($slug: String, $id: ID){
+    collection(slug: $slug, id: $id) {
+        id
+        name
+        productVariants{
+            items{
+                id
+                product{
+                    id
+                    name
+                    enabled
+                    featuredAsset {
+                        ...Asset
+                    }
+                    optionGroups {
+                        id
+                        name
+                    }
+                }
+                customFields {
+                    shadowPrice
+                }
+                priceWithTax
+                stockLevel
+                productId
+                name
+                options {
+                    id
+                    name
+                    group {
+                        id
+                        name
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+

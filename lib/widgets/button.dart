@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../theme/colors.dart';
+import 'shimmers.dart';
 import '../theme/sizes.dart';
-
 
 class AppButton extends StatefulWidget {
   final String text;
@@ -14,17 +14,18 @@ class AppButton extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final double elevation;
 
-  const AppButton({
+  AppButton({
     Key? key,
     required this.text,
     required this.onPressed,
     this.icon,
-    this.backgroundColor = AppColors.primary,      // Change based on your AppColors
+    Color? backgroundColor,
     this.textColor = Colors.white,
     this.borderRadius = 8,
     this.padding = const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
     this.elevation = 2,
-  }) : super(key: key);
+  })  : backgroundColor = backgroundColor ?? AppColors.primary,
+        super(key: key);
 
   @override
   State<AppButton> createState() => _AppButtonState();
@@ -54,27 +55,22 @@ class _AppButtonState extends State<AppButton> {
         ),
       ),
       child: _isLoading
-          ? const SizedBox(
-        height: 18,
-        width: 18,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      )
+          ? Skeletons.smallBox(size: 18)
           : Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.icon != null)
-            Icon(widget.icon, size: 16, color: widget.textColor),
-          if (widget.icon != null) const SizedBox(width: 6),
-          Text(
-            widget.text,
-            style: TextStyle(color: widget.textColor, fontSize: 14),
-          ),
-        ],
-      ),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.icon != null)
+                  Icon(widget.icon, size: 16, color: widget.textColor),
+                if (widget.icon != null) const SizedBox(width: 6),
+                Text(
+                  widget.text,
+                  style: TextStyle(color: widget.textColor, fontSize: 14),
+                ),
+              ],
+            ),
     );
   }
 }
-
 
 class AppTextButton extends StatefulWidget {
   final String text;
@@ -83,15 +79,16 @@ class AppTextButton extends StatefulWidget {
   final double? borderRadius;
   final EdgeInsetsGeometry? padding;
 
-  const AppTextButton({
+  AppTextButton({
     Key? key,
     required this.text,
     required this.onPressed,
-    this.textColor = AppColors.primary,
+    Color? textColor,
     this.borderRadius,
     this.padding,
     required Color backgroundColor,
-  }) : super(key: key);
+  })  : textColor = textColor ?? AppColors.primary,
+        super(key: key);
 
   @override
   State<AppTextButton> createState() => _AppTextButtonState();
@@ -135,7 +132,8 @@ class _AppTextButtonState extends State<AppTextButton> {
               horizontal: AppSizes.buttonHorizontalPadding,
             ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius ?? AppSizes.cardRadius),
+          borderRadius:
+              BorderRadius.circular(widget.borderRadius ?? AppSizes.cardRadius),
         ),
       ),
       child: Text(
@@ -145,7 +143,6 @@ class _AppTextButtonState extends State<AppTextButton> {
     );
   }
 }
-
 
 class CustomCheckboxTile extends StatelessWidget {
   final String title;

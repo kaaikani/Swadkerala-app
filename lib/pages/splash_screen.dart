@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import '../widgets/shimmers.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../services/sim_detection_service.dart';
-import 'auth_wrapper.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,8 +16,9 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  
-  // Permission request state
+
+  // Permission request state (set but not currently read)
+  // ignore: unused_field
   bool _isRequestingPermission = false;
   String _statusMessage = 'Loading...';
 
@@ -56,19 +57,19 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _navigateToApp() async {
     // Wait for animations to complete
     await Future.delayed(const Duration(seconds: 2));
-    
+
     // Request permissions during splash screen
     await _requestPermissions();
-    
+
     // Navigate to auth wrapper
     if (mounted) {
-      Get.offAll(() => const AuthWrapper());
+      Get.offAllNamed('/');
     }
   }
 
   Future<void> _requestPermissions() async {
     debugPrint('[SplashScreen] Starting permission request...');
-    
+
     setState(() {
       _isRequestingPermission = true;
       _statusMessage = 'Requesting permissions...';
@@ -79,56 +80,58 @@ class _SplashScreenState extends State<SplashScreen>
       debugPrint('[SplashScreen] Checking phone permission...');
       PermissionStatus phoneStatus = await Permission.phone.status;
       debugPrint('[SplashScreen] Phone permission status: $phoneStatus');
-      
+
       if (phoneStatus.isDenied || phoneStatus.isPermanentlyDenied) {
         setState(() {
           _statusMessage = 'Please grant phone permission for SIM detection...';
         });
-        
+
         debugPrint('[SplashScreen] Requesting phone permission...');
         phoneStatus = await Permission.phone.request();
         debugPrint('[SplashScreen] Phone permission result: $phoneStatus');
-        
+
         if (phoneStatus.isGranted) {
           setState(() {
             _statusMessage = 'Permission granted! Detecting SIM cards...';
           });
-          
+
           // Try to detect SIM cards and cache them
           debugPrint('[SplashScreen] Detecting SIM cards...');
           final simService = SimDetectionService();
           await simService.getAllSimInfo();
-          
+
           setState(() {
             _statusMessage = 'Ready!';
           });
         } else {
           setState(() {
-            _statusMessage = 'Permission denied. You can enter phone number manually.';
+            _statusMessage =
+                'Permission denied. You can enter phone number manually.';
           });
         }
       } else if (phoneStatus.isGranted) {
         setState(() {
           _statusMessage = 'Permission already granted. Detecting SIM cards...';
         });
-        
-        debugPrint('[SplashScreen] Permission already granted, detecting SIM cards...');
+
+        debugPrint(
+            '[SplashScreen] Permission already granted, detecting SIM cards...');
         // Try to detect SIM cards and cache them
         final simService = SimDetectionService();
         await simService.getAllSimInfo();
-        
+
         setState(() {
           _statusMessage = 'Ready!';
         });
       } else {
         setState(() {
-          _statusMessage = 'Permission status unknown. You can enter phone number manually.';
+          _statusMessage =
+              'Permission status unknown. You can enter phone number manually.';
         });
       }
-      
+
       // Wait a bit to show the final status
       await Future.delayed(const Duration(milliseconds: 500));
-      
     } catch (e) {
       debugPrint('[SplashScreen] Permission request error: $e');
       setState(() {
@@ -171,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
@@ -184,7 +187,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                     const SizedBox(height: 30),
-                    
+
                     // App Name
                     const Text(
                       'Madurai Store',
@@ -195,7 +198,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                     const SizedBox(height: 10),
-                    
+
                     // Tagline
                     const Text(
                       'Your Shopping Destination',
@@ -205,16 +208,11 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                     const SizedBox(height: 50),
-                    
+
                     // Loading indicator
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _isRequestingPermission ? Colors.orange : Colors.white,
-                      ),
-                      strokeWidth: 3,
-                    ),
+                    SizedBox(height: 24, child: Skeletons.smallBox(size: 24)),
                     const SizedBox(height: 20),
-                    
+
                     // Status text
                     Text(
                       _statusMessage,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../graphql/collections.graphql.dart';
+import '../../graphql/product.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import 'Collectionmodel.dart';
@@ -16,14 +16,11 @@ class CollectionsController extends GetxController {
   
   // Map to store all variants by product ID for quick lookup
   RxMap<String, List<Query$Products$collection$productVariants$items>> variantsByProductId = <String, List<Query$Products$collection$productVariants$items>>{}.obs;
+  // Track the currently selected variant ID per product for UI dropdowns
+  RxMap<String, String> selectedVariantIdByProductId = <String, String>{}.obs;
 
   // Flag to prevent multiple simultaneous fetches
   bool _isFetching = false;
-
-  /// Get all variants for a specific product ID
-  List<Query$Products$collection$productVariants$items> getVariantsForProduct(String productId) {
-    return variantsByProductId[productId] ?? [];
-  }
 
   Future<bool> fetchAllCollections({bool force = false}) async {
     // Prevent multiple simultaneous fetches
@@ -87,6 +84,7 @@ class CollectionsController extends GetxController {
     currentCollection.value = null;
     uniqueProductVariants.clear();
     variantsByProductId.clear();
+    selectedVariantIdByProductId.clear();
 
     utilityController.setLoadingState(true);
 
@@ -130,6 +128,7 @@ class CollectionsController extends GetxController {
           if (!loggedProductIds.contains(productId)) {
             loggedProductIds.add(productId);
             uniqueProductVariants.add(item); // Store the first variant
+            selectedVariantIdByProductId[productId] = item.id;
             debugPrint('• Product: ${product.name} | ID: ${productId} | Variants: ${variantsByProductId[productId]!.length}');
           }
         }
@@ -148,4 +147,69 @@ class CollectionsController extends GetxController {
     }
   }
 
+  /// Returns the list of variants for the given product ID (empty list if none)
+  List<Query$Products$collection$productVariants$items> getVariantsForProduct(String productId) {
+    return variantsByProductId[productId] ?? const [];
+  }
+
+  /// Sets the selected variant for a product if the ID exists in the cached list
+  void setSelectedVariant(String productId, String variantId) {
+    final variants = variantsByProductId[productId];
+    if (variants == null) return;
+    final exists = variants.any((variant) => variant.id == variantId);
+    if (exists) {
+      selectedVariantIdByProductId[productId] = variantId;
+    }
+  }
+
+  /// Returns the currently selected variant for the product. Defaults to first variant.
+  Query$Products$collection$productVariants$items? getSelectedVariantForProduct(String productId) {
+    final variants = variantsByProductId[productId];
+    if (variants == null || variants.isEmpty) return null;
+
+    final selectedId = selectedVariantIdByProductId[productId];
+    if (selectedId != null) {
+      for (final variant in variants) {
+        if (variant.id == selectedId) {
+          return variant;
+        }
+      }
+    }
+    return variants.first;
+  }
+
+  /// Builds a readable label for a variant using its option group names if present
+  String buildVariantLabel(Query$Products$collection$productVariants$items variant) {
+    if (variant.options.isEmpty) {
+      return variant.name;
+    }
+
+    final parts = variant.options.map((option) {
+      final groupName = option.group.name.trim();
+      final optionName = option.name.trim();
+      if (groupName.isNotEmpty) {
+        return '$groupName: $optionName';
+      }
+      return optionName;
+    }).toList();
+
+    return parts.join(' • ');
+  }
+
+  /// Returns all unique option values for the given product and option group name
+  List<String> getUniqueOptionsForGroup(String productId, String groupName) {
+    final variants = variantsByProductId[productId] ?? const [];
+    if (variants.isEmpty) return const [];
+
+    final uniqueValues = <String>{};
+    for (final variant in variants) {
+      for (final option in variant.options) {
+        if (option.group.name == groupName) {
+          uniqueValues.add(option.name);
+          break;
+        }
+      }
+    }
+    return uniqueValues.toList();
+  }
 }

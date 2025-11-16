@@ -44,8 +44,8 @@ class AppSizes {
   // Card & Container Properties
   static const double cardElevation = 2.0;
   static const double cardElevationHigh = 4.0;
-  static const double cardRadius = 16.0;
-  static const double cardRadiusSM = 10.0;
+  static const double cardRadius = 8.0;
+  static const double cardRadiusSM = 5.0;
   static const double cardRadiusLG = 20.0;
   
   // Border Radius

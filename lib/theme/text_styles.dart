@@ -7,21 +7,21 @@ class AppTextStyles {
   static const TextStyle displayLarge = TextStyle(
     fontSize: 32.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.2,
   );
   
   static const TextStyle displayMedium = TextStyle(
     fontSize: 28.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.2,
   );
   
   static const TextStyle displaySmall = TextStyle(
     fontSize: 24.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.2,
   );
   
@@ -29,21 +29,21 @@ class AppTextStyles {
   static const TextStyle headlineLarge = TextStyle(
     fontSize: 24.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.3,
   );
   
   static const TextStyle headlineMedium = TextStyle(
     fontSize: 20.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.3,
   );
   
   static const TextStyle headlineSmall = TextStyle(
     fontSize: 18.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.3,
   );
   
@@ -51,21 +51,21 @@ class AppTextStyles {
   static const TextStyle titleLarge = TextStyle(
     fontSize: 20.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.4,
   );
   
   static const TextStyle titleMedium = TextStyle(
     fontSize: 18.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.4,
   );
   
   static const TextStyle titleSmall = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.4,
   );
   
@@ -73,21 +73,21 @@ class AppTextStyles {
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.5,
   );
   
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.5,
   );
   
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryConst,
     height: 1.5,
   );
   
@@ -95,21 +95,21 @@ class AppTextStyles {
   static const TextStyle labelLarge = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.4,
   );
   
   static const TextStyle labelMedium = TextStyle(
     fontSize: 12.0,
     fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryConst,
     height: 1.4,
   );
   
   static const TextStyle labelSmall = TextStyle(
     fontSize: 10.0,
     fontWeight: FontWeight.w500,
-    color: AppColors.textTertiary,
+    color: AppColors.textTertiaryConst,
     height: 1.4,
   );
   
@@ -146,14 +146,14 @@ class AppTextStyles {
   static const TextStyle caption = TextStyle(
     fontSize: 12.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryConst,
     height: 1.4,
   );
   
   static const TextStyle captionBold = TextStyle(
     fontSize: 12.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryConst,
     height: 1.4,
   );
   
@@ -161,7 +161,7 @@ class AppTextStyles {
   static const TextStyle overline = TextStyle(
     fontSize: 10.0,
     fontWeight: FontWeight.w500,
-    color: AppColors.textTertiary,
+    color: AppColors.textTertiaryConst,
     letterSpacing: 1.5,
     height: 1.6,
   );
@@ -170,7 +170,7 @@ class AppTextStyles {
   static const TextStyle appBarTitle = TextStyle(
     fontSize: 20.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.textDark,
+    color: AppColors.textDarkConst,
     height: 1.2,
   );
   
@@ -178,21 +178,21 @@ class AppTextStyles {
   static const TextStyle priceLarge = TextStyle(
     fontSize: 24.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.primary,
+    color: AppColors.primaryConst,
     height: 1.2,
   );
   
   static const TextStyle priceMedium = TextStyle(
     fontSize: 18.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.primary,
+    color: AppColors.primaryConst,
     height: 1.2,
   );
   
   static const TextStyle priceSmall = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.primary,
+    color: AppColors.primaryConst,
     height: 1.2,
   );
   
@@ -225,49 +225,49 @@ class AppTextStyles {
   static const TextStyle productTitle = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.3,
   );
   
   static const TextStyle productDescription = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryConst,
     height: 1.5,
   );
   
   static const TextStyle cardTitle = TextStyle(
     fontSize: 18.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.3,
   );
   
   static const TextStyle cardSubtitle = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryConst,
     height: 1.4,
   );
   
   static const TextStyle inputLabel = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryConst,
     height: 1.4,
   );
   
   static const TextStyle inputText = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.4,
   );
   
   static const TextStyle inputHint = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.normal,
-    color: AppColors.textTertiary,
+    color: AppColors.textTertiaryConst,
     height: 1.4,
   );
   
@@ -282,7 +282,7 @@ class AppTextStyles {
   static const TextStyle chip = TextStyle(
     fontSize: 12.0,
     fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryConst,
     height: 1.2,
   );
   
@@ -290,21 +290,21 @@ class AppTextStyles {
   static const TextStyle statLarge = TextStyle(
     fontSize: 28.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.primary,
+    color: AppColors.primaryConst,
     height: 1.2,
   );
   
   static const TextStyle statMedium = TextStyle(
     fontSize: 20.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.primary,
+    color: AppColors.primaryConst,
     height: 1.2,
   );
   
   static const TextStyle statSmall = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.bold,
-    color: AppColors.primary,
+    color: AppColors.primaryConst,
     height: 1.2,
   );
 }

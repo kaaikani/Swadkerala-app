@@ -133,6 +133,7 @@ class OrderModel {
       return null;
     }
   }
+
 }
 
 class OrderLine {
@@ -465,47 +466,36 @@ class Payment {
 }
 
 class OrderCustomFields {
-  final int? loyaltyPointsUsed;
   final int? loyaltyPointsEarned;
+  final int? loyaltyPointsUsed;
+  final String? razorpayOrderId;
+  final String? otherInstructions;
+  final int? clientRequestToCancel;
 
   OrderCustomFields({
-    this.loyaltyPointsUsed,
     this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.razorpayOrderId,
+    this.otherInstructions,
+    this.clientRequestToCancel,
   });
 
   factory OrderCustomFields.fromJson(Map<String, dynamic> json) {
-    try {
-      return OrderCustomFields(
-        loyaltyPointsUsed: _parseIntField(json['loyaltyPointsUsed']),
-        loyaltyPointsEarned: _parseIntField(json['loyaltyPointsEarned']),
-      );
-    } catch (e) {
-      debugPrint('[OrderCustomFields] Error parsing JSON: $e');
-      return OrderCustomFields();
-    }
+    return OrderCustomFields(
+      loyaltyPointsEarned: _parseInt(json['loyaltyPointsEarned']),
+      loyaltyPointsUsed: _parseInt(json['loyaltyPointsUsed']),
+      razorpayOrderId: json['razorpay_order_id'],
+      otherInstructions: json['otherInstructions'],
+      clientRequestToCancel: _parseInt(json['clientRequestToCancel']),
+    );
   }
 
-  static int? _parseIntField(dynamic value) {
+  static int? _parseInt(dynamic value) {
     if (value == null) return null;
-    
-    try {
-      if (value is int) {
-        return value;
-      } else if (value is num) {
-        return value.toInt();
-      } else if (value is String) {
-        return int.tryParse(value);
-      } else if (value is bool) {
-        debugPrint('[OrderCustomFields] Got boolean value for int field: $value, treating as ${value ? 1 : 0}');
-        return value ? 1 : 0;
-      } else {
-        debugPrint('[OrderCustomFields] Unexpected type for int field: ${value.runtimeType}, value: $value');
-        return null;
-      }
-    } catch (e) {
-      debugPrint('[OrderCustomFields] Error parsing int field: $e, value: $value');
-      return null;
-    }
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 }
 

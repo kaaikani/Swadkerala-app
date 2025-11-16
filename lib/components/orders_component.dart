@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/customer/customer_controller.dart';
-import '../widgets/snackbar.dart';
+import '../controllers/theme_controller.dart';
+import '../utils/responsive.dart';
+import '../utils/price_formatter.dart';
 import '../theme/colors.dart';
 
 class OrdersComponent extends StatelessWidget {
@@ -14,259 +16,321 @@ class OrdersComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
+
     return Obx(() {
+      // Observe theme changes
+      final _ = themeController.isDarkMode;
       final orders = customerController.orders;
-      
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.shopping_bag_outlined, color: Colors.orange, size: 24),
-                SizedBox(width: 12),
-                Text(
-                  'Order History',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            orders.isEmpty
-                ? _buildEmptyOrdersState()
-                : Column(
-                    children: orders.map((order) => 
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildCompactOrderCard(order),
-                      ),
-                    ).toList(),
-                  ),
-          ],
+
+      if (orders.isEmpty) {
+        return _buildEmptyOrdersState();
+      }
+
+      return RefreshIndicator(
+        onRefresh: () async {
+          await customerController.getActiveCustomer();
+        },
+        color: AppColors.button,
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: orders.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            return _buildOrderCard(orders[index]);
+          },
         ),
       );
     });
   }
 
-  Widget _buildEmptyOrdersState() {
-    return Container(
-      padding: const EdgeInsets.all(40),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.shopping_bag_outlined,
-              size: 48,
-              color: Colors.grey,
-            ),
+  Widget _buildOrderCard(dynamic order) {
+    return GestureDetector(
+      onTap: () => _viewOrderDetails(order),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: AppColors.border,
+            width: 0.5,
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'No Orders Yet',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Start shopping to see your orders here',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => showSuccessSnackbar('Start shopping!'),
-            icon: const Icon(Icons.shopping_cart),
-            label: const Text('Start Shopping'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Order Header
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Order #${order.code}',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(16),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _formatDate(order.orderPlacedAt),
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(13),
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Status badge - only show if not cancelled
+                  if (order.state.toLowerCase() != 'cancelled')
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(order.state),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        _formatOrderStatus(order.state),
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(12),
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildCompactOrderCard(dynamic order) {
-    final statusColor = _getOrderStatusColor(order.state);
-    final statusIcon = _getOrderStatusIcon(order.state);
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(statusIcon, color: statusColor, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
+            // Divider
+            Divider(height: 1, color: AppColors.divider),
+
+            // Products Preview
+            if (order.lines != null && order.lines.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Order #${order.code}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                    // Show first product or summary
+                    _buildProductPreview(order),
+                    if (order.totalQuantity > 1) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        '+${order.totalQuantity - 1} more item${order.totalQuantity > 2 ? 's' : ''}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(13),
+                          color: AppColors.textSecondary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Placed on ${_formatDate(order.orderPlacedAt)}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
+                    ],
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  _formatOrderStatus(order.state),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              Divider(height: 1, color: AppColors.divider),
             ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Total: Rs.${(order.totalWithTax / 100).toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-              Row(
+
+            // Order Footer
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextButton.icon(
-                    onPressed: () => _viewOrderDetails(order),
-                    icon: const Icon(Icons.visibility, size: 16),
-                    label: const Text('View'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total Amount',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(12),
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        PriceFormatter.formatPrice(order.totalWithTax.round()),
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(18),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  TextButton.icon(
-                    onPressed: () => _trackOrder(order),
-                    icon: const Icon(Icons.local_shipping, size: 16),
-                    label: const Text('Track'),
+                  TextButton(
+                    onPressed: () => _viewOrderDetails(order),
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.blue,
+                      foregroundColor: AppColors.button,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                        side: BorderSide(color: AppColors.button, width: 1),
+                      ),
+                    ),
+                    child: Text(
+                      'View Details',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Color _getOrderStatusColor(String state) {
+  Widget _buildProductPreview(dynamic order) {
+    if (order.lines == null || order.lines.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final firstLine = order.lines.first;
+
+    return Row(
+      children: [
+        // Product Image
+        Container(
+          width: ResponsiveUtils.rp(50),
+          height: ResponsiveUtils.rp(50),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: AppColors.inputFill,
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: firstLine.featuredAsset?.preview != null
+                ? Image.network(
+                    firstLine.featuredAsset!.preview,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: AppColors.inputFill,
+                        child: Icon(Icons.image,
+                            color: AppColors.iconLight,
+                            size: ResponsiveUtils.rp(20)),
+                      );
+                    },
+                  )
+                : Container(
+                    color: AppColors.inputFill,
+                    child: Icon(Icons.image,
+                        color: AppColors.iconLight,
+                        size: ResponsiveUtils.rp(20)),
+                  ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Product Name
+        Expanded(
+          child: Text(
+            firstLine.productVariant?.name ?? 'Unknown Product',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.w500,
+              color: AppColors.textPrimary,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyOrdersState() {
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.inputFill,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 64,
+                  color: AppColors.iconLight,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'No Orders Yet',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Start shopping to see your orders here',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () => Get.toNamed('/home'),
+                icon: const Icon(Icons.shopping_cart, size: 20),
+                label: const Text('Start Shopping'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.button,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String state) {
     switch (state.toLowerCase()) {
       case 'paymentauthorized':
       case 'paymentsettled':
-        return Colors.green;
+        return const Color(0xFF00B761); // Green
       case 'arrangingpayment':
         return Colors.orange;
       case 'cancelled':
-        return Colors.red;
+        return AppColors.grey600; // Grey instead of red
       default:
         return Colors.blue;
-    }
-  }
-
-  IconData _getOrderStatusIcon(String state) {
-    switch (state.toLowerCase()) {
-      case 'paymentauthorized':
-      case 'paymentsettled':
-        return Icons.check_circle;
-      case 'arrangingpayment':
-        return Icons.payment;
-      case 'cancelled':
-        return Icons.cancel;
-      default:
-        return Icons.shopping_bag;
     }
   }
 
   String _formatOrderStatus(String state) {
     switch (state.toLowerCase()) {
       case 'paymentauthorized':
-        return 'Paid';
       case 'paymentsettled':
         return 'Confirmed';
       case 'arrangingpayment':
@@ -279,15 +343,23 @@ class OrdersComponent extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
   }
 
   void _viewOrderDetails(dynamic order) {
-    showSuccessSnackbar('Order details for ${order.code}');
-  }
-
-  void _trackOrder(dynamic order) {
-    showSuccessSnackbar('Tracking order ${order.code}');
+    debugPrint(
+        '[OrdersComponent] Viewing order details for code: ${order.code}');
+    Get.toNamed('/order-detail', arguments: order.code);
   }
 }
-

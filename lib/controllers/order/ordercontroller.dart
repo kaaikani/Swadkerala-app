@@ -4,9 +4,11 @@ import '../../graphql/order.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
+import '../base_controller.dart';
+import '../../utils/price_formatter.dart';
 import 'ordermodels.dart';
 
-class OrderController extends GetxController {
+class OrderController extends BaseController {
   Rx<OrderModel?> currentOrder = Rx<OrderModel?>(null);
   Rx<ErrorResult?> error = Rx<ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
@@ -20,13 +22,13 @@ class OrderController extends GetxController {
   Future<bool> getActiveOrder() async {
     try {
       utilityController.setLoadingState(true);
-      
+
       final response = await GraphqlService.client.value.query$ActiveOrder(
         Options$Query$ActiveOrder(),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Get active order exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to load order')) {
         return false;
       }
 
@@ -40,6 +42,7 @@ class OrderController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Order] Get active order error: $e');
+      handleException(e, customErrorMessage: 'Failed to load order');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -49,7 +52,7 @@ class OrderController extends GetxController {
   /// Remove item from cart
   Future<bool> removeOrderLine(String orderLineId) async {
     try {
-      utilityController.setLoadingState(true);
+      utilityController.setLoadingState(false);
 
       final response = await GraphqlService.client.value.mutate$RemoveOrderLine(
         Options$Mutation$RemoveOrderLine(
@@ -59,21 +62,28 @@ class OrderController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Remove order line exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to remove item')) {
         return false;
       }
 
       final result = response.parsedData?.removeOrderLine;
-      if (result != null) {
-        currentOrder.value = OrderModel.fromJson(result.toJson());
-        debugPrint('[Order] Order line removed successfully');
-        return true;
+      if (result == null) {
+        debugPrint('[Order] No removeOrderLine result');
+        return false;
       }
 
-      return false;
+      if (result is! Mutation$RemoveOrderLine$removeOrderLine$$Order) {
+        _handleOrderMutationError(result, 'Failed to remove item');
+        return false;
+      }
+
+      currentOrder.value = OrderModel.fromJson(result.toJson());
+      debugPrint('[Order] Order line removed successfully');
+      return true;
     } catch (e) {
       debugPrint('[Order] Remove order line error: $e');
+      handleException(e, customErrorMessage: 'Failed to remove item');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -85,25 +95,33 @@ class OrderController extends GetxController {
     try {
       utilityController.setLoadingState(true);
 
-      final response = await GraphqlService.client.value.mutate$RemoveAllOrderLines(
+      final response =
+          await GraphqlService.client.value.mutate$RemoveAllOrderLines(
         Options$Mutation$RemoveAllOrderLines(),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Remove all order lines exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to clear cart')) {
         return false;
       }
 
       final result = response.parsedData?.removeAllOrderLines;
-      if (result != null) {
-        currentOrder.value = OrderModel.fromJson(result.toJson());
-        debugPrint('[Order] All order lines removed');
-        return true;
+      if (result == null) {
+        debugPrint('[Order] No removeAllOrderLines result');
+        return false;
       }
 
-      return false;
+      if (result is! Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order) {
+        _handleOrderMutationError(result, 'Failed to clear cart');
+        return false;
+      }
+
+      currentOrder.value = OrderModel.fromJson(result.toJson());
+      debugPrint('[Order] All order lines removed');
+      return true;
     } catch (e) {
       debugPrint('[Order] Remove all order lines error: $e');
+      handleException(e, customErrorMessage: 'Failed to clear cart');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -113,31 +131,60 @@ class OrderController extends GetxController {
   /// Get eligible shipping methods
   Future<bool> getEligibleShippingMethods() async {
     try {
-      utilityController.setLoadingState(true);
+      debugPrint('[Order] Starting getEligibleShippingMethods...');
+      utilityController.setLoadingState(false);
 
-      final response = await GraphqlService.client.value.query$GetEligibleShippingMethods(
-        Options$Query$GetEligibleShippingMethods(),
-      );
+      // Prepare query options
+      final options = Options$Query$GetEligibleShippingMethods();
 
-      if (response.hasException) {
-        debugPrint('[Order] Get shipping methods exception: ${response.exception}');
+      // Print out what’s being fetched (query + variables)
+      debugPrint(
+          '[Order] Preparing to send GraphQL query: GetEligibleShippingMethods');
+      debugPrint('[Order] Query variables: ${options.variables}');
+
+      debugPrint(
+          '[Order] Sending GraphQL query for eligible shipping methods...');
+      final response = await GraphqlService.client.value
+          .query$GetEligibleShippingMethods(options);
+
+      debugPrint(
+          '[Order] GraphQL response received: ${response.data != null ? 'Data present' : 'No data'}');
+      debugPrint('[Order] Checking response for errors...');
+
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to load shipping methods')) {
+        debugPrint('[Order] Response contained errors');
         return false;
       }
 
       final methods = response.parsedData?.eligibleShippingMethods;
+      debugPrint(
+          '[Order] Parsed methods: ${methods != null ? methods.length : 0}');
+
       if (methods != null) {
-        shippingMethods.value = methods
-            .map((m) => ShippingMethod.fromJson(m.toJson()))
-            .toList();
-        debugPrint('[Order] Loaded ${shippingMethods.length} shipping methods');
+        shippingMethods.value =
+            methods.map((m) => ShippingMethod.fromJson(m.toJson())).toList();
+
+        debugPrint(
+            '[Order] Loaded ${shippingMethods.length} shipping methods successfully');
+        for (var method in shippingMethods) {
+          debugPrint('[Order] Method: ${method.name} (ID: ${method.id})');
+        }
+
         return true;
+      } else {
+        debugPrint('[Order] No eligible shipping methods found in response.');
       }
 
       return false;
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint('[Order] Get shipping methods error: $e');
+      debugPrint('[Order] Stack trace: $stack');
+      handleException(e, customErrorMessage: 'Failed to load shipping methods');
       return false;
     } finally {
+      debugPrint(
+          '[Order] Finished getEligibleShippingMethods. Resetting loading state.');
       utilityController.setLoadingState(false);
     }
   }
@@ -145,9 +192,10 @@ class OrderController extends GetxController {
   /// Set shipping method
   Future<bool> setShippingMethod(String methodId) async {
     try {
-      utilityController.setLoadingState(true);
+      utilityController.setLoadingState(false);
 
-      final response = await GraphqlService.client.value.mutate$SetShippingMethod(
+      final response =
+          await GraphqlService.client.value.mutate$SetShippingMethod(
         Options$Mutation$SetShippingMethod(
           variables: Variables$Mutation$SetShippingMethod(
             id: [methodId],
@@ -155,8 +203,8 @@ class OrderController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Set shipping method exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to set shipping method')) {
         return false;
       }
 
@@ -170,6 +218,7 @@ class OrderController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Order] Set shipping method error: $e');
+      handleException(e, customErrorMessage: 'Failed to set shipping method');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -179,21 +228,21 @@ class OrderController extends GetxController {
   /// Check if any applied coupon has free_shipping action
   bool hasFreeShippingCoupon() {
     if (currentOrder.value == null) return false;
-    
+
     final order = currentOrder.value!;
-    
+
     // Check if shipping cost is 0
     if (order.shipping == 0 && order.shippingWithTax == 0) {
       return true;
     }
-    
+
     // Check if any coupon codes are applied that might provide free shipping
     if (order.couponCodes.isNotEmpty) {
       // This is a simple check - in a real implementation, you'd check the promotion actions
       // For now, we'll assume if shipping is 0, it's free due to coupon
       return order.shipping == 0;
     }
-    
+
     return false;
   }
 
@@ -202,11 +251,11 @@ class OrderController extends GetxController {
     if (hasFreeShippingCoupon()) {
       return 'Free';
     }
-    
-    if (currentOrder.value == null) return 'Rs.0.00';
-    
+
+    if (currentOrder.value == null) return 'Rs 0';
+
     final shippingCost = currentOrder.value!.shippingWithTax;
-    return 'Rs.${(shippingCost / 100).toStringAsFixed(2)}';
+    return PriceFormatter.formatPrice(shippingCost);
   }
 
   /// Set shipping address
@@ -234,7 +283,8 @@ class OrderController extends GetxController {
         province: province,
       );
 
-      final response = await GraphqlService.client.value.mutate$SetShippingAddress(
+      final response =
+          await GraphqlService.client.value.mutate$SetShippingAddress(
         Options$Mutation$SetShippingAddress(
           variables: Variables$Mutation$SetShippingAddress(
             input: input,
@@ -242,8 +292,8 @@ class OrderController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Set shipping address exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to set shipping address')) {
         return false;
       }
 
@@ -257,6 +307,56 @@ class OrderController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Order] Set shipping address error: $e');
+      handleException(e, customErrorMessage: 'Failed to set shipping address');
+      return false;
+    } finally {
+      utilityController.setLoadingState(false);
+    }
+  }
+
+  /// Set other instructions for the order
+  Future<bool> setOtherInstruction(String instruction) async {
+    try {
+      if (currentOrder.value == null) {
+        debugPrint('[Order] Cannot set instructions: No active order');
+        return false;
+      }
+
+      final orderId = currentOrder.value!.id;
+      if (orderId.isEmpty) {
+        debugPrint('[Order] Cannot set instructions: Order ID is empty');
+        return false;
+      }
+
+      utilityController.setLoadingState(true);
+
+      final response =
+          await GraphqlService.client.value.mutate$SetOtherInstruction(
+        Options$Mutation$SetOtherInstruction(
+          variables: Variables$Mutation$SetOtherInstruction(
+            orderId: orderId,
+            value: instruction,
+          ),
+        ),
+      );
+
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to set instructions')) {
+        return false;
+      }
+
+      final result = response.parsedData?.otherInstructions;
+      if (result != null) {
+        // Refresh the active order to get updated customFields
+        await getActiveOrder();
+        debugPrint('[Order] Other instructions set successfully');
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint('[Order] Set other instructions error: $e');
+      handleException(e, customErrorMessage: 'Failed to set instructions');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -268,20 +368,20 @@ class OrderController extends GetxController {
     try {
       utilityController.setLoadingState(true);
 
-      final response = await GraphqlService.client.value.query$GetEligiblePaymentMethods(
+      final response =
+          await GraphqlService.client.value.query$GetEligiblePaymentMethods(
         Options$Query$GetEligiblePaymentMethods(),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Get payment methods exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to load payment methods')) {
         return false;
       }
 
       final methods = response.parsedData?.eligiblePaymentMethods;
       if (methods != null) {
-        paymentMethods.value = methods
-            .map((m) => PaymentMethod.fromJson(m.toJson()))
-            .toList();
+        paymentMethods.value =
+            methods.map((m) => PaymentMethod.fromJson(m.toJson())).toList();
         debugPrint('[Order] Loaded ${paymentMethods.length} payment methods');
         return true;
       }
@@ -289,6 +389,7 @@ class OrderController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Order] Get payment methods error: $e');
+      handleException(e, customErrorMessage: 'Failed to load payment methods');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -300,12 +401,13 @@ class OrderController extends GetxController {
     try {
       utilityController.setLoadingState(true);
 
-      final response = await GraphqlService.client.value.mutate$TransitionToArrangingPayment(
+      final response =
+          await GraphqlService.client.value.mutate$TransitionToArrangingPayment(
         Options$Mutation$TransitionToArrangingPayment(),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Transition exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to transition order')) {
         return false;
       }
 
@@ -319,6 +421,7 @@ class OrderController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Order] Transition error: $e');
+      handleException(e, customErrorMessage: 'Failed to transition order');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -349,9 +452,8 @@ class OrderController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Add payment exception: ${response.exception}');
-        debugPrint('[Order] Exception details: ${response.exception?.graphqlErrors}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to add payment')) {
         return false;
       }
 
@@ -360,12 +462,13 @@ class OrderController extends GetxController {
         // Check if it's an error result
         final resultJson = result.toJson();
         debugPrint('[Order] Payment result: $resultJson');
-        
+
         if (resultJson.containsKey('errorCode')) {
-          debugPrint('[Order] Payment error: ${resultJson['message']} (${resultJson['errorCode']})');
+          debugPrint(
+              '[Order] Payment error: ${resultJson['message']} (${resultJson['errorCode']})');
           return false;
         }
-        
+
         // If it's an Order, update current order
         if (resultJson.containsKey('id')) {
           currentOrder.value = OrderModel.fromJson(resultJson);
@@ -378,6 +481,7 @@ class OrderController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Order] Add payment error: $e');
+      handleException(e, customErrorMessage: 'Failed to add payment');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -397,21 +501,26 @@ class OrderController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Get order by code exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to load order')) {
         return null;
       }
 
       final orderData = response.parsedData?.orderByCode;
       if (orderData != null) {
         final order = OrderModel.fromJson(orderData.toJson());
+        currentOrder.value =
+            order; // Set the current order so UI can react to it
         debugPrint('[Order] Order retrieved: ${order.code}');
         return order;
       }
 
+      currentOrder.value = null; // Clear if order not found
       return null;
     } catch (e) {
       debugPrint('[Order] Get order by code error: $e');
+      currentOrder.value = null; // Clear on error
+      handleException(e, customErrorMessage: 'Failed to load order');
       return null;
     } finally {
       utilityController.setLoadingState(false);
@@ -423,7 +532,8 @@ class OrderController extends GetxController {
     try {
       utilityController.setLoadingState(true);
 
-      final response = await GraphqlService.client.value.mutate$GenerateRazorpayOrderId(
+      final response =
+          await GraphqlService.client.value.mutate$GenerateRazorpayOrderId(
         Options$Mutation$GenerateRazorpayOrderId(
           variables: Variables$Mutation$GenerateRazorpayOrderId(
             orderId: orderId,
@@ -431,8 +541,8 @@ class OrderController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Generate Razorpay order exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to generate payment order')) {
         return null;
       }
 
@@ -442,7 +552,8 @@ class OrderController extends GetxController {
         final data = result.toJson();
         if (data.containsKey('razorpayOrderId')) {
           final razorpayOrder = RazorpayOrderResponse.fromJson(data);
-          debugPrint('[Order] Razorpay order created: ${razorpayOrder.razorpayOrderId}');
+          debugPrint(
+              '[Order] Razorpay order created: ${razorpayOrder.razorpayOrderId}');
           return razorpayOrder;
         } else if (data.containsKey('errorCode')) {
           debugPrint('[Order] Razorpay order error: ${data['message']}');
@@ -453,6 +564,8 @@ class OrderController extends GetxController {
       return null;
     } catch (e) {
       debugPrint('[Order] Generate Razorpay order error: $e');
+      handleException(e,
+          customErrorMessage: 'Failed to generate payment order');
       return null;
     } finally {
       utilityController.setLoadingState(false);
@@ -464,12 +577,13 @@ class OrderController extends GetxController {
     try {
       utilityController.setLoadingState(true);
 
-      final response = await GraphqlService.client.value.mutate$TransitionToArrangingPayment(
+      final response =
+          await GraphqlService.client.value.mutate$TransitionToArrangingPayment(
         Options$Mutation$TransitionToArrangingPayment(),
       );
 
-      if (response.hasException) {
-        debugPrint('[Order] Transition exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to transition order')) {
         return false;
       }
 
@@ -477,12 +591,12 @@ class OrderController extends GetxController {
       if (result != null) {
         final resultJson = result.toJson();
         debugPrint('[Order] Transition result: $resultJson');
-        
+
         if (resultJson.containsKey('errorCode')) {
           debugPrint('[Order] Transition error: ${resultJson['message']}');
           return false;
         }
-        
+
         if (resultJson.containsKey('id')) {
           currentOrder.value = OrderModel.fromJson(resultJson);
           debugPrint('[Order] Order transitioned successfully');
@@ -493,6 +607,7 @@ class OrderController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Order] Transition error: $e');
+      handleException(e, customErrorMessage: 'Failed to transition order');
       return false;
     } finally {
       utilityController.setLoadingState(false);
@@ -507,5 +622,22 @@ class OrderController extends GetxController {
     selectedPaymentMethod.value = null;
     debugPrint('[Order] Order cleared');
   }
-}
 
+  void _handleOrderMutationError(dynamic result, String fallbackMessage) {
+    final code = result?.$__typename ?? 'UNKNOWN_ERROR';
+    final message = _readOrderMutationMessage(result) ?? fallbackMessage;
+    debugPrint('[Order] Mutation error ($code): $message');
+    error.value = ErrorResult(errorCode: code, message: message);
+    handleException(Exception(message), customErrorMessage: message);
+  }
+
+  String? _readOrderMutationMessage(dynamic result) {
+    try {
+      final message = (result as dynamic).message;
+      if (message is String) {
+        return message;
+      }
+    } catch (_) {}
+    return null;
+  }
+}

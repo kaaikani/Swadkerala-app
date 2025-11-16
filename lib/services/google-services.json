@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "925683676829",
+    "project_id": "push-notification-5d56d",
+    "storage_bucket": "push-notification-5d56d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925683676829:android:e4b8e96c9bd13c5132c674",
+        "android_client_info": {
+          "package_name": "com.example.flutter3ecommerce"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6D98NJ0zhzq9MzitW2LifnKcFkrxvqcI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925683676829:android:36bd81054b003a3932c674",
+        "android_client_info": {
+          "package_name": "com.kaaikani.kaaikani"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6D98NJ0zhzq9MzitW2LifnKcFkrxvqcI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

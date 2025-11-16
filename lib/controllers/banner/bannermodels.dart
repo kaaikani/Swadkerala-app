@@ -126,7 +126,7 @@ class FavoriteProductModel {
   final String name;
   final bool enabled;
   final FeaturedAssetModel? featuredAsset;
-  final List<VariantIdModel> variants;
+  final List<FavoriteVariantModel> variants;
 
   FavoriteProductModel({
     required this.id,
@@ -145,8 +145,9 @@ class FavoriteProductModel {
           ? FeaturedAssetModel.fromJson(json['featuredAsset'])
           : null,
       variants: (json['variants'] as List<dynamic>?)
-          ?.map((v) => VariantIdModel.fromJson(v))
-          .toList() ?? [],
+              ?.map((v) => FavoriteVariantModel.fromJson(v))
+              .toList() ??
+          [],
     );
   }
 }
@@ -168,14 +169,28 @@ class FeaturedAssetModel {
   }
 }
 
-class VariantIdModel {
+class FavoriteVariantModel {
   final String id;
+  final String name;
+  final double price;
+  final double priceWithTax;
+  final String currencyCode;
 
-  VariantIdModel({required this.id});
+  FavoriteVariantModel({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.priceWithTax,
+    required this.currencyCode,
+  });
 
-  factory VariantIdModel.fromJson(Map<String, dynamic> json) {
-    return VariantIdModel(
+  factory FavoriteVariantModel.fromJson(Map<String, dynamic> json) {
+    return FavoriteVariantModel(
       id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0,
+      priceWithTax: (json['priceWithTax'] as num?)?.toDouble() ?? 0,
+      currencyCode: json['currencyCode'] ?? '',
     );
   }
 }

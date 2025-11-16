@@ -1,18 +1,27 @@
 import 'package:get/get.dart';
-import 'package:unified_ecomapp/pages/cart_page.dart';
-import 'package:unified_ecomapp/pages/checkout_page.dart';
-import 'package:unified_ecomapp/pages/favourites.dart';
-import 'package:unified_ecomapp/pages/account_page.dart';
-import 'package:unified_ecomapp/pages/order_confirmation_page.dart';
+import 'package:recipe.app/pages/Collectionprodcutpage.dart';
+import 'package:recipe.app/pages/account_page.dart';
+import 'package:recipe.app/pages/addresses_page.dart';
+import 'package:recipe.app/pages/cart_page.dart';
+import 'package:recipe.app/pages/checkout_page.dart';
+import 'package:recipe.app/pages/favourites.dart';
+import 'package:recipe.app/pages/order_confirmation_page.dart';
+import 'package:recipe.app/pages/order_detail_page.dart';
+import 'package:recipe.app/pages/orders_page.dart';
+import 'package:recipe.app/pages/product_detail_page.dart';
+
 import 'components/searchbarcomponent.dart';
+import 'controllers/banner/bannercontroller.dart';
 import 'pages/login_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/homepage.dart';
 import 'pages/intro_page.dart';
-import 'pages/auth_wrapper.dart';
+import 'pages/splash_screen.dart';
+import 'pages/initial_route_wrapper.dart';
 
 class AppRoutes {
   static const String initial = '/';
+  static const String splash = '/splash';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String home = '/home';
@@ -22,12 +31,22 @@ class AppRoutes {
   static const String cart = '/cart';
   static const String checkout = '/checkout';
   static const String account = '/account';
+  static const String addresses = '/addresses';
+  static const String orders = '/orders';
   static const String orderConfirmation = '/order-confirmation';
+  static const String orderDetail = '/order-detail';
+  static const String collectionProducts = '/collection-products';
+  static const String productDetail = '/product-detail';
 
   static List<GetPage> routes = [
     GetPage(
       name: initial,
-      page: () => const AuthWrapper(),
+      page: () => const InitialRouteWrapper(),
+    ),
+    GetPage(
+      name: splash,
+      page: () => const SplashScreen(),
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: login,
@@ -58,9 +77,8 @@ class AppRoutes {
       name: search,
       page: () => FullScreenSearchPage(
         onSearch: (query) {
-          // call your search function here
-          print("Searching for: $query");
-          // example: productsController.searchForProducts(query);
+          final bannerController = Get.find<BannerController>();
+          bannerController.searchProducts({'term': query});
         },
       ),
       transition: Transition.fadeIn,
@@ -81,11 +99,44 @@ class AppRoutes {
       transition: Transition.rightToLeft,
     ),
     GetPage(
+      name: addresses,
+      page: () => const AddressesPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: orders,
+      page: () => const OrdersPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
       name: orderConfirmation,
       page: () => OrderConfirmationPage(
         orderId: Get.arguments as String,
       ),
       transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: orderDetail,
+      page: () => OrderDetailPage(
+        orderCode: Get.arguments as String,
+      ),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: collectionProducts,
+      page: () => CollectionProductsPage(
+        collectionId: (Get.arguments as Map<String, dynamic>)['collectionId'] as String,
+        collectionName: (Get.arguments as Map<String, dynamic>)['collectionName'] as String,
+      ),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: productDetail,
+      page: () => ProductDetailPage(
+        productId: (Get.arguments as Map<String, dynamic>)['productId'] as String,
+        productName: (Get.arguments as Map<String, dynamic>?)?['productName'] as String?,
+      ),
+      transition: Transition.rightToLeft,
     ),
   ];
 }

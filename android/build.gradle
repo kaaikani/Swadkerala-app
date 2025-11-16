@@ -5,6 +5,35 @@ allprojects {
     }
 }
 
+// Configure Java version for all subprojects to suppress warnings
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+        
+        // For Java/Kotlin projects
+        if (project.hasProperty('sourceCompatibility')) {
+            project.sourceCompatibility = JavaVersion.VERSION_17
+        }
+        if (project.hasProperty('targetCompatibility')) {
+            project.targetCompatibility = JavaVersion.VERSION_17
+        }
+        
+        // For Kotlin projects
+        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+    }
+}
+
 def newBuildDir = rootProject.layout.buildDirectory.dir("../../build").get()
 rootProject.layout.buildDirectory.value(newBuildDir)
 

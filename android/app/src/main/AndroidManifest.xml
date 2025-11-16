@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.unified.ecomapp">
+    xmlns:tools="http://schemas.android.com/tools">
     
     <!-- Essential permissions only -->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -12,7 +11,7 @@
     <!-- Phone and SMS permissions will be requested at runtime only when needed -->
 
     <application
-            android:label="Unified EcomApp"
+        android:label="Kaaikani"
             android:name="${applicationName}"
             android:icon="@mipmap/ic_launcher"
             android:usesCleartextTraffic="false"
@@ -20,7 +19,7 @@
             android:requestLegacyExternalStorage="false">
 
         <activity
-                android:name=".MainActivity"
+                android:name="com.kaaikani.kaaikani.MainActivity"
                 android:exported="true"
                 android:launchMode="singleTop"
                 android:taskAffinity=""
@@ -37,6 +36,32 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- Deep Links - Custom URL Scheme -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Replace with your custom scheme, e.g., kaaikani:// -->
+                <data android:scheme="kaaikani" />
+            </intent-filter>
+
+            <!-- App Links - Universal Links (HTTPS) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Replace with your domain, e.g., https://kaaikani.co.in -->
+                <data
+                    android:scheme="https"
+                    android:host="kaaikani.co.in" />
+                <!-- Add additional paths if needed -->
+                <data android:pathPrefix="/product" />
+                <data android:pathPrefix="/collection" />
+                <data android:pathPrefix="/order" />
+                <data android:pathPrefix="/cart" />
+                <data android:pathPrefix="/checkout" />
             </intent-filter>
         </activity>
 

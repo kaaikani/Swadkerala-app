@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Untitled2</string>
+	<string>Kaaikani</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>untitled2</string>
+	<string>Kaaikani</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,5 +45,26 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<!-- Custom URL Scheme -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.kaaikani.kaaikani</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kaaikani</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Universal Links (Associated Domains) -->
+	<!-- Note: You also need to add Associated Domains capability in Xcode -->
+	<!-- and create an apple-app-site-association file on your web server -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:kaaikani.co.in</string>
+	</array>
 </dict>
 </plist>

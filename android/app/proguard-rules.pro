@@ -1,16 +1,47 @@
-# Flutter
--keep class io.flutter.** { *; }
--keep class io.flutter.plugins.** { *; }
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
 
-# GraphQL (keep only used classes)
--keep class com.example.untitled2.graphql.** { *; }
+# Keep Flutter classes
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.**  { *; }
+-keep class io.flutter.util.**  { *; }
+-keep class io.flutter.view.**  { *; }
+-keep class io.flutter.**  { *; }
+-keep class io.flutter.plugins.**  { *; }
 
-# Keep native methods
+# Keep GraphQL generated classes
+-keep class **.graphql.** { *; }
+
+# Keep GetX classes
+-keep class com.github.jonataslaw.** { *; }
+
+# Keep Firebase classes
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+
+# Keep Razorpay classes
+-keep class com.razorpay.** { *; }
+
+# Keep Google Play Core classes (required for Flutter split install)
+-keep class com.google.android.play.core.** { *; }
+-dontwarn com.google.android.play.core.**
+
+# Keep Flutter Play Store split install classes
+-keep class io.flutter.embedding.engine.deferredcomponents.** { *; }
+-keep class io.flutter.embedding.android.FlutterPlayStoreSplitApplication { *; }
+
+# Keep native method names
 -keepclasseswithmembernames class * {
     native <methods>;
 }
 
-# Keep serialization
+# Keep Parcelable implementations
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+# Keep Serializable classes
 -keepclassmembers class * implements java.io.Serializable {
     static final long serialVersionUID;
     private static final java.io.ObjectStreamField[] serialPersistentFields;
@@ -20,50 +51,13 @@
     java.lang.Object readResolve();
 }
 
-# Remove logging in release builds
--assumenosideeffects class android.util.Log {
-    public static boolean isLoggable(java.lang.String, int);
-    public static int v(...);
-    public static int i(...);
-    public static int w(...);
-    public static int d(...);
-    public static int e(...);
-}
+# Keep annotations
+-keepattributes *Annotation*
+-keepattributes Signature
+-keepattributes Exceptions
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod
 
-# Ignore warnings for Google Play Core / Flutter deferred components
--dontwarn com.google.android.play.core.**
--dontwarn io.flutter.embedding.engine.deferredcomponents.**
-
-# Razorpay ProGuard rules
--keep class com.razorpay.** { *; }
--dontwarn com.razorpay.**
--keepclassmembers class com.razorpay.** {
-    *;
-}
-
-# Keep ProGuard annotations that Razorpay uses
--keep class proguard.annotation.Keep
--keep class proguard.annotation.KeepClassMembers
-
-# Keep Razorpay Analytics
--keep class com.razorpay.AnalyticsEvent { *; }
--keep class com.razorpay.AnalyticsEvent$* { *; }
-
-# Optimization & access modifications
--optimizationpasses 5
--allowaccessmodification
--dontpreverify
-
-# Remove debug info
--renamesourcefileattribute SourceFile
+# Keep line numbers for stack traces
 -keepattributes SourceFile,LineNumberTable
-
-# Remove unused string constants and exception prints
--assumenosideeffects class java.lang.String {
-    public static java.lang.String valueOf(...);
-}
--assumenosideeffects class java.lang.Throwable {
-    public void printStackTrace();
-    public void printStackTrace(java.io.PrintStream);
-    public void printStackTrace(java.io.PrintWriter);
-}
+-renamesourcefileattribute SourceFile

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/customer/customer_models.dart';
 import '../widgets/snackbar.dart';
+import '../theme/theme.dart';
+import '../utils/responsive.dart';
 
 class AddressComponent extends StatelessWidget {
   final CustomerController customerController;
@@ -16,113 +19,47 @@ class AddressComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final addresses = customerController.addresses;
-      
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.location_on_outlined, color: Colors.green, size: 24),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'My Addresses',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                FloatingActionButton.small(
-                  onPressed: () => _addNewAddress(),
-                  backgroundColor: Colors.green,
-                  child: const Icon(Icons.add, color: Colors.white),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            addresses.isEmpty
-                ? _buildEmptyAddressState()
-                : Column(
-                    children: addresses.map((address) => 
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildCompactAddressCard(address, 0),
-                      ),
-                    ).toList(),
-                  ),
-          ],
-        ),
+
+      if (addresses.isEmpty) {
+        return _buildEmptyState(context);
+      }
+
+      return ListView.separated(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: addresses.length,
+        separatorBuilder: (context, index) => SizedBox(height: 12),
+        itemBuilder: (context, index) =>
+            _buildAddressCard(context, addresses[index]),
       );
     });
   }
 
-  Widget _buildEmptyAddressState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(40),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-      ),
+      padding: EdgeInsets.all(ResponsiveUtils.rp(40)),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.location_off,
-              size: 48,
-              color: Colors.grey,
-            ),
+          Icon(
+            Icons.location_off_outlined,
+            size: ResponsiveUtils.rp(80),
+            color: AppColors.textTertiary,
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'No Addresses Yet',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
+          SizedBox(height: ResponsiveUtils.rp(20)),
           Text(
-            'Add your first address to get started with faster checkout',
+            'No addresses yet',
             style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+              fontSize: ResponsiveUtils.sp(20),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => _addNewAddress(),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Address'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+          SizedBox(height: ResponsiveUtils.rp(8)),
+          Text(
+            'Add your delivery address',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -130,305 +67,646 @@ class AddressComponent extends StatelessWidget {
     );
   }
 
-  Widget _buildCompactAddressCard(dynamic address, int index) {
+  Widget _buildAddressCard(BuildContext context, dynamic address) {
+    final isDefault = address.defaultShippingAddress;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        border: Border.all(
+          color: isDefault ? AppColors.button : AppColors.border,
+          width: isDefault ? ResponsiveUtils.rp(2) : ResponsiveUtils.rp(1),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: AppColors.shadowLight,
+            blurRadius: ResponsiveUtils.rp(8),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: isDefault
+                  ? AppColors.button.withValues(alpha: 0.08)
+                  : AppColors.grey100,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(ResponsiveUtils.rp(12)),
+                topRight: Radius.circular(ResponsiveUtils.rp(12)),
+              ),
             ),
-            child: const Icon(Icons.location_on, color: Colors.green, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        address.fullName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: ResponsiveUtils.rp(20),
+                            color: isDefault
+                                ? AppColors.button
+                                : AppColors.textSecondary,
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(8)),
+                          Expanded(
+                            child: Text(
+                              address.fullName,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    if (address.defaultShippingAddress)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          'Default',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                      if (isDefault)
+                        Container(
+                          margin: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: ResponsiveUtils.rp(10),
+                              vertical: ResponsiveUtils.rp(4)),
+                          decoration: BoxDecoration(
+                            color: AppColors.button,
+                            borderRadius:
+                                BorderRadius.circular(ResponsiveUtils.rp(4)),
+                          ),
+                          child: Text(
+                            'DEFAULT',
+                            style: TextStyle(
+                              color: AppColors.textLight,
+                              fontSize: ResponsiveUtils.sp(10),
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: ResponsiveUtils.rp(0.5),
+                            ),
                           ),
                         ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () => _showEditDialog(context, address),
+                      borderRadius:
+                          BorderRadius.circular(ResponsiveUtils.rp(8)),
+                      child: Container(
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                        child: Icon(Icons.edit_outlined,
+                            color: AppColors.info,
+                            size: ResponsiveUtils.rp(20)),
                       ),
+                    ),
+                    SizedBox(width: ResponsiveUtils.rp(4)),
+                    InkWell(
+                      onTap: () => _showDeleteDialog(context, address.id),
+                      borderRadius:
+                          BorderRadius.circular(ResponsiveUtils.rp(8)),
+                      child: Container(
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                        child: Icon(Icons.delete_outline,
+                            color: AppColors.error,
+                            size: ResponsiveUtils.rp(20)),
+                      ),
+                    ),
                   ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${address.streetLine1}, ${address.city}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  '${address.postalCode}, ${address.country.name}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
-                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 8),
-          Column(
-            children: [
-              IconButton(
-                onPressed: () => _editAddress(address),
-                icon: const Icon(Icons.edit, color: Colors.blue, size: 20),
-              ),
-              IconButton(
-                onPressed: () => _deleteAddress(address.id),
-                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-              ),
-            ],
+
+          // Address Details
+          Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  address.streetLine1,
+                  style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textPrimary,
+                      height: 1.4),
+                ),
+                if (address.streetLine2 != null &&
+                    address.streetLine2.isNotEmpty) ...[
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  Text(
+                    address.streetLine2,
+                    style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textPrimary,
+                        height: 1.4),
+                  ),
+                ],
+                SizedBox(height: ResponsiveUtils.rp(4)),
+                Text(
+                  '${address.city}, ${address.province ?? ''}',
+                  style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textPrimary,
+                      height: 1.4),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(4)),
+                Text(
+                  '${address.postalCode}, ${address.country.name}',
+                  style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textSecondary,
+                      height: 1.4),
+                ),
+                if (address.phoneNumber != null &&
+                    address.phoneNumber.isNotEmpty) ...[
+                  SizedBox(height: ResponsiveUtils.rp(8)),
+                  Row(
+                    children: [
+                      Icon(Icons.phone,
+                          size: ResponsiveUtils.rp(16),
+                          color: AppColors.textSecondary),
+                      SizedBox(width: ResponsiveUtils.rp(8)),
+                      Text(
+                        address.phoneNumber,
+                        style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            color: AppColors.textPrimary),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _addNewAddress() {
-    // Create controllers for the form
-    final fullNameController = TextEditingController();
-    final streetLine1Controller = TextEditingController();
-    final streetLine2Controller = TextEditingController();
-    final cityController = TextEditingController();
-    final provinceController = TextEditingController();
-    final postalCodeController = TextEditingController();
-    final phoneController = TextEditingController();
-    final companyController = TextEditingController();
-    
-    bool defaultShipping = false;
-    bool defaultBilling = false;
+  void _showEditDialog(BuildContext context, dynamic address) {
+    _showAddressForm(context, existingAddress: address);
+  }
 
-    Get.dialog(
-      StatefulBuilder(
+  void _showDeleteDialog(BuildContext context, String addressId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12))),
+        title: Text('Delete Address?',
+            style: TextStyle(
+                fontSize: ResponsiveUtils.sp(18),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary)),
+        content: Text('Are you sure you want to delete this address?',
+            style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                color: AppColors.textSecondary)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel',
+                style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final success = await customerController.deleteAddress(addressId);
+              if (success) {
+                customerController.refreshAddresses();
+                showSuccessSnackbar('Address deleted');
+              } else {
+                showErrorSnackbar('Failed to delete address');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.textLight,
+            ),
+            child: Text('Delete', style: TextStyle(color: AppColors.textLight)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddressForm(BuildContext context, {dynamic existingAddress}) {
+    final isEdit = existingAddress != null;
+    final box = GetStorage();
+
+    // Get channel code from storage and use it as city
+    final channelCode = box.read('channel_code') ?? '';
+
+    // Get customer data for auto-fill (only when adding new address)
+    final customer = customerController.activeCustomer.value;
+    final autoFullName = !isEdit && customer != null
+        ? '${customer.firstName} ${customer.lastName}'.trim()
+        : '';
+    final autoPhone =
+        !isEdit && customer != null ? (customer.phoneNumber ?? '') : '';
+
+    final nameController = TextEditingController(
+        text: existingAddress?.fullName ??
+            (autoFullName.isNotEmpty ? autoFullName : ''));
+    final line1Controller =
+        TextEditingController(text: existingAddress?.streetLine1 ?? '');
+    final line2Controller =
+        TextEditingController(text: existingAddress?.streetLine2 ?? '');
+    final cityController = TextEditingController(
+        text: channelCode.isNotEmpty
+            ? channelCode
+            : (existingAddress?.city ?? ''));
+    final postalController =
+        TextEditingController(text: existingAddress?.postalCode ?? '');
+    final phoneController = TextEditingController(
+        text: existingAddress?.phoneNumber ??
+            (autoPhone.isNotEmpty ? autoPhone : ''));
+
+    bool isDefault = existingAddress?.defaultShippingAddress ?? false;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
         builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('Add New Address'),
-            content: SingleChildScrollView(
+          return Dialog(
+            backgroundColor: AppColors.surface,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16))),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.8),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    controller: fullNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Full Name',
-                      border: OutlineInputBorder(),
+                  // Header
+                  Container(
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(ResponsiveUtils.rp(16))),
+                      border:
+                          Border(bottom: BorderSide(color: AppColors.border)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                          decoration: BoxDecoration(
+                            color: AppColors.button.withValues(alpha: 0.1),
+                            borderRadius:
+                                BorderRadius.circular(ResponsiveUtils.rp(10)),
+                          ),
+                          child: Icon(
+                            isEdit ? Icons.edit : Icons.add,
+                            color: AppColors.button,
+                            size: ResponsiveUtils.rp(24),
+                          ),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
+                        Expanded(
+                          child: Text(
+                            isEdit ? 'Edit Address' : 'Add New Address',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(20),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon:
+                              Icon(Icons.close, color: AppColors.textSecondary),
+                          onPressed: () => Navigator.pop(context),
+                          padding: EdgeInsets.zero,
+                          constraints: BoxConstraints(),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: streetLine1Controller,
-                    decoration: const InputDecoration(
-                      labelText: 'Street Address 1',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: streetLine2Controller,
-                    decoration: const InputDecoration(
-                      labelText: 'Street Address 2 (Optional)',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: cityController,
-                    decoration: const InputDecoration(
-                      labelText: 'City',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: provinceController,
-                    decoration: const InputDecoration(
-                      labelText: 'State/Province',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: postalCodeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Postal Code',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: phoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: companyController,
-                    decoration: const InputDecoration(
-                      labelText: 'Company (Optional)',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: defaultShipping,
-                        onChanged: (value) {
-                          setState(() {
-                            defaultShipping = value ?? false;
-                          });
-                        },
+
+                  // Form
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildFormField(
+                              nameController, 'Full Name', Icons.person,
+                              required: true),
+                          SizedBox(height: ResponsiveUtils.rp(16)),
+                          _buildFormField(
+                              line1Controller, 'Street Address', Icons.home,
+                              required: true),
+                          SizedBox(height: ResponsiveUtils.rp(16)),
+                          _buildFormField(line2Controller,
+                              'Apt, Suite, etc (Optional)', Icons.apartment),
+                          SizedBox(height: ResponsiveUtils.rp(16)),
+                          _buildFormField(
+                              cityController, 'City', Icons.location_city,
+                              required: true, readOnly: true),
+                          SizedBox(height: ResponsiveUtils.rp(16)),
+                          _buildFormField(postalController, 'ZIP Code',
+                              Icons.markunread_mailbox,
+                              required: true),
+                          SizedBox(height: ResponsiveUtils.rp(16)),
+                          _buildFormField(phoneController, 'Phone', Icons.phone,
+                              keyboardType: TextInputType.phone),
+                          SizedBox(height: ResponsiveUtils.rp(20)),
+                          InkWell(
+                            onTap: () => setState(() => isDefault = !isDefault),
+                            borderRadius:
+                                BorderRadius.circular(ResponsiveUtils.rp(10)),
+                            child: Container(
+                              padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                              decoration: BoxDecoration(
+                                color: isDefault
+                                    ? AppColors.button.withValues(alpha: 0.08)
+                                    : AppColors.grey100,
+                                borderRadius: BorderRadius.circular(
+                                    ResponsiveUtils.rp(10)),
+                                border: Border.all(
+                                  color: isDefault
+                                      ? AppColors.button.withValues(alpha: 0.3)
+                                      : AppColors.border,
+                                  width: ResponsiveUtils.rp(1.5),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: ResponsiveUtils.rp(24),
+                                    height: ResponsiveUtils.rp(24),
+                                    decoration: BoxDecoration(
+                                      color: isDefault
+                                          ? AppColors.button
+                                          : AppColors.surface,
+                                      borderRadius: BorderRadius.circular(
+                                          ResponsiveUtils.rp(6)),
+                                      border: Border.all(
+                                        color: isDefault
+                                            ? AppColors.button
+                                            : AppColors.border,
+                                        width: ResponsiveUtils.rp(2),
+                                      ),
+                                    ),
+                                    child: isDefault
+                                        ? Icon(Icons.check,
+                                            color: AppColors.textLight,
+                                            size: ResponsiveUtils.rp(16))
+                                        : null,
+                                  ),
+                                  SizedBox(width: ResponsiveUtils.rp(12)),
+                                  Expanded(
+                                    child: Text(
+                                      'Make this my default address',
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUtils.sp(15),
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const Text('Default Shipping Address'),
-                    ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: defaultBilling,
-                        onChanged: (value) {
-                          setState(() {
-                            defaultBilling = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text('Default Billing Address'),
-                    ],
+
+                  // Actions
+                  Container(
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(ResponsiveUtils.rp(16))),
+                      border: Border(top: BorderSide(color: AppColors.border)),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: ResponsiveUtils.rp(16)),
+                              side: BorderSide(color: AppColors.border),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    ResponsiveUtils.rp(10)),
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (nameController.text.isEmpty ||
+                                  line1Controller.text.isEmpty ||
+                                  cityController.text.isEmpty ||
+                                  postalController.text.isEmpty) {
+                                showErrorSnackbar(
+                                    'Please fill all required fields');
+                                return;
+                              }
+
+                              final addressData = AddressModel(
+                                id: existingAddress?.id ?? '',
+                                fullName: nameController.text,
+                                streetLine1: line1Controller.text,
+                                streetLine2: line2Controller.text,
+                                city: cityController.text,
+                                province: '', // No state needed
+                                postalCode: postalController.text,
+                                phoneNumber: phoneController.text,
+                                company: '',
+                                defaultShippingAddress: isDefault,
+                                defaultBillingAddress: isDefault,
+                                country: existingAddress?.country ??
+                                    CountryModel(
+                                      id: 'IN',
+                                      name: 'India',
+                                      code: 'IN',
+                                      languageCode: 'en',
+                                    ),
+                              );
+
+                              bool success;
+                              if (isEdit) {
+                                success = await customerController
+                                    .updateAddress(addressData);
+                              } else {
+                                success = await customerController
+                                    .createAddress(addressData);
+                              }
+
+                              if (success) {
+                                Navigator.pop(context);
+                                showSuccessSnackbar(isEdit
+                                    ? 'Address updated successfully!'
+                                    : 'Address added successfully!');
+                                customerController.refreshAddresses();
+                              } else {
+                                showErrorSnackbar(
+                                    'Failed to save address. Please try again.');
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.button,
+                              foregroundColor: AppColors.textLight,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: ResponsiveUtils.rp(16)),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    ResponsiveUtils.rp(10)),
+                              ),
+                            ),
+                            child: Text(
+                              isEdit ? 'Update Address' : 'Save Address',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Get.back(),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (fullNameController.text.isEmpty ||
-                      streetLine1Controller.text.isEmpty ||
-                      cityController.text.isEmpty ||
-                      postalCodeController.text.isEmpty) {
-                    showErrorSnackbar('Please fill in all required fields');
-                    return;
-                  }
-
-                  final newAddress = AddressModel(
-                    id: '',
-                    fullName: fullNameController.text,
-                    streetLine1: streetLine1Controller.text,
-                    streetLine2: streetLine2Controller.text.isNotEmpty ? streetLine2Controller.text : '',
-                    city: cityController.text,
-                    province: provinceController.text.isNotEmpty ? provinceController.text : '',
-                    postalCode: postalCodeController.text,
-                    phoneNumber: phoneController.text.isNotEmpty ? phoneController.text : '',
-                    company: companyController.text.isNotEmpty ? companyController.text : '',
-                    defaultShippingAddress: defaultShipping,
-                    defaultBillingAddress: defaultBilling,
-                    country: CountryModel(
-                      id: 'IN',
-                      name: 'India',
-                      code: 'IN',
-                      languageCode: 'en',
-                    ),
-                  );
-
-                  final success = await customerController.createAddress(newAddress);
-                  if (success) {
-                    Get.back();
-                    showSuccessSnackbar('Address added successfully');
-                    customerController.refreshAddresses();
-                  } else {
-                    showErrorSnackbar('Failed to add address');
-                  }
-                },
-                child: const Text('Add Address'),
-              ),
-            ],
           );
         },
       ),
     );
   }
 
-  void _editAddress(dynamic address) {
-    // Implementation for editing address
-    showSuccessSnackbar('Edit address functionality');
-  }
-
-  void _deleteAddress(String addressId) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Delete Address'),
-        content: const Text('Are you sure you want to delete this address?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+  Widget _buildFormField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool required = false,
+    TextInputType? keyboardType,
+    bool readOnly = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            if (required)
+              Text(
+                ' *',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.error,
+                ),
+              ),
+            if (readOnly)
+              Container(
+                margin: EdgeInsets.only(left: ResponsiveUtils.rp(8)),
+                padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.rp(6),
+                    vertical: ResponsiveUtils.rp(2)),
+                decoration: BoxDecoration(
+                  color: AppColors.grey200,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
+                ),
+                child: Text(
+                  'Auto',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(10),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          readOnly: readOnly,
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(15),
+            color: readOnly ? AppColors.textSecondary : AppColors.textPrimary,
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Get.back();
-              final success = await customerController.deleteAddress(addressId);
-              if (success) {
-                customerController.refreshAddresses();
-                showSuccessSnackbar('Address deleted successfully');
-              } else {
-                showErrorSnackbar('Failed to delete address');
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+          decoration: InputDecoration(
+            hintText: readOnly ? 'Auto-filled' : 'Enter $label',
+            hintStyle: TextStyle(
+                color: AppColors.textTertiary,
+                fontSize: ResponsiveUtils.sp(14)),
+            prefixIcon: Icon(icon,
+                color:
+                    readOnly ? AppColors.textTertiary : AppColors.textSecondary,
+                size: ResponsiveUtils.rp(20)),
+            suffixIcon: readOnly
+                ? Icon(Icons.lock_outline,
+                    color: AppColors.textTertiary, size: ResponsiveUtils.rp(18))
+                : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              borderSide: BorderSide(
+                  color: readOnly ? AppColors.border : AppColors.button,
+                  width: ResponsiveUtils.rp(2)),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              borderSide: BorderSide(color: AppColors.borderLight),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(16),
+                vertical: ResponsiveUtils.rp(14)),
+            filled: true,
+            fillColor: readOnly ? AppColors.grey100 : AppColors.inputFill,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

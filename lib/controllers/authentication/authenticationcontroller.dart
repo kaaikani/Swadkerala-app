@@ -8,15 +8,17 @@ import 'package:get_storage/get_storage.dart';
 import '../../services/graphql_client.dart';
 import '../../theme/colors.dart';
 import '../../widgets/snackbar.dart';
+import '../../widgets/error_dialog.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../customer/customer_controller.dart';
 import '../cart/Cartcontroller.dart';
 import '../banner/bannercontroller.dart';
 import '../order/ordercontroller.dart';
+import '../base_controller.dart';
 import 'authenticationmodels.dart';
 import '../../graphql/authenticate.graphql.dart';
 
-class AuthController extends GetxController {
+class AuthController extends BaseController {
   // Controllers
   final firstname = TextEditingController(); // ✅ add this
   final lastname = TextEditingController();  // ✅ add this
@@ -30,17 +32,16 @@ class AuthController extends GetxController {
   // State variables
   final RxBool _isLoggedIn = false.obs;
   final RxBool _isOtpSent = false.obs;
-  final RxBool _isLoading = false.obs;
   
   // Getters
   bool get isLoggedIn => _isLoggedIn.value;
   bool get isOtpSent => _isOtpSent.value;
-  bool get isLoading => _isLoading.value;
+  bool get isLoading => utilityController.isLoading;
   
   // Setters
   void setLoggedIn(bool value) => _isLoggedIn.value = value;
   void setOtpSent(bool value) => _isOtpSent.value = value;
-  void setLoading(bool value) => _isLoading.value = value;
+  void setLoading(bool value) => utilityController.setLoadingState(value);
 
   @override
   void onInit() {
@@ -49,7 +50,7 @@ class AuthController extends GetxController {
   }
 
   /// Manually check login status from GraphqlService tokens
-  void checkLoginStatusFromGraphqlService() {
+ Future <void> checkLoginStatusFromGraphqlService() async {
     final authToken = GraphqlService.authToken;
     final channelToken = GraphqlService.channelToken;
     
@@ -152,12 +153,18 @@ class AuthController extends GetxController {
   }
 
   /// Step 1: Check if phone number exists and get channel info (for login)
-  Future<bool> checkEmailAndGetChannel(BuildContext context) async {
+  Future<bool> checkEmailAndGetChannel(BuildContext? context) async {
     if (!_isValidPhoneNumber(phoneNumber.text)) {
-      SnackBarWidget.show(
-        context,
+      // Use GetX snackbar to avoid context issues
+      Get.snackbar(
+        '',
         'Please enter a valid Phone number',
+        snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
       );
       return false;
     }
@@ -175,12 +182,7 @@ class AuthController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        final msg = response.exception!.graphqlErrors.isNotEmpty
-            ? response.exception!.graphqlErrors.first.message
-            : 'Failed to check Phone number';
-        debugPrint('[AuthController] Error checking email: $msg');
-        SnackBarWidget.show(context, msg, backgroundColor: AppColors.error);
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to check phone number')) {
         return false;
       }
 
@@ -190,7 +192,7 @@ class AuthController extends GetxController {
       debugPrint('[AuthController] Channels found: ${channels.length}');
 
       if (channels.isEmpty) {
-        SnackBarWidget.show(context, 'Kindly register', backgroundColor: AppColors.error);
+        ErrorDialog.showError('Kindly register');
         return false;
       }
 
@@ -200,13 +202,23 @@ class AuthController extends GetxController {
       await GraphqlService.setToken(key: 'channel', token: channel.token);
 
       debugPrint('[AuthController] Channel saved - Code: ${channel.code}, Token: ${channel.token}');
-      SnackBarWidget.show(context, 'Phone number verified!', backgroundColor: AppColors.accent);
+      // Use GetX snackbar to avoid context issues
+      Get.snackbar(
+        '',
+        'Phone number verified!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.accent,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
 
       return true;
     } catch (e, stack) {
       debugPrint('[AuthController] Exception in checkEmailAndGetChannel: $e');
       debugPrint('[AuthController] Stack trace: $stack');
-      SnackBarWidget.show(context, 'Unexpected error occurred', backgroundColor: AppColors.error);
+      handleException(e, customErrorMessage: 'Failed to verify phone number');
       return false;
     } finally {
       setLoading(false);
@@ -275,10 +287,19 @@ class AuthController extends GetxController {
   }
 
   /// Step 2: Send OTP after channel verification
-  Future<bool> sendOtp(BuildContext context)
+  Future<bool> sendOtp(BuildContext? context)
   async {
     if (!_isValidPhoneNumber(phoneNumber.text)) {
-      SnackBarWidget.show(context, 'Please enter a valid phone number', backgroundColor: AppColors.error);
+      Get.snackbar(
+        '',
+        'Please enter a valid phone number',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
       return false;
     }
 
@@ -292,12 +313,7 @@ class AuthController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        final msg = response.exception!.graphqlErrors.isNotEmpty
-            ? response.exception!.graphqlErrors.first.message
-            : 'Failed to send OTP';
-        debugPrint('[AuthController] Error sending OTP: $msg');
-        SnackBarWidget.show(context, msg, backgroundColor: AppColors.error);
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to send OTP')) {
         return false;
       }
 
@@ -310,18 +326,27 @@ class AuthController extends GetxController {
       if (success) {
         setOtpSent(true);
         debugPrint('[AuthController] OTP sent successfully');
-        SnackBarWidget.show(context, 'OTP sent successfully!', backgroundColor: AppColors.accent);
+        Get.snackbar(
+          '',
+          'OTP sent successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.accent,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+        );
         return true;
       } else {
         debugPrint('[AuthController] OTP send failed - raw value: $rawResult');
-        SnackBarWidget.show(context, 'Failed to send OTP', backgroundColor: AppColors.error);
+        ErrorDialog.showError('Failed to send OTP');
         return false;
       }
 
     } catch (e, stack) {
       debugPrint('[AuthController] Exception in sendOtp: $e');
       debugPrint(stack.toString());
-      SnackBarWidget.show(context, 'Unexpected error occurred', backgroundColor: AppColors.error);
+      handleException(e, customErrorMessage: 'Failed to send OTP');
       return false;
     } finally {
       setLoading(false);
@@ -361,12 +386,7 @@ class AuthController extends GetxController {
       );
 
       // Handle GraphQL errors
-      if (response.hasException) {
-        final msg = response.exception!.graphqlErrors.isNotEmpty
-            ? response.exception!.graphqlErrors.first.message
-            : 'OTP verification failed';
-        debugPrint('[AuthController] Error verifying OTP: $msg');
-        SnackBarWidget.show(context, msg, backgroundColor: AppColors.error);
+      if (checkResponseForErrors(response, customErrorMessage: 'OTP verification failed')) {
         return false;
       }
 
@@ -406,18 +426,18 @@ class AuthController extends GetxController {
 
       // Handle invalid credentials
       if (data is Mutation$Authenticate$authenticate$$InvalidCredentialsError) {
-        SnackBarWidget.show(context, data.message, backgroundColor: AppColors.error);
+        ErrorDialog.showError(data.message);
         return false;
       }
 
       // Fallback error
-      SnackBarWidget.show(context, 'OTP verification failed', backgroundColor: AppColors.error);
+      ErrorDialog.showError('OTP verification failed');
       return false;
 
     } catch (e, stack) {
       debugPrint('[AuthController] Exception in verifyOtp: $e');
       debugPrint(stack.toString());
-      SnackBarWidget.show(context, 'Unexpected error occurred', backgroundColor: AppColors.error);
+      handleException(e, customErrorMessage: 'OTP verification failed');
       return false;
     } finally {
       setLoading(false);
@@ -426,9 +446,18 @@ class AuthController extends GetxController {
 
 
   /// Resend OTP
-  Future<bool> resendOtp(BuildContext context) async {
+  Future<bool> resendOtp(BuildContext? context) async {
     if (!_isValidPhoneNumber(phoneNumber.text)) {
-      SnackBarWidget.show(context, 'Please enter a valid phone number', backgroundColor: AppColors.error);
+      Get.snackbar(
+        '',
+        'Please enter a valid phone number',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
       return false;
     }
 
@@ -442,12 +471,7 @@ class AuthController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        final msg = response.exception!.graphqlErrors.isNotEmpty
-            ? response.exception!.graphqlErrors.first.message
-            : 'Failed to resend OTP';
-        debugPrint('[AuthController] Error resending OTP: $msg');
-        SnackBarWidget.show(context, msg, backgroundColor: AppColors.error);
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to resend OTP')) {
         return false;
       }
 
@@ -455,18 +479,27 @@ class AuthController extends GetxController {
       final success = rawResult != null && rawResult != false && rawResult != "false" && rawResult != 0;
       debugPrint('[AuthController] OTP resend result: $success');
 
-      SnackBarWidget.show(
-        context,
-        success ? 'OTP resent successfully!' : 'Failed to resend OTP',
-        backgroundColor: success ? AppColors.accent : AppColors.error,
-      );
+      if (success) {
+        Get.snackbar(
+          '',
+          'OTP resent successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.accent,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+        );
+      } else {
+        ErrorDialog.showError('Failed to resend OTP');
+      }
 
       return success;
 
     } catch (e, stack) {
       debugPrint('[AuthController] Exception in resendOtp: $e');
       debugPrint(stack.toString());
-      SnackBarWidget.show(context, 'Unexpected error occurred', backgroundColor: AppColors.error);
+      handleException(e, customErrorMessage: 'Failed to resend OTP');
       return false;
     } finally {
       setLoading(false);
@@ -499,7 +532,16 @@ class AuthController extends GetxController {
       resetFormField();
 
       debugPrint('[AuthController] User logged out and all cache cleared successfully');
-      SnackBarWidget.show(context, 'Logged out successfully', backgroundColor: AppColors.accent);
+      Get.snackbar(
+        '',
+        'Logged out successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.accent,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
 
       // Navigate to login page
       Future.microtask(() => Get.offAllNamed('/login'));
@@ -507,7 +549,8 @@ class AuthController extends GetxController {
     } catch (e, stack) {
       debugPrint('[AuthController] Exception in logout: $e');
       debugPrint(stack.toString());
-      SnackBarWidget.show(context, 'Unexpected error occurred', backgroundColor: AppColors.error);
+      // Don't show error dialog for logout - just log it
+      debugPrint('[AuthController] Logout error handled silently');
     } finally {
       setLoading(false);
     }
@@ -692,7 +735,7 @@ class AuthController extends GetxController {
   }
 
   /// Complete login flow: check phone -> send OTP
-  Future<bool> startLoginFlow(BuildContext context) async {
+  Future<bool> startLoginFlow(BuildContext? context) async {
     // First check if phone exists and get channel
     final phoneCheck = await checkEmailAndGetChannel(context);
     if (!phoneCheck) {

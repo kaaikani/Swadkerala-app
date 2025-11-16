@@ -1,15 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-
 import '../controllers/banner/bannercontroller.dart';
-
-
-
+import '../theme/colors.dart';
+import '../utils/responsive.dart';
+import '../widgets/responsive_widgets.dart';
 
 class SearchComponent extends StatelessWidget {
   const SearchComponent({
@@ -27,28 +23,28 @@ class SearchComponent extends StatelessWidget {
       onTap: () {
         Get.toNamed('/search');
       },
-      child: Container(
-        height: 45,
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
+      child: ResponsiveContainer(
+        height: ResponsiveUtils.rp(44),
+        padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(14.0)),
+        backgroundColor: AppColors.surface,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: ResponsiveUtils.rp(8),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
+          ),
+        ],
         child: Row(
           children: [
-            const Icon(Icons.search_rounded, color: Colors.black54),
-            const SizedBox(width: 10),
+            ResponsiveIcon(Icons.search,
+                color: AppColors.textSecondary, size: 20),
+            ResponsiveSpacing.horizontal(10),
             Expanded(
-              child: Text(
+              child: ResponsiveText(
                 hintText,
-                style: const TextStyle(color: Colors.black54, fontSize: 16),
+                style: ResponsiveTextStyles.bodyMedium(
+                    color: AppColors.textSecondary),
               ),
             ),
           ],
@@ -57,6 +53,7 @@ class SearchComponent extends StatelessWidget {
     );
   }
 }
+
 class FullScreenSearchPage extends StatefulWidget {
   const FullScreenSearchPage({
     Key? key,
@@ -114,12 +111,12 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
             border: InputBorder.none,
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                _controller.clear();
-                bannerController.searchResults.clear(); // reset results
-              },
-            )
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _controller.clear();
+                      bannerController.searchResults.clear(); // reset results
+                    },
+                  )
                 : null,
           ),
         ),
@@ -137,9 +134,13 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
             final item = results[index];
             return ListTile(
               leading: item.previewImage != null
-                  ? Image.network(item.previewImage!, width: 50, height: 50, fit: BoxFit.cover)
-                  : const Icon(Icons.image, size: 50),
-              title: Text(item.productVariantName ?? item.productName),
+                  ? Image.network(item.previewImage!,
+                      width: ResponsiveUtils.rp(50),
+                      height: ResponsiveUtils.rp(50),
+                      fit: BoxFit.cover)
+                  : Icon(Icons.image, size: ResponsiveUtils.rp(50)),
+              title: Text(item.productVariantName ?? item.productName,
+                  style: TextStyle(fontSize: ResponsiveUtils.sp(14))),
             );
           },
         );

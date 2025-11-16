@@ -1,0 +1,16 @@
+# Keystore Configuration
+# Copy this file to key.properties and fill in your actual passwords
+# DO NOT commit key.properties to version control!
+
+# Keystore file path (relative to android/ directory or absolute path)
+storeFile=/home/rootuser/Desktop/test release /old2/upload-keystore.jks
+
+# Keystore password
+storePassword=YOUR_KEYSTORE_PASSWORD
+
+# Key alias (found: "upload")
+keyAlias=upload
+
+# Key password (may be same as storePassword)
+keyPassword=YOUR_KEY_PASSWORD
+

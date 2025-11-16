@@ -18,11 +18,17 @@ class Asset {
   factory Asset.fromJson(Map<String, dynamic> json) {
     return Asset(
       id: json['id'].toString(),
-      width: json['width'] is int ? json['width'] : int.parse(json['width'].toString()),
-      height: json['height'] is int ? json['height'] : int.parse(json['height'].toString()),
+      width: json['width'] is int
+          ? json['width']
+          : int.parse(json['width'].toString()),
+      height: json['height'] is int
+          ? json['height']
+          : int.parse(json['height'].toString()),
       name: json['name'],
       preview: json['preview'],
-      focalPoint: json['focalPoint'] != null ? FocalPoint.fromJson(json['focalPoint']) : null,
+      focalPoint: json['focalPoint'] != null
+          ? FocalPoint.fromJson(json['focalPoint'])
+          : null,
     );
   }
 }
@@ -68,19 +74,36 @@ class Discount {
     );
   }
 }
+
 class ProductVariant {
   final String id;
   final String name;
+  final String? stockLevel;
+  final double? price;
 
-  ProductVariant({required this.id, required this.name});
+  ProductVariant({
+    required this.id,
+    required this.name,
+    this.stockLevel,
+    this.price,
+  });
 
   factory ProductVariant.fromJson(Map<String, dynamic> json) {
+    double? parseDouble(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      return double.tryParse(value.toString());
+    }
+
     return ProductVariant(
       id: json['id'].toString(),
-      name: json['name'],
+      name: json['name'] ?? '',
+      stockLevel: json['stockLevel']?.toString(),
+      price: parseDouble(json['price']),
     );
   }
 }
+
 class OrderLine {
   final String id;
   final Asset? featuredAsset;
@@ -91,6 +114,8 @@ class OrderLine {
   final double discountedLinePriceWithTax;
   final ProductVariant productVariant;
   final List<Discount> discounts;
+  final bool isAvailable;
+  final String? unavailableReason;
 
   OrderLine({
     required this.id,
@@ -102,21 +127,97 @@ class OrderLine {
     required this.discountedLinePriceWithTax,
     required this.productVariant,
     required this.discounts,
+    required this.isAvailable,
+    required this.unavailableReason,
   });
 
   factory OrderLine.fromJson(Map<String, dynamic> json) {
+    bool parseBool(dynamic value) {
+      if (value is bool) return value;
+      if (value == null) return true;
+      return value.toString().toLowerCase() == 'true';
+    }
+
     return OrderLine(
       id: json['id'].toString(),
-      featuredAsset: json['featuredAsset'] != null ? Asset.fromJson(json['featuredAsset']) : null,
+      featuredAsset: json['featuredAsset'] != null
+          ? Asset.fromJson(json['featuredAsset'])
+          : null,
       unitPrice: (json['unitPrice'] as num).toDouble(),
       unitPriceWithTax: (json['unitPriceWithTax'] as num).toDouble(),
-      quantity: json['quantity'] is int ? json['quantity'] : int.parse(json['quantity'].toString()),
+      quantity: json['quantity'] is int
+          ? json['quantity']
+          : int.parse(json['quantity'].toString()),
       linePriceWithTax: (json['linePriceWithTax'] as num).toDouble(),
-      discountedLinePriceWithTax: (json['discountedLinePriceWithTax'] as num).toDouble(),
+      discountedLinePriceWithTax:
+          (json['discountedLinePriceWithTax'] as num).toDouble(),
       productVariant: ProductVariant.fromJson(json['productVariant']),
       discounts: json['discounts'] != null
-          ? List<Discount>.from(json['discounts'].map((x) => Discount.fromJson(x)))
+          ? List<Discount>.from(
+              json['discounts'].map((x) => Discount.fromJson(x)))
           : [],
+      isAvailable: parseBool(json['isAvailable']),
+      unavailableReason: json['unavailableReason']?.toString(),
+    );
+  }
+}
+
+class ValidationStatus {
+  final bool isValid;
+  final bool hasUnavailableItems;
+  final int totalUnavailableItems;
+  final List<UnavailableItem> unavailableItems;
+
+  ValidationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+  });
+
+  factory ValidationStatus.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic value) {
+      if (value is int) return value;
+      return int.tryParse(value?.toString() ?? '') ?? 0;
+    }
+
+    bool parseBool(dynamic value) {
+      if (value is bool) return value;
+      if (value == null) return false;
+      return value.toString().toLowerCase() == 'true';
+    }
+
+    return ValidationStatus(
+      isValid: parseBool(json['isValid']),
+      hasUnavailableItems: parseBool(json['hasUnavailableItems']),
+      totalUnavailableItems: parseInt(json['totalUnavailableItems']),
+      unavailableItems: (json['unavailableItems'] as List<dynamic>?)
+              ?.map((e) => UnavailableItem.fromJson(e))
+              .toList() ??
+          const [],
+    );
+  }
+}
+
+class UnavailableItem {
+  final String orderLineId;
+  final String productName;
+  final String? variantName;
+  final String? reason;
+
+  UnavailableItem({
+    required this.orderLineId,
+    required this.productName,
+    this.variantName,
+    this.reason,
+  });
+
+  factory UnavailableItem.fromJson(Map<String, dynamic> json) {
+    return UnavailableItem(
+      orderLineId: json['orderLineId']?.toString() ?? '',
+      productName: json['productName'] ?? '',
+      variantName: json['variantName'],
+      reason: json['reason'],
     );
   }
 }
@@ -142,10 +243,12 @@ class Promotion {
       name: json['name'] ?? '',
       enabled: json['enabled'] ?? false,
       actions: json['actions'] != null
-          ? List<ConfigurableOperation>.from(json['actions'].map((x) => ConfigurableOperation.fromJson(x)))
+          ? List<ConfigurableOperation>.from(
+              json['actions'].map((x) => ConfigurableOperation.fromJson(x)))
           : [],
       conditions: json['conditions'] != null
-          ? List<ConfigurableOperation>.from(json['conditions'].map((x) => ConfigurableOperation.fromJson(x)))
+          ? List<ConfigurableOperation>.from(
+              json['conditions'].map((x) => ConfigurableOperation.fromJson(x)))
           : [],
     );
   }
@@ -202,6 +305,7 @@ class Order {
   final double totalWithTax;
   final double shipping;
   final double shippingWithTax;
+  final ValidationStatus? validationStatus;
 
   Order({
     required this.id,
@@ -218,31 +322,65 @@ class Order {
     required this.totalWithTax,
     required this.shipping,
     required this.shippingWithTax,
+    this.validationStatus,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
+    int? parseInt(dynamic value) {
+      if (value == null) return null;
+      if (value is int) return value;
+      return int.tryParse(value.toString());
+    }
+
+    double parseDouble(dynamic value) {
+      if (value is num) return value.toDouble();
+      return double.tryParse(value?.toString() ?? '') ?? 0.0;
+    }
+
+    bool parseBool(dynamic value) {
+      if (value is bool) return value;
+      if (value == null) return false;
+      return value.toString().toLowerCase() == 'true';
+    }
+
+    final linesRaw = json['lines'] as List<dynamic>?;
+    final lines = linesRaw != null
+        ? List<OrderLine>.from(linesRaw.map((e) => OrderLine.fromJson(e)))
+        : <OrderLine>[];
+    final derivedLineQty = lines.fold<int>(
+        0, (previousValue, element) => previousValue + element.quantity);
+
+    final parsedTotalQty = parseInt(json['totalQuantity']);
+    final totalQty = parsedTotalQty ?? derivedLineQty;
+
     return Order(
-      id: json['id'].toString(),
-      code: json['code'],
-      state: json['state'],
-      active: json['active'],
-      couponCodes: List<String>.from(json['couponCodes'] ?? []),
-      promotions: json['promotions'] != null
-          ? List<Promotion>.from(json['promotions'].map((x) => Promotion.fromJson(x)))
-          : [],
-      lines: json['lines'] != null
-          ? List<OrderLine>.from(json['lines'].map((x) => OrderLine.fromJson(x)))
-          : [],
-      totalQuantity: json['totalQuantity'] is int ? json['totalQuantity'] : int.parse(json['totalQuantity'].toString()),
-      subTotal: (json['subTotal'] as num).toDouble(),
-      subTotalWithTax: (json['subTotalWithTax'] as num).toDouble(),
-      total: (json['total'] as num).toDouble(),
-      totalWithTax: (json['totalWithTax'] as num).toDouble(),
-      shipping: (json['shipping'] as num?)?.toDouble() ?? 0.0,
-      shippingWithTax: (json['shippingWithTax'] as num?)?.toDouble() ?? 0.0,
+      id: (json['id'] ?? '').toString(),
+      code: (json['code'] ?? '').toString(),
+      state: (json['state'] ?? '').toString(),
+      active: parseBool(json['active']),
+      couponCodes: (json['couponCodes'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      promotions: (json['promotions'] as List<dynamic>?)
+              ?.map((x) => Promotion.fromJson(x))
+              .toList() ??
+          const [],
+      lines: lines,
+      totalQuantity: totalQty,
+      subTotal: parseDouble(json['subTotal']),
+      subTotalWithTax: parseDouble(json['subTotalWithTax']),
+      total: parseDouble(json['total']),
+      totalWithTax: parseDouble(json['totalWithTax']),
+      shipping: parseDouble(json['shipping']),
+      shippingWithTax: parseDouble(json['shippingWithTax']),
+      validationStatus: json['validationStatus'] != null
+          ? ValidationStatus.fromJson(json['validationStatus'])
+          : null,
     );
   }
 }
+
 class ErrorResult {
   final String errorCode;
   final String message;
@@ -256,4 +394,3 @@ class ErrorResult {
     );
   }
 }
-

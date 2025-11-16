@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 class TextButtonField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
@@ -34,12 +33,12 @@ class TextButtonField extends StatelessWidget {
     return GestureDetector(
       onTap: enabled
           ? () {
-        if (onTap != null) {
-          onTap!();
-        } else {
-          FocusScope.of(context).requestFocus(FocusNode());
-        }
-      }
+              if (onTap != null) {
+                onTap!();
+              } else {
+                FocusScope.of(context).requestFocus(FocusNode());
+              }
+            }
           : null,
       child: AbsorbPointer(
         absorbing: false,
@@ -65,7 +64,7 @@ class TextButtonField extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             contentPadding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           ),
           style: TextStyle(
             color: enabled ? Colors.black : Colors.grey,

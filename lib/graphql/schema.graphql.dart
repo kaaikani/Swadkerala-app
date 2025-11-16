@@ -3,11 +3,12 @@ class Input$AuthenticationInput {
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
-  }) => Input$AuthenticationInput._({
-    if (phoneOtp != null) r'phoneOtp': phoneOtp,
-    if (native != null) r'native': native,
-    if (google != null) r'google': google,
-  });
+  }) =>
+      Input$AuthenticationInput._({
+        if (phoneOtp != null) r'phoneOtp': phoneOtp,
+        if (native != null) r'native': native,
+        if (google != null) r'google': google,
+      });
 
   Input$AuthenticationInput._(this._$data);
 
@@ -63,7 +64,10 @@ class Input$AuthenticationInput {
   }
 
   CopyWith$Input$AuthenticationInput<Input$AuthenticationInput> get copyWith =>
-      CopyWith$Input$AuthenticationInput(this, (i) => i);
+      CopyWith$Input$AuthenticationInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -136,7 +140,10 @@ abstract class CopyWith$Input$AuthenticationInput<TRes> {
 
 class _CopyWithImpl$Input$AuthenticationInput<TRes>
     implements CopyWith$Input$AuthenticationInput<TRes> {
-  _CopyWithImpl$Input$AuthenticationInput(this._instance, this._then);
+  _CopyWithImpl$Input$AuthenticationInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$AuthenticationInput _instance;
 
@@ -148,24 +155,21 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
     Object? phoneOtp = _undefined,
     Object? native = _undefined,
     Object? google = _undefined,
-  }) => _then(
-    Input$AuthenticationInput._({
-      ..._instance._$data,
-      if (phoneOtp != _undefined)
-        'phoneOtp': (phoneOtp as Input$PhoneOtpInput?),
-      if (native != _undefined) 'native': (native as Input$NativeAuthInput?),
-      if (google != _undefined) 'google': (google as Input$GoogleAuthInput?),
-    }),
-  );
+  }) =>
+      _then(Input$AuthenticationInput._({
+        ..._instance._$data,
+        if (phoneOtp != _undefined)
+          'phoneOtp': (phoneOtp as Input$PhoneOtpInput?),
+        if (native != _undefined) 'native': (native as Input$NativeAuthInput?),
+        if (google != _undefined) 'google': (google as Input$GoogleAuthInput?),
+      }));
 
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp {
     final local$phoneOtp = _instance.phoneOtp;
     return local$phoneOtp == null
         ? CopyWith$Input$PhoneOtpInput.stub(_then(_instance))
         : CopyWith$Input$PhoneOtpInput(
-            local$phoneOtp,
-            (e) => call(phoneOtp: e),
-          );
+            local$phoneOtp, (e) => call(phoneOtp: e));
   }
 
   CopyWith$Input$NativeAuthInput<TRes> get native {
@@ -193,7 +197,8 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp =>
       CopyWith$Input$PhoneOtpInput.stub(_res);
@@ -207,7 +212,9 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
 
 class Input$BooleanListOperators {
   factory Input$BooleanListOperators({required bool inList}) =>
-      Input$BooleanListOperators._({r'inList': inList});
+      Input$BooleanListOperators._({
+        r'inList': inList,
+      });
 
   Input$BooleanListOperators._(this._$data);
 
@@ -230,7 +237,10 @@ class Input$BooleanListOperators {
   }
 
   CopyWith$Input$BooleanListOperators<Input$BooleanListOperators>
-  get copyWith => CopyWith$Input$BooleanListOperators(this, (i) => i);
+      get copyWith => CopyWith$Input$BooleanListOperators(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -270,7 +280,10 @@ abstract class CopyWith$Input$BooleanListOperators<TRes> {
 
 class _CopyWithImpl$Input$BooleanListOperators<TRes>
     implements CopyWith$Input$BooleanListOperators<TRes> {
-  _CopyWithImpl$Input$BooleanListOperators(this._instance, this._then);
+  _CopyWithImpl$Input$BooleanListOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$BooleanListOperators _instance;
 
@@ -278,12 +291,11 @@ class _CopyWithImpl$Input$BooleanListOperators<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? inList = _undefined}) => _then(
-    Input$BooleanListOperators._({
-      ..._instance._$data,
-      if (inList != _undefined && inList != null) 'inList': (inList as bool),
-    }),
-  );
+  TRes call({Object? inList = _undefined}) =>
+      _then(Input$BooleanListOperators._({
+        ..._instance._$data,
+        if (inList != _undefined && inList != null) 'inList': (inList as bool),
+      }));
 }
 
 class _CopyWithStubImpl$Input$BooleanListOperators<TRes>
@@ -296,7 +308,10 @@ class _CopyWithStubImpl$Input$BooleanListOperators<TRes>
 }
 
 class Input$BooleanOperators {
-  factory Input$BooleanOperators({bool? eq, bool? isNull}) =>
+  factory Input$BooleanOperators({
+    bool? eq,
+    bool? isNull,
+  }) =>
       Input$BooleanOperators._({
         if (eq != null) r'eq': eq,
         if (isNull != null) r'isNull': isNull,
@@ -337,7 +352,10 @@ class Input$BooleanOperators {
   }
 
   CopyWith$Input$BooleanOperators<Input$BooleanOperators> get copyWith =>
-      CopyWith$Input$BooleanOperators(this, (i) => i);
+      CopyWith$Input$BooleanOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -386,12 +404,18 @@ abstract class CopyWith$Input$BooleanOperators<TRes> {
   factory CopyWith$Input$BooleanOperators.stub(TRes res) =
       _CopyWithStubImpl$Input$BooleanOperators;
 
-  TRes call({bool? eq, bool? isNull});
+  TRes call({
+    bool? eq,
+    bool? isNull,
+  });
 }
 
 class _CopyWithImpl$Input$BooleanOperators<TRes>
     implements CopyWith$Input$BooleanOperators<TRes> {
-  _CopyWithImpl$Input$BooleanOperators(this._instance, this._then);
+  _CopyWithImpl$Input$BooleanOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$BooleanOperators _instance;
 
@@ -399,13 +423,15 @@ class _CopyWithImpl$Input$BooleanOperators<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? eq = _undefined, Object? isNull = _undefined}) => _then(
-    Input$BooleanOperators._({
-      ..._instance._$data,
-      if (eq != _undefined) 'eq': (eq as bool?),
-      if (isNull != _undefined) 'isNull': (isNull as bool?),
-    }),
-  );
+  TRes call({
+    Object? eq = _undefined,
+    Object? isNull = _undefined,
+  }) =>
+      _then(Input$BooleanOperators._({
+        ..._instance._$data,
+        if (eq != _undefined) 'eq': (eq as bool?),
+        if (isNull != _undefined) 'isNull': (isNull as bool?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$BooleanOperators<TRes>
@@ -414,7 +440,11 @@ class _CopyWithStubImpl$Input$BooleanOperators<TRes>
 
   TRes _res;
 
-  call({bool? eq, bool? isNull}) => _res;
+  call({
+    bool? eq,
+    bool? isNull,
+  }) =>
+      _res;
 }
 
 class Input$CollectionFilterParameter {
@@ -430,19 +460,20 @@ class Input$CollectionFilterParameter {
     Input$IDOperators? parentId,
     List<Input$CollectionFilterParameter>? $_and,
     List<Input$CollectionFilterParameter>? $_or,
-  }) => Input$CollectionFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (languageCode != null) r'languageCode': languageCode,
-    if (name != null) r'name': name,
-    if (slug != null) r'slug': slug,
-    if (position != null) r'position': position,
-    if (description != null) r'description': description,
-    if (parentId != null) r'parentId': parentId,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-  });
+  }) =>
+      Input$CollectionFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (languageCode != null) r'languageCode': languageCode,
+        if (name != null) r'name': name,
+        if (slug != null) r'slug': slug,
+        if (position != null) r'position': position,
+        if (description != null) r'description': description,
+        if (parentId != null) r'parentId': parentId,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+      });
 
   Input$CollectionFilterParameter._(this._$data);
 
@@ -471,8 +502,7 @@ class Input$CollectionFilterParameter {
       result$data['languageCode'] = l$languageCode == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$languageCode as Map<String, dynamic>),
-            );
+              (l$languageCode as Map<String, dynamic>));
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
@@ -491,16 +521,14 @@ class Input$CollectionFilterParameter {
       result$data['position'] = l$position == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$position as Map<String, dynamic>),
-            );
+              (l$position as Map<String, dynamic>));
     }
     if (data.containsKey('description')) {
       final l$description = data['description'];
       result$data['description'] = l$description == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$description as Map<String, dynamic>),
-            );
+              (l$description as Map<String, dynamic>));
     }
     if (data.containsKey('parentId')) {
       final l$parentId = data['parentId'];
@@ -511,21 +539,15 @@ class Input$CollectionFilterParameter {
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$CollectionFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$CollectionFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$CollectionFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$CollectionFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     return Input$CollectionFilterParameter._(result$data);
@@ -612,7 +634,10 @@ class Input$CollectionFilterParameter {
   }
 
   CopyWith$Input$CollectionFilterParameter<Input$CollectionFilterParameter>
-  get copyWith => CopyWith$Input$CollectionFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$CollectionFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -767,13 +792,13 @@ class Input$CollectionFilterParameter {
       _$data.containsKey('parentId') ? l$parentId : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
     ]);
   }
@@ -811,30 +836,25 @@ abstract class CopyWith$Input$CollectionFilterParameter<TRes> {
   CopyWith$Input$StringOperators<TRes> get description;
   CopyWith$Input$IDOperators<TRes> get parentId;
   TRes $_and(
-    Iterable<Input$CollectionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CollectionFilterParameter<
-          Input$CollectionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$CollectionFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$CollectionFilterParameter<
+                      Input$CollectionFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$CollectionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CollectionFilterParameter<
-          Input$CollectionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$CollectionFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$CollectionFilterParameter<
+                      Input$CollectionFilterParameter>>?)
+          _fn);
 }
 
 class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
     implements CopyWith$Input$CollectionFilterParameter<TRes> {
-  _CopyWithImpl$Input$CollectionFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$CollectionFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$CollectionFilterParameter _instance;
 
@@ -854,29 +874,29 @@ class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
     Object? parentId = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-  }) => _then(
-    Input$CollectionFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (languageCode != _undefined)
-        'languageCode': (languageCode as Input$StringOperators?),
-      if (name != _undefined) 'name': (name as Input$StringOperators?),
-      if (slug != _undefined) 'slug': (slug as Input$StringOperators?),
-      if (position != _undefined)
-        'position': (position as Input$NumberOperators?),
-      if (description != _undefined)
-        'description': (description as Input$StringOperators?),
-      if (parentId != _undefined) 'parentId': (parentId as Input$IDOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$CollectionFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$CollectionFilterParameter>?),
-    }),
-  );
+  }) =>
+      _then(Input$CollectionFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (languageCode != _undefined)
+          'languageCode': (languageCode as Input$StringOperators?),
+        if (name != _undefined) 'name': (name as Input$StringOperators?),
+        if (slug != _undefined) 'slug': (slug as Input$StringOperators?),
+        if (position != _undefined)
+          'position': (position as Input$NumberOperators?),
+        if (description != _undefined)
+          'description': (description as Input$StringOperators?),
+        if (parentId != _undefined)
+          'parentId': (parentId as Input$IDOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$CollectionFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$CollectionFilterParameter>?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -890,9 +910,7 @@ class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -900,9 +918,7 @@ class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get languageCode {
@@ -910,9 +926,7 @@ class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
     return local$languageCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$languageCode,
-            (e) => call(languageCode: e),
-          );
+            local$languageCode, (e) => call(languageCode: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get name {
@@ -934,9 +948,7 @@ class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
     return local$position == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$position,
-            (e) => call(position: e),
-          );
+            local$position, (e) => call(position: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get description {
@@ -944,9 +956,7 @@ class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
     return local$description == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$description,
-            (e) => call(description: e),
-          );
+            local$description, (e) => call(description: e));
   }
 
   CopyWith$Input$IDOperators<TRes> get parentId {
@@ -957,38 +967,30 @@ class _CopyWithImpl$Input$CollectionFilterParameter<TRes>
   }
 
   TRes $_and(
-    Iterable<Input$CollectionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CollectionFilterParameter<
-          Input$CollectionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$CollectionFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$CollectionFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$CollectionFilterParameter<
+                          Input$CollectionFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(_instance.$_and
+              ?.map((e) => CopyWith$Input$CollectionFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$CollectionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CollectionFilterParameter<
-          Input$CollectionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$CollectionFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$CollectionFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$CollectionFilterParameter<
+                          Input$CollectionFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(_instance.$_or
+              ?.map((e) => CopyWith$Input$CollectionFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 }
 
 class _CopyWithStubImpl$Input$CollectionFilterParameter<TRes>
@@ -1009,7 +1011,8 @@ class _CopyWithStubImpl$Input$CollectionFilterParameter<TRes>
     Input$IDOperators? parentId,
     List<Input$CollectionFilterParameter>? $_and,
     List<Input$CollectionFilterParameter>? $_or,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -1051,14 +1054,15 @@ class Input$CollectionListOptions {
     Input$CollectionSortParameter? sort,
     Input$CollectionFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$CollectionListOptions._({
-    if (topLevelOnly != null) r'topLevelOnly': topLevelOnly,
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$CollectionListOptions._({
+        if (topLevelOnly != null) r'topLevelOnly': topLevelOnly,
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$CollectionListOptions._(this._$data);
 
@@ -1081,16 +1085,14 @@ class Input$CollectionListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$CollectionSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$CollectionFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -1150,7 +1152,10 @@ class Input$CollectionListOptions {
   }
 
   CopyWith$Input$CollectionListOptions<Input$CollectionListOptions>
-  get copyWith => CopyWith$Input$CollectionListOptions(this, (i) => i);
+      get copyWith => CopyWith$Input$CollectionListOptions(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -1256,7 +1261,10 @@ abstract class CopyWith$Input$CollectionListOptions<TRes> {
 
 class _CopyWithImpl$Input$CollectionListOptions<TRes>
     implements CopyWith$Input$CollectionListOptions<TRes> {
-  _CopyWithImpl$Input$CollectionListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$CollectionListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$CollectionListOptions _instance;
 
@@ -1271,28 +1279,26 @@ class _CopyWithImpl$Input$CollectionListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$CollectionListOptions._({
-      ..._instance._$data,
-      if (topLevelOnly != _undefined) 'topLevelOnly': (topLevelOnly as bool?),
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined) 'sort': (sort as Input$CollectionSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$CollectionFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$CollectionListOptions._({
+        ..._instance._$data,
+        if (topLevelOnly != _undefined) 'topLevelOnly': (topLevelOnly as bool?),
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined)
+          'sort': (sort as Input$CollectionSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$CollectionFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$CollectionSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$CollectionSortParameter.stub(_then(_instance))
         : CopyWith$Input$CollectionSortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 
   CopyWith$Input$CollectionFilterParameter<TRes> get filter {
@@ -1300,9 +1306,7 @@ class _CopyWithImpl$Input$CollectionListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$CollectionFilterParameter.stub(_then(_instance))
         : CopyWith$Input$CollectionFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -1319,7 +1323,8 @@ class _CopyWithStubImpl$Input$CollectionListOptions<TRes>
     Input$CollectionSortParameter? sort,
     Input$CollectionFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$CollectionSortParameter<TRes> get sort =>
       CopyWith$Input$CollectionSortParameter.stub(_res);
@@ -1338,16 +1343,17 @@ class Input$CollectionSortParameter {
     Enum$SortOrder? position,
     Enum$SortOrder? description,
     Enum$SortOrder? parentId,
-  }) => Input$CollectionSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (name != null) r'name': name,
-    if (slug != null) r'slug': slug,
-    if (position != null) r'position': position,
-    if (description != null) r'description': description,
-    if (parentId != null) r'parentId': parentId,
-  });
+  }) =>
+      Input$CollectionSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (name != null) r'name': name,
+        if (slug != null) r'slug': slug,
+        if (position != null) r'position': position,
+        if (description != null) r'description': description,
+        if (parentId != null) r'parentId': parentId,
+      });
 
   Input$CollectionSortParameter._(this._$data);
 
@@ -1355,9 +1361,8 @@ class Input$CollectionSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -1373,15 +1378,13 @@ class Input$CollectionSortParameter {
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
-      result$data['name'] = l$name == null
-          ? null
-          : fromJson$Enum$SortOrder((l$name as String));
+      result$data['name'] =
+          l$name == null ? null : fromJson$Enum$SortOrder((l$name as String));
     }
     if (data.containsKey('slug')) {
       final l$slug = data['slug'];
-      result$data['slug'] = l$slug == null
-          ? null
-          : fromJson$Enum$SortOrder((l$slug as String));
+      result$data['slug'] =
+          l$slug == null ? null : fromJson$Enum$SortOrder((l$slug as String));
     }
     if (data.containsKey('position')) {
       final l$position = data['position'];
@@ -1430,51 +1433,47 @@ class Input$CollectionSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('name')) {
       final l$name = name;
-      result$data['name'] = l$name == null
-          ? null
-          : toJson$Enum$SortOrder(l$name);
+      result$data['name'] =
+          l$name == null ? null : toJson$Enum$SortOrder(l$name);
     }
     if (_$data.containsKey('slug')) {
       final l$slug = slug;
-      result$data['slug'] = l$slug == null
-          ? null
-          : toJson$Enum$SortOrder(l$slug);
+      result$data['slug'] =
+          l$slug == null ? null : toJson$Enum$SortOrder(l$slug);
     }
     if (_$data.containsKey('position')) {
       final l$position = position;
-      result$data['position'] = l$position == null
-          ? null
-          : toJson$Enum$SortOrder(l$position);
+      result$data['position'] =
+          l$position == null ? null : toJson$Enum$SortOrder(l$position);
     }
     if (_$data.containsKey('description')) {
       final l$description = description;
-      result$data['description'] = l$description == null
-          ? null
-          : toJson$Enum$SortOrder(l$description);
+      result$data['description'] =
+          l$description == null ? null : toJson$Enum$SortOrder(l$description);
     }
     if (_$data.containsKey('parentId')) {
       final l$parentId = parentId;
-      result$data['parentId'] = l$parentId == null
-          ? null
-          : toJson$Enum$SortOrder(l$parentId);
+      result$data['parentId'] =
+          l$parentId == null ? null : toJson$Enum$SortOrder(l$parentId);
     }
     return result$data;
   }
 
   CopyWith$Input$CollectionSortParameter<Input$CollectionSortParameter>
-  get copyWith => CopyWith$Input$CollectionSortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$CollectionSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -1603,7 +1602,10 @@ abstract class CopyWith$Input$CollectionSortParameter<TRes> {
 
 class _CopyWithImpl$Input$CollectionSortParameter<TRes>
     implements CopyWith$Input$CollectionSortParameter<TRes> {
-  _CopyWithImpl$Input$CollectionSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$CollectionSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$CollectionSortParameter _instance;
 
@@ -1620,20 +1622,21 @@ class _CopyWithImpl$Input$CollectionSortParameter<TRes>
     Object? position = _undefined,
     Object? description = _undefined,
     Object? parentId = _undefined,
-  }) => _then(
-    Input$CollectionSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (name != _undefined) 'name': (name as Enum$SortOrder?),
-      if (slug != _undefined) 'slug': (slug as Enum$SortOrder?),
-      if (position != _undefined) 'position': (position as Enum$SortOrder?),
-      if (description != _undefined)
-        'description': (description as Enum$SortOrder?),
-      if (parentId != _undefined) 'parentId': (parentId as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$CollectionSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (name != _undefined) 'name': (name as Enum$SortOrder?),
+        if (slug != _undefined) 'slug': (slug as Enum$SortOrder?),
+        if (position != _undefined) 'position': (position as Enum$SortOrder?),
+        if (description != _undefined)
+          'description': (description as Enum$SortOrder?),
+        if (parentId != _undefined) 'parentId': (parentId as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$CollectionSortParameter<TRes>
@@ -1651,12 +1654,19 @@ class _CopyWithStubImpl$Input$CollectionSortParameter<TRes>
     Enum$SortOrder? position,
     Enum$SortOrder? description,
     Enum$SortOrder? parentId,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$ConfigArgInput {
-  factory Input$ConfigArgInput({required String name, required String value}) =>
-      Input$ConfigArgInput._({r'name': name, r'value': value});
+  factory Input$ConfigArgInput({
+    required String name,
+    required String value,
+  }) =>
+      Input$ConfigArgInput._({
+        r'name': name,
+        r'value': value,
+      });
 
   Input$ConfigArgInput._(this._$data);
 
@@ -1685,7 +1695,10 @@ class Input$ConfigArgInput {
   }
 
   CopyWith$Input$ConfigArgInput<Input$ConfigArgInput> get copyWith =>
-      CopyWith$Input$ConfigArgInput(this, (i) => i);
+      CopyWith$Input$ConfigArgInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -1712,7 +1725,10 @@ class Input$ConfigArgInput {
   int get hashCode {
     final l$name = name;
     final l$value = value;
-    return Object.hashAll([l$name, l$value]);
+    return Object.hashAll([
+      l$name,
+      l$value,
+    ]);
   }
 }
 
@@ -1725,12 +1741,18 @@ abstract class CopyWith$Input$ConfigArgInput<TRes> {
   factory CopyWith$Input$ConfigArgInput.stub(TRes res) =
       _CopyWithStubImpl$Input$ConfigArgInput;
 
-  TRes call({String? name, String? value});
+  TRes call({
+    String? name,
+    String? value,
+  });
 }
 
 class _CopyWithImpl$Input$ConfigArgInput<TRes>
     implements CopyWith$Input$ConfigArgInput<TRes> {
-  _CopyWithImpl$Input$ConfigArgInput(this._instance, this._then);
+  _CopyWithImpl$Input$ConfigArgInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$ConfigArgInput _instance;
 
@@ -1738,13 +1760,15 @@ class _CopyWithImpl$Input$ConfigArgInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? name = _undefined, Object? value = _undefined}) => _then(
-    Input$ConfigArgInput._({
-      ..._instance._$data,
-      if (name != _undefined && name != null) 'name': (name as String),
-      if (value != _undefined && value != null) 'value': (value as String),
-    }),
-  );
+  TRes call({
+    Object? name = _undefined,
+    Object? value = _undefined,
+  }) =>
+      _then(Input$ConfigArgInput._({
+        ..._instance._$data,
+        if (name != _undefined && name != null) 'name': (name as String),
+        if (value != _undefined && value != null) 'value': (value as String),
+      }));
 }
 
 class _CopyWithStubImpl$Input$ConfigArgInput<TRes>
@@ -1753,17 +1777,22 @@ class _CopyWithStubImpl$Input$ConfigArgInput<TRes>
 
   TRes _res;
 
-  call({String? name, String? value}) => _res;
+  call({
+    String? name,
+    String? value,
+  }) =>
+      _res;
 }
 
 class Input$ConfigurableOperationInput {
   factory Input$ConfigurableOperationInput({
     required String code,
     required List<Input$ConfigArgInput> arguments,
-  }) => Input$ConfigurableOperationInput._({
-    r'code': code,
-    r'arguments': arguments,
-  });
+  }) =>
+      Input$ConfigurableOperationInput._({
+        r'code': code,
+        r'arguments': arguments,
+      });
 
   Input$ConfigurableOperationInput._(this._$data);
 
@@ -1795,7 +1824,10 @@ class Input$ConfigurableOperationInput {
   }
 
   CopyWith$Input$ConfigurableOperationInput<Input$ConfigurableOperationInput>
-  get copyWith => CopyWith$Input$ConfigurableOperationInput(this, (i) => i);
+      get copyWith => CopyWith$Input$ConfigurableOperationInput(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -1830,7 +1862,10 @@ class Input$ConfigurableOperationInput {
   int get hashCode {
     final l$code = code;
     final l$arguments = arguments;
-    return Object.hashAll([l$code, Object.hashAll(l$arguments.map((v) => v))]);
+    return Object.hashAll([
+      l$code,
+      Object.hashAll(l$arguments.map((v) => v)),
+    ]);
   }
 }
 
@@ -1843,18 +1878,22 @@ abstract class CopyWith$Input$ConfigurableOperationInput<TRes> {
   factory CopyWith$Input$ConfigurableOperationInput.stub(TRes res) =
       _CopyWithStubImpl$Input$ConfigurableOperationInput;
 
-  TRes call({String? code, List<Input$ConfigArgInput>? arguments});
+  TRes call({
+    String? code,
+    List<Input$ConfigArgInput>? arguments,
+  });
   TRes arguments(
-    Iterable<Input$ConfigArgInput> Function(
-      Iterable<CopyWith$Input$ConfigArgInput<Input$ConfigArgInput>>,
-    )
-    _fn,
-  );
+      Iterable<Input$ConfigArgInput> Function(
+              Iterable<CopyWith$Input$ConfigArgInput<Input$ConfigArgInput>>)
+          _fn);
 }
 
 class _CopyWithImpl$Input$ConfigurableOperationInput<TRes>
     implements CopyWith$Input$ConfigurableOperationInput<TRes> {
-  _CopyWithImpl$Input$ConfigurableOperationInput(this._instance, this._then);
+  _CopyWithImpl$Input$ConfigurableOperationInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$ConfigurableOperationInput _instance;
 
@@ -1862,28 +1901,27 @@ class _CopyWithImpl$Input$ConfigurableOperationInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? code = _undefined, Object? arguments = _undefined}) =>
-      _then(
-        Input$ConfigurableOperationInput._({
-          ..._instance._$data,
-          if (code != _undefined && code != null) 'code': (code as String),
-          if (arguments != _undefined && arguments != null)
-            'arguments': (arguments as List<Input$ConfigArgInput>),
-        }),
-      );
+  TRes call({
+    Object? code = _undefined,
+    Object? arguments = _undefined,
+  }) =>
+      _then(Input$ConfigurableOperationInput._({
+        ..._instance._$data,
+        if (code != _undefined && code != null) 'code': (code as String),
+        if (arguments != _undefined && arguments != null)
+          'arguments': (arguments as List<Input$ConfigArgInput>),
+      }));
 
   TRes arguments(
-    Iterable<Input$ConfigArgInput> Function(
-      Iterable<CopyWith$Input$ConfigArgInput<Input$ConfigArgInput>>,
-    )
-    _fn,
-  ) => call(
-    arguments: _fn(
-      _instance.arguments.map(
-        (e) => CopyWith$Input$ConfigArgInput(e, (i) => i),
-      ),
-    ).toList(),
-  );
+          Iterable<Input$ConfigArgInput> Function(
+                  Iterable<CopyWith$Input$ConfigArgInput<Input$ConfigArgInput>>)
+              _fn) =>
+      call(
+          arguments:
+              _fn(_instance.arguments.map((e) => CopyWith$Input$ConfigArgInput(
+                    e,
+                    (i) => i,
+                  ))).toList());
 }
 
 class _CopyWithStubImpl$Input$ConfigurableOperationInput<TRes>
@@ -1892,7 +1930,11 @@ class _CopyWithStubImpl$Input$ConfigurableOperationInput<TRes>
 
   TRes _res;
 
-  call({String? code, List<Input$ConfigArgInput>? arguments}) => _res;
+  call({
+    String? code,
+    List<Input$ConfigArgInput>? arguments,
+  }) =>
+      _res;
 
   arguments(_fn) => _res;
 }
@@ -1911,22 +1953,23 @@ class Input$CreateAddressInput {
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Map<String, dynamic>? customFields,
-  }) => Input$CreateAddressInput._({
-    if (fullName != null) r'fullName': fullName,
-    if (company != null) r'company': company,
-    r'streetLine1': streetLine1,
-    if (streetLine2 != null) r'streetLine2': streetLine2,
-    if (city != null) r'city': city,
-    if (province != null) r'province': province,
-    if (postalCode != null) r'postalCode': postalCode,
-    r'countryCode': countryCode,
-    if (phoneNumber != null) r'phoneNumber': phoneNumber,
-    if (defaultShippingAddress != null)
-      r'defaultShippingAddress': defaultShippingAddress,
-    if (defaultBillingAddress != null)
-      r'defaultBillingAddress': defaultBillingAddress,
-    if (customFields != null) r'customFields': customFields,
-  });
+  }) =>
+      Input$CreateAddressInput._({
+        if (fullName != null) r'fullName': fullName,
+        if (company != null) r'company': company,
+        r'streetLine1': streetLine1,
+        if (streetLine2 != null) r'streetLine2': streetLine2,
+        if (city != null) r'city': city,
+        if (province != null) r'province': province,
+        if (postalCode != null) r'postalCode': postalCode,
+        r'countryCode': countryCode,
+        if (phoneNumber != null) r'phoneNumber': phoneNumber,
+        if (defaultShippingAddress != null)
+          r'defaultShippingAddress': defaultShippingAddress,
+        if (defaultBillingAddress != null)
+          r'defaultBillingAddress': defaultBillingAddress,
+        if (customFields != null) r'customFields': customFields,
+      });
 
   Input$CreateAddressInput._(this._$data);
 
@@ -2058,7 +2101,10 @@ class Input$CreateAddressInput {
   }
 
   CopyWith$Input$CreateAddressInput<Input$CreateAddressInput> get copyWith =>
-      CopyWith$Input$CreateAddressInput(this, (i) => i);
+      CopyWith$Input$CreateAddressInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -2232,7 +2278,10 @@ abstract class CopyWith$Input$CreateAddressInput<TRes> {
 
 class _CopyWithImpl$Input$CreateAddressInput<TRes>
     implements CopyWith$Input$CreateAddressInput<TRes> {
-  _CopyWithImpl$Input$CreateAddressInput(this._instance, this._then);
+  _CopyWithImpl$Input$CreateAddressInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$CreateAddressInput _instance;
 
@@ -2253,28 +2302,27 @@ class _CopyWithImpl$Input$CreateAddressInput<TRes>
     Object? defaultShippingAddress = _undefined,
     Object? defaultBillingAddress = _undefined,
     Object? customFields = _undefined,
-  }) => _then(
-    Input$CreateAddressInput._({
-      ..._instance._$data,
-      if (fullName != _undefined) 'fullName': (fullName as String?),
-      if (company != _undefined) 'company': (company as String?),
-      if (streetLine1 != _undefined && streetLine1 != null)
-        'streetLine1': (streetLine1 as String),
-      if (streetLine2 != _undefined) 'streetLine2': (streetLine2 as String?),
-      if (city != _undefined) 'city': (city as String?),
-      if (province != _undefined) 'province': (province as String?),
-      if (postalCode != _undefined) 'postalCode': (postalCode as String?),
-      if (countryCode != _undefined && countryCode != null)
-        'countryCode': (countryCode as String),
-      if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
-      if (defaultShippingAddress != _undefined)
-        'defaultShippingAddress': (defaultShippingAddress as bool?),
-      if (defaultBillingAddress != _undefined)
-        'defaultBillingAddress': (defaultBillingAddress as bool?),
-      if (customFields != _undefined)
-        'customFields': (customFields as Map<String, dynamic>?),
-    }),
-  );
+  }) =>
+      _then(Input$CreateAddressInput._({
+        ..._instance._$data,
+        if (fullName != _undefined) 'fullName': (fullName as String?),
+        if (company != _undefined) 'company': (company as String?),
+        if (streetLine1 != _undefined && streetLine1 != null)
+          'streetLine1': (streetLine1 as String),
+        if (streetLine2 != _undefined) 'streetLine2': (streetLine2 as String?),
+        if (city != _undefined) 'city': (city as String?),
+        if (province != _undefined) 'province': (province as String?),
+        if (postalCode != _undefined) 'postalCode': (postalCode as String?),
+        if (countryCode != _undefined && countryCode != null)
+          'countryCode': (countryCode as String),
+        if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
+        if (defaultShippingAddress != _undefined)
+          'defaultShippingAddress': (defaultShippingAddress as bool?),
+        if (defaultBillingAddress != _undefined)
+          'defaultBillingAddress': (defaultBillingAddress as bool?),
+        if (customFields != _undefined)
+          'customFields': (customFields as Map<String, dynamic>?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$CreateAddressInput<TRes>
@@ -2296,22 +2344,22 @@ class _CopyWithStubImpl$Input$CreateAddressInput<TRes>
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Map<String, dynamic>? customFields,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$CreateCustomerCustomFieldsInput {
-  factory Input$CreateCustomerCustomFieldsInput({
-    int? loyaltyPointsAvailable,
-  }) => Input$CreateCustomerCustomFieldsInput._({
-    if (loyaltyPointsAvailable != null)
-      r'loyaltyPointsAvailable': loyaltyPointsAvailable,
-  });
+  factory Input$CreateCustomerCustomFieldsInput(
+          {int? loyaltyPointsAvailable}) =>
+      Input$CreateCustomerCustomFieldsInput._({
+        if (loyaltyPointsAvailable != null)
+          r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+      });
 
   Input$CreateCustomerCustomFieldsInput._(this._$data);
 
   factory Input$CreateCustomerCustomFieldsInput.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
@@ -2335,10 +2383,11 @@ class Input$CreateCustomerCustomFieldsInput {
   }
 
   CopyWith$Input$CreateCustomerCustomFieldsInput<
-    Input$CreateCustomerCustomFieldsInput
-  >
-  get copyWith =>
-      CopyWith$Input$CreateCustomerCustomFieldsInput(this, (i) => i);
+          Input$CreateCustomerCustomFieldsInput>
+      get copyWith => CopyWith$Input$CreateCustomerCustomFieldsInput(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -2367,7 +2416,7 @@ class Input$CreateCustomerCustomFieldsInput {
     return Object.hashAll([
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
-          : const {},
+          : const {}
     ]);
   }
 }
@@ -2397,13 +2446,12 @@ class _CopyWithImpl$Input$CreateCustomerCustomFieldsInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? loyaltyPointsAvailable = _undefined}) => _then(
-    Input$CreateCustomerCustomFieldsInput._({
-      ..._instance._$data,
-      if (loyaltyPointsAvailable != _undefined)
-        'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
-    }),
-  );
+  TRes call({Object? loyaltyPointsAvailable = _undefined}) =>
+      _then(Input$CreateCustomerCustomFieldsInput._({
+        ..._instance._$data,
+        if (loyaltyPointsAvailable != _undefined)
+          'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$CreateCustomerCustomFieldsInput<TRes>
@@ -2423,14 +2471,15 @@ class Input$CreateCustomerInput {
     String? phoneNumber,
     required String emailAddress,
     Input$CreateCustomerCustomFieldsInput? customFields,
-  }) => Input$CreateCustomerInput._({
-    if (title != null) r'title': title,
-    r'firstName': firstName,
-    r'lastName': lastName,
-    if (phoneNumber != null) r'phoneNumber': phoneNumber,
-    r'emailAddress': emailAddress,
-    if (customFields != null) r'customFields': customFields,
-  });
+  }) =>
+      Input$CreateCustomerInput._({
+        if (title != null) r'title': title,
+        r'firstName': firstName,
+        r'lastName': lastName,
+        if (phoneNumber != null) r'phoneNumber': phoneNumber,
+        r'emailAddress': emailAddress,
+        if (customFields != null) r'customFields': customFields,
+      });
 
   Input$CreateCustomerInput._(this._$data);
 
@@ -2455,8 +2504,7 @@ class Input$CreateCustomerInput {
       result$data['customFields'] = l$customFields == null
           ? null
           : Input$CreateCustomerCustomFieldsInput.fromJson(
-              (l$customFields as Map<String, dynamic>),
-            );
+              (l$customFields as Map<String, dynamic>));
     }
     return Input$CreateCustomerInput._(result$data);
   }
@@ -2500,7 +2548,10 @@ class Input$CreateCustomerInput {
   }
 
   CopyWith$Input$CreateCustomerInput<Input$CreateCustomerInput> get copyWith =>
-      CopyWith$Input$CreateCustomerInput(this, (i) => i);
+      CopyWith$Input$CreateCustomerInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -2596,7 +2647,10 @@ abstract class CopyWith$Input$CreateCustomerInput<TRes> {
 
 class _CopyWithImpl$Input$CreateCustomerInput<TRes>
     implements CopyWith$Input$CreateCustomerInput<TRes> {
-  _CopyWithImpl$Input$CreateCustomerInput(this._instance, this._then);
+  _CopyWithImpl$Input$CreateCustomerInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$CreateCustomerInput _instance;
 
@@ -2611,31 +2665,28 @@ class _CopyWithImpl$Input$CreateCustomerInput<TRes>
     Object? phoneNumber = _undefined,
     Object? emailAddress = _undefined,
     Object? customFields = _undefined,
-  }) => _then(
-    Input$CreateCustomerInput._({
-      ..._instance._$data,
-      if (title != _undefined) 'title': (title as String?),
-      if (firstName != _undefined && firstName != null)
-        'firstName': (firstName as String),
-      if (lastName != _undefined && lastName != null)
-        'lastName': (lastName as String),
-      if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
-      if (emailAddress != _undefined && emailAddress != null)
-        'emailAddress': (emailAddress as String),
-      if (customFields != _undefined)
-        'customFields':
-            (customFields as Input$CreateCustomerCustomFieldsInput?),
-    }),
-  );
+  }) =>
+      _then(Input$CreateCustomerInput._({
+        ..._instance._$data,
+        if (title != _undefined) 'title': (title as String?),
+        if (firstName != _undefined && firstName != null)
+          'firstName': (firstName as String),
+        if (lastName != _undefined && lastName != null)
+          'lastName': (lastName as String),
+        if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
+        if (emailAddress != _undefined && emailAddress != null)
+          'emailAddress': (emailAddress as String),
+        if (customFields != _undefined)
+          'customFields':
+              (customFields as Input$CreateCustomerCustomFieldsInput?),
+      }));
 
   CopyWith$Input$CreateCustomerCustomFieldsInput<TRes> get customFields {
     final local$customFields = _instance.customFields;
     return local$customFields == null
         ? CopyWith$Input$CreateCustomerCustomFieldsInput.stub(_then(_instance))
         : CopyWith$Input$CreateCustomerCustomFieldsInput(
-            local$customFields,
-            (e) => call(customFields: e),
-          );
+            local$customFields, (e) => call(customFields: e));
   }
 }
 
@@ -2652,7 +2703,8 @@ class _CopyWithStubImpl$Input$CreateCustomerInput<TRes>
     String? phoneNumber,
     String? emailAddress,
     Input$CreateCustomerCustomFieldsInput? customFields,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$CreateCustomerCustomFieldsInput<TRes> get customFields =>
       CopyWith$Input$CreateCustomerCustomFieldsInput.stub(_res);
@@ -2671,20 +2723,21 @@ class Input$CustomerFilterParameter {
     List<Input$CustomerFilterParameter>? $_and,
     List<Input$CustomerFilterParameter>? $_or,
     Input$NumberOperators? loyaltyPointsAvailable,
-  }) => Input$CustomerFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (title != null) r'title': title,
-    if (firstName != null) r'firstName': firstName,
-    if (lastName != null) r'lastName': lastName,
-    if (phoneNumber != null) r'phoneNumber': phoneNumber,
-    if (emailAddress != null) r'emailAddress': emailAddress,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-    if (loyaltyPointsAvailable != null)
-      r'loyaltyPointsAvailable': loyaltyPointsAvailable,
-  });
+  }) =>
+      Input$CustomerFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (title != null) r'title': title,
+        if (firstName != null) r'firstName': firstName,
+        if (lastName != null) r'lastName': lastName,
+        if (phoneNumber != null) r'phoneNumber': phoneNumber,
+        if (emailAddress != null) r'emailAddress': emailAddress,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+        if (loyaltyPointsAvailable != null)
+          r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+      });
 
   Input$CustomerFilterParameter._(this._$data);
 
@@ -2719,51 +2772,41 @@ class Input$CustomerFilterParameter {
       result$data['firstName'] = l$firstName == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$firstName as Map<String, dynamic>),
-            );
+              (l$firstName as Map<String, dynamic>));
     }
     if (data.containsKey('lastName')) {
       final l$lastName = data['lastName'];
       result$data['lastName'] = l$lastName == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$lastName as Map<String, dynamic>),
-            );
+              (l$lastName as Map<String, dynamic>));
     }
     if (data.containsKey('phoneNumber')) {
       final l$phoneNumber = data['phoneNumber'];
       result$data['phoneNumber'] = l$phoneNumber == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$phoneNumber as Map<String, dynamic>),
-            );
+              (l$phoneNumber as Map<String, dynamic>));
     }
     if (data.containsKey('emailAddress')) {
       final l$emailAddress = data['emailAddress'];
       result$data['emailAddress'] = l$emailAddress == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$emailAddress as Map<String, dynamic>),
-            );
+              (l$emailAddress as Map<String, dynamic>));
     }
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$CustomerFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$CustomerFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$CustomerFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$CustomerFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('loyaltyPointsAvailable')) {
@@ -2771,8 +2814,7 @@ class Input$CustomerFilterParameter {
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$loyaltyPointsAvailable as Map<String, dynamic>),
-            );
+              (l$loyaltyPointsAvailable as Map<String, dynamic>));
     }
     return Input$CustomerFilterParameter._(result$data);
   }
@@ -2855,14 +2897,17 @@ class Input$CustomerFilterParameter {
     }
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
-      result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable
-          ?.toJson();
+      result$data['loyaltyPointsAvailable'] =
+          l$loyaltyPointsAvailable?.toJson();
     }
     return result$data;
   }
 
   CopyWith$Input$CustomerFilterParameter<Input$CustomerFilterParameter>
-  get copyWith => CopyWith$Input$CustomerFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$CustomerFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -3017,13 +3062,13 @@ class Input$CustomerFilterParameter {
       _$data.containsKey('emailAddress') ? l$emailAddress : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
@@ -3063,27 +3108,26 @@ abstract class CopyWith$Input$CustomerFilterParameter<TRes> {
   CopyWith$Input$StringOperators<TRes> get phoneNumber;
   CopyWith$Input$StringOperators<TRes> get emailAddress;
   TRes $_and(
-    Iterable<Input$CustomerFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CustomerFilterParameter<Input$CustomerFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$CustomerFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$CustomerFilterParameter<
+                      Input$CustomerFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$CustomerFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CustomerFilterParameter<Input$CustomerFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$CustomerFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$CustomerFilterParameter<
+                      Input$CustomerFilterParameter>>?)
+          _fn);
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsAvailable;
 }
 
 class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     implements CopyWith$Input$CustomerFilterParameter<TRes> {
-  _CopyWithImpl$Input$CustomerFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$CustomerFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$CustomerFilterParameter _instance;
 
@@ -3103,32 +3147,31 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     Object? $_and = _undefined,
     Object? $_or = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
-  }) => _then(
-    Input$CustomerFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (title != _undefined) 'title': (title as Input$StringOperators?),
-      if (firstName != _undefined)
-        'firstName': (firstName as Input$StringOperators?),
-      if (lastName != _undefined)
-        'lastName': (lastName as Input$StringOperators?),
-      if (phoneNumber != _undefined)
-        'phoneNumber': (phoneNumber as Input$StringOperators?),
-      if (emailAddress != _undefined)
-        'emailAddress': (emailAddress as Input$StringOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$CustomerFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$CustomerFilterParameter>?),
-      if (loyaltyPointsAvailable != _undefined)
-        'loyaltyPointsAvailable':
-            (loyaltyPointsAvailable as Input$NumberOperators?),
-    }),
-  );
+  }) =>
+      _then(Input$CustomerFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (title != _undefined) 'title': (title as Input$StringOperators?),
+        if (firstName != _undefined)
+          'firstName': (firstName as Input$StringOperators?),
+        if (lastName != _undefined)
+          'lastName': (lastName as Input$StringOperators?),
+        if (phoneNumber != _undefined)
+          'phoneNumber': (phoneNumber as Input$StringOperators?),
+        if (emailAddress != _undefined)
+          'emailAddress': (emailAddress as Input$StringOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$CustomerFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$CustomerFilterParameter>?),
+        if (loyaltyPointsAvailable != _undefined)
+          'loyaltyPointsAvailable':
+              (loyaltyPointsAvailable as Input$NumberOperators?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -3142,9 +3185,7 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -3152,9 +3193,7 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get title {
@@ -3169,9 +3208,7 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     return local$firstName == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$firstName,
-            (e) => call(firstName: e),
-          );
+            local$firstName, (e) => call(firstName: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get lastName {
@@ -3179,9 +3216,7 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     return local$lastName == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$lastName,
-            (e) => call(lastName: e),
-          );
+            local$lastName, (e) => call(lastName: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get phoneNumber {
@@ -3189,9 +3224,7 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     return local$phoneNumber == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$phoneNumber,
-            (e) => call(phoneNumber: e),
-          );
+            local$phoneNumber, (e) => call(phoneNumber: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get emailAddress {
@@ -3199,49 +3232,41 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     return local$emailAddress == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$emailAddress,
-            (e) => call(emailAddress: e),
-          );
+            local$emailAddress, (e) => call(emailAddress: e));
   }
 
   TRes $_and(
-    Iterable<Input$CustomerFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CustomerFilterParameter<Input$CustomerFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$CustomerFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$CustomerFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$CustomerFilterParameter<
+                          Input$CustomerFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(_instance.$_and
+              ?.map((e) => CopyWith$Input$CustomerFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$CustomerFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$CustomerFilterParameter<Input$CustomerFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$CustomerFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$CustomerFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$CustomerFilterParameter<
+                          Input$CustomerFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(
+              _instance.$_or?.map((e) => CopyWith$Input$CustomerFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsAvailable {
     final local$loyaltyPointsAvailable = _instance.loyaltyPointsAvailable;
     return local$loyaltyPointsAvailable == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
-        : CopyWith$Input$NumberOperators(
-            local$loyaltyPointsAvailable,
-            (e) => call(loyaltyPointsAvailable: e),
-          );
+        : CopyWith$Input$NumberOperators(local$loyaltyPointsAvailable,
+            (e) => call(loyaltyPointsAvailable: e));
   }
 }
 
@@ -3263,7 +3288,8 @@ class _CopyWithStubImpl$Input$CustomerFilterParameter<TRes>
     List<Input$CustomerFilterParameter>? $_and,
     List<Input$CustomerFilterParameter>? $_or,
     Input$NumberOperators? loyaltyPointsAvailable,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -3304,13 +3330,14 @@ class Input$CustomerListOptions {
     Input$CustomerSortParameter? sort,
     Input$CustomerFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$CustomerListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$CustomerListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$CustomerListOptions._(this._$data);
 
@@ -3329,16 +3356,14 @@ class Input$CustomerListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$CustomerSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$CustomerFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -3392,7 +3417,10 @@ class Input$CustomerListOptions {
   }
 
   CopyWith$Input$CustomerListOptions<Input$CustomerListOptions> get copyWith =>
-      CopyWith$Input$CustomerListOptions(this, (i) => i);
+      CopyWith$Input$CustomerListOptions(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -3486,7 +3514,10 @@ abstract class CopyWith$Input$CustomerListOptions<TRes> {
 
 class _CopyWithImpl$Input$CustomerListOptions<TRes>
     implements CopyWith$Input$CustomerListOptions<TRes> {
-  _CopyWithImpl$Input$CustomerListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$CustomerListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$CustomerListOptions _instance;
 
@@ -3500,27 +3531,24 @@ class _CopyWithImpl$Input$CustomerListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$CustomerListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined) 'sort': (sort as Input$CustomerSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$CustomerFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$CustomerListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined) 'sort': (sort as Input$CustomerSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$CustomerFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$CustomerSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$CustomerSortParameter.stub(_then(_instance))
         : CopyWith$Input$CustomerSortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 
   CopyWith$Input$CustomerFilterParameter<TRes> get filter {
@@ -3528,9 +3556,7 @@ class _CopyWithImpl$Input$CustomerListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$CustomerFilterParameter.stub(_then(_instance))
         : CopyWith$Input$CustomerFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -3546,7 +3572,8 @@ class _CopyWithStubImpl$Input$CustomerListOptions<TRes>
     Input$CustomerSortParameter? sort,
     Input$CustomerFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$CustomerSortParameter<TRes> get sort =>
       CopyWith$Input$CustomerSortParameter.stub(_res);
@@ -3566,18 +3593,19 @@ class Input$CustomerSortParameter {
     Enum$SortOrder? phoneNumber,
     Enum$SortOrder? emailAddress,
     Enum$SortOrder? loyaltyPointsAvailable,
-  }) => Input$CustomerSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (title != null) r'title': title,
-    if (firstName != null) r'firstName': firstName,
-    if (lastName != null) r'lastName': lastName,
-    if (phoneNumber != null) r'phoneNumber': phoneNumber,
-    if (emailAddress != null) r'emailAddress': emailAddress,
-    if (loyaltyPointsAvailable != null)
-      r'loyaltyPointsAvailable': loyaltyPointsAvailable,
-  });
+  }) =>
+      Input$CustomerSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (title != null) r'title': title,
+        if (firstName != null) r'firstName': firstName,
+        if (lastName != null) r'lastName': lastName,
+        if (phoneNumber != null) r'phoneNumber': phoneNumber,
+        if (emailAddress != null) r'emailAddress': emailAddress,
+        if (loyaltyPointsAvailable != null)
+          r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+      });
 
   Input$CustomerSortParameter._(this._$data);
 
@@ -3585,9 +3613,8 @@ class Input$CustomerSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -3603,9 +3630,8 @@ class Input$CustomerSortParameter {
     }
     if (data.containsKey('title')) {
       final l$title = data['title'];
-      result$data['title'] = l$title == null
-          ? null
-          : fromJson$Enum$SortOrder((l$title as String));
+      result$data['title'] =
+          l$title == null ? null : fromJson$Enum$SortOrder((l$title as String));
     }
     if (data.containsKey('firstName')) {
       final l$firstName = data['firstName'];
@@ -3670,45 +3696,38 @@ class Input$CustomerSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('title')) {
       final l$title = title;
-      result$data['title'] = l$title == null
-          ? null
-          : toJson$Enum$SortOrder(l$title);
+      result$data['title'] =
+          l$title == null ? null : toJson$Enum$SortOrder(l$title);
     }
     if (_$data.containsKey('firstName')) {
       final l$firstName = firstName;
-      result$data['firstName'] = l$firstName == null
-          ? null
-          : toJson$Enum$SortOrder(l$firstName);
+      result$data['firstName'] =
+          l$firstName == null ? null : toJson$Enum$SortOrder(l$firstName);
     }
     if (_$data.containsKey('lastName')) {
       final l$lastName = lastName;
-      result$data['lastName'] = l$lastName == null
-          ? null
-          : toJson$Enum$SortOrder(l$lastName);
+      result$data['lastName'] =
+          l$lastName == null ? null : toJson$Enum$SortOrder(l$lastName);
     }
     if (_$data.containsKey('phoneNumber')) {
       final l$phoneNumber = phoneNumber;
-      result$data['phoneNumber'] = l$phoneNumber == null
-          ? null
-          : toJson$Enum$SortOrder(l$phoneNumber);
+      result$data['phoneNumber'] =
+          l$phoneNumber == null ? null : toJson$Enum$SortOrder(l$phoneNumber);
     }
     if (_$data.containsKey('emailAddress')) {
       final l$emailAddress = emailAddress;
-      result$data['emailAddress'] = l$emailAddress == null
-          ? null
-          : toJson$Enum$SortOrder(l$emailAddress);
+      result$data['emailAddress'] =
+          l$emailAddress == null ? null : toJson$Enum$SortOrder(l$emailAddress);
     }
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
@@ -3720,7 +3739,10 @@ class Input$CustomerSortParameter {
   }
 
   CopyWith$Input$CustomerSortParameter<Input$CustomerSortParameter>
-  get copyWith => CopyWith$Input$CustomerSortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$CustomerSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -3864,7 +3886,10 @@ abstract class CopyWith$Input$CustomerSortParameter<TRes> {
 
 class _CopyWithImpl$Input$CustomerSortParameter<TRes>
     implements CopyWith$Input$CustomerSortParameter<TRes> {
-  _CopyWithImpl$Input$CustomerSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$CustomerSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$CustomerSortParameter _instance;
 
@@ -3882,23 +3907,25 @@ class _CopyWithImpl$Input$CustomerSortParameter<TRes>
     Object? phoneNumber = _undefined,
     Object? emailAddress = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
-  }) => _then(
-    Input$CustomerSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (title != _undefined) 'title': (title as Enum$SortOrder?),
-      if (firstName != _undefined) 'firstName': (firstName as Enum$SortOrder?),
-      if (lastName != _undefined) 'lastName': (lastName as Enum$SortOrder?),
-      if (phoneNumber != _undefined)
-        'phoneNumber': (phoneNumber as Enum$SortOrder?),
-      if (emailAddress != _undefined)
-        'emailAddress': (emailAddress as Enum$SortOrder?),
-      if (loyaltyPointsAvailable != _undefined)
-        'loyaltyPointsAvailable': (loyaltyPointsAvailable as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$CustomerSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (title != _undefined) 'title': (title as Enum$SortOrder?),
+        if (firstName != _undefined)
+          'firstName': (firstName as Enum$SortOrder?),
+        if (lastName != _undefined) 'lastName': (lastName as Enum$SortOrder?),
+        if (phoneNumber != _undefined)
+          'phoneNumber': (phoneNumber as Enum$SortOrder?),
+        if (emailAddress != _undefined)
+          'emailAddress': (emailAddress as Enum$SortOrder?),
+        if (loyaltyPointsAvailable != _undefined)
+          'loyaltyPointsAvailable': (loyaltyPointsAvailable as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$CustomerSortParameter<TRes>
@@ -3917,12 +3944,15 @@ class _CopyWithStubImpl$Input$CustomerSortParameter<TRes>
     Enum$SortOrder? phoneNumber,
     Enum$SortOrder? emailAddress,
     Enum$SortOrder? loyaltyPointsAvailable,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$DateListOperators {
   factory Input$DateListOperators({required DateTime inList}) =>
-      Input$DateListOperators._({r'inList': inList});
+      Input$DateListOperators._({
+        r'inList': inList,
+      });
 
   Input$DateListOperators._(this._$data);
 
@@ -3945,7 +3975,10 @@ class Input$DateListOperators {
   }
 
   CopyWith$Input$DateListOperators<Input$DateListOperators> get copyWith =>
-      CopyWith$Input$DateListOperators(this, (i) => i);
+      CopyWith$Input$DateListOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -3984,7 +4017,10 @@ abstract class CopyWith$Input$DateListOperators<TRes> {
 
 class _CopyWithImpl$Input$DateListOperators<TRes>
     implements CopyWith$Input$DateListOperators<TRes> {
-  _CopyWithImpl$Input$DateListOperators(this._instance, this._then);
+  _CopyWithImpl$Input$DateListOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$DateListOperators _instance;
 
@@ -3992,13 +4028,11 @@ class _CopyWithImpl$Input$DateListOperators<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? inList = _undefined}) => _then(
-    Input$DateListOperators._({
-      ..._instance._$data,
-      if (inList != _undefined && inList != null)
-        'inList': (inList as DateTime),
-    }),
-  );
+  TRes call({Object? inList = _undefined}) => _then(Input$DateListOperators._({
+        ..._instance._$data,
+        if (inList != _undefined && inList != null)
+          'inList': (inList as DateTime),
+      }));
 }
 
 class _CopyWithStubImpl$Input$DateListOperators<TRes>
@@ -4017,13 +4051,14 @@ class Input$DateOperators {
     DateTime? after,
     Input$DateRange? between,
     bool? isNull,
-  }) => Input$DateOperators._({
-    if (eq != null) r'eq': eq,
-    if (before != null) r'before': before,
-    if (after != null) r'after': after,
-    if (between != null) r'between': between,
-    if (isNull != null) r'isNull': isNull,
-  });
+  }) =>
+      Input$DateOperators._({
+        if (eq != null) r'eq': eq,
+        if (before != null) r'before': before,
+        if (after != null) r'after': after,
+        if (between != null) r'between': between,
+        if (isNull != null) r'isNull': isNull,
+      });
 
   Input$DateOperators._(this._$data);
 
@@ -4031,21 +4066,18 @@ class Input$DateOperators {
     final result$data = <String, dynamic>{};
     if (data.containsKey('eq')) {
       final l$eq = data['eq'];
-      result$data['eq'] = l$eq == null
-          ? null
-          : DateTime.parse((l$eq as String));
+      result$data['eq'] =
+          l$eq == null ? null : DateTime.parse((l$eq as String));
     }
     if (data.containsKey('before')) {
       final l$before = data['before'];
-      result$data['before'] = l$before == null
-          ? null
-          : DateTime.parse((l$before as String));
+      result$data['before'] =
+          l$before == null ? null : DateTime.parse((l$before as String));
     }
     if (data.containsKey('after')) {
       final l$after = data['after'];
-      result$data['after'] = l$after == null
-          ? null
-          : DateTime.parse((l$after as String));
+      result$data['after'] =
+          l$after == null ? null : DateTime.parse((l$after as String));
     }
     if (data.containsKey('between')) {
       final l$between = data['between'];
@@ -4098,7 +4130,10 @@ class Input$DateOperators {
   }
 
   CopyWith$Input$DateOperators<Input$DateOperators> get copyWith =>
-      CopyWith$Input$DateOperators(this, (i) => i);
+      CopyWith$Input$DateOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -4189,7 +4224,10 @@ abstract class CopyWith$Input$DateOperators<TRes> {
 
 class _CopyWithImpl$Input$DateOperators<TRes>
     implements CopyWith$Input$DateOperators<TRes> {
-  _CopyWithImpl$Input$DateOperators(this._instance, this._then);
+  _CopyWithImpl$Input$DateOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$DateOperators _instance;
 
@@ -4203,16 +4241,15 @@ class _CopyWithImpl$Input$DateOperators<TRes>
     Object? after = _undefined,
     Object? between = _undefined,
     Object? isNull = _undefined,
-  }) => _then(
-    Input$DateOperators._({
-      ..._instance._$data,
-      if (eq != _undefined) 'eq': (eq as DateTime?),
-      if (before != _undefined) 'before': (before as DateTime?),
-      if (after != _undefined) 'after': (after as DateTime?),
-      if (between != _undefined) 'between': (between as Input$DateRange?),
-      if (isNull != _undefined) 'isNull': (isNull as bool?),
-    }),
-  );
+  }) =>
+      _then(Input$DateOperators._({
+        ..._instance._$data,
+        if (eq != _undefined) 'eq': (eq as DateTime?),
+        if (before != _undefined) 'before': (before as DateTime?),
+        if (after != _undefined) 'after': (after as DateTime?),
+        if (between != _undefined) 'between': (between as Input$DateRange?),
+        if (isNull != _undefined) 'isNull': (isNull as bool?),
+      }));
 
   CopyWith$Input$DateRange<TRes> get between {
     final local$between = _instance.between;
@@ -4234,15 +4271,22 @@ class _CopyWithStubImpl$Input$DateOperators<TRes>
     DateTime? after,
     Input$DateRange? between,
     bool? isNull,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$DateRange<TRes> get between =>
       CopyWith$Input$DateRange.stub(_res);
 }
 
 class Input$DateRange {
-  factory Input$DateRange({required DateTime start, required DateTime end}) =>
-      Input$DateRange._({r'start': start, r'end': end});
+  factory Input$DateRange({
+    required DateTime start,
+    required DateTime end,
+  }) =>
+      Input$DateRange._({
+        r'start': start,
+        r'end': end,
+      });
 
   Input$DateRange._(this._$data);
 
@@ -4271,7 +4315,10 @@ class Input$DateRange {
   }
 
   CopyWith$Input$DateRange<Input$DateRange> get copyWith =>
-      CopyWith$Input$DateRange(this, (i) => i);
+      CopyWith$Input$DateRange(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -4298,7 +4345,10 @@ class Input$DateRange {
   int get hashCode {
     final l$start = start;
     final l$end = end;
-    return Object.hashAll([l$start, l$end]);
+    return Object.hashAll([
+      l$start,
+      l$end,
+    ]);
   }
 }
 
@@ -4311,12 +4361,18 @@ abstract class CopyWith$Input$DateRange<TRes> {
   factory CopyWith$Input$DateRange.stub(TRes res) =
       _CopyWithStubImpl$Input$DateRange;
 
-  TRes call({DateTime? start, DateTime? end});
+  TRes call({
+    DateTime? start,
+    DateTime? end,
+  });
 }
 
 class _CopyWithImpl$Input$DateRange<TRes>
     implements CopyWith$Input$DateRange<TRes> {
-  _CopyWithImpl$Input$DateRange(this._instance, this._then);
+  _CopyWithImpl$Input$DateRange(
+    this._instance,
+    this._then,
+  );
 
   final Input$DateRange _instance;
 
@@ -4324,13 +4380,15 @@ class _CopyWithImpl$Input$DateRange<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? start = _undefined, Object? end = _undefined}) => _then(
-    Input$DateRange._({
-      ..._instance._$data,
-      if (start != _undefined && start != null) 'start': (start as DateTime),
-      if (end != _undefined && end != null) 'end': (end as DateTime),
-    }),
-  );
+  TRes call({
+    Object? start = _undefined,
+    Object? end = _undefined,
+  }) =>
+      _then(Input$DateRange._({
+        ..._instance._$data,
+        if (start != _undefined && start != null) 'start': (start as DateTime),
+        if (end != _undefined && end != null) 'end': (end as DateTime),
+      }));
 }
 
 class _CopyWithStubImpl$Input$DateRange<TRes>
@@ -4339,7 +4397,11 @@ class _CopyWithStubImpl$Input$DateRange<TRes>
 
   TRes _res;
 
-  call({DateTime? start, DateTime? end}) => _res;
+  call({
+    DateTime? start,
+    DateTime? end,
+  }) =>
+      _res;
 }
 
 class Input$FacetFilterParameter {
@@ -4352,16 +4414,17 @@ class Input$FacetFilterParameter {
     Input$StringOperators? code,
     List<Input$FacetFilterParameter>? $_and,
     List<Input$FacetFilterParameter>? $_or,
-  }) => Input$FacetFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (languageCode != null) r'languageCode': languageCode,
-    if (name != null) r'name': name,
-    if (code != null) r'code': code,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-  });
+  }) =>
+      Input$FacetFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (languageCode != null) r'languageCode': languageCode,
+        if (name != null) r'name': name,
+        if (code != null) r'code': code,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+      });
 
   Input$FacetFilterParameter._(this._$data);
 
@@ -4390,8 +4453,7 @@ class Input$FacetFilterParameter {
       result$data['languageCode'] = l$languageCode == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$languageCode as Map<String, dynamic>),
-            );
+              (l$languageCode as Map<String, dynamic>));
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
@@ -4408,21 +4470,15 @@ class Input$FacetFilterParameter {
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$FacetFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) =>
+              Input$FacetFilterParameter.fromJson((e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$FacetFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) =>
+              Input$FacetFilterParameter.fromJson((e as Map<String, dynamic>)))
           .toList();
     }
     return Input$FacetFilterParameter._(result$data);
@@ -4489,7 +4545,10 @@ class Input$FacetFilterParameter {
   }
 
   CopyWith$Input$FacetFilterParameter<Input$FacetFilterParameter>
-  get copyWith => CopyWith$Input$FacetFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$FacetFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -4611,13 +4670,13 @@ class Input$FacetFilterParameter {
       _$data.containsKey('code') ? l$code : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
     ]);
   }
@@ -4649,26 +4708,25 @@ abstract class CopyWith$Input$FacetFilterParameter<TRes> {
   CopyWith$Input$StringOperators<TRes> get name;
   CopyWith$Input$StringOperators<TRes> get code;
   TRes $_and(
-    Iterable<Input$FacetFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetFilterParameter<Input$FacetFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$FacetFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$FacetFilterParameter<
+                      Input$FacetFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$FacetFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetFilterParameter<Input$FacetFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$FacetFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$FacetFilterParameter<
+                      Input$FacetFilterParameter>>?)
+          _fn);
 }
 
 class _CopyWithImpl$Input$FacetFilterParameter<TRes>
     implements CopyWith$Input$FacetFilterParameter<TRes> {
-  _CopyWithImpl$Input$FacetFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$FacetFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$FacetFilterParameter _instance;
 
@@ -4685,24 +4743,23 @@ class _CopyWithImpl$Input$FacetFilterParameter<TRes>
     Object? code = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-  }) => _then(
-    Input$FacetFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (languageCode != _undefined)
-        'languageCode': (languageCode as Input$StringOperators?),
-      if (name != _undefined) 'name': (name as Input$StringOperators?),
-      if (code != _undefined) 'code': (code as Input$StringOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$FacetFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$FacetFilterParameter>?),
-    }),
-  );
+  }) =>
+      _then(Input$FacetFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (languageCode != _undefined)
+          'languageCode': (languageCode as Input$StringOperators?),
+        if (name != _undefined) 'name': (name as Input$StringOperators?),
+        if (code != _undefined) 'code': (code as Input$StringOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$FacetFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$FacetFilterParameter>?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -4716,9 +4773,7 @@ class _CopyWithImpl$Input$FacetFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -4726,9 +4781,7 @@ class _CopyWithImpl$Input$FacetFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get languageCode {
@@ -4736,9 +4789,7 @@ class _CopyWithImpl$Input$FacetFilterParameter<TRes>
     return local$languageCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$languageCode,
-            (e) => call(languageCode: e),
-          );
+            local$languageCode, (e) => call(languageCode: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get name {
@@ -4756,34 +4807,30 @@ class _CopyWithImpl$Input$FacetFilterParameter<TRes>
   }
 
   TRes $_and(
-    Iterable<Input$FacetFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetFilterParameter<Input$FacetFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$FacetFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$FacetFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$FacetFilterParameter<
+                          Input$FacetFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(
+              _instance.$_and?.map((e) => CopyWith$Input$FacetFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$FacetFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetFilterParameter<Input$FacetFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$FacetFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$FacetFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$FacetFilterParameter<
+                          Input$FacetFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(
+              _instance.$_or?.map((e) => CopyWith$Input$FacetFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 }
 
 class _CopyWithStubImpl$Input$FacetFilterParameter<TRes>
@@ -4801,7 +4848,8 @@ class _CopyWithStubImpl$Input$FacetFilterParameter<TRes>
     Input$StringOperators? code,
     List<Input$FacetFilterParameter>? $_and,
     List<Input$FacetFilterParameter>? $_or,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -4833,13 +4881,14 @@ class Input$FacetListOptions {
     Input$FacetSortParameter? sort,
     Input$FacetFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$FacetListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$FacetListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$FacetListOptions._(this._$data);
 
@@ -4864,8 +4913,7 @@ class Input$FacetListOptions {
       result$data['filter'] = l$filter == null
           ? null
           : Input$FacetFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -4919,7 +4967,10 @@ class Input$FacetListOptions {
   }
 
   CopyWith$Input$FacetListOptions<Input$FacetListOptions> get copyWith =>
-      CopyWith$Input$FacetListOptions(this, (i) => i);
+      CopyWith$Input$FacetListOptions(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -5012,7 +5063,10 @@ abstract class CopyWith$Input$FacetListOptions<TRes> {
 
 class _CopyWithImpl$Input$FacetListOptions<TRes>
     implements CopyWith$Input$FacetListOptions<TRes> {
-  _CopyWithImpl$Input$FacetListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$FacetListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$FacetListOptions _instance;
 
@@ -5026,18 +5080,17 @@ class _CopyWithImpl$Input$FacetListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$FacetListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined) 'sort': (sort as Input$FacetSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$FacetFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$FacetListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined) 'sort': (sort as Input$FacetSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$FacetFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$FacetSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
@@ -5051,9 +5104,7 @@ class _CopyWithImpl$Input$FacetListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$FacetFilterParameter.stub(_then(_instance))
         : CopyWith$Input$FacetFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -5069,7 +5120,8 @@ class _CopyWithStubImpl$Input$FacetListOptions<TRes>
     Input$FacetSortParameter? sort,
     Input$FacetFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$FacetSortParameter<TRes> get sort =>
       CopyWith$Input$FacetSortParameter.stub(_res);
@@ -5085,13 +5137,14 @@ class Input$FacetSortParameter {
     Enum$SortOrder? updatedAt,
     Enum$SortOrder? name,
     Enum$SortOrder? code,
-  }) => Input$FacetSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (name != null) r'name': name,
-    if (code != null) r'code': code,
-  });
+  }) =>
+      Input$FacetSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (name != null) r'name': name,
+        if (code != null) r'code': code,
+      });
 
   Input$FacetSortParameter._(this._$data);
 
@@ -5099,9 +5152,8 @@ class Input$FacetSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -5117,15 +5169,13 @@ class Input$FacetSortParameter {
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
-      result$data['name'] = l$name == null
-          ? null
-          : fromJson$Enum$SortOrder((l$name as String));
+      result$data['name'] =
+          l$name == null ? null : fromJson$Enum$SortOrder((l$name as String));
     }
     if (data.containsKey('code')) {
       final l$code = data['code'];
-      result$data['code'] = l$code == null
-          ? null
-          : fromJson$Enum$SortOrder((l$code as String));
+      result$data['code'] =
+          l$code == null ? null : fromJson$Enum$SortOrder((l$code as String));
     }
     return Input$FacetSortParameter._(result$data);
   }
@@ -5150,33 +5200,32 @@ class Input$FacetSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('name')) {
       final l$name = name;
-      result$data['name'] = l$name == null
-          ? null
-          : toJson$Enum$SortOrder(l$name);
+      result$data['name'] =
+          l$name == null ? null : toJson$Enum$SortOrder(l$name);
     }
     if (_$data.containsKey('code')) {
       final l$code = code;
-      result$data['code'] = l$code == null
-          ? null
-          : toJson$Enum$SortOrder(l$code);
+      result$data['code'] =
+          l$code == null ? null : toJson$Enum$SortOrder(l$code);
     }
     return result$data;
   }
 
   CopyWith$Input$FacetSortParameter<Input$FacetSortParameter> get copyWith =>
-      CopyWith$Input$FacetSortParameter(this, (i) => i);
+      CopyWith$Input$FacetSortParameter(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -5269,7 +5318,10 @@ abstract class CopyWith$Input$FacetSortParameter<TRes> {
 
 class _CopyWithImpl$Input$FacetSortParameter<TRes>
     implements CopyWith$Input$FacetSortParameter<TRes> {
-  _CopyWithImpl$Input$FacetSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$FacetSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$FacetSortParameter _instance;
 
@@ -5283,16 +5335,17 @@ class _CopyWithImpl$Input$FacetSortParameter<TRes>
     Object? updatedAt = _undefined,
     Object? name = _undefined,
     Object? code = _undefined,
-  }) => _then(
-    Input$FacetSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (name != _undefined) 'name': (name as Enum$SortOrder?),
-      if (code != _undefined) 'code': (code as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$FacetSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (name != _undefined) 'name': (name as Enum$SortOrder?),
+        if (code != _undefined) 'code': (code as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$FacetSortParameter<TRes>
@@ -5307,11 +5360,15 @@ class _CopyWithStubImpl$Input$FacetSortParameter<TRes>
     Enum$SortOrder? updatedAt,
     Enum$SortOrder? name,
     Enum$SortOrder? code,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$FacetValueFilterInput {
-  factory Input$FacetValueFilterInput({String? and, List<String>? or}) =>
+  factory Input$FacetValueFilterInput({
+    String? and,
+    List<String>? or,
+  }) =>
       Input$FacetValueFilterInput._({
         if (and != null) r'and': and,
         if (or != null) r'or': or,
@@ -5327,9 +5384,8 @@ class Input$FacetValueFilterInput {
     }
     if (data.containsKey('or')) {
       final l$or = data['or'];
-      result$data['or'] = (l$or as List<dynamic>?)
-          ?.map((e) => (e as String))
-          .toList();
+      result$data['or'] =
+          (l$or as List<dynamic>?)?.map((e) => (e as String)).toList();
     }
     return Input$FacetValueFilterInput._(result$data);
   }
@@ -5354,7 +5410,10 @@ class Input$FacetValueFilterInput {
   }
 
   CopyWith$Input$FacetValueFilterInput<Input$FacetValueFilterInput>
-  get copyWith => CopyWith$Input$FacetValueFilterInput(this, (i) => i);
+      get copyWith => CopyWith$Input$FacetValueFilterInput(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -5403,8 +5462,8 @@ class Input$FacetValueFilterInput {
       _$data.containsKey('and') ? l$and : const {},
       _$data.containsKey('or')
           ? l$or == null
-                ? null
-                : Object.hashAll(l$or.map((v) => v))
+              ? null
+              : Object.hashAll(l$or.map((v) => v))
           : const {},
     ]);
   }
@@ -5419,12 +5478,18 @@ abstract class CopyWith$Input$FacetValueFilterInput<TRes> {
   factory CopyWith$Input$FacetValueFilterInput.stub(TRes res) =
       _CopyWithStubImpl$Input$FacetValueFilterInput;
 
-  TRes call({String? and, List<String>? or});
+  TRes call({
+    String? and,
+    List<String>? or,
+  });
 }
 
 class _CopyWithImpl$Input$FacetValueFilterInput<TRes>
     implements CopyWith$Input$FacetValueFilterInput<TRes> {
-  _CopyWithImpl$Input$FacetValueFilterInput(this._instance, this._then);
+  _CopyWithImpl$Input$FacetValueFilterInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$FacetValueFilterInput _instance;
 
@@ -5432,13 +5497,15 @@ class _CopyWithImpl$Input$FacetValueFilterInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? and = _undefined, Object? or = _undefined}) => _then(
-    Input$FacetValueFilterInput._({
-      ..._instance._$data,
-      if (and != _undefined) 'and': (and as String?),
-      if (or != _undefined) 'or': (or as List<String>?),
-    }),
-  );
+  TRes call({
+    Object? and = _undefined,
+    Object? or = _undefined,
+  }) =>
+      _then(Input$FacetValueFilterInput._({
+        ..._instance._$data,
+        if (and != _undefined) 'and': (and as String?),
+        if (or != _undefined) 'or': (or as List<String>?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$FacetValueFilterInput<TRes>
@@ -5447,7 +5514,11 @@ class _CopyWithStubImpl$Input$FacetValueFilterInput<TRes>
 
   TRes _res;
 
-  call({String? and, List<String>? or}) => _res;
+  call({
+    String? and,
+    List<String>? or,
+  }) =>
+      _res;
 }
 
 class Input$FacetValueFilterParameter {
@@ -5461,17 +5532,18 @@ class Input$FacetValueFilterParameter {
     Input$StringOperators? code,
     List<Input$FacetValueFilterParameter>? $_and,
     List<Input$FacetValueFilterParameter>? $_or,
-  }) => Input$FacetValueFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (languageCode != null) r'languageCode': languageCode,
-    if (facetId != null) r'facetId': facetId,
-    if (name != null) r'name': name,
-    if (code != null) r'code': code,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-  });
+  }) =>
+      Input$FacetValueFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (languageCode != null) r'languageCode': languageCode,
+        if (facetId != null) r'facetId': facetId,
+        if (name != null) r'name': name,
+        if (code != null) r'code': code,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+      });
 
   Input$FacetValueFilterParameter._(this._$data);
 
@@ -5500,8 +5572,7 @@ class Input$FacetValueFilterParameter {
       result$data['languageCode'] = l$languageCode == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$languageCode as Map<String, dynamic>),
-            );
+              (l$languageCode as Map<String, dynamic>));
     }
     if (data.containsKey('facetId')) {
       final l$facetId = data['facetId'];
@@ -5524,21 +5595,15 @@ class Input$FacetValueFilterParameter {
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$FacetValueFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$FacetValueFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$FacetValueFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$FacetValueFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     return Input$FacetValueFilterParameter._(result$data);
@@ -5611,7 +5676,10 @@ class Input$FacetValueFilterParameter {
   }
 
   CopyWith$Input$FacetValueFilterParameter<Input$FacetValueFilterParameter>
-  get copyWith => CopyWith$Input$FacetValueFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$FacetValueFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -5743,13 +5811,13 @@ class Input$FacetValueFilterParameter {
       _$data.containsKey('code') ? l$code : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
     ]);
   }
@@ -5783,30 +5851,25 @@ abstract class CopyWith$Input$FacetValueFilterParameter<TRes> {
   CopyWith$Input$StringOperators<TRes> get name;
   CopyWith$Input$StringOperators<TRes> get code;
   TRes $_and(
-    Iterable<Input$FacetValueFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetValueFilterParameter<
-          Input$FacetValueFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$FacetValueFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$FacetValueFilterParameter<
+                      Input$FacetValueFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$FacetValueFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetValueFilterParameter<
-          Input$FacetValueFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$FacetValueFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$FacetValueFilterParameter<
+                      Input$FacetValueFilterParameter>>?)
+          _fn);
 }
 
 class _CopyWithImpl$Input$FacetValueFilterParameter<TRes>
     implements CopyWith$Input$FacetValueFilterParameter<TRes> {
-  _CopyWithImpl$Input$FacetValueFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$FacetValueFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$FacetValueFilterParameter _instance;
 
@@ -5824,25 +5887,24 @@ class _CopyWithImpl$Input$FacetValueFilterParameter<TRes>
     Object? code = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-  }) => _then(
-    Input$FacetValueFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (languageCode != _undefined)
-        'languageCode': (languageCode as Input$StringOperators?),
-      if (facetId != _undefined) 'facetId': (facetId as Input$IDOperators?),
-      if (name != _undefined) 'name': (name as Input$StringOperators?),
-      if (code != _undefined) 'code': (code as Input$StringOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$FacetValueFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$FacetValueFilterParameter>?),
-    }),
-  );
+  }) =>
+      _then(Input$FacetValueFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (languageCode != _undefined)
+          'languageCode': (languageCode as Input$StringOperators?),
+        if (facetId != _undefined) 'facetId': (facetId as Input$IDOperators?),
+        if (name != _undefined) 'name': (name as Input$StringOperators?),
+        if (code != _undefined) 'code': (code as Input$StringOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$FacetValueFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$FacetValueFilterParameter>?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -5856,9 +5918,7 @@ class _CopyWithImpl$Input$FacetValueFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -5866,9 +5926,7 @@ class _CopyWithImpl$Input$FacetValueFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get languageCode {
@@ -5876,9 +5934,7 @@ class _CopyWithImpl$Input$FacetValueFilterParameter<TRes>
     return local$languageCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$languageCode,
-            (e) => call(languageCode: e),
-          );
+            local$languageCode, (e) => call(languageCode: e));
   }
 
   CopyWith$Input$IDOperators<TRes> get facetId {
@@ -5903,38 +5959,30 @@ class _CopyWithImpl$Input$FacetValueFilterParameter<TRes>
   }
 
   TRes $_and(
-    Iterable<Input$FacetValueFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetValueFilterParameter<
-          Input$FacetValueFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$FacetValueFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$FacetValueFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$FacetValueFilterParameter<
+                          Input$FacetValueFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(_instance.$_and
+              ?.map((e) => CopyWith$Input$FacetValueFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$FacetValueFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FacetValueFilterParameter<
-          Input$FacetValueFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$FacetValueFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$FacetValueFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$FacetValueFilterParameter<
+                          Input$FacetValueFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(_instance.$_or
+              ?.map((e) => CopyWith$Input$FacetValueFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 }
 
 class _CopyWithStubImpl$Input$FacetValueFilterParameter<TRes>
@@ -5953,7 +6001,8 @@ class _CopyWithStubImpl$Input$FacetValueFilterParameter<TRes>
     Input$StringOperators? code,
     List<Input$FacetValueFilterParameter>? $_and,
     List<Input$FacetValueFilterParameter>? $_or,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -5988,13 +6037,14 @@ class Input$FacetValueListOptions {
     Input$FacetValueSortParameter? sort,
     Input$FacetValueFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$FacetValueListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$FacetValueListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$FacetValueListOptions._(this._$data);
 
@@ -6013,16 +6063,14 @@ class Input$FacetValueListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$FacetValueSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$FacetValueFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -6076,7 +6124,10 @@ class Input$FacetValueListOptions {
   }
 
   CopyWith$Input$FacetValueListOptions<Input$FacetValueListOptions>
-  get copyWith => CopyWith$Input$FacetValueListOptions(this, (i) => i);
+      get copyWith => CopyWith$Input$FacetValueListOptions(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -6170,7 +6221,10 @@ abstract class CopyWith$Input$FacetValueListOptions<TRes> {
 
 class _CopyWithImpl$Input$FacetValueListOptions<TRes>
     implements CopyWith$Input$FacetValueListOptions<TRes> {
-  _CopyWithImpl$Input$FacetValueListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$FacetValueListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$FacetValueListOptions _instance;
 
@@ -6184,27 +6238,25 @@ class _CopyWithImpl$Input$FacetValueListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$FacetValueListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined) 'sort': (sort as Input$FacetValueSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$FacetValueFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$FacetValueListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined)
+          'sort': (sort as Input$FacetValueSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$FacetValueFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$FacetValueSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$FacetValueSortParameter.stub(_then(_instance))
         : CopyWith$Input$FacetValueSortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 
   CopyWith$Input$FacetValueFilterParameter<TRes> get filter {
@@ -6212,9 +6264,7 @@ class _CopyWithImpl$Input$FacetValueListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$FacetValueFilterParameter.stub(_then(_instance))
         : CopyWith$Input$FacetValueFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -6230,7 +6280,8 @@ class _CopyWithStubImpl$Input$FacetValueListOptions<TRes>
     Input$FacetValueSortParameter? sort,
     Input$FacetValueFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$FacetValueSortParameter<TRes> get sort =>
       CopyWith$Input$FacetValueSortParameter.stub(_res);
@@ -6247,14 +6298,15 @@ class Input$FacetValueSortParameter {
     Enum$SortOrder? facetId,
     Enum$SortOrder? name,
     Enum$SortOrder? code,
-  }) => Input$FacetValueSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (facetId != null) r'facetId': facetId,
-    if (name != null) r'name': name,
-    if (code != null) r'code': code,
-  });
+  }) =>
+      Input$FacetValueSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (facetId != null) r'facetId': facetId,
+        if (name != null) r'name': name,
+        if (code != null) r'code': code,
+      });
 
   Input$FacetValueSortParameter._(this._$data);
 
@@ -6262,9 +6314,8 @@ class Input$FacetValueSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -6286,15 +6337,13 @@ class Input$FacetValueSortParameter {
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
-      result$data['name'] = l$name == null
-          ? null
-          : fromJson$Enum$SortOrder((l$name as String));
+      result$data['name'] =
+          l$name == null ? null : fromJson$Enum$SortOrder((l$name as String));
     }
     if (data.containsKey('code')) {
       final l$code = data['code'];
-      result$data['code'] = l$code == null
-          ? null
-          : fromJson$Enum$SortOrder((l$code as String));
+      result$data['code'] =
+          l$code == null ? null : fromJson$Enum$SortOrder((l$code as String));
     }
     return Input$FacetValueSortParameter._(result$data);
   }
@@ -6321,39 +6370,37 @@ class Input$FacetValueSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('facetId')) {
       final l$facetId = facetId;
-      result$data['facetId'] = l$facetId == null
-          ? null
-          : toJson$Enum$SortOrder(l$facetId);
+      result$data['facetId'] =
+          l$facetId == null ? null : toJson$Enum$SortOrder(l$facetId);
     }
     if (_$data.containsKey('name')) {
       final l$name = name;
-      result$data['name'] = l$name == null
-          ? null
-          : toJson$Enum$SortOrder(l$name);
+      result$data['name'] =
+          l$name == null ? null : toJson$Enum$SortOrder(l$name);
     }
     if (_$data.containsKey('code')) {
       final l$code = code;
-      result$data['code'] = l$code == null
-          ? null
-          : toJson$Enum$SortOrder(l$code);
+      result$data['code'] =
+          l$code == null ? null : toJson$Enum$SortOrder(l$code);
     }
     return result$data;
   }
 
   CopyWith$Input$FacetValueSortParameter<Input$FacetValueSortParameter>
-  get copyWith => CopyWith$Input$FacetValueSortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$FacetValueSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -6457,7 +6504,10 @@ abstract class CopyWith$Input$FacetValueSortParameter<TRes> {
 
 class _CopyWithImpl$Input$FacetValueSortParameter<TRes>
     implements CopyWith$Input$FacetValueSortParameter<TRes> {
-  _CopyWithImpl$Input$FacetValueSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$FacetValueSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$FacetValueSortParameter _instance;
 
@@ -6472,17 +6522,18 @@ class _CopyWithImpl$Input$FacetValueSortParameter<TRes>
     Object? facetId = _undefined,
     Object? name = _undefined,
     Object? code = _undefined,
-  }) => _then(
-    Input$FacetValueSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (facetId != _undefined) 'facetId': (facetId as Enum$SortOrder?),
-      if (name != _undefined) 'name': (name as Enum$SortOrder?),
-      if (code != _undefined) 'code': (code as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$FacetValueSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (facetId != _undefined) 'facetId': (facetId as Enum$SortOrder?),
+        if (name != _undefined) 'name': (name as Enum$SortOrder?),
+        if (code != _undefined) 'code': (code as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$FacetValueSortParameter<TRes>
@@ -6498,7 +6549,8 @@ class _CopyWithStubImpl$Input$FacetValueSortParameter<TRes>
     Enum$SortOrder? facetId,
     Enum$SortOrder? name,
     Enum$SortOrder? code,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$FavoriteFilterParameter {
@@ -6508,13 +6560,14 @@ class Input$FavoriteFilterParameter {
     Input$DateOperators? updatedAt,
     List<Input$FavoriteFilterParameter>? $_and,
     List<Input$FavoriteFilterParameter>? $_or,
-  }) => Input$FavoriteFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-  });
+  }) =>
+      Input$FavoriteFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+      });
 
   Input$FavoriteFilterParameter._(this._$data);
 
@@ -6541,21 +6594,15 @@ class Input$FavoriteFilterParameter {
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$FavoriteFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$FavoriteFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$FavoriteFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$FavoriteFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     return Input$FavoriteFilterParameter._(result$data);
@@ -6603,7 +6650,10 @@ class Input$FavoriteFilterParameter {
   }
 
   CopyWith$Input$FavoriteFilterParameter<Input$FavoriteFilterParameter>
-  get copyWith => CopyWith$Input$FavoriteFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$FavoriteFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -6694,13 +6744,13 @@ class Input$FavoriteFilterParameter {
       _$data.containsKey('updatedAt') ? l$updatedAt : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
     ]);
   }
@@ -6726,26 +6776,25 @@ abstract class CopyWith$Input$FavoriteFilterParameter<TRes> {
   CopyWith$Input$DateOperators<TRes> get createdAt;
   CopyWith$Input$DateOperators<TRes> get updatedAt;
   TRes $_and(
-    Iterable<Input$FavoriteFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FavoriteFilterParameter<Input$FavoriteFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$FavoriteFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$FavoriteFilterParameter<
+                      Input$FavoriteFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$FavoriteFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FavoriteFilterParameter<Input$FavoriteFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$FavoriteFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$FavoriteFilterParameter<
+                      Input$FavoriteFilterParameter>>?)
+          _fn);
 }
 
 class _CopyWithImpl$Input$FavoriteFilterParameter<TRes>
     implements CopyWith$Input$FavoriteFilterParameter<TRes> {
-  _CopyWithImpl$Input$FavoriteFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$FavoriteFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$FavoriteFilterParameter _instance;
 
@@ -6759,20 +6808,19 @@ class _CopyWithImpl$Input$FavoriteFilterParameter<TRes>
     Object? updatedAt = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-  }) => _then(
-    Input$FavoriteFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$FavoriteFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$FavoriteFilterParameter>?),
-    }),
-  );
+  }) =>
+      _then(Input$FavoriteFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$FavoriteFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$FavoriteFilterParameter>?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -6786,9 +6834,7 @@ class _CopyWithImpl$Input$FavoriteFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -6796,40 +6842,34 @@ class _CopyWithImpl$Input$FavoriteFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   TRes $_and(
-    Iterable<Input$FavoriteFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FavoriteFilterParameter<Input$FavoriteFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$FavoriteFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$FavoriteFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$FavoriteFilterParameter<
+                          Input$FavoriteFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(_instance.$_and
+              ?.map((e) => CopyWith$Input$FavoriteFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$FavoriteFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$FavoriteFilterParameter<Input$FavoriteFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$FavoriteFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$FavoriteFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$FavoriteFilterParameter<
+                          Input$FavoriteFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(
+              _instance.$_or?.map((e) => CopyWith$Input$FavoriteFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 }
 
 class _CopyWithStubImpl$Input$FavoriteFilterParameter<TRes>
@@ -6844,7 +6884,8 @@ class _CopyWithStubImpl$Input$FavoriteFilterParameter<TRes>
     Input$DateOperators? updatedAt,
     List<Input$FavoriteFilterParameter>? $_and,
     List<Input$FavoriteFilterParameter>? $_or,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -6867,13 +6908,14 @@ class Input$FavoriteListOptions {
     Input$FavoriteSortParameter? sort,
     Input$FavoriteFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$FavoriteListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$FavoriteListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$FavoriteListOptions._(this._$data);
 
@@ -6892,16 +6934,14 @@ class Input$FavoriteListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$FavoriteSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$FavoriteFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -6955,7 +6995,10 @@ class Input$FavoriteListOptions {
   }
 
   CopyWith$Input$FavoriteListOptions<Input$FavoriteListOptions> get copyWith =>
-      CopyWith$Input$FavoriteListOptions(this, (i) => i);
+      CopyWith$Input$FavoriteListOptions(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -7049,7 +7092,10 @@ abstract class CopyWith$Input$FavoriteListOptions<TRes> {
 
 class _CopyWithImpl$Input$FavoriteListOptions<TRes>
     implements CopyWith$Input$FavoriteListOptions<TRes> {
-  _CopyWithImpl$Input$FavoriteListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$FavoriteListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$FavoriteListOptions _instance;
 
@@ -7063,27 +7109,24 @@ class _CopyWithImpl$Input$FavoriteListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$FavoriteListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined) 'sort': (sort as Input$FavoriteSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$FavoriteFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$FavoriteListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined) 'sort': (sort as Input$FavoriteSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$FavoriteFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$FavoriteSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$FavoriteSortParameter.stub(_then(_instance))
         : CopyWith$Input$FavoriteSortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 
   CopyWith$Input$FavoriteFilterParameter<TRes> get filter {
@@ -7091,9 +7134,7 @@ class _CopyWithImpl$Input$FavoriteListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$FavoriteFilterParameter.stub(_then(_instance))
         : CopyWith$Input$FavoriteFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -7109,7 +7150,8 @@ class _CopyWithStubImpl$Input$FavoriteListOptions<TRes>
     Input$FavoriteSortParameter? sort,
     Input$FavoriteFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$FavoriteSortParameter<TRes> get sort =>
       CopyWith$Input$FavoriteSortParameter.stub(_res);
@@ -7123,11 +7165,12 @@ class Input$FavoriteSortParameter {
     Enum$SortOrder? id,
     Enum$SortOrder? createdAt,
     Enum$SortOrder? updatedAt,
-  }) => Input$FavoriteSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-  });
+  }) =>
+      Input$FavoriteSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+      });
 
   Input$FavoriteSortParameter._(this._$data);
 
@@ -7135,9 +7178,8 @@ class Input$FavoriteSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -7170,21 +7212,22 @@ class Input$FavoriteSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     return result$data;
   }
 
   CopyWith$Input$FavoriteSortParameter<Input$FavoriteSortParameter>
-  get copyWith => CopyWith$Input$FavoriteSortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$FavoriteSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -7255,7 +7298,10 @@ abstract class CopyWith$Input$FavoriteSortParameter<TRes> {
 
 class _CopyWithImpl$Input$FavoriteSortParameter<TRes>
     implements CopyWith$Input$FavoriteSortParameter<TRes> {
-  _CopyWithImpl$Input$FavoriteSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$FavoriteSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$FavoriteSortParameter _instance;
 
@@ -7267,14 +7313,15 @@ class _CopyWithImpl$Input$FavoriteSortParameter<TRes>
     Object? id = _undefined,
     Object? createdAt = _undefined,
     Object? updatedAt = _undefined,
-  }) => _then(
-    Input$FavoriteSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$FavoriteSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$FavoriteSortParameter<TRes>
@@ -7287,12 +7334,15 @@ class _CopyWithStubImpl$Input$FavoriteSortParameter<TRes>
     Enum$SortOrder? id,
     Enum$SortOrder? createdAt,
     Enum$SortOrder? updatedAt,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$GoogleAuthInput {
   factory Input$GoogleAuthInput({required String token}) =>
-      Input$GoogleAuthInput._({r'token': token});
+      Input$GoogleAuthInput._({
+        r'token': token,
+      });
 
   Input$GoogleAuthInput._(this._$data);
 
@@ -7315,7 +7365,10 @@ class Input$GoogleAuthInput {
   }
 
   CopyWith$Input$GoogleAuthInput<Input$GoogleAuthInput> get copyWith =>
-      CopyWith$Input$GoogleAuthInput(this, (i) => i);
+      CopyWith$Input$GoogleAuthInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -7354,7 +7407,10 @@ abstract class CopyWith$Input$GoogleAuthInput<TRes> {
 
 class _CopyWithImpl$Input$GoogleAuthInput<TRes>
     implements CopyWith$Input$GoogleAuthInput<TRes> {
-  _CopyWithImpl$Input$GoogleAuthInput(this._instance, this._then);
+  _CopyWithImpl$Input$GoogleAuthInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$GoogleAuthInput _instance;
 
@@ -7362,12 +7418,10 @@ class _CopyWithImpl$Input$GoogleAuthInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? token = _undefined}) => _then(
-    Input$GoogleAuthInput._({
-      ..._instance._$data,
-      if (token != _undefined && token != null) 'token': (token as String),
-    }),
-  );
+  TRes call({Object? token = _undefined}) => _then(Input$GoogleAuthInput._({
+        ..._instance._$data,
+        if (token != _undefined && token != null) 'token': (token as String),
+      }));
 }
 
 class _CopyWithStubImpl$Input$GoogleAuthInput<TRes>
@@ -7387,20 +7441,20 @@ class Input$HistoryEntryFilterParameter {
     Input$StringOperators? type,
     List<Input$HistoryEntryFilterParameter>? $_and,
     List<Input$HistoryEntryFilterParameter>? $_or,
-  }) => Input$HistoryEntryFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (type != null) r'type': type,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-  });
+  }) =>
+      Input$HistoryEntryFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (type != null) r'type': type,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+      });
 
   Input$HistoryEntryFilterParameter._(this._$data);
 
   factory Input$HistoryEntryFilterParameter.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
@@ -7429,21 +7483,15 @@ class Input$HistoryEntryFilterParameter {
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$HistoryEntryFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$HistoryEntryFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$HistoryEntryFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$HistoryEntryFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     return Input$HistoryEntryFilterParameter._(result$data);
@@ -7497,7 +7545,10 @@ class Input$HistoryEntryFilterParameter {
   }
 
   CopyWith$Input$HistoryEntryFilterParameter<Input$HistoryEntryFilterParameter>
-  get copyWith => CopyWith$Input$HistoryEntryFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$HistoryEntryFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -7598,13 +7649,13 @@ class Input$HistoryEntryFilterParameter {
       _$data.containsKey('type') ? l$type : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
     ]);
   }
@@ -7632,30 +7683,25 @@ abstract class CopyWith$Input$HistoryEntryFilterParameter<TRes> {
   CopyWith$Input$DateOperators<TRes> get updatedAt;
   CopyWith$Input$StringOperators<TRes> get type;
   TRes $_and(
-    Iterable<Input$HistoryEntryFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$HistoryEntryFilterParameter<
-          Input$HistoryEntryFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$HistoryEntryFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$HistoryEntryFilterParameter<
+                      Input$HistoryEntryFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$HistoryEntryFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$HistoryEntryFilterParameter<
-          Input$HistoryEntryFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$HistoryEntryFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$HistoryEntryFilterParameter<
+                      Input$HistoryEntryFilterParameter>>?)
+          _fn);
 }
 
 class _CopyWithImpl$Input$HistoryEntryFilterParameter<TRes>
     implements CopyWith$Input$HistoryEntryFilterParameter<TRes> {
-  _CopyWithImpl$Input$HistoryEntryFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$HistoryEntryFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$HistoryEntryFilterParameter _instance;
 
@@ -7670,21 +7716,20 @@ class _CopyWithImpl$Input$HistoryEntryFilterParameter<TRes>
     Object? type = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-  }) => _then(
-    Input$HistoryEntryFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (type != _undefined) 'type': (type as Input$StringOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$HistoryEntryFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$HistoryEntryFilterParameter>?),
-    }),
-  );
+  }) =>
+      _then(Input$HistoryEntryFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (type != _undefined) 'type': (type as Input$StringOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$HistoryEntryFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$HistoryEntryFilterParameter>?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -7698,9 +7743,7 @@ class _CopyWithImpl$Input$HistoryEntryFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -7708,9 +7751,7 @@ class _CopyWithImpl$Input$HistoryEntryFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get type {
@@ -7721,38 +7762,30 @@ class _CopyWithImpl$Input$HistoryEntryFilterParameter<TRes>
   }
 
   TRes $_and(
-    Iterable<Input$HistoryEntryFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$HistoryEntryFilterParameter<
-          Input$HistoryEntryFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$HistoryEntryFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$HistoryEntryFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$HistoryEntryFilterParameter<
+                          Input$HistoryEntryFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(_instance.$_and
+              ?.map((e) => CopyWith$Input$HistoryEntryFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$HistoryEntryFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$HistoryEntryFilterParameter<
-          Input$HistoryEntryFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$HistoryEntryFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$HistoryEntryFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$HistoryEntryFilterParameter<
+                          Input$HistoryEntryFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(_instance.$_or
+              ?.map((e) => CopyWith$Input$HistoryEntryFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 }
 
 class _CopyWithStubImpl$Input$HistoryEntryFilterParameter<TRes>
@@ -7768,7 +7801,8 @@ class _CopyWithStubImpl$Input$HistoryEntryFilterParameter<TRes>
     Input$StringOperators? type,
     List<Input$HistoryEntryFilterParameter>? $_and,
     List<Input$HistoryEntryFilterParameter>? $_or,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -7794,13 +7828,14 @@ class Input$HistoryEntryListOptions {
     Input$HistoryEntrySortParameter? sort,
     Input$HistoryEntryFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$HistoryEntryListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$HistoryEntryListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$HistoryEntryListOptions._(this._$data);
 
@@ -7819,16 +7854,14 @@ class Input$HistoryEntryListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$HistoryEntrySortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$HistoryEntryFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -7882,7 +7915,10 @@ class Input$HistoryEntryListOptions {
   }
 
   CopyWith$Input$HistoryEntryListOptions<Input$HistoryEntryListOptions>
-  get copyWith => CopyWith$Input$HistoryEntryListOptions(this, (i) => i);
+      get copyWith => CopyWith$Input$HistoryEntryListOptions(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -7976,7 +8012,10 @@ abstract class CopyWith$Input$HistoryEntryListOptions<TRes> {
 
 class _CopyWithImpl$Input$HistoryEntryListOptions<TRes>
     implements CopyWith$Input$HistoryEntryListOptions<TRes> {
-  _CopyWithImpl$Input$HistoryEntryListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$HistoryEntryListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$HistoryEntryListOptions _instance;
 
@@ -7990,28 +8029,25 @@ class _CopyWithImpl$Input$HistoryEntryListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$HistoryEntryListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined)
-        'sort': (sort as Input$HistoryEntrySortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$HistoryEntryFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$HistoryEntryListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined)
+          'sort': (sort as Input$HistoryEntrySortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$HistoryEntryFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$HistoryEntrySortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$HistoryEntrySortParameter.stub(_then(_instance))
         : CopyWith$Input$HistoryEntrySortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 
   CopyWith$Input$HistoryEntryFilterParameter<TRes> get filter {
@@ -8019,9 +8055,7 @@ class _CopyWithImpl$Input$HistoryEntryListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$HistoryEntryFilterParameter.stub(_then(_instance))
         : CopyWith$Input$HistoryEntryFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -8037,7 +8071,8 @@ class _CopyWithStubImpl$Input$HistoryEntryListOptions<TRes>
     Input$HistoryEntrySortParameter? sort,
     Input$HistoryEntryFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$HistoryEntrySortParameter<TRes> get sort =>
       CopyWith$Input$HistoryEntrySortParameter.stub(_res);
@@ -8051,11 +8086,12 @@ class Input$HistoryEntrySortParameter {
     Enum$SortOrder? id,
     Enum$SortOrder? createdAt,
     Enum$SortOrder? updatedAt,
-  }) => Input$HistoryEntrySortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-  });
+  }) =>
+      Input$HistoryEntrySortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+      });
 
   Input$HistoryEntrySortParameter._(this._$data);
 
@@ -8063,9 +8099,8 @@ class Input$HistoryEntrySortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -8098,21 +8133,22 @@ class Input$HistoryEntrySortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     return result$data;
   }
 
   CopyWith$Input$HistoryEntrySortParameter<Input$HistoryEntrySortParameter>
-  get copyWith => CopyWith$Input$HistoryEntrySortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$HistoryEntrySortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -8183,7 +8219,10 @@ abstract class CopyWith$Input$HistoryEntrySortParameter<TRes> {
 
 class _CopyWithImpl$Input$HistoryEntrySortParameter<TRes>
     implements CopyWith$Input$HistoryEntrySortParameter<TRes> {
-  _CopyWithImpl$Input$HistoryEntrySortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$HistoryEntrySortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$HistoryEntrySortParameter _instance;
 
@@ -8195,14 +8234,15 @@ class _CopyWithImpl$Input$HistoryEntrySortParameter<TRes>
     Object? id = _undefined,
     Object? createdAt = _undefined,
     Object? updatedAt = _undefined,
-  }) => _then(
-    Input$HistoryEntrySortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$HistoryEntrySortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$HistoryEntrySortParameter<TRes>
@@ -8215,12 +8255,15 @@ class _CopyWithStubImpl$Input$HistoryEntrySortParameter<TRes>
     Enum$SortOrder? id,
     Enum$SortOrder? createdAt,
     Enum$SortOrder? updatedAt,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$IDListOperators {
   factory Input$IDListOperators({required String inList}) =>
-      Input$IDListOperators._({r'inList': inList});
+      Input$IDListOperators._({
+        r'inList': inList,
+      });
 
   Input$IDListOperators._(this._$data);
 
@@ -8243,7 +8286,10 @@ class Input$IDListOperators {
   }
 
   CopyWith$Input$IDListOperators<Input$IDListOperators> get copyWith =>
-      CopyWith$Input$IDListOperators(this, (i) => i);
+      CopyWith$Input$IDListOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -8282,7 +8328,10 @@ abstract class CopyWith$Input$IDListOperators<TRes> {
 
 class _CopyWithImpl$Input$IDListOperators<TRes>
     implements CopyWith$Input$IDListOperators<TRes> {
-  _CopyWithImpl$Input$IDListOperators(this._instance, this._then);
+  _CopyWithImpl$Input$IDListOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$IDListOperators _instance;
 
@@ -8290,12 +8339,11 @@ class _CopyWithImpl$Input$IDListOperators<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? inList = _undefined}) => _then(
-    Input$IDListOperators._({
-      ..._instance._$data,
-      if (inList != _undefined && inList != null) 'inList': (inList as String),
-    }),
-  );
+  TRes call({Object? inList = _undefined}) => _then(Input$IDListOperators._({
+        ..._instance._$data,
+        if (inList != _undefined && inList != null)
+          'inList': (inList as String),
+      }));
 }
 
 class _CopyWithStubImpl$Input$IDListOperators<TRes>
@@ -8314,13 +8362,14 @@ class Input$IDOperators {
     List<String>? $in,
     List<String>? notIn,
     bool? isNull,
-  }) => Input$IDOperators._({
-    if (eq != null) r'eq': eq,
-    if (notEq != null) r'notEq': notEq,
-    if ($in != null) r'in': $in,
-    if (notIn != null) r'notIn': notIn,
-    if (isNull != null) r'isNull': isNull,
-  });
+  }) =>
+      Input$IDOperators._({
+        if (eq != null) r'eq': eq,
+        if (notEq != null) r'notEq': notEq,
+        if ($in != null) r'in': $in,
+        if (notIn != null) r'notIn': notIn,
+        if (isNull != null) r'isNull': isNull,
+      });
 
   Input$IDOperators._(this._$data);
 
@@ -8336,15 +8385,13 @@ class Input$IDOperators {
     }
     if (data.containsKey('in')) {
       final l$$in = data['in'];
-      result$data['in'] = (l$$in as List<dynamic>?)
-          ?.map((e) => (e as String))
-          .toList();
+      result$data['in'] =
+          (l$$in as List<dynamic>?)?.map((e) => (e as String)).toList();
     }
     if (data.containsKey('notIn')) {
       final l$notIn = data['notIn'];
-      result$data['notIn'] = (l$notIn as List<dynamic>?)
-          ?.map((e) => (e as String))
-          .toList();
+      result$data['notIn'] =
+          (l$notIn as List<dynamic>?)?.map((e) => (e as String)).toList();
     }
     if (data.containsKey('isNull')) {
       final l$isNull = data['isNull'];
@@ -8391,7 +8438,10 @@ class Input$IDOperators {
   }
 
   CopyWith$Input$IDOperators<Input$IDOperators> get copyWith =>
-      CopyWith$Input$IDOperators(this, (i) => i);
+      CopyWith$Input$IDOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -8478,13 +8528,13 @@ class Input$IDOperators {
       _$data.containsKey('notEq') ? l$notEq : const {},
       _$data.containsKey('in')
           ? l$$in == null
-                ? null
-                : Object.hashAll(l$$in.map((v) => v))
+              ? null
+              : Object.hashAll(l$$in.map((v) => v))
           : const {},
       _$data.containsKey('notIn')
           ? l$notIn == null
-                ? null
-                : Object.hashAll(l$notIn.map((v) => v))
+              ? null
+              : Object.hashAll(l$notIn.map((v) => v))
           : const {},
       _$data.containsKey('isNull') ? l$isNull : const {},
     ]);
@@ -8511,7 +8561,10 @@ abstract class CopyWith$Input$IDOperators<TRes> {
 
 class _CopyWithImpl$Input$IDOperators<TRes>
     implements CopyWith$Input$IDOperators<TRes> {
-  _CopyWithImpl$Input$IDOperators(this._instance, this._then);
+  _CopyWithImpl$Input$IDOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$IDOperators _instance;
 
@@ -8525,16 +8578,15 @@ class _CopyWithImpl$Input$IDOperators<TRes>
     Object? $in = _undefined,
     Object? notIn = _undefined,
     Object? isNull = _undefined,
-  }) => _then(
-    Input$IDOperators._({
-      ..._instance._$data,
-      if (eq != _undefined) 'eq': (eq as String?),
-      if (notEq != _undefined) 'notEq': (notEq as String?),
-      if ($in != _undefined) 'in': ($in as List<String>?),
-      if (notIn != _undefined) 'notIn': (notIn as List<String>?),
-      if (isNull != _undefined) 'isNull': (isNull as bool?),
-    }),
-  );
+  }) =>
+      _then(Input$IDOperators._({
+        ..._instance._$data,
+        if (eq != _undefined) 'eq': (eq as String?),
+        if (notEq != _undefined) 'notEq': (notEq as String?),
+        if ($in != _undefined) 'in': ($in as List<String>?),
+        if (notIn != _undefined) 'notIn': (notIn as List<String>?),
+        if (isNull != _undefined) 'isNull': (isNull as bool?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$IDOperators<TRes>
@@ -8549,7 +8601,8 @@ class _CopyWithStubImpl$Input$IDOperators<TRes>
     List<String>? $in,
     List<String>? notIn,
     bool? isNull,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$LoyaltyPointsTransactionFilterParameter {
@@ -8562,22 +8615,22 @@ class Input$LoyaltyPointsTransactionFilterParameter {
     Input$NumberOperators? value,
     List<Input$LoyaltyPointsTransactionFilterParameter>? $_and,
     List<Input$LoyaltyPointsTransactionFilterParameter>? $_or,
-  }) => Input$LoyaltyPointsTransactionFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (type != null) r'type': type,
-    if (note != null) r'note': note,
-    if (value != null) r'value': value,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-  });
+  }) =>
+      Input$LoyaltyPointsTransactionFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (type != null) r'type': type,
+        if (note != null) r'note': note,
+        if (value != null) r'value': value,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+      });
 
   Input$LoyaltyPointsTransactionFilterParameter._(this._$data);
 
   factory Input$LoyaltyPointsTransactionFilterParameter.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
@@ -8618,21 +8671,15 @@ class Input$LoyaltyPointsTransactionFilterParameter {
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$LoyaltyPointsTransactionFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$LoyaltyPointsTransactionFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$LoyaltyPointsTransactionFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$LoyaltyPointsTransactionFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     return Input$LoyaltyPointsTransactionFilterParameter._(result$data);
@@ -8699,10 +8746,11 @@ class Input$LoyaltyPointsTransactionFilterParameter {
   }
 
   CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
-    Input$LoyaltyPointsTransactionFilterParameter
-  >
-  get copyWith =>
-      CopyWith$Input$LoyaltyPointsTransactionFilterParameter(this, (i) => i);
+          Input$LoyaltyPointsTransactionFilterParameter>
+      get copyWith => CopyWith$Input$LoyaltyPointsTransactionFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -8823,13 +8871,13 @@ class Input$LoyaltyPointsTransactionFilterParameter {
       _$data.containsKey('value') ? l$value : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
     ]);
   }
@@ -8842,8 +8890,8 @@ abstract class CopyWith$Input$LoyaltyPointsTransactionFilterParameter<TRes> {
   ) = _CopyWithImpl$Input$LoyaltyPointsTransactionFilterParameter;
 
   factory CopyWith$Input$LoyaltyPointsTransactionFilterParameter.stub(
-    TRes res,
-  ) = _CopyWithStubImpl$Input$LoyaltyPointsTransactionFilterParameter;
+          TRes res) =
+      _CopyWithStubImpl$Input$LoyaltyPointsTransactionFilterParameter;
 
   TRes call({
     Input$IDOperators? id,
@@ -8862,25 +8910,17 @@ abstract class CopyWith$Input$LoyaltyPointsTransactionFilterParameter<TRes> {
   CopyWith$Input$StringOperators<TRes> get note;
   CopyWith$Input$NumberOperators<TRes> get value;
   TRes $_and(
-    Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
-          Input$LoyaltyPointsTransactionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
+                      Input$LoyaltyPointsTransactionFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
-          Input$LoyaltyPointsTransactionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
+                      Input$LoyaltyPointsTransactionFilterParameter>>?)
+          _fn);
 }
 
 class _CopyWithImpl$Input$LoyaltyPointsTransactionFilterParameter<TRes>
@@ -8905,23 +8945,23 @@ class _CopyWithImpl$Input$LoyaltyPointsTransactionFilterParameter<TRes>
     Object? value = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-  }) => _then(
-    Input$LoyaltyPointsTransactionFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (type != _undefined) 'type': (type as Input$StringOperators?),
-      if (note != _undefined) 'note': (note as Input$StringOperators?),
-      if (value != _undefined) 'value': (value as Input$NumberOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$LoyaltyPointsTransactionFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$LoyaltyPointsTransactionFilterParameter>?),
-    }),
-  );
+  }) =>
+      _then(Input$LoyaltyPointsTransactionFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (type != _undefined) 'type': (type as Input$StringOperators?),
+        if (note != _undefined) 'note': (note as Input$StringOperators?),
+        if (value != _undefined) 'value': (value as Input$NumberOperators?),
+        if ($_and != _undefined)
+          '_and':
+              ($_and as List<Input$LoyaltyPointsTransactionFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$LoyaltyPointsTransactionFilterParameter>?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -8935,9 +8975,7 @@ class _CopyWithImpl$Input$LoyaltyPointsTransactionFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -8945,9 +8983,7 @@ class _CopyWithImpl$Input$LoyaltyPointsTransactionFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get type {
@@ -8972,40 +9008,30 @@ class _CopyWithImpl$Input$LoyaltyPointsTransactionFilterParameter<TRes>
   }
 
   TRes $_and(
-    Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
-          Input$LoyaltyPointsTransactionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) =>
-            CopyWith$Input$LoyaltyPointsTransactionFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
+                          Input$LoyaltyPointsTransactionFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(_instance.$_and?.map(
+              (e) => CopyWith$Input$LoyaltyPointsTransactionFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
-          Input$LoyaltyPointsTransactionFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) =>
-            CopyWith$Input$LoyaltyPointsTransactionFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$LoyaltyPointsTransactionFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$LoyaltyPointsTransactionFilterParameter<
+                          Input$LoyaltyPointsTransactionFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(_instance.$_or?.map(
+              (e) => CopyWith$Input$LoyaltyPointsTransactionFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 }
 
 class _CopyWithStubImpl$Input$LoyaltyPointsTransactionFilterParameter<TRes>
@@ -9023,7 +9049,8 @@ class _CopyWithStubImpl$Input$LoyaltyPointsTransactionFilterParameter<TRes>
     Input$NumberOperators? value,
     List<Input$LoyaltyPointsTransactionFilterParameter>? $_and,
     List<Input$LoyaltyPointsTransactionFilterParameter>? $_or,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -9055,19 +9082,19 @@ class Input$LoyaltyPointsTransactionListOptions {
     Input$LoyaltyPointsTransactionSortParameter? sort,
     Input$LoyaltyPointsTransactionFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$LoyaltyPointsTransactionListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$LoyaltyPointsTransactionListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$LoyaltyPointsTransactionListOptions._(this._$data);
 
   factory Input$LoyaltyPointsTransactionListOptions.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('skip')) {
       final l$skip = data['skip'];
@@ -9082,16 +9109,14 @@ class Input$LoyaltyPointsTransactionListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$LoyaltyPointsTransactionSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$LoyaltyPointsTransactionFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -9145,10 +9170,11 @@ class Input$LoyaltyPointsTransactionListOptions {
   }
 
   CopyWith$Input$LoyaltyPointsTransactionListOptions<
-    Input$LoyaltyPointsTransactionListOptions
-  >
-  get copyWith =>
-      CopyWith$Input$LoyaltyPointsTransactionListOptions(this, (i) => i);
+          Input$LoyaltyPointsTransactionListOptions>
+      get copyWith => CopyWith$Input$LoyaltyPointsTransactionListOptions(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -9259,42 +9285,35 @@ class _CopyWithImpl$Input$LoyaltyPointsTransactionListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$LoyaltyPointsTransactionListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined)
-        'sort': (sort as Input$LoyaltyPointsTransactionSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$LoyaltyPointsTransactionFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$LoyaltyPointsTransactionListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined)
+          'sort': (sort as Input$LoyaltyPointsTransactionSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$LoyaltyPointsTransactionFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$LoyaltyPointsTransactionSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$LoyaltyPointsTransactionSortParameter.stub(
-            _then(_instance),
-          )
+            _then(_instance))
         : CopyWith$Input$LoyaltyPointsTransactionSortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 
   CopyWith$Input$LoyaltyPointsTransactionFilterParameter<TRes> get filter {
     final local$filter = _instance.filter;
     return local$filter == null
         ? CopyWith$Input$LoyaltyPointsTransactionFilterParameter.stub(
-            _then(_instance),
-          )
+            _then(_instance))
         : CopyWith$Input$LoyaltyPointsTransactionFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -9310,7 +9329,8 @@ class _CopyWithStubImpl$Input$LoyaltyPointsTransactionListOptions<TRes>
     Input$LoyaltyPointsTransactionSortParameter? sort,
     Input$LoyaltyPointsTransactionFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$LoyaltyPointsTransactionSortParameter<TRes> get sort =>
       CopyWith$Input$LoyaltyPointsTransactionSortParameter.stub(_res);
@@ -9326,25 +9346,24 @@ class Input$LoyaltyPointsTransactionSortParameter {
     Enum$SortOrder? updatedAt,
     Enum$SortOrder? note,
     Enum$SortOrder? value,
-  }) => Input$LoyaltyPointsTransactionSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (note != null) r'note': note,
-    if (value != null) r'value': value,
-  });
+  }) =>
+      Input$LoyaltyPointsTransactionSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (note != null) r'note': note,
+        if (value != null) r'value': value,
+      });
 
   Input$LoyaltyPointsTransactionSortParameter._(this._$data);
 
   factory Input$LoyaltyPointsTransactionSortParameter.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -9360,15 +9379,13 @@ class Input$LoyaltyPointsTransactionSortParameter {
     }
     if (data.containsKey('note')) {
       final l$note = data['note'];
-      result$data['note'] = l$note == null
-          ? null
-          : fromJson$Enum$SortOrder((l$note as String));
+      result$data['note'] =
+          l$note == null ? null : fromJson$Enum$SortOrder((l$note as String));
     }
     if (data.containsKey('value')) {
       final l$value = data['value'];
-      result$data['value'] = l$value == null
-          ? null
-          : fromJson$Enum$SortOrder((l$value as String));
+      result$data['value'] =
+          l$value == null ? null : fromJson$Enum$SortOrder((l$value as String));
     }
     return Input$LoyaltyPointsTransactionSortParameter._(result$data);
   }
@@ -9393,36 +9410,33 @@ class Input$LoyaltyPointsTransactionSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('note')) {
       final l$note = note;
-      result$data['note'] = l$note == null
-          ? null
-          : toJson$Enum$SortOrder(l$note);
+      result$data['note'] =
+          l$note == null ? null : toJson$Enum$SortOrder(l$note);
     }
     if (_$data.containsKey('value')) {
       final l$value = value;
-      result$data['value'] = l$value == null
-          ? null
-          : toJson$Enum$SortOrder(l$value);
+      result$data['value'] =
+          l$value == null ? null : toJson$Enum$SortOrder(l$value);
     }
     return result$data;
   }
 
   CopyWith$Input$LoyaltyPointsTransactionSortParameter<
-    Input$LoyaltyPointsTransactionSortParameter
-  >
-  get copyWith =>
-      CopyWith$Input$LoyaltyPointsTransactionSortParameter(this, (i) => i);
+          Input$LoyaltyPointsTransactionSortParameter>
+      get copyWith => CopyWith$Input$LoyaltyPointsTransactionSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -9532,16 +9546,17 @@ class _CopyWithImpl$Input$LoyaltyPointsTransactionSortParameter<TRes>
     Object? updatedAt = _undefined,
     Object? note = _undefined,
     Object? value = _undefined,
-  }) => _then(
-    Input$LoyaltyPointsTransactionSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (note != _undefined) 'note': (note as Enum$SortOrder?),
-      if (value != _undefined) 'value': (value as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$LoyaltyPointsTransactionSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (note != _undefined) 'note': (note as Enum$SortOrder?),
+        if (value != _undefined) 'value': (value as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$LoyaltyPointsTransactionSortParameter<TRes>
@@ -9556,14 +9571,19 @@ class _CopyWithStubImpl$Input$LoyaltyPointsTransactionSortParameter<TRes>
     Enum$SortOrder? updatedAt,
     Enum$SortOrder? note,
     Enum$SortOrder? value,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$NativeAuthInput {
   factory Input$NativeAuthInput({
     required String username,
     required String password,
-  }) => Input$NativeAuthInput._({r'username': username, r'password': password});
+  }) =>
+      Input$NativeAuthInput._({
+        r'username': username,
+        r'password': password,
+      });
 
   Input$NativeAuthInput._(this._$data);
 
@@ -9592,7 +9612,10 @@ class Input$NativeAuthInput {
   }
 
   CopyWith$Input$NativeAuthInput<Input$NativeAuthInput> get copyWith =>
-      CopyWith$Input$NativeAuthInput(this, (i) => i);
+      CopyWith$Input$NativeAuthInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -9619,7 +9642,10 @@ class Input$NativeAuthInput {
   int get hashCode {
     final l$username = username;
     final l$password = password;
-    return Object.hashAll([l$username, l$password]);
+    return Object.hashAll([
+      l$username,
+      l$password,
+    ]);
   }
 }
 
@@ -9632,12 +9658,18 @@ abstract class CopyWith$Input$NativeAuthInput<TRes> {
   factory CopyWith$Input$NativeAuthInput.stub(TRes res) =
       _CopyWithStubImpl$Input$NativeAuthInput;
 
-  TRes call({String? username, String? password});
+  TRes call({
+    String? username,
+    String? password,
+  });
 }
 
 class _CopyWithImpl$Input$NativeAuthInput<TRes>
     implements CopyWith$Input$NativeAuthInput<TRes> {
-  _CopyWithImpl$Input$NativeAuthInput(this._instance, this._then);
+  _CopyWithImpl$Input$NativeAuthInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$NativeAuthInput _instance;
 
@@ -9645,16 +9677,17 @@ class _CopyWithImpl$Input$NativeAuthInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? username = _undefined, Object? password = _undefined}) =>
-      _then(
-        Input$NativeAuthInput._({
-          ..._instance._$data,
-          if (username != _undefined && username != null)
-            'username': (username as String),
-          if (password != _undefined && password != null)
-            'password': (password as String),
-        }),
-      );
+  TRes call({
+    Object? username = _undefined,
+    Object? password = _undefined,
+  }) =>
+      _then(Input$NativeAuthInput._({
+        ..._instance._$data,
+        if (username != _undefined && username != null)
+          'username': (username as String),
+        if (password != _undefined && password != null)
+          'password': (password as String),
+      }));
 }
 
 class _CopyWithStubImpl$Input$NativeAuthInput<TRes>
@@ -9663,12 +9696,18 @@ class _CopyWithStubImpl$Input$NativeAuthInput<TRes>
 
   TRes _res;
 
-  call({String? username, String? password}) => _res;
+  call({
+    String? username,
+    String? password,
+  }) =>
+      _res;
 }
 
 class Input$NumberListOperators {
   factory Input$NumberListOperators({required double inList}) =>
-      Input$NumberListOperators._({r'inList': inList});
+      Input$NumberListOperators._({
+        r'inList': inList,
+      });
 
   Input$NumberListOperators._(this._$data);
 
@@ -9691,7 +9730,10 @@ class Input$NumberListOperators {
   }
 
   CopyWith$Input$NumberListOperators<Input$NumberListOperators> get copyWith =>
-      CopyWith$Input$NumberListOperators(this, (i) => i);
+      CopyWith$Input$NumberListOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -9731,7 +9773,10 @@ abstract class CopyWith$Input$NumberListOperators<TRes> {
 
 class _CopyWithImpl$Input$NumberListOperators<TRes>
     implements CopyWith$Input$NumberListOperators<TRes> {
-  _CopyWithImpl$Input$NumberListOperators(this._instance, this._then);
+  _CopyWithImpl$Input$NumberListOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$NumberListOperators _instance;
 
@@ -9739,12 +9784,12 @@ class _CopyWithImpl$Input$NumberListOperators<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? inList = _undefined}) => _then(
-    Input$NumberListOperators._({
-      ..._instance._$data,
-      if (inList != _undefined && inList != null) 'inList': (inList as double),
-    }),
-  );
+  TRes call({Object? inList = _undefined}) =>
+      _then(Input$NumberListOperators._({
+        ..._instance._$data,
+        if (inList != _undefined && inList != null)
+          'inList': (inList as double),
+      }));
 }
 
 class _CopyWithStubImpl$Input$NumberListOperators<TRes>
@@ -9765,15 +9810,16 @@ class Input$NumberOperators {
     double? gte,
     Input$NumberRange? between,
     bool? isNull,
-  }) => Input$NumberOperators._({
-    if (eq != null) r'eq': eq,
-    if (lt != null) r'lt': lt,
-    if (lte != null) r'lte': lte,
-    if (gt != null) r'gt': gt,
-    if (gte != null) r'gte': gte,
-    if (between != null) r'between': between,
-    if (isNull != null) r'isNull': isNull,
-  });
+  }) =>
+      Input$NumberOperators._({
+        if (eq != null) r'eq': eq,
+        if (lt != null) r'lt': lt,
+        if (lte != null) r'lte': lte,
+        if (gt != null) r'gt': gt,
+        if (gte != null) r'gte': gte,
+        if (between != null) r'between': between,
+        if (isNull != null) r'isNull': isNull,
+      });
 
   Input$NumberOperators._(this._$data);
 
@@ -9862,7 +9908,10 @@ class Input$NumberOperators {
   }
 
   CopyWith$Input$NumberOperators<Input$NumberOperators> get copyWith =>
-      CopyWith$Input$NumberOperators(this, (i) => i);
+      CopyWith$Input$NumberOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -9975,7 +10024,10 @@ abstract class CopyWith$Input$NumberOperators<TRes> {
 
 class _CopyWithImpl$Input$NumberOperators<TRes>
     implements CopyWith$Input$NumberOperators<TRes> {
-  _CopyWithImpl$Input$NumberOperators(this._instance, this._then);
+  _CopyWithImpl$Input$NumberOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$NumberOperators _instance;
 
@@ -9991,18 +10043,17 @@ class _CopyWithImpl$Input$NumberOperators<TRes>
     Object? gte = _undefined,
     Object? between = _undefined,
     Object? isNull = _undefined,
-  }) => _then(
-    Input$NumberOperators._({
-      ..._instance._$data,
-      if (eq != _undefined) 'eq': (eq as double?),
-      if (lt != _undefined) 'lt': (lt as double?),
-      if (lte != _undefined) 'lte': (lte as double?),
-      if (gt != _undefined) 'gt': (gt as double?),
-      if (gte != _undefined) 'gte': (gte as double?),
-      if (between != _undefined) 'between': (between as Input$NumberRange?),
-      if (isNull != _undefined) 'isNull': (isNull as bool?),
-    }),
-  );
+  }) =>
+      _then(Input$NumberOperators._({
+        ..._instance._$data,
+        if (eq != _undefined) 'eq': (eq as double?),
+        if (lt != _undefined) 'lt': (lt as double?),
+        if (lte != _undefined) 'lte': (lte as double?),
+        if (gt != _undefined) 'gt': (gt as double?),
+        if (gte != _undefined) 'gte': (gte as double?),
+        if (between != _undefined) 'between': (between as Input$NumberRange?),
+        if (isNull != _undefined) 'isNull': (isNull as bool?),
+      }));
 
   CopyWith$Input$NumberRange<TRes> get between {
     final local$between = _instance.between;
@@ -10026,15 +10077,22 @@ class _CopyWithStubImpl$Input$NumberOperators<TRes>
     double? gte,
     Input$NumberRange? between,
     bool? isNull,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$NumberRange<TRes> get between =>
       CopyWith$Input$NumberRange.stub(_res);
 }
 
 class Input$NumberRange {
-  factory Input$NumberRange({required double start, required double end}) =>
-      Input$NumberRange._({r'start': start, r'end': end});
+  factory Input$NumberRange({
+    required double start,
+    required double end,
+  }) =>
+      Input$NumberRange._({
+        r'start': start,
+        r'end': end,
+      });
 
   Input$NumberRange._(this._$data);
 
@@ -10063,7 +10121,10 @@ class Input$NumberRange {
   }
 
   CopyWith$Input$NumberRange<Input$NumberRange> get copyWith =>
-      CopyWith$Input$NumberRange(this, (i) => i);
+      CopyWith$Input$NumberRange(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -10090,7 +10151,10 @@ class Input$NumberRange {
   int get hashCode {
     final l$start = start;
     final l$end = end;
-    return Object.hashAll([l$start, l$end]);
+    return Object.hashAll([
+      l$start,
+      l$end,
+    ]);
   }
 }
 
@@ -10103,12 +10167,18 @@ abstract class CopyWith$Input$NumberRange<TRes> {
   factory CopyWith$Input$NumberRange.stub(TRes res) =
       _CopyWithStubImpl$Input$NumberRange;
 
-  TRes call({double? start, double? end});
+  TRes call({
+    double? start,
+    double? end,
+  });
 }
 
 class _CopyWithImpl$Input$NumberRange<TRes>
     implements CopyWith$Input$NumberRange<TRes> {
-  _CopyWithImpl$Input$NumberRange(this._instance, this._then);
+  _CopyWithImpl$Input$NumberRange(
+    this._instance,
+    this._then,
+  );
 
   final Input$NumberRange _instance;
 
@@ -10116,13 +10186,15 @@ class _CopyWithImpl$Input$NumberRange<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? start = _undefined, Object? end = _undefined}) => _then(
-    Input$NumberRange._({
-      ..._instance._$data,
-      if (start != _undefined && start != null) 'start': (start as double),
-      if (end != _undefined && end != null) 'end': (end as double),
-    }),
-  );
+  TRes call({
+    Object? start = _undefined,
+    Object? end = _undefined,
+  }) =>
+      _then(Input$NumberRange._({
+        ..._instance._$data,
+        if (start != _undefined && start != null) 'start': (start as double),
+        if (end != _undefined && end != null) 'end': (end as double),
+      }));
 }
 
 class _CopyWithStubImpl$Input$NumberRange<TRes>
@@ -10131,7 +10203,11 @@ class _CopyWithStubImpl$Input$NumberRange<TRes>
 
   TRes _res;
 
-  call({double? start, double? end}) => _res;
+  call({
+    double? start,
+    double? end,
+  }) =>
+      _res;
 }
 
 class Input$OrderFilterParameter {
@@ -10162,37 +10238,38 @@ class Input$OrderFilterParameter {
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
-  }) => Input$OrderFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (type != null) r'type': type,
-    if (orderPlacedAt != null) r'orderPlacedAt': orderPlacedAt,
-    if (code != null) r'code': code,
-    if (state != null) r'state': state,
-    if (active != null) r'active': active,
-    if (totalQuantity != null) r'totalQuantity': totalQuantity,
-    if (subTotal != null) r'subTotal': subTotal,
-    if (subTotalWithTax != null) r'subTotalWithTax': subTotalWithTax,
-    if (currencyCode != null) r'currencyCode': currencyCode,
-    if (shipping != null) r'shipping': shipping,
-    if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
-    if (total != null) r'total': total,
-    if (totalWithTax != null) r'totalWithTax': totalWithTax,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-    if (placedAtISTFormatted != null)
-      r'placedAtISTFormatted': placedAtISTFormatted,
-    if (deviceMedium != null) r'deviceMedium': deviceMedium,
-    if (razorpayStatus != null) r'razorpayStatus': razorpayStatus,
-    if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
-    if (clientRequestToCancel != null)
-      r'clientRequestToCancel': clientRequestToCancel,
-    if (otherInstructions != null) r'otherInstructions': otherInstructions,
-    if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
-    if (loyaltyPointsEarned != null)
-      r'loyaltyPointsEarned': loyaltyPointsEarned,
-  });
+  }) =>
+      Input$OrderFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (type != null) r'type': type,
+        if (orderPlacedAt != null) r'orderPlacedAt': orderPlacedAt,
+        if (code != null) r'code': code,
+        if (state != null) r'state': state,
+        if (active != null) r'active': active,
+        if (totalQuantity != null) r'totalQuantity': totalQuantity,
+        if (subTotal != null) r'subTotal': subTotal,
+        if (subTotalWithTax != null) r'subTotalWithTax': subTotalWithTax,
+        if (currencyCode != null) r'currencyCode': currencyCode,
+        if (shipping != null) r'shipping': shipping,
+        if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
+        if (total != null) r'total': total,
+        if (totalWithTax != null) r'totalWithTax': totalWithTax,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+        if (placedAtISTFormatted != null)
+          r'placedAtISTFormatted': placedAtISTFormatted,
+        if (deviceMedium != null) r'deviceMedium': deviceMedium,
+        if (razorpayStatus != null) r'razorpayStatus': razorpayStatus,
+        if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
+        if (clientRequestToCancel != null)
+          r'clientRequestToCancel': clientRequestToCancel,
+        if (otherInstructions != null) r'otherInstructions': otherInstructions,
+        if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
+        if (loyaltyPointsEarned != null)
+          r'loyaltyPointsEarned': loyaltyPointsEarned,
+      });
 
   Input$OrderFilterParameter._(this._$data);
 
@@ -10227,8 +10304,7 @@ class Input$OrderFilterParameter {
       result$data['orderPlacedAt'] = l$orderPlacedAt == null
           ? null
           : Input$DateOperators.fromJson(
-              (l$orderPlacedAt as Map<String, dynamic>),
-            );
+              (l$orderPlacedAt as Map<String, dynamic>));
     }
     if (data.containsKey('code')) {
       final l$code = data['code'];
@@ -10253,48 +10329,42 @@ class Input$OrderFilterParameter {
       result$data['totalQuantity'] = l$totalQuantity == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$totalQuantity as Map<String, dynamic>),
-            );
+              (l$totalQuantity as Map<String, dynamic>));
     }
     if (data.containsKey('subTotal')) {
       final l$subTotal = data['subTotal'];
       result$data['subTotal'] = l$subTotal == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$subTotal as Map<String, dynamic>),
-            );
+              (l$subTotal as Map<String, dynamic>));
     }
     if (data.containsKey('subTotalWithTax')) {
       final l$subTotalWithTax = data['subTotalWithTax'];
       result$data['subTotalWithTax'] = l$subTotalWithTax == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$subTotalWithTax as Map<String, dynamic>),
-            );
+              (l$subTotalWithTax as Map<String, dynamic>));
     }
     if (data.containsKey('currencyCode')) {
       final l$currencyCode = data['currencyCode'];
       result$data['currencyCode'] = l$currencyCode == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$currencyCode as Map<String, dynamic>),
-            );
+              (l$currencyCode as Map<String, dynamic>));
     }
     if (data.containsKey('shipping')) {
       final l$shipping = data['shipping'];
       result$data['shipping'] = l$shipping == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$shipping as Map<String, dynamic>),
-            );
+              (l$shipping as Map<String, dynamic>));
     }
     if (data.containsKey('shippingWithTax')) {
       final l$shippingWithTax = data['shippingWithTax'];
       result$data['shippingWithTax'] = l$shippingWithTax == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$shippingWithTax as Map<String, dynamic>),
-            );
+              (l$shippingWithTax as Map<String, dynamic>));
     }
     if (data.containsKey('total')) {
       final l$total = data['total'];
@@ -10307,27 +10377,20 @@ class Input$OrderFilterParameter {
       result$data['totalWithTax'] = l$totalWithTax == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$totalWithTax as Map<String, dynamic>),
-            );
+              (l$totalWithTax as Map<String, dynamic>));
     }
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$OrderFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) =>
+              Input$OrderFilterParameter.fromJson((e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$OrderFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) =>
+              Input$OrderFilterParameter.fromJson((e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('placedAtISTFormatted')) {
@@ -10335,64 +10398,56 @@ class Input$OrderFilterParameter {
       result$data['placedAtISTFormatted'] = l$placedAtISTFormatted == null
           ? null
           : Input$DateOperators.fromJson(
-              (l$placedAtISTFormatted as Map<String, dynamic>),
-            );
+              (l$placedAtISTFormatted as Map<String, dynamic>));
     }
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
       result$data['deviceMedium'] = l$deviceMedium == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$deviceMedium as Map<String, dynamic>),
-            );
+              (l$deviceMedium as Map<String, dynamic>));
     }
     if (data.containsKey('razorpayStatus')) {
       final l$razorpayStatus = data['razorpayStatus'];
       result$data['razorpayStatus'] = l$razorpayStatus == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$razorpayStatus as Map<String, dynamic>),
-            );
+              (l$razorpayStatus as Map<String, dynamic>));
     }
     if (data.containsKey('razorpay_order_id')) {
       final l$razorpay_order_id = data['razorpay_order_id'];
       result$data['razorpay_order_id'] = l$razorpay_order_id == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$razorpay_order_id as Map<String, dynamic>),
-            );
+              (l$razorpay_order_id as Map<String, dynamic>));
     }
     if (data.containsKey('clientRequestToCancel')) {
       final l$clientRequestToCancel = data['clientRequestToCancel'];
       result$data['clientRequestToCancel'] = l$clientRequestToCancel == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$clientRequestToCancel as Map<String, dynamic>),
-            );
+              (l$clientRequestToCancel as Map<String, dynamic>));
     }
     if (data.containsKey('otherInstructions')) {
       final l$otherInstructions = data['otherInstructions'];
       result$data['otherInstructions'] = l$otherInstructions == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$otherInstructions as Map<String, dynamic>),
-            );
+              (l$otherInstructions as Map<String, dynamic>));
     }
     if (data.containsKey('loyaltyPointsUsed')) {
       final l$loyaltyPointsUsed = data['loyaltyPointsUsed'];
       result$data['loyaltyPointsUsed'] = l$loyaltyPointsUsed == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$loyaltyPointsUsed as Map<String, dynamic>),
-            );
+              (l$loyaltyPointsUsed as Map<String, dynamic>));
     }
     if (data.containsKey('loyaltyPointsEarned')) {
       final l$loyaltyPointsEarned = data['loyaltyPointsEarned'];
       result$data['loyaltyPointsEarned'] = l$loyaltyPointsEarned == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$loyaltyPointsEarned as Map<String, dynamic>),
-            );
+              (l$loyaltyPointsEarned as Map<String, dynamic>));
     }
     return Input$OrderFilterParameter._(result$data);
   }
@@ -10584,7 +10639,10 @@ class Input$OrderFilterParameter {
   }
 
   CopyWith$Input$OrderFilterParameter<Input$OrderFilterParameter>
-  get copyWith => CopyWith$Input$OrderFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$OrderFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -10893,13 +10951,13 @@ class Input$OrderFilterParameter {
       _$data.containsKey('totalWithTax') ? l$totalWithTax : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
       _$data.containsKey('placedAtISTFormatted')
           ? l$placedAtISTFormatted
@@ -10973,21 +11031,17 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
   CopyWith$Input$NumberOperators<TRes> get total;
   CopyWith$Input$NumberOperators<TRes> get totalWithTax;
   TRes $_and(
-    Iterable<Input$OrderFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$OrderFilterParameter<Input$OrderFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$OrderFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$OrderFilterParameter<
+                      Input$OrderFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$OrderFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$OrderFilterParameter<Input$OrderFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$OrderFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$OrderFilterParameter<
+                      Input$OrderFilterParameter>>?)
+          _fn);
   CopyWith$Input$DateOperators<TRes> get placedAtISTFormatted;
   CopyWith$Input$StringOperators<TRes> get deviceMedium;
   CopyWith$Input$StringOperators<TRes> get razorpayStatus;
@@ -11000,7 +11054,10 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
 
 class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     implements CopyWith$Input$OrderFilterParameter<TRes> {
-  _CopyWithImpl$Input$OrderFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$OrderFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$OrderFilterParameter _instance;
 
@@ -11035,58 +11092,59 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
-  }) => _then(
-    Input$OrderFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (type != _undefined) 'type': (type as Input$StringOperators?),
-      if (orderPlacedAt != _undefined)
-        'orderPlacedAt': (orderPlacedAt as Input$DateOperators?),
-      if (code != _undefined) 'code': (code as Input$StringOperators?),
-      if (state != _undefined) 'state': (state as Input$StringOperators?),
-      if (active != _undefined) 'active': (active as Input$BooleanOperators?),
-      if (totalQuantity != _undefined)
-        'totalQuantity': (totalQuantity as Input$NumberOperators?),
-      if (subTotal != _undefined)
-        'subTotal': (subTotal as Input$NumberOperators?),
-      if (subTotalWithTax != _undefined)
-        'subTotalWithTax': (subTotalWithTax as Input$NumberOperators?),
-      if (currencyCode != _undefined)
-        'currencyCode': (currencyCode as Input$StringOperators?),
-      if (shipping != _undefined)
-        'shipping': (shipping as Input$NumberOperators?),
-      if (shippingWithTax != _undefined)
-        'shippingWithTax': (shippingWithTax as Input$NumberOperators?),
-      if (total != _undefined) 'total': (total as Input$NumberOperators?),
-      if (totalWithTax != _undefined)
-        'totalWithTax': (totalWithTax as Input$NumberOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$OrderFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$OrderFilterParameter>?),
-      if (placedAtISTFormatted != _undefined)
-        'placedAtISTFormatted': (placedAtISTFormatted as Input$DateOperators?),
-      if (deviceMedium != _undefined)
-        'deviceMedium': (deviceMedium as Input$StringOperators?),
-      if (razorpayStatus != _undefined)
-        'razorpayStatus': (razorpayStatus as Input$StringOperators?),
-      if (razorpay_order_id != _undefined)
-        'razorpay_order_id': (razorpay_order_id as Input$StringOperators?),
-      if (clientRequestToCancel != _undefined)
-        'clientRequestToCancel':
-            (clientRequestToCancel as Input$NumberOperators?),
-      if (otherInstructions != _undefined)
-        'otherInstructions': (otherInstructions as Input$StringOperators?),
-      if (loyaltyPointsUsed != _undefined)
-        'loyaltyPointsUsed': (loyaltyPointsUsed as Input$NumberOperators?),
-      if (loyaltyPointsEarned != _undefined)
-        'loyaltyPointsEarned': (loyaltyPointsEarned as Input$NumberOperators?),
-    }),
-  );
+  }) =>
+      _then(Input$OrderFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (type != _undefined) 'type': (type as Input$StringOperators?),
+        if (orderPlacedAt != _undefined)
+          'orderPlacedAt': (orderPlacedAt as Input$DateOperators?),
+        if (code != _undefined) 'code': (code as Input$StringOperators?),
+        if (state != _undefined) 'state': (state as Input$StringOperators?),
+        if (active != _undefined) 'active': (active as Input$BooleanOperators?),
+        if (totalQuantity != _undefined)
+          'totalQuantity': (totalQuantity as Input$NumberOperators?),
+        if (subTotal != _undefined)
+          'subTotal': (subTotal as Input$NumberOperators?),
+        if (subTotalWithTax != _undefined)
+          'subTotalWithTax': (subTotalWithTax as Input$NumberOperators?),
+        if (currencyCode != _undefined)
+          'currencyCode': (currencyCode as Input$StringOperators?),
+        if (shipping != _undefined)
+          'shipping': (shipping as Input$NumberOperators?),
+        if (shippingWithTax != _undefined)
+          'shippingWithTax': (shippingWithTax as Input$NumberOperators?),
+        if (total != _undefined) 'total': (total as Input$NumberOperators?),
+        if (totalWithTax != _undefined)
+          'totalWithTax': (totalWithTax as Input$NumberOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$OrderFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$OrderFilterParameter>?),
+        if (placedAtISTFormatted != _undefined)
+          'placedAtISTFormatted':
+              (placedAtISTFormatted as Input$DateOperators?),
+        if (deviceMedium != _undefined)
+          'deviceMedium': (deviceMedium as Input$StringOperators?),
+        if (razorpayStatus != _undefined)
+          'razorpayStatus': (razorpayStatus as Input$StringOperators?),
+        if (razorpay_order_id != _undefined)
+          'razorpay_order_id': (razorpay_order_id as Input$StringOperators?),
+        if (clientRequestToCancel != _undefined)
+          'clientRequestToCancel':
+              (clientRequestToCancel as Input$NumberOperators?),
+        if (otherInstructions != _undefined)
+          'otherInstructions': (otherInstructions as Input$StringOperators?),
+        if (loyaltyPointsUsed != _undefined)
+          'loyaltyPointsUsed': (loyaltyPointsUsed as Input$NumberOperators?),
+        if (loyaltyPointsEarned != _undefined)
+          'loyaltyPointsEarned':
+              (loyaltyPointsEarned as Input$NumberOperators?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -11100,9 +11158,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -11110,9 +11166,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get type {
@@ -11127,9 +11181,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$orderPlacedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$orderPlacedAt,
-            (e) => call(orderPlacedAt: e),
-          );
+            local$orderPlacedAt, (e) => call(orderPlacedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get code {
@@ -11158,9 +11210,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$totalQuantity == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$totalQuantity,
-            (e) => call(totalQuantity: e),
-          );
+            local$totalQuantity, (e) => call(totalQuantity: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get subTotal {
@@ -11168,9 +11218,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$subTotal == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$subTotal,
-            (e) => call(subTotal: e),
-          );
+            local$subTotal, (e) => call(subTotal: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get subTotalWithTax {
@@ -11178,9 +11226,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$subTotalWithTax == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$subTotalWithTax,
-            (e) => call(subTotalWithTax: e),
-          );
+            local$subTotalWithTax, (e) => call(subTotalWithTax: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get currencyCode {
@@ -11188,9 +11234,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$currencyCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$currencyCode,
-            (e) => call(currencyCode: e),
-          );
+            local$currencyCode, (e) => call(currencyCode: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get shipping {
@@ -11198,9 +11242,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$shipping == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$shipping,
-            (e) => call(shipping: e),
-          );
+            local$shipping, (e) => call(shipping: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get shippingWithTax {
@@ -11208,9 +11250,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$shippingWithTax == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$shippingWithTax,
-            (e) => call(shippingWithTax: e),
-          );
+            local$shippingWithTax, (e) => call(shippingWithTax: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get total {
@@ -11225,49 +11265,41 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$totalWithTax == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$totalWithTax,
-            (e) => call(totalWithTax: e),
-          );
+            local$totalWithTax, (e) => call(totalWithTax: e));
   }
 
   TRes $_and(
-    Iterable<Input$OrderFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$OrderFilterParameter<Input$OrderFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$OrderFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$OrderFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$OrderFilterParameter<
+                          Input$OrderFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(
+              _instance.$_and?.map((e) => CopyWith$Input$OrderFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$OrderFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$OrderFilterParameter<Input$OrderFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$OrderFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$OrderFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$OrderFilterParameter<
+                          Input$OrderFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(
+              _instance.$_or?.map((e) => CopyWith$Input$OrderFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   CopyWith$Input$DateOperators<TRes> get placedAtISTFormatted {
     final local$placedAtISTFormatted = _instance.placedAtISTFormatted;
     return local$placedAtISTFormatted == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$placedAtISTFormatted,
-            (e) => call(placedAtISTFormatted: e),
-          );
+            local$placedAtISTFormatted, (e) => call(placedAtISTFormatted: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get deviceMedium {
@@ -11275,9 +11307,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$deviceMedium == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$deviceMedium,
-            (e) => call(deviceMedium: e),
-          );
+            local$deviceMedium, (e) => call(deviceMedium: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get razorpayStatus {
@@ -11285,9 +11315,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$razorpayStatus == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$razorpayStatus,
-            (e) => call(razorpayStatus: e),
-          );
+            local$razorpayStatus, (e) => call(razorpayStatus: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get razorpay_order_id {
@@ -11295,9 +11323,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$razorpay_order_id == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$razorpay_order_id,
-            (e) => call(razorpay_order_id: e),
-          );
+            local$razorpay_order_id, (e) => call(razorpay_order_id: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get clientRequestToCancel {
@@ -11305,9 +11331,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$clientRequestToCancel == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$clientRequestToCancel,
-            (e) => call(clientRequestToCancel: e),
-          );
+            local$clientRequestToCancel, (e) => call(clientRequestToCancel: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get otherInstructions {
@@ -11315,9 +11339,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$otherInstructions == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$otherInstructions,
-            (e) => call(otherInstructions: e),
-          );
+            local$otherInstructions, (e) => call(otherInstructions: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsUsed {
@@ -11325,9 +11347,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$loyaltyPointsUsed == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$loyaltyPointsUsed,
-            (e) => call(loyaltyPointsUsed: e),
-          );
+            local$loyaltyPointsUsed, (e) => call(loyaltyPointsUsed: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsEarned {
@@ -11335,9 +11355,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     return local$loyaltyPointsEarned == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$loyaltyPointsEarned,
-            (e) => call(loyaltyPointsEarned: e),
-          );
+            local$loyaltyPointsEarned, (e) => call(loyaltyPointsEarned: e));
   }
 }
 
@@ -11374,7 +11392,8 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -11460,13 +11479,14 @@ class Input$OrderListOptions {
     Input$OrderSortParameter? sort,
     Input$OrderFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$OrderListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$OrderListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$OrderListOptions._(this._$data);
 
@@ -11491,8 +11511,7 @@ class Input$OrderListOptions {
       result$data['filter'] = l$filter == null
           ? null
           : Input$OrderFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -11546,7 +11565,10 @@ class Input$OrderListOptions {
   }
 
   CopyWith$Input$OrderListOptions<Input$OrderListOptions> get copyWith =>
-      CopyWith$Input$OrderListOptions(this, (i) => i);
+      CopyWith$Input$OrderListOptions(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -11639,7 +11661,10 @@ abstract class CopyWith$Input$OrderListOptions<TRes> {
 
 class _CopyWithImpl$Input$OrderListOptions<TRes>
     implements CopyWith$Input$OrderListOptions<TRes> {
-  _CopyWithImpl$Input$OrderListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$OrderListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$OrderListOptions _instance;
 
@@ -11653,18 +11678,17 @@ class _CopyWithImpl$Input$OrderListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$OrderListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined) 'sort': (sort as Input$OrderSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$OrderFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$OrderListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined) 'sort': (sort as Input$OrderSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$OrderFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$OrderSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
@@ -11678,9 +11702,7 @@ class _CopyWithImpl$Input$OrderListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$OrderFilterParameter.stub(_then(_instance))
         : CopyWith$Input$OrderFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -11696,7 +11718,8 @@ class _CopyWithStubImpl$Input$OrderListOptions<TRes>
     Input$OrderSortParameter? sort,
     Input$OrderFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$OrderSortParameter<TRes> get sort =>
       CopyWith$Input$OrderSortParameter.stub(_res);
@@ -11728,32 +11751,33 @@ class Input$OrderSortParameter {
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,
-  }) => Input$OrderSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (orderPlacedAt != null) r'orderPlacedAt': orderPlacedAt,
-    if (code != null) r'code': code,
-    if (state != null) r'state': state,
-    if (totalQuantity != null) r'totalQuantity': totalQuantity,
-    if (subTotal != null) r'subTotal': subTotal,
-    if (subTotalWithTax != null) r'subTotalWithTax': subTotalWithTax,
-    if (shipping != null) r'shipping': shipping,
-    if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
-    if (total != null) r'total': total,
-    if (totalWithTax != null) r'totalWithTax': totalWithTax,
-    if (placedAtISTFormatted != null)
-      r'placedAtISTFormatted': placedAtISTFormatted,
-    if (deviceMedium != null) r'deviceMedium': deviceMedium,
-    if (razorpayStatus != null) r'razorpayStatus': razorpayStatus,
-    if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
-    if (clientRequestToCancel != null)
-      r'clientRequestToCancel': clientRequestToCancel,
-    if (otherInstructions != null) r'otherInstructions': otherInstructions,
-    if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
-    if (loyaltyPointsEarned != null)
-      r'loyaltyPointsEarned': loyaltyPointsEarned,
-  });
+  }) =>
+      Input$OrderSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (orderPlacedAt != null) r'orderPlacedAt': orderPlacedAt,
+        if (code != null) r'code': code,
+        if (state != null) r'state': state,
+        if (totalQuantity != null) r'totalQuantity': totalQuantity,
+        if (subTotal != null) r'subTotal': subTotal,
+        if (subTotalWithTax != null) r'subTotalWithTax': subTotalWithTax,
+        if (shipping != null) r'shipping': shipping,
+        if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
+        if (total != null) r'total': total,
+        if (totalWithTax != null) r'totalWithTax': totalWithTax,
+        if (placedAtISTFormatted != null)
+          r'placedAtISTFormatted': placedAtISTFormatted,
+        if (deviceMedium != null) r'deviceMedium': deviceMedium,
+        if (razorpayStatus != null) r'razorpayStatus': razorpayStatus,
+        if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
+        if (clientRequestToCancel != null)
+          r'clientRequestToCancel': clientRequestToCancel,
+        if (otherInstructions != null) r'otherInstructions': otherInstructions,
+        if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
+        if (loyaltyPointsEarned != null)
+          r'loyaltyPointsEarned': loyaltyPointsEarned,
+      });
 
   Input$OrderSortParameter._(this._$data);
 
@@ -11761,9 +11785,8 @@ class Input$OrderSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -11785,15 +11808,13 @@ class Input$OrderSortParameter {
     }
     if (data.containsKey('code')) {
       final l$code = data['code'];
-      result$data['code'] = l$code == null
-          ? null
-          : fromJson$Enum$SortOrder((l$code as String));
+      result$data['code'] =
+          l$code == null ? null : fromJson$Enum$SortOrder((l$code as String));
     }
     if (data.containsKey('state')) {
       final l$state = data['state'];
-      result$data['state'] = l$state == null
-          ? null
-          : fromJson$Enum$SortOrder((l$state as String));
+      result$data['state'] =
+          l$state == null ? null : fromJson$Enum$SortOrder((l$state as String));
     }
     if (data.containsKey('totalQuantity')) {
       final l$totalQuantity = data['totalQuantity'];
@@ -11827,9 +11848,8 @@ class Input$OrderSortParameter {
     }
     if (data.containsKey('total')) {
       final l$total = data['total'];
-      result$data['total'] = l$total == null
-          ? null
-          : fromJson$Enum$SortOrder((l$total as String));
+      result$data['total'] =
+          l$total == null ? null : fromJson$Enum$SortOrder((l$total as String));
     }
     if (data.containsKey('totalWithTax')) {
       final l$totalWithTax = data['totalWithTax'];
@@ -11953,15 +11973,13 @@ class Input$OrderSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('orderPlacedAt')) {
       final l$orderPlacedAt = orderPlacedAt;
@@ -11971,15 +11989,13 @@ class Input$OrderSortParameter {
     }
     if (_$data.containsKey('code')) {
       final l$code = code;
-      result$data['code'] = l$code == null
-          ? null
-          : toJson$Enum$SortOrder(l$code);
+      result$data['code'] =
+          l$code == null ? null : toJson$Enum$SortOrder(l$code);
     }
     if (_$data.containsKey('state')) {
       final l$state = state;
-      result$data['state'] = l$state == null
-          ? null
-          : toJson$Enum$SortOrder(l$state);
+      result$data['state'] =
+          l$state == null ? null : toJson$Enum$SortOrder(l$state);
     }
     if (_$data.containsKey('totalQuantity')) {
       final l$totalQuantity = totalQuantity;
@@ -11989,9 +12005,8 @@ class Input$OrderSortParameter {
     }
     if (_$data.containsKey('subTotal')) {
       final l$subTotal = subTotal;
-      result$data['subTotal'] = l$subTotal == null
-          ? null
-          : toJson$Enum$SortOrder(l$subTotal);
+      result$data['subTotal'] =
+          l$subTotal == null ? null : toJson$Enum$SortOrder(l$subTotal);
     }
     if (_$data.containsKey('subTotalWithTax')) {
       final l$subTotalWithTax = subTotalWithTax;
@@ -12001,9 +12016,8 @@ class Input$OrderSortParameter {
     }
     if (_$data.containsKey('shipping')) {
       final l$shipping = shipping;
-      result$data['shipping'] = l$shipping == null
-          ? null
-          : toJson$Enum$SortOrder(l$shipping);
+      result$data['shipping'] =
+          l$shipping == null ? null : toJson$Enum$SortOrder(l$shipping);
     }
     if (_$data.containsKey('shippingWithTax')) {
       final l$shippingWithTax = shippingWithTax;
@@ -12013,15 +12027,13 @@ class Input$OrderSortParameter {
     }
     if (_$data.containsKey('total')) {
       final l$total = total;
-      result$data['total'] = l$total == null
-          ? null
-          : toJson$Enum$SortOrder(l$total);
+      result$data['total'] =
+          l$total == null ? null : toJson$Enum$SortOrder(l$total);
     }
     if (_$data.containsKey('totalWithTax')) {
       final l$totalWithTax = totalWithTax;
-      result$data['totalWithTax'] = l$totalWithTax == null
-          ? null
-          : toJson$Enum$SortOrder(l$totalWithTax);
+      result$data['totalWithTax'] =
+          l$totalWithTax == null ? null : toJson$Enum$SortOrder(l$totalWithTax);
     }
     if (_$data.containsKey('placedAtISTFormatted')) {
       final l$placedAtISTFormatted = placedAtISTFormatted;
@@ -12031,9 +12043,8 @@ class Input$OrderSortParameter {
     }
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
-      result$data['deviceMedium'] = l$deviceMedium == null
-          ? null
-          : toJson$Enum$SortOrder(l$deviceMedium);
+      result$data['deviceMedium'] =
+          l$deviceMedium == null ? null : toJson$Enum$SortOrder(l$deviceMedium);
     }
     if (_$data.containsKey('razorpayStatus')) {
       final l$razorpayStatus = razorpayStatus;
@@ -12075,7 +12086,10 @@ class Input$OrderSortParameter {
   }
 
   CopyWith$Input$OrderSortParameter<Input$OrderSortParameter> get copyWith =>
-      CopyWith$Input$OrderSortParameter(this, (i) => i);
+      CopyWith$Input$OrderSortParameter(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -12365,7 +12379,10 @@ abstract class CopyWith$Input$OrderSortParameter<TRes> {
 
 class _CopyWithImpl$Input$OrderSortParameter<TRes>
     implements CopyWith$Input$OrderSortParameter<TRes> {
-  _CopyWithImpl$Input$OrderSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$OrderSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$OrderSortParameter _instance;
 
@@ -12395,45 +12412,46 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
-  }) => _then(
-    Input$OrderSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (orderPlacedAt != _undefined)
-        'orderPlacedAt': (orderPlacedAt as Enum$SortOrder?),
-      if (code != _undefined) 'code': (code as Enum$SortOrder?),
-      if (state != _undefined) 'state': (state as Enum$SortOrder?),
-      if (totalQuantity != _undefined)
-        'totalQuantity': (totalQuantity as Enum$SortOrder?),
-      if (subTotal != _undefined) 'subTotal': (subTotal as Enum$SortOrder?),
-      if (subTotalWithTax != _undefined)
-        'subTotalWithTax': (subTotalWithTax as Enum$SortOrder?),
-      if (shipping != _undefined) 'shipping': (shipping as Enum$SortOrder?),
-      if (shippingWithTax != _undefined)
-        'shippingWithTax': (shippingWithTax as Enum$SortOrder?),
-      if (total != _undefined) 'total': (total as Enum$SortOrder?),
-      if (totalWithTax != _undefined)
-        'totalWithTax': (totalWithTax as Enum$SortOrder?),
-      if (placedAtISTFormatted != _undefined)
-        'placedAtISTFormatted': (placedAtISTFormatted as Enum$SortOrder?),
-      if (deviceMedium != _undefined)
-        'deviceMedium': (deviceMedium as Enum$SortOrder?),
-      if (razorpayStatus != _undefined)
-        'razorpayStatus': (razorpayStatus as Enum$SortOrder?),
-      if (razorpay_order_id != _undefined)
-        'razorpay_order_id': (razorpay_order_id as Enum$SortOrder?),
-      if (clientRequestToCancel != _undefined)
-        'clientRequestToCancel': (clientRequestToCancel as Enum$SortOrder?),
-      if (otherInstructions != _undefined)
-        'otherInstructions': (otherInstructions as Enum$SortOrder?),
-      if (loyaltyPointsUsed != _undefined)
-        'loyaltyPointsUsed': (loyaltyPointsUsed as Enum$SortOrder?),
-      if (loyaltyPointsEarned != _undefined)
-        'loyaltyPointsEarned': (loyaltyPointsEarned as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$OrderSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (orderPlacedAt != _undefined)
+          'orderPlacedAt': (orderPlacedAt as Enum$SortOrder?),
+        if (code != _undefined) 'code': (code as Enum$SortOrder?),
+        if (state != _undefined) 'state': (state as Enum$SortOrder?),
+        if (totalQuantity != _undefined)
+          'totalQuantity': (totalQuantity as Enum$SortOrder?),
+        if (subTotal != _undefined) 'subTotal': (subTotal as Enum$SortOrder?),
+        if (subTotalWithTax != _undefined)
+          'subTotalWithTax': (subTotalWithTax as Enum$SortOrder?),
+        if (shipping != _undefined) 'shipping': (shipping as Enum$SortOrder?),
+        if (shippingWithTax != _undefined)
+          'shippingWithTax': (shippingWithTax as Enum$SortOrder?),
+        if (total != _undefined) 'total': (total as Enum$SortOrder?),
+        if (totalWithTax != _undefined)
+          'totalWithTax': (totalWithTax as Enum$SortOrder?),
+        if (placedAtISTFormatted != _undefined)
+          'placedAtISTFormatted': (placedAtISTFormatted as Enum$SortOrder?),
+        if (deviceMedium != _undefined)
+          'deviceMedium': (deviceMedium as Enum$SortOrder?),
+        if (razorpayStatus != _undefined)
+          'razorpayStatus': (razorpayStatus as Enum$SortOrder?),
+        if (razorpay_order_id != _undefined)
+          'razorpay_order_id': (razorpay_order_id as Enum$SortOrder?),
+        if (clientRequestToCancel != _undefined)
+          'clientRequestToCancel': (clientRequestToCancel as Enum$SortOrder?),
+        if (otherInstructions != _undefined)
+          'otherInstructions': (otherInstructions as Enum$SortOrder?),
+        if (loyaltyPointsUsed != _undefined)
+          'loyaltyPointsUsed': (loyaltyPointsUsed as Enum$SortOrder?),
+        if (loyaltyPointsEarned != _undefined)
+          'loyaltyPointsEarned': (loyaltyPointsEarned as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$OrderSortParameter<TRes>
@@ -12464,14 +12482,19 @@ class _CopyWithStubImpl$Input$OrderSortParameter<TRes>
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$PaymentInput {
   factory Input$PaymentInput({
     required String method,
     required Map<String, dynamic> metadata,
-  }) => Input$PaymentInput._({r'method': method, r'metadata': metadata});
+  }) =>
+      Input$PaymentInput._({
+        r'method': method,
+        r'metadata': metadata,
+      });
 
   Input$PaymentInput._(this._$data);
 
@@ -12501,7 +12524,10 @@ class Input$PaymentInput {
   }
 
   CopyWith$Input$PaymentInput<Input$PaymentInput> get copyWith =>
-      CopyWith$Input$PaymentInput(this, (i) => i);
+      CopyWith$Input$PaymentInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -12528,7 +12554,10 @@ class Input$PaymentInput {
   int get hashCode {
     final l$method = method;
     final l$metadata = metadata;
-    return Object.hashAll([l$method, l$metadata]);
+    return Object.hashAll([
+      l$method,
+      l$metadata,
+    ]);
   }
 }
 
@@ -12541,12 +12570,18 @@ abstract class CopyWith$Input$PaymentInput<TRes> {
   factory CopyWith$Input$PaymentInput.stub(TRes res) =
       _CopyWithStubImpl$Input$PaymentInput;
 
-  TRes call({String? method, Map<String, dynamic>? metadata});
+  TRes call({
+    String? method,
+    Map<String, dynamic>? metadata,
+  });
 }
 
 class _CopyWithImpl$Input$PaymentInput<TRes>
     implements CopyWith$Input$PaymentInput<TRes> {
-  _CopyWithImpl$Input$PaymentInput(this._instance, this._then);
+  _CopyWithImpl$Input$PaymentInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$PaymentInput _instance;
 
@@ -12554,16 +12589,17 @@ class _CopyWithImpl$Input$PaymentInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? method = _undefined, Object? metadata = _undefined}) =>
-      _then(
-        Input$PaymentInput._({
-          ..._instance._$data,
-          if (method != _undefined && method != null)
-            'method': (method as String),
-          if (metadata != _undefined && metadata != null)
-            'metadata': (metadata as Map<String, dynamic>),
-        }),
-      );
+  TRes call({
+    Object? method = _undefined,
+    Object? metadata = _undefined,
+  }) =>
+      _then(Input$PaymentInput._({
+        ..._instance._$data,
+        if (method != _undefined && method != null)
+          'method': (method as String),
+        if (metadata != _undefined && metadata != null)
+          'metadata': (metadata as Map<String, dynamic>),
+      }));
 }
 
 class _CopyWithStubImpl$Input$PaymentInput<TRes>
@@ -12572,7 +12608,11 @@ class _CopyWithStubImpl$Input$PaymentInput<TRes>
 
   TRes _res;
 
-  call({String? method, Map<String, dynamic>? metadata}) => _res;
+  call({
+    String? method,
+    Map<String, dynamic>? metadata,
+  }) =>
+      _res;
 }
 
 class Input$PhoneOtpInput {
@@ -12581,12 +12621,13 @@ class Input$PhoneOtpInput {
     required String code,
     String? firstName,
     String? lastName,
-  }) => Input$PhoneOtpInput._({
-    r'phoneNumber': phoneNumber,
-    r'code': code,
-    if (firstName != null) r'firstName': firstName,
-    if (lastName != null) r'lastName': lastName,
-  });
+  }) =>
+      Input$PhoneOtpInput._({
+        r'phoneNumber': phoneNumber,
+        r'code': code,
+        if (firstName != null) r'firstName': firstName,
+        if (lastName != null) r'lastName': lastName,
+      });
 
   Input$PhoneOtpInput._(this._$data);
 
@@ -12635,7 +12676,10 @@ class Input$PhoneOtpInput {
   }
 
   CopyWith$Input$PhoneOtpInput<Input$PhoneOtpInput> get copyWith =>
-      CopyWith$Input$PhoneOtpInput(this, (i) => i);
+      CopyWith$Input$PhoneOtpInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -12710,7 +12754,10 @@ abstract class CopyWith$Input$PhoneOtpInput<TRes> {
 
 class _CopyWithImpl$Input$PhoneOtpInput<TRes>
     implements CopyWith$Input$PhoneOtpInput<TRes> {
-  _CopyWithImpl$Input$PhoneOtpInput(this._instance, this._then);
+  _CopyWithImpl$Input$PhoneOtpInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$PhoneOtpInput _instance;
 
@@ -12723,16 +12770,15 @@ class _CopyWithImpl$Input$PhoneOtpInput<TRes>
     Object? code = _undefined,
     Object? firstName = _undefined,
     Object? lastName = _undefined,
-  }) => _then(
-    Input$PhoneOtpInput._({
-      ..._instance._$data,
-      if (phoneNumber != _undefined && phoneNumber != null)
-        'phoneNumber': (phoneNumber as String),
-      if (code != _undefined && code != null) 'code': (code as String),
-      if (firstName != _undefined) 'firstName': (firstName as String?),
-      if (lastName != _undefined) 'lastName': (lastName as String?),
-    }),
-  );
+  }) =>
+      _then(Input$PhoneOtpInput._({
+        ..._instance._$data,
+        if (phoneNumber != _undefined && phoneNumber != null)
+          'phoneNumber': (phoneNumber as String),
+        if (code != _undefined && code != null) 'code': (code as String),
+        if (firstName != _undefined) 'firstName': (firstName as String?),
+        if (lastName != _undefined) 'lastName': (lastName as String?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$PhoneOtpInput<TRes>
@@ -12746,7 +12792,8 @@ class _CopyWithStubImpl$Input$PhoneOtpInput<TRes>
     String? code,
     String? firstName,
     String? lastName,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$ProductFilterParameter {
@@ -12762,19 +12809,20 @@ class Input$ProductFilterParameter {
     List<Input$ProductFilterParameter>? $_and,
     List<Input$ProductFilterParameter>? $_or,
     Input$StringOperators? hsnCode,
-  }) => Input$ProductFilterParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (languageCode != null) r'languageCode': languageCode,
-    if (name != null) r'name': name,
-    if (slug != null) r'slug': slug,
-    if (description != null) r'description': description,
-    if (enabled != null) r'enabled': enabled,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-    if (hsnCode != null) r'hsnCode': hsnCode,
-  });
+  }) =>
+      Input$ProductFilterParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (languageCode != null) r'languageCode': languageCode,
+        if (name != null) r'name': name,
+        if (slug != null) r'slug': slug,
+        if (description != null) r'description': description,
+        if (enabled != null) r'enabled': enabled,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+        if (hsnCode != null) r'hsnCode': hsnCode,
+      });
 
   Input$ProductFilterParameter._(this._$data);
 
@@ -12803,8 +12851,7 @@ class Input$ProductFilterParameter {
       result$data['languageCode'] = l$languageCode == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$languageCode as Map<String, dynamic>),
-            );
+              (l$languageCode as Map<String, dynamic>));
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
@@ -12823,35 +12870,27 @@ class Input$ProductFilterParameter {
       result$data['description'] = l$description == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$description as Map<String, dynamic>),
-            );
+              (l$description as Map<String, dynamic>));
     }
     if (data.containsKey('enabled')) {
       final l$enabled = data['enabled'];
       result$data['enabled'] = l$enabled == null
           ? null
           : Input$BooleanOperators.fromJson(
-              (l$enabled as Map<String, dynamic>),
-            );
+              (l$enabled as Map<String, dynamic>));
     }
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$ProductFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$ProductFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$ProductFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$ProductFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('hsnCode')) {
@@ -12945,7 +12984,10 @@ class Input$ProductFilterParameter {
   }
 
   CopyWith$Input$ProductFilterParameter<Input$ProductFilterParameter>
-  get copyWith => CopyWith$Input$ProductFilterParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$ProductFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -13097,13 +13139,13 @@ class Input$ProductFilterParameter {
       _$data.containsKey('enabled') ? l$enabled : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
       _$data.containsKey('hsnCode') ? l$hsnCode : const {},
     ]);
@@ -13141,27 +13183,26 @@ abstract class CopyWith$Input$ProductFilterParameter<TRes> {
   CopyWith$Input$StringOperators<TRes> get description;
   CopyWith$Input$BooleanOperators<TRes> get enabled;
   TRes $_and(
-    Iterable<Input$ProductFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductFilterParameter<Input$ProductFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$ProductFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$ProductFilterParameter<
+                      Input$ProductFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$ProductFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductFilterParameter<Input$ProductFilterParameter>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$ProductFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$ProductFilterParameter<
+                      Input$ProductFilterParameter>>?)
+          _fn);
   CopyWith$Input$StringOperators<TRes> get hsnCode;
 }
 
 class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     implements CopyWith$Input$ProductFilterParameter<TRes> {
-  _CopyWithImpl$Input$ProductFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$ProductFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$ProductFilterParameter _instance;
 
@@ -13181,29 +13222,29 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     Object? $_and = _undefined,
     Object? $_or = _undefined,
     Object? hsnCode = _undefined,
-  }) => _then(
-    Input$ProductFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (languageCode != _undefined)
-        'languageCode': (languageCode as Input$StringOperators?),
-      if (name != _undefined) 'name': (name as Input$StringOperators?),
-      if (slug != _undefined) 'slug': (slug as Input$StringOperators?),
-      if (description != _undefined)
-        'description': (description as Input$StringOperators?),
-      if (enabled != _undefined)
-        'enabled': (enabled as Input$BooleanOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$ProductFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$ProductFilterParameter>?),
-      if (hsnCode != _undefined) 'hsnCode': (hsnCode as Input$StringOperators?),
-    }),
-  );
+  }) =>
+      _then(Input$ProductFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (languageCode != _undefined)
+          'languageCode': (languageCode as Input$StringOperators?),
+        if (name != _undefined) 'name': (name as Input$StringOperators?),
+        if (slug != _undefined) 'slug': (slug as Input$StringOperators?),
+        if (description != _undefined)
+          'description': (description as Input$StringOperators?),
+        if (enabled != _undefined)
+          'enabled': (enabled as Input$BooleanOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$ProductFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$ProductFilterParameter>?),
+        if (hsnCode != _undefined)
+          'hsnCode': (hsnCode as Input$StringOperators?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -13217,9 +13258,7 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -13227,9 +13266,7 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get languageCode {
@@ -13237,9 +13274,7 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     return local$languageCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$languageCode,
-            (e) => call(languageCode: e),
-          );
+            local$languageCode, (e) => call(languageCode: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get name {
@@ -13261,9 +13296,7 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     return local$description == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$description,
-            (e) => call(description: e),
-          );
+            local$description, (e) => call(description: e));
   }
 
   CopyWith$Input$BooleanOperators<TRes> get enabled {
@@ -13271,49 +13304,41 @@ class _CopyWithImpl$Input$ProductFilterParameter<TRes>
     return local$enabled == null
         ? CopyWith$Input$BooleanOperators.stub(_then(_instance))
         : CopyWith$Input$BooleanOperators(
-            local$enabled,
-            (e) => call(enabled: e),
-          );
+            local$enabled, (e) => call(enabled: e));
   }
 
   TRes $_and(
-    Iterable<Input$ProductFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductFilterParameter<Input$ProductFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$ProductFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$ProductFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$ProductFilterParameter<
+                          Input$ProductFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(
+              _instance.$_and?.map((e) => CopyWith$Input$ProductFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$ProductFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductFilterParameter<Input$ProductFilterParameter>
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$ProductFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$ProductFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$ProductFilterParameter<
+                          Input$ProductFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(
+              _instance.$_or?.map((e) => CopyWith$Input$ProductFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   CopyWith$Input$StringOperators<TRes> get hsnCode {
     final local$hsnCode = _instance.hsnCode;
     return local$hsnCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$hsnCode,
-            (e) => call(hsnCode: e),
-          );
+            local$hsnCode, (e) => call(hsnCode: e));
   }
 }
 
@@ -13335,7 +13360,8 @@ class _CopyWithStubImpl$Input$ProductFilterParameter<TRes>
     List<Input$ProductFilterParameter>? $_and,
     List<Input$ProductFilterParameter>? $_or,
     Input$StringOperators? hsnCode,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -13376,13 +13402,14 @@ class Input$ProductListOptions {
     Input$ProductSortParameter? sort,
     Input$ProductFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$ProductListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$ProductListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$ProductListOptions._(this._$data);
 
@@ -13401,16 +13428,14 @@ class Input$ProductListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$ProductSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$ProductFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -13464,7 +13489,10 @@ class Input$ProductListOptions {
   }
 
   CopyWith$Input$ProductListOptions<Input$ProductListOptions> get copyWith =>
-      CopyWith$Input$ProductListOptions(this, (i) => i);
+      CopyWith$Input$ProductListOptions(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -13558,7 +13586,10 @@ abstract class CopyWith$Input$ProductListOptions<TRes> {
 
 class _CopyWithImpl$Input$ProductListOptions<TRes>
     implements CopyWith$Input$ProductListOptions<TRes> {
-  _CopyWithImpl$Input$ProductListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$ProductListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$ProductListOptions _instance;
 
@@ -13572,18 +13603,17 @@ class _CopyWithImpl$Input$ProductListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$ProductListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined) 'sort': (sort as Input$ProductSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$ProductFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$ProductListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined) 'sort': (sort as Input$ProductSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$ProductFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$ProductSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
@@ -13597,9 +13627,7 @@ class _CopyWithImpl$Input$ProductListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$ProductFilterParameter.stub(_then(_instance))
         : CopyWith$Input$ProductFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -13615,7 +13643,8 @@ class _CopyWithStubImpl$Input$ProductListOptions<TRes>
     Input$ProductSortParameter? sort,
     Input$ProductFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$ProductSortParameter<TRes> get sort =>
       CopyWith$Input$ProductSortParameter.stub(_res);
@@ -13633,15 +13662,16 @@ class Input$ProductSortParameter {
     Enum$SortOrder? slug,
     Enum$SortOrder? description,
     Enum$SortOrder? hsnCode,
-  }) => Input$ProductSortParameter._({
-    if (id != null) r'id': id,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (name != null) r'name': name,
-    if (slug != null) r'slug': slug,
-    if (description != null) r'description': description,
-    if (hsnCode != null) r'hsnCode': hsnCode,
-  });
+  }) =>
+      Input$ProductSortParameter._({
+        if (id != null) r'id': id,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (name != null) r'name': name,
+        if (slug != null) r'slug': slug,
+        if (description != null) r'description': description,
+        if (hsnCode != null) r'hsnCode': hsnCode,
+      });
 
   Input$ProductSortParameter._(this._$data);
 
@@ -13649,9 +13679,8 @@ class Input$ProductSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('createdAt')) {
       final l$createdAt = data['createdAt'];
@@ -13667,15 +13696,13 @@ class Input$ProductSortParameter {
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
-      result$data['name'] = l$name == null
-          ? null
-          : fromJson$Enum$SortOrder((l$name as String));
+      result$data['name'] =
+          l$name == null ? null : fromJson$Enum$SortOrder((l$name as String));
     }
     if (data.containsKey('slug')) {
       final l$slug = data['slug'];
-      result$data['slug'] = l$slug == null
-          ? null
-          : fromJson$Enum$SortOrder((l$slug as String));
+      result$data['slug'] =
+          l$slug == null ? null : fromJson$Enum$SortOrder((l$slug as String));
     }
     if (data.containsKey('description')) {
       final l$description = data['description'];
@@ -13716,45 +13743,42 @@ class Input$ProductSortParameter {
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('name')) {
       final l$name = name;
-      result$data['name'] = l$name == null
-          ? null
-          : toJson$Enum$SortOrder(l$name);
+      result$data['name'] =
+          l$name == null ? null : toJson$Enum$SortOrder(l$name);
     }
     if (_$data.containsKey('slug')) {
       final l$slug = slug;
-      result$data['slug'] = l$slug == null
-          ? null
-          : toJson$Enum$SortOrder(l$slug);
+      result$data['slug'] =
+          l$slug == null ? null : toJson$Enum$SortOrder(l$slug);
     }
     if (_$data.containsKey('description')) {
       final l$description = description;
-      result$data['description'] = l$description == null
-          ? null
-          : toJson$Enum$SortOrder(l$description);
+      result$data['description'] =
+          l$description == null ? null : toJson$Enum$SortOrder(l$description);
     }
     if (_$data.containsKey('hsnCode')) {
       final l$hsnCode = hsnCode;
-      result$data['hsnCode'] = l$hsnCode == null
-          ? null
-          : toJson$Enum$SortOrder(l$hsnCode);
+      result$data['hsnCode'] =
+          l$hsnCode == null ? null : toJson$Enum$SortOrder(l$hsnCode);
     }
     return result$data;
   }
 
   CopyWith$Input$ProductSortParameter<Input$ProductSortParameter>
-  get copyWith => CopyWith$Input$ProductSortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$ProductSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -13870,7 +13894,10 @@ abstract class CopyWith$Input$ProductSortParameter<TRes> {
 
 class _CopyWithImpl$Input$ProductSortParameter<TRes>
     implements CopyWith$Input$ProductSortParameter<TRes> {
-  _CopyWithImpl$Input$ProductSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$ProductSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$ProductSortParameter _instance;
 
@@ -13886,19 +13913,20 @@ class _CopyWithImpl$Input$ProductSortParameter<TRes>
     Object? slug = _undefined,
     Object? description = _undefined,
     Object? hsnCode = _undefined,
-  }) => _then(
-    Input$ProductSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (name != _undefined) 'name': (name as Enum$SortOrder?),
-      if (slug != _undefined) 'slug': (slug as Enum$SortOrder?),
-      if (description != _undefined)
-        'description': (description as Enum$SortOrder?),
-      if (hsnCode != _undefined) 'hsnCode': (hsnCode as Enum$SortOrder?),
-    }),
-  );
+  }) =>
+      _then(Input$ProductSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (name != _undefined) 'name': (name as Enum$SortOrder?),
+        if (slug != _undefined) 'slug': (slug as Enum$SortOrder?),
+        if (description != _undefined)
+          'description': (description as Enum$SortOrder?),
+        if (hsnCode != _undefined) 'hsnCode': (hsnCode as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$ProductSortParameter<TRes>
@@ -13915,7 +13943,8 @@ class _CopyWithStubImpl$Input$ProductSortParameter<TRes>
     Enum$SortOrder? slug,
     Enum$SortOrder? description,
     Enum$SortOrder? hsnCode,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$ProductVariantFilterParameter {
@@ -13933,27 +13962,29 @@ class Input$ProductVariantFilterParameter {
     Input$StringOperators? stockLevel,
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
-  }) => Input$ProductVariantFilterParameter._({
-    if (id != null) r'id': id,
-    if (productId != null) r'productId': productId,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (languageCode != null) r'languageCode': languageCode,
-    if (sku != null) r'sku': sku,
-    if (name != null) r'name': name,
-    if (price != null) r'price': price,
-    if (currencyCode != null) r'currencyCode': currencyCode,
-    if (priceWithTax != null) r'priceWithTax': priceWithTax,
-    if (stockLevel != null) r'stockLevel': stockLevel,
-    if ($_and != null) r'_and': $_and,
-    if ($_or != null) r'_or': $_or,
-  });
+    Input$NumberOperators? shadowPrice,
+  }) =>
+      Input$ProductVariantFilterParameter._({
+        if (id != null) r'id': id,
+        if (productId != null) r'productId': productId,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (languageCode != null) r'languageCode': languageCode,
+        if (sku != null) r'sku': sku,
+        if (name != null) r'name': name,
+        if (price != null) r'price': price,
+        if (currencyCode != null) r'currencyCode': currencyCode,
+        if (priceWithTax != null) r'priceWithTax': priceWithTax,
+        if (stockLevel != null) r'stockLevel': stockLevel,
+        if ($_and != null) r'_and': $_and,
+        if ($_or != null) r'_or': $_or,
+        if (shadowPrice != null) r'shadowPrice': shadowPrice,
+      });
 
   Input$ProductVariantFilterParameter._(this._$data);
 
   factory Input$ProductVariantFilterParameter.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
@@ -13984,8 +14015,7 @@ class Input$ProductVariantFilterParameter {
       result$data['languageCode'] = l$languageCode == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$languageCode as Map<String, dynamic>),
-            );
+              (l$languageCode as Map<String, dynamic>));
     }
     if (data.containsKey('sku')) {
       final l$sku = data['sku'];
@@ -14010,44 +14040,42 @@ class Input$ProductVariantFilterParameter {
       result$data['currencyCode'] = l$currencyCode == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$currencyCode as Map<String, dynamic>),
-            );
+              (l$currencyCode as Map<String, dynamic>));
     }
     if (data.containsKey('priceWithTax')) {
       final l$priceWithTax = data['priceWithTax'];
       result$data['priceWithTax'] = l$priceWithTax == null
           ? null
           : Input$NumberOperators.fromJson(
-              (l$priceWithTax as Map<String, dynamic>),
-            );
+              (l$priceWithTax as Map<String, dynamic>));
     }
     if (data.containsKey('stockLevel')) {
       final l$stockLevel = data['stockLevel'];
       result$data['stockLevel'] = l$stockLevel == null
           ? null
           : Input$StringOperators.fromJson(
-              (l$stockLevel as Map<String, dynamic>),
-            );
+              (l$stockLevel as Map<String, dynamic>));
     }
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
-          ?.map(
-            (e) => Input$ProductVariantFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$ProductVariantFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('_or')) {
       final l$$_or = data['_or'];
       result$data['_or'] = (l$$_or as List<dynamic>?)
-          ?.map(
-            (e) => Input$ProductVariantFilterParameter.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) => Input$ProductVariantFilterParameter.fromJson(
+              (e as Map<String, dynamic>)))
           .toList();
+    }
+    if (data.containsKey('shadowPrice')) {
+      final l$shadowPrice = data['shadowPrice'];
+      result$data['shadowPrice'] = l$shadowPrice == null
+          ? null
+          : Input$NumberOperators.fromJson(
+              (l$shadowPrice as Map<String, dynamic>));
     }
     return Input$ProductVariantFilterParameter._(result$data);
   }
@@ -14089,6 +14117,9 @@ class Input$ProductVariantFilterParameter {
 
   List<Input$ProductVariantFilterParameter>? get $_or =>
       (_$data['_or'] as List<Input$ProductVariantFilterParameter>?);
+
+  Input$NumberOperators? get shadowPrice =>
+      (_$data['shadowPrice'] as Input$NumberOperators?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -14144,13 +14175,19 @@ class Input$ProductVariantFilterParameter {
       final l$$_or = $_or;
       result$data['_or'] = l$$_or?.map((e) => e.toJson()).toList();
     }
+    if (_$data.containsKey('shadowPrice')) {
+      final l$shadowPrice = shadowPrice;
+      result$data['shadowPrice'] = l$shadowPrice?.toJson();
+    }
     return result$data;
   }
 
   CopyWith$Input$ProductVariantFilterParameter<
-    Input$ProductVariantFilterParameter
-  >
-  get copyWith => CopyWith$Input$ProductVariantFilterParameter(this, (i) => i);
+          Input$ProductVariantFilterParameter>
+      get copyWith => CopyWith$Input$ProductVariantFilterParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -14294,6 +14331,15 @@ class Input$ProductVariantFilterParameter {
     } else if (l$$_or != lOther$$_or) {
       return false;
     }
+    final l$shadowPrice = shadowPrice;
+    final lOther$shadowPrice = other.shadowPrice;
+    if (_$data.containsKey('shadowPrice') !=
+        other._$data.containsKey('shadowPrice')) {
+      return false;
+    }
+    if (l$shadowPrice != lOther$shadowPrice) {
+      return false;
+    }
     return true;
   }
 
@@ -14312,6 +14358,7 @@ class Input$ProductVariantFilterParameter {
     final l$stockLevel = stockLevel;
     final l$$_and = $_and;
     final l$$_or = $_or;
+    final l$shadowPrice = shadowPrice;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -14326,14 +14373,15 @@ class Input$ProductVariantFilterParameter {
       _$data.containsKey('stockLevel') ? l$stockLevel : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
-                ? null
-                : Object.hashAll(l$$_and.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_and.map((v) => v))
           : const {},
       _$data.containsKey('_or')
           ? l$$_or == null
-                ? null
-                : Object.hashAll(l$$_or.map((v) => v))
+              ? null
+              : Object.hashAll(l$$_or.map((v) => v))
           : const {},
+      _$data.containsKey('shadowPrice') ? l$shadowPrice : const {},
     ]);
   }
 }
@@ -14361,6 +14409,7 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
     Input$StringOperators? stockLevel,
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
+    Input$NumberOperators? shadowPrice,
   });
   CopyWith$Input$IDOperators<TRes> get id;
   CopyWith$Input$IDOperators<TRes> get productId;
@@ -14374,30 +14423,26 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
   CopyWith$Input$NumberOperators<TRes> get priceWithTax;
   CopyWith$Input$StringOperators<TRes> get stockLevel;
   TRes $_and(
-    Iterable<Input$ProductVariantFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductVariantFilterParameter<
-          Input$ProductVariantFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$ProductVariantFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$ProductVariantFilterParameter<
+                      Input$ProductVariantFilterParameter>>?)
+          _fn);
   TRes $_or(
-    Iterable<Input$ProductVariantFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductVariantFilterParameter<
-          Input$ProductVariantFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$ProductVariantFilterParameter>? Function(
+              Iterable<
+                  CopyWith$Input$ProductVariantFilterParameter<
+                      Input$ProductVariantFilterParameter>>?)
+          _fn);
+  CopyWith$Input$NumberOperators<TRes> get shadowPrice;
 }
 
 class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     implements CopyWith$Input$ProductVariantFilterParameter<TRes> {
-  _CopyWithImpl$Input$ProductVariantFilterParameter(this._instance, this._then);
+  _CopyWithImpl$Input$ProductVariantFilterParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$ProductVariantFilterParameter _instance;
 
@@ -14419,33 +14464,35 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     Object? stockLevel = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-  }) => _then(
-    Input$ProductVariantFilterParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Input$IDOperators?),
-      if (productId != _undefined)
-        'productId': (productId as Input$IDOperators?),
-      if (createdAt != _undefined)
-        'createdAt': (createdAt as Input$DateOperators?),
-      if (updatedAt != _undefined)
-        'updatedAt': (updatedAt as Input$DateOperators?),
-      if (languageCode != _undefined)
-        'languageCode': (languageCode as Input$StringOperators?),
-      if (sku != _undefined) 'sku': (sku as Input$StringOperators?),
-      if (name != _undefined) 'name': (name as Input$StringOperators?),
-      if (price != _undefined) 'price': (price as Input$NumberOperators?),
-      if (currencyCode != _undefined)
-        'currencyCode': (currencyCode as Input$StringOperators?),
-      if (priceWithTax != _undefined)
-        'priceWithTax': (priceWithTax as Input$NumberOperators?),
-      if (stockLevel != _undefined)
-        'stockLevel': (stockLevel as Input$StringOperators?),
-      if ($_and != _undefined)
-        '_and': ($_and as List<Input$ProductVariantFilterParameter>?),
-      if ($_or != _undefined)
-        '_or': ($_or as List<Input$ProductVariantFilterParameter>?),
-    }),
-  );
+    Object? shadowPrice = _undefined,
+  }) =>
+      _then(Input$ProductVariantFilterParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Input$IDOperators?),
+        if (productId != _undefined)
+          'productId': (productId as Input$IDOperators?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Input$DateOperators?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Input$DateOperators?),
+        if (languageCode != _undefined)
+          'languageCode': (languageCode as Input$StringOperators?),
+        if (sku != _undefined) 'sku': (sku as Input$StringOperators?),
+        if (name != _undefined) 'name': (name as Input$StringOperators?),
+        if (price != _undefined) 'price': (price as Input$NumberOperators?),
+        if (currencyCode != _undefined)
+          'currencyCode': (currencyCode as Input$StringOperators?),
+        if (priceWithTax != _undefined)
+          'priceWithTax': (priceWithTax as Input$NumberOperators?),
+        if (stockLevel != _undefined)
+          'stockLevel': (stockLevel as Input$StringOperators?),
+        if ($_and != _undefined)
+          '_and': ($_and as List<Input$ProductVariantFilterParameter>?),
+        if ($_or != _undefined)
+          '_or': ($_or as List<Input$ProductVariantFilterParameter>?),
+        if (shadowPrice != _undefined)
+          'shadowPrice': (shadowPrice as Input$NumberOperators?),
+      }));
 
   CopyWith$Input$IDOperators<TRes> get id {
     final local$id = _instance.id;
@@ -14459,9 +14506,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     return local$productId == null
         ? CopyWith$Input$IDOperators.stub(_then(_instance))
         : CopyWith$Input$IDOperators(
-            local$productId,
-            (e) => call(productId: e),
-          );
+            local$productId, (e) => call(productId: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get createdAt {
@@ -14469,9 +14514,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     return local$createdAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$createdAt,
-            (e) => call(createdAt: e),
-          );
+            local$createdAt, (e) => call(createdAt: e));
   }
 
   CopyWith$Input$DateOperators<TRes> get updatedAt {
@@ -14479,9 +14522,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     return local$updatedAt == null
         ? CopyWith$Input$DateOperators.stub(_then(_instance))
         : CopyWith$Input$DateOperators(
-            local$updatedAt,
-            (e) => call(updatedAt: e),
-          );
+            local$updatedAt, (e) => call(updatedAt: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get languageCode {
@@ -14489,9 +14530,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     return local$languageCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$languageCode,
-            (e) => call(languageCode: e),
-          );
+            local$languageCode, (e) => call(languageCode: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get sku {
@@ -14520,9 +14559,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     return local$currencyCode == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$currencyCode,
-            (e) => call(currencyCode: e),
-          );
+            local$currencyCode, (e) => call(currencyCode: e));
   }
 
   CopyWith$Input$NumberOperators<TRes> get priceWithTax {
@@ -14530,9 +14567,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     return local$priceWithTax == null
         ? CopyWith$Input$NumberOperators.stub(_then(_instance))
         : CopyWith$Input$NumberOperators(
-            local$priceWithTax,
-            (e) => call(priceWithTax: e),
-          );
+            local$priceWithTax, (e) => call(priceWithTax: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get stockLevel {
@@ -14540,44 +14575,42 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     return local$stockLevel == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
-            local$stockLevel,
-            (e) => call(stockLevel: e),
-          );
+            local$stockLevel, (e) => call(stockLevel: e));
   }
 
   TRes $_and(
-    Iterable<Input$ProductVariantFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductVariantFilterParameter<
-          Input$ProductVariantFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_and: _fn(
-      _instance.$_and?.map(
-        (e) => CopyWith$Input$ProductVariantFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$ProductVariantFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$ProductVariantFilterParameter<
+                          Input$ProductVariantFilterParameter>>?)
+              _fn) =>
+      call(
+          $_and: _fn(_instance.$_and
+              ?.map((e) => CopyWith$Input$ProductVariantFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   TRes $_or(
-    Iterable<Input$ProductVariantFilterParameter>? Function(
-      Iterable<
-        CopyWith$Input$ProductVariantFilterParameter<
-          Input$ProductVariantFilterParameter
-        >
-      >?,
-    )
-    _fn,
-  ) => call(
-    $_or: _fn(
-      _instance.$_or?.map(
-        (e) => CopyWith$Input$ProductVariantFilterParameter(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$ProductVariantFilterParameter>? Function(
+                  Iterable<
+                      CopyWith$Input$ProductVariantFilterParameter<
+                          Input$ProductVariantFilterParameter>>?)
+              _fn) =>
+      call(
+          $_or: _fn(_instance.$_or
+              ?.map((e) => CopyWith$Input$ProductVariantFilterParameter(
+                    e,
+                    (i) => i,
+                  )))?.toList());
+
+  CopyWith$Input$NumberOperators<TRes> get shadowPrice {
+    final local$shadowPrice = _instance.shadowPrice;
+    return local$shadowPrice == null
+        ? CopyWith$Input$NumberOperators.stub(_then(_instance))
+        : CopyWith$Input$NumberOperators(
+            local$shadowPrice, (e) => call(shadowPrice: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
@@ -14600,7 +14633,9 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
     Input$StringOperators? stockLevel,
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
-  }) => _res;
+    Input$NumberOperators? shadowPrice,
+  }) =>
+      _res;
 
   CopyWith$Input$IDOperators<TRes> get id =>
       CopyWith$Input$IDOperators.stub(_res);
@@ -14638,6 +14673,9 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
   $_and(_fn) => _res;
 
   $_or(_fn) => _res;
+
+  CopyWith$Input$NumberOperators<TRes> get shadowPrice =>
+      CopyWith$Input$NumberOperators.stub(_res);
 }
 
 class Input$ProductVariantListOptions {
@@ -14647,13 +14685,14 @@ class Input$ProductVariantListOptions {
     Input$ProductVariantSortParameter? sort,
     Input$ProductVariantFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => Input$ProductVariantListOptions._({
-    if (skip != null) r'skip': skip,
-    if (take != null) r'take': take,
-    if (sort != null) r'sort': sort,
-    if (filter != null) r'filter': filter,
-    if (filterOperator != null) r'filterOperator': filterOperator,
-  });
+  }) =>
+      Input$ProductVariantListOptions._({
+        if (skip != null) r'skip': skip,
+        if (take != null) r'take': take,
+        if (sort != null) r'sort': sort,
+        if (filter != null) r'filter': filter,
+        if (filterOperator != null) r'filterOperator': filterOperator,
+      });
 
   Input$ProductVariantListOptions._(this._$data);
 
@@ -14672,16 +14711,14 @@ class Input$ProductVariantListOptions {
       result$data['sort'] = l$sort == null
           ? null
           : Input$ProductVariantSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('filter')) {
       final l$filter = data['filter'];
       result$data['filter'] = l$filter == null
           ? null
           : Input$ProductVariantFilterParameter.fromJson(
-              (l$filter as Map<String, dynamic>),
-            );
+              (l$filter as Map<String, dynamic>));
     }
     if (data.containsKey('filterOperator')) {
       final l$filterOperator = data['filterOperator'];
@@ -14735,7 +14772,10 @@ class Input$ProductVariantListOptions {
   }
 
   CopyWith$Input$ProductVariantListOptions<Input$ProductVariantListOptions>
-  get copyWith => CopyWith$Input$ProductVariantListOptions(this, (i) => i);
+      get copyWith => CopyWith$Input$ProductVariantListOptions(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -14829,7 +14869,10 @@ abstract class CopyWith$Input$ProductVariantListOptions<TRes> {
 
 class _CopyWithImpl$Input$ProductVariantListOptions<TRes>
     implements CopyWith$Input$ProductVariantListOptions<TRes> {
-  _CopyWithImpl$Input$ProductVariantListOptions(this._instance, this._then);
+  _CopyWithImpl$Input$ProductVariantListOptions(
+    this._instance,
+    this._then,
+  );
 
   final Input$ProductVariantListOptions _instance;
 
@@ -14843,28 +14886,25 @@ class _CopyWithImpl$Input$ProductVariantListOptions<TRes>
     Object? sort = _undefined,
     Object? filter = _undefined,
     Object? filterOperator = _undefined,
-  }) => _then(
-    Input$ProductVariantListOptions._({
-      ..._instance._$data,
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (take != _undefined) 'take': (take as int?),
-      if (sort != _undefined)
-        'sort': (sort as Input$ProductVariantSortParameter?),
-      if (filter != _undefined)
-        'filter': (filter as Input$ProductVariantFilterParameter?),
-      if (filterOperator != _undefined)
-        'filterOperator': (filterOperator as Enum$LogicalOperator?),
-    }),
-  );
+  }) =>
+      _then(Input$ProductVariantListOptions._({
+        ..._instance._$data,
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (take != _undefined) 'take': (take as int?),
+        if (sort != _undefined)
+          'sort': (sort as Input$ProductVariantSortParameter?),
+        if (filter != _undefined)
+          'filter': (filter as Input$ProductVariantFilterParameter?),
+        if (filterOperator != _undefined)
+          'filterOperator': (filterOperator as Enum$LogicalOperator?),
+      }));
 
   CopyWith$Input$ProductVariantSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$ProductVariantSortParameter.stub(_then(_instance))
         : CopyWith$Input$ProductVariantSortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 
   CopyWith$Input$ProductVariantFilterParameter<TRes> get filter {
@@ -14872,9 +14912,7 @@ class _CopyWithImpl$Input$ProductVariantListOptions<TRes>
     return local$filter == null
         ? CopyWith$Input$ProductVariantFilterParameter.stub(_then(_instance))
         : CopyWith$Input$ProductVariantFilterParameter(
-            local$filter,
-            (e) => call(filter: e),
-          );
+            local$filter, (e) => call(filter: e));
   }
 }
 
@@ -14890,7 +14928,8 @@ class _CopyWithStubImpl$Input$ProductVariantListOptions<TRes>
     Input$ProductVariantSortParameter? sort,
     Input$ProductVariantFilterParameter? filter,
     Enum$LogicalOperator? filterOperator,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$ProductVariantSortParameter<TRes> get sort =>
       CopyWith$Input$ProductVariantSortParameter.stub(_res);
@@ -14910,29 +14949,30 @@ class Input$ProductVariantSortParameter {
     Enum$SortOrder? price,
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
-  }) => Input$ProductVariantSortParameter._({
-    if (id != null) r'id': id,
-    if (productId != null) r'productId': productId,
-    if (createdAt != null) r'createdAt': createdAt,
-    if (updatedAt != null) r'updatedAt': updatedAt,
-    if (sku != null) r'sku': sku,
-    if (name != null) r'name': name,
-    if (price != null) r'price': price,
-    if (priceWithTax != null) r'priceWithTax': priceWithTax,
-    if (stockLevel != null) r'stockLevel': stockLevel,
-  });
+    Enum$SortOrder? shadowPrice,
+  }) =>
+      Input$ProductVariantSortParameter._({
+        if (id != null) r'id': id,
+        if (productId != null) r'productId': productId,
+        if (createdAt != null) r'createdAt': createdAt,
+        if (updatedAt != null) r'updatedAt': updatedAt,
+        if (sku != null) r'sku': sku,
+        if (name != null) r'name': name,
+        if (price != null) r'price': price,
+        if (priceWithTax != null) r'priceWithTax': priceWithTax,
+        if (stockLevel != null) r'stockLevel': stockLevel,
+        if (shadowPrice != null) r'shadowPrice': shadowPrice,
+      });
 
   Input$ProductVariantSortParameter._(this._$data);
 
   factory Input$ProductVariantSortParameter.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('id')) {
       final l$id = data['id'];
-      result$data['id'] = l$id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$id as String));
+      result$data['id'] =
+          l$id == null ? null : fromJson$Enum$SortOrder((l$id as String));
     }
     if (data.containsKey('productId')) {
       final l$productId = data['productId'];
@@ -14954,21 +14994,18 @@ class Input$ProductVariantSortParameter {
     }
     if (data.containsKey('sku')) {
       final l$sku = data['sku'];
-      result$data['sku'] = l$sku == null
-          ? null
-          : fromJson$Enum$SortOrder((l$sku as String));
+      result$data['sku'] =
+          l$sku == null ? null : fromJson$Enum$SortOrder((l$sku as String));
     }
     if (data.containsKey('name')) {
       final l$name = data['name'];
-      result$data['name'] = l$name == null
-          ? null
-          : fromJson$Enum$SortOrder((l$name as String));
+      result$data['name'] =
+          l$name == null ? null : fromJson$Enum$SortOrder((l$name as String));
     }
     if (data.containsKey('price')) {
       final l$price = data['price'];
-      result$data['price'] = l$price == null
-          ? null
-          : fromJson$Enum$SortOrder((l$price as String));
+      result$data['price'] =
+          l$price == null ? null : fromJson$Enum$SortOrder((l$price as String));
     }
     if (data.containsKey('priceWithTax')) {
       final l$priceWithTax = data['priceWithTax'];
@@ -14981,6 +15018,12 @@ class Input$ProductVariantSortParameter {
       result$data['stockLevel'] = l$stockLevel == null
           ? null
           : fromJson$Enum$SortOrder((l$stockLevel as String));
+    }
+    if (data.containsKey('shadowPrice')) {
+      final l$shadowPrice = data['shadowPrice'];
+      result$data['shadowPrice'] = l$shadowPrice == null
+          ? null
+          : fromJson$Enum$SortOrder((l$shadowPrice as String));
     }
     return Input$ProductVariantSortParameter._(result$data);
   }
@@ -15006,6 +15049,8 @@ class Input$ProductVariantSortParameter {
 
   Enum$SortOrder? get stockLevel => (_$data['stockLevel'] as Enum$SortOrder?);
 
+  Enum$SortOrder? get shadowPrice => (_$data['shadowPrice'] as Enum$SortOrder?);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     if (_$data.containsKey('id')) {
@@ -15014,21 +15059,18 @@ class Input$ProductVariantSortParameter {
     }
     if (_$data.containsKey('productId')) {
       final l$productId = productId;
-      result$data['productId'] = l$productId == null
-          ? null
-          : toJson$Enum$SortOrder(l$productId);
+      result$data['productId'] =
+          l$productId == null ? null : toJson$Enum$SortOrder(l$productId);
     }
     if (_$data.containsKey('createdAt')) {
       final l$createdAt = createdAt;
-      result$data['createdAt'] = l$createdAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$createdAt);
+      result$data['createdAt'] =
+          l$createdAt == null ? null : toJson$Enum$SortOrder(l$createdAt);
     }
     if (_$data.containsKey('updatedAt')) {
       final l$updatedAt = updatedAt;
-      result$data['updatedAt'] = l$updatedAt == null
-          ? null
-          : toJson$Enum$SortOrder(l$updatedAt);
+      result$data['updatedAt'] =
+          l$updatedAt == null ? null : toJson$Enum$SortOrder(l$updatedAt);
     }
     if (_$data.containsKey('sku')) {
       final l$sku = sku;
@@ -15036,33 +15078,37 @@ class Input$ProductVariantSortParameter {
     }
     if (_$data.containsKey('name')) {
       final l$name = name;
-      result$data['name'] = l$name == null
-          ? null
-          : toJson$Enum$SortOrder(l$name);
+      result$data['name'] =
+          l$name == null ? null : toJson$Enum$SortOrder(l$name);
     }
     if (_$data.containsKey('price')) {
       final l$price = price;
-      result$data['price'] = l$price == null
-          ? null
-          : toJson$Enum$SortOrder(l$price);
+      result$data['price'] =
+          l$price == null ? null : toJson$Enum$SortOrder(l$price);
     }
     if (_$data.containsKey('priceWithTax')) {
       final l$priceWithTax = priceWithTax;
-      result$data['priceWithTax'] = l$priceWithTax == null
-          ? null
-          : toJson$Enum$SortOrder(l$priceWithTax);
+      result$data['priceWithTax'] =
+          l$priceWithTax == null ? null : toJson$Enum$SortOrder(l$priceWithTax);
     }
     if (_$data.containsKey('stockLevel')) {
       final l$stockLevel = stockLevel;
-      result$data['stockLevel'] = l$stockLevel == null
-          ? null
-          : toJson$Enum$SortOrder(l$stockLevel);
+      result$data['stockLevel'] =
+          l$stockLevel == null ? null : toJson$Enum$SortOrder(l$stockLevel);
+    }
+    if (_$data.containsKey('shadowPrice')) {
+      final l$shadowPrice = shadowPrice;
+      result$data['shadowPrice'] =
+          l$shadowPrice == null ? null : toJson$Enum$SortOrder(l$shadowPrice);
     }
     return result$data;
   }
 
   CopyWith$Input$ProductVariantSortParameter<Input$ProductVariantSortParameter>
-  get copyWith => CopyWith$Input$ProductVariantSortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$ProductVariantSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -15150,6 +15196,15 @@ class Input$ProductVariantSortParameter {
     if (l$stockLevel != lOther$stockLevel) {
       return false;
     }
+    final l$shadowPrice = shadowPrice;
+    final lOther$shadowPrice = other.shadowPrice;
+    if (_$data.containsKey('shadowPrice') !=
+        other._$data.containsKey('shadowPrice')) {
+      return false;
+    }
+    if (l$shadowPrice != lOther$shadowPrice) {
+      return false;
+    }
     return true;
   }
 
@@ -15164,6 +15219,7 @@ class Input$ProductVariantSortParameter {
     final l$price = price;
     final l$priceWithTax = priceWithTax;
     final l$stockLevel = stockLevel;
+    final l$shadowPrice = shadowPrice;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -15174,6 +15230,7 @@ class Input$ProductVariantSortParameter {
       _$data.containsKey('price') ? l$price : const {},
       _$data.containsKey('priceWithTax') ? l$priceWithTax : const {},
       _$data.containsKey('stockLevel') ? l$stockLevel : const {},
+      _$data.containsKey('shadowPrice') ? l$shadowPrice : const {},
     ]);
   }
 }
@@ -15197,12 +15254,16 @@ abstract class CopyWith$Input$ProductVariantSortParameter<TRes> {
     Enum$SortOrder? price,
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
+    Enum$SortOrder? shadowPrice,
   });
 }
 
 class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
     implements CopyWith$Input$ProductVariantSortParameter<TRes> {
-  _CopyWithImpl$Input$ProductVariantSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$ProductVariantSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$ProductVariantSortParameter _instance;
 
@@ -15220,22 +15281,27 @@ class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
     Object? price = _undefined,
     Object? priceWithTax = _undefined,
     Object? stockLevel = _undefined,
-  }) => _then(
-    Input$ProductVariantSortParameter._({
-      ..._instance._$data,
-      if (id != _undefined) 'id': (id as Enum$SortOrder?),
-      if (productId != _undefined) 'productId': (productId as Enum$SortOrder?),
-      if (createdAt != _undefined) 'createdAt': (createdAt as Enum$SortOrder?),
-      if (updatedAt != _undefined) 'updatedAt': (updatedAt as Enum$SortOrder?),
-      if (sku != _undefined) 'sku': (sku as Enum$SortOrder?),
-      if (name != _undefined) 'name': (name as Enum$SortOrder?),
-      if (price != _undefined) 'price': (price as Enum$SortOrder?),
-      if (priceWithTax != _undefined)
-        'priceWithTax': (priceWithTax as Enum$SortOrder?),
-      if (stockLevel != _undefined)
-        'stockLevel': (stockLevel as Enum$SortOrder?),
-    }),
-  );
+    Object? shadowPrice = _undefined,
+  }) =>
+      _then(Input$ProductVariantSortParameter._({
+        ..._instance._$data,
+        if (id != _undefined) 'id': (id as Enum$SortOrder?),
+        if (productId != _undefined)
+          'productId': (productId as Enum$SortOrder?),
+        if (createdAt != _undefined)
+          'createdAt': (createdAt as Enum$SortOrder?),
+        if (updatedAt != _undefined)
+          'updatedAt': (updatedAt as Enum$SortOrder?),
+        if (sku != _undefined) 'sku': (sku as Enum$SortOrder?),
+        if (name != _undefined) 'name': (name as Enum$SortOrder?),
+        if (price != _undefined) 'price': (price as Enum$SortOrder?),
+        if (priceWithTax != _undefined)
+          'priceWithTax': (priceWithTax as Enum$SortOrder?),
+        if (stockLevel != _undefined)
+          'stockLevel': (stockLevel as Enum$SortOrder?),
+        if (shadowPrice != _undefined)
+          'shadowPrice': (shadowPrice as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$ProductVariantSortParameter<TRes>
@@ -15254,22 +15320,23 @@ class _CopyWithStubImpl$Input$ProductVariantSortParameter<TRes>
     Enum$SortOrder? price,
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
-  }) => _res;
+    Enum$SortOrder? shadowPrice,
+  }) =>
+      _res;
 }
 
 class Input$RegisterCustomerCustomFieldsInput {
-  factory Input$RegisterCustomerCustomFieldsInput({
-    int? loyaltyPointsAvailable,
-  }) => Input$RegisterCustomerCustomFieldsInput._({
-    if (loyaltyPointsAvailable != null)
-      r'loyaltyPointsAvailable': loyaltyPointsAvailable,
-  });
+  factory Input$RegisterCustomerCustomFieldsInput(
+          {int? loyaltyPointsAvailable}) =>
+      Input$RegisterCustomerCustomFieldsInput._({
+        if (loyaltyPointsAvailable != null)
+          r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+      });
 
   Input$RegisterCustomerCustomFieldsInput._(this._$data);
 
   factory Input$RegisterCustomerCustomFieldsInput.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
@@ -15293,10 +15360,11 @@ class Input$RegisterCustomerCustomFieldsInput {
   }
 
   CopyWith$Input$RegisterCustomerCustomFieldsInput<
-    Input$RegisterCustomerCustomFieldsInput
-  >
-  get copyWith =>
-      CopyWith$Input$RegisterCustomerCustomFieldsInput(this, (i) => i);
+          Input$RegisterCustomerCustomFieldsInput>
+      get copyWith => CopyWith$Input$RegisterCustomerCustomFieldsInput(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -15325,7 +15393,7 @@ class Input$RegisterCustomerCustomFieldsInput {
     return Object.hashAll([
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
-          : const {},
+          : const {}
     ]);
   }
 }
@@ -15355,13 +15423,12 @@ class _CopyWithImpl$Input$RegisterCustomerCustomFieldsInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? loyaltyPointsAvailable = _undefined}) => _then(
-    Input$RegisterCustomerCustomFieldsInput._({
-      ..._instance._$data,
-      if (loyaltyPointsAvailable != _undefined)
-        'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
-    }),
-  );
+  TRes call({Object? loyaltyPointsAvailable = _undefined}) =>
+      _then(Input$RegisterCustomerCustomFieldsInput._({
+        ..._instance._$data,
+        if (loyaltyPointsAvailable != _undefined)
+          'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$RegisterCustomerCustomFieldsInput<TRes>
@@ -15382,15 +15449,16 @@ class Input$RegisterCustomerInput {
     String? phoneNumber,
     String? password,
     Input$RegisterCustomerCustomFieldsInput? customFields,
-  }) => Input$RegisterCustomerInput._({
-    r'emailAddress': emailAddress,
-    if (title != null) r'title': title,
-    if (firstName != null) r'firstName': firstName,
-    if (lastName != null) r'lastName': lastName,
-    if (phoneNumber != null) r'phoneNumber': phoneNumber,
-    if (password != null) r'password': password,
-    if (customFields != null) r'customFields': customFields,
-  });
+  }) =>
+      Input$RegisterCustomerInput._({
+        r'emailAddress': emailAddress,
+        if (title != null) r'title': title,
+        if (firstName != null) r'firstName': firstName,
+        if (lastName != null) r'lastName': lastName,
+        if (phoneNumber != null) r'phoneNumber': phoneNumber,
+        if (password != null) r'password': password,
+        if (customFields != null) r'customFields': customFields,
+      });
 
   Input$RegisterCustomerInput._(this._$data);
 
@@ -15423,8 +15491,7 @@ class Input$RegisterCustomerInput {
       result$data['customFields'] = l$customFields == null
           ? null
           : Input$RegisterCustomerCustomFieldsInput.fromJson(
-              (l$customFields as Map<String, dynamic>),
-            );
+              (l$customFields as Map<String, dynamic>));
     }
     return Input$RegisterCustomerInput._(result$data);
   }
@@ -15478,7 +15545,10 @@ class Input$RegisterCustomerInput {
   }
 
   CopyWith$Input$RegisterCustomerInput<Input$RegisterCustomerInput>
-  get copyWith => CopyWith$Input$RegisterCustomerInput(this, (i) => i);
+      get copyWith => CopyWith$Input$RegisterCustomerInput(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -15594,7 +15664,10 @@ abstract class CopyWith$Input$RegisterCustomerInput<TRes> {
 
 class _CopyWithImpl$Input$RegisterCustomerInput<TRes>
     implements CopyWith$Input$RegisterCustomerInput<TRes> {
-  _CopyWithImpl$Input$RegisterCustomerInput(this._instance, this._then);
+  _CopyWithImpl$Input$RegisterCustomerInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$RegisterCustomerInput _instance;
 
@@ -15610,32 +15683,28 @@ class _CopyWithImpl$Input$RegisterCustomerInput<TRes>
     Object? phoneNumber = _undefined,
     Object? password = _undefined,
     Object? customFields = _undefined,
-  }) => _then(
-    Input$RegisterCustomerInput._({
-      ..._instance._$data,
-      if (emailAddress != _undefined && emailAddress != null)
-        'emailAddress': (emailAddress as String),
-      if (title != _undefined) 'title': (title as String?),
-      if (firstName != _undefined) 'firstName': (firstName as String?),
-      if (lastName != _undefined) 'lastName': (lastName as String?),
-      if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
-      if (password != _undefined) 'password': (password as String?),
-      if (customFields != _undefined)
-        'customFields':
-            (customFields as Input$RegisterCustomerCustomFieldsInput?),
-    }),
-  );
+  }) =>
+      _then(Input$RegisterCustomerInput._({
+        ..._instance._$data,
+        if (emailAddress != _undefined && emailAddress != null)
+          'emailAddress': (emailAddress as String),
+        if (title != _undefined) 'title': (title as String?),
+        if (firstName != _undefined) 'firstName': (firstName as String?),
+        if (lastName != _undefined) 'lastName': (lastName as String?),
+        if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
+        if (password != _undefined) 'password': (password as String?),
+        if (customFields != _undefined)
+          'customFields':
+              (customFields as Input$RegisterCustomerCustomFieldsInput?),
+      }));
 
   CopyWith$Input$RegisterCustomerCustomFieldsInput<TRes> get customFields {
     final local$customFields = _instance.customFields;
     return local$customFields == null
         ? CopyWith$Input$RegisterCustomerCustomFieldsInput.stub(
-            _then(_instance),
-          )
+            _then(_instance))
         : CopyWith$Input$RegisterCustomerCustomFieldsInput(
-            local$customFields,
-            (e) => call(customFields: e),
-          );
+            local$customFields, (e) => call(customFields: e));
   }
 }
 
@@ -15653,7 +15722,8 @@ class _CopyWithStubImpl$Input$RegisterCustomerInput<TRes>
     String? phoneNumber,
     String? password,
     Input$RegisterCustomerCustomFieldsInput? customFields,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$RegisterCustomerCustomFieldsInput<TRes> get customFields =>
       CopyWith$Input$RegisterCustomerCustomFieldsInput.stub(_res);
@@ -15670,17 +15740,18 @@ class Input$SearchInput {
     int? skip,
     Input$SearchResultSortParameter? sort,
     bool? inStock,
-  }) => Input$SearchInput._({
-    if (term != null) r'term': term,
-    if (facetValueFilters != null) r'facetValueFilters': facetValueFilters,
-    if (collectionId != null) r'collectionId': collectionId,
-    if (collectionSlug != null) r'collectionSlug': collectionSlug,
-    if (groupByProduct != null) r'groupByProduct': groupByProduct,
-    if (take != null) r'take': take,
-    if (skip != null) r'skip': skip,
-    if (sort != null) r'sort': sort,
-    if (inStock != null) r'inStock': inStock,
-  });
+  }) =>
+      Input$SearchInput._({
+        if (term != null) r'term': term,
+        if (facetValueFilters != null) r'facetValueFilters': facetValueFilters,
+        if (collectionId != null) r'collectionId': collectionId,
+        if (collectionSlug != null) r'collectionSlug': collectionSlug,
+        if (groupByProduct != null) r'groupByProduct': groupByProduct,
+        if (take != null) r'take': take,
+        if (skip != null) r'skip': skip,
+        if (sort != null) r'sort': sort,
+        if (inStock != null) r'inStock': inStock,
+      });
 
   Input$SearchInput._(this._$data);
 
@@ -15693,11 +15764,8 @@ class Input$SearchInput {
     if (data.containsKey('facetValueFilters')) {
       final l$facetValueFilters = data['facetValueFilters'];
       result$data['facetValueFilters'] = (l$facetValueFilters as List<dynamic>?)
-          ?.map(
-            (e) => Input$FacetValueFilterInput.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
+          ?.map((e) =>
+              Input$FacetValueFilterInput.fromJson((e as Map<String, dynamic>)))
           .toList();
     }
     if (data.containsKey('collectionId')) {
@@ -15725,8 +15793,7 @@ class Input$SearchInput {
       result$data['sort'] = l$sort == null
           ? null
           : Input$SearchResultSortParameter.fromJson(
-              (l$sort as Map<String, dynamic>),
-            );
+              (l$sort as Map<String, dynamic>));
     }
     if (data.containsKey('inStock')) {
       final l$inStock = data['inStock'];
@@ -15765,9 +15832,8 @@ class Input$SearchInput {
     }
     if (_$data.containsKey('facetValueFilters')) {
       final l$facetValueFilters = facetValueFilters;
-      result$data['facetValueFilters'] = l$facetValueFilters
-          ?.map((e) => e.toJson())
-          .toList();
+      result$data['facetValueFilters'] =
+          l$facetValueFilters?.map((e) => e.toJson()).toList();
     }
     if (_$data.containsKey('collectionId')) {
       final l$collectionId = collectionId;
@@ -15801,7 +15867,10 @@ class Input$SearchInput {
   }
 
   CopyWith$Input$SearchInput<Input$SearchInput> get copyWith =>
-      CopyWith$Input$SearchInput(this, (i) => i);
+      CopyWith$Input$SearchInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -15916,8 +15985,8 @@ class Input$SearchInput {
       _$data.containsKey('term') ? l$term : const {},
       _$data.containsKey('facetValueFilters')
           ? l$facetValueFilters == null
-                ? null
-                : Object.hashAll(l$facetValueFilters.map((v) => v))
+              ? null
+              : Object.hashAll(l$facetValueFilters.map((v) => v))
           : const {},
       _$data.containsKey('collectionId') ? l$collectionId : const {},
       _$data.containsKey('collectionSlug') ? l$collectionSlug : const {},
@@ -15951,19 +16020,20 @@ abstract class CopyWith$Input$SearchInput<TRes> {
     bool? inStock,
   });
   TRes facetValueFilters(
-    Iterable<Input$FacetValueFilterInput>? Function(
-      Iterable<
-        CopyWith$Input$FacetValueFilterInput<Input$FacetValueFilterInput>
-      >?,
-    )
-    _fn,
-  );
+      Iterable<Input$FacetValueFilterInput>? Function(
+              Iterable<
+                  CopyWith$Input$FacetValueFilterInput<
+                      Input$FacetValueFilterInput>>?)
+          _fn);
   CopyWith$Input$SearchResultSortParameter<TRes> get sort;
 }
 
 class _CopyWithImpl$Input$SearchInput<TRes>
     implements CopyWith$Input$SearchInput<TRes> {
-  _CopyWithImpl$Input$SearchInput(this._instance, this._then);
+  _CopyWithImpl$Input$SearchInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$SearchInput _instance;
 
@@ -15981,49 +16051,45 @@ class _CopyWithImpl$Input$SearchInput<TRes>
     Object? skip = _undefined,
     Object? sort = _undefined,
     Object? inStock = _undefined,
-  }) => _then(
-    Input$SearchInput._({
-      ..._instance._$data,
-      if (term != _undefined) 'term': (term as String?),
-      if (facetValueFilters != _undefined)
-        'facetValueFilters':
-            (facetValueFilters as List<Input$FacetValueFilterInput>?),
-      if (collectionId != _undefined) 'collectionId': (collectionId as String?),
-      if (collectionSlug != _undefined)
-        'collectionSlug': (collectionSlug as String?),
-      if (groupByProduct != _undefined)
-        'groupByProduct': (groupByProduct as bool?),
-      if (take != _undefined) 'take': (take as int?),
-      if (skip != _undefined) 'skip': (skip as int?),
-      if (sort != _undefined)
-        'sort': (sort as Input$SearchResultSortParameter?),
-      if (inStock != _undefined) 'inStock': (inStock as bool?),
-    }),
-  );
+  }) =>
+      _then(Input$SearchInput._({
+        ..._instance._$data,
+        if (term != _undefined) 'term': (term as String?),
+        if (facetValueFilters != _undefined)
+          'facetValueFilters':
+              (facetValueFilters as List<Input$FacetValueFilterInput>?),
+        if (collectionId != _undefined)
+          'collectionId': (collectionId as String?),
+        if (collectionSlug != _undefined)
+          'collectionSlug': (collectionSlug as String?),
+        if (groupByProduct != _undefined)
+          'groupByProduct': (groupByProduct as bool?),
+        if (take != _undefined) 'take': (take as int?),
+        if (skip != _undefined) 'skip': (skip as int?),
+        if (sort != _undefined)
+          'sort': (sort as Input$SearchResultSortParameter?),
+        if (inStock != _undefined) 'inStock': (inStock as bool?),
+      }));
 
   TRes facetValueFilters(
-    Iterable<Input$FacetValueFilterInput>? Function(
-      Iterable<
-        CopyWith$Input$FacetValueFilterInput<Input$FacetValueFilterInput>
-      >?,
-    )
-    _fn,
-  ) => call(
-    facetValueFilters: _fn(
-      _instance.facetValueFilters?.map(
-        (e) => CopyWith$Input$FacetValueFilterInput(e, (i) => i),
-      ),
-    )?.toList(),
-  );
+          Iterable<Input$FacetValueFilterInput>? Function(
+                  Iterable<
+                      CopyWith$Input$FacetValueFilterInput<
+                          Input$FacetValueFilterInput>>?)
+              _fn) =>
+      call(
+          facetValueFilters: _fn(_instance.facetValueFilters
+              ?.map((e) => CopyWith$Input$FacetValueFilterInput(
+                    e,
+                    (i) => i,
+                  )))?.toList());
 
   CopyWith$Input$SearchResultSortParameter<TRes> get sort {
     final local$sort = _instance.sort;
     return local$sort == null
         ? CopyWith$Input$SearchResultSortParameter.stub(_then(_instance))
         : CopyWith$Input$SearchResultSortParameter(
-            local$sort,
-            (e) => call(sort: e),
-          );
+            local$sort, (e) => call(sort: e));
   }
 }
 
@@ -16043,7 +16109,8 @@ class _CopyWithStubImpl$Input$SearchInput<TRes>
     int? skip,
     Input$SearchResultSortParameter? sort,
     bool? inStock,
-  }) => _res;
+  }) =>
+      _res;
 
   facetValueFilters(_fn) => _res;
 
@@ -16055,10 +16122,11 @@ class Input$SearchResultSortParameter {
   factory Input$SearchResultSortParameter({
     Enum$SortOrder? name,
     Enum$SortOrder? price,
-  }) => Input$SearchResultSortParameter._({
-    if (name != null) r'name': name,
-    if (price != null) r'price': price,
-  });
+  }) =>
+      Input$SearchResultSortParameter._({
+        if (name != null) r'name': name,
+        if (price != null) r'price': price,
+      });
 
   Input$SearchResultSortParameter._(this._$data);
 
@@ -16066,15 +16134,13 @@ class Input$SearchResultSortParameter {
     final result$data = <String, dynamic>{};
     if (data.containsKey('name')) {
       final l$name = data['name'];
-      result$data['name'] = l$name == null
-          ? null
-          : fromJson$Enum$SortOrder((l$name as String));
+      result$data['name'] =
+          l$name == null ? null : fromJson$Enum$SortOrder((l$name as String));
     }
     if (data.containsKey('price')) {
       final l$price = data['price'];
-      result$data['price'] = l$price == null
-          ? null
-          : fromJson$Enum$SortOrder((l$price as String));
+      result$data['price'] =
+          l$price == null ? null : fromJson$Enum$SortOrder((l$price as String));
     }
     return Input$SearchResultSortParameter._(result$data);
   }
@@ -16089,21 +16155,22 @@ class Input$SearchResultSortParameter {
     final result$data = <String, dynamic>{};
     if (_$data.containsKey('name')) {
       final l$name = name;
-      result$data['name'] = l$name == null
-          ? null
-          : toJson$Enum$SortOrder(l$name);
+      result$data['name'] =
+          l$name == null ? null : toJson$Enum$SortOrder(l$name);
     }
     if (_$data.containsKey('price')) {
       final l$price = price;
-      result$data['price'] = l$price == null
-          ? null
-          : toJson$Enum$SortOrder(l$price);
+      result$data['price'] =
+          l$price == null ? null : toJson$Enum$SortOrder(l$price);
     }
     return result$data;
   }
 
   CopyWith$Input$SearchResultSortParameter<Input$SearchResultSortParameter>
-  get copyWith => CopyWith$Input$SearchResultSortParameter(this, (i) => i);
+      get copyWith => CopyWith$Input$SearchResultSortParameter(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -16153,12 +16220,18 @@ abstract class CopyWith$Input$SearchResultSortParameter<TRes> {
   factory CopyWith$Input$SearchResultSortParameter.stub(TRes res) =
       _CopyWithStubImpl$Input$SearchResultSortParameter;
 
-  TRes call({Enum$SortOrder? name, Enum$SortOrder? price});
+  TRes call({
+    Enum$SortOrder? name,
+    Enum$SortOrder? price,
+  });
 }
 
 class _CopyWithImpl$Input$SearchResultSortParameter<TRes>
     implements CopyWith$Input$SearchResultSortParameter<TRes> {
-  _CopyWithImpl$Input$SearchResultSortParameter(this._instance, this._then);
+  _CopyWithImpl$Input$SearchResultSortParameter(
+    this._instance,
+    this._then,
+  );
 
   final Input$SearchResultSortParameter _instance;
 
@@ -16166,13 +16239,15 @@ class _CopyWithImpl$Input$SearchResultSortParameter<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? name = _undefined, Object? price = _undefined}) => _then(
-    Input$SearchResultSortParameter._({
-      ..._instance._$data,
-      if (name != _undefined) 'name': (name as Enum$SortOrder?),
-      if (price != _undefined) 'price': (price as Enum$SortOrder?),
-    }),
-  );
+  TRes call({
+    Object? name = _undefined,
+    Object? price = _undefined,
+  }) =>
+      _then(Input$SearchResultSortParameter._({
+        ..._instance._$data,
+        if (name != _undefined) 'name': (name as Enum$SortOrder?),
+        if (price != _undefined) 'price': (price as Enum$SortOrder?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$SearchResultSortParameter<TRes>
@@ -16181,12 +16256,18 @@ class _CopyWithStubImpl$Input$SearchResultSortParameter<TRes>
 
   TRes _res;
 
-  call({Enum$SortOrder? name, Enum$SortOrder? price}) => _res;
+  call({
+    Enum$SortOrder? name,
+    Enum$SortOrder? price,
+  }) =>
+      _res;
 }
 
 class Input$StringListOperators {
   factory Input$StringListOperators({required String inList}) =>
-      Input$StringListOperators._({r'inList': inList});
+      Input$StringListOperators._({
+        r'inList': inList,
+      });
 
   Input$StringListOperators._(this._$data);
 
@@ -16209,7 +16290,10 @@ class Input$StringListOperators {
   }
 
   CopyWith$Input$StringListOperators<Input$StringListOperators> get copyWith =>
-      CopyWith$Input$StringListOperators(this, (i) => i);
+      CopyWith$Input$StringListOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -16249,7 +16333,10 @@ abstract class CopyWith$Input$StringListOperators<TRes> {
 
 class _CopyWithImpl$Input$StringListOperators<TRes>
     implements CopyWith$Input$StringListOperators<TRes> {
-  _CopyWithImpl$Input$StringListOperators(this._instance, this._then);
+  _CopyWithImpl$Input$StringListOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$StringListOperators _instance;
 
@@ -16257,12 +16344,12 @@ class _CopyWithImpl$Input$StringListOperators<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? inList = _undefined}) => _then(
-    Input$StringListOperators._({
-      ..._instance._$data,
-      if (inList != _undefined && inList != null) 'inList': (inList as String),
-    }),
-  );
+  TRes call({Object? inList = _undefined}) =>
+      _then(Input$StringListOperators._({
+        ..._instance._$data,
+        if (inList != _undefined && inList != null)
+          'inList': (inList as String),
+      }));
 }
 
 class _CopyWithStubImpl$Input$StringListOperators<TRes>
@@ -16284,16 +16371,17 @@ class Input$StringOperators {
     List<String>? notIn,
     String? regex,
     bool? isNull,
-  }) => Input$StringOperators._({
-    if (eq != null) r'eq': eq,
-    if (notEq != null) r'notEq': notEq,
-    if (contains != null) r'contains': contains,
-    if (notContains != null) r'notContains': notContains,
-    if ($in != null) r'in': $in,
-    if (notIn != null) r'notIn': notIn,
-    if (regex != null) r'regex': regex,
-    if (isNull != null) r'isNull': isNull,
-  });
+  }) =>
+      Input$StringOperators._({
+        if (eq != null) r'eq': eq,
+        if (notEq != null) r'notEq': notEq,
+        if (contains != null) r'contains': contains,
+        if (notContains != null) r'notContains': notContains,
+        if ($in != null) r'in': $in,
+        if (notIn != null) r'notIn': notIn,
+        if (regex != null) r'regex': regex,
+        if (isNull != null) r'isNull': isNull,
+      });
 
   Input$StringOperators._(this._$data);
 
@@ -16317,15 +16405,13 @@ class Input$StringOperators {
     }
     if (data.containsKey('in')) {
       final l$$in = data['in'];
-      result$data['in'] = (l$$in as List<dynamic>?)
-          ?.map((e) => (e as String))
-          .toList();
+      result$data['in'] =
+          (l$$in as List<dynamic>?)?.map((e) => (e as String)).toList();
     }
     if (data.containsKey('notIn')) {
       final l$notIn = data['notIn'];
-      result$data['notIn'] = (l$notIn as List<dynamic>?)
-          ?.map((e) => (e as String))
-          .toList();
+      result$data['notIn'] =
+          (l$notIn as List<dynamic>?)?.map((e) => (e as String)).toList();
     }
     if (data.containsKey('regex')) {
       final l$regex = data['regex'];
@@ -16394,7 +16480,10 @@ class Input$StringOperators {
   }
 
   CopyWith$Input$StringOperators<Input$StringOperators> get copyWith =>
-      CopyWith$Input$StringOperators(this, (i) => i);
+      CopyWith$Input$StringOperators(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -16512,13 +16601,13 @@ class Input$StringOperators {
       _$data.containsKey('notContains') ? l$notContains : const {},
       _$data.containsKey('in')
           ? l$$in == null
-                ? null
-                : Object.hashAll(l$$in.map((v) => v))
+              ? null
+              : Object.hashAll(l$$in.map((v) => v))
           : const {},
       _$data.containsKey('notIn')
           ? l$notIn == null
-                ? null
-                : Object.hashAll(l$notIn.map((v) => v))
+              ? null
+              : Object.hashAll(l$notIn.map((v) => v))
           : const {},
       _$data.containsKey('regex') ? l$regex : const {},
       _$data.containsKey('isNull') ? l$isNull : const {},
@@ -16549,7 +16638,10 @@ abstract class CopyWith$Input$StringOperators<TRes> {
 
 class _CopyWithImpl$Input$StringOperators<TRes>
     implements CopyWith$Input$StringOperators<TRes> {
-  _CopyWithImpl$Input$StringOperators(this._instance, this._then);
+  _CopyWithImpl$Input$StringOperators(
+    this._instance,
+    this._then,
+  );
 
   final Input$StringOperators _instance;
 
@@ -16566,19 +16658,18 @@ class _CopyWithImpl$Input$StringOperators<TRes>
     Object? notIn = _undefined,
     Object? regex = _undefined,
     Object? isNull = _undefined,
-  }) => _then(
-    Input$StringOperators._({
-      ..._instance._$data,
-      if (eq != _undefined) 'eq': (eq as String?),
-      if (notEq != _undefined) 'notEq': (notEq as String?),
-      if (contains != _undefined) 'contains': (contains as String?),
-      if (notContains != _undefined) 'notContains': (notContains as String?),
-      if ($in != _undefined) 'in': ($in as List<String>?),
-      if (notIn != _undefined) 'notIn': (notIn as List<String>?),
-      if (regex != _undefined) 'regex': (regex as String?),
-      if (isNull != _undefined) 'isNull': (isNull as bool?),
-    }),
-  );
+  }) =>
+      _then(Input$StringOperators._({
+        ..._instance._$data,
+        if (eq != _undefined) 'eq': (eq as String?),
+        if (notEq != _undefined) 'notEq': (notEq as String?),
+        if (contains != _undefined) 'contains': (contains as String?),
+        if (notContains != _undefined) 'notContains': (notContains as String?),
+        if ($in != _undefined) 'in': ($in as List<String>?),
+        if (notIn != _undefined) 'notIn': (notIn as List<String>?),
+        if (regex != _undefined) 'regex': (regex as String?),
+        if (isNull != _undefined) 'isNull': (isNull as bool?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$StringOperators<TRes>
@@ -16596,7 +16687,8 @@ class _CopyWithStubImpl$Input$StringOperators<TRes>
     List<String>? notIn,
     String? regex,
     bool? isNull,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$UpdateAddressInput {
@@ -16614,23 +16706,24 @@ class Input$UpdateAddressInput {
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Map<String, dynamic>? customFields,
-  }) => Input$UpdateAddressInput._({
-    r'id': id,
-    if (fullName != null) r'fullName': fullName,
-    if (company != null) r'company': company,
-    if (streetLine1 != null) r'streetLine1': streetLine1,
-    if (streetLine2 != null) r'streetLine2': streetLine2,
-    if (city != null) r'city': city,
-    if (province != null) r'province': province,
-    if (postalCode != null) r'postalCode': postalCode,
-    if (countryCode != null) r'countryCode': countryCode,
-    if (phoneNumber != null) r'phoneNumber': phoneNumber,
-    if (defaultShippingAddress != null)
-      r'defaultShippingAddress': defaultShippingAddress,
-    if (defaultBillingAddress != null)
-      r'defaultBillingAddress': defaultBillingAddress,
-    if (customFields != null) r'customFields': customFields,
-  });
+  }) =>
+      Input$UpdateAddressInput._({
+        r'id': id,
+        if (fullName != null) r'fullName': fullName,
+        if (company != null) r'company': company,
+        if (streetLine1 != null) r'streetLine1': streetLine1,
+        if (streetLine2 != null) r'streetLine2': streetLine2,
+        if (city != null) r'city': city,
+        if (province != null) r'province': province,
+        if (postalCode != null) r'postalCode': postalCode,
+        if (countryCode != null) r'countryCode': countryCode,
+        if (phoneNumber != null) r'phoneNumber': phoneNumber,
+        if (defaultShippingAddress != null)
+          r'defaultShippingAddress': defaultShippingAddress,
+        if (defaultBillingAddress != null)
+          r'defaultBillingAddress': defaultBillingAddress,
+        if (customFields != null) r'customFields': customFields,
+      });
 
   Input$UpdateAddressInput._(this._$data);
 
@@ -16776,7 +16869,10 @@ class Input$UpdateAddressInput {
   }
 
   CopyWith$Input$UpdateAddressInput<Input$UpdateAddressInput> get copyWith =>
-      CopyWith$Input$UpdateAddressInput(this, (i) => i);
+      CopyWith$Input$UpdateAddressInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -16966,7 +17062,10 @@ abstract class CopyWith$Input$UpdateAddressInput<TRes> {
 
 class _CopyWithImpl$Input$UpdateAddressInput<TRes>
     implements CopyWith$Input$UpdateAddressInput<TRes> {
-  _CopyWithImpl$Input$UpdateAddressInput(this._instance, this._then);
+  _CopyWithImpl$Input$UpdateAddressInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$UpdateAddressInput _instance;
 
@@ -16988,27 +17087,26 @@ class _CopyWithImpl$Input$UpdateAddressInput<TRes>
     Object? defaultShippingAddress = _undefined,
     Object? defaultBillingAddress = _undefined,
     Object? customFields = _undefined,
-  }) => _then(
-    Input$UpdateAddressInput._({
-      ..._instance._$data,
-      if (id != _undefined && id != null) 'id': (id as String),
-      if (fullName != _undefined) 'fullName': (fullName as String?),
-      if (company != _undefined) 'company': (company as String?),
-      if (streetLine1 != _undefined) 'streetLine1': (streetLine1 as String?),
-      if (streetLine2 != _undefined) 'streetLine2': (streetLine2 as String?),
-      if (city != _undefined) 'city': (city as String?),
-      if (province != _undefined) 'province': (province as String?),
-      if (postalCode != _undefined) 'postalCode': (postalCode as String?),
-      if (countryCode != _undefined) 'countryCode': (countryCode as String?),
-      if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
-      if (defaultShippingAddress != _undefined)
-        'defaultShippingAddress': (defaultShippingAddress as bool?),
-      if (defaultBillingAddress != _undefined)
-        'defaultBillingAddress': (defaultBillingAddress as bool?),
-      if (customFields != _undefined)
-        'customFields': (customFields as Map<String, dynamic>?),
-    }),
-  );
+  }) =>
+      _then(Input$UpdateAddressInput._({
+        ..._instance._$data,
+        if (id != _undefined && id != null) 'id': (id as String),
+        if (fullName != _undefined) 'fullName': (fullName as String?),
+        if (company != _undefined) 'company': (company as String?),
+        if (streetLine1 != _undefined) 'streetLine1': (streetLine1 as String?),
+        if (streetLine2 != _undefined) 'streetLine2': (streetLine2 as String?),
+        if (city != _undefined) 'city': (city as String?),
+        if (province != _undefined) 'province': (province as String?),
+        if (postalCode != _undefined) 'postalCode': (postalCode as String?),
+        if (countryCode != _undefined) 'countryCode': (countryCode as String?),
+        if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
+        if (defaultShippingAddress != _undefined)
+          'defaultShippingAddress': (defaultShippingAddress as bool?),
+        if (defaultBillingAddress != _undefined)
+          'defaultBillingAddress': (defaultBillingAddress as bool?),
+        if (customFields != _undefined)
+          'customFields': (customFields as Map<String, dynamic>?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$UpdateAddressInput<TRes>
@@ -17031,22 +17129,22 @@ class _CopyWithStubImpl$Input$UpdateAddressInput<TRes>
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Map<String, dynamic>? customFields,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$UpdateCustomerCustomFieldsInput {
-  factory Input$UpdateCustomerCustomFieldsInput({
-    int? loyaltyPointsAvailable,
-  }) => Input$UpdateCustomerCustomFieldsInput._({
-    if (loyaltyPointsAvailable != null)
-      r'loyaltyPointsAvailable': loyaltyPointsAvailable,
-  });
+  factory Input$UpdateCustomerCustomFieldsInput(
+          {int? loyaltyPointsAvailable}) =>
+      Input$UpdateCustomerCustomFieldsInput._({
+        if (loyaltyPointsAvailable != null)
+          r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+      });
 
   Input$UpdateCustomerCustomFieldsInput._(this._$data);
 
   factory Input$UpdateCustomerCustomFieldsInput.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
@@ -17070,10 +17168,11 @@ class Input$UpdateCustomerCustomFieldsInput {
   }
 
   CopyWith$Input$UpdateCustomerCustomFieldsInput<
-    Input$UpdateCustomerCustomFieldsInput
-  >
-  get copyWith =>
-      CopyWith$Input$UpdateCustomerCustomFieldsInput(this, (i) => i);
+          Input$UpdateCustomerCustomFieldsInput>
+      get copyWith => CopyWith$Input$UpdateCustomerCustomFieldsInput(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -17102,7 +17201,7 @@ class Input$UpdateCustomerCustomFieldsInput {
     return Object.hashAll([
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
-          : const {},
+          : const {}
     ]);
   }
 }
@@ -17132,13 +17231,12 @@ class _CopyWithImpl$Input$UpdateCustomerCustomFieldsInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? loyaltyPointsAvailable = _undefined}) => _then(
-    Input$UpdateCustomerCustomFieldsInput._({
-      ..._instance._$data,
-      if (loyaltyPointsAvailable != _undefined)
-        'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
-    }),
-  );
+  TRes call({Object? loyaltyPointsAvailable = _undefined}) =>
+      _then(Input$UpdateCustomerCustomFieldsInput._({
+        ..._instance._$data,
+        if (loyaltyPointsAvailable != _undefined)
+          'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$UpdateCustomerCustomFieldsInput<TRes>
@@ -17157,13 +17255,14 @@ class Input$UpdateCustomerInput {
     String? lastName,
     String? phoneNumber,
     Input$UpdateCustomerCustomFieldsInput? customFields,
-  }) => Input$UpdateCustomerInput._({
-    if (title != null) r'title': title,
-    if (firstName != null) r'firstName': firstName,
-    if (lastName != null) r'lastName': lastName,
-    if (phoneNumber != null) r'phoneNumber': phoneNumber,
-    if (customFields != null) r'customFields': customFields,
-  });
+  }) =>
+      Input$UpdateCustomerInput._({
+        if (title != null) r'title': title,
+        if (firstName != null) r'firstName': firstName,
+        if (lastName != null) r'lastName': lastName,
+        if (phoneNumber != null) r'phoneNumber': phoneNumber,
+        if (customFields != null) r'customFields': customFields,
+      });
 
   Input$UpdateCustomerInput._(this._$data);
 
@@ -17190,8 +17289,7 @@ class Input$UpdateCustomerInput {
       result$data['customFields'] = l$customFields == null
           ? null
           : Input$UpdateCustomerCustomFieldsInput.fromJson(
-              (l$customFields as Map<String, dynamic>),
-            );
+              (l$customFields as Map<String, dynamic>));
     }
     return Input$UpdateCustomerInput._(result$data);
   }
@@ -17235,7 +17333,10 @@ class Input$UpdateCustomerInput {
   }
 
   CopyWith$Input$UpdateCustomerInput<Input$UpdateCustomerInput> get copyWith =>
-      CopyWith$Input$UpdateCustomerInput(this, (i) => i);
+      CopyWith$Input$UpdateCustomerInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -17331,7 +17432,10 @@ abstract class CopyWith$Input$UpdateCustomerInput<TRes> {
 
 class _CopyWithImpl$Input$UpdateCustomerInput<TRes>
     implements CopyWith$Input$UpdateCustomerInput<TRes> {
-  _CopyWithImpl$Input$UpdateCustomerInput(this._instance, this._then);
+  _CopyWithImpl$Input$UpdateCustomerInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$UpdateCustomerInput _instance;
 
@@ -17345,27 +17449,24 @@ class _CopyWithImpl$Input$UpdateCustomerInput<TRes>
     Object? lastName = _undefined,
     Object? phoneNumber = _undefined,
     Object? customFields = _undefined,
-  }) => _then(
-    Input$UpdateCustomerInput._({
-      ..._instance._$data,
-      if (title != _undefined) 'title': (title as String?),
-      if (firstName != _undefined) 'firstName': (firstName as String?),
-      if (lastName != _undefined) 'lastName': (lastName as String?),
-      if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
-      if (customFields != _undefined)
-        'customFields':
-            (customFields as Input$UpdateCustomerCustomFieldsInput?),
-    }),
-  );
+  }) =>
+      _then(Input$UpdateCustomerInput._({
+        ..._instance._$data,
+        if (title != _undefined) 'title': (title as String?),
+        if (firstName != _undefined) 'firstName': (firstName as String?),
+        if (lastName != _undefined) 'lastName': (lastName as String?),
+        if (phoneNumber != _undefined) 'phoneNumber': (phoneNumber as String?),
+        if (customFields != _undefined)
+          'customFields':
+              (customFields as Input$UpdateCustomerCustomFieldsInput?),
+      }));
 
   CopyWith$Input$UpdateCustomerCustomFieldsInput<TRes> get customFields {
     final local$customFields = _instance.customFields;
     return local$customFields == null
         ? CopyWith$Input$UpdateCustomerCustomFieldsInput.stub(_then(_instance))
         : CopyWith$Input$UpdateCustomerCustomFieldsInput(
-            local$customFields,
-            (e) => call(customFields: e),
-          );
+            local$customFields, (e) => call(customFields: e));
   }
 }
 
@@ -17381,7 +17482,8 @@ class _CopyWithStubImpl$Input$UpdateCustomerInput<TRes>
     String? lastName,
     String? phoneNumber,
     Input$UpdateCustomerCustomFieldsInput? customFields,
-  }) => _res;
+  }) =>
+      _res;
 
   CopyWith$Input$UpdateCustomerCustomFieldsInput<TRes> get customFields =>
       CopyWith$Input$UpdateCustomerCustomFieldsInput.stub(_res);
@@ -17395,22 +17497,22 @@ class Input$UpdateOrderCustomFieldsInput {
     String? otherInstructions,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
-  }) => Input$UpdateOrderCustomFieldsInput._({
-    if (deviceMedium != null) r'deviceMedium': deviceMedium,
-    if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
-    if (clientRequestToCancel != null)
-      r'clientRequestToCancel': clientRequestToCancel,
-    if (otherInstructions != null) r'otherInstructions': otherInstructions,
-    if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
-    if (loyaltyPointsEarned != null)
-      r'loyaltyPointsEarned': loyaltyPointsEarned,
-  });
+  }) =>
+      Input$UpdateOrderCustomFieldsInput._({
+        if (deviceMedium != null) r'deviceMedium': deviceMedium,
+        if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
+        if (clientRequestToCancel != null)
+          r'clientRequestToCancel': clientRequestToCancel,
+        if (otherInstructions != null) r'otherInstructions': otherInstructions,
+        if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
+        if (loyaltyPointsEarned != null)
+          r'loyaltyPointsEarned': loyaltyPointsEarned,
+      });
 
   Input$UpdateOrderCustomFieldsInput._(this._$data);
 
   factory Input$UpdateOrderCustomFieldsInput.fromJson(
-    Map<String, dynamic> data,
-  ) {
+      Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
@@ -17483,9 +17585,11 @@ class Input$UpdateOrderCustomFieldsInput {
   }
 
   CopyWith$Input$UpdateOrderCustomFieldsInput<
-    Input$UpdateOrderCustomFieldsInput
-  >
-  get copyWith => CopyWith$Input$UpdateOrderCustomFieldsInput(this, (i) => i);
+          Input$UpdateOrderCustomFieldsInput>
+      get copyWith => CopyWith$Input$UpdateOrderCustomFieldsInput(
+            this,
+            (i) => i,
+          );
 
   @override
   bool operator ==(Object other) {
@@ -17597,7 +17701,10 @@ abstract class CopyWith$Input$UpdateOrderCustomFieldsInput<TRes> {
 
 class _CopyWithImpl$Input$UpdateOrderCustomFieldsInput<TRes>
     implements CopyWith$Input$UpdateOrderCustomFieldsInput<TRes> {
-  _CopyWithImpl$Input$UpdateOrderCustomFieldsInput(this._instance, this._then);
+  _CopyWithImpl$Input$UpdateOrderCustomFieldsInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$UpdateOrderCustomFieldsInput _instance;
 
@@ -17612,22 +17719,22 @@ class _CopyWithImpl$Input$UpdateOrderCustomFieldsInput<TRes>
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
-  }) => _then(
-    Input$UpdateOrderCustomFieldsInput._({
-      ..._instance._$data,
-      if (deviceMedium != _undefined) 'deviceMedium': (deviceMedium as String?),
-      if (razorpay_order_id != _undefined)
-        'razorpay_order_id': (razorpay_order_id as String?),
-      if (clientRequestToCancel != _undefined)
-        'clientRequestToCancel': (clientRequestToCancel as int?),
-      if (otherInstructions != _undefined)
-        'otherInstructions': (otherInstructions as String?),
-      if (loyaltyPointsUsed != _undefined)
-        'loyaltyPointsUsed': (loyaltyPointsUsed as int?),
-      if (loyaltyPointsEarned != _undefined)
-        'loyaltyPointsEarned': (loyaltyPointsEarned as int?),
-    }),
-  );
+  }) =>
+      _then(Input$UpdateOrderCustomFieldsInput._({
+        ..._instance._$data,
+        if (deviceMedium != _undefined)
+          'deviceMedium': (deviceMedium as String?),
+        if (razorpay_order_id != _undefined)
+          'razorpay_order_id': (razorpay_order_id as String?),
+        if (clientRequestToCancel != _undefined)
+          'clientRequestToCancel': (clientRequestToCancel as int?),
+        if (otherInstructions != _undefined)
+          'otherInstructions': (otherInstructions as String?),
+        if (loyaltyPointsUsed != _undefined)
+          'loyaltyPointsUsed': (loyaltyPointsUsed as int?),
+        if (loyaltyPointsEarned != _undefined)
+          'loyaltyPointsEarned': (loyaltyPointsEarned as int?),
+      }));
 }
 
 class _CopyWithStubImpl$Input$UpdateOrderCustomFieldsInput<TRes>
@@ -17643,15 +17750,16 @@ class _CopyWithStubImpl$Input$UpdateOrderCustomFieldsInput<TRes>
     String? otherInstructions,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
-  }) => _res;
+  }) =>
+      _res;
 }
 
 class Input$UpdateOrderInput {
-  factory Input$UpdateOrderInput({
-    Input$UpdateOrderCustomFieldsInput? customFields,
-  }) => Input$UpdateOrderInput._({
-    if (customFields != null) r'customFields': customFields,
-  });
+  factory Input$UpdateOrderInput(
+          {Input$UpdateOrderCustomFieldsInput? customFields}) =>
+      Input$UpdateOrderInput._({
+        if (customFields != null) r'customFields': customFields,
+      });
 
   Input$UpdateOrderInput._(this._$data);
 
@@ -17662,8 +17770,7 @@ class Input$UpdateOrderInput {
       result$data['customFields'] = l$customFields == null
           ? null
           : Input$UpdateOrderCustomFieldsInput.fromJson(
-              (l$customFields as Map<String, dynamic>),
-            );
+              (l$customFields as Map<String, dynamic>));
     }
     return Input$UpdateOrderInput._(result$data);
   }
@@ -17683,7 +17790,10 @@ class Input$UpdateOrderInput {
   }
 
   CopyWith$Input$UpdateOrderInput<Input$UpdateOrderInput> get copyWith =>
-      CopyWith$Input$UpdateOrderInput(this, (i) => i);
+      CopyWith$Input$UpdateOrderInput(
+        this,
+        (i) => i,
+      );
 
   @override
   bool operator ==(Object other) {
@@ -17708,9 +17818,8 @@ class Input$UpdateOrderInput {
   @override
   int get hashCode {
     final l$customFields = customFields;
-    return Object.hashAll([
-      _$data.containsKey('customFields') ? l$customFields : const {},
-    ]);
+    return Object.hashAll(
+        [_$data.containsKey('customFields') ? l$customFields : const {}]);
   }
 }
 
@@ -17729,7 +17838,10 @@ abstract class CopyWith$Input$UpdateOrderInput<TRes> {
 
 class _CopyWithImpl$Input$UpdateOrderInput<TRes>
     implements CopyWith$Input$UpdateOrderInput<TRes> {
-  _CopyWithImpl$Input$UpdateOrderInput(this._instance, this._then);
+  _CopyWithImpl$Input$UpdateOrderInput(
+    this._instance,
+    this._then,
+  );
 
   final Input$UpdateOrderInput _instance;
 
@@ -17737,22 +17849,19 @@ class _CopyWithImpl$Input$UpdateOrderInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? customFields = _undefined}) => _then(
-    Input$UpdateOrderInput._({
-      ..._instance._$data,
-      if (customFields != _undefined)
-        'customFields': (customFields as Input$UpdateOrderCustomFieldsInput?),
-    }),
-  );
+  TRes call({Object? customFields = _undefined}) =>
+      _then(Input$UpdateOrderInput._({
+        ..._instance._$data,
+        if (customFields != _undefined)
+          'customFields': (customFields as Input$UpdateOrderCustomFieldsInput?),
+      }));
 
   CopyWith$Input$UpdateOrderCustomFieldsInput<TRes> get customFields {
     final local$customFields = _instance.customFields;
     return local$customFields == null
         ? CopyWith$Input$UpdateOrderCustomFieldsInput.stub(_then(_instance))
         : CopyWith$Input$UpdateOrderCustomFieldsInput(
-            local$customFields,
-            (e) => call(customFields: e),
-          );
+            local$customFields, (e) => call(customFields: e));
   }
 }
 
@@ -18717,6 +18826,7 @@ enum Enum$ErrorCode {
   PASSWORD_RESET_TOKEN_INVALID_ERROR,
   PASSWORD_RESET_TOKEN_EXPIRED_ERROR,
   NOT_VERIFIED_ERROR,
+  CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR,
   $unknown;
 
   factory Enum$ErrorCode.fromJson(String value) =>
@@ -18789,6 +18899,8 @@ String toJson$Enum$ErrorCode(Enum$ErrorCode e) {
       return r'PASSWORD_RESET_TOKEN_EXPIRED_ERROR';
     case Enum$ErrorCode.NOT_VERIFIED_ERROR:
       return r'NOT_VERIFIED_ERROR';
+    case Enum$ErrorCode.CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR:
+      return r'CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR';
     case Enum$ErrorCode.$unknown:
       return r'$unknown';
   }
@@ -18858,6 +18970,8 @@ Enum$ErrorCode fromJson$Enum$ErrorCode(String value) {
       return Enum$ErrorCode.PASSWORD_RESET_TOKEN_EXPIRED_ERROR;
     case r'NOT_VERIFIED_ERROR':
       return Enum$ErrorCode.NOT_VERIFIED_ERROR;
+    case r'CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR':
+      return Enum$ErrorCode.CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR;
     default:
       return Enum$ErrorCode.$unknown;
   }
@@ -18927,6 +19041,7 @@ enum Enum$HistoryEntryType {
   ORDER_COUPON_REMOVED,
   ORDER_MODIFIED,
   ORDER_CUSTOMER_UPDATED,
+  ORDER_LINE_PRICE_UPDATED,
   $unknown;
 
   factory Enum$HistoryEntryType.fromJson(String value) =>
@@ -18987,6 +19102,8 @@ String toJson$Enum$HistoryEntryType(Enum$HistoryEntryType e) {
       return r'ORDER_MODIFIED';
     case Enum$HistoryEntryType.ORDER_CUSTOMER_UPDATED:
       return r'ORDER_CUSTOMER_UPDATED';
+    case Enum$HistoryEntryType.ORDER_LINE_PRICE_UPDATED:
+      return r'ORDER_LINE_PRICE_UPDATED';
     case Enum$HistoryEntryType.$unknown:
       return r'$unknown';
   }
@@ -19044,6 +19161,8 @@ Enum$HistoryEntryType fromJson$Enum$HistoryEntryType(String value) {
       return Enum$HistoryEntryType.ORDER_MODIFIED;
     case r'ORDER_CUSTOMER_UPDATED':
       return Enum$HistoryEntryType.ORDER_CUSTOMER_UPDATED;
+    case r'ORDER_LINE_PRICE_UPDATED':
+      return Enum$HistoryEntryType.ORDER_LINE_PRICE_UPDATED;
     default:
       return Enum$HistoryEntryType.$unknown;
   }

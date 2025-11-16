@@ -1,38 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:graphql/client.dart' as graphql;
 
 import '../../graphql/cart.graphql.dart'; // Generated GraphQL queries/mutations
 import '../../graphql/order.graphql.dart';
 import '../../services/graphql_client.dart';
+import '../../utils/price_formatter.dart';
 import '../order/ordercontroller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
+import '../base_controller.dart';
 import 'cartmodels.dart';
 
-class CartController extends GetxController {
+class CartController extends BaseController {
   Rx<Order?> cart = Rx<Order?>(null);
   Rx<ErrorResult?> error = Rx<ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
   final OrderController orderController = Get.put(OrderController());
 
-  Future<bool> addToCart({required int productVariantId, int quantity = 1}) async {
-    debugPrint('[Cart] Starting addToCart: variantId=$productVariantId quantity=$quantity');
-    utilityController.setLoadingState(true);
+  Future<bool> addToCart(
+      {required int productVariantId, int quantity = 1}) async {
+    debugPrint(
+        '[Cart] Starting addToCart: variantId=$productVariantId quantity=$quantity');
 
     try {
       final response = await GraphqlService.client.value.mutate$AddToCart(
         Options$Mutation$AddToCart(
           variables: Variables$Mutation$AddToCart(
-            variantId: productVariantId.toString(), // ✅ Ensure String conversion
+            variantId:
+                productVariantId.toString(), // ✅ Ensure String conversion
             qty: quantity,
           ),
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Cart] GraphQL Exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to add item to cart')) {
         error.value = ErrorResult(
           errorCode: "GRAPHQL_ERROR",
-          message: response.exception.toString(),
+          message:
+              response.exception?.toString() ?? 'Failed to add item to cart',
         );
         return false;
       }
@@ -44,19 +50,28 @@ class CartController extends GetxController {
         return false;
       }
 
-      // ✅ Directly assume success & update cart
+      if (addItemResult is! Mutation$AddToCart$addItemToOrder$$Order) {
+        _handleAddToCartError(addItemResult);
+        return false;
+      }
+
       cart.value = Order.fromJson(addItemResult.toJson());
-      debugPrint('[Cart] Item added. Cart now has ${cart.value?.totalQuantity} items.');
+      debugPrint(
+          '[Cart] Item added. State: ${cart.value?.state}, active: ${cart.value?.active}. Cart now has ${cart.value?.totalQuantity} items.');
+
+      if (!await _ensureOrderConsistency()) {
+        return false;
+      }
 
       return true;
-
     } catch (e, stacktrace) {
       debugPrint('[Cart] Exception: $e');
       debugPrint('[Cart] Stacktrace: $stacktrace');
-      error.value = ErrorResult(errorCode: "NETWORK_ERROR", message: e.toString());
+      handleException(e, customErrorMessage: 'Failed to add item to cart');
+      error.value =
+          ErrorResult(errorCode: "NETWORK_ERROR", message: e.toString());
       return false;
     } finally {
-      utilityController.setLoadingState(false);
       debugPrint('[Cart] addToCart finished.');
     }
   }
@@ -64,38 +79,39 @@ class CartController extends GetxController {
   /// Get active order (current cart)
   Future<bool> getActiveOrder() async {
     debugPrint('[Cart] Fetching active order...');
-    utilityController.setLoadingState(false);
 
     try {
-      final response = await GraphqlService.client.value.query$ActiveOrder(
-        Options$Query$ActiveOrder(),
+      final response = await GraphqlService.client.value.query$GetCartTotals(
+        Options$Query$GetCartTotals(
+          fetchPolicy: graphql.FetchPolicy.networkOnly,
+          cacheRereadPolicy: graphql.CacheRereadPolicy.ignoreAll,
+        ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Cart] GraphQL Exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to load cart')) {
         return false;
       }
 
       final orderData = response.parsedData?.activeOrder;
       if (orderData != null) {
         cart.value = Order.fromJson(orderData.toJson());
-        debugPrint('[Cart] Active order loaded with ${cart.value?.totalQuantity ?? 0} items');
+        debugPrint(
+            '[Cart] Active order loaded with ${cart.value?.totalQuantity ?? 0} items');
         return true;
       }
 
       return false;
     } catch (e) {
       debugPrint('[Cart] Exception: $e');
+      handleException(e, customErrorMessage: 'Failed to load cart');
       return false;
-    } finally {
-      utilityController.setLoadingState(false);
-    }
+    } finally {}
   }
 
   /// Adjust line quantity
-  Future<bool> adjustOrderLine({required String orderLineId, required int quantity}) async {
-    utilityController.setLoadingState(true);
-
+  Future<bool> adjustOrderLine(
+      {required String orderLineId, required int quantity}) async {
     try {
       final response = await GraphqlService.client.value.mutate$AdjustOrderLine(
         Options$Mutation$AdjustOrderLine(
@@ -106,25 +122,69 @@ class CartController extends GetxController {
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Cart] Adjust line exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to update cart item')) {
         return false;
       }
 
       final result = response.parsedData?.adjustOrderLine;
-      if (result != null) {
-        cart.value = Order.fromJson(result.toJson());
-        debugPrint('[Cart] Order line adjusted');
-        return true;
+      if (result == null) {
+        debugPrint('[Cart] No adjustOrderLine result');
+        return false;
       }
 
-      return false;
+      if (result is! Mutation$AdjustOrderLine$adjustOrderLine$$Order) {
+        _handleAdjustOrderError(result);
+        return false;
+      }
+
+      cart.value = Order.fromJson(result.toJson());
+      debugPrint(
+          '[Cart] Order line adjusted. State: ${cart.value?.state}, qty: ${cart.value?.totalQuantity}');
+
+      if (!await _ensureOrderConsistency()) {
+        return false;
+      }
+
+      return true;
     } catch (e) {
       debugPrint('[Cart] Adjust line error: $e');
+      handleException(e, customErrorMessage: 'Failed to update cart item');
       return false;
-    } finally {
-      utilityController.setLoadingState(false);
+    } finally {}
+  }
+
+  /// Returns the [OrderLine] associated with the given variant ID if present in the cart
+  OrderLine? _findOrderLineByVariant(String variantId) {
+    final currentCart = cart.value;
+    if (currentCart == null) return null;
+
+    try {
+      return currentCart.lines
+          .firstWhere((line) => line.productVariant.id == variantId);
+    } catch (_) {
+      return null;
     }
+  }
+
+  /// Get the quantity for a specific product variant currently in the cart
+  int getVariantQuantity(String variantId) {
+    return _findOrderLineByVariant(variantId)?.quantity ?? 0;
+  }
+
+  /// Decrement the quantity of a given variant. If quantity reaches zero, the line is removed.
+  Future<bool> decrementVariant({required String variantId}) async {
+    final line = _findOrderLineByVariant(variantId);
+    if (line == null) {
+      return false;
+    }
+
+    final newQuantity = line.quantity - 1;
+    final targetQuantity = newQuantity < 0 ? 0 : newQuantity;
+    try {
+      return await adjustOrderLine(
+          orderLineId: line.id, quantity: targetQuantity);
+    } finally {}
   }
 
   /// Get cart total items count
@@ -133,9 +193,46 @@ class CartController extends GetxController {
   /// Get cart total price
   int get cartTotalPrice => (cart.value?.totalWithTax ?? 0).toInt();
 
+  bool get hasUnavailableItems {
+    final order = cart.value;
+    if (order == null) return false;
+    if (order.validationStatus?.hasUnavailableItems ?? false) {
+      return true;
+    }
+    return order.lines.any((line) => !line.isAvailable);
+  }
+
+  List<OrderLine> get unavailableLines {
+    final order = cart.value;
+    if (order == null) return [];
+    return order.lines.where((line) => !line.isAvailable).toList();
+  }
+
+  String? get firstUnavailableReason {
+    final order = cart.value;
+    if (order == null) return null;
+
+    final validationReason =
+        order.validationStatus?.unavailableItems.isNotEmpty == true
+            ? order.validationStatus!.unavailableItems.first.reason
+            : null;
+    if (validationReason != null && validationReason.isNotEmpty) {
+      return validationReason;
+    }
+
+    for (final line in order.lines) {
+      if (!line.isAvailable && (line.unavailableReason?.isNotEmpty ?? false)) {
+        return line.unavailableReason;
+      }
+    }
+
+    return null;
+  }
+
   /// Format price (assuming price is in cents)
+  /// If price is 2000, shows "Rs 20" (not "Rs 20.00")
   String formatPrice(int price) {
-    return 'Rs.${(price / 100).toStringAsFixed(2)}';
+    return PriceFormatter.formatPrice(price);
   }
 
   /// Clear cart
@@ -148,34 +245,36 @@ class CartController extends GetxController {
   /// Check if any applied coupon has free_shipping action
   bool hasFreeShippingCoupon() {
     if (cart.value == null) return false;
-    
+
     final order = cart.value!;
-    
+
     debugPrint('[Cart] Checking for free shipping coupon...');
-    debugPrint('[Cart] Current shipping cost: ${order.shipping}, ${order.shippingWithTax}');
+    debugPrint(
+        '[Cart] Current shipping cost: ${order.shipping}, ${order.shippingWithTax}');
     debugPrint('[Cart] Applied coupon codes: ${order.couponCodes}');
     debugPrint('[Cart] Promotions count: ${order.promotions.length}');
-    
+
     // Check if shipping cost is 0
     if (order.shipping == 0 && order.shippingWithTax == 0) {
       debugPrint('[Cart] Shipping cost is 0 - free shipping detected');
       return true;
     }
-    
+
     // Check promotions for free_shipping action
     for (final promotion in order.promotions) {
       debugPrint('[Cart] Checking promotion: ${promotion.name}');
       debugPrint('[Cart] Promotion actions count: ${promotion.actions.length}');
-      
+
       for (final action in promotion.actions) {
         debugPrint('[Cart] Action code: ${action.code}');
         if (action.code == 'free_shipping') {
-          debugPrint('[Cart] Found free_shipping action in promotion: ${promotion.name}');
+          debugPrint(
+              '[Cart] Found free_shipping action in promotion: ${promotion.name}');
           return true;
         }
       }
     }
-    
+
     debugPrint('[Cart] No free shipping coupon found');
     return false;
   }
@@ -186,11 +285,12 @@ class CartController extends GetxController {
       debugPrint('[Cart] Returning Free for shipping display');
       return 'Free';
     }
-    
-    if (cart.value == null) return 'Rs.0.00';
-    
+
+    if (cart.value == null) return 'Rs 0';
+
     final shippingCost = cart.value!.shippingWithTax;
-    debugPrint('[Cart] Returning shipping cost: ${formatPrice(shippingCost.toInt())}');
+    debugPrint(
+        '[Cart] Returning shipping cost: ${formatPrice(shippingCost.toInt())}');
     return formatPrice(shippingCost.toInt());
   }
 
@@ -198,5 +298,127 @@ class CartController extends GetxController {
   Future<void> refreshCartData() async {
     debugPrint('[Cart] Refreshing cart data...');
     await getActiveOrder();
+  }
+
+  Future<bool> _ensureOrderConsistency() async {
+    final current = cart.value;
+    if (current == null) {
+      return true;
+    }
+
+    final locked = _isOrderLocked(current.state) || !current.active;
+    final zeroQuantityWithLines =
+        current.totalQuantity == 0 && current.lines.isNotEmpty;
+
+    if (!locked && !zeroQuantityWithLines) {
+      return true;
+    }
+
+    debugPrint(
+        '[Cart] Detected locked/inconsistent order (state: ${current.state}, qty: ${current.totalQuantity}). Refreshing...');
+    await getActiveOrder();
+    final refreshed = cart.value;
+
+    if (refreshed == null) {
+      _setCartError('ORDER_REFRESH_FAILED',
+          'Unable to refresh your cart. Please try again.');
+      return false;
+    }
+
+    if (_isOrderLocked(refreshed.state) || !refreshed.active) {
+      _setCartError('ORDER_LOCKED',
+          'Your current order is being processed. Please wait until it completes before making further changes.');
+      return false;
+    }
+
+    if (refreshed.totalQuantity == 0 && refreshed.lines.isNotEmpty) {
+      _setCartError('ORDER_REFRESH_FAILED',
+          'Unable to update the cart right now. Please refresh the cart and try again.');
+      return false;
+    }
+
+    return true;
+  }
+
+  void _setCartError(String code, String message) {
+    debugPrint('[Cart] Error [$code]: $message');
+    error.value = ErrorResult(errorCode: code, message: message);
+    handleException(Exception(message), customErrorMessage: message);
+  }
+
+  void _handleAddToCartError(Mutation$AddToCart$addItemToOrder result) {
+    final message = _mapAddToCartErrorMessage(result);
+    debugPrint('[Cart] AddToCart error (${result.$__typename}): $message');
+    _setCartError(result.$__typename, message);
+  }
+
+  void _handleAdjustOrderError(
+      Mutation$AdjustOrderLine$adjustOrderLine result) {
+    final message = _mapAdjustOrderErrorMessage(result);
+    debugPrint(
+        '[Cart] AdjustOrderLine error (${result.$__typename}): $message');
+    _setCartError(result.$__typename, message);
+  }
+
+  String _mapAddToCartErrorMessage(Mutation$AddToCart$addItemToOrder result) {
+    switch (result.$__typename) {
+      case 'InsufficientStockError':
+        return (result
+                as Mutation$AddToCart$addItemToOrder$$InsufficientStockError)
+            .message;
+      case 'OrderModificationError':
+        return (result
+                as Mutation$AddToCart$addItemToOrder$$OrderModificationError)
+            .message;
+      case 'OrderLimitError':
+        return (result as Mutation$AddToCart$addItemToOrder$$OrderLimitError)
+            .message;
+      case 'NegativeQuantityError':
+        return (result
+                as Mutation$AddToCart$addItemToOrder$$NegativeQuantityError)
+            .message;
+      case 'OrderInterceptorError':
+        return (result
+                as Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
+            .message;
+      default:
+        return 'Unable to add this item to your cart right now.';
+    }
+  }
+
+  String _mapAdjustOrderErrorMessage(
+      Mutation$AdjustOrderLine$adjustOrderLine result) {
+    switch (result.$__typename) {
+      case 'InsufficientStockError':
+        return (result
+                as Mutation$AdjustOrderLine$adjustOrderLine$$InsufficientStockError)
+            .message;
+      case 'OrderModificationError':
+        return (result
+                as Mutation$AdjustOrderLine$adjustOrderLine$$OrderModificationError)
+            .message;
+      case 'OrderLimitError':
+        return (result
+                as Mutation$AdjustOrderLine$adjustOrderLine$$OrderLimitError)
+            .message;
+      case 'NegativeQuantityError':
+        return (result
+                as Mutation$AdjustOrderLine$adjustOrderLine$$NegativeQuantityError)
+            .message;
+      case 'OrderInterceptorError':
+        return (result
+                as Mutation$AdjustOrderLine$adjustOrderLine$$OrderInterceptorError)
+            .message;
+      default:
+        return 'Unable to update this cart item right now.';
+    }
+  }
+
+  bool _isOrderLocked(String? state) {
+    if (state == null) return false;
+    final normalized = state.toLowerCase();
+    return normalized == 'arrangingpayment' ||
+        normalized == 'paymentauthorized' ||
+        normalized == 'paymentsettled';
   }
 }

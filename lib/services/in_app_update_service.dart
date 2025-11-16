@@ -33,11 +33,11 @@ class InAppUpdateService {
       // Get current app version
       final packageInfo = await PackageInfo.fromPlatform();
       _currentVersion = packageInfo.version;
-
+      
       // Initialize with current version as default
       _latestVersion = _currentVersion;
       _isImmediateUpdateEnabled = false;
-
+      
       debugPrint('[InAppUpdate] Service initialized');
       debugPrint('[InAppUpdate] Current version: $_currentVersion');
       debugPrint('[InAppUpdate] Latest version: $_latestVersion');
@@ -61,20 +61,20 @@ class InAppUpdateService {
 
       // Check Play Store for updates first
       _updateInfo = await InAppUpdate.checkForUpdate();
-
+      
       if (_updateInfo != null) {
         _isUpdateAvailable = _updateInfo!.updateAvailability == UpdateAvailability.updateAvailable;
-
+        
         debugPrint('[InAppUpdate] Update available: $_isUpdateAvailable');
         debugPrint('[InAppUpdate] Immediate update allowed: ${_updateInfo!.immediateUpdateAllowed}');
         debugPrint('[InAppUpdate] Flexible update allowed: ${_updateInfo!.flexibleUpdateAllowed}');
-
+        
         // Only check version comparison if we have a newer version configured
         if (_latestVersion != _currentVersion && _latestVersion.isNotEmpty) {
           debugPrint('[InAppUpdate] Comparing versions: current=$_currentVersion, latest=$_latestVersion');
           bool hasNewerVersion = _currentVersion != _latestVersion;
           debugPrint('[InAppUpdate] Has newer version available: $hasNewerVersion');
-
+          
           if (hasNewerVersion) {
             debugPrint('[InAppUpdate] Update available from config: $_currentVersion -> $_latestVersion');
           }
@@ -87,7 +87,7 @@ class InAppUpdateService {
       return _isUpdateAvailable;
     } catch (e) {
       debugPrint('[InAppUpdate] Error checking for update: $e');
-
+      
       // Check if it's the "app not owned" error (development/debug build)
       if (e.toString().contains('ERROR_APP_NOT_OWNED') || e.toString().contains('-10')) {
         debugPrint('[InAppUpdate] App not installed from Play Store (development build) - no update check needed');
@@ -108,23 +108,23 @@ class InAppUpdateService {
   Future<bool> checkPlayStoreDirectly() async {
     try {
       debugPrint('[InAppUpdate] Checking Play Store directly...');
-
+      
       // Check Play Store for updates
       final updateInfo = await InAppUpdate.checkForUpdate();
-
+      
       final updateAvailable = updateInfo.updateAvailability == UpdateAvailability.updateAvailable;
       debugPrint('[InAppUpdate] Play Store check result: updateAvailable=$updateAvailable');
       debugPrint('[InAppUpdate] Immediate update allowed: ${updateInfo.immediateUpdateAllowed}');
       debugPrint('[InAppUpdate] Flexible update allowed: ${updateInfo.flexibleUpdateAllowed}');
-
+      
       // Store the update info for later use
       _updateInfo = updateInfo;
       _isUpdateAvailable = updateAvailable;
-
+      
       return updateAvailable;
     } catch (e) {
       debugPrint('[InAppUpdate] Error checking Play Store directly: $e');
-
+      
       // Check if it's the "app not owned" error (development/debug build)
       if (e.toString().contains('ERROR_APP_NOT_OWNED') || e.toString().contains('-10')) {
         debugPrint('[InAppUpdate] App not installed from Play Store (development build) - no update check needed');
@@ -152,9 +152,9 @@ class InAppUpdateService {
       }
 
       debugPrint('[InAppUpdate] Starting immediate update...');
-
+      
       await InAppUpdate.performImmediateUpdate();
-
+      
       debugPrint('[InAppUpdate] Immediate update completed');
     } catch (e) {
       debugPrint('[InAppUpdate] Error performing immediate update: $e');
@@ -178,13 +178,13 @@ class InAppUpdateService {
       }
 
       debugPrint('[InAppUpdate] Starting flexible update...');
-
+      
       // Start the flexible update
       await InAppUpdate.startFlexibleUpdate();
-
+      
       // Show download progress
       showSuccessSnackbar('Update downloading in background...');
-
+      
       // Listen for download completion
       InAppUpdate.completeFlexibleUpdate().then((_) {
         debugPrint('[InAppUpdate] Flexible update completed, app will restart');
@@ -203,12 +203,12 @@ class InAppUpdateService {
     try {
       // First check for updates
       final updateAvailable = await checkForUpdate();
-
+      
       if (updateAvailable && context.mounted) {
         // Check if this is a same major.minor update (should be flexible)
         if (_latestVersion.isNotEmpty) {
           bool isSameMajorMinor = _isSameMajorMinorUpdate(_currentVersion, _latestVersion);
-
+          
           if (isSameMajorMinor) {
             debugPrint('[InAppUpdate] Same major.minor update detected - showing flexible dialog in account page');
             _showFlexibleUpdateDialog(context);
@@ -230,12 +230,12 @@ class InAppUpdateService {
     try {
       // First check for updates
       final updateAvailable = await checkForUpdate();
-
+      
       if (updateAvailable && context.mounted) {
         // Check if this is a same major.minor update (should be flexible)
         if (_latestVersion.isNotEmpty) {
           bool isSameMajorMinor = _isSameMajorMinorUpdate(_currentVersion, _latestVersion);
-
+          
           if (isSameMajorMinor) {
             debugPrint('[InAppUpdate] Showing flexible update dialog for same major.minor update');
             _showFlexibleUpdateDialog(context);
@@ -260,18 +260,18 @@ class InAppUpdateService {
     try {
       // First check for updates and determine the correct update type
       final updateAvailable = await checkForUpdate();
-
+      
       if (updateAvailable && context.mounted) {
         // Re-evaluate update type based on current version comparison
         if (_latestVersion.isNotEmpty) {
           bool isSameMajorMinor = _isSameMajorMinorUpdate(_currentVersion, _latestVersion);
-
+          
           if (isSameMajorMinor) {
             debugPrint('[InAppUpdate] Same major.minor update detected on startup - skipping immediate dialog');
             return; // Don't show immediate dialog for same major.minor updates
           }
         }
-
+        
         // Only show immediate dialog if it's actually an immediate update
         if (_isImmediateUpdateEnabled) {
           _showImmediateUpdateDialog(context);
@@ -506,42 +506,42 @@ class InAppUpdateService {
   Future<void> checkForUpdatesAndDetermineType() async {
     try {
       debugPrint('[InAppUpdate] Starting simplified update check flow...');
-
+      
       // STEP 1: Check Play Store for updates
       debugPrint('[InAppUpdate] Step 1: Checking Play Store for updates...');
       final updateInfo = await InAppUpdate.checkForUpdate();
-
+      
       if (updateInfo.updateAvailability != UpdateAvailability.updateAvailable) {
         debugPrint('[InAppUpdate] No update available on Play Store');
         _isUpdateAvailable = false;
         _isImmediateUpdateEnabled = false;
         return;
       }
-
+      
       debugPrint('[InAppUpdate] Update available on Play Store');
       debugPrint('[InAppUpdate] Immediate update allowed: ${updateInfo.immediateUpdateAllowed}');
       debugPrint('[InAppUpdate] Flexible update allowed: ${updateInfo.flexibleUpdateAllowed}');
-
+      
       // Store the update info
       _updateInfo = updateInfo;
       _isUpdateAvailable = true;
-
+      
       // STEP 2: Get GraphQL version from API
       debugPrint('[InAppUpdate] Step 2: Getting version from GraphQL API...');
       final graphqlVersion = await _getPlayStoreVersion();
-
+      
       // Check if GraphQL version is valid (not null, not empty)
       if (graphqlVersion != null && graphqlVersion.isNotEmpty && graphqlVersion.trim().isNotEmpty) {
         _latestVersion = graphqlVersion.trim();
         debugPrint('[InAppUpdate] Current app version: $_currentVersion');
         debugPrint('[InAppUpdate] GraphQL API latest version: $_latestVersion');
-
+        
         // STEP 3: Check update type based on 2nd digit (minor version)
         // If 2nd digit differs → IMMEDIATE UPDATE
         // If 2nd digit same → FLEXIBLE UPDATE
-
+        
         bool isSameMajorMinor = _isSameMajorMinorUpdate(_currentVersion, _latestVersion);
-
+        
         if (isSameMajorMinor) {
           debugPrint('[InAppUpdate] Same 2nd digit (minor version) - FLEXIBLE UPDATE');
           _isImmediateUpdateEnabled = false;
@@ -555,7 +555,7 @@ class InAppUpdateService {
         debugPrint('[InAppUpdate] GraphQL version is null/empty or API error occurred');
         debugPrint('[InAppUpdate] GraphQL version received: ${graphqlVersion ?? "null"}');
         debugPrint('[InAppUpdate] Forcing IMMEDIATE UPDATE due to missing GraphQL version');
-
+        
         // Force immediate update if GraphQL version is not available
         _isImmediateUpdateEnabled = true;
         _isUpdateAvailable = true;
@@ -563,7 +563,7 @@ class InAppUpdateService {
 
     } catch (e) {
       debugPrint('[InAppUpdate] Update check flow error: $e');
-
+      
       // Check if it's the "app not owned" error (development/debug build)
       if (e.toString().contains('ERROR_APP_NOT_OWNED') || e.toString().contains('-10')) {
         debugPrint('[InAppUpdate] App not installed from Play Store (development build) - skipping update check');
@@ -581,7 +581,7 @@ class InAppUpdateService {
   Future<String?> _getPlayStoreVersion() async {
     try {
       debugPrint('[InAppUpdate] Getting latest version from GraphQL API...');
-
+      
       final query = '''
         query GetAppUpdate {
           getUpdateInfoForChannel {
@@ -590,25 +590,25 @@ class InAppUpdateService {
           }
         }
       ''';
-
+      
       final result = await GraphqlService.client.value.query(
         graphql.QueryOptions(
           document: graphql.gql(query),
         ),
       );
-
+      
       if (result.hasException) {
         debugPrint('[InAppUpdate] GraphQL query exception: ${result.exception}');
         debugPrint('[InAppUpdate] Error fetching version from API - will fallback to Play Store flags');
         return null;
       }
-
+      
       final data = result.data?['getUpdateInfoForChannel'];
       if (data != null) {
         final latestVersion = data['latestVersion'] as String?;
-
+        
         debugPrint('[InAppUpdate] GraphQL API returned latestVersion: $latestVersion');
-
+        
         // Check if version is valid (not null, not empty)
         if (latestVersion != null && latestVersion.isNotEmpty && latestVersion.trim().isNotEmpty) {
           return latestVersion.trim();
@@ -617,7 +617,7 @@ class InAppUpdateService {
           return null;
         }
       }
-
+      
       debugPrint('[InAppUpdate] No version data from GraphQL API - returning null');
       return null;
     } catch (e) {
@@ -644,16 +644,16 @@ class InAppUpdateService {
       debugPrint('[InAppUpdate] Latest version: $latestVersion');
       debugPrint('[InAppUpdate] Update type from API: $updateType');
       debugPrint('[InAppUpdate] Current version: $_currentVersion');
-
+      
       // Update latest version
       _latestVersion = latestVersion;
-
+      
       // Determine update type based on current version and API update type
       // Priority: Current version logic > API update type
-
+      
       // Only compare app version vs Play Store version
       bool isSameMajorMinor = _isSameMajorMinorUpdate(_currentVersion, latestVersion);
-
+      
       if (isSameMajorMinor) {
         // Same major.minor updates are always flexible (patch updates)
         _isImmediateUpdateEnabled = false;
@@ -663,12 +663,12 @@ class InAppUpdateService {
         _isImmediateUpdateEnabled = true;
         debugPrint('[InAppUpdate] Different major.minor - IMMEDIATE UPDATE');
       }
-
+      
       // Reset update states to force re-check with new configuration
       _isUpdateAvailable = false;
       _updateInfo = null;
       _isCheckingUpdate = false;
-
+      
       debugPrint('[InAppUpdate] Final decision - Immediate update: $_isImmediateUpdateEnabled');
       debugPrint('[InAppUpdate] Configuration updated successfully');
     } catch (e) {
@@ -681,21 +681,21 @@ class InAppUpdateService {
     try {
       List<int> currentParts = currentVersion.split('.').map(int.parse).toList();
       List<int> latestParts = latestVersion.split('.').map(int.parse).toList();
-
+      
       // Pad with zeros if needed
       while (currentParts.length < 3) currentParts.add(0);
       while (latestParts.length < 3) latestParts.add(0);
-
+      
       int currentMajor = currentParts[0];
       int currentMinor = currentParts[1];
-
+      
       int latestMajor = latestParts[0];
       int latestMinor = latestParts[1];
-
+      
       bool isSameMajorMinor = (currentMajor == latestMajor && currentMinor == latestMinor);
-
+      
       debugPrint('[InAppUpdate] Same major.minor check: $currentMajor.$currentMinor vs $latestMajor.$latestMinor = $isSameMajorMinor');
-
+      
       return isSameMajorMinor;
     } catch (e) {
       debugPrint('[InAppUpdate] Error checking same major.minor: $e');
@@ -709,32 +709,32 @@ class InAppUpdateService {
     try {
       List<int> currentParts = currentVersion.split('.').map(int.parse).toList();
       List<int> latestParts = latestVersion.split('.').map(int.parse).toList();
-
+      
       // Pad with zeros if needed
       while (currentParts.length < 3) currentParts.add(0);
       while (latestParts.length < 3) latestParts.add(0);
-
+      
       int currentMajor = currentParts[0];
       int currentMinor = currentParts[1];
       int currentPatch = currentParts[2];
-
+      
       int latestMajor = latestParts[0];
       int latestMinor = latestParts[1];
       int latestPatch = latestParts[2];
-
+      
       debugPrint('[InAppUpdate] Checking version skipping: current=[$currentMajor.$currentMinor.$currentPatch], latest=[$latestMajor.$latestMinor.$latestPatch]');
-
+      
       // Check if user is skipping any versions that had immediate update requirements
       bool isSkippingImmediate = _checkSkippedVersionsForImmediateUpdates(
-          currentMajor, currentMinor, currentPatch,
-          latestMajor, latestMinor, latestPatch
+        currentMajor, currentMinor, currentPatch,
+        latestMajor, latestMinor, latestPatch
       );
-
+      
       if (isSkippingImmediate) {
         debugPrint('[InAppUpdate] User is skipping versions with immediate update requirements - forcing immediate update');
         return true;
       }
-
+      
       debugPrint('[InAppUpdate] No version skipping detected - using normal update strategy');
       return false;
     } catch (e) {
@@ -745,42 +745,42 @@ class InAppUpdateService {
 
   /// Check if any skipped versions had immediate update requirements by checking Play Store
   bool _checkSkippedVersionsForImmediateUpdates(
-      int currentMajor, int currentMinor, int currentPatch,
-      int latestMajor, int latestMinor, int latestPatch
-      ) {
+    int currentMajor, int currentMinor, int currentPatch,
+    int latestMajor, int latestMinor, int latestPatch
+  ) {
     try {
       debugPrint('[InAppUpdate] ==========================================');
       debugPrint('[InAppUpdate] Checking version requirements...');
       debugPrint('[InAppUpdate] Current: $currentMajor.$currentMinor.$currentPatch');
       debugPrint('[InAppUpdate] Latest: $latestMajor.$latestMinor.$latestPatch');
       debugPrint('[InAppUpdate] ==========================================');
-
+      
       // Simple logic: If second digit differs = IMMEDIATE UPDATE
       // - 2.0.5 → 2.0.6: Flexible update (same second digit)
       // - 2.0.5 → 2.1.3: Immediate update (second digit differs: 0 → 1)
       // - 2.0.5 → 2.2.4: Immediate update (second digit differs: 0 → 2)
-
+      
       // Check if the SECOND DIGIT (minor version) differs - FORCE IMMEDIATE UPDATE
       debugPrint('[InAppUpdate] Checking: currentMajor ($currentMajor) == latestMajor ($latestMajor)? ${currentMajor == latestMajor}');
       debugPrint('[InAppUpdate] Checking: currentMinor ($currentMinor) != latestMinor ($latestMinor)? ${currentMinor != latestMinor}');
-
+      
       if (currentMajor == latestMajor && currentMinor != latestMinor) {
         debugPrint('[InAppUpdate] ✅ Second digit differs: $currentMinor → $latestMinor - IMMEDIATE UPDATE');
         return true;
       }
-
+      
       // Check if major version differs - FORCE IMMEDIATE UPDATE
       if (latestMajor > currentMajor) {
         debugPrint('[InAppUpdate] ✅ Major version differs: $currentMajor → $latestMajor - IMMEDIATE UPDATE');
         return true;
       }
-
+      
       // Same major and minor version = FLEXIBLE UPDATE
       if (currentMajor == latestMajor && currentMinor == latestMinor) {
         debugPrint('[InAppUpdate] ❌ Same major.minor version - FLEXIBLE UPDATE');
         return false;
       }
-
+      
       debugPrint('[InAppUpdate] ❌ Default: FLEXIBLE UPDATE');
       return false;
     } catch (e) {
@@ -790,3 +790,4 @@ class InAppUpdateService {
   }
 
 }
+

@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:unified_ecomapp/graphql/Customer.graphql.dart';
-import 'package:unified_ecomapp/graphql/authenticate.graphql.dart';
+import 'package:recipe.app/graphql/Customer.graphql.dart';
+import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
+import '../../widgets/error_dialog.dart';
+import '../base_controller.dart';
+import '../utilitycontroller/utilitycontroller.dart';
 import 'customer_models.dart';
 
-class CustomerController extends GetxController {
+class CustomerController extends BaseController {
   // Observable variables
   final Rx<CustomerModel?> activeCustomer = Rx<CustomerModel?>(null);
   final RxList<AddressModel> addresses = <AddressModel>[].obs;
   final RxList<OrderModel> orders = <OrderModel>[].obs;
-  final RxBool isLoading = false.obs;
   final RxBool isEditingProfile = false.obs;
   final RxString error = ''.obs;
+  final UtilityController utilityController = Get.find();
+
+  RxBool get isLoading => utilityController.isLoadingRx;
 
   // Profile editing controllers
   final firstNameController = TextEditingController();
@@ -32,17 +37,37 @@ class CustomerController extends GetxController {
   /// Get active customer data
   Future<void> getActiveCustomer() async {
     try {
-      isLoading.value = true;
+      utilityController.setLoadingState(false);
       error.value = '';
 
       debugPrint('[Customer] Fetching active customer...');
 
-      final response = await GraphqlService.client.value.query$GetActiveCustomer();
+      final response =
+          await GraphqlService.client.value.query$GetActiveCustomer();
 
+      // Check if error contains "User not found" - handle specially
       if (response.hasException) {
         debugPrint('[Customer] Exception: ${response.exception}');
-        error.value = 'Failed to load customer data';
-        return;
+
+        // Check if error contains "User not found"
+        final exceptionString = response.exception.toString().toLowerCase();
+        if (exceptionString.contains('user not found') ||
+            exceptionString.contains('user not found with this email')) {
+          debugPrint(
+              '[Customer] User not found error detected - triggering logout');
+          error.value = 'User not found. Please login again.';
+
+          // Trigger logout and redirect to login
+          await _handleUserNotFoundError();
+          return;
+        }
+
+        // Use base controller error handling for other errors
+        if (checkResponseForErrors(response,
+            customErrorMessage: 'Failed to load customer data')) {
+          error.value = 'Failed to load customer data';
+          return;
+        }
       }
 
       final customerData = response.parsedData?.activeCustomer;
@@ -50,14 +75,15 @@ class CustomerController extends GetxController {
         // Convert the GraphQL response to a Map
         final customerJson = customerData.toJson();
         debugPrint('[Customer] Raw customer data: $customerJson');
-        
+
         activeCustomer.value = CustomerModel.fromJson(customerJson);
         addresses.value = activeCustomer.value?.addresses ?? [];
         orders.value = activeCustomer.value?.orders?.items ?? [];
-        
+
         _initializeProfileFields();
-        
-        debugPrint('[Customer] Customer loaded: ${activeCustomer.value?.firstName} ${activeCustomer.value?.lastName}');
+
+        debugPrint(
+            '[Customer] Customer loaded: ${activeCustomer.value?.firstName} ${activeCustomer.value?.lastName}');
         debugPrint('[Customer] Addresses: ${addresses.length}');
         debugPrint('[Customer] Orders: ${orders.length}');
       } else {
@@ -66,27 +92,43 @@ class CustomerController extends GetxController {
       }
     } catch (e) {
       debugPrint('[Customer] Error: $e');
+
+      // Check if error contains "User not found"
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('user not found') ||
+          errorString.contains('user not found with this email')) {
+        debugPrint(
+            '[Customer] User not found error detected in catch - triggering logout');
+        error.value = 'User not found. Please login again.';
+
+        // Trigger logout and redirect to login
+        await _handleUserNotFoundError();
+        return;
+      }
+
+      // Use base controller error handling
+      handleException(e, customErrorMessage: 'Failed to load customer data');
       error.value = 'Failed to load customer data: $e';
     } finally {
-      isLoading.value = false;
+      utilityController.setLoadingState(false);
     }
   }
 
   /// Update customer profile
   Future<bool> updateCustomer() async {
     try {
-      isLoading.value = true;
+      utilityController.setLoadingState(true);
       debugPrint('[Customer] Updating customer profile...');
 
       // Log the input values clearly
-      debugPrint('[Customer] Mutation input: firstName=${firstNameController.value}, lastName=${lastNameController.value}');
+      debugPrint(
+          '[Customer] Mutation input: firstName=${firstNameController.value}, lastName=${lastNameController.value}');
 
       // Prepare mutation input
       final input = Input$UpdateCustomerInput(
         firstName: firstNameController.text,
         lastName: lastNameController.text,
       );
-
 
       // Execute mutation
       final response = await GraphqlService.client.value.mutate$UpdateCustomer(
@@ -98,8 +140,8 @@ class CustomerController extends GetxController {
       );
 
       // Check for exceptions
-      if (response.hasException) {
-        debugPrint('[Customer] Update exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to update profile')) {
         return false;
       }
 
@@ -122,19 +164,19 @@ class CustomerController extends GetxController {
 
       debugPrint('[Customer] Mutation returned null result');
       return false;
-
     } catch (e) {
       debugPrint('[Customer] Update error: $e');
+      handleException(e, customErrorMessage: 'Failed to update profile');
       return false;
     } finally {
-      isLoading.value = false;
+      utilityController.setLoadingState(false);
     }
   }
 
   /// Create new address
   Future<bool> createAddress(AddressModel address) async {
     try {
-      isLoading.value = true;
+      utilityController.setLoadingState(true);
 
       debugPrint('[Customer] Creating address...');
 
@@ -151,14 +193,15 @@ class CustomerController extends GetxController {
         defaultBillingAddress: address.defaultBillingAddress,
       );
 
-      final response = await GraphqlService.client.value.mutate$CreateCustomerAddress(
+      final response =
+          await GraphqlService.client.value.mutate$CreateCustomerAddress(
         Options$Mutation$CreateCustomerAddress(
           variables: Variables$Mutation$CreateCustomerAddress(input: input),
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Customer] Create address exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to create address')) {
         return false;
       }
 
@@ -175,16 +218,17 @@ class CustomerController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Customer] Create address error: $e');
+      handleException(e, customErrorMessage: 'Failed to create address');
       return false;
     } finally {
-      isLoading.value = false;
+      utilityController.setLoadingState(false);
     }
   }
 
   /// Update existing address
   Future<bool> updateAddress(AddressModel address) async {
     try {
-      isLoading.value = true;
+      utilityController.setLoadingState(true);
 
       debugPrint('[Customer] Updating address...');
 
@@ -202,14 +246,15 @@ class CustomerController extends GetxController {
         defaultBillingAddress: address.defaultBillingAddress,
       );
 
-      final response = await GraphqlService.client.value.mutate$UpdateCustomerAddress(
+      final response =
+          await GraphqlService.client.value.mutate$UpdateCustomerAddress(
         Options$Mutation$UpdateCustomerAddress(
           variables: Variables$Mutation$UpdateCustomerAddress(input: input),
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Customer] Update address exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to update address')) {
         return false;
       }
 
@@ -226,27 +271,29 @@ class CustomerController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Customer] Update address error: $e');
+      handleException(e, customErrorMessage: 'Failed to update address');
       return false;
     } finally {
-      isLoading.value = false;
+      utilityController.setLoadingState(false);
     }
   }
 
   /// Delete address
   Future<bool> deleteAddress(String addressId) async {
     try {
-      isLoading.value = true;
+      utilityController.setLoadingState(true);
 
       debugPrint('[Customer] Deleting address: $addressId');
 
-      final response = await GraphqlService.client.value.mutate$DeleteCustomerAddress(
+      final response =
+          await GraphqlService.client.value.mutate$DeleteCustomerAddress(
         Options$Mutation$DeleteCustomerAddress(
           variables: Variables$Mutation$DeleteCustomerAddress(id: addressId),
         ),
       );
 
-      if (response.hasException) {
-        debugPrint('[Customer] Delete address exception: ${response.exception}');
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to delete address')) {
         return false;
       }
 
@@ -263,24 +310,22 @@ class CustomerController extends GetxController {
       return false;
     } catch (e) {
       debugPrint('[Customer] Delete address error: $e');
+      handleException(e, customErrorMessage: 'Failed to delete address');
       return false;
     } finally {
-      isLoading.value = false;
+      utilityController.setLoadingState(false);
     }
   }
 
   /// Toggle profile editing mode
-Future  <void> toggleEditProfile() async {
+  Future<void> toggleEditProfile() async {
     isEditingProfile.value = !isEditingProfile.value;
     if (isEditingProfile.value) {
       _initializeProfileFields();
     }
   }
 
-
-
   /// Update phone number
-
 
   /// Initialize profile fields with current customer data
   void _initializeProfileFields() {
@@ -290,7 +335,6 @@ Future  <void> toggleEditProfile() async {
     }
   }
 
-
   /// Force refresh addresses list
   void refreshAddresses() {
     addresses.refresh();
@@ -298,15 +342,48 @@ Future  <void> toggleEditProfile() async {
     update();
   }
 
+  /// Handle user not found error - logout and redirect
+  Future<void> _handleUserNotFoundError() async {
+    try {
+      debugPrint('[Customer] Handling user not found error...');
+
+      // Clear local data immediately
+      activeCustomer.value = null;
+      addresses.clear();
+      orders.clear();
+      isEditingProfile.value = false;
+
+      // Clear authentication tokens
+      await GraphqlService.clearToken('auth');
+      await GraphqlService.clearToken('channel');
+
+      // Show message to user
+      ErrorDialog.show(
+        title: 'Session Expired',
+        message: 'User not found. Please login again.',
+      );
+
+      // Navigate to login page
+      Get.offAllNamed('/login');
+
+      debugPrint('[Customer] User logged out due to user not found error');
+    } catch (e) {
+      debugPrint('[Customer] Error handling user not found: $e');
+      // Still navigate to login even if cleanup fails
+      Get.offAllNamed('/login');
+    }
+  }
+
   /// Logout customer
-  void logout() async {
+  Future<void> logout() async {
     try {
       debugPrint('[Customer] Logging out...');
-      
+
       final response = await GraphqlService.client.value.mutate$LogoutUser(
         Options$Mutation$LogoutUser(),
       );
 
+      // Don't show error dialog for logout - just log it
       if (response.hasException) {
         debugPrint('[Customer] Logout exception: ${response.exception}');
       }
@@ -316,10 +393,14 @@ Future  <void> toggleEditProfile() async {
       addresses.clear();
       orders.clear();
       isEditingProfile.value = false;
-      
+
+      // Clear authentication tokens
+      await GraphqlService.clearToken('auth');
+      await GraphqlService.clearToken('channel');
+
       // Navigate to login
       Get.offAllNamed('/login');
-      
+
       debugPrint('[Customer] Logged out successfully');
     } catch (e) {
       debugPrint('[Customer] Logout error: $e');
@@ -329,13 +410,15 @@ Future  <void> toggleEditProfile() async {
   }
 
   /// Get loyalty points
-  int get loyaltyPoints => activeCustomer.value?.customFields?.loyaltyPointsAvailable ?? 0;
+  int get loyaltyPoints =>
+      activeCustomer.value?.customFields?.loyaltyPointsAvailable ?? 0;
 
   /// Get total orders
   int get totalOrders => orders.length;
 
   /// Get default address
   AddressModel? get defaultAddress {
-    return addresses.firstWhereOrNull((address) => address.defaultShippingAddress);
+    return addresses
+        .firstWhereOrNull((address) => address.defaultShippingAddress);
   }
 }

@@ -82,6 +82,10 @@ query GetCustomerFavorites {
                         enabled
                         variants{
                             id
+                            name
+                            price
+                            priceWithTax
+                            currencyCode
                         }
 
 
@@ -224,3 +228,5 @@ mutation RemoveCouponCode($couponCode: String!){
         __typename
     }
 }
+
+

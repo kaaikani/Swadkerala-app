@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import '../widgets/shimmers.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
 import '../services/sms_autofill_service.dart';
-import '../theme/colors.dart';
-import '../theme/sizes.dart';
-import '../widgets/button.dart';
+import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
-import '../widgets/textbox.dart';
-import 'homepage.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -18,442 +15,956 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   final _authController = Get.find<AuthController>();
   final _smsAutofillService = SmsAutofillService();
-  bool _isOtpVisible = false;
-  
-  // Channel token data
-  final List<Map<String, String>> _channelTokens = [
-    {'name': 'Trichy', 'token': 'ind-trichy'},
-    {'name': 'Coimbatore', 'token': 'ind-coimbatore'},
-    {'name': 'Salem', 'token': 'ind-salem'},
-    {'name': 'Madurai', 'token': 'ind-madurai'},
+
+  final List<Map<String, String>> _cities = [
+    {'name': 'Trichy', 'code': 'ind-trichy'},
+    {'name': 'Coimbatore', 'code': 'ind-coimbatore'},
+    {'name': 'Salem', 'code': 'ind-salem'},
+    {'name': 'Madurai', 'code': 'ind-madurai'},
   ];
-  
-  String? _selectedChannelToken;
+
+  String? _selectedCity;
+
+  // Animation controllers
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  // Validation states
+  String? _firstNameError;
+  String? _lastNameError;
+  String? _phoneError;
+  String? _cityError;
+  String? _otpError;
+
+  bool _firstNameTouched = false;
+  bool _lastNameTouched = false;
+  bool _phoneTouched = false;
+  bool _cityTouched = false;
+  bool _otpTouched = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize SMS autofill service
+    _initializeAnimations();
     _initializeSmsAutofill();
-    
-    // Schedule state reset after the build phase
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _resetState();
-      // No automatic phone number detection for signup - user must enter manually
+      _authController.resetFormField();
     });
   }
 
-  /// Initialize SMS autofill service
+  void _initializeAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
+
+    _fadeController.forward();
+    _slideController.forward();
+  }
+
   Future<void> _initializeSmsAutofill() async {
     try {
       await _smsAutofillService.initialize();
-      debugPrint('[SignupPage] SMS autofill service initialized');
     } catch (e) {
-      debugPrint('[SignupPage] Error initializing SMS autofill: $e');
+      debugPrint('[SignupPage] SMS autofill init error: $e');
     }
   }
 
-  void _resetState() {
-    _authController.resetFormField();
-    setState(() {
-      _isOtpVisible = false;
-      _selectedChannelToken = null;
-    });
-  }
-
-
-  /// Show snackbar with appropriate styling
-  void _showSnackBar(String message, {required bool isError}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  /// Check if all required fields are filled and auto-send OTP if possible
-  Future<void> _checkAndAutoSendOtp() async {
-    // Check if all required fields are filled
-    bool hasFirstName = _authController.firstname.text.trim().isNotEmpty;
-    bool hasLastName = _authController.lastname.text.trim().isNotEmpty;
-    bool hasPhoneNumber = _authController.phoneNumber.text.length == 10;
-    bool hasChannel = _selectedChannelToken != null && _selectedChannelToken!.isNotEmpty;
-
-    if (hasFirstName && hasLastName && hasPhoneNumber && hasChannel) {
-      // All fields are ready, send OTP automatically
-      debugPrint('[SignupPage] All fields ready, auto-sending OTP...');
-      await _sendOtp();
-    } else {
-      // Show message about what's missing
-      List<String> missingFields = [];
-      if (!hasFirstName) missingFields.add('First Name');
-      if (!hasLastName) missingFields.add('Last Name');
-      if (!hasChannel) missingFields.add('City Selection');
-      
-      if (missingFields.isNotEmpty) {
-        _showSnackBar('Phone detected! Please fill ${missingFields.join(', ')} to continue.', isError: false);
-      }
-    }
-  }
-
-  /// Start SMS autofill listening
   Future<void> _startSmsAutofill() async {
     try {
       await _smsAutofillService.startListening((otp) {
-        debugPrint('[SignupPage] OTP received from SMS: $otp');
         _authController.otpController.text = otp;
-        // Auto-verify OTP
-        _verifyOtp();
+        _validateOtp(otp);
+        if (otp.length == 4 && _otpError == null) _verifyOtp();
       });
-      debugPrint('[SignupPage] SMS autofill listening started');
     } catch (e) {
-      debugPrint('[SignupPage] Error starting SMS autofill: $e');
+      debugPrint('[SignupPage] SMS autofill error: $e');
     }
   }
 
-  /// Stop SMS autofill listening
-  void _stopSmsAutofill() {
-    try {
-      _smsAutofillService.stopListening();
-      debugPrint('[SignupPage] SMS autofill listening stopped');
-    } catch (e) {
-      debugPrint('[SignupPage] Error stopping SMS autofill: $e');
-    }
+  void _validateFirstName(String value) {
+    setState(() {
+      if (value.trim().isEmpty) {
+        _firstNameError = 'First name is required';
+      } else if (value.trim().length < 2) {
+        _firstNameError = 'Name must be at least 2 characters';
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+        _firstNameError = 'Only letters are allowed';
+      } else {
+        _firstNameError = null;
+      }
+    });
+  }
+
+  void _validateLastName(String value) {
+    setState(() {
+      if (value.trim().isEmpty) {
+        _lastNameError = 'Last name is required';
+      } else if (value.trim().length < 2) {
+        _lastNameError = 'Name must be at least 2 characters';
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+        _lastNameError = 'Only letters are allowed';
+      } else {
+        _lastNameError = null;
+      }
+    });
+  }
+
+  void _validatePhone(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _phoneError = 'Phone number is required';
+      } else if (value.length < 10) {
+        _phoneError = 'Phone number must be 10 digits';
+      } else if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+        _phoneError = 'Only numbers are allowed';
+      } else {
+        _phoneError = null;
+      }
+    });
+  }
+
+  void _validateCity(String? value) {
+    setState(() {
+      if (value == null || value.isEmpty) {
+        _cityError = 'Please select a city';
+      } else {
+        _cityError = null;
+      }
+    });
+  }
+
+  void _validateOtp(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _otpError = 'OTP is required';
+      } else if (value.length < 4) {
+        _otpError = 'OTP must be 4 digits';
+      } else if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+        _otpError = 'Only numbers are allowed';
+      } else {
+        _otpError = null;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primary,
+              AppColors.primary.withValues(alpha: 0.8),
+              Colors.white,
+            ],
+            stops: const [0.0, 0.3, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
 
-    return GestureDetector(
-      onTap: () {
-        // Dismiss keyboard when tapping anywhere on screen
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Stack(
-          children: [
-            // Top half background image
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: screenHeight * 0.45,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.primary,
-                      AppColors.primary.withOpacity(0.8),
-                    ],
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
-                  ),
-                ),
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      // Back button
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
-                          onPressed: () => Get.back(),
-                        ),
-                      ),
-                      const Spacer(),
-                      // Logo or Image placeholder
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 20,
-                              spreadRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.person_add,
-                          size: 60,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Create Account',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Sign up to get started',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
-                        ),
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
+                    // Back Button and Header
+                    _buildHeader(),
+
+                    const SizedBox(height: 40),
+
+                    // Main Form Card
+                    _buildFormCard(),
+
+                    const SizedBox(height: 30),
+                  ],
                 ),
               ),
             ),
-
-            // Bottom card with form
-            Positioned(
-              top: screenHeight * 0.40,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(AppSizes.defaultPadding * 1.5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 20),
-                      _buildFirstNameField(),
-                      const SizedBox(height: 20),
-                      _buildLastNameField(),
-                      const SizedBox(height: 20),
-                      _buildPhoneNumberField(),
-                      const SizedBox(height: 20),
-                      _buildChannelDropdown(),
-                      const SizedBox(height: 20),
-                      _buildOtpField(),
-                      const SizedBox(height: 30),
-                      _buildSignupButton(),
-                      const SizedBox(height: 16),
-                      _buildResendButton(),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildFirstNameField() {
-    return TextButtonField(
-      controller: _authController.firstname,
-      hint: 'First Name',
-      keyboardType: TextInputType.name,
-      textCapitalization: TextCapitalization.words,
-      enabled: !_isOtpVisible,
-      onChanged: (value) {
-        // Check if we can auto-send OTP when user types
-        if (value.trim().isNotEmpty) {
-          _checkAndAutoSendOtp();
-        }
-      },
-    );
-  }
-
-  Widget _buildLastNameField() {
-    return TextButtonField(
-      controller: _authController.lastname,
-      hint: 'Last Name',
-      keyboardType: TextInputType.name,
-      textCapitalization: TextCapitalization.words,
-      enabled: !_isOtpVisible,
-      onChanged: (value) {
-        // Check if we can auto-send OTP when user types
-        if (value.trim().isNotEmpty) {
-          _checkAndAutoSendOtp();
-        }
-      },
-    );
-  }
-
-  Widget _buildPhoneNumberField() {
+  Widget _buildHeader() {
     return Column(
       children: [
-        TextButtonField(
-          controller: _authController.phoneNumber,
-          hint: 'Phone Number',
-          prefixText: '+91 ',
-          keyboardType: TextInputType.phone,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(10),
+        // Back Button
+        Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: IconButton(
+                icon:
+                    const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                onPressed: () => Get.back(),
+              ),
+            ),
           ],
-          enabled: !_isOtpVisible,
         ),
+
+        const SizedBox(height: 30),
+
+        // Logo
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.person_add_alt_1,
+            size: 50,
+            color: AppColors.primary,
+          ),
+        ),
+
+        const SizedBox(height: 30),
+
+        // Welcome Text
+        const Text(
+          'Create Account',
+          style: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1,
+          ),
+        ),
+
         const SizedBox(height: 8),
+
         Text(
-          'Enter your 10-digit mobile number',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
+          'Join us today',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white.withValues(alpha: 0.9),
+            fontWeight: FontWeight.w400,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildChannelDropdown() {
+  Widget _buildFormCard() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedChannelToken,
-          hint: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Text(
-              'Select City',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
-            ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
           ),
-          isExpanded: true,
-          items: _channelTokens.map((channel) {
-            return DropdownMenuItem<String>(
-              value: channel['token'],
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text(
-                  channel['name']!,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-          onChanged: _isOtpVisible ? null : (String? newValue) {
-            setState(() {
-              _selectedChannelToken = newValue;
-            });
-            // Check if we can auto-send OTP when channel is selected
-            if (newValue != null && newValue.isNotEmpty) {
-              _checkAndAutoSendOtp();
-            }
-          },
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Personal Info Section
+            _buildPersonalInfoSection(),
+
+            const SizedBox(height: 30),
+
+            // Contact Info Section
+            _buildContactInfoSection(),
+
+            const SizedBox(height: 30),
+
+            // OTP Section
+            Obx(() {
+              if (!_authController.isOtpSent) return const SizedBox.shrink();
+              return _buildOtpSection();
+            }),
+
+            const SizedBox(height: 30),
+
+            // Action Button
+            _buildActionButton(),
+
+            // Resend OTP
+            Obx(() {
+              if (!_authController.isOtpSent) return const SizedBox.shrink();
+              return _buildResendSection();
+            }),
+          ],
         ),
       ),
     );
   }
 
+  Widget _buildPersonalInfoSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.person_outline,
+                color: AppColors.primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Personal Information',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
 
+        const SizedBox(height: 20),
 
+        // First Name
+        _buildTextField(
+          controller: _authController.firstname,
+          label: 'First Name',
+          hint: 'Enter your first name',
+          hasError: _firstNameTouched && _firstNameError != null,
+          isValid: _firstNameTouched &&
+              _firstNameError == null &&
+              _authController.firstname.text.trim().isNotEmpty,
+          onChanged: (value) {
+            if (!_firstNameTouched) setState(() => _firstNameTouched = true);
+            _validateFirstName(value);
+          },
+        ),
 
-  Widget _buildOtpField() {
-    return Obx(() {
-      if (!_authController.isOtpSent) return const SizedBox.shrink();
+        if (_firstNameTouched && _firstNameError != null)
+          _buildErrorMessage(_firstNameError!),
 
-      return Column(
-        children: [
-          TextButtonField(
-            controller: _authController.otpController,
-            hint: '4-Digit OTP',
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(4),
-            ],
-            onChanged: (value) {
-              // Auto-verify OTP when 4 digits are entered
-              if (value.length == 4) {
-                _verifyOtp();
-              }
-            },
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'OTP sent to +91 ${_authController.phoneNumber.text}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'SMS will be auto-filled when received',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.green[600],
-              fontSize: 12,
-                ),
-          ),
-        ],
-      );
-    });
+        if (_firstNameTouched &&
+            _firstNameError == null &&
+            _authController.firstname.text.trim().isNotEmpty)
+          _buildSuccessMessage('Valid name'),
+
+        const SizedBox(height: 20),
+
+        // Last Name
+        _buildTextField(
+          controller: _authController.lastname,
+          label: 'Last Name',
+          hint: 'Enter your last name',
+          hasError: _lastNameTouched && _lastNameError != null,
+          isValid: _lastNameTouched &&
+              _lastNameError == null &&
+              _authController.lastname.text.trim().isNotEmpty,
+          onChanged: (value) {
+            if (!_lastNameTouched) setState(() => _lastNameTouched = true);
+            _validateLastName(value);
+          },
+        ),
+
+        if (_lastNameTouched && _lastNameError != null)
+          _buildErrorMessage(_lastNameError!),
+
+        if (_lastNameTouched &&
+            _lastNameError == null &&
+            _authController.lastname.text.trim().isNotEmpty)
+          _buildSuccessMessage('Valid name'),
+      ],
+    );
   }
 
-  Widget _buildSignupButton() {
+  Widget _buildContactInfoSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.contact_phone,
+                color: Colors.blue[700],
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Contact Details',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+
+        // Phone Number
+        _buildPhoneField(),
+
+        if (_phoneTouched && _phoneError != null)
+          _buildErrorMessage(_phoneError!),
+
+        if (_phoneTouched &&
+            _phoneError == null &&
+            _authController.phoneNumber.text.length == 10)
+          _buildSuccessMessage('Valid phone number'),
+
+        const SizedBox(height: 20),
+
+        // City
+        _buildCityDropdown(),
+
+        if (_cityTouched && _cityError != null) _buildErrorMessage(_cityError!),
+
+        if (_cityTouched && _cityError == null && _selectedCity != null)
+          _buildSuccessMessage('City selected'),
+      ],
+    );
+  }
+
+  Widget _buildOtpSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green[50],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.verified_user,
+                color: Colors.green,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Enter OTP',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Sent to +91 ${_authController.phoneNumber.text}',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 15),
+        _buildOtpField(),
+        if (_otpTouched && _otpError != null) _buildErrorMessage(_otpError!),
+        if (_otpTouched &&
+            _otpError == null &&
+            _authController.otpController.text.length == 4)
+          _buildSuccessMessage('Valid OTP'),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required bool hasError,
+    required bool isValid,
+    required Function(String) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasError
+                  ? Colors.red
+                  : isValid
+                      ? Colors.green
+                      : Colors.grey[300]!,
+              width: 2,
+            ),
+          ),
+          child: TextField(
+            controller: controller,
+            textCapitalization: TextCapitalization.words,
+            enabled: !_authController.isOtpSent,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 14,
+              ),
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              suffixIcon: isValid
+                  ? const Icon(Icons.check_circle,
+                      color: Colors.green, size: 20)
+                  : hasError
+                      ? const Icon(Icons.error, color: Colors.red, size: 20)
+                      : null,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhoneField() {
+    bool hasError = _phoneTouched && _phoneError != null;
+    bool isValid = _phoneTouched &&
+        _phoneError == null &&
+        _authController.phoneNumber.text.length == 10;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Mobile Number',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasError
+                  ? Colors.red
+                  : isValid
+                      ? Colors.green
+                      : Colors.grey[300]!,
+              width: 2,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: const Text(
+                  '+91',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 30,
+                color: Colors.grey[300],
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _authController.phoneNumber,
+                  keyboardType: TextInputType.phone,
+                  enabled: !_authController.isOtpSent,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                  onChanged: (value) {
+                    if (!_phoneTouched) setState(() => _phoneTouched = true);
+                    _validatePhone(value);
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Enter 10 digit mobile number',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                    suffixIcon: isValid
+                        ? const Icon(Icons.check_circle,
+                            color: Colors.green, size: 20)
+                        : hasError
+                            ? const Icon(Icons.error,
+                                color: Colors.red, size: 20)
+                            : null,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCityDropdown() {
+    bool hasError = _cityTouched && _cityError != null;
+    bool isValid = _cityTouched && _cityError == null && _selectedCity != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Select Your City',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasError
+                  ? Colors.red
+                  : isValid
+                      ? Colors.green
+                      : Colors.grey[300]!,
+              width: 2,
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _selectedCity,
+              hint: Text(
+                'Choose your city',
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 14,
+                ),
+              ),
+              isExpanded: true,
+              icon: Icon(Icons.arrow_drop_down,
+                  color: Colors.grey[700], size: 24),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+              items: _cities.map((city) {
+                return DropdownMenuItem<String>(
+                  value: city['code'],
+                  child: Text(city['name']!),
+                );
+              }).toList(),
+              onChanged: _authController.isOtpSent
+                  ? null
+                  : (value) {
+                      setState(() {
+                        _selectedCity = value;
+                        if (!_cityTouched) _cityTouched = true;
+                      });
+                      _validateCity(value);
+                    },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOtpField() {
+    bool hasError = _otpTouched && _otpError != null;
+    bool isValid = _otpTouched &&
+        _otpError == null &&
+        _authController.otpController.text.length == 4;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: hasError
+              ? Colors.red
+              : isValid
+                  ? Colors.green
+                  : Colors.grey[300]!,
+          width: 2,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      child: TextField(
+        controller: _authController.otpController,
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 16,
+        ),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(4),
+        ],
+        onChanged: (value) {
+          if (!_otpTouched) setState(() => _otpTouched = true);
+          _validateOtp(value);
+          if (value.length == 4 && _otpError == null) _verifyOtp();
+        },
+        decoration: InputDecoration(
+          hintText: '○ ○ ○ ○',
+          hintStyle: TextStyle(
+            color: Colors.grey[300],
+            fontSize: 24,
+            letterSpacing: 16,
+          ),
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton() {
     return Obx(() {
       final isLoading = _authController.isLoading;
       final isOtpSent = _authController.isOtpSent;
 
-      return AppButton(
-        text: isOtpSent ? 'Verify & Sign Up' : 'Send OTP',
-        backgroundColor: AppColors.primary,
-        onPressed: isLoading ? null : _handleButtonPress,
+      bool isEnabled;
+      if (isOtpSent) {
+        isEnabled =
+            _otpError == null && _authController.otpController.text.length == 4;
+      } else {
+        isEnabled = _firstNameError == null &&
+            _lastNameError == null &&
+            _phoneError == null &&
+            _cityError == null &&
+            _authController.firstname.text.trim().isNotEmpty &&
+            _authController.lastname.text.trim().isNotEmpty &&
+            _authController.phoneNumber.text.length == 10 &&
+            _selectedCity != null;
+      }
+
+      return Container(
+        width: double.infinity,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          gradient: isEnabled
+              ? LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withValues(alpha: 0.8)
+                  ],
+                )
+              : null,
+          color: isEnabled ? null : Colors.grey[300],
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: (isLoading || !isEnabled) ? null : _handleButtonPress,
+            borderRadius: BorderRadius.circular(15),
+            child: Center(
+              child: isLoading
+                  ? Skeletons.smallBox(size: 28)
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          isOtpSent ? Icons.check_circle_outline : Icons.send,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          isOtpSent ? 'Verify & Sign Up' : 'Send OTP',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        ),
       );
     });
   }
 
-  Widget _buildResendButton() {
-    return Obx(() {
-      if (!_authController.isOtpSent) return const SizedBox.shrink();
-
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Didn't receive OTP? ",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+  Widget _buildResendSection() {
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        Text(
+          "Didn't receive the code?",
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 15,
           ),
-          TextButton(
-            onPressed: _authController.isLoading ? null : _handleResendOtp,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+        ),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: _authController.isLoading ? null : _handleResendOtp,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+          child: Text(
+            'Resend OTP',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
             ),
-            child: const Text(
-              'Resend',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorMessage(String message) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.red[50],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.red[200]!),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: Colors.red[700],
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-        ],
-      );
-    });
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessMessage(String message) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.green[50],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.green[200]!),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              message,
+              style: TextStyle(
+                color: Colors.green[700],
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _handleButtonPress() async {
@@ -465,92 +976,65 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _sendOtp() async {
-    // Validate first name
-    if (_authController.firstname.text.trim().isEmpty) {
-      SnackBarWidget.show(
-        context,
-        'Please enter your first name',
-        backgroundColor: AppColors.error,
-      );
+    // Touch all fields to show validation
+    setState(() {
+      _firstNameTouched = true;
+      _lastNameTouched = true;
+      _phoneTouched = true;
+      _cityTouched = true;
+    });
+
+    // Validate all fields
+    _validateFirstName(_authController.firstname.text);
+    _validateLastName(_authController.lastname.text);
+    _validatePhone(_authController.phoneNumber.text);
+    _validateCity(_selectedCity);
+
+    // Check for any errors
+    if (_firstNameError != null) {
+      showErrorSnackbar(_firstNameError!);
       return;
     }
-
-    // Validate last name
-    if (_authController.lastname.text.trim().isEmpty) {
-      SnackBarWidget.show(
-        context,
-        'Please enter your last name',
-        backgroundColor: AppColors.error,
-      );
+    if (_lastNameError != null) {
+      showErrorSnackbar(_lastNameError!);
       return;
     }
-
-    // Validate phone number
-    if (_authController.phoneNumber.text.length != 10) {
-      SnackBarWidget.show(
-        context,
-        'Please enter a valid 10-digit phone number',
-        backgroundColor: AppColors.error,
-      );
+    if (_phoneError != null) {
+      showErrorSnackbar(_phoneError!);
       return;
     }
-
-    // Validate channel selection
-    if (_selectedChannelToken == null || _selectedChannelToken!.isEmpty) {
-      SnackBarWidget.show(
-        context,
-        'Please select a city',
-        backgroundColor: AppColors.error,
-      );
+    if (_cityError != null) {
+      showErrorSnackbar(_cityError!);
       return;
     }
-
-    // Check if user is already registered (across all channels)
 
     final userExists = await _authController.checkUserExists();
-
     if (userExists) {
-      SnackBarWidget.show(
-        context,
-        'You are already registered. Please login.',
-        backgroundColor: AppColors.error, // optional, override default
-        duration: const Duration(seconds: 5), // optional, override default
-      );
-
+      showErrorSnackbar('You are already registered. Please login.');
       Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          Get.back();
-        }
+        if (mounted) Get.back();
       });
       return;
     }
 
-    // Set selected channel token BEFORE sending OTP
-    await GraphqlService.setToken(key: 'channel', token: _selectedChannelToken!);
-
+    await GraphqlService.setToken(key: 'channel', token: _selectedCity!);
     final success = await _authController.sendOtp(context);
     if (success) {
-      setState(() => _isOtpVisible = true);
-      // Start listening for SMS autofill
-      _startSmsAutofill();
+      await _startSmsAutofill();
     }
   }
 
   Future<void> _verifyOtp() async {
-    if (_authController.otpController.text.length != 4) {
-      SnackBarWidget.show(
-        context,
-        'Please enter a valid 4-digit OTP',
-        backgroundColor: AppColors.error,
-      );
+    setState(() => _otpTouched = true);
+    _validateOtp(_authController.otpController.text);
 
+    if (_otpError != null) {
+      showErrorSnackbar(_otpError!);
       return;
     }
 
     final success = await _authController.verifyOtp(context);
-    if (success) {
-      Get.offAll(() =>  MyHomePage());
-    }
+    if (success) Get.offAllNamed('/home');
   }
 
   Future<void> _handleResendOtp() async {
@@ -559,8 +1043,9 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   void dispose() {
-    // Stop SMS autofill listening
-    _stopSmsAutofill();
+    _fadeController.dispose();
+    _slideController.dispose();
+    _smsAutofillService.stopListening();
     super.dispose();
   }
 }

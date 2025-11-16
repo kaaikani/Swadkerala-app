@@ -4,24 +4,55 @@ import '../theme/colors.dart';
 
 class SnackBarWidget {
   static void show(
-      BuildContext context,
-      String message, {
-        Color backgroundColor = AppColors.background, // default from AppColors
-        Duration duration = const Duration(seconds: 2),
-      }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(color: AppColors.buttonText), // use AppColors
+    BuildContext? context,
+    String message, {
+    Color? backgroundColor,
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    // If context is null or widget is disposed, use GetX snackbar instead
+    if (context == null || !context.mounted) {
+      _showWithGetX(message, backgroundColor: backgroundColor, duration: duration);
+      return;
+    }
+
+    try {
+      final bgColor = backgroundColor ?? AppColors.background;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            message,
+            style: TextStyle(color: AppColors.buttonText),
+          ),
+          backgroundColor: bgColor,
+          behavior: SnackBarBehavior.floating,
+          duration: duration,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        backgroundColor: backgroundColor,
-        behavior: SnackBarBehavior.floating,
-        duration: duration,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
+      );
+    } catch (e) {
+      // If ScaffoldMessenger fails, fallback to GetX
+      _showWithGetX(message, backgroundColor: backgroundColor, duration: duration);
+    }
+  }
+
+  static void _showWithGetX(
+    String message, {
+    Color? backgroundColor,
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    final bgColor = backgroundColor ?? AppColors.background;
+    Get.snackbar(
+      '',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: bgColor,
+      colorText: AppColors.buttonText,
+      duration: duration,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+      isDismissible: true,
     );
   }
 }
