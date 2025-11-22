@@ -12,7 +12,8 @@ import '../widgets/snackbar.dart';
 import '../theme/colors.dart';
 import '../utils/price_formatter.dart';
 import '../utils/responsive.dart';
-import '../utils/collection_product_card.dart';
+import '../widgets/product_card.dart';
+import '../utils/navigation_helper.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -128,6 +129,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           onRefresh: () async {
             await bannerController.getCustomerFavorites();
           },
+          color: AppColors.refreshIndicator,
           child: GridView.builder(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(
@@ -194,22 +196,18 @@ class _FavoritesPageState extends State<FavoritesPage> {
     required FavoriteProductModel product, // <-- correct type
     required FavoriteVariantModel? variant,
   }) {
-    final variantId = variant?.id ?? '';
-    final quantity =
-        variantId.isNotEmpty ? cartController.getVariantQuantity(variantId) : 0;
-
     final priceText = variant != null
         ? PriceFormatter.formatPrice(variant.priceWithTax.round())
         : 'Rs --';
 
-    return CollectionProductCard(
+    return ProductCard(
       name: name,
       imageUrl: imageUrl,
       onTap: () {
-        Get.toNamed('/product-detail', arguments: {
-          'productId': productId,
-          'productName': name,
-        });
+        NavigationHelper.navigateToProductDetail(
+          productId: productId,
+          productName: name,
+        );
       },
       onDoubleTap: () => _handleRemoveFavorite(productId, name),
       isFavorite: true,
@@ -225,69 +223,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
       variantLabel: variant?.name ?? 'Default',
       priceText: priceText,
       shadowPriceText: null,
-      quantity: quantity,
-      counterBuilder: () => variantId.isEmpty
-          ? const SizedBox.shrink()
-          : _buildFavoriteCounter(
-              variantId: variantId,
-              productName: name,
-            ),
       onAddToCart: () => _handleAddToCart(name, variant?.id),
     );
   }
 
-  Widget _buildFavoriteCounter({
-    required String variantId,
-    required String productName,
-  }) {
-    final quantity = cartController.getVariantQuantity(variantId);
-    return Container(
-      width: ResponsiveUtils.rp(90),
-      height: ResponsiveUtils.rp(32),
-      decoration: BoxDecoration(
-        color: AppColors.button,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () async {
-              await cartController.decrementVariant(variantId: variantId);
-              if (mounted) setState(() {});
-            },
-            child: Padding(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-              child: Icon(
-                Icons.remove,
-                size: ResponsiveUtils.rp(18),
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Text(
-            quantity.toString(),
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(13),
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _handleAddToCart(productName, variantId),
-            child: Padding(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-              child: Icon(
-                Icons.add,
-                size: ResponsiveUtils.rp(18),
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSkeletonTile() {
     final isDark = Theme.of(context).brightness == Brightness.dark;

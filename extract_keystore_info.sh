@@ -55,3 +55,14 @@ echo ""
 echo "3. Create android/key.properties with the information"
 echo ""
 
+
+
+
+
+
+
+
+
+
+
+

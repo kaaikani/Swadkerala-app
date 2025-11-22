@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to App...</title>
+    <script>
+        // Try to open the app using custom scheme
+        function openApp() {
+            const path = window.location.pathname;
+            const query = window.location.search;
+            
+            // Remove leading slash and build custom scheme URL
+            const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+            let customScheme = 'kaaikani://' + cleanPath;
+            
+            // Add query string if present
+            if (query) {
+                customScheme += query;
+            }
+            
+            // Try to open the app
+            window.location.href = customScheme;
+            
+            // Fallback: If app doesn't open, show message after 2 seconds
+            setTimeout(function() {
+                document.getElementById('fallback').style.display = 'block';
+                document.getElementById('fallback-link').href = customScheme;
+            }, 2000);
+        }
+        
+        // Run on page load
+        window.onload = openApp;
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        #fallback {
+            display: none;
+            margin-top: 20px;
+        }
+        .button {
+            background: #E23744;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Opening in App...</h2>
+        <p>Please wait while we redirect you to the app.</p>
+        <div id="fallback">
+            <p>If the app doesn't open automatically, click below:</p>
+            <a id="fallback-link" href="kaaikani://checkout" class="button">Open in App</a>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../widgets/shimmers.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,8 @@ import '../services/graphql_client.dart';
 import '../services/sim_detection_service.dart';
 import '../services/sms_autofill_service.dart';
 import '../theme/theme.dart';
+import '../utils/navigation_helper.dart';
+import '../services/analytics_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,6 +29,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  
+  // Timer for auto-fill phone number
+  Timer? _autoFillTimer;
 
   // Validation states
   String? _phoneError;
@@ -36,12 +42,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    
+    // Track screen view
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AnalyticsService().logScreenView(screenName: 'Login');
+    });
     _initializeAnimations();
     _initializeSmsAutofill();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _clearAllCache();
       _authController.resetFormField();
-      Future.delayed(const Duration(milliseconds: 1500), () {
+      _autoFillTimer = Timer(const Duration(milliseconds: 1500), () {
         _autoFillPhoneNumber();
       });
     });
@@ -92,6 +103,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Future<void> _autoFillPhoneNumber() async {
+    if (!mounted) return; // Check if widget is still mounted
     setState(() => _isDetectingSim = true);
     try {
       final simService = SimDetectionService();
@@ -100,7 +112,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       if (!hasPermission) {
         bool granted = await simService.requestPhonePermission();
         if (!granted) {
-          setState(() => _isDetectingSim = false);
+          if (mounted) setState(() => _isDetectingSim = false);
           return;
         }
       }
@@ -127,7 +139,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     } catch (e) {
       debugPrint('[LoginPage] SIM detection failed: $e');
     } finally {
-      setState(() => _isDetectingSim = false);
+      if (mounted) setState(() => _isDetectingSim = false);
     }
   }
 
@@ -946,7 +958,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
 
     final success = await _authController.verifyOtp(context);
-    if (success) Get.offAllNamed('/home');
+    if (success) {
+      // Track login event
+      await AnalyticsService().logLogin(loginMethod: 'OTP');
+      
+      // Redirect to intended route if exists, otherwise go to home
+      await NavigationHelper.redirectToIntendedRoute();
+    }
   }
 
   Future<void> _handleResendOtp() async {
@@ -955,6 +973,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _autoFillTimer?.cancel(); // Cancel the timer to prevent setState after dispose
     _fadeController.dispose();
     _slideController.dispose();
     _smsAutofillService.stopListening();

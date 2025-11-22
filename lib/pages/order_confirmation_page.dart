@@ -74,6 +74,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
           onRefresh: () async {
             await orderController.getOrderByCode(widget.orderId);
           },
+          color: AppColors.refreshIndicator,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(

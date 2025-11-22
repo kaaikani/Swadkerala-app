@@ -42,8 +42,8 @@ class CartItemCardPremium extends StatelessWidget {
     final canAdjust = !isUnavailable && !isLoading;
 
     final card = PremiumCard(
-      padding: ResponsiveSpacing.padding(all: 12),
-      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+      padding: ResponsiveSpacing.padding(all: 14),
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(14)),
       borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,43 +56,43 @@ class CartItemCardPremium extends StatelessWidget {
                 child: imageUrl != null
                     ? Image.network(
                         imageUrl!,
-                        width: ResponsiveUtils.rp(100),
-                        height: ResponsiveUtils.rp(100),
+                        width: ResponsiveUtils.rp(90),
+                        height: ResponsiveUtils.rp(90),
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
                             _buildPlaceholder(),
                       )
                     : _buildPlaceholder(),
               ),
-              ResponsiveSpacing.horizontal(12),
+              SizedBox(width: ResponsiveUtils.rp(14)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ResponsiveText(
                       productName,
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (variantName != null && variantName!.isNotEmpty) ...[
-                      ResponsiveSpacing.vertical(4),
+                      SizedBox(height: ResponsiveUtils.rp(5)),
                       ResponsiveText(
                         variantName!,
-                        fontSize: 13,
+                        fontSize: 14,
                         color: AppColors.textSecondary,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    ResponsiveSpacing.vertical(8),
+                    SizedBox(height: ResponsiveUtils.rp(8)),
                     ResponsiveText(
                       'Unit: $unitPrice',
                       fontSize: 13,
                       color: AppColors.textSecondary,
                     ),
-                    ResponsiveSpacing.vertical(12),
+                    SizedBox(height: ResponsiveUtils.rp(12)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -115,7 +115,7 @@ class CartItemCardPremium extends StatelessWidget {
                                       EdgeInsets.all(ResponsiveUtils.rp(6)),
                                   child: Icon(
                                     Icons.remove,
-                                    size: ResponsiveUtils.rp(16),
+                                    size: ResponsiveUtils.rp(18),
                                     color: !canAdjust || quantity <= 1
                                         ? AppColors.textTertiary
                                         : AppColors.textPrimary,
@@ -129,7 +129,7 @@ class CartItemCardPremium extends StatelessWidget {
                                 ),
                                 child: ResponsiveText(
                                   '$quantity',
-                                  fontSize: 14,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                   color: isUnavailable
                                       ? AppColors.textTertiary
@@ -143,7 +143,7 @@ class CartItemCardPremium extends StatelessWidget {
                                       EdgeInsets.all(ResponsiveUtils.rp(6)),
                                   child: Icon(
                                     Icons.add,
-                                    size: ResponsiveUtils.rp(16),
+                                    size: ResponsiveUtils.rp(18),
                                     color: !canAdjust
                                         ? AppColors.textTertiary
                                         : AppColors.textPrimary,
@@ -155,7 +155,7 @@ class CartItemCardPremium extends StatelessWidget {
                         ),
                         ResponsiveText(
                           totalPrice,
-                          fontSize: 16,
+                          fontSize: 17,
                           fontWeight: FontWeight.bold,
                           color: isUnavailable
                               ? AppColors.textSecondary
@@ -166,7 +166,7 @@ class CartItemCardPremium extends StatelessWidget {
                   ],
                 ),
               ),
-              ResponsiveSpacing.horizontal(8),
+              SizedBox(width: ResponsiveUtils.rp(8)),
               InkWell(
                 onTap: isLoading ? null : onRemove,
                 child: ResponsiveIcon(
@@ -178,9 +178,12 @@ class CartItemCardPremium extends StatelessWidget {
             ],
           ),
           if (isUnavailable && (statusMessage?.isNotEmpty ?? false)) ...[
-            ResponsiveSpacing.vertical(12),
+            SizedBox(height: ResponsiveUtils.rp(12)),
             Container(
-              padding: ResponsiveSpacing.padding(all: 10),
+              padding: ResponsiveSpacing.padding(
+                horizontal: 10,
+                vertical: 10,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.warning.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
@@ -193,13 +196,13 @@ class CartItemCardPremium extends StatelessWidget {
                     size: ResponsiveUtils.rp(18),
                     color: AppColors.warning,
                   ),
-                  ResponsiveSpacing.horizontal(8),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
                   Expanded(
                     child: ResponsiveText(
                       statusMessage!,
                       fontSize: 12,
                       color: AppColors.warning,
-                      maxLines: 4,
+                      maxLines: 3,
                     ),
                   )
                 ],
@@ -219,15 +222,15 @@ class CartItemCardPremium extends StatelessWidget {
 
   Widget _buildPlaceholder() {
     return Container(
-      width: ResponsiveUtils.rp(100),
-      height: ResponsiveUtils.rp(100),
+      width: ResponsiveUtils.rp(90),
+      height: ResponsiveUtils.rp(90),
       decoration: BoxDecoration(
         color: AppColors.grey100,
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
       ),
       child: Icon(
         Icons.image_outlined,
-        size: ResponsiveUtils.rp(40),
+        size: ResponsiveUtils.rp(36),
         color: AppColors.textTertiary,
       ),
     );

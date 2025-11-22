@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
 
 def keystoreProperties = new Properties()
@@ -18,6 +19,13 @@ android {
 
     buildFeatures {
         buildConfig true
+    }
+    
+    // Force ABI filter at project level to override Flutter defaults
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 
     compileOptions {
@@ -38,6 +46,15 @@ android {
         versionName flutter.versionName
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Limit resource configurations to reduce size
+        resConfigs "en", "hi" // Only include English and Hindi resources
+        
+        // Force single architecture to keep APK under 30MB
+        // Note: Flutter may override this, but we'll enforce it in packaging
+        ndk {
+            abiFilters 'arm64-v8a'
+        }
     }
 
     // Split APKs by architecture to reduce size
@@ -96,6 +113,10 @@ android {
 flutter {
     source "../.."
     target "lib/main.dart"
+}
+
+configurations.all {
+    exclude group: 'io.github.ponnamkarthik.toast', module: 'fluttertoast'
 }
 
 dependencies {

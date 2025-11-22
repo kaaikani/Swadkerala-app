@@ -185,11 +185,8 @@ class CollectionsController extends GetxController {
     }
 
     final parts = variant.options.map((option) {
-      final groupName = option.group.name.trim();
       final optionName = option.name.trim();
-      if (groupName.isNotEmpty) {
-        return '$groupName: $optionName';
-      }
+      // Return only the option name (remove group name before colon)
       return optionName;
     }).toList();
 

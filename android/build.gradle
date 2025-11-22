@@ -3,34 +3,9 @@ allprojects {
         google()
         mavenCentral()
     }
-}
-
-// Configure Java version for all subprojects to suppress warnings
-subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty('android')) {
-            project.android {
-                compileOptions {
-                    sourceCompatibility JavaVersion.VERSION_17
-                    targetCompatibility JavaVersion.VERSION_17
-                }
-            }
-        }
-        
-        // For Java/Kotlin projects
-        if (project.hasProperty('sourceCompatibility')) {
-            project.sourceCompatibility = JavaVersion.VERSION_17
-        }
-        if (project.hasProperty('targetCompatibility')) {
-            project.targetCompatibility = JavaVersion.VERSION_17
-        }
-        
-        // For Kotlin projects
-        project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
-        }
+    
+    configurations.all {
+        exclude group: 'io.github.ponnamkarthik.toast', module: 'fluttertoast'
     }
 }
 
@@ -44,6 +19,10 @@ subprojects {
 
 subprojects {
     project.evaluationDependsOn(":app")
+    
+    configurations.all {
+        exclude group: 'io.github.ponnamkarthik.toast', module: 'fluttertoast'
+    }
 }
 
 tasks.register("clean", Delete) {

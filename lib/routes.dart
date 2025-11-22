@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:recipe.app/pages/Collectionprodcutpage.dart';
 import 'package:recipe.app/pages/account_page.dart';
@@ -5,10 +6,14 @@ import 'package:recipe.app/pages/addresses_page.dart';
 import 'package:recipe.app/pages/cart_page.dart';
 import 'package:recipe.app/pages/checkout_page.dart';
 import 'package:recipe.app/pages/favourites.dart';
+import 'package:recipe.app/pages/frequently_ordered_page.dart';
 import 'package:recipe.app/pages/order_confirmation_page.dart';
 import 'package:recipe.app/pages/order_detail_page.dart';
 import 'package:recipe.app/pages/orders_page.dart';
 import 'package:recipe.app/pages/product_detail_page.dart';
+import 'package:recipe.app/pages/loyalty_points_transaction_page.dart';
+import 'package:recipe.app/pages/connect_with_us_page.dart';
+import 'package:recipe.app/pages/help_support_page.dart';
 
 import 'components/searchbarcomponent.dart';
 import 'controllers/banner/bannercontroller.dart';
@@ -18,6 +23,7 @@ import 'pages/homepage.dart';
 import 'pages/intro_page.dart';
 import 'pages/splash_screen.dart';
 import 'pages/initial_route_wrapper.dart';
+import 'middleware/auth_guard.dart';
 
 class AppRoutes {
   static const String initial = '/';
@@ -37,6 +43,10 @@ class AppRoutes {
   static const String orderDetail = '/order-detail';
   static const String collectionProducts = '/collection-products';
   static const String productDetail = '/product-detail';
+  static const String loyaltyPointsTransactions = '/loyalty-points-transactions';
+  static const String frequentlyOrdered = '/frequently-ordered';
+  static const String connectWithUs = '/connect-with-us';
+  static const String helpSupport = '/help-support';
 
   static List<GetPage> routes = [
     GetPage(
@@ -87,26 +97,35 @@ class AppRoutes {
       name: cart,
       page: () => const CartPage(),
       transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: checkout,
       page: () => const CheckoutPage(),
       transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: account,
       page: () => const AccountPage(),
       transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: addresses,
       page: () => const AddressesPage(),
       transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: orders,
-      page: () => const OrdersPage(),
+      page: () => OrdersPage(
+        initialFilter: Get.arguments is OrderFilter 
+            ? Get.arguments as OrderFilter 
+            : null,
+      ),
       transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: orderConfirmation,
@@ -114,6 +133,7 @@ class AppRoutes {
         orderId: Get.arguments as String,
       ),
       transition: Transition.fadeIn,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: orderDetail,
@@ -121,21 +141,63 @@ class AppRoutes {
         orderCode: Get.arguments as String,
       ),
       transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: collectionProducts,
       page: () => CollectionProductsPage(
         collectionId: (Get.arguments as Map<String, dynamic>)['collectionId'] as String,
         collectionName: (Get.arguments as Map<String, dynamic>)['collectionName'] as String,
+        slug: (Get.arguments as Map<String, dynamic>)['slug'] as String?,
       ),
       transition: Transition.rightToLeft,
     ),
     GetPage(
       name: productDetail,
-      page: () => ProductDetailPage(
-        productId: (Get.arguments as Map<String, dynamic>)['productId'] as String,
-        productName: (Get.arguments as Map<String, dynamic>?)?['productName'] as String?,
-      ),
+      page: () {
+        final arguments = Get.arguments as Map<String, dynamic>?;
+        final productId = arguments?['productId'] as String?;
+        
+        // If productId is null or empty, redirect to home
+        if (productId == null || productId.isEmpty) {
+          debugPrint('[Routes] ProductDetailPage: Missing productId, redirecting to home');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Get.offAllNamed(AppRoutes.home);
+          });
+          // Return a temporary loading widget
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        
+        return ProductDetailPage(
+          productId: productId,
+          productName: arguments?['productName'] as String?,
+        );
+      },
+      middlewares: [AuthGuard()],
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: loyaltyPointsTransactions,
+      page: () => const LoyaltyPointsTransactionPage(),
+      transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
+    ),
+    GetPage(
+      name: frequentlyOrdered,
+      page: () => const FrequentlyOrderedPage(),
+      transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
+    ),
+    GetPage(
+      name: connectWithUs,
+      page: () => const ConnectWithUsPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: helpSupport,
+      page: () => const HelpSupportPage(),
       transition: Transition.rightToLeft,
     ),
   ];

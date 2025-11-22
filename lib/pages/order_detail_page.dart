@@ -7,6 +7,10 @@ import '../controllers/theme_controller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
+import '../services/graphql_client.dart';
+import '../graphql/order.graphql.dart';
+import '../widgets/premium_card.dart';
+import '../widgets/responsive_spacing.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class OrderDetailPage extends StatefulWidget {
@@ -40,8 +44,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       debugPrint('[OrderDetail] Loading order with code: ${widget.orderCode}');
       final order = await orderController.getOrderByCode(widget.orderCode);
       if (order == null) {
-        debugPrint(
-            '[OrderDetail] Order not found for code: ${widget.orderCode}');
+        debugPrint('[OrderDetail] Order not found for code: ${widget.orderCode}');
       } else {
         debugPrint('[OrderDetail] Order loaded successfully: ${order.code}');
       }
@@ -53,16 +56,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Observe theme changes
       final _ = themeController.isDarkMode;
 
       return Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: AppColors.surface,
+          backgroundColor: AppColors.card,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            icon: Icon(Icons.arrow_back_ios_rounded, 
+                color: AppColors.textPrimary, size: 20),
             onPressed: () => Get.back(),
           ),
           title: Text(
@@ -70,7 +73,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
             ),
           ),
           centerTitle: false,
@@ -82,35 +85,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
           final order = orderController.currentOrder.value;
           if (order == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline,
-                      size: 64, color: AppColors.iconLight),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Order not found',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => Get.back(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.button,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                    ),
-                    child: const Text('Go Back'),
-                  ),
-                ],
-              ),
-            );
+            return _buildEmptyState();
           }
 
           return RefreshIndicator(
@@ -120,29 +95,42 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             color: AppColors.button,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Order ID and Total Header
-                  _buildOrderHeader(order),
-
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+                  
+                  // Order Status Header Card
+                  _buildStatusHeader(order),
+                  
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+                  
                   // Products Section
-                  if (order.lines.isNotEmpty) _buildProductsSection(order),
-
-                  // Shipping Address
-                  if (order.shippingAddress != null)
-                    _buildShippingAddressSection(order),
-
-                  // Shipping Method
-                  if (order.shippingLines.isNotEmpty)
-                    _buildShippingMethodSection(order),
-
+                  if (order.lines.isNotEmpty) _buildProductsCard(order),
+                  
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+                  
+                  // Price Breakdown
+                  _buildPriceBreakdownCard(order),
+                  
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+                  
+                  // Delivery Information
+                  if (order.shippingAddress != null || order.shippingLines.isNotEmpty)
+                    _buildDeliveryCard(order),
+                  
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+                  
                   // Payment Information
-                  if (order.payments.isNotEmpty) _buildPaymentSection(order),
-
-                  // Order Information
-                  _buildOrderInfoSection(order),
-
+                  if (order.payments.isNotEmpty) _buildPaymentCard(order),
+                  
+                  // Cancel Order Button
+                  if (order.state.toLowerCase() != 'cancelled' &&
+                      order.state.toLowerCase() != 'fulfilled' &&
+                      order.state.toLowerCase() != 'delivered')
+                    _buildCancelOrderButton(order),
+                  
                   SizedBox(height: ResponsiveUtils.rp(20)),
                 ],
               ),
@@ -153,88 +141,185 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     });
   }
 
-  Widget _buildOrderHeader(dynamic order) {
-    return Container(
-      width: double.infinity,
-      color: AppColors.card,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(20),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(20),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  order.code,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(16),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(6)),
-                Text(
-                  _formatPrice(order.totalWithTax),
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(20),
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ],
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(40)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+              decoration: BoxDecoration(
+                color: AppColors.inputFill,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.receipt_long_outlined,
+                  size: ResponsiveUtils.rp(64),
+                  color: AppColors.textSecondary),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUtils.rp(14),
-              vertical: ResponsiveUtils.rp(6),
-            ),
-            decoration: BoxDecoration(
-              color: _getStatusColor(order.state),
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-            ),
-            child: Text(
-              _formatOrderStatus(order.state),
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            Text(
+              'Order Not Found',
               style: TextStyle(
-                fontSize: ResponsiveUtils.sp(12),
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+                fontSize: ResponsiveUtils.sp(20),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
             ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            Text(
+              'The order you\'re looking for doesn\'t exist or has been removed.',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: ResponsiveUtils.rp(32)),
+            ElevatedButton.icon(
+              onPressed: () => Get.back(),
+              icon: Icon(Icons.arrow_back, size: ResponsiveUtils.rp(18)),
+              label: Text('Go Back'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.button,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(24),
+                  vertical: ResponsiveUtils.rp(14),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusHeader(dynamic order) {
+    final isCancellationRequested = order.customFields?.clientRequestToCancel == 1 ||
+        order.customFields?.clientRequestToCancel == true;
+    final isCancelled = order.state.toLowerCase() == 'cancelled';
+    final statusColor = isCancellationRequested
+        ? Colors.orange
+        : (isCancelled ? AppColors.grey600 : _getStatusColor(order.state));
+    final statusText = isCancellationRequested
+        ? 'Cancellation Requested'
+        : _formatOrderStatus(order.state);
+
+    return PremiumCard(
+      padding: ResponsiveSpacing.padding(all: 16),
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Order #${order.code}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(6)),
+                    Text(
+                      _formatPrice(order.totalWithTax),
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(24),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(12),
+                  vertical: ResponsiveUtils.rp(6),
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                ),
+                child: Text(
+                  statusText,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(11),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
+          if (isCancellationRequested) ...[
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                border: Border.all(
+                  color: Colors.orange.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline_rounded,
+                      color: Colors.orange, size: ResponsiveUtils.rp(16)),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Expanded(
+                    child: Text(
+                      'Your cancellation request is being processed.',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(11),
+                        color: Colors.orange.shade800,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildProductsSection(dynamic order) {
-    return Container(
-      margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
-      color: AppColors.card,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-      ),
+  Widget _buildProductsCard(dynamic order) {
+    return PremiumCard(
+      padding: ResponsiveSpacing.padding(all: 16),
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Ordered Products',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+          Row(
+            children: [
+              Icon(Icons.shopping_bag_outlined,
+                  color: AppColors.button, size: ResponsiveUtils.rp(20)),
+              SizedBox(width: ResponsiveUtils.rp(8)),
+              Text(
+                'Items (${order.totalQuantity})',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
           ),
           SizedBox(height: ResponsiveUtils.rp(16)),
           ...order.lines.asMap().entries.map((entry) {
@@ -242,9 +327,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             final line = entry.value;
             return Padding(
               padding: EdgeInsets.only(
-                  bottom: index < order.lines.length - 1
-                      ? ResponsiveUtils.rp(16)
-                      : 0),
+                bottom: index < order.lines.length - 1
+                    ? ResponsiveUtils.rp(16)
+                    : 0,
+              ),
               child: _buildProductItem(line),
             );
           }).toList(),
@@ -259,15 +345,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       children: [
         // Product Image
         Container(
-          width: ResponsiveUtils.rp(60),
-          height: ResponsiveUtils.rp(60),
+          width: ResponsiveUtils.rp(70),
+          height: ResponsiveUtils.rp(70),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
             color: AppColors.inputFill,
-            border: Border.all(color: AppColors.border, width: 0.5),
+            border: Border.all(color: AppColors.border, width: 1),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
             child: line.featuredAsset?.preview != null
                 ? Image.network(
                     line.featuredAsset!.preview,
@@ -275,17 +361,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: AppColors.inputFill,
-                        child: Icon(Icons.image,
+                        child: Icon(Icons.image_outlined,
                             color: AppColors.iconLight,
-                            size: ResponsiveUtils.rp(24)),
+                            size: ResponsiveUtils.rp(28)),
                       );
                     },
                   )
                 : Container(
                     color: AppColors.inputFill,
-                    child: Icon(Icons.image,
+                    child: Icon(Icons.image_outlined,
                         color: AppColors.iconLight,
-                        size: ResponsiveUtils.rp(24)),
+                        size: ResponsiveUtils.rp(28)),
                   ),
           ),
         ),
@@ -298,20 +384,44 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               Text(
                 line.productVariant?.name ?? 'Unknown Product',
                 style: TextStyle(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   fontSize: ResponsiveUtils.sp(15),
                   color: AppColors.textPrimary,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: ResponsiveUtils.rp(4)),
-              Text(
-                'Quantity: ${line.quantity}',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: ResponsiveUtils.sp(13),
-                ),
+              SizedBox(height: ResponsiveUtils.rp(6)),
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(8),
+                      vertical: ResponsiveUtils.rp(4),
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                    ),
+                    child: Text(
+                      'Qty: ${line.quantity}',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: ResponsiveUtils.sp(12),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    PriceFormatter.formatPrice(line.linePriceWithTax),
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(15),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -320,250 +430,152 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  Widget _buildShippingAddressSection(dynamic order) {
-    final address = order.shippingAddress;
-    if (address == null) return const SizedBox.shrink();
-
-    return Container(
-      margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
-      color: AppColors.card,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-      ),
+  Widget _buildPriceBreakdownCard(dynamic order) {
+    return PremiumCard(
+      padding: ResponsiveSpacing.padding(all: 16),
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Shipping Address',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(12)),
-          Text(
-            address.fullName,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: ResponsiveUtils.sp(14),
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(4)),
-          Text(
-            address.streetLine1,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(14),
-              color: AppColors.textPrimary,
-            ),
-          ),
-          if (address.streetLine2 != null &&
-              address.streetLine2!.isNotEmpty) ...[
-            SizedBox(height: ResponsiveUtils.rp(2)),
-            Text(
-              address.streetLine2!,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(14),
-                color: AppColors.textPrimary,
+          Row(
+            children: [
+              Icon(Icons.receipt_long_outlined,
+                  color: AppColors.button, size: ResponsiveUtils.rp(20)),
+              SizedBox(width: ResponsiveUtils.rp(8)),
+              Text(
+                'Price Breakdown',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
-            ),
-          ],
-          SizedBox(height: ResponsiveUtils.rp(2)),
-          Text(
-            '${address.city}, ${address.province ?? ''} ${address.postalCode}',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(14),
-              color: AppColors.textPrimary,
-            ),
+            ],
           ),
-          if (address.country != null && address.country!.isNotEmpty) ...[
-            SizedBox(height: ResponsiveUtils.rp(2)),
-            Text(
-              address.country!,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(14),
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
-          if (address.phoneNumber != null &&
-              address.phoneNumber!.isNotEmpty) ...[
-            SizedBox(height: ResponsiveUtils.rp(6)),
-            Text(
-              address.phoneNumber!,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(13),
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShippingMethodSection(dynamic order) {
-    if (order.shippingLines.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final shippingLine = order.shippingLines.first;
-    final shippingMethod = shippingLine.shippingMethod;
-    final shippingCost = shippingLine.priceWithTax;
-
-    return Container(
-      margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
-      color: AppColors.card,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Shipping Method',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(12)),
-          Text(
-            shippingMethod.name.isNotEmpty
-                ? '${shippingMethod.name} (${_formatPrice(shippingCost)} incl.Tax)'
-                : 'Standard Shipping (${_formatPrice(shippingCost)} incl.Tax)',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: ResponsiveUtils.sp(14),
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(4)),
-          Text(
-            '${_formatPrice(shippingCost)} incl. Tax',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(13),
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentSection(dynamic order) {
-    if (order.payments.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final payment = order.payments.first;
-    final paymentMethod = _formatPaymentMethod(payment.method);
-    final paymentStatus = _formatPaymentStatus(payment.state);
-    final statusColor = _getPaymentStatusColor(payment.state);
-
-    return Container(
-      margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
-      color: AppColors.card,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Payment Information',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(12)),
-          Text(
-            paymentMethod,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: ResponsiveUtils.sp(14),
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(6)),
-          Text(
-            'Status: $paymentStatus',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(14),
-              color: statusColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          if (payment.transactionId != null &&
-              payment.transactionId!.isNotEmpty) ...[
-            SizedBox(height: ResponsiveUtils.rp(6)),
-            Text(
-              'Transaction ID: ${payment.transactionId}',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(12),
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOrderInfoSection(dynamic order) {
-    return Container(
-      margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
-      color: AppColors.card,
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Order Information',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(12)),
-          _buildInfoRow(
-              'Order Date',
-              order.orderPlacedAt != null
-                  ? _formatDate(order.orderPlacedAt!)
-                  : 'N/A'),
+          SizedBox(height: ResponsiveUtils.rp(16)),
+          _buildPriceRow('Subtotal', order.subTotalWithTax),
           SizedBox(height: ResponsiveUtils.rp(10)),
-          if (order.orderPlacedAt != null) ...[
-            _buildInfoRow('Order Time', _formatTime(order.orderPlacedAt!)),
+          _buildPriceRow('Shipping', order.shippingWithTax),
+          // Loyalty Points Used
+          if (order.customFields?.loyaltyPointsUsed != null &&
+              order.customFields!.loyaltyPointsUsed! > 0) ...[
             SizedBox(height: ResponsiveUtils.rp(10)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.stars_outlined,
+                        color: AppColors.success,
+                        size: ResponsiveUtils.rp(16)),
+                    SizedBox(width: ResponsiveUtils.rp(6)),
+                    Text(
+                      'Points Used',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  '${order.customFields!.loyaltyPointsUsed} points',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(14),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.success,
+                  ),
+                ),
+              ],
+            ),
           ],
-          _buildInfoRow('Total Items', '${order.totalQuantity}'),
-          SizedBox(height: ResponsiveUtils.rp(10)),
-          _buildInfoRow('Currency', order.currencyCode ?? 'INR'),
+          // Discounts
+          if (order.discounts.isNotEmpty) ...[
+            SizedBox(height: ResponsiveUtils.rp(10)),
+            ...order.discounts.map((discount) => Padding(
+                  padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(6)),
+                  child: _buildPriceRow(
+                    discount.description.isNotEmpty
+                        ? discount.description
+                        : 'Discount',
+                    -discount.amountWithTax,
+                    isDiscount: true,
+                  ),
+                )),
+          ],
+          SizedBox(height: ResponsiveUtils.rp(12)),
+          Divider(color: AppColors.border, height: 1),
+          SizedBox(height: ResponsiveUtils.rp(12)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(18),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              Text(
+                _formatPrice(order.totalWithTax),
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(20),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.button,
+                ),
+              ),
+            ],
+          ),
+          // Loyalty Points Earned
+          if (order.customFields?.loyaltyPointsEarned != null &&
+              order.customFields!.loyaltyPointsEarned! > 0) ...[
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            Divider(color: AppColors.border, height: 1),
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+              decoration: BoxDecoration(
+                color: AppColors.success.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.stars_rounded,
+                          color: AppColors.success,
+                          size: ResponsiveUtils.rp(20)),
+                      SizedBox(width: ResponsiveUtils.rp(8)),
+                      Text(
+                        'Points Earned',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(15),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '+${order.customFields!.loyaltyPointsEarned} points',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(15),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.success,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildPriceRow(String label, int amount, {bool isDiscount = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -575,36 +587,445 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           ),
         ),
         Text(
-          value,
+          isDiscount
+              ? '-${PriceFormatter.formatPrice(amount.abs())}'
+              : PriceFormatter.formatPrice(amount),
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(14),
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+            color: isDiscount ? AppColors.success : AppColors.textPrimary,
           ),
         ),
       ],
     );
   }
 
+  Widget _buildDeliveryCard(dynamic order) {
+    return PremiumCard(
+      padding: ResponsiveSpacing.padding(all: 16),
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.local_shipping_outlined,
+                  color: AppColors.button, size: ResponsiveUtils.rp(20)),
+              SizedBox(width: ResponsiveUtils.rp(8)),
+              Text(
+                'Delivery Information',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveUtils.rp(16)),
+          if (order.shippingAddress != null) ...[
+            _buildDeliverySection(
+              'Delivery Address',
+              Icons.location_on_outlined,
+              _formatAddress(order.shippingAddress!),
+            ),
+            if (order.shippingLines.isNotEmpty) ...[
+              SizedBox(height: ResponsiveUtils.rp(16)),
+              Divider(color: AppColors.border, height: 1),
+              SizedBox(height: ResponsiveUtils.rp(16)),
+            ],
+          ],
+          if (order.shippingLines.isNotEmpty)
+            _buildDeliverySection(
+              'Shipping Method',
+              Icons.delivery_dining_outlined,
+              _formatShippingMethod(order.shippingLines.first),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeliverySection(String title, IconData icon, String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: AppColors.textSecondary, size: ResponsiveUtils.rp(16)),
+            SizedBox(width: ResponsiveUtils.rp(6)),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(13),
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        Text(
+          content,
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textPrimary,
+            height: 1.4,
+          ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
+  String _formatAddress(dynamic address) {
+    List<String> parts = [];
+    
+    // Line 1: Name and Street Line 1
+    String line1 = '';
+    if (address.fullName.isNotEmpty) {
+      line1 = address.fullName;
+      if (address.streetLine1.isNotEmpty) {
+        line1 += ', ${address.streetLine1}';
+      }
+    } else if (address.streetLine1.isNotEmpty) {
+      line1 = address.streetLine1;
+    }
+    if (line1.isNotEmpty) parts.add(line1);
+    
+    // Line 2: Street Line 2 and City
+    String line2 = '';
+    if (address.streetLine2 != null && address.streetLine2!.isNotEmpty) {
+      line2 = address.streetLine2!;
+    }
+    if (address.city.isNotEmpty) {
+      if (line2.isNotEmpty) {
+        line2 += ', ${address.city}';
+      } else {
+        line2 = address.city;
+      }
+    }
+    if (line2.isNotEmpty) parts.add(line2);
+    
+    // Line 3: Postal Code, Country, and Phone
+    String line3 = '';
+    if (address.postalCode != null && address.postalCode!.isNotEmpty) {
+      line3 = address.postalCode!;
+    }
+    if (address.country != null && address.country!.isNotEmpty) {
+      if (line3.isNotEmpty) {
+        line3 += ', ${address.country}';
+      } else {
+        line3 = address.country!;
+      }
+    }
+    if (address.phoneNumber != null && address.phoneNumber!.isNotEmpty) {
+      if (line3.isNotEmpty) {
+        line3 += ' • ${address.phoneNumber}';
+      } else {
+        line3 = 'Phone: ${address.phoneNumber}';
+      }
+    }
+    if (line3.isNotEmpty) parts.add(line3);
+    
+    // Ensure maximum 3 lines
+    if (parts.length > 3) {
+      parts = parts.take(3).toList();
+    }
+    
+    return parts.join('\n');
+  }
+
+  String _formatShippingMethod(dynamic shippingLine) {
+    final method = shippingLine.shippingMethod;
+    final cost = shippingLine.priceWithTax;
+    if (cost == 0) {
+      return '${method.name.isNotEmpty ? method.name : "Standard Shipping"} - Free';
+    }
+    return '${method.name.isNotEmpty ? method.name : "Standard Shipping"} - ${PriceFormatter.formatPrice(cost)}';
+  }
+
+  Widget _buildPaymentCard(dynamic order) {
+    final payment = order.payments.first;
+    final paymentMethod = _formatPaymentMethod(payment.method);
+    final paymentStatus = _formatPaymentStatus(payment.state);
+    final statusColor = _getPaymentStatusColor(payment.state);
+
+    return PremiumCard(
+      padding: ResponsiveSpacing.padding(all: 16),
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.payment_outlined,
+                  color: AppColors.button, size: ResponsiveUtils.rp(20)),
+              SizedBox(width: ResponsiveUtils.rp(8)),
+              Text(
+                'Payment Information',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveUtils.rp(16)),
+          _buildInfoItem('Payment Method', paymentMethod),
+          SizedBox(height: ResponsiveUtils.rp(10)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Status',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(10),
+                  vertical: ResponsiveUtils.rp(4),
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                ),
+                child: Text(
+                  paymentStatus,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(12),
+                    fontWeight: FontWeight.w600,
+                    color: statusColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (payment.transactionId != null &&
+              payment.transactionId!.isNotEmpty) ...[
+            SizedBox(height: ResponsiveUtils.rp(10)),
+            _buildInfoItem('Transaction ID', payment.transactionId!),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textSecondary,
+          ),
+        ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCancelOrderButton(dynamic order) {
+    final isCancellationRequested = order.customFields?.clientRequestToCancel == 1 ||
+        order.customFields?.clientRequestToCancel == true;
+    
+    if (isCancellationRequested) {
+      return SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+      child: SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: () => _showCancelOrderDialog(order),
+          icon: Icon(Icons.cancel_outlined, size: ResponsiveUtils.rp(20)),
+          label: Text(
+            'Request Cancellation',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(15),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.red,
+            padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
+            side: BorderSide(color: Colors.red, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCancelOrderDialog(dynamic order) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded,
+                color: Colors.orange, size: ResponsiveUtils.rp(28)),
+            SizedBox(width: ResponsiveUtils.rp(12)),
+            Expanded(
+              child: Text(
+                'Request Order Cancellation',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(18),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to request cancellation for order ${order.code}? This request will be reviewed by our team.',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textSecondary,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+              await _requestOrderCancellation(order);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+              ),
+            ),
+            child: Text(
+              'Request Cancellation',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _requestOrderCancellation(dynamic order) async {
+    try {
+      utilityController.setLoadingState(true);
+      
+      final response = await GraphqlService.client.value.mutate$CancelOrderOnClientRequest(
+        Options$Mutation$CancelOrderOnClientRequest(
+          variables: Variables$Mutation$CancelOrderOnClientRequest(
+            orderId: order.id,
+            value: 1,
+          ),
+        ),
+      );
+
+      if (response.hasException) {
+        debugPrint('[OrderDetail] Error requesting cancellation: ${response.exception}');
+        Get.snackbar(
+          'Error',
+          'Failed to request cancellation. Please try again.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      if (response.parsedData?.cancelOrderOnClientRequest == null) {
+        Get.snackbar(
+          'Error',
+          'Failed to request cancellation. Please try again.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      await orderController.getOrderByCode(widget.orderCode);
+      
+      Get.snackbar(
+        'Success',
+        'Cancellation request submitted successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      debugPrint('[OrderDetail] Exception requesting cancellation: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to request cancellation. Please try again.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      utilityController.setLoadingState(false);
+    }
+  }
+
   Widget _buildShimmerLoading() {
     return Skeletonizer(
       enabled: true,
       child: SingleChildScrollView(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
         child: Column(
           children: [
             Container(
-              height: ResponsiveUtils.rp(100),
-              color: AppColors.card,
-              padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+              height: ResponsiveUtils.rp(120),
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+              ),
             ),
             SizedBox(height: ResponsiveUtils.rp(12)),
             ...List.generate(
-                4,
-                (index) => Container(
-                      height: ResponsiveUtils.rp(120),
-                      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                      color: AppColors.card,
-                    )),
+              5,
+              (index) => Container(
+                height: ResponsiveUtils.rp(150),
+                margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -615,18 +1036,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return PriceFormatter.formatPrice(price);
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  String _formatTime(DateTime date) {
-    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-  }
-
   String _formatOrderStatus(String state) {
     switch (state.toLowerCase()) {
       case 'paymentauthorized':
-        return 'Confirmed';
       case 'paymentsettled':
         return 'Confirmed';
       case 'arrangingpayment':
@@ -642,11 +1054,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     switch (state.toLowerCase()) {
       case 'paymentauthorized':
       case 'paymentsettled':
-        return const Color(0xFF00B761); // Green
+        return const Color(0xFF00B761);
       case 'arrangingpayment':
         return Colors.orange;
       case 'cancelled':
-        return AppColors.grey600; // Grey instead of red
+        return AppColors.grey600;
       default:
         return Colors.blue;
     }
@@ -684,11 +1096,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     switch (state.toLowerCase()) {
       case 'authorized':
       case 'settled':
-        return const Color(0xFF00B761); // Green
+        return const Color(0xFF00B761);
       case 'pending':
         return Colors.orange;
       case 'cancelled':
-        return AppColors.grey600; // Grey instead of red
+        return AppColors.grey600;
       default:
         return Colors.grey;
     }

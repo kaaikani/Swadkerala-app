@@ -12,6 +12,7 @@ import '../../services/graphql_client.dart';
 import '../../utils/html_utils.dart';
 import '../../utils/price_formatter.dart';
 import '../../services/in_app_update_service.dart';
+import '../../services/analytics_service.dart';
 import '../../widgets/error_dialog.dart';
 import 'bannermodels.dart';
 import '../utilitycontroller/utilitycontroller.dart';
@@ -164,8 +165,25 @@ class BannerController extends BaseController {
       final fetchedItems =
           items.map((e) => SearchItemModel.fromJson(e)).toList();
 
-      searchResults.assignAll(fetchedItems);
-      totalItems.value = total;
+      // Filter to show only unique products (not variants)
+      // Group by productId and keep only the first variant for each product
+      final Map<String, SearchItemModel> uniqueProducts = {};
+      for (final item in fetchedItems) {
+        if (!uniqueProducts.containsKey(item.productId)) {
+          uniqueProducts[item.productId] = item;
+        }
+      }
+
+      final uniqueProductList = uniqueProducts.values.toList();
+      print('✅ [DEBUG] Unique products: ${uniqueProductList.length} (from ${fetchedItems.length} variants)');
+
+      searchResults.assignAll(uniqueProductList);
+      totalItems.value = uniqueProductList.length;
+
+      // Track search event
+      if (term.isNotEmpty) {
+        AnalyticsService().logSearch(searchTerm: term);
+      }
 
       print('✅ [DEBUG] Search results updated successfully.');
       utilityController.setLoadingState(false);

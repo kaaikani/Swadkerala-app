@@ -14,12 +14,16 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
+  // High importance channel for heads-up notifications (Snapchat-style)
   static const AndroidNotificationChannel _defaultChannel =
       AndroidNotificationChannel(
     'kaaikani_updates',
     'Kaaikani Updates',
     description: 'Order, cart, and promotional updates from Kaaikani',
-    importance: Importance.defaultImportance,
+    importance: Importance.high, // HIGH IMPORTANCE = Heads-up notifications
+    playSound: true,
+    enableVibration: true,
+    showBadge: true,
   );
 
   Future<void> initialize() async {
@@ -47,12 +51,21 @@ class NotificationService {
       return;
     }
 
+    // High importance + High priority = Heads-up notification (Snapchat-style)
     final androidDetails = AndroidNotificationDetails(
       _defaultChannel.id,
       _defaultChannel.name,
       channelDescription: _defaultChannel.description,
-      importance: Importance.defaultImportance,
-      priority: Priority.defaultPriority,
+      importance: Importance.high, // HIGH = Shows heads-up banner at top
+      priority: Priority.high, // HIGH = Appears even when app is closed
+      playSound: true,
+      enableVibration: true,
+      showWhen: true,
+      icon: '@mipmap/ic_launcher',
+      styleInformation: BigTextStyleInformation(
+        notification.body ?? '',
+        contentTitle: notification.title ?? 'Kaaikani',
+      ),
     );
 
     await _localNotifications.show(

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -6,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../components/collectioncomponent.dart';
+import '../controllers/authentication/authenticationcontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
+import '../controllers/banner/bannermodels.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/collection controller/Collectionmodel.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
-import '../controllers/order/ordermodels.dart';
 import '../components/bannercomponent.dart';
 import '../components/vertical_list_component.dart';
 import '../components/searchbarcomponent.dart';
@@ -19,11 +19,14 @@ import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
-import '../components/bottomnavigationbar.dart';
 import '../widgets/responsive_spacing.dart';
-import '../utils/shipping_utils.dart';
-import '../utils/collection_product_card.dart';
+import '../widgets/product_card.dart';
 import '../utils/price_formatter.dart';
+import '../utils/navigation_helper.dart';
+import '../components/bottomnavigationbar.dart';
+import '../services/analytics_service.dart';
+import '../services/graphql_client.dart';
+import '../services/remote_config_service.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -41,72 +44,58 @@ class _MyHomePageState extends State<MyHomePage> {
   final OrderController orderController = Get.put(OrderController());
   final CustomerController customerController = Get.put(CustomerController());
   final UtilityController utilityController = Get.put(UtilityController());
-
-  final Duration _shippingTickerInterval = const Duration(seconds: 4);
-  Timer? _shippingTickerTimer;
-  Worker? _shippingWorker;
-  int _shippingTickerIndex = 0;
+  
+  // Track selected variant for each product in favorites
+  final Map<String, String> _selectedVariantIds = {};
 
   @override
   void initState() {
     super.initState();
-    _observeShippingMethods();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      cartController.getActiveOrder();
-      customerController.getActiveCustomer();
+      // Only fetch authenticated data if user is logged in
+      if (_isUserAuthenticated()) {
+        cartController.getActiveOrder();
+        customerController.getActiveCustomer();
+        bannerController.getCustomerFavorites();
+      }
+      
+      // These can be fetched regardless of authentication status
       collectionController.fetchAllCollections();
       bannerController.getFrequentlyOrderedProducts();
-      bannerController.getCustomerFavorites();
-      orderController.getEligibleShippingMethods();
-    });
-  }
-
-  void _observeShippingMethods() {
-    _shippingWorker =
-        ever<List<ShippingMethod>>(orderController.shippingMethods, (methods) {
-      if (!mounted) return;
-      if (methods.isEmpty) {
-        _shippingTickerTimer?.cancel();
-        setState(() => _shippingTickerIndex = 0);
-        return;
-      }
-      setState(() {
-        _shippingTickerIndex = _shippingTickerIndex % methods.length;
-      });
-      _startShippingTicker();
-    });
-  }
-
-  void _startShippingTicker() {
-    _shippingTickerTimer?.cancel();
-    final methods = orderController.shippingMethods;
-    if (methods.length <= 1) return;
-
-    _shippingTickerTimer = Timer.periodic(_shippingTickerInterval, (_) {
-      if (!mounted || methods.isEmpty) return;
-      setState(() {
-        _shippingTickerIndex = (_shippingTickerIndex + 1) % methods.length;
-      });
+     
+      
+      // Track screen view
+      AnalyticsService().logScreenView(screenName: 'Home');
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final cityName = box.read('channel_code') ?? 'Default City';
+    final channelCode = box.read('channel_code') ?? '';
+    final cityName = _formatCityName(channelCode);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: RefreshIndicator(
         onRefresh: () async {
-          await Future.wait([
-          cartController.getActiveOrder(),
-          customerController.getActiveCustomer(),
-          collectionController.fetchAllCollections(),
-          bannerController.getFrequentlyOrderedProducts(),
-          bannerController.getCustomerFavorites(),
-          orderController.getEligibleShippingMethods(),
-          ]);
+          // Create list of futures based on authentication status
+          List<Future> futures = [
+            collectionController.fetchAllCollections(),
+            bannerController.getFrequentlyOrderedProducts(),
+          ];
+          
+          // Only add authenticated requests if user is logged in
+          if (_isUserAuthenticated()) {
+            futures.addAll([
+              cartController.getActiveOrder(),
+              customerController.getActiveCustomer(),
+              bannerController.getCustomerFavorites(),
+            ]);
+          }
+          
+          await Future.wait(futures);
         },
+        color: AppColors.refreshIndicator,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -122,22 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       bottomNavigationBar: Obx(() => BottomNavComponent(
             cartCount: cartController.cartItemCount,
-            onTap: (index) {
-              // Handle navigation if needed
-              switch (index) {
-                case 0:
-                  // Home - already on home
-                  break;
-                case 1:
-                  // Categories
-                  Get.toNamed('/categories');
-                  break;
-                case 2:
-                  // Cart
-                  Get.toNamed('/cart');
-                  break;
-              }
-            },
           )),
     );
   }
@@ -165,6 +138,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 SizedBox(width: ResponsiveUtils.rp(12)),
+                // Location with Channel Code (only show when authenticated)
+                if (_isUserAuthenticated()) ...[
+                  _buildLocationInfo(cityName),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                ],
                 // Account Text with Icon
                 InkWell(
                   onTap: () => Get.toNamed('/account'),
@@ -189,6 +167,43 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Build location info widget with channel code
+  Widget _buildLocationInfo(String cityName) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.rp(8),
+        vertical: ResponsiveUtils.rp(4),
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.location_on,
+            color: AppColors.primary,
+            size: ResponsiveUtils.rp(16),
+          ),
+          SizedBox(width: ResponsiveUtils.rp(4)),
+          Text(
+            cityName,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: ResponsiveUtils.rp(12),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMainContent() {
     return Column(
       children: [
@@ -196,16 +211,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ResponsiveSpacing.vertical(12),
         // Hero Banner Section - Clean without overlay
         _buildHeroBanner(),
-        ResponsiveSpacing.vertical(24),
+        ResponsiveSpacing.vertical(10),
 
         // Category Selection Horizontal Scroll
         _buildCategorySelection(),
+        ResponsiveSpacing.vertical(4),
 
         // Reward Points Section
 
         // Favorites Section (prioritized over frequently ordered)
         _buildFavoritesSection(),
-        ResponsiveSpacing.vertical(32),
+        ResponsiveSpacing.vertical(18),
 
         // Frequently Ordered Section
         _buildFrequentlyOrderedSection(),
@@ -231,10 +247,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildShippingTicker() {
     return Obx(() {
       try {
-        final methods = orderController.shippingMethods;
-        if (methods.isEmpty) return const SizedBox.shrink();
-
-        final tickerText = _buildShippingTickerText(methods);
+        // Get Remote Config service
+        final remoteConfigService = Get.find<RemoteConfigService>();
+        final tickerText = remoteConfigService.getShippingTickerText();
+        
+        // Only show if text is fetched from Remote Config
+        if (!remoteConfigService.hasShippingTickerText() || tickerText.isEmpty) {
+          return const SizedBox.shrink();
+        }
 
         return Container(
           width: double.infinity,
@@ -293,17 +313,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  String _buildShippingTickerText(List<ShippingMethod> methods) {
-    final segments = <String>[];
-
-    final note = ShippingUtils.buildDeliveryNote(methods);
-    if (note != null) {
-      segments.add(note);
-    }
-
-    return segments.join('   •   ');
-  }
-
   Widget _buildHeroBanner() {
     return BannerComponent();
   }
@@ -318,7 +327,10 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       return Container(
-        padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(8)),
+        padding: EdgeInsets.only(
+          top: ResponsiveUtils.rp(2),
+          bottom: ResponsiveUtils.rp(2),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -366,7 +378,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   if (enabledProducts.length > 3)
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed('/frequently-ordered');
+                      },
                       child: Text(
                         'See All',
                         style: TextStyle(
@@ -399,21 +413,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
 
                   final variantId = variant.id;
-                  final quantity = cartController.getVariantQuantity(variantId);
                   final priceText =
                       PriceFormatter.formatPrice(variant.priceWithTax.round());
                   final isFavorite = bannerController.isFavorite(product.id);
 
                   return SizedBox(
                     width: ResponsiveUtils.rp(170),
-                    child: CollectionProductCard(
+                    child: ProductCard(
                       name: product.name,
                       imageUrl: product.featuredAsset?.preview,
                       onTap: () {
-                        Get.toNamed('/product-detail', arguments: {
-                          'productId': product.id,
-                          'productName': product.name,
-                        });
+                        NavigationHelper.navigateToProductDetail(
+                          productId: product.id,
+                          productName: product.name,
+                        );
                       },
                       onDoubleTap: () => bannerController.toggleFavorite(
                           productId: product.id),
@@ -426,11 +439,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       variantLabel: variant.name,
                       priceText: priceText,
                       shadowPriceText: null,
-                      quantity: quantity,
-                      counterBuilder: () => _buildVariantCounter(
-                        variantId: variantId,
-                        productName: product.name,
-                      ),
                       onAddToCart: () => _addVariantToCartById(
                         variantId,
                         product.name,
@@ -514,58 +522,69 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (context, index) {
                   final favorite = enabledFavorites[index];
                   final product = favorite.product;
-                        final imageUrl = product.featuredAsset?.preview;
-                  final variant = product.variants.isNotEmpty
-                      ? product.variants.first
-                      : null;
-                        final variantId = variant?.id ?? '';
-                        final quantity = variantId.isNotEmpty
-                            ? cartController.getVariantQuantity(variantId)
-                            : 0;
+                  final imageUrl = product.featuredAsset?.preview;
+                  
+                  // Get selected variant or default to first variant
+                  final selectedVariantId = _selectedVariantIds[product.id] ?? 
+                      (product.variants.isNotEmpty ? product.variants.first.id : '');
+                  
+                  final selectedVariant = selectedVariantId.isNotEmpty
+                      ? product.variants.firstWhere(
+                          (v) => v.id == selectedVariantId,
+                          orElse: () => product.variants.first,
+                        )
+                      : (product.variants.isNotEmpty ? product.variants.first : null);
+                  
+                  final hasMultipleVariants = product.variants.length > 1;
 
-                        return SizedBox(
-                          width: ResponsiveUtils.rp(170),
-                          child: CollectionProductCard(
-                            name: product.name,
-                    imageUrl: imageUrl,
-                            onTap: () {
-                              Get.toNamed('/product-detail', arguments: {
-                                'productId': product.id,
-                                'productName': product.name,
-                              });
-                            },
-                            onDoubleTap: () => bannerController.toggleFavorite(
-                                productId: product.id),
-                            isFavorite: true,
-                            onFavoriteToggle: () => bannerController
-                                .toggleFavorite(productId: product.id),
-                            discountPercent: null,
-                            variantSelector: null,
-                            showVariantSelector: false,
-                            variantLabel: variant?.name ?? 'Default',
-                            priceText: variant != null
-                                ? PriceFormatter.formatPrice(
-                                    variant.priceWithTax.round())
-                                : 'Rs --',
-                            shadowPriceText: null,
-                            quantity: quantity,
-                            counterBuilder: () => variantId.isEmpty
-                                ? const SizedBox.shrink()
-                                : _buildVariantCounter(
-                                    variantId: variantId,
-                    productName: product.name,
-                                  ),
-                            onAddToCart: () => variantId.isEmpty
-                                ? Get.snackbar(
-                                    'Variant unavailable',
-                                    'Unable to add this item right now.',
+                  return SizedBox(
+                    width: ResponsiveUtils.rp(170),
+                    child: ProductCard(
+                      name: product.name,
+                      imageUrl: imageUrl,
+                      onTap: () {
+                        NavigationHelper.navigateToProductDetail(
+                          productId: product.id,
+                          productName: product.name,
+                        );
+                      },
+                      onDoubleTap: () => bannerController.toggleFavorite(
+                          productId: product.id),
+                      isFavorite: true,
+                      onFavoriteToggle: () => bannerController
+                          .toggleFavorite(productId: product.id),
+                      discountPercent: null,
+                      variantSelector: hasMultipleVariants
+                          ? _buildFavoritesVariantDropdown(
+                              productId: product.id,
+                              variants: product.variants,
+                              currentVariantId: selectedVariantId,
+                            )
+                          : null,
+                      showVariantSelector: hasMultipleVariants,
+                      variantLabel: selectedVariant != null
+                          ? _getVariantLabelFromName(selectedVariant.name)
+                          : 'Default',
+                      priceText: selectedVariant != null
+                          ? PriceFormatter.formatPrice(
+                              selectedVariant.priceWithTax.round())
+                          : 'Rs --',
+                      shadowPriceText: null,
+                      onAddToCart: () {
+                        if (selectedVariantId.isEmpty) {
+                          Get.snackbar(
+                            'Variant unavailable',
+                            'Unable to add this item right now.',
                             snackPosition: SnackPosition.BOTTOM,
-                                  )
-                                : _addVariantToCartById(
-                                    variantId,
-                                    product.name,
-                                  ),
-                          ),
+                          );
+                        } else {
+                          _addVariantToCartById(
+                            selectedVariantId,
+                            product.name,
+                          );
+                        }
+                      },
+                    ),
                   );
                 },
               ),
@@ -576,60 +595,101 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget _buildVariantCounter({
-    required String variantId,
-    required String productName,
-  }) {
-    final quantity = cartController.getVariantQuantity(variantId);
-    if (quantity <= 0) {
-      return SizedBox(
-        height: ResponsiveUtils.rp(36),
-      );
-    }
 
+  /// Build variant dropdown for favorites (similar to collection products)
+  Widget _buildFavoritesVariantDropdown({
+    required String productId,
+    required List<FavoriteVariantModel> variants,
+    required String currentVariantId,
+  }) {
     return Container(
-      width: ResponsiveUtils.rp(90),
       height: ResponsiveUtils.rp(32),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
       decoration: BoxDecoration(
-        color: AppColors.button,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+        color: AppColors.backgroundLight,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.6),
+          width: 1,
+        ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => _decrementVariantById(variantId),
-            child: Padding(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-              child: Icon(
-                Icons.remove,
-                size: ResponsiveUtils.rp(18),
-                color: Colors.white,
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: currentVariantId.isNotEmpty ? currentVariantId : null,
+          isExpanded: true,
+          isDense: true,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: ResponsiveUtils.rp(20),
+            color: AppColors.icon.withValues(alpha: 0.7),
+          ),
+          iconSize: ResponsiveUtils.rp(20),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(12),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+            height: 1.2,
+          ),
+          items: variants.map((variant) {
+            final isSelected = variant.id == currentVariantId;
+            final displayName = _getVariantLabelFromName(variant.name);
+            return DropdownMenuItem<String>(
+              value: variant.id,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: ResponsiveUtils.rp(4),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        displayName,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(13),
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    if (isSelected) ...[
+                      SizedBox(width: ResponsiveUtils.rp(6)),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        size: ResponsiveUtils.rp(16),
+                        color: AppColors.button,
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
-          ),
-          Text(
-            quantity.toString(),
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(13),
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _addVariantToCartById(variantId, productName),
-            child: Padding(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-              child: Icon(
-                Icons.add,
-                size: ResponsiveUtils.rp(18),
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
+            );
+          }).toList(),
+          dropdownColor: AppColors.card,
+          menuMaxHeight: ResponsiveUtils.rp(200),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+          onChanged: (String? newVariantId) {
+            if (newVariantId == null) return;
+            setState(() {
+              _selectedVariantIds[productId] = newVariantId;
+            });
+          },
+        ),
       ),
     );
+  }
+
+  /// Extract variant label from variant name (remove text before colon if present)
+  String _getVariantLabelFromName(String variantName) {
+    // If variant name contains ":", return only the part after colon
+    if (variantName.contains(':')) {
+      return variantName.split(':').last.trim();
+    }
+    return variantName;
   }
 
   Future<void> _addVariantToCartById(
@@ -659,10 +719,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _decrementVariantById(String variantId) async {
-    await cartController.decrementVariant(variantId: variantId);
-    if (mounted) setState(() {});
-  }
 
   Widget _buildFavoritesShimmerRow() {
     return Skeletonizer(
@@ -738,8 +794,38 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _shippingTickerTimer?.cancel();
-    _shippingWorker?.dispose();
     super.dispose();
+  }
+
+  /// Check if user is authenticated
+  bool _isUserAuthenticated() {
+    final authController = Get.find<AuthController>();
+    final authToken = GraphqlService.authToken;
+    final channelToken = GraphqlService.channelToken;
+    
+    return authController.isLoggedIn && 
+           authToken.isNotEmpty && 
+           channelToken.isNotEmpty;
+  }
+
+  /// Format channel code to display name
+  String _formatCityName(String channelCode) {
+    if (channelCode.isEmpty) return 'Location';
+    
+    // Handle common channel code formats
+    if (channelCode.contains('-')) {
+      final parts = channelCode.split('-');
+      if (parts.length > 1) {
+        // Convert "ind-madurai" to "Madurai"
+        return parts.last.split(' ').map((word) => 
+          word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : ''
+        ).join(' ');
+      }
+    }
+    
+    // Fallback: capitalize first letter
+    return channelCode.isNotEmpty 
+        ? channelCode[0].toUpperCase() + channelCode.substring(1).toLowerCase()
+        : 'Location';
   }
 }

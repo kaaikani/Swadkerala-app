@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import '../widgets/shimmers.dart';
 
-class CollectionProductCard extends StatelessWidget {
-  const CollectionProductCard({
+/// Unified product card widget used across all pages
+/// (Collection products, Favourites, Frequently Ordered, Home page)
+class ProductCard extends StatelessWidget {
+  const ProductCard({
     super.key,
     required this.name,
     required this.imageUrl,
@@ -12,15 +14,13 @@ class CollectionProductCard extends StatelessWidget {
     required this.onDoubleTap,
     required this.isFavorite,
     required this.onFavoriteToggle,
-    required this.discountPercent,
-    required this.variantSelector,
-    required this.showVariantSelector,
     required this.variantLabel,
     required this.priceText,
-    required this.shadowPriceText,
-    required this.quantity,
-    required this.counterBuilder,
     required this.onAddToCart,
+    this.discountPercent,
+    this.variantSelector,
+    this.showVariantSelector = false,
+    this.shadowPriceText,
   });
 
   final String name;
@@ -35,8 +35,6 @@ class CollectionProductCard extends StatelessWidget {
   final String variantLabel;
   final String priceText;
   final String? shadowPriceText;
-  final int quantity;
-  final Widget Function() counterBuilder;
   final VoidCallback onAddToCart;
 
   @override
@@ -65,10 +63,10 @@ class CollectionProductCard extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  ClipPath(
-                    clipper: InnerRightCurveClipper(
-                      cornerRadius: ResponsiveUtils.rp(10),
-                      cutoutRadius: ResponsiveUtils.rp(28),
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(ResponsiveUtils.rp(10)),
+                      topRight: Radius.circular(ResponsiveUtils.rp(10)),
                     ),
                     child: imageUrl != null && imageUrl!.isNotEmpty
                         ? Image.network(
@@ -78,14 +76,28 @@ class CollectionProductCard extends StatelessWidget {
                             height: double.infinity,
                             cacheWidth: 500,
                             cacheHeight: 500,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              // Show shimmer while loading
+                              return Skeletons.imageRect(
+                                height: double.infinity,
+                                width: double.infinity,
+                                radius: 0,
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              // Show shimmer on error instead of empty container
+                              return Skeletons.imageRect(
+                                height: double.infinity,
+                                width: double.infinity,
+                                radius: 0,
+                              );
+                            },
                           )
-                        : Container(
-                            color: Colors.grey[200],
-                            child: Icon(
-                              Icons.image,
-                              size: ResponsiveUtils.rp(30),
-                              color: Colors.grey[400],
-                            ),
+                        : Skeletons.imageRect(
+                            height: double.infinity,
+                            width: double.infinity,
+                            radius: 0,
                           ),
                   ),
                   Positioned(
@@ -109,12 +121,13 @@ class CollectionProductCard extends StatelessWidget {
                   ),
                   if (discountPercent != null)
                     _DiscountRibbon(discountPercent: discountPercent!),
-                  if (quantity == 0)
-                    Positioned(
-                      bottom: -ResponsiveUtils.rp(14),
-                      right: -ResponsiveUtils.rp(8),
-                      child: _AddToCartButton(onPressed: onAddToCart),
+                  Positioned(
+                    bottom: -ResponsiveUtils.rp(0),
+                    right: -ResponsiveUtils.rp(0),
+                    child: _AddToCartButton(
+                      onPressed: onAddToCart,
                     ),
+                  ),
                 ],
               ),
             ),
@@ -148,8 +161,9 @@ class CollectionProductCard extends StatelessWidget {
                       child: Text(
                         variantLabel,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(11),
-                          color: AppColors.textSecondary,
+                          fontSize: ResponsiveUtils.sp(13),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -184,14 +198,6 @@ class CollectionProductCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: quantity > 0
-                              ? counterBuilder()
-                              : SizedBox(height: ResponsiveUtils.rp(36)),
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -204,47 +210,88 @@ class CollectionProductCard extends StatelessWidget {
   }
 }
 
-class _AddToCartButton extends StatelessWidget {
+class _AddToCartButton extends StatefulWidget {
   const _AddToCartButton({required this.onPressed});
 
   final VoidCallback onPressed;
 
   @override
+  State<_AddToCartButton> createState() => _AddToCartButtonState();
+}
+
+class _AddToCartButtonState extends State<_AddToCartButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOutBack,
+      ),
+    );
+    
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final resolvedSize = ResponsiveUtils.rp(42);
-    return Material(
-      color: Colors.transparent,
-      shape: const CircleBorder(),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onPressed,
-        child: Container(
-          height: resolvedSize,
-          width: resolvedSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFF8A5C), Color(0xFFFF3D6E)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.18),
-                blurRadius: ResponsiveUtils.rp(10),
-                offset: Offset(0, ResponsiveUtils.rp(4)),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: widget.onPressed,
+              child: Container(
+                height: resolvedSize,
+                width: resolvedSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFF8A5C), Color(0xFFFF3D6E)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.18),
+                      blurRadius: ResponsiveUtils.rp(10),
+                      offset: Offset(0, ResponsiveUtils.rp(4)),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: resolvedSize * 0.45,
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: Center(
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-              size: resolvedSize * 0.45,
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -346,38 +393,3 @@ class _RibbonTriangleClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
-class InnerRightCurveClipper extends CustomClipper<Path> {
-  InnerRightCurveClipper({
-    required this.cornerRadius,
-    required this.cutoutRadius,
-  });
-
-  final double cornerRadius;
-  final double cutoutRadius;
-
-  @override
-  Path getClip(Size size) {
-    final r = cornerRadius.clamp(0, size.height / 2).toDouble();
-    final cutout = cutoutRadius.clamp(0, size.width).toDouble();
-    final path = Path();
-
-    path.moveTo(0, r);
-    path.quadraticBezierTo(0, 0, r, 0);
-    path.lineTo(size.width - r, 0);
-    path.quadraticBezierTo(size.width, 0, size.width, r);
-    path.lineTo(size.width, size.height - cutout);
-    path.arcToPoint(
-      Offset(size.width - cutout, size.height),
-      radius: Radius.circular(cutout),
-      clockwise: false,
-    );
-    path.lineTo(r, size.height);
-    path.quadraticBezierTo(0, size.height, 0, size.height - r);
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
-}

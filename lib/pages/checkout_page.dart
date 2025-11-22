@@ -10,7 +10,9 @@ import '../controllers/customer/customer_models.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/theme_controller.dart';
 import '../services/razorpay_service.dart';
+import '../services/analytics_service.dart';
 import '../widgets/snackbar.dart';
+import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
 import '../theme/colors.dart';
 import '../utils/html_utils.dart';
 import '../utils/responsive.dart';
@@ -44,6 +46,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Timer? _instructionsDebounceTimer;
 
   String? _lastAppliedShippingMethodId;
+  bool _showOrderSummaryDetails = false;
 
   @override
   void initState() {
@@ -123,6 +126,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final methodToApply =
         existingSelection ?? orderController.shippingMethods.first;
 
+    // If method is already selected and applied, don't re-apply
+    if (currentId != null && 
+        currentId == methodToApply.id && 
+        _lastAppliedShippingMethodId == currentId) {
+      // Method already applied, just refresh payment methods if needed
+      if (orderController.paymentMethods.isEmpty) {
+        await _refreshPaymentMethods();
+      }
+      return;
+    }
+
     if (orderController.selectedShippingMethod.value?.id != methodToApply.id) {
       orderController.selectedShippingMethod.value = methodToApply;
     }
@@ -135,6 +149,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final selected = orderController.selectedShippingMethod.value;
     if (selected == null) return;
 
+    // If method is already applied and not forcing, skip without loading
     if (!force && _lastAppliedShippingMethodId == selected.id) {
       if (orderController.paymentMethods.isEmpty) {
         await _refreshPaymentMethods();
@@ -142,14 +157,36 @@ class _CheckoutPageState extends State<CheckoutPage> {
       return;
     }
 
-    final success = await orderController.setShippingMethod(selected.id);
+    // Check if shipping method is already set in current order
+    final currentOrder = orderController.currentOrder.value;
+    final isAlreadySet = currentOrder != null &&
+        currentOrder.shippingLines.isNotEmpty &&
+        currentOrder.shippingLines.any((line) => line.shippingMethod.id == selected.id);
+
+    // If already set and not forcing, skip API call and loading
+    if (!force && isAlreadySet && _lastAppliedShippingMethodId == selected.id) {
+      if (orderController.paymentMethods.isEmpty) {
+        await _refreshPaymentMethods();
+      }
+      return;
+    }
+
+    // Skip loading if method is already set in the order
+    final skipIfAlreadySet = !force && isAlreadySet;
+    final success = await orderController.setShippingMethod(
+      selected.id, 
+      skipIfAlreadySet: skipIfAlreadySet,
+    );
 
     if (success) {
       _lastAppliedShippingMethodId = selected.id;
       if (showFeedback) {
         showSuccessSnackbar('Shipping method selected');
       }
-      await cartController.getActiveOrder();
+      // Only refresh cart if method was actually changed
+      if (!skipIfAlreadySet) {
+        await cartController.getActiveOrder();
+      }
       await _refreshPaymentMethods();
     } else {
       showErrorSnackbar('Failed to set shipping method');
@@ -227,7 +264,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Future<void> _loadExistingInstructions() async {
     try {
-      await orderController.getActiveOrder();
+      // Skip loading state when loading existing instructions
+      await orderController.getActiveOrder(skipLoading: true);
       if (orderController.currentOrder.value?.customFields?.otherInstructions != null) {
         final instructions = orderController.currentOrder.value!.customFields!.otherInstructions!;
         if (instructions.isNotEmpty && mounted) {
@@ -328,7 +366,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         await orderController.generateRazorpayOrderId(orderId);
 
     if (razorpayOrder == null) {
-      showErrorSnackbar('Failed to generate Razorpay order');
+      // Error message is already shown by the controller's error handling
+      debugPrint('[Checkout] Razorpay order generation failed');
       return;
     }
 
@@ -336,15 +375,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
         '[Checkout] Razorpay Order ID: ${razorpayOrder.razorpayOrderId}');
     debugPrint('[Checkout] Razorpay Key ID: ${razorpayOrder.keyId}');
 
+    // Get customer phone number - prioritize address phone, fallback to customer phone
+    final customer = customerController.activeCustomer.value;
+    String customerPhone = '';
+    
+    if (_selectedAddress?.phoneNumber != null && 
+        _selectedAddress!.phoneNumber.isNotEmpty) {
+      customerPhone = _selectedAddress!.phoneNumber;
+    } else if (customer?.phoneNumber != null && 
+               customer!.phoneNumber!.isNotEmpty) {
+      customerPhone = customer.phoneNumber!;
+    }
+
+    // Validate phone number before proceeding
+    if (customerPhone.isEmpty) {
+      showErrorSnackbar('Phone number is required for payment. Please add a phone number to your address or profile.');
+      return;
+    }
+
+    debugPrint('[Checkout] Customer Phone: $customerPhone');
+
     // Open Razorpay payment gateway with backend-generated order ID
     _razorpayService.openPaymentGateway(
       razorpayOrderId: razorpayOrder.razorpayOrderId,
       razorpayKeyId: razorpayOrder.keyId,
       amountInPaise: amount, // Already in paise/cents
-      customerName: _selectedAddress?.fullName ?? 'Customer',
-      customerEmail: customerController.activeCustomer.value?.emailAddress ??
-          'customer@example.com',
-      customerPhone: _selectedAddress?.phoneNumber ?? '',
+      customerName: _selectedAddress?.fullName ?? 
+          (customer != null ? '${customer.firstName} ${customer.lastName}'.trim() : 'Customer'),
+      customerEmail: customer?.emailAddress ?? 'customer@example.com',
+      customerPhone: customerPhone,
       description: 'Order #${cart.code}',
       onPaymentSuccess: (response) async {
         debugPrint(
@@ -368,6 +427,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
         );
 
         if (success) {
+          // Track purchase event
+          final items = cart.lines.map((line) {
+            return analytics.AnalyticsEventItem(
+              itemId: line.productVariant.id,
+              itemName: line.productVariant.name,
+              itemCategory: 'Product',
+              price: line.unitPriceWithTax / 100.0,
+              quantity: line.quantity,
+            );
+          }).toList();
+          
+          await AnalyticsService().logPurchase(
+            transactionId: cart.code,
+            value: cart.totalWithTax / 100.0,
+            currency: 'INR',
+            items: items,
+            parameters: {
+              'payment_method': 'razorpay',
+              'payment_id': response.paymentId ?? '',
+            },
+          );
+          
           // Try to transition order to next state
           debugPrint('[Checkout] Payment successful, transitioning order...');
           final transitioned = await orderController.transitionToNextState();
@@ -407,9 +488,32 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
 
     if (success) {
+      // Track purchase event for COD
+      final cart = cartController.cart.value;
+      if (cart != null) {
+        final items = cart.lines.map((line) {
+          return analytics.AnalyticsEventItem(
+            itemId: line.productVariant.id,
+            itemName: line.productVariant.name,
+            itemCategory: 'Product',
+            price: line.unitPriceWithTax / 100.0,
+            quantity: line.quantity,
+          );
+        }).toList();
+        
+        await AnalyticsService().logPurchase(
+          transactionId: cart.code,
+          value: cart.totalWithTax / 100.0,
+          currency: 'INR',
+          items: items,
+          parameters: {
+            'payment_method': 'cash_on_delivery',
+          },
+        );
+      }
+      
       showSuccessSnackbar('Order placed successfully!');
       // Navigate to order confirmation page
-      final cart = cartController.cart.value;
       if (cart != null) {
         Get.offAllNamed('/order-confirmation', arguments: cart.code);
       } else {
@@ -947,7 +1051,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       _loadLoyaltyPointsConfig(),
                     ]);
                   },
-                  color: AppColors.button,
+                  color: AppColors.refreshIndicator,
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
@@ -1003,64 +1107,67 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         ),
 
-        // Add New Address Button
-        Container(
-          margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(16)),
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () async {
-              await Get.toNamed('/addresses');
-              await _loadCustomerAddresses();
-            },
-            icon: Icon(Icons.add_location_alt_rounded,
-                size: ResponsiveUtils.rp(20)),
-            label: Text('Add New Address'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.button,
-              side: BorderSide(color: AppColors.button),
-              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-              ),
-            ),
-          ),
-        ),
-
         // Address List
         Obx(() {
           if (customerController.addresses.isEmpty) {
-            return Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(40)),
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.location_off_rounded,
-                    size: ResponsiveUtils.rp(48),
-                    color: AppColors.textSecondary,
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  Text(
-                    'No addresses found',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(16),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+            return Column(
+              children: [
+                // Add New Address Button - only show when no addresses
+                Container(
+                  margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(16)),
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      await Get.toNamed('/addresses');
+                      await _loadCustomerAddresses();
+                    },
+                    icon: Icon(Icons.add_location_alt_rounded,
+                        size: ResponsiveUtils.rp(20)),
+                    label: Text('Add New Address'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.button,
+                      side: BorderSide(color: AppColors.button),
+                      padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                      ),
                     ),
                   ),
-                  SizedBox(height: ResponsiveUtils.rp(4)),
-                  Text(
-                    'Please add a delivery address to continue',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: ResponsiveUtils.sp(14),
-                    ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(40)),
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                   ),
-                ],
-              ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.location_off_rounded,
+                        size: ResponsiveUtils.rp(48),
+                        color: AppColors.textSecondary,
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(12)),
+                      Text(
+                        'No addresses found',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(16),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(4)),
+                      Text(
+                        'Please add a delivery address to continue',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: ResponsiveUtils.sp(14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             );
           }
 
@@ -1149,7 +1256,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   border: Border.all(color: AppColors.button, width: 2),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
                   child: AddressCardPremium(
                     fullName: shippingAddress.fullName,
                     streetLine1: shippingAddress.streetLine1,
@@ -1806,109 +1913,265 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Order Summary',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(18),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          Divider(color: AppColors.divider),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Subtotal',
-                  style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      color: AppColors.textSecondary)),
-              Obx(() {
-                final subtotal =
-                    (cartController.cart.value?.subTotalWithTax ?? 0).toInt();
-                return Text(
-                  cartController.formatPrice(subtotal),
-                  style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      color: AppColors.textPrimary),
-                );
-              }),
-            ],
-          ),
-          SizedBox(height: ResponsiveUtils.rp(8)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Shipping',
-                  style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      color: AppColors.textSecondary)),
-              Obx(() {
-                if (cartController.hasFreeShippingCoupon()) {
-                  return Text('Free',
+              Text(
+                'Order Summary',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(18),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _showOrderSummaryDetails = !_showOrderSummaryDetails;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _showOrderSummaryDetails ? 'Show Less' : 'Show More',
                       style: TextStyle(
-                          color: AppColors.success,
-                          fontWeight: FontWeight.bold,
-                          fontSize: ResponsiveUtils.sp(14)));
-                }
-                return Text(
-                  orderController.selectedShippingMethod.value != null
-                      ? cartController.formatPrice(orderController
-                          .selectedShippingMethod.value!.priceWithTax)
-                      : 'TBD',
-                  style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      color: AppColors.textPrimary),
-                );
-              }),
+                        fontSize: ResponsiveUtils.sp(12),
+                        color: AppColors.button,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: ResponsiveUtils.rp(4)),
+                    Icon(
+                      _showOrderSummaryDetails
+                          ? Icons.expand_less
+                          : Icons.expand_more,
+                      size: ResponsiveUtils.rp(16),
+                      color: AppColors.button,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          SizedBox(height: ResponsiveUtils.rp(8)),
-          Obx(() {
-            final payment = orderController.selectedPaymentMethod.value;
-            if (payment == null) return SizedBox.shrink();
-            return Row(
+          if (_showOrderSummaryDetails) ...[
+            Divider(color: AppColors.divider),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            // Subtotal
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Payment',
+                Text('Subtotal',
                     style: TextStyle(
                         fontSize: ResponsiveUtils.sp(14),
                         color: AppColors.textSecondary)),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          payment.code.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(14),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        if (payment.eligibilityMessage != null)
-                          Padding(
-                            padding:
-                                EdgeInsets.only(top: ResponsiveUtils.rp(2)),
-                            child: Text(
-                              payment.eligibilityMessage!,
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(12),
-                                color: AppColors.textSecondary,
-                              ),
-                              textAlign: TextAlign.right,
+                Obx(() {
+                  final subtotal =
+                      (cartController.cart.value?.subTotalWithTax ?? 0).toInt();
+                  return Text(
+                    cartController.formatPrice(subtotal),
+                    style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textPrimary),
+                  );
+                }),
+              ],
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            // Shipping
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Shipping',
+                    style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textSecondary)),
+                Obx(() {
+                  final shippingMethod = orderController.selectedShippingMethod.value;
+                  
+                  // Check if coupon makes shipping free
+                  if (cartController.hasFreeShippingCoupon()) {
+                    return Text('Free',
+                        style: TextStyle(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.bold,
+                            fontSize: ResponsiveUtils.sp(14)));
+                  }
+                  
+                  // Check if shipping method itself is free (price is 0) - show only tick
+                  if (shippingMethod != null && shippingMethod.priceWithTax == 0) {
+                    return Icon(
+                      Icons.check_circle,
+                      size: ResponsiveUtils.rp(18),
+                      color: AppColors.success,
+                    );
+                  }
+                  
+                  // Show shipping price if method is selected
+                  return Text(
+                    shippingMethod != null
+                        ? cartController.formatPrice(shippingMethod.priceWithTax)
+                        : 'TBD',
+                    style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textPrimary),
+                  );
+                }),
+              ],
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            // Payment Method
+            Obx(() {
+              final payment = orderController.selectedPaymentMethod.value;
+              if (payment == null) return SizedBox.shrink();
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Payment',
+                      style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(14),
+                          color: AppColors.textSecondary)),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            payment.code.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
                             ),
                           ),
-                      ],
+                          if (payment.eligibilityMessage != null)
+                            Padding(
+                              padding:
+                                  EdgeInsets.only(top: ResponsiveUtils.rp(2)),
+                              child: Text(
+                                payment.eligibilityMessage!,
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(12),
+                                  color: AppColors.textSecondary,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          }),
-          Divider(color: AppColors.divider),
+                ],
+              );
+            }),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            // Loyalty Points Used
+            Obx(() {
+              final loyaltyPointsUsed = orderController
+                  .currentOrder.value?.customFields?.loyaltyPointsUsed;
+              if (loyaltyPointsUsed == null || loyaltyPointsUsed == 0) {
+                return SizedBox.shrink();
+              }
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Points Used',
+                      style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(14),
+                          color: AppColors.textSecondary)),
+                  Text(
+                    '$loyaltyPointsUsed points',
+                    style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textPrimary),
+                  ),
+                ],
+              );
+            }),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            // Coupon Codes
+            Obx(() {
+              final couponCodes = orderController.currentOrder.value?.couponCodes ?? [];
+              if (couponCodes.isEmpty) {
+                return SizedBox.shrink();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Coupon Code',
+                      style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(14),
+                          color: AppColors.textSecondary)),
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  ...couponCodes.map((code) => Padding(
+                        padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(4)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              code,
+                              style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(14),
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.success),
+                            ),
+                          ],
+                        ),
+                      )),
+                ],
+              );
+            }),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            // Discounts
+            Obx(() {
+              final discounts = orderController.currentOrder.value?.discounts ?? [];
+              if (discounts.isEmpty) {
+                return SizedBox.shrink();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Discount',
+                      style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(14),
+                          color: AppColors.textSecondary)),
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  ...discounts.map((discount) => Padding(
+                        padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(4)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                discount.description.isNotEmpty
+                                    ? discount.description
+                                    : 'Discount',
+                                style: TextStyle(
+                                    fontSize: ResponsiveUtils.sp(14),
+                                    color: AppColors.success),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Text(
+                              cartController.formatPrice(discount.amountWithTax),
+                              style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(14),
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.success),
+                            ),
+                          ],
+                        ),
+                      )),
+                ],
+              );
+            }),
+            Divider(color: AppColors.divider),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+          ],
+          // Total (always visible)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

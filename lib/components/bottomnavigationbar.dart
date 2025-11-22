@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../context/context.dart';
 import '../theme/colors.dart';
-import '../theme/sizes.dart';
 import '../utils/responsive.dart';
 import '../controllers/cart/Cartcontroller.dart';
+import '../utils/navigation_helper.dart';
 
 class BottomNavComponent extends StatefulWidget {
   final int cartCount;
-  final ValueChanged<int>? onTap;
 
   const BottomNavComponent({
     super.key,
     this.cartCount = AppContent.defaultCartCount,
-    this.onTap,
   });
 
   @override
@@ -21,33 +19,13 @@ class BottomNavComponent extends StatefulWidget {
 }
 
 class _BottomNavComponentState extends State<BottomNavComponent> {
-  int _selectedIndex = 0;
   final CartController cartController = Get.find<CartController>();
-
-  void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
-
-    // Handle navigation based on index
-    switch (index) {
-      case 0:
-        // Home - already on home page
-        if (widget.onTap != null) widget.onTap!(index);
-        break;
-      case 1:
-        // Categories - can be implemented later
-        if (widget.onTap != null) widget.onTap!(index);
-        break;
-      case 2:
-        // Cart - navigate to cart page
-        Get.toNamed('/cart');
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    // If cart has more than 1 item, show only cart button with total and coupon text
-    if (widget.cartCount > 1) {
+    // Only show cart button when cart has more than 1 item
+    // Don't show bottom navigation bar (home, category, cart) at all
+    if (widget.cartCount > 0) {
       return Obx(() {
         final cartTotal = cartController.cartTotalPrice;
         final formattedTotal = cartController.formatPrice(cartTotal);
@@ -66,7 +44,7 @@ class _BottomNavComponentState extends State<BottomNavComponent> {
           child: SafeArea(
             top: false,
             child: InkWell(
-              onTap: () => Get.toNamed('/cart'),
+              onTap: () => NavigationHelper.navigateToCart(),
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: ResponsiveUtils.rp(16),
@@ -160,64 +138,8 @@ class _BottomNavComponentState extends State<BottomNavComponent> {
       });
     }
 
-    // Normal bottom navigation when cart has 1 or fewer items
-    return BottomNavigationBar(
-      currentIndex: _selectedIndex,
-      onTap: _onItemTapped,
-      backgroundColor: AppColors.surface,
-      selectedItemColor: AppColors.button,
-      unselectedItemColor: AppColors.heartInactive,
-      iconSize: AppSizes.heartIconSize,
-      elevation: AppSizes.cardElevation,
-      type: BottomNavigationBarType.fixed,
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined, color: AppColors.icon),
-          activeIcon: const Icon(Icons.home),
-          label: AppContent.homeLabel,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.category_outlined, color: AppColors.icon),
-          activeIcon: const Icon(Icons.category),
-          label: AppContent.categoryLabel,
-        ),
-        BottomNavigationBarItem(
-          icon: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Icon(Icons.shopping_cart_outlined, color: AppColors.icon),
-              if (widget.cartCount > 0)
-                Positioned(
-                  right: -ResponsiveUtils.rp(6),
-                  top: -ResponsiveUtils.rp(3),
-                  child: Container(
-                    padding: EdgeInsets.all(ResponsiveUtils.rp(2)),
-                    decoration: BoxDecoration(
-                      color: AppColors.heartActive,
-                      borderRadius:
-                          BorderRadius.circular(ResponsiveUtils.rp(10)),
-                    ),
-                    constraints: BoxConstraints(
-                      minWidth: ResponsiveUtils.rp(18),
-                      minHeight: ResponsiveUtils.rp(18),
-                    ),
-                    child: Text(
-                      '${widget.cartCount}',
-                      style: TextStyle(
-                        color: AppColors.buttonText,
-                        fontSize: ResponsiveUtils.sp(10),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          activeIcon: const Icon(Icons.shopping_cart),
-          label: AppContent.cartLabel,
-        ),
-      ],
-    );
+    // Return empty container when cart has 1 or fewer items
+    // No bottom navigation bar will be shown
+    return const SizedBox.shrink();
   }
 }

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opening in App...</title>
+    <script>
+        // App configuration
+        const APP_PACKAGE_NAME = 'com.kaaikani.kaaikani';
+        const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=' + APP_PACKAGE_NAME;
+        const PLAY_STORE_APP_URL = 'market://details?id=' + APP_PACKAGE_NAME;
+        const APP_OPEN_TIMEOUT = 2500; // 2.5 seconds to detect if app opened
+        
+        let appOpened = false;
+        let redirectTimer = null;
+        
+        // Universal redirect handler for any path
+        function openApp() {
+            const path = window.location.pathname;
+            const query = window.location.search;
+            const hash = window.location.hash;
+            
+            // Remove leading slash and build custom scheme URL
+            const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+            let customScheme = 'kaaikani://' + cleanPath;
+            
+            // Add query string if present
+            if (query) {
+                customScheme += query;
+            }
+            
+            // Add hash if present
+            if (hash) {
+                customScheme += hash;
+            }
+            
+            debugPrint('[Redirect] Attempting to open: ' + customScheme);
+            
+            // Mark that we're trying to open the app
+            appOpened = false;
+            
+            // Try to open the app using custom scheme
+            try {
+                window.location.href = customScheme;
+            } catch (e) {
+                debugPrint('[Redirect] Error opening app: ' + e);
+            }
+            
+            // Also try Android App Links (universal link)
+            // This will be handled automatically by Android if app is installed
+            const universalLink = window.location.origin + path + query + hash;
+            debugPrint('[Redirect] Universal link: ' + universalLink);
+            
+            // Set up detection timer
+            // If we're still on this page after timeout, app is not installed
+            redirectTimer = setTimeout(function() {
+                if (!appOpened) {
+                    debugPrint('[Redirect] App not detected, redirecting to Play Store');
+                    redirectToPlayStore();
+                }
+            }, APP_OPEN_TIMEOUT);
+            
+            // Detect if app opened (page visibility API)
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    debugPrint('[Redirect] Page hidden - app likely opened');
+                    appOpened = true;
+                    if (redirectTimer) {
+                        clearTimeout(redirectTimer);
+                    }
+                }
+            });
+            
+            // Also detect blur (user switched apps)
+            window.addEventListener('blur', function() {
+                debugPrint('[Redirect] Window blurred - app likely opened');
+                appOpened = true;
+                if (redirectTimer) {
+                    clearTimeout(redirectTimer);
+                }
+            });
+        }
+        
+        function redirectToPlayStore() {
+            // Try Play Store app first, then web fallback
+            const playStoreAppLink = document.createElement('a');
+            playStoreAppLink.href = PLAY_STORE_APP_URL;
+            playStoreAppLink.style.display = 'none';
+            document.body.appendChild(playStoreAppLink);
+            
+            // Try to open Play Store app
+            try {
+                playStoreAppLink.click();
+                
+                // Fallback to web Play Store after short delay
+                setTimeout(function() {
+                    window.location.href = PLAY_STORE_URL;
+                }, 500);
+            } catch (e) {
+                // If that fails, go directly to web Play Store
+                window.location.href = PLAY_STORE_URL;
+            }
+        }
+        
+        function debugPrint(message) {
+            if (console && console.log) {
+                console.log(message);
+            }
+        }
+        
+        // Run on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', openApp);
+        } else {
+            openApp();
+        }
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 500px;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        p {
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+        #fallback {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .button {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        .button:active {
+            transform: scale(0.95);
+        }
+        #universal-link {
+            font-size: 12px;
+            opacity: 0.7;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <h2>Opening in App...</h2>
+        <p>Please wait while we redirect you to the Kaaikani app.</p>
+        <p style="font-size: 14px; opacity: 0.8; margin-top: 20px;">
+            If the app is not installed, you'll be redirected to the Play Store.
+        </p>
+        <div id="fallback" style="display: none;">
+            <p>Redirecting to Play Store...</p>
+            <a href="https://play.google.com/store/apps/details?id=com.kaaikani.kaaikani" class="button">Go to Play Store</a>
+        </div>
+    </div>
+</body>
+</html>
+

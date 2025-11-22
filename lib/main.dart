@@ -9,8 +9,13 @@ import 'package:recipe.app/services/graphql_client.dart';
 import 'package:recipe.app/services/in_app_update_service.dart';
 import 'package:recipe.app/services/notification_service.dart';
 import 'package:recipe.app/services/deep_link_service.dart';
+import 'package:recipe.app/services/crashlytics_service.dart';
+import 'package:recipe.app/services/analytics_service.dart';
+import 'package:recipe.app/services/remote_config_service.dart';
 import 'controllers/customer/customer_controller.dart';
 import 'controllers/banner/bannercontroller.dart';
+import 'controllers/cart/Cartcontroller.dart';
+import 'controllers/collection controller/collectioncontroller.dart';
 import 'routes.dart';
 import 'controllers/utilitycontroller/utilitycontroller.dart';
 import 'controllers/authentication/authenticationcontroller.dart';
@@ -145,53 +150,91 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await NotificationService.instance.showRemoteNotification(message);
 }
 
-Future<void> _initializeFirebaseMessaging() async {
+Future<void> _initializeFirebase() async {
   if (kIsWeb) {
-    // Skip Firebase Messaging initialization on Web (no options configured).
-    debugPrint('[Main] Skipping Firebase Messaging initialization on Web.');
+    // Skip Firebase initialization on Web (no options configured).
+    debugPrint('[Main] Skipping Firebase initialization on Web.');
     return;
   }
-  await Firebase.initializeApp();
-  await NotificationService.instance.initialize();
 
-  final messaging = FirebaseMessaging.instance;
-  await messaging.requestPermission();
+  try {
+    await Firebase.initializeApp();
+    
+    // Initialize Crashlytics
+    await CrashlyticsService.instance.initialize();
+    
+    // Initialize Firebase Messaging
+    await NotificationService.instance.initialize();
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    NotificationService.instance.showRemoteNotification(message);
-    NotificationService.instance.showSnackbar(message);
-  });
+    final messaging = FirebaseMessaging.instance;
+    await messaging.requestPermission();
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      NotificationService.instance.showRemoteNotification(message);
+      NotificationService.instance.showSnackbar(message);
+    });
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    
+    // Initialize Analytics
+    await AnalyticsService().initialize();
+    
+    // Initialize Remote Config
+    final remoteConfigService = Get.put(RemoteConfigService());
+    await remoteConfigService.initialize();
+  } catch (e, stackTrace) {
+    debugPrint('[Main] Firebase initialization error: $e');
+    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Firebase initialization failed');
+  }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase Messaging only on mobile/desktop, not Web.
-  await _initializeFirebaseMessaging();
+  // Initialize Firebase (Crashlytics + Messaging) only on mobile/desktop, not Web.
+  await _initializeFirebase();
 
   // Initialize GetStorage
   await GetStorage.init();
   await dotenv.load(fileName: ".env"); // <-- load dotenv first
-  await GraphqlService.initialize();
+  
+  try {
+    await GraphqlService.initialize();
+  } catch (e, stackTrace) {
+    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'GraphQL initialization failed');
+  }
   
   // Initialize in-app update service
-  await InAppUpdateService().initialize();
+  try {
+    await InAppUpdateService().initialize();
+  } catch (e, stackTrace) {
+    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'In-app update initialization failed');
+  }
 
   // Initialize deep link service
-  await DeepLinkService().initialize();
+  try {
+    await DeepLinkService().initialize();
+  } catch (e, stackTrace) {
+    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Deep link initialization failed');
+  }
 
   // Initialize controllers
-  Get.put(UtilityController());
-  Get.put(CustomerController());
-  Get.put<AuthController>(AuthController());
-  final themeController = Get.put(ThemeController());
-  
-  // Check for app updates
-  await checkAppUpdate();
+  try {
+    Get.put(UtilityController());
+    Get.put(CustomerController());
+    Get.put<AuthController>(AuthController());
+    Get.put(CartController());
+    Get.put(CollectionsController());
+    final themeController = Get.put(ThemeController());
+    
+    // Check for app updates
+    await checkAppUpdate();
 
-  runApp(MyApp(themeController: themeController));
+    runApp(MyApp(themeController: themeController));
+  } catch (e, stackTrace) {
+    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'App initialization failed', fatal: true);
+    rethrow;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -201,6 +244,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final analyticsObserver = AnalyticsService().observer;
+    
     return Obx(() => GetMaterialApp(
       title: 'Kaaikani',
       theme: AppTheme.lightTheme(),
@@ -209,6 +254,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.initial,
       getPages: AppRoutes.routes,
+      navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
     ));
   }
 }

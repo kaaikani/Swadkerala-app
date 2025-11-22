@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import '../controllers/authentication/authenticationcontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../routes.dart';
+import '../services/graphql_client.dart';
 import '../graphql/product.graphql.dart';
 import '../widgets/Variant bottom sheet.dart' show VariantBottomSheet;
 import '../widgets/appbar.dart';
 import '../widgets/snackbar.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
-import '../utils/collection_product_card.dart';
+import '../widgets/product_card.dart';
 import '../utils/price_formatter.dart';
+import '../utils/navigation_helper.dart';
+import '../services/analytics_service.dart';
 
 class CollectionProductsPage extends StatefulWidget {
   final String collectionId;
   final String collectionName;
+  final String? slug;
 
   const CollectionProductsPage({
     Key? key,
     required this.collectionId,
     required this.collectionName,
+    this.slug,
   }) : super(key: key);
 
   @override
@@ -33,32 +40,32 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   final CartController cartController = Get.put(CartController());
   final BannerController bannerController = Get.put(BannerController());
   final UtilityController utilityController = Get.find();
-  final Map<String, int> _optimisticQuantityOverrides = {};
-
-  int _getOptimisticQuantity(String variantId, int actualQuantity) {
-    final override = _optimisticQuantityOverrides[variantId];
-    if (override == null) {
-      return actualQuantity;
-    }
-
-    // Clear override once the actual quantity matches
-    if (override == actualQuantity) {
-      _optimisticQuantityOverrides.remove(variantId);
-      return actualQuantity;
-    }
-
-    return override;
-  }
 
   @override
   void initState() {
     super.initState();
     debugPrint(
-        '🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}');
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+        '🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       debugPrint(
-          '🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}');
-      controller.fetchCollectionproducts(id: widget.collectionId);
+          '🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
+      
+      try {
+        await controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug);
+        
+        // Check if collection was found after fetch attempt
+        if (controller.currentCollection.value == null) {
+          debugPrint('⚠️ [CollectionProductsPage] Collection not found, handling redirect...');
+          _handleCollectionNotFound();
+          return;
+        }
+        
+      } catch (e) {
+        debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
+        _handleCollectionNotFound();
+        return;
+      }
+      
       // Fetch favorites to know which products are favorited
       bannerController.getCustomerFavorites();
       cartController.getActiveOrder();
@@ -87,6 +94,28 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
       Query$Products$collection$productVariants$items variant) {
     final collectionsController = Get.find<CollectionsController>();
     return collectionsController.buildVariantLabel(variant);
+  }
+
+  /// Get variant label that matches what's shown in the dropdown
+  String _getVariantLabelFromSelectedVariant(
+      Query$Products$collection$productVariants$items selectedVariant,
+      String? groupName) {
+    // If there's an option group, get the option name from that group (same as dropdown)
+    if (groupName != null && selectedVariant.options.isNotEmpty) {
+      for (final opt in selectedVariant.options) {
+        if (opt.group.name == groupName) {
+          return opt.name; // Return the option name (same as dropdown shows)
+        }
+      }
+    }
+    
+    // Fallback: if no options, use the variant name
+    if (selectedVariant.options.isEmpty) {
+      return selectedVariant.name;
+    }
+    
+    // If no matching group, return first option name
+    return selectedVariant.options.first.name;
   }
 
   double? _calculateDiscountPercent(
@@ -165,43 +194,83 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
     }
 
     return Container(
-      height: ResponsiveUtils.rp(36),
-      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
+      height: ResponsiveUtils.rp(32),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
       decoration: BoxDecoration(
         color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.6),
+          width: 1,
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: currentOptionValue,
           isExpanded: true,
+          isDense: true,
           icon: Icon(
-            Icons.keyboard_arrow_down,
-            size: ResponsiveUtils.rp(18),
-            color: AppColors.icon,
+            Icons.keyboard_arrow_down_rounded,
+            size: ResponsiveUtils.rp(20),
+            color: AppColors.icon.withValues(alpha: 0.7),
+          ),
+          iconSize: ResponsiveUtils.rp(20),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(12),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+            height: 1.2,
           ),
           hint: Text(
             groupName,
             style: TextStyle(
-              fontSize: ResponsiveUtils.sp(13),
+              fontSize: ResponsiveUtils.sp(12),
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
+              color: AppColors.textSecondary.withValues(alpha: 0.7),
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           items: uniqueOptions.map((optionName) {
+            final isSelected = optionName == currentOptionValue;
             return DropdownMenuItem<String>(
               value: optionName,
-              child: Text(
-                '$optionName',
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(12),
-                  color: AppColors.textSecondary,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: ResponsiveUtils.rp(4),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        optionName,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(13),
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    if (isSelected) ...[
+                      SizedBox(width: ResponsiveUtils.rp(6)),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        size: ResponsiveUtils.rp(16),
+                        color: AppColors.button,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             );
           }).toList(),
+          dropdownColor: AppColors.card,
+          menuMaxHeight: ResponsiveUtils.rp(200),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
           onChanged: (String? newOptionName) {
             if (newOptionName == null) return;
 
@@ -234,20 +303,29 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
       return;
     }
 
-    final current = cartController.getVariantQuantity(variant.id);
-    _optimisticQuantityOverrides[variant.id] = current + 1;
-    setState(() {});
-
     final success = await cartController.addToCart(
         productVariantId: variantId, quantity: 1);
 
     if (success) {
       final displayName = _getVariantDisplayName(variant);
       showSuccessSnackbar('$displayName added to cart');
+      
+      // Track add to cart event
+      final price = variant.priceWithTax / 100.0; // Convert from minor units
+      await AnalyticsService().logAddToCart(
+        itemId: variant.id,
+        itemName: displayName,
+        itemCategory: variant.product.name,
+        price: price,
+        currency: 'INR',
+        quantity: 1,
+      );
+      
+      // Trigger state update for UI refresh
+      if (mounted) {
+        setState(() {});
+      }
     }
-
-    _optimisticQuantityOverrides.remove(variant.id);
-    if (mounted) setState(() {});
   }
 
   /// Show bottom sheet with variant options
@@ -274,88 +352,27 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
         showSuccessSnackbar('$productName removed from favorites');
       } else {
         showSuccessSnackbar('$productName added to favorites');
+        
+        // Track add to wishlist event
+        final variants = controller.getVariantsForProduct(productId);
+        if (variants.isNotEmpty) {
+          final variant = variants.first;
+          final price = variant.priceWithTax / 100.0;
+          await AnalyticsService().logAddToWishlist(
+            itemId: variant.id,
+            itemName: productName,
+            itemCategory: 'Product',
+            price: price,
+            currency: 'INR',
+          );
+        }
       }
     } else {}
   }
 
-  Future<void> _handleDecreaseVariant(
-    Query$Products$collection$productVariants$items variant,
-    String productName,
-  ) async {
-    final current = cartController.getVariantQuantity(variant.id);
-    final nextQuantity = current - 1 < 0 ? 0 : current - 1;
-    _optimisticQuantityOverrides[variant.id] = nextQuantity;
-    setState(() {});
-
-    final success =
-        await cartController.decrementVariant(variantId: variant.id);
-    if (!success) {
-      // Revert optimistic change if decrement failed
-      _optimisticQuantityOverrides[variant.id] = current;
-    }
-
-    _optimisticQuantityOverrides.remove(variant.id);
-    if (mounted) setState(() {});
-  }
 
   // --- Start of UI Restructure: Blinkit Style ---
 
-  // Counter widget
-  Widget _buildCounterWidget({
-    required int quantity,
-    required Query$Products$collection$productVariants$items variant,
-    required String productName,
-  }) {
-    return Container(
-      width: double.infinity,
-      height: ResponsiveUtils.rp(36),
-      decoration: BoxDecoration(
-        color: AppColors.button,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Decrease button
-          GestureDetector(
-            onTap: () => _handleDecreaseVariant(variant, productName),
-            child: Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-              child: Icon(
-                Icons.remove,
-                size: ResponsiveUtils.rp(20),
-                color: Colors.white,
-              ),
-            ),
-          ),
-          // Quantity display
-          Text(
-            quantity.toString(),
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(14),
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          // Increase button
-          GestureDetector(
-            onTap: () => _handleAddToCart(
-              variant,
-              allowVariantSelector: false,
-            ),
-            child: Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-              child: Icon(
-                Icons.add,
-                size: ResponsiveUtils.rp(20),
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -400,6 +417,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
               bannerController.getCustomerFavorites(),
             ]);
           },
+          color: AppColors.refreshIndicator,
           child: GridView.builder(
             // Reduced padding for denser layout
             padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
@@ -429,16 +447,16 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                 final selectedVariant =
                     controller.getSelectedVariantForProduct(productId) ??
                         variant;
-                final actualQuantity =
-                    cartController.getVariantQuantity(selectedVariant.id);
-                final quantity =
-                    _getOptimisticQuantity(selectedVariant.id, actualQuantity);
-
                 final priceMinorUnits = selectedVariant.priceWithTax.round();
                 final priceText = PriceFormatter.formatPrice(priceMinorUnits);
 
-                final variantLabel =
-                    controller.buildVariantLabel(selectedVariant);
+                // Get the same option value that's shown in the dropdown
+                final variantLabel = _getVariantLabelFromSelectedVariant(
+                  selectedVariant,
+                  product.optionGroups.isNotEmpty
+                      ? product.optionGroups.first.name
+                      : null,
+                );
                 final shadowPriceMinor = _getShadowPriceMinor(selectedVariant);
                 final discountPercent =
                     _calculateDiscountPercent(selectedVariant);
@@ -452,14 +470,14 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                     ? PriceFormatter.formatPrice(shadowPriceMinor)
                     : null;
 
-                return CollectionProductCard(
+                return ProductCard(
                   name: name,
                   imageUrl: imageUrl,
                   onTap: () {
-                    Get.toNamed('/product-detail', arguments: {
-                      'productId': productId,
-                      'productName': name,
-                    });
+                    NavigationHelper.navigateToProductDetail(
+                      productId: productId,
+                      productName: name,
+                    );
                   },
                   onDoubleTap: () => _handleFavoriteToggle(productId, name),
                   isFavorite: isFavorite,
@@ -476,12 +494,6 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                   variantLabel: variantLabel,
                   priceText: priceText,
                   shadowPriceText: shadowPriceText,
-                  quantity: quantity,
-                  counterBuilder: () => _buildCounterWidget(
-                    quantity: quantity,
-                    variant: selectedVariant,
-                    productName: name,
-                  ),
                   onAddToCart: () => _handleAddToCart(
                     selectedVariant,
                     allowVariantSelector: false,
@@ -597,5 +609,34 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
         },
       ),
     );
+  }
+
+  /// Handle collection not found error - redirect based on authentication status
+  void _handleCollectionNotFound() {
+    try {
+      // Check authentication status
+      final authController = Get.find<AuthController>();
+      final authToken = GraphqlService.authToken;
+      final channelToken = GraphqlService.channelToken;
+      
+      final isAuthenticated = authController.isLoggedIn && 
+                             authToken.isNotEmpty && 
+                             channelToken.isNotEmpty;
+      
+      debugPrint('🔍 [CollectionProductsPage] Authentication status: $isAuthenticated');
+      
+      if (isAuthenticated) {
+        debugPrint('🏠 [CollectionProductsPage] User authenticated - redirecting to home');
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        debugPrint('🔐 [CollectionProductsPage] User not authenticated - redirecting to login');
+        Get.offAllNamed(AppRoutes.login);
+      }
+      
+    } catch (e) {
+      debugPrint('❌ [CollectionProductsPage] Error checking auth status: $e');
+      // Fallback to home page if there's any error
+      Get.offAllNamed(AppRoutes.home);
+    }
   }
 }

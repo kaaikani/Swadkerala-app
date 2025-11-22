@@ -15,6 +15,7 @@ import '../cart/Cartcontroller.dart';
 import '../banner/bannercontroller.dart';
 import '../order/ordercontroller.dart';
 import '../base_controller.dart';
+import '../../services/analytics_service.dart';
 import 'authenticationmodels.dart';
 import '../../graphql/authenticate.graphql.dart';
 
@@ -525,6 +526,9 @@ class AuthController extends BaseController {
 
       // Clear all stored data and cache
       await _clearAllAppData();
+
+      // Reset analytics data
+      await AnalyticsService().resetAnalytics();
 
       // Reset auth state
       setLoggedIn(false);

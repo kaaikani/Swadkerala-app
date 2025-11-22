@@ -115,6 +115,7 @@ query GetFrequentlyOrderedProducts {
                 price
                 priceWithTax
                 currencyCode
+
             }
             featuredAsset {
                 preview

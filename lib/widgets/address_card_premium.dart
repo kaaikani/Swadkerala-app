@@ -36,27 +36,19 @@ class AddressCardPremium extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: PremiumCard(
-        padding: ResponsiveSpacing.padding(all: 16),
-        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        padding: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
         backgroundColor: AppColors.surface,
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: AppColors.button.withValues(alpha: 0.2),
-                  blurRadius: ResponsiveUtils.rp(8),
-                  offset: Offset(0, ResponsiveUtils.rp(2)),
-                  spreadRadius: ResponsiveUtils.rp(1),
-                ),
-              ]
-            : [],
+        boxShadow: [],
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Radio Button
             Container(
-              width: ResponsiveUtils.rp(24),
-              height: ResponsiveUtils.rp(24),
+              width: ResponsiveUtils.rp(20),
+              height: ResponsiveUtils.rp(20),
+              margin: EdgeInsets.only(top: ResponsiveUtils.rp(2)),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -68,8 +60,8 @@ class AddressCardPremium extends StatelessWidget {
               child: isSelected
                   ? Center(
                       child: Container(
-                        width: ResponsiveUtils.rp(8),
-                        height: ResponsiveUtils.rp(8),
+                        width: ResponsiveUtils.rp(6),
+                        height: ResponsiveUtils.rp(6),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.textLight,
@@ -78,85 +70,138 @@ class AddressCardPremium extends StatelessWidget {
                     )
                   : null,
             ),
-            ResponsiveSpacing.horizontal(16),
+            SizedBox(width: ResponsiveUtils.rp(12)),
             // Address Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Name
                   ResponsiveText(
                     fullName,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
-                  ResponsiveSpacing.vertical(8),
-                  // Address Lines
-                  ResponsiveText(
-                    streetLine1,
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                  if (streetLine2.isNotEmpty) ...[
-                    ResponsiveSpacing.vertical(4),
-                    ResponsiveText(
-                      streetLine2,
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ],
                   ResponsiveSpacing.vertical(4),
-                  ResponsiveText(
-                    '$city, $postalCode',
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
+                  // Address Lines - Combined to fit in max 3 lines
+                  _buildCompactAddress(
+                    streetLine1: streetLine1,
+                    streetLine2: streetLine2,
+                    city: city,
+                    postalCode: postalCode,
+                    phoneNumber: phoneNumber,
+                    isDefault: isDefault,
                   ),
-                  if (phoneNumber != null && phoneNumber!.isNotEmpty) ...[
-                    ResponsiveSpacing.vertical(8),
-                    Row(
-                      children: [
-                        ResponsiveIcon(
-                          Icons.phone,
-                          size: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                        ResponsiveSpacing.horizontal(6),
-                        ResponsiveText(
-                          phoneNumber!,
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (isDefault) ...[
-                    ResponsiveSpacing.vertical(8),
-                    Container(
-                      padding:
-                          ResponsiveSpacing.padding(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.button.withValues(alpha: 0.1),
-                        borderRadius:
-                            BorderRadius.circular(ResponsiveUtils.rp(6)),
-                        border: Border.all(
-                          color: AppColors.button.withValues(alpha: 0.3),
-                          width: ResponsiveUtils.rp(1),
-                        ),
-                      ),
-                      child: ResponsiveText(
-                        'Default Address',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.button,
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCompactAddress({
+    required String streetLine1,
+    required String streetLine2,
+    required String city,
+    required String postalCode,
+    String? phoneNumber,
+    required bool isDefault,
+  }) {
+    // Build address parts list
+    List<String> addressParts = [];
+    
+    // Add street lines
+    if (streetLine1.isNotEmpty) {
+      addressParts.add(streetLine1);
+    }
+    if (streetLine2.isNotEmpty) {
+      addressParts.add(streetLine2);
+    }
+    
+    // Add city and postal code
+    String cityPostal = '$city, $postalCode'.trim();
+    if (cityPostal.isNotEmpty && cityPostal != ',') {
+      addressParts.add(cityPostal);
+    }
+    
+    // Combine address parts with comma separator
+    String combinedAddress = addressParts.join(', ');
+    
+    // Build phone and default badge row
+    List<Widget> bottomRow = [];
+    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+      bottomRow.add(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ResponsiveIcon(
+              Icons.phone,
+              size: 12,
+              color: AppColors.textSecondary,
+            ),
+            SizedBox(width: ResponsiveUtils.rp(4)),
+            ResponsiveText(
+              phoneNumber,
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ],
+        ),
+      );
+    }
+    
+    if (isDefault) {
+      if (bottomRow.isNotEmpty) {
+        bottomRow.add(SizedBox(width: ResponsiveUtils.rp(8)));
+      }
+      bottomRow.add(
+        Container(
+          padding: ResponsiveSpacing.padding(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: AppColors.button.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
+            border: Border.all(
+              color: AppColors.button.withValues(alpha: 0.3),
+              width: ResponsiveUtils.rp(1),
+            ),
+          ),
+          child: ResponsiveText(
+            'Default Address',
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: AppColors.button,
+          ),
+        ),
+      );
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Address text with max 3 lines
+        Text(
+          combinedAddress,
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(12),
+            color: AppColors.textSecondary,
+            height: 1.3,
+          ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (bottomRow.isNotEmpty) ...[
+          ResponsiveSpacing.vertical(4),
+          Wrap(
+            spacing: ResponsiveUtils.rp(8),
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: bottomRow,
+          ),
+        ],
+      ],
     );
   }
 }

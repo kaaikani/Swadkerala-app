@@ -15,6 +15,7 @@ import '../widgets/responsive_text.dart';
 import '../widgets/responsive_icon.dart';
 import '../widgets/shimmers.dart';
 import '../widgets/snackbar.dart';
+import '../services/analytics_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String productId;
@@ -56,6 +57,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       _fetchProductDetail();
       cartController.getActiveOrder();
       bannerController.getCustomerFavorites();
+      
+      // Track screen view
+      AnalyticsService().logScreenView(screenName: 'ProductDetail');
     });
   }
 
@@ -96,6 +100,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         _hasFetchedData = true; // Mark that we've completed the fetch attempt
         if (data != null) {
           productDetail = ProductDetailModel.fromJson(data);
+          
+          // Track product view
+          if (productDetail!.variants.isNotEmpty) {
+            final variant = productDetail!.variants.first;
+            final price = variant.priceWithTax != null ? variant.priceWithTax! / 100.0 : 0.0;
+            AnalyticsService().logViewItem(
+              itemId: variant.id,
+              itemName: widget.productName ?? productDetail!.name,
+              itemCategory: productDetail!.name,
+              price: price,
+              currency: 'INR',
+            );
+          }
+          
           if (productDetail!.variants.isNotEmpty) {
             selectedVariant = productDetail!.variants.first;
           }
@@ -720,13 +738,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     final variantId = int.tryParse(selectedVariant!.id);
     if (variantId == null) {
-      showErrorSnackbar('Invalid variant ID');
+      if (mounted) {
+        showErrorSnackbar('Invalid variant ID');
+      }
       return;
     }
 
     final qty = quantity ?? _selectedQuantity;
     final success = await cartController.addToCart(
         productVariantId: variantId, quantity: qty);
+
+    if (!mounted) return; // Widget was disposed during async operation
 
     if (success) {
       final displayName = _getVariantDisplayName(selectedVariant!);
@@ -739,58 +761,152 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     }
   }
 
-  Future<void> _showQuantityDialog() async {
-    final controller = TextEditingController();
-    await showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+  /// Get the dropdown value, ensuring it's always valid and exists in the items list
+  int? _getDropdownValue(int cartQuantity) {
+    // Build the items list to check what values are available
+    final items = _buildQuantityDropdownItems(cartQuantity);
+    final availableValues = items.map((item) => item.value).toList();
+    
+    if (cartQuantity > 0) {
+      // If cart quantity exists in the items list, use it
+      if (availableValues.contains(cartQuantity)) {
+        return cartQuantity;
+      }
+      // If cart quantity is 1, 2, or 3, use it (should always be in list)
+      if (cartQuantity >= 1 && cartQuantity <= 3) {
+        return cartQuantity;
+      }
+      // For custom quantities (> 3) that aren't in the list yet, default to 1
+      // The items list will be rebuilt with cartQuantity on next build
+      return 1;
+    }
+    
+    // Ensure _selectedQuantity is valid and exists in the items list
+    if (availableValues.contains(_selectedQuantity)) {
+      return _selectedQuantity;
+    }
+    
+    // Default to 1 if invalid (1 should always be in the list)
+    return 1;
+  }
+
+  /// Build dropdown items, including cart quantity if it's custom (> 3)
+  List<DropdownMenuItem<int>> _buildQuantityDropdownItems(int cartQuantity) {
+    final items = <DropdownMenuItem<int>>[
+      DropdownMenuItem<int>(
+        value: 1,
+        child: Center(
+          child: Text(
+            '1',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(16),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
             ),
-            title: ResponsiveText(
-              'Enter Quantity',
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      DropdownMenuItem<int>(
+        value: 2,
+        child: Center(
+          child: Text(
+            '2',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(16),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
             ),
-            content: TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: 'Quantity',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                ),
+          ),
+        ),
+      ),
+      DropdownMenuItem<int>(
+        value: 3,
+        child: Center(
+          child: Text(
+            '3',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(16),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+      ),
+    ];
+
+    // Add cart quantity if it's custom (> 3) and not already in the list
+    if (cartQuantity > 3) {
+      items.add(
+        DropdownMenuItem<int>(
+          value: cartQuantity,
+          child: Center(
+            child: Text(
+              '$cartQuantity',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(16),
+                fontWeight: FontWeight.w700,
+                color: AppColors.button,
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancel',
-                    style: TextStyle(color: AppColors.textSecondary)),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final qty = int.tryParse(controller.text);
-                  if (qty != null && qty > 0) {
-                    Navigator.pop(context);
-                    await _addToCart(quantity: qty);
-                  } else {
-                    showErrorSnackbar('Please enter a valid quantity');
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.button,
+          ),
+        ),
+      );
+    }
+
+    // Add "More" option
+    items.add(
+      DropdownMenuItem<int>(
+        value: -1, // Special value for "More"
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'More',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.button,
                 ),
-                child: Text('Add', style: TextStyle(color: Colors.white)),
+              ),
+              SizedBox(width: ResponsiveUtils.rp(4)),
+              Icon(
+                Icons.add_circle_outline,
+                size: ResponsiveUtils.rp(16),
+                color: AppColors.button,
               ),
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
-    controller.dispose();
+
+    return items;
+  }
+
+  Future<void> _showQuantityDialog() async {
+    const maxQuantity = 20;
+    
+    final result = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) {
+        return _QuantityDialogWidget(
+          maxQuantity: maxQuantity,
+          onAdd: (quantity) {
+            Navigator.pop(dialogContext, quantity);
+          },
+        );
+      },
+    );
+    
+    // Handle the result after dialog is closed
+    if (result != null && mounted) {
+      // Wait a frame to ensure dialog is fully closed
+      await Future.delayed(const Duration(milliseconds: 150));
+      if (mounted) {
+        await _addToCart(quantity: result);
+      }
+    }
   }
 
   Widget _buildBottomBar() {
@@ -829,78 +945,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<int>(
-                  value: cartQuantity > 0 ? null : _selectedQuantity,
+                  value: _getDropdownValue(cartQuantity),
                   isExpanded: true,
                   icon: Icon(
                     Icons.keyboard_arrow_down,
                     color: AppColors.button,
                     size: ResponsiveUtils.rp(20),
                   ),
-                  items: [
-                    DropdownMenuItem<int>(
-                      value: 1,
-                      child: Center(
-                        child: Text(
-                          '1',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(16),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem<int>(
-                      value: 2,
-                      child: Center(
-                        child: Text(
-                          '2',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(16),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem<int>(
-                      value: 3,
-                      child: Center(
-                        child: Text(
-                          '3',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(16),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    DropdownMenuItem<int>(
-                      value: -1, // Special value for "More"
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'More',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(14),
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.button,
-                              ),
-                            ),
-                            SizedBox(width: ResponsiveUtils.rp(4)),
-                            Icon(
-                              Icons.add_circle_outline,
-                              size: ResponsiveUtils.rp(16),
-                              color: AppColors.button,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  items: _buildQuantityDropdownItems(cartQuantity),
                   onChanged: isOutOfStock
                       ? null
                       : (value) async {
@@ -915,38 +967,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           }
                         },
                   selectedItemBuilder: (context) {
-                    if (cartQuantity > 0) {
-                      return [
-                        DropdownMenuItem<int>(
-                          value: cartQuantity,
-                          child: Center(
-                            child: Text(
-                              '$cartQuantity',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(16),
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.button,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ];
-                    }
-                    return [
-                      DropdownMenuItem<int>(
-                        value: _selectedQuantity,
+                    // selectedItemBuilder must return a list with the same length as items
+                    // Each item corresponds to the item at that index in the items list
+                    final items = _buildQuantityDropdownItems(cartQuantity);
+                    return items.map((item) {
+                      final isSelected = item.value == _getDropdownValue(cartQuantity);
+                      final isCartQuantity = item.value == cartQuantity && cartQuantity > 0;
+                      return DropdownMenuItem<int>(
+                        value: item.value,
                         child: Center(
                           child: Text(
-                            '$_selectedQuantity',
+                            item.value == -1
+                                ? 'More'
+                                : '${item.value}',
                             style: TextStyle(
                               fontSize: ResponsiveUtils.sp(16),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
+                              fontWeight: isSelected || isCartQuantity
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
+                              color: isSelected || isCartQuantity
+                                  ? AppColors.button
+                                  : AppColors.textPrimary,
                             ),
                           ),
                         ),
-                      ),
-                    ];
+                      );
+                    }).toList();
                   },
                 ),
               ),
@@ -1053,6 +1099,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           onRefresh: () async {
             await _fetchProductDetail();
           },
+          color: AppColors.refreshIndicator,
           child: CustomScrollView(
             physics: BouncingScrollPhysics(),
             slivers: [
@@ -1360,6 +1407,127 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ),
         SizedBox(height: ResponsiveUtils.rp(80)), // Space for bottom bar
+      ],
+    );
+  }
+}
+
+/// Separate StatefulWidget for quantity dialog to properly manage TextEditingController lifecycle
+class _QuantityDialogWidget extends StatefulWidget {
+  final int maxQuantity;
+  final Function(int) onAdd;
+
+  const _QuantityDialogWidget({
+    required this.maxQuantity,
+    required this.onAdd,
+  });
+
+  @override
+  State<_QuantityDialogWidget> createState() => _QuantityDialogWidgetState();
+}
+
+class _QuantityDialogWidgetState extends State<_QuantityDialogWidget> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+      ),
+      title: ResponsiveText(
+        'Enter Quantity',
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: 'Quantity (Max: ${widget.maxQuantity})',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                ),
+              ),
+              onChanged: (value) {
+                // Limit input to maxQuantity
+                final qty = int.tryParse(value);
+                if (qty != null && qty > widget.maxQuantity) {
+                  _controller.text = widget.maxQuantity.toString();
+                  _controller.selection = TextSelection.fromPosition(
+                    TextPosition(offset: _controller.text.length),
+                  );
+                }
+              },
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            Text(
+              'Maximum quantity: ${widget.maxQuantity}',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(12),
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel',
+              style: TextStyle(color: AppColors.textSecondary)),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final qty = int.tryParse(_controller.text);
+            if (qty != null && qty > 0) {
+              if (qty > widget.maxQuantity) {
+                // Use Get.snackbar to avoid context issues
+                Get.snackbar(
+                  'Error',
+                  'Maximum quantity is ${widget.maxQuantity}',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                );
+                return;
+              }
+              widget.onAdd(qty);
+            } else {
+              // Use Get.snackbar to avoid context issues
+              Get.snackbar(
+                'Error',
+                'Please enter a valid quantity',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.red,
+                colorText: Colors.white,
+                duration: const Duration(seconds: 2),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.button,
+          ),
+          child: Text('Add', style: TextStyle(color: Colors.white)),
+        ),
       ],
     );
   }

@@ -6,6 +6,7 @@ import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../../widgets/error_dialog.dart';
+import '../../services/analytics_service.dart';
 import '../base_controller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import 'customer_models.dart';
@@ -81,6 +82,15 @@ class CustomerController extends BaseController {
         orders.value = activeCustomer.value?.orders?.items ?? [];
 
         _initializeProfileFields();
+
+        // Set analytics user ID
+        if (activeCustomer.value?.id != null) {
+          await AnalyticsService().setUserId(activeCustomer.value!.id);
+          await AnalyticsService().setUserProperty(
+            name: 'email',
+            value: activeCustomer.value!.emailAddress,
+          );
+        }
 
         debugPrint(
             '[Customer] Customer loaded: ${activeCustomer.value?.firstName} ${activeCustomer.value?.lastName}');

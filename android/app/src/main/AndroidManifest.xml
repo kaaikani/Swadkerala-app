@@ -1,79 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-    
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.kaaikani.kaaikani">
+
     <!-- Essential permissions only -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    
-    <!-- Removed sensitive permissions to pass security checks -->
-    <!-- Phone and SMS permissions will be requested at runtime only when needed -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:label="Kaaikani"
-            android:name="${applicationName}"
-            android:icon="@mipmap/ic_launcher"
-            android:usesCleartextTraffic="false"
-            android:allowBackup="false"
-            android:requestLegacyExternalStorage="false">
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"
+        android:allowBackup="false"
+        android:requestLegacyExternalStorage="false">
 
         <activity
-                android:name="com.kaaikani.kaaikani.MainActivity"
-                android:exported="true"
-                android:launchMode="singleTop"
-                android:taskAffinity=""
-                android:theme="@style/LaunchTheme"
-                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-                android:hardwareAccelerated="true"
-                android:windowSoftInputMode="adjustResize">
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
 
+            <!-- App Icon Launcher -->
             <meta-data
-                    android:name="io.flutter.embedding.android.NormalTheme"
-                    android:resource="@style/NormalTheme"
-            />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep Links - Custom URL Scheme -->
-            <intent-filter android:autoVerify="true">
+            <!-- 1. Custom Scheme (kaaikani://) - No verification needed -->
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Replace with your custom scheme, e.g., kaaikani:// -->
                 <data android:scheme="kaaikani" />
             </intent-filter>
 
-            <!-- App Links - Universal Links (HTTPS) -->
+            <!-- 1b. Test Scheme (testapp://) - For testing deep links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="testapp" />
+            </intent-filter>
+
+            <!-- 2. Production App Links - kaaikani.co.in (FULLY VERIFIED) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Replace with your domain, e.g., https://kaaikani.co.in -->
-                <data
-                    android:scheme="https"
-                    android:host="kaaikani.co.in" />
-                <!-- Add additional paths if needed -->
-                <data android:pathPrefix="/product" />
-                <data android:pathPrefix="/collection" />
-                <data android:pathPrefix="/order" />
-                <data android:pathPrefix="/cart" />
-                <data android:pathPrefix="/checkout" />
+                <data android:scheme="https" android:host="kaaikani.co.in" />
             </intent-filter>
+
+            <!-- 3. Demo/Staging App Links - demo.htagbilling.com (FULLY VERIFIED) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="demo.htagbilling.com" />
+            </intent-filter>
+
+            <!-- 4. Ngrok Local Testing with specific paths (ENABLE ONLY DURING DEVELOPMENT) -->
+            
+            <!-- Root path for home -->
+            <intent-filter android:priority="100">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="138cedf90c79.ngrok-free.app"
+                      android:path="/" />
+            </intent-filter>
+            
+            <!-- Cart page -->
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="138cedf90c79.ngrok-free.app"
+                      android:pathPrefix="/cart" />
+            </intent-filter>
+            
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="138cedf90c79.ngrok-free.app"
+                      android:pathPrefix="/checkout" />
+            </intent-filter>
+            
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="138cedf90c79.ngrok-free.app"
+                      android:pathPrefix="/account" />
+            </intent-filter>
+            
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="138cedf90c79.ngrok-free.app"
+                      android:pathPrefix="/addresses" />
+            </intent-filter>
+            
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="138cedf90c79.ngrok-free.app"
+                      android:pathPrefix="/orders" />
+            </intent-filter>
+
+
         </activity>
 
+        <!-- Flutter Embedding -->
         <meta-data
-                android:name="flutterEmbedding"
-                android:value="2" />
+            android:name="flutterEmbedding"
+            android:value="2" />
+
     </application>
 
+    <!-- Required for PROCESS_TEXT (share text to app) -->
     <queries>
         <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
         </intent>
     </queries>
+
 </manifest>

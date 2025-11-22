@@ -5,9 +5,8 @@ import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
+import '../controllers/banner/bannermodels.dart';
 import '../widgets/appbar.dart';
-import '../widgets/button.dart';
-import '../widgets/empty_state.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/cart_item_card_premium.dart';
 import '../widgets/order_summary_card.dart';
@@ -15,6 +14,9 @@ import '../utils/responsive.dart';
 import '../widgets/responsive_spacing.dart';
 import '../widgets/premium_card.dart';
 import '../theme/colors.dart';
+import '../utils/navigation_helper.dart';
+import '../services/analytics_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -34,7 +36,121 @@ class _CartPageState extends State<CartPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       cartController.getActiveOrder();
+      // Load coupon codes
+      if (!bannerController.couponCodesLoaded.value) {
+        bannerController.getCouponCodeList();
+      }
+      
+      // Track screen view
+      AnalyticsService().logScreenView(screenName: 'Cart');
     });
+  }
+
+  /// Get minimum order amount from coupon conditions
+  int? _getCouponMinimumAmount(CouponCodeModel coupon) {
+    try {
+      for (final condition in coupon.conditions) {
+        if (condition.code == 'minimum_order_amount') {
+          for (final arg in condition.args) {
+            if (arg.name == 'amount') {
+              final value = arg.value;
+              if (value is num) {
+                return value.toInt();
+              } else if (value is String) {
+                return int.tryParse(value);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error getting coupon minimum amount: $e');
+    }
+    return null;
+  }
+
+  /// Get applicable coupons - show coupons with minimum amounts 500, 1000, 1500
+  /// regardless of cart value. Validation happens when applying.
+  List<CouponCodeModel> _getApplicableCoupons(int cartTotal) {
+    final coupons = bannerController.availableCouponCodes;
+    final applicableCoupons = <CouponCodeModel>[];
+
+    for (final coupon in coupons) {
+      if (!coupon.enabled) continue;
+
+      // Get minimum order amount required for this coupon
+      final minimumAmount = _getCouponMinimumAmount(coupon);
+      
+      // Show coupons with minimum amounts of 500, 1000, 1500
+      // (or any coupon if no minimum amount is set)
+      if (minimumAmount == null) {
+        // If no minimum amount condition, show the coupon
+        applicableCoupons.add(coupon);
+      } else if (minimumAmount == 500 || minimumAmount == 1000 || minimumAmount == 1500) {
+        // Show coupons that require 500, 1000, or 1500 minimum order
+        applicableCoupons.add(coupon);
+      }
+    }
+
+    return applicableCoupons;
+  }
+
+  /// Calculate coupon suggestion based on cart total
+  /// Returns coupon and amount short if user is close to qualifying
+  Map<String, dynamic> _calculateCouponInfo(double totalPrice, List<CouponCodeModel> coupons) {
+    final totalInPaise = (totalPrice * 100).toInt(); // Convert to paise
+    CouponCodeModel? suggestedCoupon;
+    int? amountShort;
+
+    for (final coupon in coupons) {
+      if (!coupon.enabled) continue;
+
+      // Get minimum order amount from coupon conditions
+      final minimumAmount = _getCouponMinimumAmount(coupon);
+      if (minimumAmount == null) continue;
+
+      // Calculate difference: (requiredAmount - totalInPaise) + 100
+      final difference = (minimumAmount - totalInPaise) + 100;
+
+      // If difference is between 1-40000 (₹0.01 to ₹400), suggest this coupon
+      if (difference >= 1 && difference <= 40000) {
+        suggestedCoupon = coupon;
+        amountShort = difference;
+        break; // Use first matching coupon
+      }
+    }
+
+    return {
+      'coupon': suggestedCoupon,
+      'amountShort': amountShort,
+    };
+  }
+
+  /// Apply coupon code
+  Future<void> _applyCouponCode(String couponCode) async {
+    final result = await bannerController.applyCouponCode(couponCode);
+    if (result['success'] == true) {
+      showSuccessSnackbar(result['message'] ?? 'Coupon applied successfully');
+      
+      // Track coupon application
+      final cart = cartController.cart.value;
+      if (cart != null) {
+        final coupon = bannerController.availableCouponCodes.firstWhere(
+          (c) => c.couponCode == couponCode,
+          orElse: () => bannerController.availableCouponCodes.first,
+        );
+        await AnalyticsService().logApplyCoupon(
+          couponName: coupon.name,
+          couponCode: couponCode,
+          value: cart.totalWithTax / 100.0,
+          currency: 'INR',
+        );
+      }
+      
+      await cartController.getActiveOrder();
+    } else {
+      showErrorSnackbar(result['message'] ?? 'Failed to apply coupon');
+    }
   }
 
   Future<void> _handleRemoveItem(String orderLineId, String productName) async {
@@ -77,7 +193,27 @@ class _CartPageState extends State<CartPage> {
       return;
     }
 
-    Get.toNamed('/checkout');
+    // Track begin checkout event
+    final cart = cartController.cart.value;
+    if (cart != null) {
+      final items = cart.lines.map((line) {
+        return analytics.AnalyticsEventItem(
+          itemId: line.productVariant.id,
+          itemName: line.productVariant.name,
+          itemCategory: 'Product', // ProductVariant doesn't have product reference
+          price: line.unitPriceWithTax / 100.0,
+          quantity: line.quantity,
+        );
+      }).toList();
+      
+      AnalyticsService().logBeginCheckout(
+        value: cart.totalWithTax / 100.0,
+        currency: 'INR',
+        items: items,
+      );
+    }
+
+    NavigationHelper.navigateToCheckout();
   }
 
   Future<void> _handleClearCart() async {
@@ -146,17 +282,7 @@ class _CartPageState extends State<CartPage> {
         final cart = cartController.cart.value;
 
         if (cart == null || cart.lines.isEmpty) {
-          return EmptyState(
-            icon: Icons.shopping_cart_outlined,
-            title: 'Your Cart is Empty',
-            subtitle: 'Add items to your cart to see them here',
-            action: AppButton(
-              text: 'Start Shopping',
-              onPressed: () async {
-                Get.back();
-              },
-            ),
-          );
+          return _buildEmptyCartUI();
         }
 
         // Calculate totals will be done in Obx
@@ -169,6 +295,7 @@ class _CartPageState extends State<CartPage> {
                 onRefresh: () async {
                   await cartController.getActiveOrder();
                 },
+                color: AppColors.refreshIndicator,
                 child: ListView.builder(
                   padding: ResponsiveSpacing.padding(all: 16),
                   itemCount: cart.lines.length,
@@ -213,7 +340,7 @@ class _CartPageState extends State<CartPage> {
 
             // Cart Summary - Fixed Bottom
             PremiumCard(
-              padding: ResponsiveSpacing.padding(all: 16),
+              padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(ResponsiveUtils.rp(16)),
@@ -237,6 +364,15 @@ class _CartPageState extends State<CartPage> {
                           'Remove unavailable items before proceeding to checkout.')
                       : null;
 
+                  // Get applicable coupons
+                  final applicableCoupons = _getApplicableCoupons(cartTotal);
+
+                  // Calculate suggested coupon
+                  final couponInfo = _calculateCouponInfo(
+                    cart.totalWithTax,
+                    bannerController.availableCouponCodes,
+                  );
+
                   return OrderSummaryCard(
                     subtotal: cartController
                         .formatPrice(cart.subTotalWithTax.toInt()),
@@ -250,6 +386,11 @@ class _CartPageState extends State<CartPage> {
                         cartController.cartItemCount > 0 && !hasUnavailable,
                     isLoading: utilityController.isLoadingRx.value,
                     warningMessage: warningMessage,
+                    applicableCoupons: applicableCoupons,
+                    onApplyCoupon: _applyCouponCode,
+                    appliedCouponCodes: bannerController.appliedCouponCodes,
+                    suggestedCoupon: couponInfo['coupon'] as CouponCodeModel?,
+                    amountShort: couponInfo['amountShort'] as int?,
                   );
                 }),
               ),
@@ -257,6 +398,129 @@ class _CartPageState extends State<CartPage> {
           ],
         );
       }),
+    );
+  }
+
+  Widget _buildEmptyCartUI() {
+    return Container(
+      width: double.infinity,
+      color: AppColors.background,
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Large animated cart icon with background circle
+            Container(
+              width: ResponsiveUtils.rp(180),
+              height: ResponsiveUtils.rp(180),
+              decoration: BoxDecoration(
+                color: AppColors.zomatoRed.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.shopping_bag_outlined,
+                size: ResponsiveUtils.rp(100),
+                color: AppColors.zomatoRed,
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(32)),
+            
+            // Title
+            Text(
+              'Your Cart is Empty',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(24),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+                letterSpacing: -0.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            
+            // Subtitle
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(48),
+              ),
+              child: Text(
+                'Looks like you haven\'t added anything to your cart yet',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(48)),
+            
+            // CTA Button with icon
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(32),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    Get.back();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.zomatoRed,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      vertical: ResponsiveUtils.rp(16),
+                      horizontal: ResponsiveUtils.rp(24),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveUtils.rp(12),
+                      ),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.shopping_bag_rounded,
+                        size: ResponsiveUtils.rp(20),
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(8)),
+                      Text(
+                        'Start Shopping',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(16),
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            
+            // Additional helpful text
+            TextButton(
+              onPressed: () {
+                Get.offAllNamed('/home');
+              },
+              child: Text(
+                'Browse Products',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  color: AppColors.zomatoRed,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

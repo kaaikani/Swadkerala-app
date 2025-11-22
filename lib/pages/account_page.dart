@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/customer/customer_models.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
+import '../services/graphql_client.dart';
 import '../controllers/theme_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../services/in_app_update_service.dart';
 import '../widgets/snackbar.dart';
-import '../widgets/premium_card.dart';
 import '../theme/theme.dart';
 import '../utils/responsive.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../theme/colors.dart';
+import 'orders_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -33,9 +35,23 @@ class _AccountPageState extends State<AccountPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      customerController.getActiveCustomer();
+      // Only fetch customer data if user is authenticated
+      if (_isUserAuthenticated()) {
+        customerController.getActiveCustomer();
+      }
       _updateService.checkAndShowFlexibleUpdateInAccount(context);
     });
+  }
+
+  /// Check if user is authenticated
+  bool _isUserAuthenticated() {
+    final authController = Get.find<AuthController>();
+    final authToken = GraphqlService.authToken;
+    final channelToken = GraphqlService.channelToken;
+    
+    return authController.isLoggedIn && 
+           authToken.isNotEmpty && 
+           channelToken.isNotEmpty;
   }
 
   @override
@@ -72,8 +88,12 @@ class _AccountPageState extends State<AccountPage> {
 
         return RefreshIndicator(
           onRefresh: () async {
-            await customerController.getActiveCustomer();
+            // Only fetch customer data if user is authenticated
+            if (_isUserAuthenticated()) {
+              await customerController.getActiveCustomer();
+            }
           },
+          color: AppColors.refreshIndicator,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -106,9 +126,21 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Widget _buildProfileCard(CustomerModel customer) {
-    return PremiumCard(
+    return Container(
       margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
       padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: ResponsiveUtils.rp(8),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Row(
@@ -197,41 +229,52 @@ class _AccountPageState extends State<AccountPage> {
             ],
           ),
           SizedBox(height: ResponsiveUtils.rp(16)),
-          // Loyalty Points & Divider
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUtils.rp(16),
-              vertical: ResponsiveUtils.rp(12),
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.button.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.stars_outlined,
-                  color: AppColors.button,
-                  size: ResponsiveUtils.rp(20),
-                ),
-                SizedBox(width: ResponsiveUtils.rp(10)),
-                Text(
-                  'Loyalty Points',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: ResponsiveUtils.sp(14),
-                  ),
-                ),
-                Spacer(),
-                Text(
-                  '${customer.customFields?.loyaltyPointsAvailable ?? 0}',
-                  style: TextStyle(
+          // Loyalty Points
+          InkWell(
+            onTap: () {
+              Get.toNamed('/loyalty-points-transactions');
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(16),
+                vertical: ResponsiveUtils.rp(12),
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.button.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.stars_outlined,
                     color: AppColors.button,
-                    fontSize: ResponsiveUtils.sp(18),
-                    fontWeight: FontWeight.bold,
+                    size: ResponsiveUtils.rp(20),
                   ),
-                ),
-              ],
+                  SizedBox(width: ResponsiveUtils.rp(10)),
+                  Text(
+                    'Loyalty Points',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: ResponsiveUtils.sp(14),
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    '${customer.customFields?.loyaltyPointsAvailable ?? 0}',
+                    style: TextStyle(
+                      color: AppColors.button,
+                      fontSize: ResponsiveUtils.sp(18),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textSecondary,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -263,7 +306,7 @@ class _AccountPageState extends State<AccountPage> {
               ),
               Spacer(),
               TextButton(
-                onPressed: () => Get.toNamed('/orders'),
+                onPressed: () => Get.toNamed('/orders', arguments: OrderFilter.all),
                 child: Text(
                   'View All ($ordersCount)',
                   style: TextStyle(
@@ -279,13 +322,21 @@ class _AccountPageState extends State<AccountPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildOrderStatusItem(
-                  Icons.payment_outlined, 'Pending', Colors.orange, () {}),
+                  Icons.payment_outlined, 
+                  'Order Confirmed', 
+                  Colors.green, 
+                  () => Get.toNamed('/orders', arguments: OrderFilter.paymentAuthorized)),
               _buildOrderStatusItem(
-                  Icons.local_shipping_outlined, 'Shipped', Colors.blue, () {}),
-              _buildOrderStatusItem(Icons.check_circle_outlined, 'Delivered',
-                  Colors.green, () {}),
-              _buildOrderStatusItem(Icons.assignment_return_outlined, 'Return',
-                  Colors.red, () {}),
+                  Icons.check_circle_outlined, 
+                  'Delivered', 
+                  Colors.blue, 
+                  () => Get.toNamed('/orders', arguments: OrderFilter.delivered)),
+              _buildOrderStatusItem(
+                  Icons.cancel_outlined, 
+                  'Cancelled', 
+                  Colors.red, 
+                  () => Get.toNamed('/orders', arguments: OrderFilter.cancelled)),
+    
             ],
           ),
         ],
@@ -329,13 +380,6 @@ class _AccountPageState extends State<AccountPage> {
       child: Column(
         children: [
           _buildListTile(
-            Icons.person_outline,
-            'Profile Information',
-            Icons.arrow_forward_ios,
-            onTap: _showEditProfileDialog,
-          ),
-          _buildDivider(),
-          _buildListTile(
             Icons.location_on_outlined,
             'Saved Addresses',
             Icons.arrow_forward_ios,
@@ -347,14 +391,7 @@ class _AccountPageState extends State<AccountPage> {
             Icons.favorite_outline,
             'Wishlist',
             Icons.arrow_forward_ios,
-            onTap: () => Get.toNamed('/wishlist'),
-          ),
-          _buildDivider(),
-          _buildListTile(
-            Icons.notifications_outlined,
-            'Notification Settings',
-            Icons.arrow_forward_ios,
-            onTap: () => Get.toNamed('/notifications'),
+            onTap: () => Get.toNamed('/favourite'),
           ),
           _buildDivider(),
           _buildDarkModeTile(),
@@ -369,10 +406,17 @@ class _AccountPageState extends State<AccountPage> {
       child: Column(
         children: [
           _buildListTile(
+            Icons.link_outlined,
+            'Connect with Us',
+            Icons.arrow_forward_ios,
+            onTap: () => Get.toNamed('/connect-with-us'),
+          ),
+          _buildDivider(),
+          _buildListTile(
             Icons.help_outline,
             'Help & Support',
             Icons.arrow_forward_ios,
-            onTap: _openHelpSupport,
+            onTap: () => Get.toNamed('/help-support'),
           ),
           _buildDivider(),
           _buildListTile(
@@ -544,63 +588,308 @@ class _AccountPageState extends State<AccountPage> {
 
     final firstNameController = TextEditingController(text: customer.firstName);
     final lastNameController = TextEditingController(text: customer.lastName);
+    bool isLoading = false;
 
     Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUtils.rp(20),
+          vertical: ResponsiveUtils.rp(40),
         ),
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: ResponsiveUtils.rp(20),
+                    offset: Offset(0, ResponsiveUtils.rp(10)),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Container(
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                    decoration: BoxDecoration(
+                      color: AppColors.button.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(ResponsiveUtils.rp(20)),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                          decoration: BoxDecoration(
+                            color: AppColors.button,
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          ),
+                          child: Icon(
+                            Icons.person_outline,
+                            color: Colors.white,
+                            size: ResponsiveUtils.rp(24),
+                          ),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
+                        Expanded(
+                          child: Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(20),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Get.back(),
+                          icon: Icon(Icons.close_rounded),
+                          color: AppColors.textSecondary,
+                          iconSize: ResponsiveUtils.rp(24),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Content
+                  Flexible(
+                    child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // First Name Field
+                          Text(
+                            'First Name',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(8)),
               TextField(
                 controller: firstNameController,
+                            enabled: !isLoading,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(16),
+                              color: AppColors.textPrimary,
+                            ),
                 decoration: InputDecoration(
-                  labelText: 'First Name',
-                  prefixIcon: Icon(Icons.person_outline),
+                              hintText: 'Enter first name',
+                              prefixIcon: Icon(
+                                Icons.person_outline,
+                                color: AppColors.button,
+                              ),
+                              filled: true,
+                              fillColor: AppColors.inputFill,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                borderSide: BorderSide(
+                                  color: AppColors.border,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                borderSide: BorderSide(
+                                  color: AppColors.border,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                borderSide: BorderSide(
+                                  color: AppColors.button,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(16),
+                                vertical: ResponsiveUtils.rp(16),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(20)),
+                          // Last Name Field
+                          Text(
+                            'Last Name',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(8)),
               TextField(
                 controller: lastNameController,
+                            enabled: !isLoading,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(16),
+                              color: AppColors.textPrimary,
+                            ),
                 decoration: InputDecoration(
-                  labelText: 'Last Name',
-                  prefixIcon: Icon(Icons.person_outline),
+                              hintText: 'Enter last name',
+                              prefixIcon: Icon(
+                                Icons.person_outline,
+                                color: AppColors.button,
+                              ),
+                              filled: true,
+                              fillColor: AppColors.inputFill,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                borderSide: BorderSide(
+                                  color: AppColors.border,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                borderSide: BorderSide(
+                                  color: AppColors.border,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                borderSide: BorderSide(
+                                  color: AppColors.button,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(16),
+                                vertical: ResponsiveUtils.rp(16),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(12)),
+                          // Phone Number (Read-only)
+                          Text(
+                            'Phone Number',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(8)),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ResponsiveUtils.rp(16),
+                              vertical: ResponsiveUtils.rp(16),
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.inputFill.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                              border: Border.all(
+                                color: AppColors.border,
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.phone_outlined,
+                                  color: AppColors.textSecondary,
+                                  size: ResponsiveUtils.rp(20),
+                                ),
+                                SizedBox(width: ResponsiveUtils.rp(12)),
+                                Text(
+                                  customer.phoneNumber ?? 'No phone number',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUtils.sp(16),
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                Spacer(),
+                                Text(
+                                  'Read-only',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUtils.sp(12),
+                                    color: AppColors.textTertiary,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(height: 16),
-              // Phone number is read-only, cannot be changed
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.textSecondary,
-            ),
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
+                  // Actions
+                  Container(
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.border,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: isLoading ? null : () => Get.back(),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: AppColors.border),
+                              foregroundColor: AppColors.textPrimary,
+                              padding: EdgeInsets.symmetric(
+                                vertical: ResponsiveUtils.rp(14),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton(
+                            onPressed: isLoading ? null : () async {
+                              if (firstNameController.text.trim().isEmpty ||
+                                  lastNameController.text.trim().isEmpty) {
+                                showErrorSnackbar('Please fill in all fields');
+                                return;
+                              }
+
+                              setState(() {
+                                isLoading = true;
+                              });
+
               customerController.firstNameController.text =
-                  firstNameController.text;
+                                  firstNameController.text.trim();
               customerController.lastNameController.text =
-                  lastNameController.text;
-              // You might need to add phone controller to your customer controller
+                                  lastNameController.text.trim();
 
               final success = await customerController.updateCustomer();
+                              
+                              setState(() {
+                                isLoading = false;
+                              });
+
               if (success) {
                 Get.back();
                 showSuccessSnackbar('Profile updated successfully');
@@ -611,11 +900,42 @@ class _AccountPageState extends State<AccountPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.button,
               foregroundColor: Colors.white,
-            ),
-            child: Text('Save'),
+                              padding: EdgeInsets.symmetric(
+                                vertical: ResponsiveUtils.rp(14),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: isLoading
+                                ? SizedBox(
+                                    width: ResponsiveUtils.rp(20),
+                                    height: ResponsiveUtils.rp(20),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    'Save Changes',
+                                    style: TextStyle(
+                                      fontSize: ResponsiveUtils.sp(16),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
           ),
         ],
       ),
+            );
+          },
+        ),
+      ),
+      barrierDismissible: true,
     );
   }
 
@@ -658,23 +978,9 @@ class _AccountPageState extends State<AccountPage> {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       final packageName = packageInfo.packageName;
-      final shareText =
-          'Check out this amazing app! Download it from: https://play.google.com/store/apps/details?id=$packageName';
+      final appLink = 'https://play.google.com/store/apps/details?id=$packageName';
 
-      // For now, show a dialog with share text
-      // You can integrate with share_plus package for actual sharing
-      Get.dialog(
-        AlertDialog(
-          title: Text('Share App'),
-          content: SelectableText(shareText),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: Text('Close'),
-            ),
-          ],
-        ),
-      );
+      await Share.share(appLink);
     } catch (e) {
       showErrorSnackbar('Could not share app');
     }
@@ -741,75 +1047,6 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Future<void> _openHelpSupport() async {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        title: Text(
-          'Help & Support',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.phone_outlined, color: AppColors.primary),
-              title: Text('Phone Support'),
-              subtitle: Text('+91 1234567890'),
-              onTap: () => _launchPhone(),
-            ),
-            ListTile(
-              leading: Icon(Icons.chat_outlined, color: AppColors.primary),
-              title: Text('WhatsApp'),
-              subtitle: Text('Chat with us'),
-              onTap: () => _launchWhatsApp(),
-            ),
-            ListTile(
-              leading: Icon(Icons.email_outlined, color: AppColors.primary),
-              title: Text('Email Support'),
-              subtitle: Text('support@yourcompany.com'),
-              onTap: () => _launchEmail(),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _launchPhone() async {
-    final url = Uri.parse('tel:+911234567890');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      showErrorSnackbar('Could not make phone call');
-    }
-  }
-
-  Future<void> _launchWhatsApp() async {
-    final url = Uri.parse('https://wa.me/911234567890');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      showErrorSnackbar('Could not open WhatsApp');
-    }
-  }
-
-  Future<void> _launchEmail() async {
-    final url = Uri.parse('mailto:support@yourcompany.com');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      showErrorSnackbar('Could not open email app');
-    }
-  }
 
   Widget _buildShimmerAccount() {
     return Skeletonizer(

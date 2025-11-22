@@ -5,13 +5,16 @@ import '../controllers/theme_controller.dart';
 import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
 import '../theme/colors.dart';
+import '../pages/orders_page.dart';
 
 class OrdersComponent extends StatelessWidget {
   final CustomerController customerController;
+  final OrderFilter filter;
 
   const OrdersComponent({
     super.key,
     required this.customerController,
+    this.filter = OrderFilter.all,
   });
 
   @override
@@ -21,145 +24,187 @@ class OrdersComponent extends StatelessWidget {
     return Obx(() {
       // Observe theme changes
       final _ = themeController.isDarkMode;
-      final orders = customerController.orders;
+      final allOrders = customerController.orders;
+      final filteredOrders = _filterOrders(allOrders);
 
-      if (orders.isEmpty) {
-        return _buildEmptyOrdersState();
+      if (filteredOrders.isEmpty) {
+        return _buildEmptyOrdersState(filter);
       }
 
-      return RefreshIndicator(
+        return RefreshIndicator(
         onRefresh: () async {
           await customerController.getActiveCustomer();
         },
-        color: AppColors.button,
+        color: AppColors.refreshIndicator,
         child: ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: orders.length,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          itemCount: filteredOrders.length,
           separatorBuilder: (context, index) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
-            return _buildOrderCard(orders[index]);
+            return _buildOrderCard(filteredOrders[index]);
           },
         ),
       );
     });
   }
 
+  List<dynamic> _filterOrders(List<dynamic> orders) {
+    if (filter == OrderFilter.all) {
+      return orders;
+    }
+
+    return orders.where((order) {
+      final state = order.state?.toString().toLowerCase() ?? '';
+      
+      switch (filter) {
+        case OrderFilter.delivered:
+          // Check for delivered/fulfilled/shipped states
+          return state == 'fulfilled' || 
+                 state == 'delivered' || 
+                 state == 'shipped' ||
+                 state == 'partiallyfulfilled';
+        
+        case OrderFilter.paymentAuthorized:
+          // Check for payment authorized/settled states
+          return state == 'paymentauthorized' || 
+                 state == 'paymentsettled';
+        
+        case OrderFilter.cancelled:
+          // Check for cancelled state
+          return state == 'cancelled';
+        
+        case OrderFilter.all:
+          return true;
+      }
+    }).toList();
+  }
+
   Widget _buildOrderCard(dynamic order) {
+    final isCancellationRequested = order.customFields?.clientRequestToCancel == 1 ||
+        order.customFields?.clientRequestToCancel == true;
+    final isCancelled = order.state.toLowerCase() == 'cancelled';
+    
     return GestureDetector(
       onTap: () => _viewOrderDetails(order),
       child: Container(
+        margin: EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: AppColors.card,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: AppColors.border,
-            width: 0.5,
+            width: 1,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Order Header
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
+        child: Padding(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Order Header - Compact
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Order #${order.code}',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(16),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                            letterSpacing: 0.3,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'Order #${order.code}',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(15),
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            // Status badge
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isCancellationRequested
+                                    ? Colors.orange
+                                    : (isCancelled
+                                        ? AppColors.grey600
+                                        : _getStatusColor(order.state)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                isCancellationRequested
+                                    ? 'Cancellation Requested'
+                                    : _formatOrderStatus(order.state),
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(10),
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           _formatDate(order.orderPlacedAt),
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(13),
+                            fontSize: ResponsiveUtils.sp(12),
                             color: AppColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Status badge - only show if not cancelled
-                  if (order.state.toLowerCase() != 'cancelled')
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(order.state),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        _formatOrderStatus(order.state),
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(12),
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
                 ],
               ),
-            ),
+              
+              SizedBox(height: 12),
+              
+              // Products Preview - Compact
+              if (order.lines != null && order.lines.isNotEmpty) ...[
+                _buildProductPreview(order),
+                if (order.totalQuantity > 1) ...[
+                  SizedBox(height: 4),
+                  Text(
+                    '+${order.totalQuantity - 1} more item${order.totalQuantity > 2 ? 's' : ''}',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(12),
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+                SizedBox(height: 12),
+              ],
 
-            // Divider
-            Divider(height: 1, color: AppColors.divider),
-
-            // Products Preview
-            if (order.lines != null && order.lines.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Show first product or summary
-                    _buildProductPreview(order),
-                    if (order.totalQuantity > 1) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        '+${order.totalQuantity - 1} more item${order.totalQuantity > 2 ? 's' : ''}',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(13),
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Divider(height: 1, color: AppColors.divider),
-            ],
-
-            // Order Footer
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
+              // Order Footer - Compact
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total Amount',
+                        'Total',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(12),
+                          fontSize: ResponsiveUtils.sp(11),
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 2),
                       Text(
                         PriceFormatter.formatPrice(order.totalWithTax.round()),
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(18),
+                          fontSize: ResponsiveUtils.sp(16),
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
@@ -170,25 +215,25 @@ class OrdersComponent extends StatelessWidget {
                     onPressed: () => _viewOrderDetails(order),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.button,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        side: BorderSide(color: AppColors.button, width: 1),
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: AppColors.button, width: 1.5),
                       ),
                     ),
                     child: Text(
                       'View Details',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -203,10 +248,10 @@ class OrdersComponent extends StatelessWidget {
 
     return Row(
       children: [
-        // Product Image
+        // Product Image - Smaller
         Container(
-          width: ResponsiveUtils.rp(50),
-          height: ResponsiveUtils.rp(50),
+          width: ResponsiveUtils.rp(45),
+          height: ResponsiveUtils.rp(45),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
             color: AppColors.inputFill,
@@ -223,7 +268,7 @@ class OrdersComponent extends StatelessWidget {
                         color: AppColors.inputFill,
                         child: Icon(Icons.image,
                             color: AppColors.iconLight,
-                            size: ResponsiveUtils.rp(20)),
+                            size: ResponsiveUtils.rp(18)),
                       );
                     },
                   )
@@ -231,17 +276,17 @@ class OrdersComponent extends StatelessWidget {
                     color: AppColors.inputFill,
                     child: Icon(Icons.image,
                         color: AppColors.iconLight,
-                        size: ResponsiveUtils.rp(20)),
+                        size: ResponsiveUtils.rp(18)),
                   ),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 10),
         // Product Name
         Expanded(
           child: Text(
             firstLine.productVariant?.name ?? 'Unknown Product',
             style: TextStyle(
-              fontSize: ResponsiveUtils.sp(14),
+              fontSize: ResponsiveUtils.sp(13),
               fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,
             ),
@@ -253,7 +298,29 @@ class OrdersComponent extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyOrdersState() {
+  Widget _buildEmptyOrdersState(OrderFilter currentFilter) {
+    String title;
+    String message;
+    
+    switch (currentFilter) {
+      case OrderFilter.delivered:
+        title = 'No Delivered Orders';
+        message = 'You don\'t have any delivered orders yet';
+        break;
+      case OrderFilter.paymentAuthorized:
+        title = 'No Payment Authorized Orders';
+        message = 'You don\'t have any orders with authorized payment';
+        break;
+      case OrderFilter.cancelled:
+        title = 'No Cancelled Orders';
+        message = 'You don\'t have any cancelled orders';
+        break;
+      case OrderFilter.all:
+        title = 'No Orders Yet';
+        message = 'Start shopping to see your orders here';
+        break;
+    }
+
     return Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -275,7 +342,7 @@ class OrdersComponent extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                'No Orders Yet',
+                title,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -284,29 +351,51 @@ class OrdersComponent extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Start shopping to see your orders here',
+                message,
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () => Get.toNamed('/home'),
-                icon: const Icon(Icons.shopping_cart, size: 20),
-                label: const Text('Start Shopping'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.button,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              if (currentFilter != OrderFilter.all) ...[
+                const SizedBox(height: 32),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Navigate to orders page with all filter, replacing current page
+                    Get.offNamed('/orders', arguments: OrderFilter.all);
+                  },
+                  icon: const Icon(Icons.list, size: 20),
+                  label: const Text('View All Orders'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button,
+                    foregroundColor: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
                 ),
-              ),
+              ] else ...[
+                const SizedBox(height: 32),
+                ElevatedButton.icon(
+                  onPressed: () => Get.toNamed('/home'),
+                  icon: const Icon(Icons.shopping_cart, size: 20),
+                  label: const Text('Start Shopping'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button,
+                    foregroundColor: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

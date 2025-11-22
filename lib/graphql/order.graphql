@@ -148,6 +148,7 @@ query GetOrderByCode($code: String!) {
         customFields {
             loyaltyPointsEarned
             loyaltyPointsUsed
+            clientRequestToCancel
         }
         customer {
             id

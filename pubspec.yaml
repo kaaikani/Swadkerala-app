@@ -45,8 +45,12 @@ dependencies:
   skeletonizer: ^2.1.0+1
   firebase_core: ^2.30.1
   firebase_messaging: ^14.9.1
+  firebase_crashlytics: ^3.5.7
+  firebase_analytics: ^10.10.7
+  firebase_remote_config: ^4.4.7
   flutter_local_notifications: ^17.2.1
   app_links: ^6.3.3
+  share_plus: ^7.2.1
 
 
 
@@ -68,7 +72,3 @@ flutter:
   assets:
     - .env
     - assets/images/
-
-dependency_overrides:
-  fluttertoast:
-    path: third_party/fluttertoast

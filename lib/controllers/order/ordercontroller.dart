@@ -19,9 +19,11 @@ class OrderController extends BaseController {
   Rx<PaymentMethod?> selectedPaymentMethod = Rx<PaymentMethod?>(null);
 
   /// Get active order (cart)
-  Future<bool> getActiveOrder() async {
+  Future<bool> getActiveOrder({bool skipLoading = false}) async {
     try {
-      utilityController.setLoadingState(true);
+      if (!skipLoading) {
+        utilityController.setLoadingState(true);
+      }
 
       final response = await GraphqlService.client.value.query$ActiveOrder(
         Options$Query$ActiveOrder(),
@@ -45,7 +47,9 @@ class OrderController extends BaseController {
       handleException(e, customErrorMessage: 'Failed to load order');
       return false;
     } finally {
-      utilityController.setLoadingState(false);
+      if (!skipLoading) {
+        utilityController.setLoadingState(false);
+      }
     }
   }
 
@@ -190,9 +194,20 @@ class OrderController extends BaseController {
   }
 
   /// Set shipping method
-  Future<bool> setShippingMethod(String methodId) async {
+  Future<bool> setShippingMethod(String methodId, {bool skipIfAlreadySet = false}) async {
     try {
-      utilityController.setLoadingState(false);
+      // If method is already set and skipIfAlreadySet is true, return early without loading
+      if (skipIfAlreadySet && 
+          selectedShippingMethod.value?.id == methodId &&
+          currentOrder.value?.shippingLines.isNotEmpty == true) {
+        debugPrint('[Order] Shipping method already set, skipping');
+        return true;
+      }
+
+      // Don't set loading state if method is already applied
+      if (!skipIfAlreadySet) {
+        utilityController.setLoadingState(false);
+      }
 
       final response =
           await GraphqlService.client.value.mutate$SetShippingMethod(
@@ -532,6 +547,8 @@ class OrderController extends BaseController {
     try {
       utilityController.setLoadingState(true);
 
+      debugPrint('[Order] Generating Razorpay order for order ID: $orderId');
+
       final response =
           await GraphqlService.client.value.mutate$GenerateRazorpayOrderId(
         Options$Mutation$GenerateRazorpayOrderId(
@@ -541,8 +558,44 @@ class OrderController extends BaseController {
         ),
       );
 
-      if (checkResponseForErrors(response,
-          customErrorMessage: 'Failed to generate payment order')) {
+      // Check for GraphQL errors first
+      if (response.hasException) {
+        final exception = response.exception;
+        String errorMessage = 'Failed to generate payment order';
+        
+        // Extract error message from GraphQL errors
+        if (exception?.graphqlErrors.isNotEmpty == true) {
+          final graphQLError = exception!.graphqlErrors.first;
+          errorMessage = graphQLError.message;
+          debugPrint('[Order] Razorpay GraphQL Error: $errorMessage');
+          
+          // Check if it's a Razorpay-specific error
+          if (errorMessage.contains('Razorpay') || 
+              errorMessage.contains('razorpay') ||
+              errorMessage.contains('Could not create')) {
+            // Show user-friendly error message
+            handleException(
+              Exception(errorMessage),
+              customErrorMessage: 'Payment gateway error: $errorMessage. Please try again or contact support.',
+            );
+          } else {
+            handleException(
+              Exception(errorMessage),
+              customErrorMessage: errorMessage,
+            );
+          }
+        } else if (exception?.linkException != null) {
+          debugPrint('[Order] Razorpay Link Exception: ${exception!.linkException}');
+          handleException(
+            exception.linkException!,
+            customErrorMessage: 'Network error. Please check your connection and try again.',
+          );
+        } else {
+          handleException(
+            Exception(exception.toString()),
+            customErrorMessage: errorMessage,
+          );
+        }
         return null;
       }
 
@@ -553,19 +606,32 @@ class OrderController extends BaseController {
         if (data.containsKey('razorpayOrderId')) {
           final razorpayOrder = RazorpayOrderResponse.fromJson(data);
           debugPrint(
-              '[Order] Razorpay order created: ${razorpayOrder.razorpayOrderId}');
+              '[Order] ✅ Razorpay order created successfully: ${razorpayOrder.razorpayOrderId}');
           return razorpayOrder;
-        } else if (data.containsKey('errorCode')) {
-          debugPrint('[Order] Razorpay order error: ${data['message']}');
+        } else if (data.containsKey('errorCode') || data.containsKey('message')) {
+          final errorMessage = data['message'] ?? 'Failed to create Razorpay order';
+          final errorCode = data['errorCode'] ?? 'UNKNOWN_ERROR';
+          debugPrint('[Order] ❌ Razorpay order error: [$errorCode] $errorMessage');
+          
+          // Show user-friendly error
+          handleException(
+            Exception(errorMessage),
+            customErrorMessage: 'Payment setup failed: $errorMessage. Please try again or contact support.',
+          );
           return null;
         }
       }
 
+      debugPrint('[Order] ⚠️ No valid response from Razorpay order generation');
+      handleException(
+        Exception('Invalid response from payment gateway'),
+        customErrorMessage: 'Payment gateway returned an invalid response. Please try again.',
+      );
       return null;
     } catch (e) {
-      debugPrint('[Order] Generate Razorpay order error: $e');
+      debugPrint('[Order] ❌ Generate Razorpay order exception: $e');
       handleException(e,
-          customErrorMessage: 'Failed to generate payment order');
+          customErrorMessage: 'Failed to initialize payment. Please try again or contact support.');
       return null;
     } finally {
       utilityController.setLoadingState(false);

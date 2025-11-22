@@ -7,6 +7,7 @@ import '../services/graphql_client.dart';
 import '../services/sms_autofill_service.dart';
 import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
+import '../utils/navigation_helper.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -1034,7 +1035,10 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     }
 
     final success = await _authController.verifyOtp(context);
-    if (success) Get.offAllNamed('/home');
+    if (success) {
+      // After successful signup, redirect to intended route or home through AuthWrapper
+      await NavigationHelper.redirectToIntendedRoute();
+    }
   }
 
   Future<void> _handleResendOtp() async {

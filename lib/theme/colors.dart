@@ -76,6 +76,9 @@ class AppColors {
   static const Color buttonDark = zomatoRedDark; // Darker red for pressed
   static const Color link = Color(0xFF3B82F6);
   
+  // Refresh Indicator Color
+  static const Color refreshIndicator = zomatoRed; // Red color for refresh indicator
+  
   // Specific UI Colors
   static Color get inputFill => _isDarkMode ? Colors.grey[900]! : Color(0xFFF9FAFB);
   static Color get inputBorder => _isDarkMode ? Colors.grey[700]! : Color(0xFFE5E7EB);
