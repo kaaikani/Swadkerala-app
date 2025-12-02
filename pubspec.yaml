@@ -51,6 +51,10 @@ dependencies:
   flutter_local_notifications: ^17.2.1
   app_links: ^6.3.3
   share_plus: ^7.2.1
+  pdf: ^3.11.3
+  printing: ^5.13.1
+  path_provider: ^2.1.5
+  slide_to_act: ^2.0.2
 
 
 

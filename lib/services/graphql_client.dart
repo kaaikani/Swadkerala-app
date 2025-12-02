@@ -1,7 +1,9 @@
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart' as http_io;
 import 'package:get_storage/get_storage.dart';
 
 class GraphqlService {
@@ -18,28 +20,44 @@ class GraphqlService {
 
   static ValueNotifier<GraphQLClient> get client {
     _client ??= ValueNotifier(_createClient());
-    print("📦 GraphQL Client created with channelToken: $_channelToken");
+// print("📦 GraphQL Client created with channelToken: $_channelToken");
     return _client!;
   }
 
   static GraphQLClient _createClient() {
-    print("🔧 _createClient called with authToken: $_authToken, channelToken: $_channelToken");
+// print("🔧 _createClient called with authToken: $_authToken, channelToken: $_channelToken");
 
     final authLink = AuthLink(getToken: () async => _authToken.isNotEmpty ? 'Bearer $_authToken' : null);
 
+    // Create HTTP client with improved timeout and connection settings
+    // Configure HttpClient for better connection handling and stability
+    final httpClientInstance = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 30)
+      ..idleTimeout = const Duration(seconds: 30)
+      ..autoUncompress = true // Enable automatic decompression
+      ..maxConnectionsPerHost = 10 // Allow multiple connections per host for better concurrency
+      ..userAgent = 'Unified-EcomApp/1.0';
+    
+    final httpClient = http_io.IOClient(httpClientInstance);
+    
     final httpLink = HttpLink(
       dotenv.env['SHOP_API_URL'] ?? '',
-      httpClient: http.Client(),
+      httpClient: httpClient,
       defaultHeaders: {
         if (_channelToken.isNotEmpty) _channelTokenKey: _channelToken,
         'x-device-medium': 'android',
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Connection': 'keep-alive', // Keep connection alive for reuse
+        'Accept-Encoding': 'gzip, deflate', // Enable compression
       },
     );
 
+    // Chain: auth -> http
+    final link = authLink.concat(httpLink);
+
     return GraphQLClient(
-      link: authLink.concat(httpLink),
+      link: link,
       cache: GraphQLCache(store: null), // fully disabled cache
       defaultPolicies: DefaultPolicies(
         watchQuery: Policies(fetch: FetchPolicy.networkOnly),
@@ -51,17 +69,17 @@ class GraphqlService {
 
   // Initialize from storage
   static Future<void> initialize() async {
-    print("⚡ Initializing GraphqlService...");
+// print("⚡ Initializing GraphqlService...");
     await GetStorage.init();
     _authToken = _storage.read('auth_token') ?? "";
     _channelToken = _storage.read('channel_token') ?? "";
-    print("✅ Tokens loaded - authToken: $_authToken, channelToken: $_channelToken");
+// print("✅ Tokens loaded - authToken: $_authToken, channelToken: $_channelToken");
     _client ??= ValueNotifier(_createClient());
   }
 
   // Generic setter for token
   static Future<void> setToken({required String key, required String token}) async {
-    print("📝 setToken called for $key: $token");
+// print("📝 setToken called for $key: $token");
     if (key == 'auth') {
       if (_authToken != token) _authToken = token;
     } else if (key == 'channel') {
@@ -69,17 +87,17 @@ class GraphqlService {
     }
     await _storage.write('${key}_token', token);
     _client?.value = _createClient();
-    print("✅ $key token updated and client recreated");
+// print("✅ $key token updated and client recreated");
   }
 
   // Generic clear token
   static Future<void> clearToken(String key) async {
-    print("🗑️ clearToken called for $key");
+// print("🗑️ clearToken called for $key");
     if (key == 'auth') _authToken = "";
     if (key == 'channel') _channelToken = "";
     await _storage.remove('${key}_token');
     _client?.value = _createClient();
-    print("✅ $key token cleared and client recreated");
+// print("✅ $key token cleared and client recreated");
   }
 
   // Getters

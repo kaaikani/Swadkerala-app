@@ -27,6 +27,7 @@ import '../components/bottomnavigationbar.dart';
 import '../services/analytics_service.dart';
 import '../services/graphql_client.dart';
 import '../services/remote_config_service.dart';
+import '../graphql/banner.graphql.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -249,10 +250,11 @@ class _MyHomePageState extends State<MyHomePage> {
       try {
         // Get Remote Config service
         final remoteConfigService = Get.find<RemoteConfigService>();
-        final tickerText = remoteConfigService.getShippingTickerText();
+        // Access observable directly instead of calling methods
+        final tickerText = remoteConfigService.shippingTickerText.value;
         
         // Only show if text is fetched from Remote Config
-        if (!remoteConfigService.hasShippingTickerText() || tickerText.isEmpty) {
+        if (tickerText.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -305,9 +307,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         );
-      } catch (e, stack) {
-        debugPrint('🔥 _buildShippingTicker crashed: $e');
-        debugPrint('$stack');
+      } catch (e) {
+// debugPrint('🔥 _buildShippingTicker crashed: $e');
+// debugPrint('$stack');
         return const SizedBox.shrink();
       }
     });
@@ -404,18 +406,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (context, index) {
                   final item = enabledProducts[index];
                   final product = item.product;
-                  final variant = product.variants.isNotEmpty
-                      ? product.variants.first
-                      : null;
-
-                  if (variant == null) {
+                  final variants = product.variants;
+                  
+                  if (variants.isEmpty) {
                     return const SizedBox.shrink();
                   }
-
-                  final variantId = variant.id;
-                  final priceText =
-                      PriceFormatter.formatPrice(variant.priceWithTax.round());
+                  
+                  // Get selected variant ID or default to first variant
+                  final selectedVariantId = _selectedVariantIds[product.id] ?? 
+                      (variants.isNotEmpty ? variants.first.id : '');
+                  
+                  final selectedVariant = selectedVariantId.isNotEmpty
+                      ? variants.firstWhere(
+                          (v) => v.id == selectedVariantId,
+                          orElse: () => variants.first,
+                        )
+                      : variants.first;
+                  
+                  final priceText = PriceFormatter.formatPrice(
+                      selectedVariant.priceWithTax.round());
                   final isFavorite = bannerController.isFavorite(product.id);
+                  final hasMultipleVariants = variants.length > 1;
+                  
+                  // Get option value from variant name (like category product page)
+                  final variantLabel = _getVariantLabelFromName(selectedVariant.name);
 
                   return SizedBox(
                     width: ResponsiveUtils.rp(170),
@@ -434,15 +448,31 @@ class _MyHomePageState extends State<MyHomePage> {
                       onFavoriteToggle: () => bannerController.toggleFavorite(
                           productId: product.id),
                       discountPercent: null,
-                      variantSelector: null,
-                      showVariantSelector: false,
-                      variantLabel: variant.name,
+                      variantSelector: hasMultipleVariants
+                          ? _buildFrequentlyOrderedVariantDropdown(
+                              productId: product.id,
+                              variants: variants,
+                              currentVariantId: selectedVariantId,
+                            )
+                          : null,
+                      showVariantSelector: hasMultipleVariants,
+                      variantLabel: variantLabel,
                       priceText: priceText,
                       shadowPriceText: null,
-                      onAddToCart: () => _addVariantToCartById(
-                        variantId,
-                        product.name,
-                      ),
+                      onAddToCart: () {
+                        if (selectedVariantId.isEmpty) {
+                          Get.snackbar(
+                            'Variant unavailable',
+                            'Unable to add this item right now.',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        } else {
+                          _addVariantToCartById(
+                            selectedVariantId,
+                            product.name,
+                          );
+                        }
+                      },
                     ),
                   );
                 },
@@ -596,12 +626,67 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  /// Build variant dropdown for favorites (similar to collection products)
+  /// Build variant dropdown for favorites (shows option group names and option names like category products)
   Widget _buildFavoritesVariantDropdown({
     required String productId,
     required List<FavoriteVariantModel> variants,
     required String currentVariantId,
   }) {
+    // Extract unique option values from variant names (same as category product page: opt.name)
+    final uniqueOptions = <String>{};
+    final optionToVariantMap = <String, String>{};
+    
+    for (final variant in variants) {
+      // Extract option name from variant name (same as category page: opt.name)
+      // Category page uses: opt.name where opt.group.name == groupName
+      // For favourites, extract from variant name (part after colon = option name)
+      String optionValue;
+      if (variant.name.contains(':')) {
+        optionValue = variant.name.split(':').last.trim();
+      } else {
+        optionValue = variant.name;
+      }
+      uniqueOptions.add(optionValue);
+      optionToVariantMap[optionValue] = variant.id;
+    }
+    
+    final uniqueOptionsList = uniqueOptions.toList();
+    if (uniqueOptionsList.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    // Get current option value for selected variant (same as category page: opt.name)
+    final currentVariant = variants.firstWhere(
+      (v) => v.id == currentVariantId,
+      orElse: () => variants.first,
+    );
+    // Extract option name from variant name (same as category page: opt.name)
+    // Category page uses: opt.name where opt.group.name == groupName
+    String currentOptionValue;
+    if (currentVariant.name.contains(':')) {
+      currentOptionValue = currentVariant.name.split(':').last.trim();
+    } else {
+      currentOptionValue = currentVariant.name;
+    }
+    
+    // Get option group name (like category product page)
+    String groupName = 'Size'; // Default
+    if (variants.isNotEmpty) {
+      final firstVariantName = variants.first.name;
+      if (firstVariantName.contains(':')) {
+        groupName = firstVariantName.split(':').first.trim();
+      } else {
+        // Try common group names
+        final commonGroupNames = ['Size', 'Color', 'Weight', 'Pack'];
+        for (final name in commonGroupNames) {
+          if (firstVariantName.toLowerCase().contains(name.toLowerCase())) {
+            groupName = name;
+            break;
+          }
+        }
+      }
+    }
+    
     return Container(
       height: ResponsiveUtils.rp(32),
       padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
@@ -615,7 +700,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: currentVariantId.isNotEmpty ? currentVariantId : null,
+          value: currentOptionValue,
           isExpanded: true,
           isDense: true,
           icon: Icon(
@@ -630,11 +715,19 @@ class _MyHomePageState extends State<MyHomePage> {
             color: AppColors.textPrimary,
             height: 1.2,
           ),
-          items: variants.map((variant) {
-            final isSelected = variant.id == currentVariantId;
-            final displayName = _getVariantLabelFromName(variant.name);
+          hint: Text(
+            groupName,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(12),
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary.withValues(alpha: 0.7),
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          items: uniqueOptionsList.map((optionName) {
+            final isSelected = optionName == currentOptionValue;
             return DropdownMenuItem<String>(
-              value: variant.id,
+              value: optionName,
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical: ResponsiveUtils.rp(4),
@@ -643,7 +736,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Expanded(
                       child: Text(
-                        displayName,
+                        optionName,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(13),
@@ -672,11 +765,179 @@ class _MyHomePageState extends State<MyHomePage> {
           dropdownColor: AppColors.card,
           menuMaxHeight: ResponsiveUtils.rp(200),
           borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-          onChanged: (String? newVariantId) {
-            if (newVariantId == null) return;
-            setState(() {
-              _selectedVariantIds[productId] = newVariantId;
-            });
+          onChanged: (String? newOptionName) {
+            if (newOptionName == null) return;
+            
+            // Find matching variant for the selected option (same as category product page)
+            FavoriteVariantModel? matchingVariant;
+            for (final variant in variants) {
+              // Extract option name from variant name (same as category page: opt.name == newOptionName)
+              String? optionValue;
+              if (variant.name.contains(':')) {
+                optionValue = variant.name.split(':').last.trim();
+              } else {
+                optionValue = variant.name;
+              }
+              
+              if (optionValue == newOptionName) {
+                matchingVariant = variant;
+                break;
+              }
+            }
+            
+            if (matchingVariant != null) {
+              setState(() {
+                _selectedVariantIds[productId] = matchingVariant!.id;
+              });
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Build variant dropdown for frequently ordered products (shows option group names and option names like category products)
+  Widget _buildFrequentlyOrderedVariantDropdown({
+    required String productId,
+    required List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants> variants,
+    required String currentVariantId,
+  }) {
+    // Extract unique option values from variant names
+    final uniqueOptions = <String>{};
+    final optionToVariantMap = <String, String>{};
+    
+    for (final variant in variants) {
+      final optionValue = _getVariantLabelFromName(variant.name);
+      uniqueOptions.add(optionValue);
+      optionToVariantMap[optionValue] = variant.id;
+    }
+    
+    final uniqueOptionsList = uniqueOptions.toList();
+    if (uniqueOptionsList.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    // Get current option value for selected variant
+    final currentVariant = variants.firstWhere(
+      (v) => v.id == currentVariantId,
+      orElse: () => variants.first,
+    );
+    final currentOptionValue = _getVariantLabelFromName(currentVariant.name);
+    
+    // Get option group name (like category product page)
+    String groupName = 'Size'; // Default
+    if (variants.isNotEmpty) {
+      final firstVariantName = variants.first.name;
+      if (firstVariantName.contains(':')) {
+        groupName = firstVariantName.split(':').first.trim();
+      } else {
+        // Try common group names
+        final commonGroupNames = ['Size', 'Color', 'Weight', 'Pack'];
+        for (final name in commonGroupNames) {
+          if (firstVariantName.toLowerCase().contains(name.toLowerCase())) {
+            groupName = name;
+            break;
+          }
+        }
+      }
+    }
+    
+    return Container(
+      height: ResponsiveUtils.rp(32),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundLight,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.6),
+          width: 1,
+        ),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: currentOptionValue,
+          isExpanded: true,
+          isDense: true,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: ResponsiveUtils.rp(20),
+            color: AppColors.icon.withValues(alpha: 0.7),
+          ),
+          iconSize: ResponsiveUtils.rp(20),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(12),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+            height: 1.2,
+          ),
+          hint: Text(
+            groupName,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(12),
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary.withValues(alpha: 0.7),
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          items: uniqueOptionsList.map((optionName) {
+            final isSelected = optionName == currentOptionValue;
+            return DropdownMenuItem<String>(
+              value: optionName,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: ResponsiveUtils.rp(4),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        optionName,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(13),
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    if (isSelected) ...[
+                      SizedBox(width: ResponsiveUtils.rp(6)),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        size: ResponsiveUtils.rp(16),
+                        color: AppColors.button,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+          dropdownColor: AppColors.card,
+          menuMaxHeight: ResponsiveUtils.rp(200),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+          onChanged: (String? newOptionName) {
+            if (newOptionName == null) return;
+            
+            // Find matching variant for the selected option (like category product page)
+            Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants? matchingVariant;
+            for (final variant in variants) {
+              final optionValue = _getVariantLabelFromName(variant.name);
+              if (optionValue == newOptionName) {
+                matchingVariant = variant;
+                break;
+              }
+            }
+            
+            if (matchingVariant != null) {
+              setState(() {
+                _selectedVariantIds[productId] = matchingVariant!.id;
+              });
+            }
           },
         ),
       ),
@@ -708,14 +969,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await cartController.addToCart(productVariantId: parsedVariantId);
     if (success && mounted) {
       setState(() {});
-      Get.snackbar(
-        'Added to Cart',
-        '$productName added successfully!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.success,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-      );
+
     }
   }
 

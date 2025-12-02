@@ -11,7 +11,7 @@ import '../services/graphql_client.dart';
 import '../graphql/product.graphql.dart';
 import '../widgets/Variant bottom sheet.dart' show VariantBottomSheet;
 import '../widgets/appbar.dart';
-import '../widgets/snackbar.dart';
+// import '../widgets/snackbar.dart'; // Unused import
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/product_card.dart';
@@ -44,24 +44,22 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint(
-        '🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
+/// debugPrint(  '🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      debugPrint(
-          '🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
+/// debugPrint(  '🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
       
       try {
         await controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug);
         
         // Check if collection was found after fetch attempt
         if (controller.currentCollection.value == null) {
-          debugPrint('⚠️ [CollectionProductsPage] Collection not found, handling redirect...');
+// debugPrint('⚠️ [CollectionProductsPage] Collection not found, handling redirect...');
           _handleCollectionNotFound();
           return;
         }
         
       } catch (e) {
-        debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
+// debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
         _handleCollectionNotFound();
         return;
       }
@@ -308,8 +306,8 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
 
     if (success) {
       final displayName = _getVariantDisplayName(variant);
-      showSuccessSnackbar('$displayName added to cart');
-      
+
+
       // Track add to cart event
       final price = variant.priceWithTax / 100.0; // Convert from minor units
       await AnalyticsService().logAddToCart(
@@ -349,9 +347,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
 
     if (success) {
       if (wasFavorite) {
-        showSuccessSnackbar('$productName removed from favorites');
       } else {
-        showSuccessSnackbar('$productName added to favorites');
         
         // Track add to wishlist event
         final variants = controller.getVariantsForProduct(productId);
@@ -382,24 +378,22 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed('/search');
+            },
           ),
         ],
       ),
       body: Obx(() {
+        // Show shimmer grid while loading
         if (utilityController.isLoadingRx.value) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: AppColors.button,
-              strokeWidth: 3,
-            ),
-          );
+          return _buildShimmerGrid();
         }
 
         final collection = controller.currentCollection.value;
 
-        // Show shimmer grid while loading or when collection is null
-        if (collection == null || utilityController.isLoadingRx.value) {
+        // Show shimmer grid when collection is null
+        if (collection == null) {
           return _buildShimmerGrid();
         }
 
@@ -623,18 +617,18 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                              authToken.isNotEmpty && 
                              channelToken.isNotEmpty;
       
-      debugPrint('🔍 [CollectionProductsPage] Authentication status: $isAuthenticated');
+// debugPrint('🔍 [CollectionProductsPage] Authentication status: $isAuthenticated');
       
       if (isAuthenticated) {
-        debugPrint('🏠 [CollectionProductsPage] User authenticated - redirecting to home');
+// debugPrint('🏠 [CollectionProductsPage] User authenticated - redirecting to home');
         Get.offAllNamed(AppRoutes.home);
       } else {
-        debugPrint('🔐 [CollectionProductsPage] User not authenticated - redirecting to login');
+// debugPrint('🔐 [CollectionProductsPage] User not authenticated - redirecting to login');
         Get.offAllNamed(AppRoutes.login);
       }
       
     } catch (e) {
-      debugPrint('❌ [CollectionProductsPage] Error checking auth status: $e');
+// debugPrint('❌ [CollectionProductsPage] Error checking auth status: $e');
       // Fallback to home page if there's any error
       Get.offAllNamed(AppRoutes.home);
     }

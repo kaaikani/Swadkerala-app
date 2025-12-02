@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
-import 'premium_card.dart';
 import 'responsive_text.dart';
 import 'responsive_spacing.dart';
 import 'responsive_icon.dart';
@@ -41,10 +40,17 @@ class CartItemCardPremium extends StatelessWidget {
   Widget build(BuildContext context) {
     final canAdjust = !isUnavailable && !isLoading;
 
-    final card = PremiumCard(
-      padding: ResponsiveSpacing.padding(all: 14),
-      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(14)),
-      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+    final card = Container(
+      padding: ResponsiveSpacing.padding(all: 10),
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -56,43 +62,43 @@ class CartItemCardPremium extends StatelessWidget {
                 child: imageUrl != null
                     ? Image.network(
                         imageUrl!,
-                        width: ResponsiveUtils.rp(90),
-                        height: ResponsiveUtils.rp(90),
+                        width: ResponsiveUtils.rp(70),
+                        height: ResponsiveUtils.rp(70),
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
                             _buildPlaceholder(),
                       )
                     : _buildPlaceholder(),
               ),
-              SizedBox(width: ResponsiveUtils.rp(14)),
+              SizedBox(width: ResponsiveUtils.rp(10)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ResponsiveText(
                       productName,
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (variantName != null && variantName!.isNotEmpty) ...[
-                      SizedBox(height: ResponsiveUtils.rp(5)),
+                      SizedBox(height: ResponsiveUtils.rp(3)),
                       ResponsiveText(
                         variantName!,
-                        fontSize: 14,
+                        fontSize: 12,
                         color: AppColors.textSecondary,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    SizedBox(height: ResponsiveUtils.rp(8)),
+                    SizedBox(height: ResponsiveUtils.rp(4)),
                     ResponsiveText(
                       'Unit: $unitPrice',
-                      fontSize: 13,
+                      fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
-                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    SizedBox(height: ResponsiveUtils.rp(8)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

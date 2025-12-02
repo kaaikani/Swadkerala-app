@@ -62,20 +62,49 @@
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# Additional size optimizations
--optimizationpasses 5
+# Additional size optimizations - More aggressive
+-optimizationpasses 9
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -verbose
 
-# Remove logging
+# Remove logging - More comprehensive
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
     public static *** i(...);
+    public static *** w(...);
+    public static *** e(...);
 }
 
-# Aggressive optimization
+# Remove debug prints
+-assumenosideeffects class kotlin.io.ConsoleKt {
+    public static *** println(...);
+}
+
+# Remove Flutter debug prints (if any)
+-assumenosideeffects class dart.core.** {
+    public static *** print(...);
+}
+
+# Aggressive optimization - Maximum compression
 -optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-allowaccessmodification
+-repackageclasses ''
+
+# Remove unused code more aggressively
+-dontpreverify
+-verbose
+
+# Remove unused string resources
+-assumenosideeffects class java.lang.String {
+    public boolean equals(java.lang.Object);
+}
+
+# Keep only essential attributes
+-keepattributes SourceFile,LineNumberTable
+-keepattributes *Annotation*,InnerClasses,EnclosingMethod,Signature
+
+# More aggressive class merging
 -allowaccessmodification
 -repackageclasses ''

@@ -170,7 +170,14 @@ class AddressComponent extends StatelessWidget {
                     ),
                     SizedBox(width: ResponsiveUtils.rp(4)),
                     InkWell(
-                      onTap: () => _showDeleteDialog(context, address.id),
+                      onTap: () {
+                        // Check if this is the only address
+                        if (customerController.addresses.length <= 1) {
+                          showErrorSnackbar('Cannot delete the only address. At least one address must be kept.');
+                          return;
+                        }
+                        _showDeleteDialog(context, address.id);
+                      },
                       borderRadius:
                           BorderRadius.circular(ResponsiveUtils.rp(8)),
                       child: Container(
@@ -257,6 +264,12 @@ class AddressComponent extends StatelessWidget {
   }
 
   void _showDeleteDialog(BuildContext context, String addressId) {
+    // Check if this is the only address
+    if (customerController.addresses.length <= 1) {
+      showErrorSnackbar('Cannot delete the only address. At least one address must be kept.');
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -280,6 +293,12 @@ class AddressComponent extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () async {
+              // Double check before deletion
+              if (customerController.addresses.length <= 1) {
+                Navigator.pop(context);
+                showErrorSnackbar('Cannot delete the only address. At least one address must be kept.');
+                return;
+              }
               Navigator.pop(context);
               final success = await customerController.deleteAddress(addressId);
               if (success) {
@@ -332,21 +351,35 @@ class AddressComponent extends StatelessWidget {
         text: existingAddress?.phoneNumber ??
             (autoPhone.isNotEmpty ? autoPhone : ''));
 
-    bool isDefault = existingAddress?.defaultShippingAddress ?? false;
+    // Get address count and determine default address logic
+    final addressCount = customerController.addresses.length;
+    final isOnlyAddress = addressCount <= 1; // Only one address or no addresses
+    final isOnlyDefault = isEdit && 
+        existingAddress?.defaultShippingAddress == true && 
+        addressCount == 1;
+    
+    // If adding first address, it must be default
+    // If editing only address, it must remain default
+    bool isDefault = isEdit 
+        ? (existingAddress?.defaultShippingAddress ?? false)
+        : (addressCount == 0); // Auto-default if no addresses exist
 
     showDialog(
       context: context,
+      barrierDismissible: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return Dialog(
-            backgroundColor: AppColors.surface,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16))),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.8),
-              child: Column(
+            backgroundColor: Colors.transparent, // Faster rendering
+            insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            child: Material(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.8),
+                child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Header
@@ -426,60 +459,91 @@ class AddressComponent extends StatelessWidget {
                               keyboardType: TextInputType.phone),
                           SizedBox(height: ResponsiveUtils.rp(20)),
                           InkWell(
-                            onTap: () => setState(() => isDefault = !isDefault),
+                            onTap: () {
+                              // Prevent unchecking if it's the only default address
+                              if (isOnlyDefault && isDefault) {
+                                showErrorSnackbar('Unable to deselect default address. At least one address must be set as default.');
+                                return;
+                              }
+                              // Prevent unchecking if it's the only address
+                              if (isOnlyAddress && isDefault) {
+                                showErrorSnackbar('Unable to deselect default address. At least one address must be set as default.');
+                                return;
+                              }
+                              setState(() => isDefault = !isDefault);
+                            },
                             borderRadius:
                                 BorderRadius.circular(ResponsiveUtils.rp(10)),
-                            child: Container(
-                              padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-                              decoration: BoxDecoration(
-                                color: isDefault
-                                    ? AppColors.button.withValues(alpha: 0.08)
-                                    : AppColors.grey100,
-                                borderRadius: BorderRadius.circular(
-                                    ResponsiveUtils.rp(10)),
-                                border: Border.all(
+                            child: Opacity(
+                              opacity: (isOnlyAddress && isDefault) ? 0.6 : 1.0,
+                              child: Container(
+                                padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                                decoration: BoxDecoration(
                                   color: isDefault
-                                      ? AppColors.button.withValues(alpha: 0.3)
-                                      : AppColors.border,
-                                  width: ResponsiveUtils.rp(1.5),
+                                      ? AppColors.button.withValues(alpha: 0.08)
+                                      : AppColors.grey100,
+                                  borderRadius: BorderRadius.circular(
+                                      ResponsiveUtils.rp(10)),
+                                  border: Border.all(
+                                    color: isDefault
+                                        ? AppColors.button.withValues(alpha: 0.3)
+                                        : AppColors.border,
+                                    width: ResponsiveUtils.rp(1.5),
+                                  ),
                                 ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: ResponsiveUtils.rp(24),
-                                    height: ResponsiveUtils.rp(24),
-                                    decoration: BoxDecoration(
-                                      color: isDefault
-                                          ? AppColors.button
-                                          : AppColors.surface,
-                                      borderRadius: BorderRadius.circular(
-                                          ResponsiveUtils.rp(6)),
-                                      border: Border.all(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: ResponsiveUtils.rp(24),
+                                      height: ResponsiveUtils.rp(24),
+                                      decoration: BoxDecoration(
                                         color: isDefault
                                             ? AppColors.button
-                                            : AppColors.border,
-                                        width: ResponsiveUtils.rp(2),
+                                            : AppColors.surface,
+                                        borderRadius: BorderRadius.circular(
+                                            ResponsiveUtils.rp(6)),
+                                        border: Border.all(
+                                          color: isDefault
+                                              ? AppColors.button
+                                              : AppColors.border,
+                                          width: ResponsiveUtils.rp(2),
+                                        ),
+                                      ),
+                                      child: isDefault
+                                          ? Icon(Icons.check,
+                                              color: AppColors.textLight,
+                                              size: ResponsiveUtils.rp(16))
+                                          : null,
+                                    ),
+                                    SizedBox(width: ResponsiveUtils.rp(12)),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Make this my default address',
+                                            style: TextStyle(
+                                              fontSize: ResponsiveUtils.sp(15),
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.textPrimary,
+                                            ),
+                                          ),
+                                          if (isOnlyAddress && isDefault)
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 4),
+                                              child: Text(
+                                                'This is your only address and must remain default',
+                                                style: TextStyle(
+                                                  fontSize: ResponsiveUtils.sp(12),
+                                                  color: AppColors.textSecondary,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
-                                    child: isDefault
-                                        ? Icon(Icons.check,
-                                            color: AppColors.textLight,
-                                            size: ResponsiveUtils.rp(16))
-                                        : null,
-                                  ),
-                                  SizedBox(width: ResponsiveUtils.rp(12)),
-                                  Expanded(
-                                    child: Text(
-                                      'Make this my default address',
-                                      style: TextStyle(
-                                        fontSize: ResponsiveUtils.sp(15),
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.textPrimary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -541,7 +605,7 @@ class AddressComponent extends StatelessWidget {
                                 streetLine1: line1Controller.text,
                                 streetLine2: line2Controller.text,
                                 city: cityController.text,
-                                province: '', // No state needed
+                                province: 'Tamil Nadu', // Default province
                                 postalCode: postalController.text,
                                 phoneNumber: phoneController.text,
                                 company: '',
@@ -602,6 +666,7 @@ class AddressComponent extends StatelessWidget {
                 ],
               ),
             ),
+          ),
           );
         },
       ),

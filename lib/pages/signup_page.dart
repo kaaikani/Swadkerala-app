@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/shimmers.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
@@ -8,6 +7,7 @@ import '../services/sms_autofill_service.dart';
 import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
 import '../utils/navigation_helper.dart';
+import '../utils/responsive.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -48,6 +48,9 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   bool _cityTouched = false;
   bool _otpTouched = false;
 
+  // UI state for step-based flow
+  int _currentStep = 0; // 0: Personal Info, 1: Contact Info, 2: OTP Verification
+
   @override
   void initState() {
     super.initState();
@@ -85,7 +88,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     try {
       await _smsAutofillService.initialize();
     } catch (e) {
-      debugPrint('[SignupPage] SMS autofill init error: $e');
+// debugPrint('[SignupPage] SMS autofill init error: $e');
     }
   }
 
@@ -97,7 +100,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         if (otp.length == 4 && _otpError == null) _verifyOtp();
       });
     } catch (e) {
-      debugPrint('[SignupPage] SMS autofill error: $e');
+// debugPrint('[SignupPage] SMS autofill error: $e');
     }
   }
 
@@ -170,15 +173,16 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.primary,
-              AppColors.primary.withValues(alpha: 0.8),
-              Colors.white,
+              AppColors.button.withValues(alpha: 0.1),
+              AppColors.buttonLight.withValues(alpha: 0.05),
+              AppColors.background,
             ],
             stops: const [0.0, 0.3, 1.0],
           ),
@@ -188,24 +192,16 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-
-                    // Back Button and Header
-                    _buildHeader(),
-
-                    const SizedBox(height: 40),
-
-                    // Main Form Card
-                    _buildFormCard(),
-
-                    const SizedBox(height: 30),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  // Top section with back button and header
+                  _buildTopSection(),
+                  
+                  // Main content card
+                  Expanded(
+                    child: _buildMainContent(),
+                  ),
+                ],
               ),
             ),
           ),
@@ -214,161 +210,274 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildHeader() {
-    return Column(
-      children: [
-        // Back Button
-        Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
+  Widget _buildTopSection() {
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+      child: Column(
+        children: [
+          // Back button
+          Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: ResponsiveUtils.rp(8),
+                      offset: Offset(0, ResponsiveUtils.rp(2)),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_rounded,
+                    color: AppColors.textPrimary,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                  onPressed: () => Get.back(),
+                ),
               ),
-              child: IconButton(
-                icon:
-                    const Icon(Icons.arrow_back, color: Colors.white, size: 24),
-                onPressed: () => Get.back(),
+            ],
+          ),
+          SizedBox(height: ResponsiveUtils.rp(24)),
+          // Logo
+          Container(
+            width: ResponsiveUtils.rp(80),
+            height: ResponsiveUtils.rp(80),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.button, AppColors.buttonLight],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.button.withValues(alpha: 0.3),
+                  blurRadius: ResponsiveUtils.rp(20),
+                  offset: Offset(0, ResponsiveUtils.rp(10)),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.person_add_rounded,
+              size: ResponsiveUtils.rp(40),
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(24)),
+          Text(
+            'Create Account',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(28),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.5,
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(8)),
+          Text(
+            'Join us and start shopping',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(16),
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainContent() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(ResponsiveUtils.rp(32)),
+          topRight: Radius.circular(ResponsiveUtils.rp(32)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: ResponsiveUtils.rp(20),
+            offset: Offset(0, -5),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            
+            // Progress indicator
+            _buildProgressIndicator(),
+            
+            SizedBox(height: ResponsiveUtils.rp(32)),
+            
+            // Form content
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: _buildCurrentStepContent(),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(24)),
+                    _buildNavigationButtons(),
+                    if (_currentStep == 2)
+                      Obx(() {
+                        if (!_authController.isOtpSent) return const SizedBox.shrink();
+                        return _buildResendSection();
+                      }),
+                  ],
+                ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
 
-        const SizedBox(height: 30),
-
-        // Logo
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+  Widget _buildProgressIndicator() {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.rp(20),
+        vertical: ResponsiveUtils.rp(16),
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.inputFill,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+      ),
+      child: Row(
+        children: [
+          _buildProgressStep(1, 'Personal', _currentStep == 0, _currentStep > 0),
+          Expanded(
+            child: Container(
+              height: 3,
+              margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                color: _currentStep > 0
+                    ? AppColors.button
+                    : AppColors.border.withValues(alpha: 0.3),
               ),
-            ],
+            ),
           ),
-          child: Icon(
-            Icons.person_add_alt_1,
-            size: 50,
-            color: AppColors.primary,
+          _buildProgressStep(2, 'Contact', _currentStep == 1, _currentStep > 1),
+          Expanded(
+            child: Container(
+              height: 3,
+              margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                color: _currentStep > 1
+                    ? AppColors.button
+                    : AppColors.border.withValues(alpha: 0.3),
+              ),
+            ),
+          ),
+          _buildProgressStep(3, 'Verify', _currentStep == 2, false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressStep(int step, String label, bool isActive, bool isCompleted) {
+    return Column(
+      children: [
+        Container(
+          width: ResponsiveUtils.rp(32),
+          height: ResponsiveUtils.rp(32),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isCompleted
+                ? AppColors.button
+                : isActive
+                    ? AppColors.button
+                    : AppColors.border.withValues(alpha: 0.3),
+          ),
+          child: Center(
+            child: isCompleted
+                ? Icon(
+                    Icons.check,
+                    size: ResponsiveUtils.rp(18),
+                    color: Colors.white,
+                  )
+                : Text(
+                    '$step',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: ResponsiveUtils.sp(14),
+                    ),
+                  ),
           ),
         ),
-
-        const SizedBox(height: 30),
-
-        // Welcome Text
-        const Text(
-          'Create Account',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: 1,
-          ),
-        ),
-
-        const SizedBox(height: 8),
-
+        SizedBox(height: ResponsiveUtils.rp(4)),
         Text(
-          'Join us today',
+          label,
           style: TextStyle(
-            fontSize: 16,
-            color: Colors.white.withValues(alpha: 0.9),
-            fontWeight: FontWeight.w400,
+            fontSize: ResponsiveUtils.sp(11),
+            color: isActive || isCompleted
+                ? AppColors.textPrimary
+                : AppColors.textSecondary,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildFormCard() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Personal Info Section
-            _buildPersonalInfoSection(),
-
-            const SizedBox(height: 30),
-
-            // Contact Info Section
-            _buildContactInfoSection(),
-
-            const SizedBox(height: 30),
-
-            // OTP Section
-            Obx(() {
-              if (!_authController.isOtpSent) return const SizedBox.shrink();
-              return _buildOtpSection();
-            }),
-
-            const SizedBox(height: 30),
-
-            // Action Button
-            _buildActionButton(),
-
-            // Resend OTP
-            Obx(() {
-              if (!_authController.isOtpSent) return const SizedBox.shrink();
-              return _buildResendSection();
-            }),
-          ],
-        ),
-      ),
-    );
+  Widget _buildCurrentStepContent() {
+    switch (_currentStep) {
+      case 0:
+        return _buildPersonalInfoSection(key: const ValueKey('personal'));
+      case 1:
+        return _buildContactInfoSection(key: const ValueKey('contact'));
+      case 2:
+        return Obx(() {
+          if (!_authController.isOtpSent) {
+            return const SizedBox.shrink();
+          }
+          return _buildOtpSection(key: const ValueKey('otp'));
+        });
+      default:
+        return const SizedBox.shrink();
+    }
   }
 
-  Widget _buildPersonalInfoSection() {
+  Widget _buildPersonalInfoSection({Key? key}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.person_outline,
-                color: AppColors.primary,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text(
-              'Personal Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ],
+        Text(
+          'Personal Information',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(18),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
         ),
-
-        const SizedBox(height: 20),
-
-        // First Name
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        Text(
+          'Tell us about yourself',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textSecondary,
+          ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(24)),
         _buildTextField(
           controller: _authController.firstname,
           label: 'First Name',
@@ -382,18 +491,12 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
             _validateFirstName(value);
           },
         ),
-
         if (_firstNameTouched && _firstNameError != null)
-          _buildErrorMessage(_firstNameError!),
-
-        if (_firstNameTouched &&
-            _firstNameError == null &&
-            _authController.firstname.text.trim().isNotEmpty)
-          _buildSuccessMessage('Valid name'),
-
-        const SizedBox(height: 20),
-
-        // Last Name
+          Padding(
+            padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+            child: _buildErrorMessage(_firstNameError!),
+          ),
+        SizedBox(height: ResponsiveUtils.rp(20)),
         _buildTextField(
           controller: _authController.lastname,
           label: 'Last Name',
@@ -407,118 +510,82 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
             _validateLastName(value);
           },
         ),
-
         if (_lastNameTouched && _lastNameError != null)
-          _buildErrorMessage(_lastNameError!),
-
-        if (_lastNameTouched &&
-            _lastNameError == null &&
-            _authController.lastname.text.trim().isNotEmpty)
-          _buildSuccessMessage('Valid name'),
+          Padding(
+            padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+            child: _buildErrorMessage(_lastNameError!),
+          ),
       ],
     );
   }
 
-  Widget _buildContactInfoSection() {
+  Widget _buildContactInfoSection({Key? key}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.contact_phone,
-                color: Colors.blue[700],
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text(
-              'Contact Details',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ],
+        Text(
+          'Contact Details',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(18),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
         ),
-
-        const SizedBox(height: 20),
-
-        // Phone Number
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        Text(
+          'We need this to verify your account',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textSecondary,
+          ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(24)),
         _buildPhoneField(),
-
         if (_phoneTouched && _phoneError != null)
-          _buildErrorMessage(_phoneError!),
-
-        if (_phoneTouched &&
-            _phoneError == null &&
-            _authController.phoneNumber.text.length == 10)
-          _buildSuccessMessage('Valid phone number'),
-
-        const SizedBox(height: 20),
-
-        // City
+          Padding(
+            padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+            child: _buildErrorMessage(_phoneError!),
+          ),
+        SizedBox(height: ResponsiveUtils.rp(20)),
         _buildCityDropdown(),
-
-        if (_cityTouched && _cityError != null) _buildErrorMessage(_cityError!),
-
-        if (_cityTouched && _cityError == null && _selectedCity != null)
-          _buildSuccessMessage('City selected'),
+        if (_cityTouched && _cityError != null)
+          Padding(
+            padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+            child: _buildErrorMessage(_cityError!),
+          ),
       ],
     );
   }
 
-  Widget _buildOtpSection() {
+  Widget _buildOtpSection({Key? key}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.verified_user,
-                color: Colors.green,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text(
-              'Enter OTP',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ],
+        Text(
+          'Enter OTP',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(18),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: ResponsiveUtils.rp(8)),
         Text(
           'Sent to +91 ${_authController.phoneNumber.text}',
           style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
+            fontSize: ResponsiveUtils.sp(13),
+            color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 15),
+        SizedBox(height: ResponsiveUtils.rp(24)),
         _buildOtpField(),
-        if (_otpTouched && _otpError != null) _buildErrorMessage(_otpError!),
-        if (_otpTouched &&
-            _otpError == null &&
-            _authController.otpController.text.length == 4)
-          _buildSuccessMessage('Valid OTP'),
+        if (_otpTouched && _otpError != null)
+          Padding(
+            padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+            child: _buildErrorMessage(_otpError!),
+          ),
       ],
     );
   }
@@ -536,49 +603,65 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 15,
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: ResponsiveUtils.rp(8)),
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.inputFill,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
             border: Border.all(
               color: hasError
-                  ? Colors.red
+                  ? AppColors.errorLight
                   : isValid
-                      ? Colors.green
-                      : Colors.grey[300]!,
-              width: 2,
+                      ? AppColors.successLight
+                      : AppColors.inputBorder,
+              width: 1.5,
             ),
           ),
           child: TextField(
             controller: controller,
             textCapitalization: TextCapitalization.words,
             enabled: !_authController.isOtpSent,
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(16),
               fontWeight: FontWeight.w500,
+              color: AppColors.textPrimary,
             ),
             onChanged: onChanged,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 14,
+                color: AppColors.textSecondary.withValues(alpha: 0.5),
+                fontSize: ResponsiveUtils.sp(16),
               ),
               border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(16),
+                vertical: ResponsiveUtils.rp(16),
+              ),
               suffixIcon: isValid
-                  ? const Icon(Icons.check_circle,
-                      color: Colors.green, size: 20)
+                  ? Padding(
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                      child: Icon(
+                        Icons.check_circle,
+                        color: AppColors.success,
+                        size: ResponsiveUtils.rp(20),
+                      ),
+                    )
                   : hasError
-                      ? const Icon(Icons.error, color: Colors.red, size: 20)
+                      ? Padding(
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                          child: Icon(
+                            Icons.error,
+                            color: AppColors.error,
+                            size: ResponsiveUtils.rp(20),
+                          ),
+                        )
                       : null,
             ),
           ),
@@ -596,55 +679,65 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Mobile Number',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: ResponsiveUtils.sp(14),
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: ResponsiveUtils.rp(8)),
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.inputFill,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
             border: Border.all(
               color: hasError
-                  ? Colors.red
+                  ? AppColors.errorLight
                   : isValid
-                      ? Colors.green
-                      : Colors.grey[300]!,
-              width: 2,
+                      ? AppColors.successLight
+                      : AppColors.inputBorder,
+              width: 1.5,
             ),
           ),
           child: Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: const Text(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(16),
+                  vertical: ResponsiveUtils.rp(16),
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.inputFill,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(ResponsiveUtils.rp(16)),
+                    bottomLeft: Radius.circular(ResponsiveUtils.rp(16)),
+                  ),
+                ),
+                child: Text(
                   '+91',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.sp(16),
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),
               Container(
                 width: 1,
-                height: 30,
-                color: Colors.grey[300],
+                height: ResponsiveUtils.rp(24),
+                color: AppColors.border,
               ),
               Expanded(
                 child: TextField(
                   controller: _authController.phoneNumber,
                   keyboardType: TextInputType.phone,
                   enabled: !_authController.isOtpSent,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(16),
                     fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
                   ),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -655,20 +748,34 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                     _validatePhone(value);
                   },
                   decoration: InputDecoration(
-                    hintText: 'Enter 10 digit mobile number',
+                    hintText: 'Enter mobile number',
                     hintStyle: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 14,
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
+                      fontSize: ResponsiveUtils.sp(16),
                     ),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(16),
+                      vertical: ResponsiveUtils.rp(16),
+                    ),
                     suffixIcon: isValid
-                        ? const Icon(Icons.check_circle,
-                            color: Colors.green, size: 20)
+                        ? Padding(
+                            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                            child: Icon(
+                              Icons.check_circle,
+                              color: AppColors.success,
+                              size: ResponsiveUtils.rp(20),
+                            ),
+                          )
                         : hasError
-                            ? const Icon(Icons.error,
-                                color: Colors.red, size: 20)
+                            ? Padding(
+                                padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                                child: Icon(
+                                  Icons.error,
+                                  color: AppColors.error,
+                                  size: ResponsiveUtils.rp(20),
+                                ),
+                              )
                             : null,
                   ),
                 ),
@@ -687,46 +794,49 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Select Your City',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: ResponsiveUtils.sp(14),
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: ResponsiveUtils.rp(8)),
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.inputFill,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
             border: Border.all(
               color: hasError
-                  ? Colors.red
+                  ? AppColors.errorLight
                   : isValid
-                      ? Colors.green
-                      : Colors.grey[300]!,
-              width: 2,
+                      ? AppColors.successLight
+                      : AppColors.inputBorder,
+              width: 1.5,
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _selectedCity,
               hint: Text(
                 'Choose your city',
                 style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 14,
+                  color: AppColors.textSecondary.withValues(alpha: 0.5),
+                  fontSize: ResponsiveUtils.sp(16),
                 ),
               ),
               isExpanded: true,
-              icon: Icon(Icons.arrow_drop_down,
-                  color: Colors.grey[700], size: 24),
-              style: const TextStyle(
-                fontSize: 16,
+              icon: Icon(
+                Icons.arrow_drop_down,
+                color: AppColors.textSecondary,
+                size: ResponsiveUtils.rp(24),
+              ),
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(16),
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
               items: _cities.map((city) {
                 return DropdownMenuItem<String>(
@@ -758,26 +868,30 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.inputFill,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
         border: Border.all(
           color: hasError
-              ? Colors.red
+              ? AppColors.errorLight
               : isValid
-                  ? Colors.green
-                  : Colors.grey[300]!,
-          width: 2,
+                  ? AppColors.successLight
+                  : AppColors.inputBorder,
+          width: 1.5,
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.rp(20),
+        vertical: ResponsiveUtils.rp(20),
+      ),
       child: TextField(
         controller: _authController.otpController,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 24,
+        style: TextStyle(
+          fontSize: ResponsiveUtils.sp(24),
           fontWeight: FontWeight.bold,
-          letterSpacing: 16,
+          color: AppColors.textPrimary,
+          letterSpacing: ResponsiveUtils.rp(12),
         ),
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
@@ -791,9 +905,9 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         decoration: InputDecoration(
           hintText: '○ ○ ○ ○',
           hintStyle: TextStyle(
-            color: Colors.grey[300],
-            fontSize: 24,
-            letterSpacing: 16,
+            color: AppColors.textSecondary.withValues(alpha: 0.3),
+            fontSize: ResponsiveUtils.sp(24),
+            letterSpacing: ResponsiveUtils.rp(12),
           ),
           border: InputBorder.none,
         ),
@@ -801,81 +915,138 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildNavigationButtons() {
     return Obx(() {
       final isLoading = _authController.isLoading;
-      final isOtpSent = _authController.isOtpSent;
+      
+      bool isEnabled = false;
+      String buttonText = 'Next';
+      IconData buttonIcon = Icons.arrow_forward_rounded;
 
-      bool isEnabled;
-      if (isOtpSent) {
-        isEnabled =
-            _otpError == null && _authController.otpController.text.length == 4;
-      } else {
+      if (_currentStep == 0) {
         isEnabled = _firstNameError == null &&
             _lastNameError == null &&
-            _phoneError == null &&
-            _cityError == null &&
             _authController.firstname.text.trim().isNotEmpty &&
-            _authController.lastname.text.trim().isNotEmpty &&
+            _authController.lastname.text.trim().isNotEmpty;
+        buttonText = 'Next';
+        buttonIcon = Icons.arrow_forward_rounded;
+      } else if (_currentStep == 1) {
+        isEnabled = _phoneError == null &&
+            _cityError == null &&
             _authController.phoneNumber.text.length == 10 &&
             _selectedCity != null;
+        buttonText = 'Send OTP';
+        buttonIcon = Icons.send_rounded;
+      } else if (_currentStep == 2) {
+        isEnabled = _otpError == null &&
+            _authController.otpController.text.length == 4;
+        buttonText = 'Verify & Sign Up';
+        buttonIcon = Icons.verified;
       }
 
-      return Container(
-        width: double.infinity,
-        height: 60,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          gradient: isEnabled
-              ? LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.primary.withValues(alpha: 0.8)
-                  ],
-                )
-              : null,
-          color: isEnabled ? null : Colors.grey[300],
-          boxShadow: isEnabled
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: (isLoading || !isEnabled) ? null : _handleButtonPress,
-            borderRadius: BorderRadius.circular(15),
-            child: Center(
-              child: isLoading
-                  ? Skeletons.smallBox(size: 28)
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          isOtpSent ? Icons.check_circle_outline : Icons.send,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          isOtpSent ? 'Verify & Sign Up' : 'Send OTP',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
+      return Row(
+        children: [
+          if (_currentStep > 0 && !_authController.isOtpSent)
+            Expanded(
+              flex: 1,
+              child: Container(
+                height: ResponsiveUtils.rp(56),
+                margin: EdgeInsets.only(right: ResponsiveUtils.rp(12)),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                  border: Border.all(color: AppColors.border, width: 1.5),
+                  color: AppColors.card,
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: isLoading
+                        ? null
+                        : () {
+                            setState(() {
+                              _currentStep--;
+                            });
+                          },
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: AppColors.textPrimary,
+                            size: ResponsiveUtils.rp(18),
                           ),
-                        ),
-                      ],
+                          SizedBox(width: ResponsiveUtils.rp(4)),
+                          Text(
+                            'Back',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(16),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ),
+                ),
+              ),
+            ),
+          Expanded(
+            flex: _currentStep > 0 && !_authController.isOtpSent ? 2 : 1,
+            child: Container(
+              height: ResponsiveUtils.rp(56),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                gradient: isEnabled
+                    ? LinearGradient(
+                        colors: [AppColors.button, AppColors.buttonLight],
+                      )
+                    : null,
+                color: isEnabled ? null : AppColors.inputBorder,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: (isLoading || !isEnabled) ? null : _handleButtonPress,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                  child: Center(
+                    child: isLoading
+                        ? SizedBox(
+                            width: ResponsiveUtils.rp(24),
+                            height: ResponsiveUtils.rp(24),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                buttonIcon,
+                                color: Colors.white,
+                                size: ResponsiveUtils.rp(20),
+                              ),
+                              SizedBox(width: ResponsiveUtils.rp(12)),
+                              Text(
+                                buttonText,
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(16),
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       );
     });
   }
@@ -883,26 +1054,23 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   Widget _buildResendSection() {
     return Column(
       children: [
-        const SizedBox(height: 20),
+        SizedBox(height: ResponsiveUtils.rp(16)),
         Text(
           "Didn't receive the code?",
           style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 15,
+            color: AppColors.textSecondary,
+            fontSize: ResponsiveUtils.sp(14),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: ResponsiveUtils.rp(8)),
         TextButton(
           onPressed: _authController.isLoading ? null : _handleResendOtp,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          ),
           child: Text(
             'Resend OTP',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.w600,
+              color: AppColors.button,
             ),
           ),
         ),
@@ -911,95 +1079,69 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   }
 
   Widget _buildErrorMessage(String message) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.red[50],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.red[200]!),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 18),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                message,
-                style: TextStyle(
-                  color: Colors.red[700],
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+      decoration: BoxDecoration(
+        color: AppColors.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+        border: Border.all(
+          color: AppColors.error.withValues(alpha: 0.3),
         ),
       ),
-    );
-  }
-
-  Widget _buildSuccessMessage(String message) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.green[50],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.green[200]!),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 18),
-            const SizedBox(width: 8),
-            Text(
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: AppColors.error,
+            size: ResponsiveUtils.rp(16),
+          ),
+          SizedBox(width: ResponsiveUtils.rp(8)),
+          Expanded(
+            child: Text(
               message,
               style: TextStyle(
-                color: Colors.green[700],
-                fontSize: 13,
+                color: AppColors.error,
+                fontSize: ResponsiveUtils.sp(12),
                 fontWeight: FontWeight.w500,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Future<void> _handleButtonPress() async {
-    if (_authController.isOtpSent) {
-      await _verifyOtp();
-    } else {
+    if (_currentStep == 0) {
+      setState(() {
+        _firstNameTouched = true;
+        _lastNameTouched = true;
+      });
+      
+      _validateFirstName(_authController.firstname.text);
+      _validateLastName(_authController.lastname.text);
+      
+      if (_firstNameError == null && _lastNameError == null) {
+        setState(() {
+          _currentStep = 1;
+        });
+      }
+    } else if (_currentStep == 1) {
       await _sendOtp();
+    } else if (_currentStep == 2) {
+      await _verifyOtp();
     }
   }
 
   Future<void> _sendOtp() async {
-    // Touch all fields to show validation
     setState(() {
-      _firstNameTouched = true;
-      _lastNameTouched = true;
       _phoneTouched = true;
       _cityTouched = true;
     });
 
-    // Validate all fields
-    _validateFirstName(_authController.firstname.text);
-    _validateLastName(_authController.lastname.text);
     _validatePhone(_authController.phoneNumber.text);
     _validateCity(_selectedCity);
 
-    // Check for any errors
-    if (_firstNameError != null) {
-      showErrorSnackbar(_firstNameError!);
-      return;
-    }
-    if (_lastNameError != null) {
-      showErrorSnackbar(_lastNameError!);
-      return;
-    }
     if (_phoneError != null) {
       showErrorSnackbar(_phoneError!);
       return;
@@ -1022,6 +1164,9 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     final success = await _authController.sendOtp(context);
     if (success) {
       await _startSmsAutofill();
+      setState(() {
+        _currentStep = 2;
+      });
     }
   }
 
@@ -1036,7 +1181,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
 
     final success = await _authController.verifyOtp(context);
     if (success) {
-      // After successful signup, redirect to intended route or home through AuthWrapper
       await NavigationHelper.redirectToIntendedRoute();
     }
   }

@@ -267,8 +267,8 @@ class _AddToCartButtonState extends State<_AddToCartButton>
                 width: resolvedSize,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF8A5C), Color(0xFFFF3D6E)],
+                  gradient: LinearGradient(
+                    colors: [AppColors.buttonLight, AppColors.button],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -317,8 +317,8 @@ class _DiscountRibbon extends StatelessWidget {
             width: ribbonWidth,
             height: ribbonHeight,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF7B9D), Color(0xFFFF3D6E)],
+              gradient: LinearGradient(
+                colors: [AppColors.buttonLight, AppColors.button],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -364,9 +364,9 @@ class _DiscountRibbon extends StatelessWidget {
             child: Container(
               width: ribbonWidth,
               height: notchHeight,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFFFF3D6E), Color(0xFFE62857)],
+                  colors: [AppColors.button, AppColors.buttonDark],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),

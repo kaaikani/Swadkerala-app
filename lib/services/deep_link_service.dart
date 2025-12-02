@@ -26,7 +26,7 @@ class DeepLinkService {
     final hasValidTokens = authToken.isNotEmpty && channelToken.isNotEmpty;
 
     if (hasValidTokens) {
-      debugPrint('[DeepLink] Auth status - authToken: ${authToken.isNotEmpty}, channelToken: ${channelToken.isNotEmpty} (via GraphqlService)');
+// debugPrint('[DeepLink] Auth status - authToken: ${authToken.isNotEmpty}, channelToken: ${channelToken.isNotEmpty} (via GraphqlService)');
       return true;
     }
 
@@ -34,11 +34,11 @@ class DeepLinkService {
     if (Get.isRegistered<AuthController>()) {
       final authController = Get.find<AuthController>();
       final isLoggedIn = authController.isLoggedIn;
-      debugPrint('[DeepLink] Auth status - isLoggedIn: $isLoggedIn (via AuthController)');
+// debugPrint('[DeepLink] Auth status - isLoggedIn: $isLoggedIn (via AuthController)');
       return isLoggedIn;
     }
 
-    debugPrint('[DeepLink] Auth status - Not authenticated (no tokens, no AuthController)');
+// debugPrint('[DeepLink] Auth status - Not authenticated (no tokens, no AuthController)');
     return false;
   }
 
@@ -47,14 +47,14 @@ class DeepLinkService {
   /// Initialize deep link service
   Future<void> initialize() async {
     if (_isInitialized) {
-      debugPrint('[DeepLink] Service already initialized');
+// debugPrint('[DeepLink] Service already initialized');
       return;
     }
 
     try {
       _appLinks = AppLinks();
       _isInitialized = true;
-      debugPrint('[DeepLink] Service initialized');
+// debugPrint('[DeepLink] Service initialized');
 
       // Handle initial link (when app is opened from a link)
       _handleInitialLink();
@@ -62,7 +62,7 @@ class DeepLinkService {
       // Listen for incoming links while app is running
       _listenToIncomingLinks();
     } catch (e) {
-      debugPrint('[DeepLink] Initialization error: $e');
+// debugPrint('[DeepLink] Initialization error: $e');
     }
   }
 
@@ -75,14 +75,14 @@ class DeepLinkService {
       
       final initialLink = await _appLinks.getInitialLink();
       if (initialLink != null) {
-        debugPrint('[DeepLink] Initial link received: $initialLink');
+// debugPrint('[DeepLink] Initial link received: $initialLink');
         // Mark this as an initial link so we can use offAllNamed
         _handleLink(initialLink, isInitialLink: true);
       } else {
-        debugPrint('[DeepLink] No initial link found');
+// debugPrint('[DeepLink] No initial link found');
       }
     } catch (e) {
-      debugPrint('[DeepLink] Error getting initial link: $e');
+// debugPrint('[DeepLink] Error getting initial link: $e');
     }
   }
 
@@ -90,11 +90,11 @@ class DeepLinkService {
   void _listenToIncomingLinks() {
     _linkSubscription = _appLinks.uriLinkStream.listen(
       (Uri uri) {
-        debugPrint('[DeepLink] Incoming link: $uri');
+// debugPrint('[DeepLink] Incoming link: $uri');
         _handleLink(uri, isInitialLink: false);
       },
       onError: (err) {
-        debugPrint('[DeepLink] Link stream error: $err');
+// debugPrint('[DeepLink] Link stream error: $err');
       },
     );
   }
@@ -102,20 +102,20 @@ class DeepLinkService {
   /// Handle the deep link and navigate accordingly
   void _handleLink(Uri uri, {bool isInitialLink = false}) {
     try {
-      debugPrint('[DeepLink] Processing link: $uri (isInitialLink: $isInitialLink)');
-      debugPrint('[DeepLink] Scheme: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}');
+// debugPrint('[DeepLink] Processing link: $uri (isInitialLink: $isInitialLink)');
+// debugPrint('[DeepLink] Scheme: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}');
 
       // Handle development/testing URLs (ngrok, demo server, etc.)
       // These should be treated as deep links, not HTTP requests
       if (uri.host.contains('ngrok') || 
           uri.host == 'demo.htagbilling.com' ||
           uri.host == '63f4005bb018.ngrok-free.app') {
-        debugPrint('[DeepLink] Development/Testing URL detected - treating as deep link');
+// debugPrint('[DeepLink] Development/Testing URL detected - treating as deep link');
       }
 
       // Handle custom schemes (kaaikani://, testapp://)
       if (uri.scheme == 'kaaikani' || uri.scheme == 'testapp') {
-        debugPrint('[DeepLink] Custom scheme detected: ${uri.scheme}://');
+// debugPrint('[DeepLink] Custom scheme detected: ${uri.scheme}://');
       }
 
       String path = uri.path;
@@ -125,10 +125,10 @@ class DeepLinkService {
       if (uri.scheme == 'kaaikani' || uri.scheme == 'testapp') {
         // For custom schemes like testapp://cart, the host becomes the path
         path = '/${uri.host}';
-        debugPrint('[DeepLink] Custom scheme - using host as path: $path');
+// debugPrint('[DeepLink] Custom scheme - using host as path: $path');
       }
 
-      debugPrint('[DeepLink] Extracted path: $path, Query params: $queryParams');
+// debugPrint('[DeepLink] Extracted path: $path, Query params: $queryParams');
 
       // Wait for navigation to be ready - longer delay for initial links
       final delay = isInitialLink ? 2000 : 500;
@@ -138,7 +138,7 @@ class DeepLinkService {
         });
       });
     } catch (e) {
-      debugPrint('[DeepLink] Error handling link: $e');
+// debugPrint('[DeepLink] Error handling link: $e');
     }
   }
 
@@ -148,21 +148,21 @@ class DeepLinkService {
       // Remove leading slash if present and convert to lowercase for case-insensitive matching
       final cleanPath = (path.startsWith('/') ? path.substring(1) : path).toLowerCase();
 
-      debugPrint('[DeepLink] 🔍 Original path: "$path"');
-      debugPrint('[DeepLink] 🔍 Clean path: "$cleanPath"');
-      debugPrint('[DeepLink] 🔍 Navigating to: $cleanPath with params: $queryParams (isInitialLink: $isInitialLink)');
+// debugPrint('[DeepLink] 🔍 Original path: "$path"');
+// debugPrint('[DeepLink] 🔍 Clean path: "$cleanPath"');
+// debugPrint('[DeepLink] 🔍 Navigating to: $cleanPath with params: $queryParams (isInitialLink: $isInitialLink)');
 
       // Check for query parameter navigation first
       if (queryParams.containsKey('page')) {
         final page = queryParams['page']?.toLowerCase();
-        debugPrint('[DeepLink] 📋 Found page parameter: $page');
+// debugPrint('[DeepLink] 📋 Found page parameter: $page');
         
         switch (page) {
           case 'cart':
-            debugPrint('[DeepLink] 🛒 QUERY PARAM CART - Navigating to cart page');
+// debugPrint('[DeepLink] 🛒 QUERY PARAM CART - Navigating to cart page');
             // Check authentication before navigating to protected cart page
             if (!_isUserAuthenticated()) {
-              debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for cart');
+// debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for cart');
               if (isInitialLink) {
                 Get.offAllNamed(AppRoutes.login, arguments: {
                   'intendedRoute': AppRoutes.cart,
@@ -174,23 +174,23 @@ class DeepLinkService {
                   'intendedArguments': null,
                 });
               }
-              debugPrint('[DeepLink] Redirected to login with cart as intended route');
+// debugPrint('[DeepLink] Redirected to login with cart as intended route');
               return;
             }
             
             try {
               await NavigationHelper.navigateToCart(isInitialLink: isInitialLink);
-              debugPrint('[DeepLink] Successfully navigated to cart via query param');
+// debugPrint('[DeepLink] Successfully navigated to cart via query param');
               return;
             } catch (e) {
-              debugPrint('[DeepLink] Error navigating to cart via query param: $e');
+// debugPrint('[DeepLink] Error navigating to cart via query param: $e');
             }
             break;
           case 'checkout':
-            debugPrint('[DeepLink] 💳 QUERY PARAM CHECKOUT - Navigating to checkout page');
+// debugPrint('[DeepLink] 💳 QUERY PARAM CHECKOUT - Navigating to checkout page');
             // Check authentication before navigating to protected checkout page
             if (!_isUserAuthenticated()) {
-              debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for checkout');
+// debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for checkout');
               if (isInitialLink) {
                 Get.offAllNamed(AppRoutes.login, arguments: {
                   'intendedRoute': AppRoutes.checkout,
@@ -202,23 +202,23 @@ class DeepLinkService {
                   'intendedArguments': null,
                 });
               }
-              debugPrint('[DeepLink] Redirected to login with checkout as intended route');
+// debugPrint('[DeepLink] Redirected to login with checkout as intended route');
               return;
             }
             
             try {
               await NavigationHelper.navigateToCheckout(isInitialLink: isInitialLink);
-              debugPrint('[DeepLink] Successfully navigated to checkout via query param');
+// debugPrint('[DeepLink] Successfully navigated to checkout via query param');
               return;
             } catch (e) {
-              debugPrint('[DeepLink] Error navigating to checkout via query param: $e');
+// debugPrint('[DeepLink] Error navigating to checkout via query param: $e');
             }
             break;
           case 'account':
-            debugPrint('[DeepLink] 👤 QUERY PARAM ACCOUNT - Navigating to account page');
+// debugPrint('[DeepLink] 👤 QUERY PARAM ACCOUNT - Navigating to account page');
             // Check authentication before navigating to protected account page
             if (!_isUserAuthenticated()) {
-              debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for account');
+// debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for account');
               if (isInitialLink) {
                 Get.offAllNamed(AppRoutes.login, arguments: {
                   'intendedRoute': AppRoutes.account,
@@ -230,7 +230,7 @@ class DeepLinkService {
                   'intendedArguments': null,
                 });
               }
-              debugPrint('[DeepLink] Redirected to login with account as intended route');
+// debugPrint('[DeepLink] Redirected to login with account as intended route');
               return;
             }
             
@@ -243,10 +243,10 @@ class DeepLinkService {
             }
             return;
           case 'addresses':
-            debugPrint('[DeepLink] 📍 QUERY PARAM ADDRESSES - Navigating to addresses page');
+// debugPrint('[DeepLink] 📍 QUERY PARAM ADDRESSES - Navigating to addresses page');
             // Check authentication before navigating to protected addresses page
             if (!_isUserAuthenticated()) {
-              debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for addresses');
+// debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for addresses');
               if (isInitialLink) {
                 Get.offAllNamed(AppRoutes.login, arguments: {
                   'intendedRoute': AppRoutes.addresses,
@@ -258,7 +258,7 @@ class DeepLinkService {
                   'intendedArguments': null,
                 });
               }
-              debugPrint('[DeepLink] Redirected to login with addresses as intended route');
+// debugPrint('[DeepLink] Redirected to login with addresses as intended route');
               return;
             }
             
@@ -271,10 +271,10 @@ class DeepLinkService {
             }
             return;
           case 'orders':
-            debugPrint('[DeepLink] 📦 QUERY PARAM ORDERS - Navigating to orders page');
+// debugPrint('[DeepLink] 📦 QUERY PARAM ORDERS - Navigating to orders page');
             // Check authentication before navigating to protected orders page
             if (!_isUserAuthenticated()) {
-              debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for orders');
+// debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for orders');
               if (isInitialLink) {
                 Get.offAllNamed(AppRoutes.login, arguments: {
                   'intendedRoute': AppRoutes.orders,
@@ -286,7 +286,7 @@ class DeepLinkService {
                   'intendedArguments': null,
                 });
               }
-              debugPrint('[DeepLink] Redirected to login with orders as intended route');
+// debugPrint('[DeepLink] Redirected to login with orders as intended route');
               return;
             }
             
@@ -299,13 +299,13 @@ class DeepLinkService {
             }
             return;
           case 'category':
-            debugPrint('[DeepLink] 🏷️ QUERY PARAM CATEGORY - Navigating to category page');
+// debugPrint('[DeepLink] 🏷️ QUERY PARAM CATEGORY - Navigating to category page');
             final categoryId = queryParams['categoryId'] ?? queryParams['id'];
             final categoryName = queryParams['categoryName'] ?? queryParams['name'];
             final categorySlug = queryParams['categorySlug'] ?? queryParams['slug'];
             
             if (categoryId != null && categoryId.isNotEmpty) {
-              debugPrint('[DeepLink] Category ID: $categoryId, Name: $categoryName, Slug: $categorySlug');
+// debugPrint('[DeepLink] Category ID: $categoryId, Name: $categoryName, Slug: $categorySlug');
               
               // Determine the slug and display name
               String slug;
@@ -328,7 +328,7 @@ class DeepLinkService {
                 'slug': slug,
               };
               
-              debugPrint('[DeepLink] Final arguments: $arguments');
+// debugPrint('[DeepLink] Final arguments: $arguments');
               
               if (isInitialLink) {
                 // For initial links, first navigate to home, then push the collection page
@@ -338,21 +338,21 @@ class DeepLinkService {
                 Get.toNamed(AppRoutes.collectionProducts, arguments: arguments);
               }
             } else {
-              debugPrint('[DeepLink] ⚠️ Category ID missing, navigating to home');
+// debugPrint('[DeepLink] ⚠️ Category ID missing, navigating to home');
               Get.offAllNamed(AppRoutes.initial);
             }
             return;
           case 'product':
-            debugPrint('[DeepLink] 📦 QUERY PARAM PRODUCT - Navigating to product detail page');
+// debugPrint('[DeepLink] 📦 QUERY PARAM PRODUCT - Navigating to product detail page');
             final productId = queryParams['productId'] ?? queryParams['id'];
             final productName = queryParams['productName'] ?? queryParams['name'];
             
             if (productId != null && productId.isNotEmpty) {
-              debugPrint('[DeepLink] Product ID: $productId, Name: $productName');
+// debugPrint('[DeepLink] Product ID: $productId, Name: $productName');
               
               // Check authentication before navigating to protected product detail page
               if (!_isUserAuthenticated()) {
-                debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for product detail');
+// debugPrint('[DeepLink] 🚫 User not authenticated, redirecting to login for product detail');
                 // Store the intended route and arguments for post-login redirection
                 if (isInitialLink) {
                   Get.offAllNamed(AppRoutes.login, arguments: {
@@ -371,7 +371,7 @@ class DeepLinkService {
                     },
                   });
                 }
-                debugPrint('[DeepLink] Redirected to login with product detail as intended route');
+// debugPrint('[DeepLink] Redirected to login with product detail as intended route');
                 return;
               }
               
@@ -381,13 +381,13 @@ class DeepLinkService {
                   productName: productName,
                   isInitialLink: isInitialLink,
                 );
-                debugPrint('[DeepLink] Successfully navigated to product detail via query param');
+// debugPrint('[DeepLink] Successfully navigated to product detail via query param');
               } catch (e) {
-                debugPrint('[DeepLink] Error navigating to product detail via query param: $e');
+// debugPrint('[DeepLink] Error navigating to product detail via query param: $e');
                 Get.offAllNamed(AppRoutes.initial);
               }
             } else {
-              debugPrint('[DeepLink] ⚠️ Product ID missing for query param, navigating to initial route');
+// debugPrint('[DeepLink] ⚠️ Product ID missing for query param, navigating to initial route');
               Get.offAllNamed(AppRoutes.initial);
             }
             return;
@@ -400,14 +400,14 @@ class DeepLinkService {
         case 'products':
           final productId = queryParams['id'] ?? queryParams['productId'];
           if (productId != null) {
-            debugPrint('[DeepLink] Navigating to product detail: $productId');
+// debugPrint('[DeepLink] Navigating to product detail: $productId');
             await NavigationHelper.navigateToProductDetail(
               productId: productId,
               productName: queryParams['name'] ?? queryParams['productName'],
               isInitialLink: isInitialLink,
             );
           } else {
-            debugPrint('[DeepLink] Product ID missing, navigating to initial route');
+// debugPrint('[DeepLink] Product ID missing, navigating to initial route');
             Get.offAllNamed(AppRoutes.initial);
           }
           break;
@@ -421,7 +421,7 @@ class DeepLinkService {
           final collectionSlug = queryParams['slug'] ?? queryParams['collectionSlug'] ?? queryParams['categorySlug'];
           
           if (collectionId != null) {
-            debugPrint('[DeepLink] Navigating to collection: $collectionId / $collectionName / $collectionSlug');
+// debugPrint('[DeepLink] Navigating to collection: $collectionId / $collectionName / $collectionSlug');
             
             final slug = collectionSlug ?? (collectionName != null ? _convertNameToSlug(collectionName) : 'collection-$collectionId');
             final displayName = collectionName ?? 'Collection $collectionId';
@@ -442,7 +442,7 @@ class DeepLinkService {
               });
             }
           } else {
-            debugPrint('[DeepLink] Collection ID/Slug missing, navigating to initial route');
+// debugPrint('[DeepLink] Collection ID/Slug missing, navigating to initial route');
             Get.offAllNamed(AppRoutes.initial);
           }
           break;
@@ -452,14 +452,14 @@ class DeepLinkService {
           final orderId = queryParams['id'] ?? queryParams['orderId'];
           final orderCode = queryParams['code'] ?? queryParams['orderCode'];
           if (orderId != null || orderCode != null) {
-            debugPrint('[DeepLink] Navigating to order detail: $orderId / $orderCode');
+// debugPrint('[DeepLink] Navigating to order detail: $orderId / $orderCode');
             if (isInitialLink) {
               Get.offAllNamed(AppRoutes.orderDetail, arguments: orderCode ?? orderId ?? '');
             } else {
               Get.toNamed(AppRoutes.orderDetail, arguments: orderCode ?? orderId ?? '');
             }
           } else {
-            debugPrint('[DeepLink] Navigating to orders list');
+// debugPrint('[DeepLink] Navigating to orders list');
             if (isInitialLink) {
               Get.offAllNamed(AppRoutes.orders);
             } else {
@@ -469,24 +469,24 @@ class DeepLinkService {
           break;
 
         case 'cart':
-          debugPrint('[DeepLink] 🛒 MATCHED CART CASE - Navigating to cart page from deep link');
+// debugPrint('[DeepLink] 🛒 MATCHED CART CASE - Navigating to cart page from deep link');
           try {
             await NavigationHelper.navigateToCart(isInitialLink: isInitialLink);
-            debugPrint('[DeepLink] Successfully navigated to cart');
+// debugPrint('[DeepLink] Successfully navigated to cart');
           } catch (e) {
-            debugPrint('[DeepLink] Error navigating to cart: $e');
+// debugPrint('[DeepLink] Error navigating to cart: $e');
             // Fallback: try to go to initial route
             Get.offAllNamed(AppRoutes.initial);
           }
           break;
 
         case 'checkout':
-          debugPrint('[DeepLink] 💳 MATCHED CHECKOUT CASE - Navigating to checkout page from deep link');
+// debugPrint('[DeepLink] 💳 MATCHED CHECKOUT CASE - Navigating to checkout page from deep link');
           try {
             await NavigationHelper.navigateToCheckout(isInitialLink: isInitialLink);
-            debugPrint('[DeepLink] Successfully navigated to checkout');
+// debugPrint('[DeepLink] Successfully navigated to checkout');
           } catch (e) {
-            debugPrint('[DeepLink] Error navigating to checkout: $e');
+// debugPrint('[DeepLink] Error navigating to checkout: $e');
             // Fallback: try to go to cart first, then user can proceed
             await NavigationHelper.navigateToCart(isInitialLink: isInitialLink);
           }
@@ -494,7 +494,7 @@ class DeepLinkService {
 
         case 'account':
         case 'profile':
-          debugPrint('[DeepLink] Navigating to account page');
+// debugPrint('[DeepLink] Navigating to account page');
           if (isInitialLink) {
             Get.offAllNamed(AppRoutes.account);
           } else {
@@ -505,7 +505,7 @@ class DeepLinkService {
         case 'admin':
           // Admin path - navigate to account page or home as fallback
           // You can change this to navigate to a specific admin page if you have one
-          debugPrint('[DeepLink] Navigating to account page (admin)');
+// debugPrint('[DeepLink] Navigating to account page (admin)');
           if (isInitialLink) {
             Get.offAllNamed(AppRoutes.account);
           } else {
@@ -514,7 +514,7 @@ class DeepLinkService {
           break;
 
         case 'login':
-          debugPrint('[DeepLink] Navigating to login page');
+// debugPrint('[DeepLink] Navigating to login page');
           if (isInitialLink) {
             Get.offAllNamed(AppRoutes.login);
           } else {
@@ -524,7 +524,7 @@ class DeepLinkService {
 
         case 'signup':
         case 'register':
-          debugPrint('[DeepLink] Navigating to signup page');
+// debugPrint('[DeepLink] Navigating to signup page');
           if (isInitialLink) {
             Get.offAllNamed(AppRoutes.signup);
           } else {
@@ -533,30 +533,30 @@ class DeepLinkService {
           break;
 
         case 'home':
-          debugPrint('[DeepLink] Navigating to home page');
+// debugPrint('[DeepLink] Navigating to home page');
           Get.offAllNamed(AppRoutes.initial);
           break;
 
         default:
           // If path is empty or just '/', go to initial route (respects AuthWrapper)
           if (cleanPath.isEmpty || cleanPath == '/') {
-            debugPrint('[DeepLink] ⚠️ DEFAULT CASE - Empty path, navigating to initial route');
+// debugPrint('[DeepLink] ⚠️ DEFAULT CASE - Empty path, navigating to initial route');
             Get.offAllNamed(AppRoutes.initial);
           } else {
-            debugPrint('[DeepLink] ⚠️ DEFAULT CASE - Unknown path: "$cleanPath", navigating to initial route as fallback');
+// debugPrint('[DeepLink] ⚠️ DEFAULT CASE - Unknown path: "$cleanPath", navigating to initial route as fallback');
             // Try to navigate to initial route as fallback (respects AuthWrapper)
             Get.offAllNamed(AppRoutes.initial);
           }
           break;
       }
-    } catch (e, stackTrace) {
-      debugPrint('[DeepLink] Navigation error: $e');
-      debugPrint('[DeepLink] Stack trace: $stackTrace');
+    } catch (e) {
+// debugPrint('[DeepLink] Navigation error: $e');
+// debugPrint('[DeepLink] Stack trace: $stackTrace');
       // Fallback to initial route on any error
       try {
         Get.offAllNamed(AppRoutes.initial);
       } catch (fallbackError) {
-        debugPrint('[DeepLink] Fallback navigation also failed: $fallbackError');
+// debugPrint('[DeepLink] Fallback navigation also failed: $fallbackError');
       }
     }
   }
@@ -566,7 +566,7 @@ class DeepLinkService {
     _linkSubscription?.cancel();
     _initialLinkSubscription?.cancel();
     _isInitialized = false;
-    debugPrint('[DeepLink] Service disposed');
+// debugPrint('[DeepLink] Service disposed');
   }
 
   /// Convert category name to slug format

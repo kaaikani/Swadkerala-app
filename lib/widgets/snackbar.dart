@@ -62,7 +62,7 @@ void showSuccessSnackbar(String message) {
   Get.snackbar(
     'Success',
     message,
-    snackPosition: SnackPosition.BOTTOM,
+    snackPosition: SnackPosition.TOP,
     backgroundColor: Colors.green,
     colorText: Colors.white,
     duration: const Duration(seconds: 2),

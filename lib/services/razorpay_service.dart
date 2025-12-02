@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class RazorpayService {
@@ -42,10 +41,10 @@ class RazorpayService {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    debugPrint('[Razorpay] ✅ Payment Success!');
-    debugPrint('[Razorpay] Payment ID: ${response.paymentId}');
-    debugPrint('[Razorpay] Order ID: ${response.orderId}');
-    debugPrint('[Razorpay] Signature: ${response.signature}');
+// debugPrint('[Razorpay] ✅ Payment Success!');
+// debugPrint('[Razorpay] Payment ID: ${response.paymentId}');
+// debugPrint('[Razorpay] Order ID: ${response.orderId}');
+// debugPrint('[Razorpay] Signature: ${response.signature}');
     
     if (onSuccess != null) {
       onSuccess!(response);
@@ -53,9 +52,9 @@ class RazorpayService {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    debugPrint('[Razorpay] ❌ Payment Failed!');
-    debugPrint('[Razorpay] Error Code: ${response.code}');
-    debugPrint('[Razorpay] Error Message: ${response.message}');
+// debugPrint('[Razorpay] ❌ Payment Failed!');
+// debugPrint('[Razorpay] Error Code: ${response.code}');
+// debugPrint('[Razorpay] Error Message: ${response.message}');
     
     if (onFailure != null) {
       onFailure!(response);
@@ -63,7 +62,7 @@ class RazorpayService {
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-    debugPrint('[Razorpay] External Wallet: ${response.walletName}');
+// debugPrint('[Razorpay] External Wallet: ${response.walletName}');
   }
 
   /// Open Razorpay payment gateway
@@ -83,7 +82,7 @@ class RazorpayService {
 
     // Validate Razorpay key
     if (razorpayKeyId.isEmpty) {
-      debugPrint('[Razorpay] ⚠️ ERROR: No Razorpay key provided from backend!');
+// debugPrint('[Razorpay] ⚠️ ERROR: No Razorpay key provided from backend!');
       return;
     }
 
@@ -92,19 +91,19 @@ class RazorpayService {
 
     // Format phone number for Razorpay
     final formattedPhone = _formatPhoneNumber(customerPhone);
-    debugPrint('[Razorpay] 📞 Phone Number Validation:');
-    debugPrint('[Razorpay] - Original Phone: $customerPhone');
-    debugPrint('[Razorpay] - Formatted Phone: $formattedPhone');
-    debugPrint('[Razorpay] - Phone Length: ${formattedPhone.length}');
-    debugPrint('[Razorpay] - Phone Valid: ${formattedPhone.startsWith('+91') && formattedPhone.length == 13}');
+// debugPrint('[Razorpay] 📞 Phone Number Validation:');
+// debugPrint('[Razorpay] - Original Phone: $customerPhone');
+// debugPrint('[Razorpay] - Formatted Phone: $formattedPhone');
+// debugPrint('[Razorpay] - Phone Length: ${formattedPhone.length}');
+// debugPrint('[Razorpay] - Phone Valid: ${formattedPhone.startsWith('+91') && formattedPhone.length == 13}');
 
-    debugPrint('[Razorpay] Payment Details:');
-    debugPrint('[Razorpay] - Order ID: $razorpayOrderId');
-    debugPrint('[Razorpay] - Amount: Rs.${amountInPaise / 100}');
-    debugPrint('[Razorpay] - Customer: $customerName');
-    debugPrint('[Razorpay] - Phone: $formattedPhone');
-    debugPrint('[Razorpay] - Email: $customerEmail');
-    debugPrint('[Razorpay] - Description: $enhancedDescription');
+// debugPrint('[Razorpay] Payment Details:');
+// debugPrint('[Razorpay] - Order ID: $razorpayOrderId');
+// debugPrint('[Razorpay] - Amount: Rs.${amountInPaise / 100}');
+// debugPrint('[Razorpay] - Customer: $customerName');
+// debugPrint('[Razorpay] - Phone: $formattedPhone');
+// debugPrint('[Razorpay] - Email: $customerEmail');
+// debugPrint('[Razorpay] - Description: $enhancedDescription');
 
     final options = {
       'key': razorpayKeyId, // Razorpay key from backend
@@ -165,14 +164,14 @@ class RazorpayService {
     };
 
     try {
-      debugPrint('[Razorpay] 🚀 Opening payment gateway...');
-      debugPrint('[Razorpay] - Amount: Rs.${amountInPaise / 100}');
-      debugPrint('[Razorpay] - Phone Prefill: $formattedPhone');
-      debugPrint('[Razorpay] - Contact Field Readonly: true');
-      debugPrint('[Razorpay] - Full Options: $options');
+// debugPrint('[Razorpay] 🚀 Opening payment gateway...');
+// debugPrint('[Razorpay] - Amount: Rs.${amountInPaise / 100}');
+// debugPrint('[Razorpay] - Phone Prefill: $formattedPhone');
+// debugPrint('[Razorpay] - Contact Field Readonly: true');
+// debugPrint('[Razorpay] - Full Options: $options');
       _razorpay.open(options);
     } catch (e) {
-      debugPrint('[Razorpay] ❌ Error opening payment gateway: $e');
+// debugPrint('[Razorpay] ❌ Error opening payment gateway: $e');
       if (onFailure != null) {
         // Create a mock failure response for gateway opening errors
         final mockResponse = PaymentFailureResponse(

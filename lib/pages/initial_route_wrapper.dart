@@ -31,32 +31,28 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
       final updateService = InAppUpdateService();
 
       // Try to fetch app update information from GraphQL
-      debugPrint(
-          '[InitialRouteWrapper] Attempting to fetch app update information...');
+/// debugPrint(  '[InitialRouteWrapper] Attempting to fetch app update information...');
       try {
         final bannerController = Get.put(BannerController());
         // Wait for the update info to be fetched
         await bannerController.getAppUpdateInfo();
-        debugPrint('[InitialRouteWrapper] Update info fetch completed');
+// debugPrint('[InitialRouteWrapper] Update info fetch completed');
       } catch (e) {
-        debugPrint('[InitialRouteWrapper] Update info fetch failed: $e');
+// debugPrint('[InitialRouteWrapper] Update info fetch failed: $e');
       }
 
       // Check if immediate update is enabled (this is the main condition)
       if (updateService.isImmediateUpdateEnabled) {
         _shouldCheckImmediateUpdate = true;
-        debugPrint(
-            '[InitialRouteWrapper] IMMEDIATE UPDATE enabled - showing update page');
+/// debugPrint(  '[InitialRouteWrapper] IMMEDIATE UPDATE enabled - showing update page');
       } else {
         _shouldCheckImmediateUpdate = false;
-        debugPrint(
-            '[InitialRouteWrapper] No immediate update needed - proceeding to login');
+/// debugPrint(  '[InitialRouteWrapper] No immediate update needed - proceeding to login');
       }
 
-      debugPrint(
-          '[InitialRouteWrapper] Final decision - Should check immediate update: $_shouldCheckImmediateUpdate');
+/// debugPrint(  '[InitialRouteWrapper] Final decision - Should check immediate update: $_shouldCheckImmediateUpdate');
     } catch (e) {
-      debugPrint('[InitialRouteWrapper] Error checking update settings: $e');
+// debugPrint('[InitialRouteWrapper] Error checking update settings: $e');
       _shouldCheckImmediateUpdate = false;
     } finally {
       if (mounted) {
@@ -69,12 +65,11 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
-        '[InitialRouteWrapper] Build called - _isLoading: $_isLoading, _shouldCheckImmediateUpdate: $_shouldCheckImmediateUpdate');
+/// debugPrint(  '[InitialRouteWrapper] Build called - _isLoading: $_isLoading, _shouldCheckImmediateUpdate: $_shouldCheckImmediateUpdate');
 
     // Show loading while checking settings
     if (_isLoading) {
-      debugPrint('[InitialRouteWrapper] Showing loading screen');
+// debugPrint('[InitialRouteWrapper] Showing loading screen');
       return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -99,12 +94,10 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
 
     // Decide which wrapper to use based on IMMEDIATE_UPDATE setting
     if (_shouldCheckImmediateUpdate) {
-      debugPrint(
-          '[InitialRouteWrapper] Using UpdateCheckWrapper for immediate updates');
+/// debugPrint(  '[InitialRouteWrapper] Using UpdateCheckWrapper for immediate updates');
       return const UpdateCheckWrapper();
     } else {
-      debugPrint(
-          '[InitialRouteWrapper] Using AuthWrapper for flexible updates');
+/// debugPrint(  '[InitialRouteWrapper] Using AuthWrapper for flexible updates');
       return const AuthWrapper();
     }
   }

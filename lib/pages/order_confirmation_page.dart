@@ -4,12 +4,10 @@ import '../controllers/order/ordercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
-import '../widgets/appbar.dart';
-import '../widgets/button.dart';
-import '../widgets/card.dart';
 import '../theme/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../utils/responsive.dart';
+import '../utils/bill_generator.dart';
 
 class OrderConfirmationPage extends StatefulWidget {
   final String orderId;
@@ -41,15 +39,46 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     try {
       await orderController.getOrderByCode(widget.orderId);
     } catch (e) {
-      debugPrint('[OrderConfirmation] Error loading order details: $e');
+// debugPrint('[OrderConfirmation] Error loading order details: $e');
     }
   }
+
+  Future<void> _shareBill() async {
+    final orderModel = orderController.currentOrder.value;
+    if (orderModel != null) {
+      try {
+        utilityController.setLoadingState(true);
+        // Pass OrderModel directly to BillGenerator
+        await BillGenerator.generateAndShare(orderModel);
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to generate bill: $e',
+            backgroundColor: Colors.red, colorText: Colors.white);
+      } finally {
+        utilityController.setLoadingState(false);
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(
-        title: 'Order Confirmation',
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.close, color: AppColors.textPrimary),
+          onPressed: () => Get.offAllNamed('/home'),
+        ),
+        title: Text(
+          'Order Confirmation',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: Obx(() {
         if (utilityController.isLoadingRx.value) {
@@ -76,36 +105,118 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
           },
           color: AppColors.refreshIndicator,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Order Success Header
-                _buildOrderSuccessHeader(order),
-                const SizedBox(height: 24),
+                // Success Animation/Icon
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle,
+                    size: ResponsiveUtils.rp(64),
+                    color: AppColors.success,
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(16)),
+                Text(
+                  'Order Placed Successfully!',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(24),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(8)),
+                Text(
+                  'Order #${order.code}',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(16),
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(24)),
 
-                // Order Details
-                _buildOrderDetails(order),
-                const SizedBox(height: 16),
+                // Share Bill Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _shareBill,
+                    icon: Icon(Icons.share, size: ResponsiveUtils.rp(20)),
+                    label: Text('Share Bill'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                          vertical: ResponsiveUtils.rp(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(24)),
 
-                // Products Ordered
-                _buildProductsSection(order),
-                const SizedBox(height: 16),
+                // Order Details Card
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.border),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Order Summary',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(18),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(16)),
+                      ...order.lines.map((line) => _buildProductItem(line)).toList(),
+                      Divider(height: ResponsiveUtils.rp(32), color: AppColors.divider),
+                      _buildSummaryRow('Subtotal', order.subTotalWithTax.toDouble()),
+                      SizedBox(height: ResponsiveUtils.rp(8)),
+                      _buildSummaryRow('Shipping', order.shippingWithTax.toDouble()),
+                      SizedBox(height: ResponsiveUtils.rp(8)),
+                      _buildSummaryRow('Total', order.totalWithTax.toDouble(), isBold: true),
+                    ],
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(24)),
 
-                // Shipping Address
-                _buildShippingAddressSection(order),
-                const SizedBox(height: 16),
-
-                // Payment Information
-                _buildPaymentSection(order),
-                const SizedBox(height: 16),
-
-                // Loyalty Points
-                _buildLoyaltyPointsSection(order),
-                const SizedBox(height: 24),
-
-                // Action Buttons
-                _buildActionButtons(order),
+                // Continue Shopping Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () => Get.offAllNamed('/home'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textPrimary,
+                      side: BorderSide(color: AppColors.border),
+                      padding: EdgeInsets.symmetric(
+                          vertical: ResponsiveUtils.rp(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text('Continue Shopping'),
+                  ),
+                ),
               ],
             ),
           ),
@@ -114,132 +225,18 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     );
   }
 
-  Widget _buildOrderSuccessHeader(dynamic order) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green.shade400, Colors.green.shade600],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.green.withValues(alpha: 0.3),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          const Icon(
-            Icons.check_circle,
-            size: 64,
-            color: Colors.white,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Order Placed Successfully!',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Order #${order.code}',
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Total: ${cartController.formatPrice(order.totalWithTax.toInt())}',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOrderDetails(dynamic order) {
-    return AppCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Order Details',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildDetailRow('Order ID', order.code),
-            _buildDetailRow(
-                'Date',
-                order.orderPlacedAt?.toLocal().toString().split(' ')[0] ??
-                    'N/A'),
-            _buildDetailRow('Status', order.state),
-            _buildDetailRow('Total Items', '${order.totalQuantity}'),
-            _buildDetailRow('Currency', order.currencyCode ?? 'N/A'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductsSection(dynamic order) {
-    return AppCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Products Ordered',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...order.lines.map((line) => _buildProductItem(line)).toList(),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildProductItem(dynamic line) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
+    return Padding(
+      padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
       child: Row(
         children: [
-          // Product Image
           Container(
-            width: 60,
-            height: 60,
+            width: ResponsiveUtils.rp(50),
+            height: ResponsiveUtils.rp(50),
             decoration: BoxDecoration(
+              color: AppColors.backgroundLight,
               borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade200,
+              border: Border.all(color: AppColors.border),
             ),
             child: line.featuredAsset?.preview != null
                 ? ClipRRect(
@@ -247,43 +244,43 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                     child: Image.network(
                       line.featuredAsset!.preview,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.image, color: Colors.grey);
-                      },
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.image, color: AppColors.textSecondary),
                     ),
                   )
-                : const Icon(Icons.image, color: Colors.grey),
+                : Icon(Icons.image, color: AppColors.textSecondary),
           ),
-          const SizedBox(width: 12),
-          // Product Details
+          SizedBox(width: ResponsiveUtils.rp(12)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   line.productVariant?.name ?? 'Unknown Product',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: ResponsiveUtils.sp(14),
+                    color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
-                  'Quantity: ${line.quantity}',
+                  'Qty: ${line.quantity}',
                   style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Price: ${cartController.formatPrice(line.linePriceWithTax.toInt())}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+                    color: AppColors.textSecondary,
+                    fontSize: ResponsiveUtils.sp(12),
                   ),
                 ),
               ],
+            ),
+          ),
+          Text(
+            cartController.formatPrice(line.linePriceWithTax.toInt()),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: ResponsiveUtils.sp(14),
+              color: AppColors.textPrimary,
             ),
           ),
         ],
@@ -291,240 +288,28 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     );
   }
 
-  Widget _buildShippingAddressSection(dynamic order) {
-    final address = order.shippingAddress;
-    if (address == null) {
-      return const SizedBox.shrink();
-    }
-
-    return AppCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Shipping Address',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(Icons.location_on, color: AppColors.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        address.fullName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(address.streetLine1),
-                      if (address.streetLine2.isNotEmpty)
-                        Text(address.streetLine2),
-                      Text(
-                          '${address.city}, ${address.province ?? ''} ${address.postalCode}'),
-                      Text(address.country ?? ''),
-                      if (address.phoneNumber.isNotEmpty)
-                        Text('Phone: ${address.phoneNumber}'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPaymentSection(dynamic order) {
-    final payments = order.payments;
-    if (payments.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final payment = payments.first;
-    final isOnlinePayment = payment.method.toLowerCase().contains('online') ||
-        payment.method.toLowerCase().contains('razorpay');
-
-    return AppCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Payment Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(
-                  isOnlinePayment ? Icons.credit_card : Icons.money,
-                  color: isOnlinePayment ? Colors.green : Colors.orange,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isOnlinePayment ? 'Online Payment' : 'Cash on Delivery',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text('Method: ${payment.method}'),
-                      Text('Status: ${payment.state}'),
-                      Text(
-                          'Amount: ${cartController.formatPrice(payment.amount.toInt())}'),
-                      if (payment.transactionId != null)
-                        Text('Transaction ID: ${payment.transactionId}'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoyaltyPointsSection(dynamic order) {
-    final customFields = order.customFields;
-    final pointsUsed = customFields?.loyaltyPointsUsed ?? 0;
-    final pointsEarned = customFields?.loyaltyPointsEarned ?? 0;
-
-    return AppCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Loyalty Points',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            if (pointsUsed > 0) ...[
-              _buildLoyaltyPointRow('Points Used', '$pointsUsed',
-                  Icons.remove_circle, Colors.red),
-              const SizedBox(height: 8),
-            ],
-            if (pointsEarned > 0) ...[
-              _buildLoyaltyPointRow('Points Earned', '$pointsEarned',
-                  Icons.add_circle, Colors.green),
-            ],
-            if (pointsUsed == 0 && pointsEarned == 0)
-              const Text('No loyalty points activity for this order',
-                  style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoyaltyPointRow(
-      String label, String value, IconData icon, Color color) {
+  Widget _buildSummaryRow(String label, double amount, {bool isBold = false}) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
-        const Spacer(),
-        Text(
-          value,
           style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: color,
-            fontSize: 16,
+            fontSize: isBold ? ResponsiveUtils.sp(16) : ResponsiveUtils.sp(14),
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            color: isBold ? AppColors.textPrimary : AppColors.textSecondary,
+          ),
+        ),
+        Text(
+          cartController.formatPrice(amount.toInt()),
+          style: TextStyle(
+            fontSize: isBold ? ResponsiveUtils.sp(18) : ResponsiveUtils.sp(14),
+            fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
+            color: AppColors.textPrimary,
           ),
         ),
       ],
     );
-  }
-
-  Widget _buildActionButtons(dynamic order) {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          child: AppButton(
-            text: 'Continue Shopping',
-            onPressed: () async => Get.offAllNamed('/home'),
-            backgroundColor: AppColors.primary,
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          child: AppButton(
-            text: 'View Order Details',
-            onPressed: () async => _viewOrderDetails(order),
-            backgroundColor: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          child: AppButton(
-            text: 'Download Receipt',
-            onPressed: () async => _downloadReceipt(order),
-            backgroundColor: Colors.blue,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-          Expanded(
-            child: Text(value),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _viewOrderDetails(dynamic order) {
-    // TODO: Navigate to detailed order view
-    Get.snackbar('Order Details', 'Detailed order view coming soon');
-  }
-
-  void _downloadReceipt(dynamic order) {
-    // TODO: Implement receipt download
-    Get.snackbar('Download', 'Receipt download feature coming soon');
   }
 
   Widget _buildShimmerOrderConfirmation() {
@@ -533,65 +318,19 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
       child: SingleChildScrollView(
         padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Success header shimmer
-            Container(
-              height: ResponsiveUtils.rp(120),
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(24)),
-            // Order details shimmer
-            Container(
-              height: ResponsiveUtils.rp(20),
-              width: ResponsiveUtils.rp(150),
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(16)),
-            ...List.generate(
-                3,
-                (index) => Container(
-                      height: ResponsiveUtils.rp(60),
-                      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                      decoration: BoxDecoration(
-                        color: AppColors.shimmerBase,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    )),
-            SizedBox(height: ResponsiveUtils.rp(24)),
-            // Shipping address shimmer
-            Container(
-              height: ResponsiveUtils.rp(20),
-              width: ResponsiveUtils.rp(150),
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(12)),
             Container(
               height: ResponsiveUtils.rp(100),
+              width: ResponsiveUtils.rp(100),
               decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                shape: BoxShape.circle,
               ),
             ),
             SizedBox(height: ResponsiveUtils.rp(24)),
-            // Button shimmer
-            Container(
-              height: ResponsiveUtils.rp(48),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
+            Container(height: 20, width: 200, color: Colors.white),
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            Container(height: 300, width: double.infinity, color: Colors.white),
           ],
         ),
       ),

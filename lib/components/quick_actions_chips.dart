@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/colors.dart';
 
 class QuickActionsChips extends StatelessWidget {
   final void Function(String key) onTap;
@@ -33,7 +34,7 @@ class QuickActionsChips extends StatelessWidget {
                     ),
                     backgroundColor: Colors.white,
                     elevation: 0,
-                    side: const BorderSide(color: Color(0xFFE5E7EB)),
+                    side: BorderSide(color: AppColors.border),
                     onPressed: () => onTap(a.key),
                   ),
                 ),

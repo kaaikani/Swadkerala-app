@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/customer/customer_controller.dart';
+import '../controllers/order/ordercontroller.dart';
+import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/theme_controller.dart';
 import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
+import '../utils/bill_generator.dart';
 import '../theme/colors.dart';
 import '../pages/orders_page.dart';
 
@@ -49,34 +52,52 @@ class OrdersComponent extends StatelessWidget {
   }
 
   List<dynamic> _filterOrders(List<dynamic> orders) {
-    if (filter == OrderFilter.all) {
-      return orders;
-    }
-
-    return orders.where((order) {
+    List<dynamic> filtered;
+    
+    // First, exclude cancelled orders from all filters
+    final nonCancelledOrders = orders.where((order) {
       final state = order.state?.toString().toLowerCase() ?? '';
-      
-      switch (filter) {
-        case OrderFilter.delivered:
-          // Check for delivered/fulfilled/shipped states
-          return state == 'fulfilled' || 
-                 state == 'delivered' || 
-                 state == 'shipped' ||
-                 state == 'partiallyfulfilled';
-        
-        case OrderFilter.paymentAuthorized:
-          // Check for payment authorized/settled states
-          return state == 'paymentauthorized' || 
-                 state == 'paymentsettled';
-        
-        case OrderFilter.cancelled:
-          // Check for cancelled state
-          return state == 'cancelled';
-        
-        case OrderFilter.all:
-          return true;
-      }
+      return state != 'cancelled';
     }).toList();
+    
+    if (filter == OrderFilter.all) {
+      filtered = nonCancelledOrders;
+    } else {
+      filtered = nonCancelledOrders.where((order) {
+        final state = order.state?.toString().toLowerCase() ?? '';
+        
+        switch (filter) {
+          case OrderFilter.delivered:
+            // Check for delivered/fulfilled/shipped states
+            return state == 'fulfilled' || 
+                   state == 'delivered' || 
+                   state == 'shipped' ||
+                   state == 'partiallyfulfilled';
+          
+          case OrderFilter.paymentAuthorized:
+            // Check for payment authorized/settled states
+            return state == 'paymentauthorized' || 
+                   state == 'paymentsettled';
+          
+          case OrderFilter.cancelled:
+            // Cancelled orders are already filtered out, so return empty
+            return false;
+          
+          case OrderFilter.all:
+            return true;
+        }
+      }).toList();
+    }
+    
+    // Sort by orderPlacedAt in descending order (most recent first)
+    filtered.sort((a, b) {
+      final dateA = a.orderPlacedAt ?? DateTime(1970);
+      final dateB = b.orderPlacedAt ?? DateTime(1970);
+      return dateB.compareTo(dateA); // Descending order
+    });
+    
+    // Limit to 10 most recent orders
+    return filtered.take(10).toList();
   }
 
   Widget _buildOrderCard(dynamic order) {
@@ -211,24 +232,43 @@ class OrdersComponent extends StatelessWidget {
                       ),
                     ],
                   ),
-                  TextButton(
-                    onPressed: () => _viewOrderDetails(order),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.button,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: AppColors.button, width: 1.5),
+                  Row(
+                    children: [
+                      // Share Invoice Button - only show for non-cancelled orders
+                      if (!isCancelled)
+                        IconButton(
+                          onPressed: () => _shareInvoice(order),
+                          icon: Icon(
+                            Icons.share_outlined,
+                            size: ResponsiveUtils.rp(20),
+                            color: AppColors.button,
+                          ),
+                          tooltip: 'Share Invoice',
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                          constraints: BoxConstraints(),
+                        ),
+                      if (!isCancelled) SizedBox(width: ResponsiveUtils.rp(8)),
+                      // View Details Button
+                      TextButton(
+                        onPressed: () => _viewOrderDetails(order),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.button,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(color: AppColors.button, width: 1.5),
+                          ),
+                        ),
+                        child: Text(
+                          'View Details',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'View Details',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -447,8 +487,54 @@ class OrdersComponent extends StatelessWidget {
   }
 
   void _viewOrderDetails(dynamic order) {
-    debugPrint(
-        '[OrdersComponent] Viewing order details for code: ${order.code}');
+// debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.code}');
     Get.toNamed('/order-detail', arguments: order.code);
+  }
+
+  Future<void> _shareInvoice(dynamic order) async {
+    // Don't allow sharing for cancelled orders
+    final isCancelled = order.state?.toString().toLowerCase() == 'cancelled';
+    if (isCancelled) {
+      Get.snackbar(
+        'Error',
+        'Cannot share invoice for cancelled orders',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+    
+    try {
+      final orderController = Get.find<OrderController>();
+      final utilityController = Get.find<UtilityController>();
+      
+      utilityController.setLoadingState(true);
+      
+      // Fetch full order details using order code
+      final orderModel = await orderController.getOrderByCode(order.code);
+      
+      if (orderModel != null) {
+        // Use BillGenerator to generate and share the invoice
+        await BillGenerator.generateAndShare(orderModel);
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to load order details',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+// debugPrint('[OrdersComponent] Error sharing invoice: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to generate invoice: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      final utilityController = Get.find<UtilityController>();
+      utilityController.setLoadingState(false);
+    }
   }
 }

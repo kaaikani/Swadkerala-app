@@ -248,8 +248,17 @@ fragment Cart on Order {
     code
     state
     active
-
-
+    validationStatus {
+        isValid
+        hasUnavailableItems
+        totalUnavailableItems
+        unavailableItems {
+            orderLineId
+            productName
+            variantName
+            reason
+        }
+    }
     couponCodes
     promotions {
         couponCode
@@ -273,7 +282,8 @@ fragment Cart on Order {
     lines {
         id
         quantity
-
+        isAvailable
+        unavailableReason
         customFields
         featuredAsset {
             ...Asset
@@ -286,8 +296,13 @@ fragment Cart on Order {
         discountedLinePriceWithTax
         productVariant {
             id
-
             name
+            stockLevel
+            price
+            product {
+                enabled
+                __typename
+            }
             __typename
         }
         discounts {
@@ -304,10 +319,8 @@ fragment Cart on Order {
     subTotal
     subTotalWithTax
     total
-
     totalWithTax
     shipping
-
     shippingWithTax
     shippingLines {
         priceWithTax
@@ -328,9 +341,7 @@ fragment Cart on Order {
         type
         __typename
     }
-
     customFields {
-
         clientRequestToCancel
     }
     __typename

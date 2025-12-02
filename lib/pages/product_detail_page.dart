@@ -38,6 +38,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   ProductDetailModel? productDetail;
   ProductVariantDetailModel? selectedVariant;
+  Map<String, dynamic>? _rawProductData; // Store raw JSON data for shadow price
   PageController _imagePageController = PageController();
   int _currentImageIndex = 0;
   bool _isDescriptionExpanded = false;
@@ -79,15 +80,96 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           .map((option) => option.name!)
           .join(', ');
       if (optionNames.isNotEmpty) {
-        debugPrint(
-            '[ProductDetailPage] Variant ID: ${variant.id}, Options: ${variant.options.length}, Option Names: $optionNames');
+/// debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, Options: ${variant.options.length}, Option Names: $optionNames');
         return optionNames;
       }
     }
     // If no options, show variant name as fallback
-    debugPrint(
-        '[ProductDetailPage] Variant ID: ${variant.id}, No options found, using variant name: ${variant.name}');
+/// debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, No options found, using variant name: ${variant.name}');
     return variant.name;
+  }
+
+
+  /// Calculate discount percentage from shadow price - same logic as category product page
+  double? _calculateDiscountPercent(ProductVariantDetailModel variant) {
+    final shadowPriceMinor = _getShadowPriceFromRawData(variant);
+    if (shadowPriceMinor == null) {
+      return null;
+    }
+
+    // priceWithTax is in minor units (paise) as double
+    // e.g., 12000.0 = 120 rupees = 12000 paise
+    final currentPriceMinor = (variant.priceWithTax ?? 0).round();
+    if (shadowPriceMinor <= currentPriceMinor) {
+      return null;
+    }
+
+    final discount = ((shadowPriceMinor - currentPriceMinor) / shadowPriceMinor) * 100;
+    if (discount <= 0) {
+      return null;
+    }
+    return discount;
+  }
+
+  /// Format MRP price without "Rs" prefix
+  String _formatMRPPrice(int priceInPaise) {
+    final amount = priceInPaise / 100;
+    final bool isWholeNumber = (amount % 1).abs() < 0.0001;
+    final String value =
+        isWholeNumber ? amount.toInt().toString() : amount.toStringAsFixed(2);
+    return value;
+  }
+
+  /// Get shadow price from raw data - same logic as category product page
+  int? _getShadowPriceFromRawData(ProductVariantDetailModel variant) {
+    try {
+      if (_rawProductData == null) {
+        return null;
+      }
+
+      // Find the variant in the raw data
+      final variants = _rawProductData!['variants'] as List?;
+      if (variants == null) {
+        return null;
+      }
+
+      for (var variantData in variants) {
+        final variantId = variantData['id'];
+        
+        if (variantId == variant.id) {
+          // Access customFields - same way as category product page
+          final customFields = variantData['customFields'];
+          if (customFields == null) {
+            return null;
+          }
+
+          final rawValue = customFields['shadowPrice'];
+          if (rawValue == null || rawValue <= 0) {
+            return null;
+          }
+
+          // priceWithTax is in minor units (paise) as double
+          // e.g., 12000.0 = 120 rupees = 12000 paise
+          final currentPriceMinor = (variant.priceWithTax ?? 0).round();
+
+          // If the stored value already looks like minor units (>= current price), use it directly
+          if (rawValue > currentPriceMinor) {
+            return rawValue.toInt();
+          }
+
+          // Some catalog entries may store shadow price in rupees; scale up to paise
+          final scaledValue = (rawValue as num) * 100;
+          if (scaledValue > currentPriceMinor) {
+            return scaledValue.toInt();
+          }
+
+          return null;
+        }
+      }
+    } catch (e) {
+// debugPrint('[ProductDetailPage] Error getting shadow price: $e');
+    }
+    return null;
   }
 
   Future<void> _fetchProductDetail() async {
@@ -99,6 +181,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       setState(() {
         _hasFetchedData = true; // Mark that we've completed the fetch attempt
         if (data != null) {
+          _rawProductData = data; // Store raw data for shadow price access
           productDetail = ProductDetailModel.fromJson(data);
           
           // Track product view
@@ -169,37 +252,81 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         icon: Container(
           padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.9),
+            color: AppColors.card.withValues(alpha: 0.95),
             shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: ResponsiveUtils.rp(8),
+                offset: Offset(0, ResponsiveUtils.rp(2)),
+              ),
+            ],
           ),
-          child: Icon(Icons.arrow_back,
-              color: AppColors.textPrimary, size: ResponsiveUtils.rp(20)),
+          child: Icon(Icons.arrow_back_ios_rounded,
+              color: AppColors.textPrimary, size: ResponsiveUtils.rp(18)),
         ),
         onPressed: () => Get.back(),
       ),
       actions: [
+        // Cart Button with Total Item Count in Center
         Obx(() {
-          final isFavorite =
-              bannerController.isFavorite(productDetail?.id ?? '');
-          return IconButton(
-            icon: Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+          final cartItemCount = cartController.cartItemCount;
+          return Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+            child: Container(
+              width: ResponsiveUtils.rp(48),
+              height: ResponsiveUtils.rp(48),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: AppColors.card.withValues(alpha: 0.95),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: ResponsiveUtils.rp(12),
+                    offset: Offset(0, ResponsiveUtils.rp(4)),
+                  ),
+                ],
               ),
-              child: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? AppColors.error : AppColors.textPrimary,
-                size: ResponsiveUtils.rp(20),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Get.toNamed('/cart'),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(24)),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Cart Icon
+                      Icon(
+                        Icons.shopping_cart_rounded,
+                        color: AppColors.textPrimary,
+                        size: ResponsiveUtils.rp(26),
+                      ),
+                      // Total Item Count at Top of Icon
+                      if (cartItemCount > 0)
+                        Positioned(
+                          top: ResponsiveUtils.rp(4),
+                          child: Text(
+                            cartItemCount > 99 ? '99+' : '$cartItemCount',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: ResponsiveUtils.sp(11),
+                              fontWeight: FontWeight.w800,
+                              height: 1.0,
+                              shadows: [
+                                Shadow(
+                                  color: AppColors.card,
+                                  blurRadius: ResponsiveUtils.rp(4),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            onPressed: () async {
-              if (productDetail != null) {
-                await bannerController.toggleFavorite(
-                    productId: productDetail!.id);
-              }
-            },
           );
         }),
       ],
@@ -297,40 +424,169 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
           decoration: BoxDecoration(
             color: AppColors.card,
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.3),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadowLight,
-                blurRadius: ResponsiveUtils.rp(8),
-                offset: Offset(0, ResponsiveUtils.rp(2)),
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: ResponsiveUtils.rp(12),
+                offset: Offset(0, ResponsiveUtils.rp(4)),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Product Name
               if (selectedVariant != null)
                 ResponsiveText(
                   selectedVariant!.name,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
+                  letterSpacing: 0.3,
                 ),
-              if (selectedVariant != null) ResponsiveSpacing.vertical(12),
+              if (selectedVariant != null) ResponsiveSpacing.vertical(16),
               if (selectedVariant != null &&
                   selectedVariant!.priceWithTax != null)
-                Row(
-                  children: [
-                    ResponsiveText(
-                      PriceFormatter.formatPriceFromDouble(
-                          selectedVariant!.priceWithTax!),
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.button,
-                    ),
-                    if (selectedVariant!.stockLevel > 0 ||
-                        selectedVariant!.stockLevel >= 999) ...[
-                      SizedBox(width: ResponsiveUtils.rp(16)),
+                Builder(
+                  builder: (context) {
+                    final shadowPrice = _getShadowPriceFromRawData(selectedVariant!);
+                    final discountPercent = _calculateDiscountPercent(selectedVariant!);
+                    
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Price Row - Price and Discount on Left, SKU on Right
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Left side - Price, Discount, and MRP
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Current Price Row
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      // Current Price
+                                      ResponsiveText(
+                                        PriceFormatter.formatPriceFromDouble(
+                                            selectedVariant!.priceWithTax!),
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.button,
+                                      ),
+                                      // Discount badge
+                                      if (discountPercent != null) ...[
+                                        SizedBox(width: ResponsiveUtils.rp(12)),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: ResponsiveUtils.rp(12),
+                                            vertical: ResponsiveUtils.rp(6),
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.error,
+                                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                                          ),
+                                          child: Text(
+                                            '${discountPercent.round()}% OFF',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: ResponsiveUtils.sp(16),
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  // MRP (Shadow Price) with strike-through - below price
+                                  if (shadowPrice != null) ...[
+                                    SizedBox(height: ResponsiveUtils.rp(6)),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'M.R.P: ',
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUtils.sp(14),
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.textSecondary,
+                                          ),
+                                        ),
+                                        Text(
+                                          _formatMRPPrice(shadowPrice),
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUtils.sp(16),
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.textTertiary,
+                                            decoration: TextDecoration.lineThrough,
+                                            decorationColor: AppColors.textTertiary,
+                                            decorationThickness: 2.0,
+                                            decorationStyle: TextDecorationStyle.solid,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            // Right side - SKU Display alone
+                            if (selectedVariant?.sku != null)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveUtils.rp(10),
+                                  vertical: ResponsiveUtils.rp(6),
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.inputFill,
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                                  border: Border.all(
+                                    color: AppColors.border.withValues(alpha: 0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'SKU: ',
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUtils.sp(11),
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                    Text(
+                                      selectedVariant!.sku!,
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUtils.sp(11),
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              // Stock status badge with Favorite Icon on Right
+              if (selectedVariant != null) ...[
+                ResponsiveSpacing.vertical(12),
+                if (selectedVariant!.stockLevel > 0 ||
+                    selectedVariant!.stockLevel >= 999)
+                  Row(
+                    children: [
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: ResponsiveUtils.rp(10),
@@ -338,8 +594,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.success.withValues(alpha: 0.1),
-                          borderRadius:
-                              BorderRadius.circular(ResponsiveUtils.rp(6)),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -357,8 +612,41 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ],
                         ),
                       ),
-                    ] else ...[
-                      SizedBox(width: ResponsiveUtils.rp(16)),
+                      Spacer(),
+                      // Favorite Button at right end
+                      Obx(() {
+                        final isFavorite =
+                            bannerController.isFavorite(productDetail?.id ?? '');
+                        return GestureDetector(
+                          onTap: () async {
+                            if (productDetail != null) {
+                              await bannerController.toggleFavorite(
+                                  productId: productDetail!.id);
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                            decoration: BoxDecoration(
+                              color: isFavorite
+                                  ? AppColors.error.withValues(alpha: 0.1)
+                                  : AppColors.inputFill,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              isFavorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color: isFavorite ? AppColors.error : AppColors.textSecondary,
+                              size: ResponsiveUtils.rp(28),
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: ResponsiveUtils.rp(10),
@@ -366,8 +654,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.error.withValues(alpha: 0.1),
-                          borderRadius:
-                              BorderRadius.circular(ResponsiveUtils.rp(6)),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -385,9 +672,39 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ],
                         ),
                       ),
+                      Spacer(),
+                      // Favorite Button at right end
+                      Obx(() {
+                        final isFavorite =
+                            bannerController.isFavorite(productDetail?.id ?? '');
+                        return GestureDetector(
+                          onTap: () async {
+                            if (productDetail != null) {
+                              await bannerController.toggleFavorite(
+                                  productId: productDetail!.id);
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                            decoration: BoxDecoration(
+                              color: isFavorite
+                                  ? AppColors.error.withValues(alpha: 0.1)
+                                  : AppColors.inputFill,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              isFavorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color: isFavorite ? AppColors.error : AppColors.textSecondary,
+                              size: ResponsiveUtils.rp(28),
+                            ),
+                          ),
+                        );
+                      }),
                     ],
-                  ],
-                ),
+                  ),
+              ],
             ],
           ),
         ),
@@ -399,93 +716,93 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
             decoration: BoxDecoration(
               color: AppColors.card,
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.shadowLight,
-                  blurRadius: ResponsiveUtils.rp(4),
-                  offset: Offset(0, ResponsiveUtils.rp(2)),
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: ResponsiveUtils.rp(12),
+                  offset: Offset(0, ResponsiveUtils.rp(4)),
                 ),
               ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ResponsiveText(
-                  'Select Variant',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-                ResponsiveSpacing.vertical(12),
-                Container(
-                  width: double.infinity,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                    border: Border.all(
-                      color: AppColors.border,
-                      width: 1.5,
-                    ),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<ProductVariantDetailModel>(
-                      value: selectedVariant,
-                      isExpanded: true,
-                      icon: Icon(
-                        Icons.keyboard_arrow_down,
-                        color: AppColors.button,
-                        size: ResponsiveUtils.rp(24),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                      decoration: BoxDecoration(
+                        color: AppColors.button.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
                       ),
-                      items: productDetail!.variants.map((variant) {
-                        // Use option names instead of variant name
-                        final displayName = _getVariantDisplayName(variant);
-
-                        return DropdownMenuItem<ProductVariantDetailModel>(
-                          value: variant,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  displayName,
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUtils.sp(15),
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (variant.priceWithTax != null) ...[
-                                SizedBox(width: ResponsiveUtils.rp(8)),
-                                Text(
-                                  PriceFormatter.formatPriceFromDouble(
-                                      variant.priceWithTax!),
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUtils.sp(14),
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.button,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (variant) {
-                        if (variant != null) {
-                          setState(() {
-                            selectedVariant = variant;
-                            _selectedQuantity =
-                                1; // Reset quantity when variant changes
-                          });
-                        }
-                      },
+                      child: Icon(
+                        Icons.tune_rounded,
+                        color: AppColors.button,
+                        size: ResponsiveUtils.rp(18),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: ResponsiveUtils.rp(12)),
+                    Expanded(
+                      child: ResponsiveText(
+                        'Select Variant',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                ResponsiveSpacing.vertical(20),
+                // Variant Selection - Chips
+                Wrap(
+                  spacing: ResponsiveUtils.rp(12),
+                  runSpacing: ResponsiveUtils.rp(12),
+                  children: productDetail!.variants.map((variant) {
+                    final displayName = _getVariantDisplayName(variant);
+                    final isSelected = selectedVariant?.id == variant.id;
+                    
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedVariant = variant;
+                          _selectedQuantity = 1; // Reset quantity when variant changes
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(16),
+                          vertical: ResponsiveUtils.rp(12),
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected 
+                              ? AppColors.button 
+                              : AppColors.inputFill,
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          border: Border.all(
+                            color: isSelected 
+                                ? AppColors.button 
+                                : AppColors.border.withValues(alpha: 0.5),
+                            width: isSelected ? 2 : 1.5,
+                          ),
+                        ),
+                        child: Text(
+                          displayName,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            fontWeight: FontWeight.w600,
+                            color: isSelected 
+                                ? Colors.white 
+                                : AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
@@ -502,12 +819,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
             decoration: BoxDecoration(
               color: AppColors.card,
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.shadowLight,
-                  blurRadius: ResponsiveUtils.rp(4),
-                  offset: Offset(0, ResponsiveUtils.rp(2)),
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: ResponsiveUtils.rp(12),
+                  offset: Offset(0, ResponsiveUtils.rp(4)),
                 ),
               ],
             ),
@@ -516,9 +837,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.description,
-                        color: AppColors.button, size: ResponsiveUtils.rp(20)),
-                    SizedBox(width: ResponsiveUtils.rp(8)),
+                    Container(
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                      decoration: BoxDecoration(
+                        color: AppColors.info.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                      ),
+                      child: Icon(Icons.description_rounded,
+                          color: AppColors.info, size: ResponsiveUtils.rp(20)),
+                    ),
+                    SizedBox(width: ResponsiveUtils.rp(12)),
                     ResponsiveText(
                       'About Product',
                       fontSize: 18,
@@ -635,8 +963,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                   colors: [
-                                    Colors.white.withValues(alpha: 0),
-                                    Colors.white,
+                                    AppColors.card.withValues(alpha: 0),
+                                    AppColors.card,
                                   ],
                                 ),
                               ),
@@ -665,56 +993,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ResponsiveSpacing.vertical(20),
         ],
 
-        // Product Info Section
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
-          decoration: BoxDecoration(
-            color: AppColors.card,
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-          ),
-          child: Column(
-            children: [
-              if (selectedVariant?.sku != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ResponsiveText(
-                      'SKU',
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                    ResponsiveText(
-                      selectedVariant!.sku!,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ],
-                ),
-              if (selectedVariant?.sku != null) ResponsiveSpacing.vertical(12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ResponsiveText(
-                    'Stock Level',
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                  ResponsiveText(
-                    selectedVariant!.stockLevel >= 999
-                        ? 'Available'
-                        : '${selectedVariant!.stockLevel}',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        ResponsiveSpacing.vertical(80), // Space for bottom bar
       ],
     );
   }
@@ -751,8 +1029,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     if (!mounted) return; // Widget was disposed during async operation
 
     if (success) {
-      final displayName = _getVariantDisplayName(selectedVariant!);
-      showSuccessSnackbar('$displayName added to cart');
       setState(() {
         _selectedQuantity = 1;
       });
@@ -761,128 +1037,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     }
   }
 
-  /// Get the dropdown value, ensuring it's always valid and exists in the items list
-  int? _getDropdownValue(int cartQuantity) {
-    // Build the items list to check what values are available
-    final items = _buildQuantityDropdownItems(cartQuantity);
-    final availableValues = items.map((item) => item.value).toList();
-    
-    if (cartQuantity > 0) {
-      // If cart quantity exists in the items list, use it
-      if (availableValues.contains(cartQuantity)) {
-        return cartQuantity;
-      }
-      // If cart quantity is 1, 2, or 3, use it (should always be in list)
-      if (cartQuantity >= 1 && cartQuantity <= 3) {
-        return cartQuantity;
-      }
-      // For custom quantities (> 3) that aren't in the list yet, default to 1
-      // The items list will be rebuilt with cartQuantity on next build
-      return 1;
-    }
-    
-    // Ensure _selectedQuantity is valid and exists in the items list
-    if (availableValues.contains(_selectedQuantity)) {
-      return _selectedQuantity;
-    }
-    
-    // Default to 1 if invalid (1 should always be in the list)
-    return 1;
-  }
-
-  /// Build dropdown items, including cart quantity if it's custom (> 3)
-  List<DropdownMenuItem<int>> _buildQuantityDropdownItems(int cartQuantity) {
-    final items = <DropdownMenuItem<int>>[
-      DropdownMenuItem<int>(
-        value: 1,
-        child: Center(
-          child: Text(
-            '1',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
-      DropdownMenuItem<int>(
-        value: 2,
-        child: Center(
-          child: Text(
-            '2',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
-      DropdownMenuItem<int>(
-        value: 3,
-        child: Center(
-          child: Text(
-            '3',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(16),
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
-    ];
-
-    // Add cart quantity if it's custom (> 3) and not already in the list
-    if (cartQuantity > 3) {
-      items.add(
-        DropdownMenuItem<int>(
-          value: cartQuantity,
-          child: Center(
-            child: Text(
-              '$cartQuantity',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(16),
-                fontWeight: FontWeight.w700,
-                color: AppColors.button,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Add "More" option
-    items.add(
-      DropdownMenuItem<int>(
-        value: -1, // Special value for "More"
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'More',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(14),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.button,
-                ),
-              ),
-              SizedBox(width: ResponsiveUtils.rp(4)),
-              Icon(
-                Icons.add_circle_outline,
-                size: ResponsiveUtils.rp(16),
-                color: AppColors.button,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    return items;
-  }
 
   Future<void> _showQuantityDialog() async {
     const maxQuantity = 20;
@@ -916,130 +1070,239 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     final isOutOfStock =
         selectedVariant!.stockLevel <= 0 && selectedVariant!.stockLevel < 999;
 
-    // Zomato-style UI: Quantity dropdown + Add to Cart button
     return Container(
-      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: ResponsiveUtils.rp(8),
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: ResponsiveUtils.rp(20),
             offset: Offset(0, -ResponsiveUtils.rp(2)),
           ),
         ],
       ),
       child: SafeArea(
-        child: Row(
-          children: [
-            // Quantity dropdown - Zomato style
-            Container(
-              width: ResponsiveUtils.rp(80),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                border: Border.all(
-                  color: AppColors.border,
-                  width: 1,
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
-                  value: _getDropdownValue(cartQuantity),
-                  isExpanded: true,
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: AppColors.button,
-                    size: ResponsiveUtils.rp(20),
+        top: false,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUtils.rp(16),
+            vertical: ResponsiveUtils.rp(12),
+          ),
+          child: Row(
+            children: [
+              // Quantity Selector - Clean button style
+              GestureDetector(
+                onTap: isOutOfStock
+                    ? null
+                    : () async {
+                        final result = await showModalBottomSheet<int>(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => _buildQuantityBottomSheet(cartQuantity),
+                        );
+                        if (result != null && result > 0) {
+                          setState(() {
+                            _selectedQuantity = result;
+                          });
+                          await _addToCart(quantity: result);
+                        }
+                      },
+                child: Container(
+                  width: ResponsiveUtils.rp(70),
+                  height: ResponsiveUtils.rp(50),
+                  decoration: BoxDecoration(
+                    color: AppColors.inputFill,
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    border: Border.all(
+                      color: AppColors.border.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
                   ),
-                  items: _buildQuantityDropdownItems(cartQuantity),
-                  onChanged: isOutOfStock
-                      ? null
-                      : (value) async {
-                          if (value == -1) {
-                            // Open dialog for custom quantity
-                            await _showQuantityDialog();
-                          } else if (value != null) {
-                            setState(() {
-                              _selectedQuantity = value;
-                            });
-                            await _addToCart(quantity: value);
-                          }
-                        },
-                  selectedItemBuilder: (context) {
-                    // selectedItemBuilder must return a list with the same length as items
-                    // Each item corresponds to the item at that index in the items list
-                    final items = _buildQuantityDropdownItems(cartQuantity);
-                    return items.map((item) {
-                      final isSelected = item.value == _getDropdownValue(cartQuantity);
-                      final isCartQuantity = item.value == cartQuantity && cartQuantity > 0;
-                      return DropdownMenuItem<int>(
-                        value: item.value,
-                        child: Center(
-                          child: Text(
-                            item.value == -1
-                                ? 'More'
-                                : '${item.value}',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(16),
-                              fontWeight: isSelected || isCartQuantity
-                                  ? FontWeight.w700
-                                  : FontWeight.w600,
-                              color: isSelected || isCartQuantity
-                                  ? AppColors.button
-                                  : AppColors.textPrimary,
-                            ),
-                          ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${_selectedQuantity}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(16),
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
                         ),
-                      );
-                    }).toList();
-                  },
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(4)),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: AppColors.textSecondary,
+                        size: ResponsiveUtils.rp(18),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            SizedBox(width: ResponsiveUtils.rp(12)),
+              SizedBox(width: ResponsiveUtils.rp(12)),
 
-            // Add to Cart button - Zomato style
-            Expanded(
-              child: Container(
-                height: ResponsiveUtils.rp(48),
-                decoration: BoxDecoration(
-                  color: isOutOfStock ? AppColors.grey300 : AppColors.button,
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: isOutOfStock ? null : () => _addToCart(),
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          cartQuantity > 0
-                              ? Icons.shopping_cart
-                              : Icons.add_shopping_cart,
-                          color: Colors.white,
-                          size: ResponsiveUtils.rp(20),
-                        ),
-                        SizedBox(width: ResponsiveUtils.rp(8)),
-                        Text(
-                          cartQuantity > 0 ? 'Update Cart' : 'Add to Cart',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(15),
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
+              // Add to Cart Button - Clean and modern
+              Expanded(
+                child: Container(
+                  height: ResponsiveUtils.rp(50),
+                  decoration: BoxDecoration(
+                    gradient: isOutOfStock
+                        ? null
+                        : LinearGradient(
+                            colors: [AppColors.button, AppColors.buttonLight],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
                           ),
+                    color: isOutOfStock ? AppColors.grey300 : null,
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: isOutOfStock ? null : () => _addToCart(),
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_shopping_cart_rounded,
+                              color: Colors.white,
+                              size: ResponsiveUtils.rp(20),
+                            ),
+                            SizedBox(width: ResponsiveUtils.rp(8)),
+                            Text(
+                              'Add to Cart',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildQuantityBottomSheet(int cartQuantity) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(ResponsiveUtils.rp(20)),
+          topRight: Radius.circular(ResponsiveUtils.rp(20)),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Container(
+            margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
+            width: ResponsiveUtils.rp(40),
+            height: ResponsiveUtils.rp(4),
+            decoration: BoxDecoration(
+              color: AppColors.border.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(2)),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+            child: Text(
+              'Select Quantity',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(18),
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          Flexible(
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                final quantity = index + 1;
+                final isSelected = quantity == _selectedQuantity;
+                return InkWell(
+                  onTap: () => Navigator.pop(context, quantity),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(16),
+                      vertical: ResponsiveUtils.rp(16),
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.button.withValues(alpha: 0.1)
+                          : AppColors.inputFill,
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.button
+                            : AppColors.border.withValues(alpha: 0.2),
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '$quantity',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(16),
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w600,
+                            color: isSelected
+                                ? AppColors.button
+                                : AppColors.textPrimary,
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.button,
+                            size: ResponsiveUtils.rp(20),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+            child: TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await _showQuantityDialog();
+              },
+              child: Text(
+                'Enter Custom Quantity',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.button,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(8)),
+        ],
       ),
     );
   }

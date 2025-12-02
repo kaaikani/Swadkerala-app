@@ -774,57 +774,6 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: ResponsiveUtils.rp(12)),
-                          // Phone Number (Read-only)
-                          Text(
-                            'Phone Number',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(14),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          SizedBox(height: ResponsiveUtils.rp(8)),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: ResponsiveUtils.rp(16),
-                              vertical: ResponsiveUtils.rp(16),
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.inputFill.withValues(alpha: 0.5),
-                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                              border: Border.all(
-                                color: AppColors.border,
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.phone_outlined,
-                                  color: AppColors.textSecondary,
-                                  size: ResponsiveUtils.rp(20),
-                                ),
-                                SizedBox(width: ResponsiveUtils.rp(12)),
-                                Text(
-                                  customer.phoneNumber ?? 'No phone number',
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUtils.sp(16),
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                                Spacer(),
-                                Text(
-                                  'Read-only',
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUtils.sp(12),
-                                    color: AppColors.textTertiary,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -995,17 +944,17 @@ class _AccountPageState extends State<AccountPage> {
       final webStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=$packageName');
 
-      debugPrint('[AccountPage] Opening Play Store for package: $packageName');
+// debugPrint('[AccountPage] Opening Play Store for package: $packageName');
 
       if (await canLaunchUrl(playStoreUrl)) {
         await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
-        debugPrint('[AccountPage] Opened Play Store app');
+// debugPrint('[AccountPage] Opened Play Store app');
       } else {
         await launchUrl(webStoreUrl, mode: LaunchMode.externalApplication);
-        debugPrint('[AccountPage] Opened Play Store in browser');
+// debugPrint('[AccountPage] Opened Play Store in browser');
       }
     } catch (e) {
-      debugPrint('[AccountPage] Error opening Play Store: $e');
+// debugPrint('[AccountPage] Error opening Play Store: $e');
       showErrorSnackbar('Could not open Play Store: $e');
     }
   }

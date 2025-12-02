@@ -27,15 +27,13 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
   final CartController cartController = Get.put(CartController());
   final UtilityController utilityController = Get.find<UtilityController>();
   
-  // Track selected variant for each product
-  final Map<String, String> _selectedVariantIds = {};
 
   @override
   void initState() {
     super.initState();
     // Fetch frequently ordered products when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
+// debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
       bannerController.getFrequentlyOrderedProducts();
     });
   }
@@ -58,108 +56,12 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
         productVariantId: parsedVariantId, quantity: 1);
 
     if (success) {
-      showSuccessSnackbar('$productName added to cart');
       if (mounted) setState(() {});
     } else {
       showErrorSnackbar('Failed to add to cart');
     }
   }
 
-  /// Build variant dropdown for frequently ordered products
-  Widget _buildVariantDropdown({
-    required String productId,
-    required List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants> variants,
-    required String currentVariantId,
-  }) {
-    return Container(
-      height: ResponsiveUtils.rp(32),
-      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.6),
-          width: 1,
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: currentVariantId.isNotEmpty ? currentVariantId : null,
-          isExpanded: true,
-          isDense: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: ResponsiveUtils.rp(20),
-            color: AppColors.icon.withValues(alpha: 0.7),
-          ),
-          iconSize: ResponsiveUtils.rp(20),
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(12),
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-            height: 1.2,
-          ),
-          items: variants.map((variant) {
-            final isSelected = variant.id == currentVariantId;
-            final displayName = _getVariantLabelFromName(variant.name);
-            return DropdownMenuItem<String>(
-              value: variant.id,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: ResponsiveUtils.rp(4),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        displayName,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(13),
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                          color: isSelected
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                    if (isSelected) ...[
-                      SizedBox(width: ResponsiveUtils.rp(6)),
-                      Icon(
-                        Icons.check_circle_rounded,
-                        size: ResponsiveUtils.rp(16),
-                        color: AppColors.button,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-          dropdownColor: AppColors.card,
-          menuMaxHeight: ResponsiveUtils.rp(200),
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-          onChanged: (String? newVariantId) {
-            if (newVariantId == null) return;
-            setState(() {
-              _selectedVariantIds[productId] = newVariantId;
-            });
-          },
-        ),
-      ),
-    );
-  }
-
-  /// Extract variant label from variant name (remove text before colon if present)
-  String _getVariantLabelFromName(String variantName) {
-    // If variant name contains ":", return only the part after colon
-    if (variantName.contains(':')) {
-      return variantName.split(':').last.trim();
-    }
-    return variantName;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,18 +119,11 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
               final imageUrl = product.featuredAsset?.preview;
               final productId = product.id;
               
-              // Get selected variant or default to first variant
-              final selectedVariantId = _selectedVariantIds[productId] ?? 
-                  (product.variants.isNotEmpty ? product.variants.first.id : '');
+              // Get first variant directly (no dropdown)
+              final variant = product.variants.isNotEmpty
+                  ? product.variants.first
+                  : null;
               
-              final selectedVariant = selectedVariantId.isNotEmpty
-                  ? product.variants.firstWhere(
-                      (v) => v.id == selectedVariantId,
-                      orElse: () => product.variants.first,
-                    )
-                  : (product.variants.isNotEmpty ? product.variants.first : null);
-              
-              final hasMultipleVariants = product.variants.length > 1;
               final isFavorite = bannerController.isFavorite(productId);
 
               return _buildProductTile(
@@ -236,9 +131,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
                 imageUrl: imageUrl,
                 productId: productId,
                 product: product,
-                variant: selectedVariant,
-                hasMultipleVariants: hasMultipleVariants,
-                selectedVariantId: selectedVariantId,
+                variant: variant,
                 isFavorite: isFavorite,
               );
             },
@@ -276,13 +169,13 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
     required String productId,
     required Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product product,
     required Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants? variant,
-    required bool hasMultipleVariants,
-    required String selectedVariantId,
     required bool isFavorite,
   }) {
     final priceText = variant != null
         ? PriceFormatter.formatPrice(variant.priceWithTax.round())
         : 'Rs --';
+    
+    final variantId = variant?.id ?? '';
 
     return ProductCard(
       name: name,
@@ -297,20 +190,12 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
       isFavorite: isFavorite,
       onFavoriteToggle: () => bannerController.toggleFavorite(productId: productId),
       discountPercent: null,
-      variantSelector: hasMultipleVariants
-          ? _buildVariantDropdown(
-              productId: productId,
-              variants: product.variants,
-              currentVariantId: selectedVariantId,
-            )
-          : null,
-      showVariantSelector: hasMultipleVariants,
-      variantLabel: variant != null
-          ? _getVariantLabelFromName(variant.name)
-          : 'Default',
+      variantSelector: null,
+      showVariantSelector: false,
+      variantLabel: variant?.name ?? 'Default',
       priceText: priceText,
       shadowPriceText: null,
-      onAddToCart: () => _handleAddToCart(name, selectedVariantId),
+      onAddToCart: () => _handleAddToCart(name, variantId),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import '../utils/price_formatter.dart';
 import '../controllers/banner/bannermodels.dart';
 import 'premium_card.dart';
 import 'responsive_text.dart';
@@ -9,9 +10,10 @@ import 'responsive_button.dart';
 
 /// Premium order summary card like Amazon/Flipkart
 class OrderSummaryCard extends StatelessWidget {
-  final String subtotal;
+  final String? subtotal;
   final String shipping;
   final String? shippingNote;
+  final String? shippingMethod;
   final String total;
   final VoidCallback? onProceedToCheckout;
   final String? buttonLabel;
@@ -23,12 +25,18 @@ class OrderSummaryCard extends StatelessWidget {
   final List<String>? appliedCouponCodes;
   final CouponCodeModel? suggestedCoupon;
   final int? amountShort;
+  final bool? loyaltyPointsApplied;
+  final int? loyaltyPointsUsed;
+  final VoidCallback? onToggleLoyaltyPoints;
+  final int? couponDiscount; // Discount amount in paise
+  final String? appliedCouponName; // Name of applied coupon
 
   const OrderSummaryCard({
     Key? key,
-    required this.subtotal,
+    this.subtotal,
     required this.shipping,
     this.shippingNote,
+    this.shippingMethod,
     required this.total,
     this.onProceedToCheckout,
     this.buttonLabel,
@@ -40,6 +48,11 @@ class OrderSummaryCard extends StatelessWidget {
     this.appliedCouponCodes,
     this.suggestedCoupon,
     this.amountShort,
+    this.loyaltyPointsApplied,
+    this.loyaltyPointsUsed,
+    this.onToggleLoyaltyPoints,
+    this.couponDiscount,
+    this.appliedCouponName,
   }) : super(key: key);
 
   @override
@@ -134,26 +147,37 @@ class OrderSummaryCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (!isApplied && onApplyCoupon != null)
-                          GestureDetector(
-                            onTap: () => onApplyCoupon!(couponCode),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: ResponsiveUtils.rp(8),
-                                vertical: ResponsiveUtils.rp(4),
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.button,
-                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
-                              ),
-                              child: ResponsiveText(
-                                'Apply',
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                        GestureDetector(
+                          onTap: isApplied ? null : () => onApplyCoupon!(couponCode),
+                          child: Container(
+                            width: ResponsiveUtils.rp(40),
+                            height: ResponsiveUtils.rp(20),
+                            padding: EdgeInsets.all(ResponsiveUtils.rp(2)),
+                            decoration: BoxDecoration(
+                              color: isApplied ? AppColors.success : AppColors.textSecondary.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                            ),
+                            child: AnimatedAlign(
+                              duration: const Duration(milliseconds: 200),
+                              alignment: isApplied ? Alignment.centerRight : Alignment.centerLeft,
+                              child: Container(
+                                width: ResponsiveUtils.rp(16),
+                                height: ResponsiveUtils.rp(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.2),
+                                      blurRadius: 2,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
+                        ),
                       ],
                     ),
                     if (minimumAmount != null && !isApplied) ...[
@@ -170,7 +194,189 @@ class OrderSummaryCard extends StatelessWidget {
               );
             }).toList(),
           ],
-          // Total only
+          // Loyalty Points Toggle
+          if (loyaltyPointsUsed != null && loyaltyPointsUsed! > 0 && onToggleLoyaltyPoints != null) ...[
+            Container(
+              margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(6)),
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(10),
+                vertical: ResponsiveUtils.rp(5),
+              ),
+              decoration: BoxDecoration(
+                color: (loyaltyPointsApplied ?? false)
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : AppColors.button.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                border: Border.all(
+                  color: (loyaltyPointsApplied ?? false)
+                      ? AppColors.success.withValues(alpha: 0.3)
+                      : AppColors.button.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        (loyaltyPointsApplied ?? false) ? Icons.check_circle : Icons.stars,
+                        size: ResponsiveUtils.rp(14),
+                        color: (loyaltyPointsApplied ?? false) ? AppColors.success : AppColors.button,
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(6)),
+                      ResponsiveText(
+                        'Loyalty Points (₹${loyaltyPointsUsed})',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: (loyaltyPointsApplied ?? false) ? AppColors.success : AppColors.button,
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: onToggleLoyaltyPoints,
+                    child: Container(
+                      width: ResponsiveUtils.rp(40),
+                      height: ResponsiveUtils.rp(20),
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(2)),
+                      decoration: BoxDecoration(
+                        color: (loyaltyPointsApplied ?? false) ? AppColors.success : AppColors.textSecondary.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                      ),
+                      child: AnimatedAlign(
+                        duration: const Duration(milliseconds: 200),
+                        alignment: (loyaltyPointsApplied ?? false) ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Container(
+                          width: ResponsiveUtils.rp(16),
+                          height: ResponsiveUtils.rp(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          // Subtotal - Show if provided
+          if (subtotal != null && subtotal!.isNotEmpty) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ResponsiveText(
+                  'Subtotal',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+                ResponsiveText(
+                  subtotal!,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ],
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+          ],
+          // Loyalty Points Discount - Show below subtotal if applied
+          if (loyaltyPointsUsed != null && loyaltyPointsUsed! > 0 && (loyaltyPointsApplied ?? false)) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.stars,
+                      size: ResponsiveUtils.rp(16),
+                      color: AppColors.info,
+                    ),
+                    SizedBox(width: ResponsiveUtils.rp(6)),
+                    ResponsiveText(
+                      'Loyalty Points',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ],
+                ),
+                ResponsiveText(
+                  '-${PriceFormatter.formatPrice(loyaltyPointsUsed!)}',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.info,
+                ),
+              ],
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+          ],
+          // Shipping Cost Display - Show if shipping method is applied
+          if (shippingMethod != null && shippingMethod!.isNotEmpty && shippingMethod == 'Applied') ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ResponsiveText(
+                  'Shipping Cost',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+                ResponsiveText(
+                  shipping.isNotEmpty ? shipping : 'Free',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ],
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+          ],
+          // Coupon Discount - Show below shipping cost if applied
+          if (couponDiscount != null && couponDiscount! > 0 && appliedCouponName != null) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.local_offer,
+                      size: ResponsiveUtils.rp(16),
+                      color: AppColors.success,
+                    ),
+                    SizedBox(width: ResponsiveUtils.rp(6)),
+                    ResponsiveText(
+                      appliedCouponName!,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ],
+                ),
+                ResponsiveText(
+                  '-${PriceFormatter.formatPrice(couponDiscount!)}',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.success,
+                ),
+              ],
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+          ],
+          // Total
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,

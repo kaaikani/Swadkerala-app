@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _requestPermissions() async {
-    debugPrint('[SplashScreen] Starting permission request...');
+// debugPrint('[SplashScreen] Starting permission request...');
 
     setState(() {
       _isRequestingPermission = true;
@@ -77,18 +77,18 @@ class _SplashScreenState extends State<SplashScreen>
 
     try {
       // Check phone permission using permission_handler
-      debugPrint('[SplashScreen] Checking phone permission...');
+// debugPrint('[SplashScreen] Checking phone permission...');
       PermissionStatus phoneStatus = await Permission.phone.status;
-      debugPrint('[SplashScreen] Phone permission status: $phoneStatus');
+// debugPrint('[SplashScreen] Phone permission status: $phoneStatus');
 
       if (phoneStatus.isDenied || phoneStatus.isPermanentlyDenied) {
         setState(() {
           _statusMessage = 'Please grant phone permission for SIM detection...';
         });
 
-        debugPrint('[SplashScreen] Requesting phone permission...');
+// debugPrint('[SplashScreen] Requesting phone permission...');
         phoneStatus = await Permission.phone.request();
-        debugPrint('[SplashScreen] Phone permission result: $phoneStatus');
+// debugPrint('[SplashScreen] Phone permission result: $phoneStatus');
 
         if (phoneStatus.isGranted) {
           setState(() {
@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
           });
 
           // Try to detect SIM cards and cache them
-          debugPrint('[SplashScreen] Detecting SIM cards...');
+// debugPrint('[SplashScreen] Detecting SIM cards...');
           final simService = SimDetectionService();
           await simService.getAllSimInfo();
 
@@ -114,8 +114,7 @@ class _SplashScreenState extends State<SplashScreen>
           _statusMessage = 'Permission already granted. Detecting SIM cards...';
         });
 
-        debugPrint(
-            '[SplashScreen] Permission already granted, detecting SIM cards...');
+/// debugPrint(  '[SplashScreen] Permission already granted, detecting SIM cards...');
         // Try to detect SIM cards and cache them
         final simService = SimDetectionService();
         await simService.getAllSimInfo();
@@ -133,7 +132,7 @@ class _SplashScreenState extends State<SplashScreen>
       // Wait a bit to show the final status
       await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
-      debugPrint('[SplashScreen] Permission request error: $e');
+// debugPrint('[SplashScreen] Permission request error: $e');
       setState(() {
         _statusMessage = 'Ready!';
       });

@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class OrderModel {
   final String id;
   final String code;
@@ -108,11 +106,11 @@ class OrderModel {
       if (addressData is Map<String, dynamic>) {
         return OrderAddress.fromJson(addressData);
       } else {
-        debugPrint('[OrderModel] $type address is not a Map, got: ${addressData.runtimeType}, value: $addressData');
+// debugPrint('[OrderModel] $type address is not a Map, got: ${addressData.runtimeType}, value: $addressData');
         return null;
       }
     } catch (e) {
-      debugPrint('[OrderModel] Error parsing $type address: $e');
+// debugPrint('[OrderModel] Error parsing $type address: $e');
       return null;
     }
   }
@@ -122,14 +120,14 @@ class OrderModel {
     
     try {
       if (customFieldsData is Map<String, dynamic>) {
-        debugPrint('[OrderModel] Custom fields data: $customFieldsData');
+// debugPrint('[OrderModel] Custom fields data: $customFieldsData');
         return OrderCustomFields.fromJson(customFieldsData);
       } else {
-        debugPrint('[OrderModel] Custom fields is not a Map, got: ${customFieldsData.runtimeType}, value: $customFieldsData');
+// debugPrint('[OrderModel] Custom fields is not a Map, got: ${customFieldsData.runtimeType}, value: $customFieldsData');
         return null;
       }
     } catch (e) {
-      debugPrint('[OrderModel] Error parsing custom fields: $e');
+// debugPrint('[OrderModel] Error parsing custom fields: $e');
       return null;
     }
   }

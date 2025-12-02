@@ -126,11 +126,11 @@ class ProductVariantDetailModel {
 
     int parseStockLevel(dynamic value) {
       if (value == null) {
-        print('[ProductModel] stockLevel is null, defaulting to 999 (unlimited)');
+// print('[ProductModel] stockLevel is null, defaulting to 999 (unlimited)');
         return 999; // Default to high value if null (assume in stock)
       }
       if (value is int) {
-        print('[ProductModel] stockLevel is int: $value');
+// print('[ProductModel] stockLevel is int: $value');
         return value;
       }
       if (value is String) {
@@ -141,26 +141,26 @@ class ProductVariantDetailModel {
             stockLevelUpper == 'INSTOCK' || 
             stockLevelUpper == 'AVAILABLE' ||
             stockLevelUpper.isEmpty) {
-          print('[ProductModel] stockLevel is "$value" (special value), defaulting to 999 (in stock)');
+// print('[ProductModel] stockLevel is "$value" (special value), defaulting to 999 (in stock)');
           return 999; // Treat as in stock
         }
         
         // Try to parse as number
         final parsed = int.tryParse(stockLevelUpper);
         if (parsed != null) {
-          print('[ProductModel] stockLevel parsed from String "$value" to int: $parsed');
+// print('[ProductModel] stockLevel parsed from String "$value" to int: $parsed');
           return parsed;
         } else {
           // If parsing fails and it's not a special value, assume in stock (999)
-          print('[ProductModel] stockLevel string "$value" could not be parsed, defaulting to 999 (assume in stock)');
+// print('[ProductModel] stockLevel string "$value" could not be parsed, defaulting to 999 (assume in stock)');
           return 999; // Default to high value (assume in stock)
         }
       }
       if (value is double) {
-        print('[ProductModel] stockLevel is double: $value, converting to int');
+// print('[ProductModel] stockLevel is double: $value, converting to int');
         return value.toInt();
       }
-      print('[ProductModel] stockLevel is unknown type: ${value.runtimeType}, defaulting to 999');
+// print('[ProductModel] stockLevel is unknown type: ${value.runtimeType}, defaulting to 999');
       return 999; // Default to high value (assume in stock)
     }
 

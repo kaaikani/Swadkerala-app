@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 class SmsAutofillService {
@@ -15,9 +14,9 @@ class SmsAutofillService {
   Future<void> initialize() async {
     try {
       _appHash = await SmsAutoFill().getAppSignature;
-      debugPrint('[SmsAutofillService] App Hash Key: $_appHash');
+// debugPrint('[SmsAutofillService] App Hash Key: $_appHash');
     } catch (e) {
-      debugPrint('[SmsAutofillService] Error getting app hash: $e');
+// debugPrint('[SmsAutofillService] Error getting app hash: $e');
       _appHash = 'PLACEHOLDER_HASH';
     }
   }
@@ -32,14 +31,14 @@ class SmsAutofillService {
 
       _smsSubscription = SmsAutoFill().code.listen((otp) {
         if (otp.isNotEmpty) {
-          debugPrint('[SmsAutofillService] OTP received: $otp');
+// debugPrint('[SmsAutofillService] OTP received: $otp');
           _onOtpReceived?.call(otp);
         }
       });
 
-      debugPrint('[SmsAutofillService] Listening for OTP...');
+// debugPrint('[SmsAutofillService] Listening for OTP...');
     } catch (e) {
-      debugPrint('[SmsAutofillService] Error starting listener: $e');
+// debugPrint('[SmsAutofillService] Error starting listener: $e');
       _showManualEntryMessage();
     }
   }
@@ -50,7 +49,7 @@ class SmsAutofillService {
     _smsSubscription = null;
     _onOtpReceived = null;
     SmsAutoFill().unregisterListener();
-    debugPrint('[SmsAutofillService] Stopped listening for OTP');
+// debugPrint('[SmsAutofillService] Stopped listening for OTP');
   }
 
   /// Get app hash
@@ -61,6 +60,6 @@ class SmsAutofillService {
 
   /// Show manual entry message when SMS autofill fails
   void _showManualEntryMessage() {
-    debugPrint('[SmsAutofillService] SMS autofill not available, user should enter OTP manually');
+// debugPrint('[SmsAutofillService] SMS autofill not available, user should enter OTP manually');
   }
 }

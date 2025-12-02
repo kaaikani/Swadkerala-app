@@ -311,8 +311,18 @@ class _AddressesPageState extends State<AddressesPage> {
                   constraints: BoxConstraints(),
                   icon: Icon(Icons.delete_outline, 
                       color: Colors.red, size: 20),
-                  onPressed: () => _showDeleteDialog(
-                      context, address.id, customerController),
+                  onPressed: () {
+                    // Check if this is the only address
+                    if (customerController.addresses.length <= 1) {
+                      SnackBarWidget.show(
+                        context,
+                        'Cannot delete the only address. At least one address must be kept.',
+                        backgroundColor: AppColors.error,
+                      );
+                      return;
+                    }
+                    _showDeleteDialog(context, address.id, customerController);
+                  },
                 ),
               ],
             ),
@@ -366,6 +376,16 @@ class _AddressesPageState extends State<AddressesPage> {
 
   void _showDeleteDialog(BuildContext context, String addressId,
       CustomerController customerController) {
+    // Check if this is the only address
+    if (customerController.addresses.length <= 1) {
+      SnackBarWidget.show(
+        context,
+        'Cannot delete the only address. At least one address must be kept.',
+        backgroundColor: AppColors.error,
+      );
+      return;
+    }
+
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -387,6 +407,16 @@ class _AddressesPageState extends State<AddressesPage> {
           ),
           ElevatedButton(
             onPressed: () async {
+              // Double check before deletion
+              if (customerController.addresses.length <= 1) {
+                Get.back();
+                SnackBarWidget.show(
+                  context,
+                  'Cannot delete the only address. At least one address must be kept.',
+                  backgroundColor: AppColors.error,
+                );
+                return;
+              }
               Get.back();
               final success = await customerController.deleteAddress(addressId);
               if (success) {
@@ -424,8 +454,17 @@ class _AddAddressFormWidget extends StatefulWidget {
 }
 
 class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
+  late final TextEditingController fullNameController;
+  late final TextEditingController streetLine1Controller;
+  late final TextEditingController streetLine2Controller;
+  late final TextEditingController cityController;
+  late final TextEditingController postalCodeController;
+  late final TextEditingController phoneController;
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    // Pre-initialize controllers for better performance
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
     final customer = widget.customerController.activeCustomer.value;
@@ -434,17 +473,37 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
         : '';
     final autoPhone = customer != null ? (customer.phoneNumber ?? '') : '';
 
-    final fullNameController = TextEditingController(
+    fullNameController = TextEditingController(
         text: autoFullName.isNotEmpty ? autoFullName : '');
-    final streetLine1Controller = TextEditingController();
-    final streetLine2Controller = TextEditingController();
-    final cityController = TextEditingController(
+    streetLine1Controller = TextEditingController();
+    streetLine2Controller = TextEditingController();
+    cityController = TextEditingController(
         text: channelCode.isNotEmpty ? channelCode : '');
-    final postalCodeController = TextEditingController();
-    final phoneController = TextEditingController(
+    postalCodeController = TextEditingController();
+    phoneController = TextEditingController(
         text: autoPhone.isNotEmpty ? autoPhone : '');
+  }
 
-    bool defaultShipping = false;
+  @override
+  void dispose() {
+    fullNameController.dispose();
+    streetLine1Controller.dispose();
+    streetLine2Controller.dispose();
+    cityController.dispose();
+    postalCodeController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Get address count - if no addresses, first one must be default
+    final addressCount = widget.customerController.addresses.length;
+    final isOnlyAddress = addressCount == 0; // No addresses yet
+    final bool? isOnlyDefault = null; // Not applicable for add form
+    
+    // If adding first address, it must be default
+    bool defaultShipping = addressCount == 0;
     final Map<String, String?> errors = {};
 
     return StatefulBuilder(
@@ -577,28 +636,70 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                     width: defaultShipping ? 2 : 1,
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: defaultShipping,
-                      onChanged: (value) => setState(
-                          () => defaultShipping = value ?? false),
-                      activeColor: AppColors.button,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4)),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Set as default address',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                          fontSize: 15,
+                child: Opacity(
+                  opacity: (isOnlyAddress && defaultShipping) ? 0.6 : 1.0,
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: defaultShipping,
+                        onChanged: (isOnlyAddress && defaultShipping)
+                            ? null // Disable if only default address
+                            : (value) {
+                                // Prevent unchecking if it's the only default address (edit form only)
+                                if (isOnlyDefault == true && defaultShipping && value == false) {
+                                  SnackBarWidget.show(
+                                    context,
+                                    'Unable to deselect default address. At least one address must be set as default.',
+                                    backgroundColor: AppColors.error,
+                                  );
+                                  return;
+                                }
+                                // Prevent unchecking if it's the only address
+                                if (isOnlyAddress && defaultShipping && value == false) {
+                                  SnackBarWidget.show(
+                                    context,
+                                    'Unable to deselect default address. At least one address must be set as default.',
+                                    backgroundColor: AppColors.error,
+                                  );
+                                  return;
+                                }
+                                setState(() => defaultShipping = value ?? false);
+                              },
+                        activeColor: AppColors.button,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4)),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Set as default address',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                                fontSize: 15,
+                              ),
+                            ),
+                            if (isOnlyAddress && defaultShipping)
+                              Padding(
+                                padding: EdgeInsets.only(top: 4),
+                                child: Text(
+                                  isOnlyAddress && addressCount == 0
+                                      ? 'This will be your default address'
+                                      : 'This is your only address and must remain default',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -637,7 +738,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                           streetLine1: streetLine1Controller.text.trim(),
                           streetLine2: streetLine2Controller.text.trim(),
                           city: cityController.text.trim(),
-                          province: '',
+                          province: 'Tamil Nadu', // Default province
                           postalCode: postalCodeController.text.trim(),
                           phoneNumber: phoneController.text.trim(),
                           company: '',
@@ -801,26 +902,57 @@ class _EditAddressFormWidget extends StatefulWidget {
 }
 
 class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
+  late final TextEditingController fullNameController;
+  late final TextEditingController streetLine1Controller;
+  late final TextEditingController streetLine2Controller;
+  late final TextEditingController cityController;
+  late final TextEditingController postalCodeController;
+  late final TextEditingController phoneController;
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    // Pre-initialize controllers for better performance
+    final existingAddress = widget.existingAddress;
+    fullNameController = TextEditingController(
+        text: existingAddress?.fullName ?? '');
+    streetLine1Controller = TextEditingController(
+        text: existingAddress?.streetLine1 ?? '');
+    streetLine2Controller = TextEditingController(
+        text: existingAddress?.streetLine2 ?? '');
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
-
-    final fullNameController = TextEditingController(
-        text: widget.existingAddress?.fullName ?? '');
-    final streetLine1Controller =
-        TextEditingController(text: widget.existingAddress?.streetLine1 ?? '');
-    final streetLine2Controller =
-        TextEditingController(text: widget.existingAddress?.streetLine2 ?? '');
-    final cityController = TextEditingController(
+    cityController = TextEditingController(
         text: channelCode.isNotEmpty
             ? channelCode
-            : (widget.existingAddress?.city ?? ''));
-    final postalCodeController =
-        TextEditingController(text: widget.existingAddress?.postalCode ?? '');
-    final phoneController = TextEditingController(
-        text: widget.existingAddress?.phoneNumber ?? '');
+            : (existingAddress?.city ?? ''));
+    postalCodeController = TextEditingController(
+        text: existingAddress?.postalCode ?? '');
+    phoneController = TextEditingController(
+        text: existingAddress?.phoneNumber ?? '');
+  }
 
+  @override
+  void dispose() {
+    fullNameController.dispose();
+    streetLine1Controller.dispose();
+    streetLine2Controller.dispose();
+    cityController.dispose();
+    postalCodeController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Controllers are already initialized in initState for better performance
+    // Get address count and determine if this is the only address
+    final addressCount = widget.customerController.addresses.length;
+    final isOnlyAddress = addressCount <= 1; // Only one address
+    final isOnlyDefault = widget.existingAddress?.defaultShippingAddress == true && 
+        addressCount == 1;
+    
+    // If editing only address, it must remain default
     bool defaultShipping = widget.existingAddress?.defaultShippingAddress ?? false;
     final Map<String, String?> errors = {};
 
@@ -954,28 +1086,70 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                     width: defaultShipping ? 2 : 1,
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: defaultShipping,
-                      onChanged: (value) => setState(
-                          () => defaultShipping = value ?? false),
-                      activeColor: AppColors.button,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4)),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Set as default address',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                          fontSize: 15,
+                child: Opacity(
+                  opacity: (isOnlyAddress && defaultShipping) ? 0.6 : 1.0,
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: defaultShipping,
+                        onChanged: (isOnlyAddress && defaultShipping)
+                            ? null // Disable if only default address
+                            : (value) {
+                                // Prevent unchecking if it's the only default address (edit form only)
+                                if (isOnlyDefault == true && defaultShipping && value == false) {
+                                  SnackBarWidget.show(
+                                    context,
+                                    'Unable to deselect default address. At least one address must be set as default.',
+                                    backgroundColor: AppColors.error,
+                                  );
+                                  return;
+                                }
+                                // Prevent unchecking if it's the only address
+                                if (isOnlyAddress && defaultShipping && value == false) {
+                                  SnackBarWidget.show(
+                                    context,
+                                    'Unable to deselect default address. At least one address must be set as default.',
+                                    backgroundColor: AppColors.error,
+                                  );
+                                  return;
+                                }
+                                setState(() => defaultShipping = value ?? false);
+                              },
+                        activeColor: AppColors.button,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4)),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Set as default address',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                                fontSize: 15,
+                              ),
+                            ),
+                            if (isOnlyAddress && defaultShipping)
+                              Padding(
+                                padding: EdgeInsets.only(top: 4),
+                                child: Text(
+                                  isOnlyAddress && addressCount == 0
+                                      ? 'This will be your default address'
+                                      : 'This is your only address and must remain default',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -1014,7 +1188,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                           streetLine1: streetLine1Controller.text.trim(),
                           streetLine2: streetLine2Controller.text.trim(),
                           city: cityController.text.trim(),
-                          province: '',
+                          province: 'Tamil Nadu', // Default province
                           postalCode: postalCodeController.text.trim(),
                           phoneNumber: phoneController.text.trim(),
                           company: '',

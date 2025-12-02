@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../graphql/order.graphql.dart';
 import '../../graphql/schema.graphql.dart';
@@ -36,14 +35,127 @@ class OrderController extends BaseController {
 
       final orderData = response.parsedData?.activeOrder;
       if (orderData != null) {
-        currentOrder.value = OrderModel.fromJson(orderData.toJson());
-        debugPrint('[Order] Active order loaded: ${currentOrder.value?.code}');
+        // Debug: Print all order data
+        final orderJson = orderData.toJson();
+// debugPrint('═══════════════════════════════════════════════════════════');
+// debugPrint('[Order] ========== ACTIVE ORDER DATA ==========');
+// debugPrint('[Order] Order ID: ${orderJson['id']}');
+// debugPrint('[Order] Order Code: ${orderJson['code']}');
+// debugPrint('[Order] State: ${orderJson['state']}');
+// debugPrint('[Order] Active: ${orderJson['active']}');
+// debugPrint('[Order] Total Quantity: ${orderJson['totalQuantity']}');
+// debugPrint('[Order] Subtotal: ${orderJson['subTotal']}');
+// debugPrint('[Order] Subtotal With Tax: ${orderJson['subTotalWithTax']}');
+// debugPrint('[Order] Total: ${orderJson['total']}');
+// debugPrint('[Order] Total With Tax: ${orderJson['totalWithTax']}');
+// debugPrint('[Order] Shipping: ${orderJson['shipping']}');
+// debugPrint('[Order] Shipping With Tax: ${orderJson['shippingWithTax']}');
+// debugPrint('[Order] Coupon Codes: ${orderJson['couponCodes']}');
+        
+        // Validation Status
+        if (orderJson['validationStatus'] != null) {
+          final validationStatus = orderJson['validationStatus'] as Map<String, dynamic>;
+// debugPrint('[Order] ──── Validation Status ────');
+// debugPrint('[Order] Is Valid: ${validationStatus['isValid']}');
+// debugPrint('[Order] Has Unavailable Items: ${validationStatus['hasUnavailableItems']}');
+// debugPrint('[Order] Total Unavailable Items: ${validationStatus['totalUnavailableItems']}');
+          if (validationStatus['unavailableItems'] != null) {
+            final unavailableItems = validationStatus['unavailableItems'] as List<dynamic>;
+// debugPrint('[Order] Unavailable Items Count: ${unavailableItems.length}');
+            for (int i = 0; i < unavailableItems.length; i++) {
+              // ignore: unused_local_variable
+              final itemData = unavailableItems[i] as Map<String, dynamic>;
+// debugPrint('[Order]   [$i] OrderLineId: ${itemData['orderLineId']}');
+// debugPrint('[Order]   [$i] ProductName: ${itemData['productName']}');
+// debugPrint('[Order]   [$i] VariantName: ${itemData['variantName']}');
+// debugPrint('[Order]   [$i] Reason: ${itemData['reason']}');
+            }
+          }
+        } else {
+// debugPrint('[Order] Validation Status: null');
+        }
+        
+        // Order Lines
+        if (orderJson['lines'] != null) {
+          final lines = orderJson['lines'] as List<dynamic>;
+// debugPrint('[Order] ──── Order Lines (${lines.length}) ────');
+          for (int i = 0; i < lines.length; i++) {
+            final line = lines[i] as Map<String, dynamic>;
+// debugPrint('[Order]   Line [$i]:');
+// debugPrint('[Order]     ID: ${line['id']}');
+// debugPrint('[Order]     Quantity: ${line['quantity']}');
+// debugPrint('[Order]     Unit Price: ${line['unitPrice']}');
+// debugPrint('[Order]     Unit Price With Tax: ${line['unitPriceWithTax']}');
+// debugPrint('[Order]     Line Price With Tax: ${line['linePriceWithTax']}');
+// debugPrint('[Order]     Is Available: ${line['isAvailable']}');
+// debugPrint('[Order]     Unavailable Reason: ${line['unavailableReason']}');
+            if (line['productVariant'] != null) {
+              // ignore: unused_local_variable
+              final variantData = line['productVariant'] as Map<String, dynamic>;
+// debugPrint('[Order]     Product Variant:');
+// debugPrint('[Order]       ID: ${variantData['id']}');
+// debugPrint('[Order]       Name: ${variantData['name']}');
+// debugPrint('[Order]       Stock Level: ${variantData['stockLevel']}');
+// debugPrint('[Order]       Price: ${variantData['price']}');
+            }
+          }
+        }
+        
+        // Shipping Lines
+        if (orderJson['shippingLines'] != null) {
+          final shippingLines = orderJson['shippingLines'] as List<dynamic>;
+// debugPrint('[Order] ──── Shipping Lines (${shippingLines.length}) ────');
+          for (int i = 0; i < shippingLines.length; i++) {
+            final shippingLine = shippingLines[i] as Map<String, dynamic>;
+// debugPrint('[Order]   Shipping Line [$i]:');
+// debugPrint('[Order]     Price With Tax: ${shippingLine['priceWithTax']}');
+            if (shippingLine['shippingMethod'] != null) {
+              // ignore: unused_local_variable
+              final methodData = shippingLine['shippingMethod'] as Map<String, dynamic>;
+// debugPrint('[Order]     Method ID: ${methodData['id']}');
+// debugPrint('[Order]     Method Code: ${methodData['code']}');
+// debugPrint('[Order]     Method Name: ${methodData['name']}');
+            }
+          }
+        }
+        
+// debugPrint('[Order] ===================================================');
+// debugPrint('═══════════════════════════════════════════════════════════');
+        
+        final newOrder = OrderModel.fromJson(orderJson);
+        final previousOrderId = currentOrder.value?.id;
+        
+        // If this is a new order (different ID) or order has no shipping lines, clear selected shipping method
+        if (previousOrderId != null && previousOrderId != newOrder.id) {
+// debugPrint('[Order] New order detected (ID changed from $previousOrderId to ${newOrder.id}), clearing selected shipping method');
+          selectedShippingMethod.value = null;
+        } else if (newOrder.shippingLines.isEmpty && selectedShippingMethod.value != null) {
+// debugPrint('[Order] Order has no shipping lines, clearing selected shipping method');
+          selectedShippingMethod.value = null;
+        } else if (newOrder.shippingLines.isNotEmpty && selectedShippingMethod.value != null) {
+          // Verify the selected method is still applied to the order
+          final isMethodStillApplied = newOrder.shippingLines.any((line) => 
+            line.shippingMethod.id == selectedShippingMethod.value?.id);
+          if (!isMethodStillApplied) {
+// debugPrint('[Order] Selected shipping method is not applied to order, clearing selection');
+            selectedShippingMethod.value = null;
+          }
+        }
+        
+        currentOrder.value = newOrder;
+// debugPrint('[Order] Active order loaded: ${currentOrder.value?.code}');
         return true;
+      } else {
+        // No active order, clear selected shipping method
+        if (selectedShippingMethod.value != null) {
+// debugPrint('[Order] No active order, clearing selected shipping method');
+          selectedShippingMethod.value = null;
+        }
       }
 
       return false;
     } catch (e) {
-      debugPrint('[Order] Get active order error: $e');
+// debugPrint('[Order] Get active order error: $e');
       handleException(e, customErrorMessage: 'Failed to load order');
       return false;
     } finally {
@@ -73,7 +185,7 @@ class OrderController extends BaseController {
 
       final result = response.parsedData?.removeOrderLine;
       if (result == null) {
-        debugPrint('[Order] No removeOrderLine result');
+// debugPrint('[Order] No removeOrderLine result');
         return false;
       }
 
@@ -83,10 +195,10 @@ class OrderController extends BaseController {
       }
 
       currentOrder.value = OrderModel.fromJson(result.toJson());
-      debugPrint('[Order] Order line removed successfully');
+// debugPrint('[Order] Order line removed successfully');
       return true;
     } catch (e) {
-      debugPrint('[Order] Remove order line error: $e');
+// debugPrint('[Order] Remove order line error: $e');
       handleException(e, customErrorMessage: 'Failed to remove item');
       return false;
     } finally {
@@ -111,7 +223,7 @@ class OrderController extends BaseController {
 
       final result = response.parsedData?.removeAllOrderLines;
       if (result == null) {
-        debugPrint('[Order] No removeAllOrderLines result');
+// debugPrint('[Order] No removeAllOrderLines result');
         return false;
       }
 
@@ -121,10 +233,10 @@ class OrderController extends BaseController {
       }
 
       currentOrder.value = OrderModel.fromJson(result.toJson());
-      debugPrint('[Order] All order lines removed');
+// debugPrint('[Order] All order lines removed');
       return true;
     } catch (e) {
-      debugPrint('[Order] Remove all order lines error: $e');
+// debugPrint('[Order] Remove all order lines error: $e');
       handleException(e, customErrorMessage: 'Failed to clear cart');
       return false;
     } finally {
@@ -135,60 +247,54 @@ class OrderController extends BaseController {
   /// Get eligible shipping methods
   Future<bool> getEligibleShippingMethods() async {
     try {
-      debugPrint('[Order] Starting getEligibleShippingMethods...');
+// debugPrint('[Order] Starting getEligibleShippingMethods...');
       utilityController.setLoadingState(false);
 
       // Prepare query options
       final options = Options$Query$GetEligibleShippingMethods();
 
       // Print out what’s being fetched (query + variables)
-      debugPrint(
-          '[Order] Preparing to send GraphQL query: GetEligibleShippingMethods');
-      debugPrint('[Order] Query variables: ${options.variables}');
+/// debugPrint(  '[Order] Preparing to send GraphQL query: GetEligibleShippingMethods');
+// debugPrint('[Order] Query variables: ${options.variables}');
 
-      debugPrint(
-          '[Order] Sending GraphQL query for eligible shipping methods...');
+/// debugPrint(  '[Order] Sending GraphQL query for eligible shipping methods...');
       final response = await GraphqlService.client.value
           .query$GetEligibleShippingMethods(options);
 
-      debugPrint(
-          '[Order] GraphQL response received: ${response.data != null ? 'Data present' : 'No data'}');
-      debugPrint('[Order] Checking response for errors...');
+/// debugPrint(  '[Order] GraphQL response received: ${response.data != null ? 'Data present' : 'No data'}');
+// debugPrint('[Order] Checking response for errors...');
 
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to load shipping methods')) {
-        debugPrint('[Order] Response contained errors');
+// debugPrint('[Order] Response contained errors');
         return false;
       }
 
       final methods = response.parsedData?.eligibleShippingMethods;
-      debugPrint(
-          '[Order] Parsed methods: ${methods != null ? methods.length : 0}');
+/// debugPrint(  '[Order] Parsed methods: ${methods != null ? methods.length : 0}');
 
       if (methods != null) {
         shippingMethods.value =
             methods.map((m) => ShippingMethod.fromJson(m.toJson())).toList();
 
-        debugPrint(
-            '[Order] Loaded ${shippingMethods.length} shipping methods successfully');
-        for (var method in shippingMethods) {
-          debugPrint('[Order] Method: ${method.name} (ID: ${method.id})');
+/// debugPrint(  '[Order] Loaded ${shippingMethods.length} shipping methods successfully');
+        // ignore: unused_local_variable
+        for (var shippingMethod in shippingMethods) {
+// debugPrint('[Order] Method: ${shippingMethod.name} (ID: ${shippingMethod.id})');
         }
 
         return true;
       } else {
-        debugPrint('[Order] No eligible shipping methods found in response.');
+// debugPrint('[Order] No eligible shipping methods found in response.');
       }
 
       return false;
-    } catch (e, stack) {
-      debugPrint('[Order] Get shipping methods error: $e');
-      debugPrint('[Order] Stack trace: $stack');
+    } catch (e) {
+// debugPrint('[Order] Get shipping methods error: $e');
       handleException(e, customErrorMessage: 'Failed to load shipping methods');
       return false;
     } finally {
-      debugPrint(
-          '[Order] Finished getEligibleShippingMethods. Resetting loading state.');
+/// debugPrint(  '[Order] Finished getEligibleShippingMethods. Resetting loading state.');
       utilityController.setLoadingState(false);
     }
   }
@@ -200,14 +306,12 @@ class OrderController extends BaseController {
       if (skipIfAlreadySet && 
           selectedShippingMethod.value?.id == methodId &&
           currentOrder.value?.shippingLines.isNotEmpty == true) {
-        debugPrint('[Order] Shipping method already set, skipping');
+// debugPrint('[Order] Shipping method already set, skipping');
         return true;
       }
 
-      // Don't set loading state if method is already applied
-      if (!skipIfAlreadySet) {
-        utilityController.setLoadingState(false);
-      }
+      // Don't show loading state when selecting shipping method
+      // This provides instant feedback to the user
 
       final response =
           await GraphqlService.client.value.mutate$SetShippingMethod(
@@ -226,18 +330,17 @@ class OrderController extends BaseController {
       final result = response.parsedData?.setOrderShippingMethod;
       if (result != null) {
         currentOrder.value = OrderModel.fromJson(result.toJson());
-        debugPrint('[Order] Shipping method set successfully');
+// debugPrint('[Order] Shipping method set successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-      debugPrint('[Order] Set shipping method error: $e');
+// debugPrint('[Order] Set shipping method error: $e');
       handleException(e, customErrorMessage: 'Failed to set shipping method');
       return false;
-    } finally {
-      utilityController.setLoadingState(false);
     }
+    // Removed finally block - no loading state management needed
   }
 
   /// Check if any applied coupon has free_shipping action
@@ -283,9 +386,13 @@ class OrderController extends BaseController {
     required String phoneNumber,
     String? streetLine2,
     String? province,
+    bool skipLoading = false,
   }) async {
     try {
-      utilityController.setLoadingState(true);
+      // Don't show loading indicator for shipping address (non-blocking)
+      if (!skipLoading) {
+        utilityController.setLoadingState(true);
+      }
 
       final input = Input$CreateAddressInput(
         fullName: fullName,
@@ -315,17 +422,19 @@ class OrderController extends BaseController {
       final result = response.parsedData?.setOrderShippingAddress;
       if (result != null) {
         currentOrder.value = OrderModel.fromJson(result.toJson());
-        debugPrint('[Order] Shipping address set successfully');
+// debugPrint('[Order] Shipping address set successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-      debugPrint('[Order] Set shipping address error: $e');
+// debugPrint('[Order] Set shipping address error: $e');
       handleException(e, customErrorMessage: 'Failed to set shipping address');
       return false;
     } finally {
-      utilityController.setLoadingState(false);
+      if (!skipLoading) {
+        utilityController.setLoadingState(false);
+      }
     }
   }
 
@@ -333,18 +442,17 @@ class OrderController extends BaseController {
   Future<bool> setOtherInstruction(String instruction) async {
     try {
       if (currentOrder.value == null) {
-        debugPrint('[Order] Cannot set instructions: No active order');
+// debugPrint('[Order] Cannot set instructions: No active order');
         return false;
       }
 
       final orderId = currentOrder.value!.id;
       if (orderId.isEmpty) {
-        debugPrint('[Order] Cannot set instructions: Order ID is empty');
+// debugPrint('[Order] Cannot set instructions: Order ID is empty');
         return false;
       }
 
-      utilityController.setLoadingState(true);
-
+      // Don't show loading state for instructions - provides instant feedback
       final response =
           await GraphqlService.client.value.mutate$SetOtherInstruction(
         Options$Mutation$SetOtherInstruction(
@@ -362,19 +470,17 @@ class OrderController extends BaseController {
 
       final result = response.parsedData?.otherInstructions;
       if (result != null) {
-        // Refresh the active order to get updated customFields
-        await getActiveOrder();
-        debugPrint('[Order] Other instructions set successfully');
+        // Refresh the active order to get updated customFields without showing loading
+        await getActiveOrder(skipLoading: true);
+// debugPrint('[Order] Other instructions set successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-      debugPrint('[Order] Set other instructions error: $e');
+// debugPrint('[Order] Set other instructions error: $e');
       handleException(e, customErrorMessage: 'Failed to set instructions');
       return false;
-    } finally {
-      utilityController.setLoadingState(false);
     }
   }
 
@@ -397,13 +503,13 @@ class OrderController extends BaseController {
       if (methods != null) {
         paymentMethods.value =
             methods.map((m) => PaymentMethod.fromJson(m.toJson())).toList();
-        debugPrint('[Order] Loaded ${paymentMethods.length} payment methods');
+// debugPrint('[Order] Loaded ${paymentMethods.length} payment methods');
         return true;
       }
 
       return false;
     } catch (e) {
-      debugPrint('[Order] Get payment methods error: $e');
+// debugPrint('[Order] Get payment methods error: $e');
       handleException(e, customErrorMessage: 'Failed to load payment methods');
       return false;
     } finally {
@@ -411,9 +517,87 @@ class OrderController extends BaseController {
     }
   }
 
+  /// Transition order to a specific state
+  Future<bool> transitionToState(String targetState, {bool skipLoading = false}) async {
+    try {
+      if (!skipLoading) {
+        utilityController.setLoadingState(true);
+      }
+
+      final response =
+          await GraphqlService.client.value.mutate$TransitionOrderToState(
+        Options$Mutation$TransitionOrderToState(
+          variables: Variables$Mutation$TransitionOrderToState(
+            state: targetState,
+          ),
+        ),
+      );
+
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to transition order')) {
+        return false;
+      }
+
+      final result = response.parsedData?.transitionOrderToState;
+      if (result != null) {
+        final resultJson = result.toJson();
+        // Check if it's an error result
+        if (resultJson.containsKey('errorCode')) {
+// debugPrint('[Order] Transition error: ${resultJson['message']} (${resultJson['errorCode']})');
+          return false;
+        }
+
+        // If it's an Order, update current order
+        if (resultJson.containsKey('id')) {
+          currentOrder.value = OrderModel.fromJson(resultJson);
+// debugPrint('[Order] Transitioned to $targetState');
+          return true;
+        }
+      }
+
+      return false;
+    } catch (e) {
+// debugPrint('[Order] Transition error: $e');
+      handleException(e, customErrorMessage: 'Failed to transition order');
+      return false;
+    } finally {
+      if (!skipLoading) {
+        utilityController.setLoadingState(false);
+      }
+    }
+  }
+
   /// Transition to ArrangingPayment state
+  /// Handles cases where order might be in "AddingItems" state
   Future<bool> transitionToArrangingPayment() async {
     try {
+      // First, refresh to get current state
+      await getActiveOrder(skipLoading: true);
+      
+      final currentState = currentOrder.value?.state;
+// debugPrint('[Order] Current order state: $currentState');
+      
+      // If already in ArrangingPayment, no need to transition
+      if (currentState == 'ArrangingPayment') {
+// debugPrint('[Order] Already in ArrangingPayment state, skipping transition');
+        return true;
+      }
+      
+      // If in AddingItems, transition directly to ArrangingPayment (no Draft needed)
+      if (currentState == 'AddingItems') {
+// debugPrint('[Order] Order is in AddingItems state, transitioning directly to ArrangingPayment...');
+        // Use the generic transition method to go directly to ArrangingPayment
+        final directTransitioned = await transitionToState('ArrangingPayment', skipLoading: true);
+        if (directTransitioned) {
+// debugPrint('[Order] ✅ Successfully transitioned directly from AddingItems to ArrangingPayment');
+          return true;
+        } else {
+// debugPrint('[Order] ❌ Direct transition from AddingItems to ArrangingPayment failed');
+          return false;
+        }
+      }
+
+      // For other states, use the standard transition to ArrangingPayment
       utilityController.setLoadingState(true);
 
       final response =
@@ -428,14 +612,24 @@ class OrderController extends BaseController {
 
       final result = response.parsedData?.transitionOrderToState;
       if (result != null) {
-        currentOrder.value = OrderModel.fromJson(result.toJson());
-        debugPrint('[Order] Transitioned to ArrangingPayment');
-        return true;
+        final resultJson = result.toJson();
+        // Check if it's an error result
+        if (resultJson.containsKey('errorCode')) {
+// debugPrint('[Order] Transition to ArrangingPayment error: ${resultJson['message']} (${resultJson['errorCode']})');
+          return false;
+        }
+
+        // If it's an Order, update current order
+        if (resultJson.containsKey('id')) {
+          currentOrder.value = OrderModel.fromJson(resultJson);
+// debugPrint('[Order] Transitioned to ArrangingPayment');
+          return true;
+        }
       }
 
       return false;
     } catch (e) {
-      debugPrint('[Order] Transition error: $e');
+// debugPrint('[Order] Transition error: $e');
       handleException(e, customErrorMessage: 'Failed to transition order');
       return false;
     } finally {
@@ -451,12 +645,14 @@ class OrderController extends BaseController {
     try {
       utilityController.setLoadingState(true);
 
-      debugPrint('[Order] Adding payment with method: $method');
-      debugPrint('[Order] Payment metadata: $metadata');
+// debugPrint('[Order] Adding payment with method: $method');
+// debugPrint('[Order] Payment metadata: $metadata');
 
+      // For online payments, don't pass metadata (use empty map)
+      // For offline payments, pass metadata with total, payment_method, and payment_id
       final input = Input$PaymentInput(
         method: method,
-        metadata: metadata ?? {},
+        metadata: metadata ?? {}, // If null, use empty map (no metadata for online payments)
       );
 
       final response = await GraphqlService.client.value.mutate$AddPayment(
@@ -476,26 +672,25 @@ class OrderController extends BaseController {
       if (result != null) {
         // Check if it's an error result
         final resultJson = result.toJson();
-        debugPrint('[Order] Payment result: $resultJson');
+// debugPrint('[Order] Payment result: $resultJson');
 
         if (resultJson.containsKey('errorCode')) {
-          debugPrint(
-              '[Order] Payment error: ${resultJson['message']} (${resultJson['errorCode']})');
+/// debugPrint(  '[Order] Payment error: ${resultJson['message']} (${resultJson['errorCode']})');
           return false;
         }
 
         // If it's an Order, update current order
         if (resultJson.containsKey('id')) {
           currentOrder.value = OrderModel.fromJson(resultJson);
-          debugPrint('[Order] Payment added successfully, order updated');
+// debugPrint('[Order] Payment added successfully, order updated');
           return true;
         }
       }
 
-      debugPrint('[Order] No valid payment result received');
+// debugPrint('[Order] No valid payment result received');
       return false;
     } catch (e) {
-      debugPrint('[Order] Add payment error: $e');
+// debugPrint('[Order] Add payment error: $e');
       handleException(e, customErrorMessage: 'Failed to add payment');
       return false;
     } finally {
@@ -526,14 +721,14 @@ class OrderController extends BaseController {
         final order = OrderModel.fromJson(orderData.toJson());
         currentOrder.value =
             order; // Set the current order so UI can react to it
-        debugPrint('[Order] Order retrieved: ${order.code}');
+// debugPrint('[Order] Order retrieved: ${order.code}');
         return order;
       }
 
       currentOrder.value = null; // Clear if order not found
       return null;
     } catch (e) {
-      debugPrint('[Order] Get order by code error: $e');
+// debugPrint('[Order] Get order by code error: $e');
       currentOrder.value = null; // Clear on error
       handleException(e, customErrorMessage: 'Failed to load order');
       return null;
@@ -547,7 +742,7 @@ class OrderController extends BaseController {
     try {
       utilityController.setLoadingState(true);
 
-      debugPrint('[Order] Generating Razorpay order for order ID: $orderId');
+// debugPrint('[Order] Generating Razorpay order for order ID: $orderId');
 
       final response =
           await GraphqlService.client.value.mutate$GenerateRazorpayOrderId(
@@ -567,7 +762,7 @@ class OrderController extends BaseController {
         if (exception?.graphqlErrors.isNotEmpty == true) {
           final graphQLError = exception!.graphqlErrors.first;
           errorMessage = graphQLError.message;
-          debugPrint('[Order] Razorpay GraphQL Error: $errorMessage');
+// debugPrint('[Order] Razorpay GraphQL Error: $errorMessage');
           
           // Check if it's a Razorpay-specific error
           if (errorMessage.contains('Razorpay') || 
@@ -584,8 +779,8 @@ class OrderController extends BaseController {
               customErrorMessage: errorMessage,
             );
           }
-        } else if (exception?.linkException != null) {
-          debugPrint('[Order] Razorpay Link Exception: ${exception!.linkException}');
+        } else if (exception != null && exception.linkException != null) {
+// debugPrint('[Order] Razorpay Link Exception: ${exception.linkException}');
           handleException(
             exception.linkException!,
             customErrorMessage: 'Network error. Please check your connection and try again.',
@@ -605,13 +800,12 @@ class OrderController extends BaseController {
         final data = result.toJson();
         if (data.containsKey('razorpayOrderId')) {
           final razorpayOrder = RazorpayOrderResponse.fromJson(data);
-          debugPrint(
-              '[Order] ✅ Razorpay order created successfully: ${razorpayOrder.razorpayOrderId}');
+/// debugPrint(  '[Order] ✅ Razorpay order created successfully: ${razorpayOrder.razorpayOrderId}');
           return razorpayOrder;
         } else if (data.containsKey('errorCode') || data.containsKey('message')) {
           final errorMessage = data['message'] ?? 'Failed to create Razorpay order';
-          final errorCode = data['errorCode'] ?? 'UNKNOWN_ERROR';
-          debugPrint('[Order] ❌ Razorpay order error: [$errorCode] $errorMessage');
+          // final errorCode = data['errorCode'] ?? 'UNKNOWN_ERROR'; // Unused variable
+// debugPrint('[Order] ❌ Razorpay order error: [${data['errorCode'] ?? 'UNKNOWN_ERROR'}] $errorMessage');
           
           // Show user-friendly error
           handleException(
@@ -622,14 +816,14 @@ class OrderController extends BaseController {
         }
       }
 
-      debugPrint('[Order] ⚠️ No valid response from Razorpay order generation');
+// debugPrint('[Order] ⚠️ No valid response from Razorpay order generation');
       handleException(
         Exception('Invalid response from payment gateway'),
         customErrorMessage: 'Payment gateway returned an invalid response. Please try again.',
       );
       return null;
     } catch (e) {
-      debugPrint('[Order] ❌ Generate Razorpay order exception: $e');
+// debugPrint('[Order] ❌ Generate Razorpay order exception: $e');
       handleException(e,
           customErrorMessage: 'Failed to initialize payment. Please try again or contact support.');
       return null;
@@ -656,23 +850,23 @@ class OrderController extends BaseController {
       final result = response.parsedData?.transitionOrderToState;
       if (result != null) {
         final resultJson = result.toJson();
-        debugPrint('[Order] Transition result: $resultJson');
+// debugPrint('[Order] Transition result: $resultJson');
 
         if (resultJson.containsKey('errorCode')) {
-          debugPrint('[Order] Transition error: ${resultJson['message']}');
+// debugPrint('[Order] Transition error: ${resultJson['message']}');
           return false;
         }
 
         if (resultJson.containsKey('id')) {
           currentOrder.value = OrderModel.fromJson(resultJson);
-          debugPrint('[Order] Order transitioned successfully');
+// debugPrint('[Order] Order transitioned successfully');
           return true;
         }
       }
 
       return false;
     } catch (e) {
-      debugPrint('[Order] Transition error: $e');
+// debugPrint('[Order] Transition error: $e');
       handleException(e, customErrorMessage: 'Failed to transition order');
       return false;
     } finally {
@@ -686,13 +880,13 @@ class OrderController extends BaseController {
     error.value = null;
     selectedShippingMethod.value = null;
     selectedPaymentMethod.value = null;
-    debugPrint('[Order] Order cleared');
+// debugPrint('[Order] Order cleared');
   }
 
   void _handleOrderMutationError(dynamic result, String fallbackMessage) {
     final code = result?.$__typename ?? 'UNKNOWN_ERROR';
     final message = _readOrderMutationMessage(result) ?? fallbackMessage;
-    debugPrint('[Order] Mutation error ($code): $message');
+// debugPrint('[Order] Mutation error ($code): $message');
     error.value = ErrorResult(errorCode: code, message: message);
     handleException(Exception(message), customErrorMessage: message);
   }

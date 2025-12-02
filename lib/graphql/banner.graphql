@@ -226,6 +226,7 @@ mutation ApplyCouponCode($input: String!) {
 
 mutation RemoveCouponCode($couponCode: String!){
     removeCouponCode(couponCode: $couponCode){
+        ...Cart
         __typename
     }
 }

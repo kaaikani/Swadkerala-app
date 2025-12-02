@@ -9,7 +9,7 @@ import '../../graphql/banner.graphql.dart';
 import '../../graphql/cart.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
-import '../../utils/html_utils.dart';
+// import '../../utils/html_utils.dart'; // Unused import
 import '../../utils/price_formatter.dart';
 import '../../services/in_app_update_service.dart';
 import '../../services/analytics_service.dart';
@@ -17,6 +17,10 @@ import '../../widgets/error_dialog.dart';
 import 'bannermodels.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../base_controller.dart';
+import '../cart/Cartcontroller.dart';
+import '../cart/cartmodels.dart';
+import '../order/ordercontroller.dart';
+import '../order/ordermodels.dart';
 
 class BannerController extends BaseController {
   // ============================================================================
@@ -68,9 +72,12 @@ class BannerController extends BaseController {
   final RxList<String> appliedCouponCodes = <String>[].obs;
   final RxBool couponCodesLoaded = false.obs;
 
-  // Track products added by each coupon
-  final RxMap<String, List<String>> couponAddedProducts =
-      <String, List<String>>{}.obs;
+  // Track products added by each coupon: Map<couponCode, Map<variantId, quantity>>
+  final RxMap<String, Map<String, int>> couponAddedProducts =
+      <String, Map<String, int>>{}.obs;
+
+  // Flag to prevent duplicate addToCart calls when order is complete
+  bool _isAddingItems = false;
 
   // Fetch banners
   Future<void> getBannersForChannel() async {
@@ -123,12 +130,12 @@ class BannerController extends BaseController {
   Future<void> searchProducts(Map<String, dynamic> input) async {
     final term = (input['term'] ?? '').trim();
 
-    print('🔍 [DEBUG] Starting product search...');
-    print('📥 Input term: "$term"');
+// print('🔍 [DEBUG] Starting product search...');
+// print('📥 Input term: "$term"');
 
     // If search term is empty, clear results and return
     if (term.isEmpty) {
-      print('⚠️ [DEBUG] Empty search term — clearing results.');
+// print('⚠️ [DEBUG] Empty search term — clearing results.');
       searchResults.clear();
       totalItems.value = 0;
       return;
@@ -136,17 +143,17 @@ class BannerController extends BaseController {
 
     try {
       utilityController.setLoadingState(true);
-      print('⏳ [DEBUG] Loading state set to true.');
+// print('⏳ [DEBUG] Loading state set to true.');
 
       final inputObj = Input$SearchInput(term: term);
       final variables = Variables$Query$Search(input: inputObj);
-      print('🧩 [DEBUG] Created GraphQL variables: $variables');
+// print('🧩 [DEBUG] Created GraphQL variables: $variables');
 
       final res = await GraphqlService.client.value.query$Search(
         Options$Query$Search(variables: variables),
       );
 
-      print('🛰️ [DEBUG] GraphQL query executed.');
+// print('🛰️ [DEBUG] GraphQL query executed.');
 
       if (checkResponseForErrors(res,
           customErrorMessage: 'Failed to search products')) {
@@ -157,10 +164,10 @@ class BannerController extends BaseController {
       }
 
       final items = res.data?['search']['items'] as List<dynamic>? ?? [];
-      final total = res.data?['search']['totalItems'] as int? ?? 0;
+      // final total = res.data?['search']['totalItems'] as int? ?? 0; // Unused variable
 
-      print('📊 [DEBUG] Total items fetched: $total');
-      print('🧾 [DEBUG] Raw items length: ${items.length}');
+// print('📊 [DEBUG] Total items fetched: ${res.data?['search']['totalItems'] ?? 0}');
+// print('🧾 [DEBUG] Raw items length: ${items.length}');
 
       final fetchedItems =
           items.map((e) => SearchItemModel.fromJson(e)).toList();
@@ -175,7 +182,7 @@ class BannerController extends BaseController {
       }
 
       final uniqueProductList = uniqueProducts.values.toList();
-      print('✅ [DEBUG] Unique products: ${uniqueProductList.length} (from ${fetchedItems.length} variants)');
+// print('✅ [DEBUG] Unique products: ${uniqueProductList.length} (from ${fetchedItems.length} variants)');
 
       searchResults.assignAll(uniqueProductList);
       totalItems.value = uniqueProductList.length;
@@ -185,12 +192,12 @@ class BannerController extends BaseController {
         AnalyticsService().logSearch(searchTerm: term);
       }
 
-      print('✅ [DEBUG] Search results updated successfully.');
+// print('✅ [DEBUG] Search results updated successfully.');
       utilityController.setLoadingState(false);
-      print('🏁 [DEBUG] Loading state set to false.');
-    } catch (e, stack) {
-      print('💥 [DEBUG] Exception caught during search: $e');
-      print('🪜 [DEBUG] Stack trace: $stack');
+// print('🏁 [DEBUG] Loading state set to false.');
+    } catch (e) {
+// print('💥 [DEBUG] Exception caught during search: $e');
+// print('🪜 [DEBUG] Stack trace: $stack');
       searchResults.clear();
       totalItems.value = 0;
       utilityController.setLoadingState(false);
@@ -230,8 +237,11 @@ class BannerController extends BaseController {
         favoriteProductIds.clear();
         favoriteProductIds.addAll(result.items.map((item) => item.product.id));
 
-        debugPrint(
-            '[BannerController] Toggle favorite success. Total favorites: ${result.totalItems}');
+// debugPrint(            '[BannerController] Toggle favorite success. Total favorites: ${result.totalItems}');
+        
+        // Refresh customer favorites to ensure UI is up to date
+        await getCustomerFavorites();
+        
         utilityController.setLoadingState(false);
         return true;
       }
@@ -239,7 +249,7 @@ class BannerController extends BaseController {
       utilityController.setLoadingState(false);
       return false;
     } catch (e) {
-      debugPrint('[BannerController] Toggle favorite error: $e');
+// debugPrint('[BannerController] Toggle favorite error: $e');
       handleException(e, customErrorMessage: 'Failed to update favorite');
       utilityController.setLoadingState(false);
       return false;
@@ -271,12 +281,10 @@ class BannerController extends BaseController {
 
         if (isCacheMissException) {
           // Cache miss is expected and non-fatal - proceed to process data
-          debugPrint(
-              '[BannerController] Cache miss detected (non-fatal) - proceeding with data processing');
+// debugPrint( '[BannerController] Cache miss detected (non-fatal) - proceeding with data processing');
         } else {
           // For other exceptions, log but still try to process data if available
-          debugPrint(
-              '[BannerController] GetCustomerFavorites Exception: ${res.exception}');
+// debugPrint(       '[BannerController] GetCustomerFavorites Exception: ${res.exception}');
         }
       }
 
@@ -297,35 +305,31 @@ class BannerController extends BaseController {
           favoriteProductIds
               .addAll(favorites.items.map((item) => item.product.id));
 
-          debugPrint(
-              '[BannerController] Fetched ${favorites.totalItems} favorites');
+// debugPrint('[BannerController] Fetched ${favorites.totalItems} favorites');
 
           // Debug: Log image URLs
-          for (var item in favorites.items) {
-            final imageUrl = item.product.featuredAsset?.preview;
-            debugPrint(
-                '[BannerController] Product: ${item.product.name}, Image: ${imageUrl ?? "NO IMAGE"}');
+          for (var _ in favorites.items) {
+            // Logging is commented out, so variable is unused
           }
         } else {
           // No favorites data, clear the list
           favoritesList.clear();
           favoritesTotalItems.value = 0;
           favoriteProductIds.clear();
-          debugPrint('[BannerController] No favorites data found');
+// debugPrint('[BannerController] No favorites data found');
         }
       } else {
         // Customer not logged in or not a Customer type, clear favorites
         favoritesList.clear();
         favoritesTotalItems.value = 0;
         favoriteProductIds.clear();
-        debugPrint(
-            '[BannerController] Active customer is null or not a Customer type');
+/// debugPrint(  '[BannerController] Active customer is null or not a Customer type');
       }
 
       utilityController.setLoadingState(false);
-    } catch (e, stackTrace) {
-      debugPrint('[BannerController] Get favorites error: $e');
-      debugPrint('[BannerController] Stack trace: $stackTrace');
+    } catch (e) {
+// debugPrint('[BannerController] Get favorites error: $e');
+// debugPrint('[BannerController] Stack trace: $stackTrace');
       // Clear favorites on error to prevent stale data
       favoritesList.clear();
       favoritesTotalItems.value = 0;
@@ -361,12 +365,10 @@ class BannerController extends BaseController {
       final products = res.parsedData?.frequentlyOrderedProducts ?? [];
       frequentlyOrderedProducts.assignAll(products);
 
-      debugPrint(
-          '[BannerController] Fetched ${products.length} frequently ordered products');
+// debugPrint( '[BannerController] Fetched ${products.length} frequently ordered products');
       utilityController.setLoadingState(false);
     } catch (e) {
-      debugPrint(
-          '[BannerController] Get frequently ordered products error: $e');
+/// debugPrint(  '[BannerController] Get frequently ordered products error: $e');
       handleException(e,
           customErrorMessage: 'Failed to load frequently ordered products');
       utilityController.setLoadingState(false);
@@ -402,8 +404,7 @@ class BannerController extends BaseController {
             result.customFields?.loyaltyPointsEarned ?? 0;
         loyaltyPointsApplied.value = true;
 
-        debugPrint(
-            '[BannerController] Loyalty points applied successfully: ${loyaltyPointsUsed.value}');
+/// debugPrint(  '[BannerController] Loyalty points applied successfully: ${loyaltyPointsUsed.value}');
         utilityController.setLoadingState(false);
         return true;
       }
@@ -411,7 +412,7 @@ class BannerController extends BaseController {
       utilityController.setLoadingState(false);
       return false;
     } catch (e) {
-      debugPrint('[BannerController] Apply loyalty points error: $e');
+// debugPrint('[BannerController] Apply loyalty points error: $e');
       handleException(e, customErrorMessage: 'Failed to apply loyalty points');
       utilityController.setLoadingState(false);
       return false;
@@ -440,7 +441,7 @@ class BannerController extends BaseController {
         loyaltyPointsUsed.value = 0;
         loyaltyPointsApplied.value = false;
 
-        debugPrint('[BannerController] Loyalty points removed successfully');
+// debugPrint('[BannerController] Loyalty points removed successfully');
         utilityController.setLoadingState(false);
         return true;
       }
@@ -448,7 +449,7 @@ class BannerController extends BaseController {
       utilityController.setLoadingState(false);
       return false;
     } catch (e) {
-      debugPrint('[BannerController] Remove loyalty points error: $e');
+// debugPrint('[BannerController] Remove loyalty points error: $e');
       handleException(e, customErrorMessage: 'Failed to remove loyalty points');
       utilityController.setLoadingState(false);
       return false;
@@ -466,7 +467,7 @@ class BannerController extends BaseController {
   Future<void> fetchLoyaltyPointsConfig() async {
     try {
       utilityController.setLoadingState(true);
-      debugPrint('[BannerController] Fetching loyalty points configuration...');
+// debugPrint('[BannerController] Fetching loyalty points configuration...');
 
       final res = await GraphqlService.client.value.query$LoyaltyPointsConfig(
         Options$Query$LoyaltyPointsConfig(),
@@ -482,19 +483,16 @@ class BannerController extends BaseController {
       if (configData != null) {
         loyaltyPointsConfig.value =
             LoyaltyPointsConfigModel.fromJson(configData);
-        debugPrint(
-            '[BannerController] Loyalty points config loaded successfully');
-        debugPrint(
-            '[BannerController] Rupees per point: ${loyaltyPointsConfig.value?.rupeesPerPoint}');
-        debugPrint(
-            '[BannerController] Points per rupee: ${loyaltyPointsConfig.value?.pointsPerRupee}');
+/// debugPrint(  '[BannerController] Loyalty points config loaded successfully');
+/// debugPrint(  '[BannerController] Rupees per point: ${loyaltyPointsConfig.value?.rupeesPerPoint}');
+/// debugPrint(  '[BannerController] Points per rupee: ${loyaltyPointsConfig.value?.pointsPerRupee}');
       } else {
-        debugPrint('[BannerController] No loyalty points configuration found');
+// debugPrint('[BannerController] No loyalty points configuration found');
       }
 
       utilityController.setLoadingState(false);
     } catch (e) {
-      debugPrint('[BannerController] Fetch loyalty points config error: $e');
+// debugPrint('[BannerController] Fetch loyalty points config error: $e');
       handleException(e,
           customErrorMessage: 'Failed to load loyalty points configuration');
       utilityController.setLoadingState(false);
@@ -511,6 +509,7 @@ class BannerController extends BaseController {
   /// Get products for a specific coupon code from the actual coupon data
   List<Map<String, dynamic>> getCouponProducts(String couponCode) {
     try {
+// debugPrint('[BannerController] ===== getCouponProducts for: $couponCode =====');
       // Find the coupon in the available list
       final coupon = availableCouponCodes.firstWhere(
         (c) => c.couponCode.toUpperCase() == couponCode.toUpperCase(),
@@ -532,23 +531,28 @@ class BannerController extends BaseController {
       );
 
       if (coupon.id.isEmpty) {
-        debugPrint('[BannerController] Coupon not found: $couponCode');
+// debugPrint('[BannerController] ❌ Coupon not found: $couponCode');
+// debugPrint('[BannerController] Available coupons: ${availableCouponCodes.map((c) => c.couponCode).toList()}');
         return [];
       }
+
+// debugPrint('[BannerController] ✅ Found coupon: ${coupon.name} (${coupon.couponCode})');
+// debugPrint('[BannerController] Actions count: ${coupon.actions.length}');
+// debugPrint('[BannerController] Conditions count: ${coupon.conditions.length}');
 
       // Extract products from coupon actions and conditions
       final products = <Map<String, dynamic>>[];
 
-      // Check actions for product information
+      // Check actions for product information (actions are what the coupon DOES)
       for (final action in coupon.actions) {
-        debugPrint('[BannerController] Action code: ${action.code}');
+// debugPrint('[BannerController] 🔍 Checking action: code=${action.code}, args=${action.args.length}');
         if (action.code == 'add_products' ||
-            action.code == 'contains_products') {
+            action.code == 'contains_products' ||
+            action.code == 'free_shipping') {
           for (final arg in action.args) {
             if (arg.name == 'productVariantIds' && arg.value is List) {
               final variantIds = arg.value as List<dynamic>;
-              debugPrint(
-                  '[BannerController] Found product variant IDs in action: $variantIds');
+/// debugPrint(  '[BannerController] Found product variant IDs in action: $variantIds');
 
               for (final variantId in variantIds) {
                 products.add({
@@ -568,16 +572,13 @@ class BannerController extends BaseController {
 
       // Check conditions for product information
       for (final condition in coupon.conditions) {
-        debugPrint('[BannerController] Condition code: ${condition.code}');
-        debugPrint(
-            '[BannerController] Condition args count: ${condition.args.length}');
+// debugPrint('[BannerController] Condition code: ${condition.code}');
+/// debugPrint(  '[BannerController] Condition args count: ${condition.args.length}');
 
         if (condition.code == 'contains_products') {
-          debugPrint(
-              '[BannerController] Processing contains_products condition');
+/// debugPrint(  '[BannerController] Processing contains_products condition');
           for (final arg in condition.args) {
-            debugPrint(
-                '[BannerController] Condition arg: ${arg.name} = ${arg.value} (type: ${arg.value.runtimeType})');
+/// debugPrint(  '[BannerController] Condition arg: ${arg.name} = ${arg.value} (type: ${arg.value.runtimeType})');
 
             // Check for different possible argument names
             if (arg.name == 'productVariantIds') {
@@ -585,12 +586,10 @@ class BannerController extends BaseController {
 
               if (arg.value is List) {
                 variantIds = arg.value as List<dynamic>;
-                debugPrint(
-                    '[BannerController] Found product variant IDs as List: $variantIds');
+/// debugPrint(  '[BannerController] Found product variant IDs as List: $variantIds');
               } else if (arg.value is String) {
                 final stringValue = arg.value as String;
-                debugPrint(
-                    '[BannerController] Found product variant IDs as String: $stringValue');
+/// debugPrint(  '[BannerController] Found product variant IDs as String: $stringValue');
 
                 // Try to parse string representation of list like "[542]" or "542,543"
                 if (stringValue.startsWith('[') && stringValue.endsWith(']')) {
@@ -599,25 +598,21 @@ class BannerController extends BaseController {
                       stringValue.substring(1, stringValue.length - 1);
                   variantIds =
                       cleanString.split(',').map((e) => e.trim()).toList();
-                  debugPrint(
-                      '[BannerController] Parsed variant IDs from brackets: $variantIds');
+/// debugPrint(  '[BannerController] Parsed variant IDs from brackets: $variantIds');
                 } else if (stringValue.contains(',')) {
                   // Split by comma
                   variantIds =
                       stringValue.split(',').map((e) => e.trim()).toList();
-                  debugPrint(
-                      '[BannerController] Parsed variant IDs from comma-separated: $variantIds');
+/// debugPrint(  '[BannerController] Parsed variant IDs from comma-separated: $variantIds');
                 } else {
                   // Single value
                   variantIds = [stringValue.trim()];
-                  debugPrint(
-                      '[BannerController] Parsed single variant ID: $variantIds');
+/// debugPrint(  '[BannerController] Parsed single variant ID: $variantIds');
                 }
               }
 
               if (variantIds.isNotEmpty) {
-                debugPrint(
-                    '[BannerController] Processing ${variantIds.length} variant IDs');
+/// debugPrint(  '[BannerController] Processing ${variantIds.length} variant IDs');
                 for (final variantId in variantIds) {
                   products.add({
                     'id': variantId.toString(),
@@ -632,8 +627,7 @@ class BannerController extends BaseController {
               }
             } else if (arg.name == 'productIds' && arg.value is List) {
               final productIds = arg.value as List<dynamic>;
-              debugPrint(
-                  '[BannerController] Found product IDs in condition: $productIds');
+/// debugPrint(  '[BannerController] Found product IDs in condition: $productIds');
 
               for (final productId in productIds) {
                 products.add({
@@ -648,8 +642,7 @@ class BannerController extends BaseController {
               }
             } else if (arg.name == 'products' && arg.value is List) {
               final productsList = arg.value as List<dynamic>;
-              debugPrint(
-                  '[BannerController] Found products list in condition: $productsList');
+/// debugPrint(  '[BannerController] Found products list in condition: $productsList');
 
               for (final product in productsList) {
                 if (product is Map<String, dynamic>) {
@@ -673,11 +666,19 @@ class BannerController extends BaseController {
         }
       }
 
-      debugPrint(
-          '[BannerController] Extracted ${products.length} products for coupon: $couponCode');
+/// debugPrint(  '[BannerController] ===== getCouponProducts result =====');
+// debugPrint('[BannerController] Extracted ${products.length} products for coupon: $couponCode');
+      if (products.isNotEmpty) {
+        for (int i = 0; i < products.length; i++) {
+// debugPrint('[BannerController] Product $i: ${products[i]}');
+        }
+      } else {
+// debugPrint('[BannerController] ⚠️ No products found for coupon: $couponCode');
+// debugPrint('[BannerController] This coupon may not have products to add, or products are in a different format');
+      }
       return products;
     } catch (e) {
-      debugPrint('[BannerController] Error getting coupon products: $e');
+// debugPrint('[BannerController] Error getting coupon products: $e');
       return [];
     }
   }
@@ -685,43 +686,41 @@ class BannerController extends BaseController {
   /// Check if a coupon has associated products
   bool hasCouponProducts(String couponCode) {
     final products = getCouponProducts(couponCode);
+// debugPrint('[BannerController] hasCouponProducts($couponCode): ${products.length} products found');
+    if (products.isNotEmpty) {
+// debugPrint('[BannerController] Product IDs: ${products.map((p) => p['productVariantId']).toList()}');
+    }
     return products.isNotEmpty;
   }
 
   /// Get available coupon codes
   Future<void> getCouponCodeList() async {
     try {
-      debugPrint('[BannerController] ===== STARTING COUPON CODE LOADING =====');
-      debugPrint('[BannerController] Setting loading state to true');
+// debugPrint('[BannerController] ===== STARTING COUPON CODE LOADING =====');
+// debugPrint('[BannerController] Setting loading state to true');
       utilityController.setLoadingState(false);
 
-      debugPrint('[BannerController] GraphQL client status: Available');
-      debugPrint(
-          '[BannerController] GraphQL client value: ${GraphqlService.client.value}');
-      debugPrint('[BannerController] Making GraphQL query: GetCouponCodeList');
+// debugPrint('[BannerController] GraphQL client status: Available');
+/// debugPrint(  '[BannerController] GraphQL client value: ${GraphqlService.client.value}');
+// debugPrint('[BannerController] Making GraphQL query: GetCouponCodeList');
 
       // Check if we have authentication token
       final authToken = GraphqlService.authToken;
       final channelToken = GraphqlService.channelToken;
-      debugPrint(
-          '[BannerController] Auth token available: ${authToken.isNotEmpty}');
-      debugPrint(
-          '[BannerController] Channel token available: ${channelToken.isNotEmpty}');
+/// debugPrint(  '[BannerController] Auth token available: ${authToken.isNotEmpty}');
+/// debugPrint(  '[BannerController] Channel token available: ${channelToken.isNotEmpty}');
       if (authToken.isNotEmpty) {
-        debugPrint('[BannerController] Auth token length: ${authToken.length}');
+// debugPrint('[BannerController] Auth token length: ${authToken.length}');
       } else {
-        debugPrint(
-            '[BannerController] ⚠️ No auth token available - this might cause GraphQL query to fail');
+/// debugPrint(  '[BannerController] ⚠️ No auth token available - this might cause GraphQL query to fail');
       }
       if (channelToken.isNotEmpty) {
-        debugPrint(
-            '[BannerController] Channel token length: ${channelToken.length}');
+/// debugPrint(  '[BannerController] Channel token length: ${channelToken.length}');
       } else {
-        debugPrint(
-            '[BannerController] ⚠️ No channel token available - this might cause GraphQL query to fail');
+/// debugPrint(  '[BannerController] ⚠️ No channel token available - this might cause GraphQL query to fail');
       }
 
-      debugPrint('[BannerController] Executing GraphQL query...');
+// debugPrint('[BannerController] Executing GraphQL query...');
 
       // Try the query with retry logic
       QueryResult<Query$GetCouponCodeList>? res;
@@ -730,8 +729,7 @@ class BannerController extends BaseController {
 
       while (retryCount < maxRetries) {
         try {
-          debugPrint(
-              '[BannerController] Attempt ${retryCount + 1} of $maxRetries');
+/// debugPrint(  '[BannerController] Attempt ${retryCount + 1} of $maxRetries');
 
           res = await Future.any([
             GraphqlService.client.value.query$GetCouponCodeList(
@@ -742,20 +740,19 @@ class BannerController extends BaseController {
                     'Query timeout after 15 seconds', Duration(seconds: 15))),
           ]);
 
-          debugPrint(
-              '[BannerController] Query completed successfully on attempt ${retryCount + 1}');
+/// debugPrint(  '[BannerController] Query completed successfully on attempt ${retryCount + 1}');
           break; // Success, exit retry loop
         } catch (e) {
           retryCount++;
-          debugPrint('[BannerController] Attempt ${retryCount} failed: $e');
+// debugPrint('[BannerController] Attempt ${retryCount} failed: $e');
 
           if (retryCount >= maxRetries) {
-            debugPrint('[BannerController] All $maxRetries attempts failed');
+// debugPrint('[BannerController] All $maxRetries attempts failed');
             rethrow;
           }
 
           // Wait before retrying
-          debugPrint('[BannerController] Waiting 2 seconds before retry...');
+// debugPrint('[BannerController] Waiting 2 seconds before retry...');
           await Future.delayed(Duration(seconds: 2));
         }
       }
@@ -764,18 +761,16 @@ class BannerController extends BaseController {
         throw Exception(
             'Failed to get coupon codes after $maxRetries attempts');
       }
-      debugPrint('[BannerController] GraphQL query completed');
+// debugPrint('[BannerController] GraphQL query completed');
 
-      debugPrint('[BannerController] Has exception: ${res.hasException}');
-      debugPrint('[BannerController] Has data: ${res.data != null}');
-      debugPrint('[BannerController] Parsed data: ${res.parsedData != null}');
+// debugPrint('[BannerController] Has exception: ${res.hasException}');
+// debugPrint('[BannerController] Has data: ${res.data != null}');
+// debugPrint('[BannerController] Parsed data: ${res.parsedData != null}');
 
       if (res.hasException) {
-        debugPrint('[BannerController] Exception details: ${res.exception}');
-        debugPrint(
-            '[BannerController] Exception graphqlErrors: ${res.exception?.graphqlErrors}');
-        debugPrint(
-            '[BannerController] Exception linkException: ${res.exception?.linkException}');
+// debugPrint('[BannerController] Exception details: ${res.exception}');
+/// debugPrint(  '[BannerController] Exception graphqlErrors: ${res.exception?.graphqlErrors}');
+/// debugPrint(  '[BannerController] Exception linkException: ${res.exception?.linkException}');
       }
 
       if (checkResponseForErrors(res,
@@ -784,110 +779,92 @@ class BannerController extends BaseController {
         return;
       }
 
-      debugPrint('[BannerController] ✅ No GraphQL exceptions');
+// debugPrint('[BannerController] ✅ No GraphQL exceptions');
 
       if (res.data != null) {
-        debugPrint(
-            '[BannerController] Raw response data keys: ${res.data!.keys.toList()}');
-        debugPrint('[BannerController] Full response data: ${res.data}');
+/// debugPrint(  '[BannerController] Raw response data keys: ${res.data!.keys.toList()}');
+// debugPrint('[BannerController] Full response data: ${res.data}');
       } else {
-        debugPrint('[BannerController] ❌ Response data is NULL');
+// debugPrint('[BannerController] ❌ Response data is NULL');
       }
 
       final couponData = res.parsedData?.getCouponCodeList;
-      debugPrint(
-          '[BannerController] Parsed coupon data: ${couponData != null ? 'Available' : 'NULL'}');
+/// debugPrint(  '[BannerController] Parsed coupon data: ${couponData != null ? 'Available' : 'NULL'}');
 
       if (couponData != null) {
         final items = couponData.items;
-        debugPrint('[BannerController] Coupon items count: ${items.length}');
-        debugPrint(
-            '[BannerController] Coupon items type: ${items.runtimeType}');
+// debugPrint('[BannerController] Coupon items count: ${items.length}');
+/// debugPrint(  '[BannerController] Coupon items type: ${items.runtimeType}');
 
         if (items.isNotEmpty) {
-          debugPrint('[BannerController] First coupon raw data:');
-          debugPrint('[BannerController] ${items.first.toJson()}');
+// debugPrint('[BannerController] First coupon raw data:');
+// debugPrint('[BannerController] ${items.first.toJson()}');
 
           // Check if items are properly structured
-          debugPrint(
-              '[BannerController] First item type: ${items.first.runtimeType}');
-          debugPrint(
-              '[BannerController] First item properties: ${items.first.toString()}');
+/// debugPrint(  '[BannerController] First item type: ${items.first.runtimeType}');
+/// debugPrint(  '[BannerController] First item properties: ${items.first.toString()}');
         } else {
-          debugPrint('[BannerController] ❌ No coupon items found in response');
+// debugPrint('[BannerController] ❌ No coupon items found in response');
         }
 
         try {
           final fetchedCoupons = items.map((item) {
-            debugPrint(
-                '[BannerController] Converting item to CouponCodeModel: ${item.runtimeType}');
+/// debugPrint(  '[BannerController] Converting item to CouponCodeModel: ${item.runtimeType}');
             final json = item.toJson();
-            debugPrint('[BannerController] Item JSON: $json');
+// debugPrint('[BannerController] Item JSON: $json');
             return CouponCodeModel.fromJson(json);
           }).toList();
 
-          debugPrint(
-              '[BannerController] ✅ Successfully converted ${fetchedCoupons.length} coupons');
+/// debugPrint(  '[BannerController] ✅ Successfully converted ${fetchedCoupons.length} coupons');
 
           availableCouponCodes.assignAll(fetchedCoupons);
           couponCodesLoaded.value = true;
 
-          debugPrint(
-              '[BannerController] ✅ Updated availableCouponCodes list with ${availableCouponCodes.length} items');
-          debugPrint('[BannerController] ✅ Set couponCodesLoaded to true');
+/// debugPrint(  '[BannerController] ✅ Updated availableCouponCodes list with ${availableCouponCodes.length} items');
+// debugPrint('[BannerController] ✅ Set couponCodesLoaded to true');
 
           // Debug print each coupon details
           for (int i = 0; i < fetchedCoupons.length; i++) {
             final coupon = fetchedCoupons[i];
-            debugPrint(
-                '[BannerController] Coupon $i: ${coupon.name} (Code: ${coupon.couponCode})');
-            debugPrint('[BannerController] - ID: ${coupon.id}');
-            debugPrint('[BannerController] - Enabled: ${coupon.enabled}');
-            final sanitizedDescription =
-                HtmlUtils.stripHtmlTags(coupon.description);
-            debugPrint(
-                '[BannerController] - Description: $sanitizedDescription');
-            debugPrint('[BannerController] - Starts At: ${coupon.startsAt}');
-            debugPrint('[BannerController] - Ends At: ${coupon.endsAt}');
-            debugPrint(
-                '[BannerController] - Actions count: ${coupon.actions.length}');
-            debugPrint(
-                '[BannerController] - Conditions count: ${coupon.conditions.length}');
-            // debugPrint('[BannerController] - Custom Fields: ${coupon.customFields}');
+/// debugPrint(  '[BannerController] Coupon $i: ${coupon.name} (Code: ${coupon.couponCode})');
+// debugPrint('[BannerController] - ID: ${coupon.id}');
+// debugPrint('[BannerController] - Enabled: ${coupon.enabled}');
+            // final sanitizedDescription = HtmlUtils.stripHtmlTags(coupon.description); // Unused variable
+/// debugPrint(  '[BannerController] - Description: $sanitizedDescription');
+// debugPrint('[BannerController] - Starts At: ${coupon.startsAt}');
+// debugPrint('[BannerController] - Ends At: ${coupon.endsAt}');
+/// debugPrint(  '[BannerController] - Actions count: ${coupon.actions.length}');
+/// debugPrint(  '[BannerController] - Conditions count: ${coupon.conditions.length}');
 
             if (coupon.products != null) {
-              debugPrint(
+debugPrint
+  (
                   '[BannerController] - Products count: ${coupon.products!.length}');
               for (int j = 0; j < coupon.products!.length; j++) {
-                final product = coupon.products![j];
-                debugPrint(
-                    '[BannerController] - Product $j: ${product.name} (Variant: ${product.productVariantId}, Qty: ${product.quantity})');
+                // final product = coupon.products![j]; // Unused variable
+/// debugPrint(  '[BannerController] - Product $j: ${coupon.products![j].name} (Variant: ${coupon.products![j].productVariantId}, Qty: ${coupon.products![j].quantity})');
               }
             } else {
-              debugPrint('[BannerController] - No products field found');
+// debugPrint('[BannerController] - No products field found');
             }
           }
         } catch (conversionError) {
-          debugPrint(
-              '[BannerController] ❌ Error converting items to CouponCodeModel: $conversionError');
-          debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
+/// debugPrint(  '[BannerController] ❌ Error converting items to CouponCodeModel: $conversionError');
+// debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
         }
       } else {
-        debugPrint('[BannerController] ❌ Parsed coupon data is NULL');
-        debugPrint(
-            '[BannerController] Available coupon codes count: ${availableCouponCodes.length}');
-        debugPrint(
-            '[BannerController] Coupon codes loaded: ${couponCodesLoaded.value}');
+// debugPrint('[BannerController] ❌ Parsed coupon data is NULL');
+/// debugPrint(  '[BannerController] Available coupon codes count: ${availableCouponCodes.length}');
+/// debugPrint(  '[BannerController] Coupon codes loaded: ${couponCodesLoaded.value}');
       }
 
-      debugPrint('[BannerController] Setting loading state to false');
+// debugPrint('[BannerController] Setting loading state to false');
       utilityController.setLoadingState(false);
-      debugPrint(
-          '[BannerController] ===== COUPON CODE LOADING COMPLETED =====');
+/// debugPrint(  '[BannerController] ===== COUPON CODE LOADING COMPLETED =====');
     } catch (e) {
-      debugPrint('[BannerController] ❌ Get coupon codes error: $e');
-      debugPrint('[BannerController] Error type: ${e.runtimeType}');
-      debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
+// debugPrint('[BannerController] ❌ Get coupon codes error: $e');
+// debugPrint('[BannerController] Error type: ${e.runtimeType}');
+// debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
       utilityController.setLoadingState(false);
     }
   }
@@ -989,7 +966,7 @@ class BannerController extends BaseController {
         'coupon': coupon
       };
     } catch (e) {
-      debugPrint('[BannerController] Validate coupon code error: $e');
+// debugPrint('[BannerController] Validate coupon code error: $e');
       return {
         'valid': false,
         'message': 'Error validating coupon code',
@@ -1002,8 +979,7 @@ class BannerController extends BaseController {
   Future<Map<String, dynamic>> _validateMinimumOrderAmount(
       CouponCodeModel coupon) async {
     try {
-      debugPrint(
-          '[BannerController] Validating minimum order amount for coupon: ${coupon.couponCode}');
+/// debugPrint(  '[BannerController] Validating minimum order amount for coupon: ${coupon.couponCode}');
 
       // Get current cart total
       final cartTotal = await _getCurrentCartTotal();
@@ -1015,16 +991,15 @@ class BannerController extends BaseController {
         };
       }
 
-      debugPrint('[BannerController] Current cart total: $cartTotal');
+// debugPrint('[BannerController] Current cart total: $cartTotal');
 
       // Check coupon conditions for minimum order amount
       for (final condition in coupon.conditions) {
-        debugPrint('[BannerController] Checking condition: ${condition.code}');
+// debugPrint('[BannerController] Checking condition: ${condition.code}');
 
         if (condition.code == 'minimum_order_amount') {
           for (final arg in condition.args) {
-            debugPrint(
-                '[BannerController] Condition arg: ${arg.name} = ${arg.value}');
+/// debugPrint(  '[BannerController] Condition arg: ${arg.name} = ${arg.value}');
 
             if (arg.name == 'amount') {
               // Handle both string and numeric values for amount
@@ -1034,13 +1009,11 @@ class BannerController extends BaseController {
               } else if (arg.value is num) {
                 requiredAmount = (arg.value as num).toDouble();
               } else {
-                debugPrint(
-                    '[BannerController] Invalid amount type: ${arg.value.runtimeType}');
+/// debugPrint(  '[BannerController] Invalid amount type: ${arg.value.runtimeType}');
                 continue;
               }
 
-              debugPrint(
-                  '[BannerController] Required minimum amount: $requiredAmount');
+/// debugPrint(  '[BannerController] Required minimum amount: $requiredAmount');
 
               if (cartTotal < requiredAmount) {
                 return {
@@ -1057,11 +1030,10 @@ class BannerController extends BaseController {
         }
       }
 
-      debugPrint('[BannerController] Minimum order amount validation passed');
+// debugPrint('[BannerController] Minimum order amount validation passed');
       return {'valid': true, 'message': 'Minimum order amount requirement met'};
     } catch (e) {
-      debugPrint(
-          '[BannerController] Error validating minimum order amount: $e');
+/// debugPrint(  '[BannerController] Error validating minimum order amount: $e');
       return {
         'valid': false,
         'message': 'Error validating minimum order amount',
@@ -1090,21 +1062,20 @@ class BannerController extends BaseController {
       );
 
       if (res.hasException) {
-        debugPrint(
-            '[BannerController] Error getting cart total: ${res.exception}');
+/// debugPrint(  '[BannerController] Error getting cart total: ${res.exception}');
         return null;
       }
 
       final activeOrder = res.data?['activeOrder'];
       if (activeOrder != null) {
         final totalWithTax = (activeOrder['totalWithTax'] as num?)?.toDouble();
-        debugPrint('[BannerController] Cart total with tax: $totalWithTax');
+// debugPrint('[BannerController] Cart total with tax: $totalWithTax');
         return totalWithTax;
       }
 
       return null;
     } catch (e) {
-      debugPrint('[BannerController] Exception getting cart total: $e');
+// debugPrint('[BannerController] Exception getting cart total: $e');
       return null;
     }
   }
@@ -1186,8 +1157,58 @@ class BannerController extends BaseController {
           appliedCouponCodes.clear(); // Remove any existing coupons
           appliedCouponCodes.add(couponCode); // Add the new coupon
 
-          debugPrint(
-              '[BannerController] Coupon code applied successfully: $couponCode');
+/// debugPrint(  '[BannerController] Coupon code applied successfully: $couponCode');
+          
+          // Update both cart and order controllers directly from the response
+          try {
+            final cartController = Get.find<CartController>();
+            final orderController = Get.find<OrderController>();
+            final resultJson = result.toJson();
+            
+            // Update CartController
+            cartController.cart.value = Order.fromJson(resultJson);
+//             debugPrint('[BannerController] CartController updated directly from coupon response');
+            
+            // Update OrderController
+            orderController.currentOrder.value = OrderModel.fromJson(resultJson);
+//             debugPrint('[BannerController] OrderController updated directly from coupon response');
+          } catch (e) {
+//             debugPrint('[BannerController] Could not update controllers directly: $e');
+            // Fallback: refresh both controllers while preserving cart state
+            try {
+              final cartController = Get.find<CartController>();
+              final orderController = Get.find<OrderController>();
+              
+              // Preserve previous cart state before refresh to prevent empty UI
+              final previousCart = cartController.cart.value;
+              
+              // Refresh controllers
+              final refreshSuccess = await cartController.getActiveOrder();
+              await orderController.getActiveOrder(skipLoading: true);
+              
+              // If cart became null after refresh and we had a previous cart, restore it
+              // This prevents showing empty cart during the brief moment of refresh
+              if (!refreshSuccess && cartController.cart.value == null && previousCart != null) {
+                cartController.cart.value = previousCart;
+                // Try one more time to get the updated cart
+                await Future.delayed(Duration(milliseconds: 500));
+                await cartController.getActiveOrder();
+              }
+              
+//               debugPrint('[BannerController] Controllers refreshed via getActiveOrder');
+            } catch (refreshError) {
+//               debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
+              // If refresh failed, try to restore cart state
+              try {
+                final cartController = Get.find<CartController>();
+                // Try to get the cart one more time
+                await cartController.getActiveOrder();
+              } catch (e) {
+                // Ignore errors during recovery
+              }
+            }
+          }
+          
           utilityController.setLoadingState(false);
           return {
             'success': true,
@@ -1205,7 +1226,7 @@ class BannerController extends BaseController {
         'error': 'UNKNOWN_ERROR'
       };
     } catch (e) {
-      debugPrint('[BannerController] Apply coupon code error: $e');
+// debugPrint('[BannerController] Apply coupon code error: $e');
       handleException(e, customErrorMessage: 'Failed to apply coupon code');
       utilityController.setLoadingState(false);
       return {
@@ -1219,101 +1240,130 @@ class BannerController extends BaseController {
   /// Remove products added by a specific coupon
   Future<bool> removeCouponProducts(String couponCode) async {
     try {
-      debugPrint('[BannerController] ===== REMOVING COUPON PRODUCTS =====');
-      debugPrint('[BannerController] Coupon code: $couponCode');
+// debugPrint('[BannerController] ===== REMOVING COUPON PRODUCTS =====');
+// debugPrint('[BannerController] Coupon code: $couponCode');
 
       if (!couponAddedProducts.containsKey(couponCode)) {
-        debugPrint(
-            '[BannerController] No products tracked for coupon: $couponCode');
-        debugPrint(
-            '[BannerController] Available tracked coupons: ${couponAddedProducts.keys.toList()}');
+/// debugPrint(  '[BannerController] No products tracked for coupon: $couponCode');
+/// debugPrint(  '[BannerController] Available tracked coupons: ${couponAddedProducts.keys.toList()}');
         return true; // No products to remove
       }
 
-      final productVariantIds = couponAddedProducts[couponCode]!;
-      debugPrint(
-          '[BannerController] Found ${productVariantIds.length} products to remove for coupon: $couponCode');
-      debugPrint(
-          '[BannerController] Product variant IDs to remove: $productVariantIds');
+      final productsToRemove = couponAddedProducts[couponCode]!;
+// debugPrint(  '[BannerController] Found ${productsToRemove.length} products to remove for coupon: $couponCode');
+// debugPrint(  '[BannerController] Products to remove: $productsToRemove');
 
       // Get current cart to find order line IDs for these products
       final cart = await _getCurrentCart();
       if (cart == null) {
-        debugPrint(
-            '[BannerController] No active cart found - cannot remove products');
+// debugPrint(  '[BannerController] No active cart found - cannot remove products');
         return false;
       }
 
       final cartLines = cart['lines'] as List<dynamic>? ?? [];
-      debugPrint(
-          '[BannerController] Current cart has ${cartLines.length} order lines');
+// debugPrint(  '[BannerController] Current cart has ${cartLines.length} order lines');
 
       int removedCount = 0;
-      for (final variantId in productVariantIds) {
-        debugPrint(
-            '[BannerController] Looking for variant ID: $variantId in cart');
+      final cartController = Get.find<CartController>();
+      
+      for (final entry in productsToRemove.entries) {
+        final variantId = entry.key;
+        final quantityToRemove = entry.value;
+// debugPrint(  '[BannerController] Processing variant $variantId, quantity to remove: $quantityToRemove');
         bool found = false;
 
         // Find order lines that match this variant ID
         for (final line in cartLines) {
           final lineData = line as Map<String, dynamic>;
           final lineId = lineData['id'] as String;
+          final currentQuantity = lineData['quantity'] as int? ?? 0;
           final productVariant =
               lineData['productVariant'] as Map<String, dynamic>;
           final variantIdFromCart = productVariant['id'] as String;
 
-          debugPrint(
-              '[BannerController] Checking order line $lineId with variant $variantIdFromCart');
+// debugPrint(  '[BannerController] Checking order line $lineId: variant=$variantIdFromCart, currentQty=$currentQuantity');
           if (variantIdFromCart == variantId) {
             found = true;
-            debugPrint(
-                '[BannerController] ✓ Found matching order line $lineId for variant $variantId');
-            debugPrint(
-                '[BannerController] Removing order line $lineId for variant $variantId');
-
-            final success = await _removeOrderLineById(lineId);
-            if (success) {
-              removedCount++;
-              debugPrint(
-                  '[BannerController] ✓ Successfully removed order line $lineId');
+// debugPrint(  '[BannerController] ✓ Found matching order line $lineId for variant $variantId');
+            
+            // Calculate new quantity after removing coupon-added quantity
+            final newQuantity = currentQuantity - quantityToRemove;
+            
+            if (newQuantity <= 0) {
+              // Remove the entire line if quantity becomes 0 or negative
+              // This happens when: currentQuantity <= quantityToRemove
+              // Example: currentQuantity=1, quantityToRemove=1 → newQuantity=0 → remove
+// debugPrint(  '[BannerController] Removing entire order line $lineId (currentQty=$currentQuantity, couponQty=$quantityToRemove, would be $newQuantity)');
+              final success = await _removeOrderLineById(lineId);
+              if (success) {
+                removedCount++;
+// debugPrint(  '[BannerController] ✓ Successfully removed order line $lineId');
+                
+                // Update controllers after removal
+                try {
+                  final orderController = Get.find<OrderController>();
+                  await orderController.getActiveOrder(skipLoading: true);
+//                   debugPrint('[BannerController] OrderController updated after removing line');
+                } catch (e) {
+//                   debugPrint('[BannerController] Could not update OrderController: $e');
+                }
+              } else {
+// debugPrint(  '[BannerController] ✗ Failed to remove order line $lineId');
+              }
             } else {
-              debugPrint(
-                  '[BannerController] ✗ Failed to remove order line $lineId');
+              // Decrease quantity instead of removing the line
+              // This happens when: currentQuantity > quantityToRemove
+              // Example: currentQuantity=2, quantityToRemove=1 → newQuantity=1 → decrease
+// debugPrint(  '[BannerController] Decreasing quantity from $currentQuantity to $newQuantity for order line $lineId (removing coupon-added quantity: $quantityToRemove)');
+              final success = await cartController.adjustOrderLine(
+                orderLineId: lineId,
+                quantity: newQuantity,
+              );
+              if (success) {
+                removedCount++;
+// debugPrint(  '[BannerController] ✓ Successfully decreased quantity for order line $lineId');
+                
+                // Update controllers after quantity adjustment
+                try {
+                  final orderController = Get.find<OrderController>();
+                  await orderController.getActiveOrder(skipLoading: true);
+//                   debugPrint('[BannerController] OrderController updated after decreasing quantity');
+                } catch (e) {
+//                   debugPrint('[BannerController] Could not update OrderController: $e');
+                }
+              } else {
+// debugPrint(  '[BannerController] ✗ Failed to decrease quantity for order line $lineId');
+              }
             }
-            break; // Remove only one instance per variant ID
+            break; // Process only one instance per variant ID
           }
         }
 
         if (!found) {
-          debugPrint(
-              '[BannerController] ⚠ Variant ID $variantId not found in current cart');
+// debugPrint(  '[BannerController] ⚠ Variant ID $variantId not found in current cart');
         }
       }
 
-      debugPrint(
-          '[BannerController] Removed $removedCount out of ${productVariantIds.length} products');
+// debugPrint(  '[BannerController] Processed $removedCount out of ${productsToRemove.length} products');
 
       // Verify removal by checking cart again
       if (removedCount > 0) {
-        debugPrint('[BannerController] Verifying product removal...');
+// debugPrint('[BannerController] Verifying product removal...');
         final updatedCart = await _getCurrentCart();
         if (updatedCart != null) {
-          final updatedLines = updatedCart['lines'] as List<dynamic>? ?? [];
-          debugPrint(
-              '[BannerController] Cart after removal has ${updatedLines.length} lines');
+          // final updatedLines = updatedCart['lines'] as List<dynamic>? ?? []; // Unused variable
+/// debugPrint(  '[BannerController] Cart after removal has ${(updatedCart['lines'] as List<dynamic>? ?? []).length} lines');
         }
       }
 
       // Clear the tracked products for this coupon
       couponAddedProducts.remove(couponCode);
-      debugPrint(
-          '[BannerController] ✓ Cleared tracked products for coupon: $couponCode');
-      debugPrint(
-          '[BannerController] ===== COUPON PRODUCT REMOVAL COMPLETE =====');
+/// debugPrint(  '[BannerController] ✓ Cleared tracked products for coupon: $couponCode');
+/// debugPrint(  '[BannerController] ===== COUPON PRODUCT REMOVAL COMPLETE =====');
 
       return removedCount > 0;
     } catch (e) {
-      debugPrint('[BannerController] ✗ Error removing coupon products: $e');
+// debugPrint('[BannerController] ✗ Error removing coupon products: $e');
       return false;
     }
   }
@@ -1321,7 +1371,7 @@ class BannerController extends BaseController {
   /// Get current cart
   Future<dynamic> _getCurrentCart() async {
     try {
-      debugPrint('[BannerController] Fetching current cart...');
+// debugPrint('[BannerController] Fetching current cart...');
 
       const query = '''
         query GetActiveOrder {
@@ -1346,33 +1396,30 @@ class BannerController extends BaseController {
       );
 
       if (res.hasException) {
-        debugPrint(
-            '[BannerController] Error getting current cart: ${res.exception}');
+/// debugPrint(  '[BannerController] Error getting current cart: ${res.exception}');
         return null;
       }
 
       final activeOrder = res.data?['activeOrder'];
       if (activeOrder != null) {
-        debugPrint(
-            '[BannerController] ✓ Found active order: ${activeOrder['id']}');
-        debugPrint(
-            '[BannerController] Order has ${activeOrder['lines']?.length ?? 0} lines');
+/// debugPrint(  '[BannerController] ✓ Found active order: ${activeOrder['id']}');
+/// debugPrint(  '[BannerController] Order has ${activeOrder['lines']?.length ?? 0} lines');
 
         // Debug each line
         if (activeOrder['lines'] != null) {
           for (int i = 0; i < activeOrder['lines'].length; i++) {
-            final line = activeOrder['lines'][i];
-            debugPrint(
-                '[BannerController] Line $i: ID=${line['id']}, Variant=${line['productVariant']['id']}, Name=${line['productVariant']['name']}, Qty=${line['quantity']}');
+            // ignore: unused_local_variable
+            final lineData = activeOrder['lines'][i];
+/// debugPrint(  '[BannerController] Line $i: ID=${lineData['id']}, Variant=${lineData['productVariant']['id']}, Name=${lineData['productVariant']['name']}, Qty=${lineData['quantity']}');
           }
         }
       } else {
-        debugPrint('[BannerController] ⚠ No active order found');
+// debugPrint('[BannerController] ⚠ No active order found');
       }
 
       return activeOrder;
     } catch (e) {
-      debugPrint('[BannerController] Exception getting current cart: $e');
+// debugPrint('[BannerController] Exception getting current cart: $e');
       return null;
     }
   }
@@ -1380,8 +1427,7 @@ class BannerController extends BaseController {
   /// Remove order line by ID
   Future<bool> _removeOrderLineById(String orderLineId) async {
     try {
-      debugPrint(
-          '[BannerController] Attempting to remove order line: $orderLineId');
+/// debugPrint(  '[BannerController] Attempting to remove order line: $orderLineId');
 
       const mutation = '''
         mutation RemoveOrderLine(\$orderLineId: ID!) {
@@ -1412,23 +1458,46 @@ class BannerController extends BaseController {
       final result = res.data?['removeOrderLine'];
       if (result != null) {
         if (result['__typename'] == 'Order') {
-          debugPrint(
-              '[BannerController] ✓ Successfully removed order line $orderLineId');
-          debugPrint('[BannerController] Updated order ID: ${result['id']}');
+// debugPrint(  '[BannerController] ✓ Successfully removed order line $orderLineId');
+//           debugPrint('[BannerController] Updated order ID: ${result['id']}');
+          
+          // Update both controllers after removal
+          try {
+            final cartController = Get.find<CartController>();
+            final orderController = Get.find<OrderController>();
+            final resultJson = result as Map<String, dynamic>;
+            
+            // Update CartController
+            cartController.cart.value = Order.fromJson(resultJson);
+//             debugPrint('[BannerController] CartController updated after removing line');
+            
+            // Update OrderController
+            orderController.currentOrder.value = OrderModel.fromJson(resultJson);
+//             debugPrint('[BannerController] OrderController updated after removing line');
+          } catch (e) {
+//             debugPrint('[BannerController] Could not update controllers after removal: $e');
+            // Fallback: refresh controllers
+            try {
+              final cartController = Get.find<CartController>();
+              final orderController = Get.find<OrderController>();
+              await cartController.getActiveOrder();
+              await orderController.getActiveOrder(skipLoading: true);
+            } catch (refreshError) {
+//               debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
+            }
+          }
+          
           return true;
         } else {
-          debugPrint(
-              '[BannerController] ✗ Failed to remove order line $orderLineId: ${result['message']}');
+/// debugPrint(  '[BannerController] ✗ Failed to remove order line $orderLineId: ${result['message']}');
           return false;
         }
       } else {
-        debugPrint(
-            '[BannerController] ✗ No result from removeOrderLine mutation for $orderLineId');
+/// debugPrint(  '[BannerController] ✗ No result from removeOrderLine mutation for $orderLineId');
         return false;
       }
     } catch (e) {
-      debugPrint(
-          '[BannerController] ✗ Exception removing order line $orderLineId: $e');
+/// debugPrint(  '[BannerController] ✗ Exception removing order line $orderLineId: $e');
       handleException(e, customErrorMessage: 'Failed to remove item from cart');
       return false;
     }
@@ -1439,15 +1508,29 @@ class BannerController extends BaseController {
     try {
       utilityController.setLoadingState(true);
 
-      // First remove products that were added by this coupon
-      debugPrint(
-          '[BannerController] Removing products added by coupon: $couponCode');
-      final productsRemoved = await removeCouponProducts(couponCode);
-      if (!productsRemoved) {
-        debugPrint(
-            '[BannerController] Warning: Failed to remove some products for coupon $couponCode');
+      // Check if coupon has products that need to be removed
+      final hasProducts = hasCouponProducts(couponCode) || 
+                         couponAddedProducts.containsKey(couponCode);
+/// debugPrint(  '[BannerController] Coupon $couponCode has products to remove: $hasProducts');
+
+      // If coupon has products, remove them from cart first
+      if (hasProducts) {
+/// debugPrint(  '[BannerController] Step 1: Removing products added by coupon: $couponCode');
+        final productsRemoved = await removeCouponProducts(couponCode);
+        
+        // If removing products fails, don't remove coupon
+        if (!productsRemoved) {
+/// debugPrint(  '[BannerController] ❌ Failed to remove products for coupon $couponCode');
+/// debugPrint(  '[BannerController] ❌ Not removing coupon code due to product removal failure');
+          utilityController.setLoadingState(false);
+          return false;
+        }
+/// debugPrint(  '[BannerController] ✅ Successfully removed coupon products from cart');
+      } else {
+/// debugPrint(  '[BannerController] Coupon has no products, skipping product removal');
       }
 
+// debugPrint('[BannerController] Step 2: Removing coupon code...');
       final res = await GraphqlService.client.value.mutate$RemoveCouponCode(
         Options$Mutation$RemoveCouponCode(
           variables:
@@ -1466,8 +1549,42 @@ class BannerController extends BaseController {
       if (result != null) {
         appliedCouponCodes.remove(couponCode);
 
-        debugPrint(
-            '[BannerController] Coupon code removed successfully: $couponCode');
+// debugPrint(  '[BannerController] Coupon code removed successfully: $couponCode');
+        
+        // Update both cart and order controllers directly from the response
+        try {
+          final cartController = Get.find<CartController>();
+          final orderController = Get.find<OrderController>();
+          // Result is Fragment$Cart which contains full order data
+          final resultJson = result.toJson();
+          if (resultJson.containsKey('id')) {
+            // Update CartController
+            cartController.cart.value = Order.fromJson(resultJson);
+//             debugPrint('[BannerController] CartController updated directly from removeCouponCode response');
+            
+            // Update OrderController
+            orderController.currentOrder.value = OrderModel.fromJson(resultJson);
+//             debugPrint('[BannerController] OrderController updated directly from removeCouponCode response');
+          } else {
+//             debugPrint('[BannerController] No order data in removeCouponCode response, refreshing controllers');
+            // Fallback: refresh both controllers
+            await cartController.getActiveOrder();
+            await orderController.getActiveOrder(skipLoading: true);
+          }
+        } catch (e) {
+//           debugPrint('[BannerController] Could not update controllers directly: $e');
+          // Fallback: refresh both controllers
+          try {
+            final cartController = Get.find<CartController>();
+            final orderController = Get.find<OrderController>();
+            await cartController.getActiveOrder();
+            await orderController.getActiveOrder(skipLoading: true);
+//             debugPrint('[BannerController] Controllers refreshed via getActiveOrder');
+          } catch (refreshError) {
+//             debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
+          }
+        }
+        
         utilityController.setLoadingState(false);
         return true;
       }
@@ -1475,7 +1592,7 @@ class BannerController extends BaseController {
       utilityController.setLoadingState(false);
       return false;
     } catch (e) {
-      debugPrint('[BannerController] Remove coupon code error: $e');
+// debugPrint('[BannerController] Remove coupon code error: $e');
       handleException(e, customErrorMessage: 'Failed to remove coupon code');
       utilityController.setLoadingState(false);
       return false;
@@ -1518,7 +1635,7 @@ class BannerController extends BaseController {
   void resetCouponCodes() {
     appliedCouponCodes.clear();
     couponAddedProducts.clear();
-    debugPrint('[BannerController] Coupon codes and tracked products reset');
+// debugPrint('[BannerController] Coupon codes and tracked products reset');
   }
 
   /// Get coupon validation status for UI display
@@ -1534,7 +1651,7 @@ class BannerController extends BaseController {
       // For now, we'll assume there are products if we have an active order
       return true; // This should be implemented based on your cart logic
     } catch (e) {
-      debugPrint('[BannerController] Check cart products error: $e');
+// debugPrint('[BannerController] Check cart products error: $e');
       return false;
     }
   }
@@ -1543,16 +1660,27 @@ class BannerController extends BaseController {
   Future<Map<String, dynamic>> addCouponProductsToCart(
       String couponCode) async {
     try {
-      debugPrint(
-          '[BannerController] ===== ADDING COUPON PRODUCTS TO CART =====');
-      debugPrint('[BannerController] Coupon code: $couponCode');
+      // Prevent duplicate calls - if already adding items, return early
+      if (_isAddingItems) {
+/// debugPrint(  '[BannerController] ⚠️ Already adding items, skipping duplicate call');
+        return {
+          'success': false,
+          'message': 'Items are already being added to cart',
+          'error': 'ALREADY_ADDING_ITEMS'
+        };
+      }
+
+      // Set flag to prevent duplicate calls
+      _isAddingItems = true;
+
+/// debugPrint(  '[BannerController] ===== ADDING COUPON PRODUCTS TO CART =====');
+// debugPrint('[BannerController] Coupon code: $couponCode');
 
       // Get products from the actual coupon data
       final couponProducts = getCouponProducts(couponCode);
 
       if (couponProducts.isEmpty) {
-        debugPrint(
-            '[BannerController] ✗ No products found for coupon: $couponCode');
+/// debugPrint(  '[BannerController] ✗ No products found for coupon: $couponCode');
         return {
           'success': false,
           'message': 'No products found for this coupon',
@@ -1560,12 +1688,10 @@ class BannerController extends BaseController {
         };
       }
 
-      debugPrint(
-          '[BannerController] ✓ Found ${couponProducts.length} products for coupon: $couponCode');
+/// debugPrint(  '[BannerController] ✓ Found ${couponProducts.length} products for coupon: $couponCode');
       for (int i = 0; i < couponProducts.length; i++) {
-        final product = couponProducts[i];
-        debugPrint(
-            '[BannerController] Product $i: ${product['name']} (Variant ID: ${product['productVariantId']}, Qty: ${product['quantity']})');
+        // final product = couponProducts[i]; // Unused variable
+/// debugPrint(  '[BannerController] Product $i: ${couponProducts[i]['name']} (Variant ID: ${couponProducts[i]['productVariantId']}, Qty: ${couponProducts[i]['quantity']})');
       }
 
       utilityController.setLoadingState(true);
@@ -1581,8 +1707,7 @@ class BannerController extends BaseController {
           final quantity = product['quantity'] as int;
           final priceWithTax = product['priceWithTax'] as double;
 
-          debugPrint(
-              '[BannerController] Adding product to cart: $productName (Variant ID: $productVariantId, Qty: $quantity)');
+/// debugPrint(  '[BannerController] Adding product to cart: $productName (Variant ID: $productVariantId, Qty: $quantity)');
 
           final res = await GraphqlService.client.value.mutate$AddToCart(
             Options$Mutation$AddToCart(
@@ -1594,8 +1719,7 @@ class BannerController extends BaseController {
           );
 
           if (res.hasException) {
-            debugPrint(
-                '[BannerController] - Product from $productName: Network error: ${res.exception}');
+/// debugPrint(  '[BannerController] - Product from $productName: Network error: ${res.exception}');
 
             // Extract error message from GraphQL errors
             String errorMessage = 'Failed to add product to cart';
@@ -1617,11 +1741,28 @@ class BannerController extends BaseController {
 
           final result = res.parsedData?.addItemToOrder;
           if (result != null) {
-            debugPrint(
-                '[BannerController] Add to cart result for $productName: ${result.runtimeType}');
+// debugPrint(  '[BannerController] Add to cart result for $productName: ${result.runtimeType}');
             if (result is Mutation$AddToCart$addItemToOrder$$Order) {
-              debugPrint(
-                  '[BannerController] Successfully added $productName to cart');
+// debugPrint(  '[BannerController] Successfully added $productName to cart');
+              
+              // Update both controllers immediately after each product is added
+              // This prevents the "cart is empty" UI issue
+              try {
+                final cartController = Get.find<CartController>();
+                final orderController = Get.find<OrderController>();
+                final resultJson = result.toJson();
+                
+                // Update CartController
+                cartController.cart.value = Order.fromJson(resultJson);
+//                 debugPrint('[BannerController] CartController updated after adding $productName');
+                
+                // Update OrderController
+                orderController.currentOrder.value = OrderModel.fromJson(resultJson);
+//                 debugPrint('[BannerController] OrderController updated after adding $productName');
+              } catch (e) {
+//                 debugPrint('[BannerController] Could not update controllers after adding $productName: $e');
+              }
+              
               addedProducts.add({
                 'product': productName,
                 'quantity': quantity,
@@ -1630,27 +1771,23 @@ class BannerController extends BaseController {
               });
             } else if (result
                 is Mutation$AddToCart$addItemToOrder$$InsufficientStockError) {
-              debugPrint(
-                  '[BannerController] Failed to add $productName: Insufficient stock');
+/// debugPrint(  '[BannerController] Failed to add $productName: Insufficient stock');
               failedProducts
                   .add({'product': productName, 'error': 'Insufficient stock'});
             } else {
-              debugPrint(
-                  '[BannerController] Failed to add $productName: Unknown error');
+/// debugPrint(  '[BannerController] Failed to add $productName: Unknown error');
               failedProducts
                   .add({'product': productName, 'error': 'Unknown error'});
             }
           } else {
-            debugPrint(
-                '[BannerController] No result returned for adding $productName');
+/// debugPrint(  '[BannerController] No result returned for adding $productName');
             failedProducts.add({
               'product': productName,
               'error': 'No result returned from server'
             });
           }
         } catch (e) {
-          debugPrint(
-              '[BannerController] Exception adding product ${product['name']}: $e');
+/// debugPrint(  '[BannerController] Exception adding product ${product['name']}: $e');
           handleException(e,
               customErrorMessage: 'Failed to add product to cart');
           failedProducts.add({
@@ -1662,49 +1799,109 @@ class BannerController extends BaseController {
 
       utilityController.setLoadingState(false);
 
-      debugPrint(
-          '[BannerController] Coupon products addition completed for $couponCode');
-      debugPrint(
-          '[BannerController] Successfully added: ${addedProducts.length} products');
-      debugPrint(
-          '[BannerController] Failed to add: ${failedProducts.length} products');
+/// debugPrint(  '[BannerController] Coupon products addition completed for $couponCode');
+/// debugPrint(  '[BannerController] Successfully added: ${addedProducts.length} products');
+/// debugPrint(  '[BannerController] Failed to add: ${failedProducts.length} products');
 
       if (addedProducts.isNotEmpty) {
-        debugPrint('[BannerController] Added products:');
+// debugPrint('[BannerController] Added products:');
         final addedProductIds = <String>[];
         for (final product in addedProducts) {
-          debugPrint(
-              '[BannerController] - ${product['product']} (Qty: ${product['quantity']}, Price: ${product['price']})');
+/// debugPrint(  '[BannerController] - ${product['product']} (Qty: ${product['quantity']}, Price: ${product['price']})');
           // Track the product variant ID for removal later
           if (product['productVariantId'] != null) {
             addedProductIds.add(product['productVariantId'].toString());
           }
         }
 
-        // Store the products added by this coupon
-        couponAddedProducts[couponCode] = addedProductIds;
-        debugPrint(
-            '[BannerController] Tracked ${addedProductIds.length} products for coupon $couponCode: $addedProductIds');
+        // Store the products added by this coupon with quantities
+        final productsMap = <String, int>{};
+        for (final product in addedProducts) {
+          final variantId = product['productVariantId']?.toString();
+          final quantity = product['quantity'] as int? ?? 1;
+          if (variantId != null) {
+            productsMap[variantId] = quantity;
+          }
+        }
+        couponAddedProducts[couponCode] = productsMap;
+// debugPrint(  '[BannerController] Tracked ${productsMap.length} products for coupon $couponCode: $productsMap');
       }
 
       if (failedProducts.isNotEmpty) {
-        debugPrint('[BannerController] Failed products:');
-        for (final product in failedProducts) {
-          debugPrint(
-              '[BannerController] - ${product['product']}: ${product['error']}');
+// debugPrint('[BannerController] ❌ Failed products:');
+        for (final _ in failedProducts) {
+          // Logging is commented out, so variable is unused
         }
       }
 
+      // If ANY product failed, rollback all added products and return failure
+      if (failedProducts.isNotEmpty) {
+// debugPrint('[BannerController] ❌ Some products failed to add. Rolling back all added products...');
+        
+        // Rollback: Remove all successfully added products
+        for (final addedProduct in addedProducts) {
+          try {
+            final productVariantId = addedProduct['productVariantId'] as String;
+// debugPrint('[BannerController] Rolling back product: ${addedProduct['product']} (Variant ID: $productVariantId)');
+            
+            // Find the order line for this product variant
+            final cart = await _getCurrentCart();
+            if (cart != null) {
+              final cartLines = cart['lines'] as List<dynamic>? ?? [];
+              for (final line in cartLines) {
+                final lineData = line as Map<String, dynamic>;
+                final lineId = lineData['id'] as String;
+                final productVariant = lineData['productVariant'] as Map<String, dynamic>;
+                final variantIdFromCart = productVariant['id'] as String;
+                
+                if (variantIdFromCart == productVariantId) {
+// debugPrint('[BannerController] Removing order line $lineId for variant $productVariantId');
+                  final success = await _removeOrderLineById(lineId);
+                  if (success) {
+// debugPrint('[BannerController] ✓ Successfully rolled back order line $lineId');
+                  } else {
+// debugPrint('[BannerController] ✗ Failed to rollback order line $lineId');
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+// debugPrint('[BannerController] Error rolling back product ${addedProduct['product']}: $e');
+          }
+        }
+        
+        // Clear tracked products for this coupon
+        couponAddedProducts.remove(couponCode);
+// debugPrint('[BannerController] ❌ Rollback complete. Coupon will not be applied.');
+        
+        return {
+          'success': false,
+          'message': 'Failed to add all coupon products. Added products have been removed.',
+          'addedProducts': [],
+          'failedProducts': failedProducts,
+          'totalAdded': 0,
+          'totalFailed': failedProducts.length,
+          'rollbackPerformed': true,
+        };
+      }
+
+      // Only return success if ALL products were added successfully
+      // If any product failed, success should be false (already handled above with rollback)
+      final allProductsAdded = failedProducts.isEmpty && addedProducts.isNotEmpty;
+      
       return {
-        'success': addedProducts.isNotEmpty,
-        'message': 'Added ${addedProducts.length} products to cart',
+        'success': allProductsAdded,
+        'message': allProductsAdded 
+            ? 'Added ${addedProducts.length} products to cart'
+            : 'Failed to add all products to cart',
         'addedProducts': addedProducts,
         'failedProducts': failedProducts,
         'totalAdded': addedProducts.length,
         'totalFailed': failedProducts.length,
       };
     } catch (e) {
-      debugPrint('[BannerController] Add coupon products to cart error: $e');
+// debugPrint('[BannerController] Add coupon products to cart error: $e');
       handleException(e,
           customErrorMessage: 'Failed to add coupon products to cart');
       utilityController.setLoadingState(false);
@@ -1713,6 +1910,10 @@ class BannerController extends BaseController {
         'message': 'Error adding coupon products to cart: $e',
         'error': 'ADD_PRODUCTS_ERROR'
       };
+    } finally {
+      // Reset flag to allow future calls
+      _isAddingItems = false;
+// debugPrint('[BannerController] Reset _isAddingItems flag');
     }
   }
 
@@ -1720,76 +1921,111 @@ class BannerController extends BaseController {
   Future<Map<String, dynamic>> applyCouponCodeWithProducts(
       String couponCode) async {
     try {
-      debugPrint(
-          '[BannerController] Starting applyCouponCodeWithProducts for: $couponCode');
+/// debugPrint(  '[BannerController] Starting applyCouponCodeWithProducts for: $couponCode');
 
-      // First add coupon products to cart
-      debugPrint(
-          '[BannerController] Step 1: Adding coupon products to cart...');
-      final addResult = await addCouponProductsToCart(couponCode);
+      // Check if coupon has products
+      final hasProducts = hasCouponProducts(couponCode);
+/// debugPrint(  '[BannerController] Coupon $couponCode has products: $hasProducts');
 
-      if (!addResult['success']) {
-        debugPrint(
-            '[BannerController] Failed to add products to cart: ${addResult['message']}');
-        return addResult;
+      Map<String, dynamic>? addResult;
+      
+      // If coupon has products, add them to cart first
+      if (hasProducts) {
+/// debugPrint(  '[BannerController] Step 1: Adding coupon products to cart...');
+        addResult = await addCouponProductsToCart(couponCode);
+
+        // If adding products fails OR if ANY product failed, don't apply coupon
+        // addResult['success'] will be false if any product failed (due to rollback)
+        if (!addResult['success']) {
+/// debugPrint(  '[BannerController] ❌ Failed to add products to cart: ${addResult['message']}');
+/// debugPrint(  '[BannerController] ❌ Not applying coupon code due to product addition failure');
+          
+          // Check if rollback was performed
+          final rollbackPerformed = addResult['rollbackPerformed'] == true;
+          final failedCount = addResult['totalFailed'] ?? 0;
+          final addedCount = addResult['totalAdded'] ?? 0;
+          
+          String errorMessage = 'Failed to add coupon products to cart. Coupon not applied.';
+          if (rollbackPerformed && addedCount > 0) {
+            errorMessage = 'Some coupon products could not be added. Added products have been removed. Coupon not applied.';
+          } else if (failedCount > 0) {
+            errorMessage = 'Failed to add all coupon products. Coupon not applied.';
+          }
+          
+          return {
+            'success': false,
+            'message': errorMessage,
+            'error': 'PRODUCT_ADDITION_FAILED',
+            'addResult': addResult,
+            'rollbackPerformed': rollbackPerformed,
+          };
+        }
+/// debugPrint(  '[BannerController] ✅ Successfully added coupon products to cart');
+      } else {
+/// debugPrint(  '[BannerController] Coupon has no products, skipping product addition');
+        addResult = {
+          'success': true,
+          'addedProducts': [],
+          'message': 'No products to add',
+        };
       }
 
-      debugPrint('[BannerController] Step 2: Applying coupon code...');
+// debugPrint('[BannerController] Step 2: Applying coupon code...');
       // Then apply the coupon code
       final couponResult = await applyCouponCode(couponCode);
 
       if (couponResult['success']) {
-        debugPrint(
-            '[BannerController] Successfully applied coupon with products for: $couponCode');
+// debugPrint(  '[BannerController] Successfully applied coupon with products for: $couponCode');
+        
+        // Both controllers are already updated by applyCouponCode
+        // No need to call getActiveOrder() which might fetch stale data
+        // The direct updates in applyCouponCode are sufficient
+        
         return {
           'success': true,
-          'message': 'Coupon products added and coupon applied successfully',
-          'addedProducts': addResult['addedProducts'],
+          'message': hasProducts 
+              ? 'Coupon products added and coupon applied successfully'
+              : 'Coupon applied successfully',
+          'addedProducts': addResult['addedProducts'] ?? [],
           'couponApplied': true,
           'affectedProducts': couponResult['affectedProducts'],
           'orderTotal': couponResult['orderTotal'],
         };
       } else {
-        debugPrint(
-            '[BannerController] Products added but failed to apply coupon: ${couponResult['message']}');
+/// debugPrint(  '[BannerController] Products added but failed to apply coupon: ${couponResult['message']}');
 
         // ROLLBACK: Remove the products that were added since coupon application failed
-        debugPrint(
-            '[BannerController] Rolling back: Removing added products due to coupon application failure...');
-        final rollbackResult = await _rollbackAddedProducts(couponCode);
+        if (hasProducts) {
+/// debugPrint(  '[BannerController] Rolling back: Removing added products due to coupon application failure...');
+          final rollbackResult = await _rollbackAddedProducts(couponCode);
 
-        if (rollbackResult['success']) {
-          debugPrint(
-              '[BannerController] Successfully rolled back added products');
-        } else {
-          debugPrint(
-              '[BannerController] Failed to rollback added products: ${rollbackResult['message']}');
+          if (rollbackResult['success']) {
+/// debugPrint(  '[BannerController] Successfully rolled back added products');
+          } else {
+/// debugPrint(  '[BannerController] Failed to rollback added products: ${rollbackResult['message']}');
+          }
         }
 
         return {
           'success': false,
           'message':
-              'Failed to apply coupon: ${couponResult['message']}. Added products have been removed.',
-          'addedProducts': addResult['addedProducts'],
+              'Failed to apply coupon: ${couponResult['message']}.${hasProducts ? ' Added products have been removed.' : ''}',
+          'addedProducts': addResult['addedProducts'] ?? [],
           'couponApplied': false,
           'couponError': couponResult['message'],
-          'rollbackPerformed': true,
-          'rollbackResult': rollbackResult,
+          'rollbackPerformed': hasProducts,
         };
       }
     } catch (e) {
-      debugPrint('[BannerController] Apply coupon with products error: $e');
+// debugPrint('[BannerController] Apply coupon with products error: $e');
 
       // ROLLBACK: If there's an exception, try to remove any products that might have been added
-      debugPrint(
-          '[BannerController] Exception occurred, attempting rollback...');
+/// debugPrint(  '[BannerController] Exception occurred, attempting rollback...');
       try {
-        final rollbackResult = await _rollbackAddedProducts(couponCode);
-        debugPrint(
-            '[BannerController] Rollback result: ${rollbackResult['success']}');
+        await _rollbackAddedProducts(couponCode);
+/// debugPrint(  '[BannerController] Rollback completed');
       } catch (rollbackError) {
-        debugPrint(
-            '[BannerController] Rollback failed with error: $rollbackError');
+/// debugPrint(  '[BannerController] Rollback failed with error: $rollbackError');
       }
 
       return {
@@ -1805,13 +2041,12 @@ class BannerController extends BaseController {
   /// Rollback added products when coupon application fails
   Future<Map<String, dynamic>> _rollbackAddedProducts(String couponCode) async {
     try {
-      debugPrint('[BannerController] ===== ROLLING BACK ADDED PRODUCTS =====');
-      debugPrint('[BannerController] Coupon code: $couponCode');
+// debugPrint('[BannerController] ===== ROLLING BACK ADDED PRODUCTS =====');
+// debugPrint('[BannerController] Coupon code: $couponCode');
 
       // Check if we have tracked products for this coupon
       if (!couponAddedProducts.containsKey(couponCode)) {
-        debugPrint(
-            '[BannerController] No products tracked for coupon: $couponCode - nothing to rollback');
+/// debugPrint(  '[BannerController] No products tracked for coupon: $couponCode - nothing to rollback');
         return {
           'success': true,
           'message': 'No products to rollback',
@@ -1819,17 +2054,14 @@ class BannerController extends BaseController {
         };
       }
 
-      final productVariantIds = couponAddedProducts[couponCode]!;
-      debugPrint(
-          '[BannerController] Rolling back ${productVariantIds.length} products for coupon: $couponCode');
-      debugPrint(
-          '[BannerController] Product variant IDs to remove: $productVariantIds');
+      final productsToRemove = couponAddedProducts[couponCode]!;
+// debugPrint(  '[BannerController] Rolling back ${productsToRemove.length} products for coupon: $couponCode');
+// debugPrint(  '[BannerController] Products to remove: $productsToRemove');
 
       // Get current cart to find order line IDs for these products
       final cart = await _getCurrentCart();
       if (cart == null) {
-        debugPrint(
-            '[BannerController] No active cart found - cannot rollback products');
+/// debugPrint(  '[BannerController] No active cart found - cannot rollback products');
         return {
           'success': false,
           'message': 'No active cart found',
@@ -1838,60 +2070,96 @@ class BannerController extends BaseController {
       }
 
       final cartLines = cart['lines'] as List<dynamic>? ?? [];
-      debugPrint(
-          '[BannerController] Current cart has ${cartLines.length} order lines');
+/// debugPrint(  '[BannerController] Current cart has ${cartLines.length} order lines');
 
       int removedCount = 0;
       final failedRemovals = <String>[];
+      final cartController = Get.find<CartController>();
 
-      for (final variantId in productVariantIds) {
-        debugPrint(
-            '[BannerController] Looking for variant ID: $variantId in cart for rollback');
+      for (final entry in productsToRemove.entries) {
+        final variantId = entry.key;
+        final quantityToRemove = entry.value;
+// debugPrint(  '[BannerController] Processing variant $variantId, quantity to remove: $quantityToRemove for rollback');
         bool found = false;
 
         // Find order lines that match this variant ID
         for (final line in cartLines) {
           final lineData = line as Map<String, dynamic>;
           final lineId = lineData['id'] as String;
+          final currentQuantity = lineData['quantity'] as int? ?? 0;
           final productVariant =
               lineData['productVariant'] as Map<String, dynamic>;
           final variantIdFromCart = productVariant['id'] as String;
 
-          debugPrint(
-              '[BannerController] Checking order line $lineId with variant $variantIdFromCart for rollback');
+// debugPrint(  '[BannerController] Checking order line $lineId: variant=$variantIdFromCart, currentQty=$currentQuantity for rollback');
           if (variantIdFromCart == variantId) {
             found = true;
-            debugPrint(
-                '[BannerController] ✓ Found matching order line $lineId for variant $variantId - removing for rollback');
-
-            final success = await _removeOrderLineById(lineId);
-            if (success) {
-              removedCount++;
-              debugPrint(
-                  '[BannerController] ✓ Successfully removed order line $lineId during rollback');
+// debugPrint(  '[BannerController] ✓ Found matching order line $lineId for variant $variantId - processing rollback');
+            
+            // Calculate new quantity after removing coupon-added quantity
+            final newQuantity = currentQuantity - quantityToRemove;
+            
+            if (newQuantity <= 0) {
+              // Remove the entire line if quantity becomes 0 or negative
+              // This happens when: currentQuantity <= quantityToRemove
+// debugPrint(  '[BannerController] Removing entire order line $lineId during rollback (currentQty=$currentQuantity, couponQty=$quantityToRemove, would be $newQuantity)');
+              final success = await _removeOrderLineById(lineId);
+              if (success) {
+                removedCount++;
+// debugPrint(  '[BannerController] ✓ Successfully removed order line $lineId during rollback');
+                
+                // Update controllers after removal
+                try {
+                  final orderController = Get.find<OrderController>();
+                  await orderController.getActiveOrder(skipLoading: true);
+//                   debugPrint('[BannerController] OrderController updated after rollback removal');
+                } catch (e) {
+//                   debugPrint('[BannerController] Could not update OrderController: $e');
+                }
+              } else {
+// debugPrint(  '[BannerController] ✗ Failed to remove order line $lineId during rollback');
+                failedRemovals.add('Line $lineId for variant $variantId');
+              }
             } else {
-              debugPrint(
-                  '[BannerController] ✗ Failed to remove order line $lineId during rollback');
-              failedRemovals.add('Line $lineId for variant $variantId');
+              // Decrease quantity instead of removing the line
+              // This happens when: currentQuantity > quantityToRemove
+// debugPrint(  '[BannerController] Decreasing quantity from $currentQuantity to $newQuantity for order line $lineId during rollback (removing coupon-added quantity: $quantityToRemove)');
+              final success = await cartController.adjustOrderLine(
+                orderLineId: lineId,
+                quantity: newQuantity,
+              );
+              if (success) {
+                removedCount++;
+// debugPrint(  '[BannerController] ✓ Successfully decreased quantity for order line $lineId during rollback');
+                
+                // Update controllers after quantity adjustment
+                try {
+                  final orderController = Get.find<OrderController>();
+                  await orderController.getActiveOrder(skipLoading: true);
+//                   debugPrint('[BannerController] OrderController updated after rollback quantity decrease');
+                } catch (e) {
+//                   debugPrint('[BannerController] Could not update OrderController: $e');
+                }
+              } else {
+// debugPrint(  '[BannerController] ✗ Failed to decrease quantity for order line $lineId during rollback');
+                failedRemovals.add('Line $lineId for variant $variantId');
+              }
             }
-            break; // Remove only one instance per variant ID
+            break; // Process only one instance per variant ID
           }
         }
 
         if (!found) {
-          debugPrint(
-              '[BannerController] ⚠ Variant ID $variantId not found in current cart during rollback');
+// debugPrint(  '[BannerController] ⚠ Variant ID $variantId not found in current cart during rollback');
         }
       }
 
-      debugPrint(
-          '[BannerController] Rollback completed: Removed $removedCount out of ${productVariantIds.length} products');
+// debugPrint(  '[BannerController] Rollback completed: Processed $removedCount out of ${productsToRemove.length} products');
 
       // Clear the tracked products for this coupon
       couponAddedProducts.remove(couponCode);
-      debugPrint(
-          '[BannerController] ✓ Cleared tracked products for coupon: $couponCode after rollback');
-      debugPrint('[BannerController] ===== ROLLBACK COMPLETE =====');
+// debugPrint(  '[BannerController] ✓ Cleared tracked products for coupon: $couponCode after rollback');
+//       debugPrint('[BannerController] ===== ROLLBACK COMPLETE =====');
 
       return {
         'success': removedCount > 0 || failedRemovals.isEmpty,
@@ -1900,10 +2168,10 @@ class BannerController extends BaseController {
             : 'No products were removed during rollback',
         'removedCount': removedCount,
         'failedRemovals': failedRemovals,
-        'totalExpected': productVariantIds.length
+        'totalExpected': productsToRemove.length
       };
     } catch (e) {
-      debugPrint('[BannerController] ✗ Error during rollback: $e');
+// debugPrint('[BannerController] ✗ Error during rollback: $e');
       return {
         'success': false,
         'message': 'Error during rollback: $e',
@@ -1915,17 +2183,15 @@ class BannerController extends BaseController {
   /// Fetch app update information - now delegated to InAppUpdateService
   Future<void> getAppUpdateInfo() async {
     try {
-      debugPrint(
-          '[BannerController] Delegating update check to InAppUpdateService...');
+/// debugPrint(  '[BannerController] Delegating update check to InAppUpdateService...');
 
       // Simply call the service method
       final updateService = InAppUpdateService();
       await updateService.checkForUpdatesAndDetermineType();
 
-      debugPrint(
-          '[BannerController] Update check completed by InAppUpdateService');
+/// debugPrint(  '[BannerController] Update check completed by InAppUpdateService');
     } catch (e) {
-      debugPrint('[BannerController] Update check error: $e');
+// debugPrint('[BannerController] Update check error: $e');
     }
   }
 
@@ -1940,8 +2206,7 @@ class BannerController extends BaseController {
       {required String productId}) async {
     try {
       utilityController.setLoadingState(true);
-      debugPrint(
-          '[BannerController] Fetching product detail for ID: $productId');
+/// debugPrint(  '[BannerController] Fetching product detail for ID: $productId');
 
       // Query string for product detail
       const String query = '''
@@ -1990,6 +2255,10 @@ class BannerController extends BaseController {
                 preview
               }
               sku
+              customFields {
+                shadowPrice
+                __typename
+              }
               __typename
             }
             featuredAsset {
@@ -2026,8 +2295,7 @@ class BannerController extends BaseController {
       );
 
       if (result.hasException) {
-        debugPrint(
-            '[BannerController] GetProductDetail Exception: ${result.exception}');
+/// debugPrint(  '[BannerController] GetProductDetail Exception: ${result.exception}');
         utilityController.setLoadingState(false);
         return null;
       }
@@ -2035,18 +2303,17 @@ class BannerController extends BaseController {
       final productData = result.data?['product'];
       if (productData != null) {
         productDetail.value = productData as Map<String, dynamic>;
-        debugPrint(
-            '[BannerController] Product detail fetched successfully: ${productData['name']}');
+/// debugPrint(  '[BannerController] Product detail fetched successfully: ${productData['name']}');
         utilityController.setLoadingState(false);
         return productData;
       } else {
-        debugPrint('[BannerController] No product data found');
+// debugPrint('[BannerController] No product data found');
         utilityController.setLoadingState(false);
         return null;
       }
-    } catch (e, stackTrace) {
-      debugPrint('[BannerController] Get product detail error: $e');
-      debugPrint('[BannerController] Stack trace: $stackTrace');
+    } catch (e) {
+// debugPrint('[BannerController] Get product detail error: $e');
+// debugPrint('[BannerController] Stack trace: $stackTrace');
       utilityController.setLoadingState(false);
       return null;
     }

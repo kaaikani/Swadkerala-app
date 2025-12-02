@@ -12,6 +12,7 @@ class Fragment$Cart {
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -33,6 +34,7 @@ class Fragment$Cart {
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -52,6 +54,8 @@ class Fragment$Cart {
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus: Fragment$Cart$validationStatus.fromJson(
+          (l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -92,6 +96,8 @@ class Fragment$Cart {
 
   final bool active;
 
+  final Fragment$Cart$validationStatus validationStatus;
+
   final List<String> couponCodes;
 
   final List<Fragment$Cart$promotions> promotions;
@@ -130,6 +136,8 @@ class Fragment$Cart {
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -168,6 +176,7 @@ class Fragment$Cart {
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -187,6 +196,7 @@ class Fragment$Cart {
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -230,6 +240,11 @@ class Fragment$Cart {
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -362,6 +377,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
     String? code,
     String? state,
     bool? active,
+    Fragment$Cart$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Fragment$Cart$promotions>? promotions,
     List<Fragment$Cart$lines>? lines,
@@ -377,6 +393,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
     Fragment$Cart$customFields? customFields,
     String? $__typename,
   });
+  CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus;
   TRes promotions(
       Iterable<Fragment$Cart$promotions> Function(
               Iterable<
@@ -418,6 +435,7 @@ class _CopyWithImpl$Fragment$Cart<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -444,6 +462,10 @@ class _CopyWithImpl$Fragment$Cart<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus:
+            validationStatus == _undefined || validationStatus == null
+                ? _instance.validationStatus
+                : (validationStatus as Fragment$Cart$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -489,6 +511,12 @@ class _CopyWithImpl$Fragment$Cart<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Fragment$Cart$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Fragment$Cart$promotions> Function(
@@ -559,6 +587,7 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
     String? code,
     String? state,
     bool? active,
+    Fragment$Cart$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Fragment$Cart$promotions>? promotions,
     List<Fragment$Cart$lines>? lines,
@@ -575,6 +604,9 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
     String? $__typename,
   }) =>
       _res;
+
+  CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus =>
+      CopyWith$Fragment$Cart$validationStatus.stub(_res);
 
   promotions(_fn) => _res;
 
@@ -624,6 +656,85 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
       arguments: [],
       directives: [],
       selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: 'validationStatus'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: SelectionSetNode(selections: [
+        FieldNode(
+          name: NameNode(value: 'isValid'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'hasUnavailableItems'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'totalUnavailableItems'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'unavailableItems'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: SelectionSetNode(selections: [
+            FieldNode(
+              name: NameNode(value: 'orderLineId'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'productName'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'variantName'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'reason'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ]),
+        ),
+        FieldNode(
+          name: NameNode(value: '__typename'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
     ),
     FieldNode(
       name: NameNode(value: 'couponCodes'),
@@ -784,6 +895,27 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
           selectionSet: null,
         ),
         FieldNode(
+          name: NameNode(value: 'unitPrice'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'isAvailable'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'unavailableReason'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
           name: NameNode(value: 'featuredAsset'),
           alias: null,
           arguments: [],
@@ -801,13 +933,6 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
               selectionSet: null,
             ),
           ]),
-        ),
-        FieldNode(
-          name: NameNode(value: 'unitPrice'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
         ),
         FieldNode(
           name: NameNode(value: 'unitPriceWithTax'),
@@ -856,6 +981,42 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
               arguments: [],
               directives: [],
               selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'stockLevel'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'price'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'product'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(selections: [
+                FieldNode(
+                  name: NameNode(value: 'enabled'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ]),
             ),
             FieldNode(
               name: NameNode(value: '__typename'),
@@ -1165,6 +1326,415 @@ extension ClientExtension$Fragment$Cart on graphql.GraphQLClient {
     );
     return result == null ? null : Fragment$Cart.fromJson(result);
   }
+}
+
+class Fragment$Cart$validationStatus {
+  Fragment$Cart$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Fragment$Cart$validationStatus.fromJson(Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) => Fragment$Cart$validationStatus$unavailableItems.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<Fragment$Cart$validationStatus$unavailableItems> unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$validationStatus
+    on Fragment$Cart$validationStatus {
+  CopyWith$Fragment$Cart$validationStatus<Fragment$Cart$validationStatus>
+      get copyWith => CopyWith$Fragment$Cart$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$validationStatus<TRes> {
+  factory CopyWith$Fragment$Cart$validationStatus(
+    Fragment$Cart$validationStatus instance,
+    TRes Function(Fragment$Cart$validationStatus) then,
+  ) = _CopyWithImpl$Fragment$Cart$validationStatus;
+
+  factory CopyWith$Fragment$Cart$validationStatus.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Fragment$Cart$validationStatus$unavailableItems>? unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Fragment$Cart$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Fragment$Cart$validationStatus$unavailableItems<
+                      Fragment$Cart$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Fragment$Cart$validationStatus<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus<TRes> {
+  _CopyWithImpl$Fragment$Cart$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$validationStatus _instance;
+
+  final TRes Function(Fragment$Cart$validationStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems:
+            unavailableItems == _undefined || unavailableItems == null
+                ? _instance.unavailableItems
+                : (unavailableItems
+                    as List<Fragment$Cart$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Fragment$Cart$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Fragment$Cart$validationStatus$unavailableItems<
+                          Fragment$Cart$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map(
+              (e) => CopyWith$Fragment$Cart$validationStatus$unavailableItems(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Fragment$Cart$validationStatus<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$validationStatus(this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Fragment$Cart$validationStatus$unavailableItems>? unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Fragment$Cart$validationStatus$unavailableItems {
+  Fragment$Cart$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Fragment$Cart$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$validationStatus$unavailableItems
+    on Fragment$Cart$validationStatus$unavailableItems {
+  CopyWith$Fragment$Cart$validationStatus$unavailableItems<
+          Fragment$Cart$validationStatus$unavailableItems>
+      get copyWith => CopyWith$Fragment$Cart$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$validationStatus$unavailableItems<TRes> {
+  factory CopyWith$Fragment$Cart$validationStatus$unavailableItems(
+    Fragment$Cart$validationStatus$unavailableItems instance,
+    TRes Function(Fragment$Cart$validationStatus$unavailableItems) then,
+  ) = _CopyWithImpl$Fragment$Cart$validationStatus$unavailableItems;
+
+  factory CopyWith$Fragment$Cart$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$Cart$validationStatus$unavailableItems<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus$unavailableItems<TRes> {
+  _CopyWithImpl$Fragment$Cart$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$validationStatus$unavailableItems _instance;
+
+  final TRes Function(Fragment$Cart$validationStatus$unavailableItems) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$Cart$validationStatus$unavailableItems<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus$unavailableItems<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$validationStatus$unavailableItems(this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Fragment$Cart$promotions {
@@ -2085,8 +2655,10 @@ class _CopyWithStubImpl$Fragment$Cart$promotions$conditions$args<TRes>
 class Fragment$Cart$lines {
   Fragment$Cart$lines({
     required this.id,
-    this.featuredAsset,
     required this.unitPrice,
+    required this.isAvailable,
+    this.unavailableReason,
+    this.featuredAsset,
     required this.unitPriceWithTax,
     required this.quantity,
     required this.linePriceWithTax,
@@ -2099,8 +2671,10 @@ class Fragment$Cart$lines {
 
   factory Fragment$Cart$lines.fromJson(Map<String, dynamic> json) {
     final l$id = json['id'];
-    final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
+    final l$featuredAsset = json['featuredAsset'];
     final l$unitPriceWithTax = json['unitPriceWithTax'];
     final l$quantity = json['quantity'];
     final l$linePriceWithTax = json['linePriceWithTax'];
@@ -2111,10 +2685,12 @@ class Fragment$Cart$lines {
     final l$$__typename = json['__typename'];
     return Fragment$Cart$lines(
       id: (l$id as String),
+      unitPrice: (l$unitPrice as num).toDouble(),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       featuredAsset: l$featuredAsset == null
           ? null
           : Fragment$Asset.fromJson((l$featuredAsset as Map<String, dynamic>)),
-      unitPrice: (l$unitPrice as num).toDouble(),
       unitPriceWithTax: (l$unitPriceWithTax as num).toDouble(),
       quantity: (l$quantity as int),
       linePriceWithTax: (l$linePriceWithTax as num).toDouble(),
@@ -2133,9 +2709,13 @@ class Fragment$Cart$lines {
 
   final String id;
 
-  final Fragment$Asset? featuredAsset;
-
   final double unitPrice;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
+
+  final Fragment$Asset? featuredAsset;
 
   final double unitPriceWithTax;
 
@@ -2157,10 +2737,14 @@ class Fragment$Cart$lines {
     final _resultData = <String, dynamic>{};
     final l$id = id;
     _resultData['id'] = l$id;
-    final l$featuredAsset = featuredAsset;
-    _resultData['featuredAsset'] = l$featuredAsset?.toJson();
     final l$unitPrice = unitPrice;
     _resultData['unitPrice'] = l$unitPrice;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
+    final l$featuredAsset = featuredAsset;
+    _resultData['featuredAsset'] = l$featuredAsset?.toJson();
     final l$unitPriceWithTax = unitPriceWithTax;
     _resultData['unitPriceWithTax'] = l$unitPriceWithTax;
     final l$quantity = quantity;
@@ -2183,8 +2767,10 @@ class Fragment$Cart$lines {
   @override
   int get hashCode {
     final l$id = id;
-    final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
+    final l$featuredAsset = featuredAsset;
     final l$unitPriceWithTax = unitPriceWithTax;
     final l$quantity = quantity;
     final l$linePriceWithTax = linePriceWithTax;
@@ -2195,8 +2781,10 @@ class Fragment$Cart$lines {
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
-      l$featuredAsset,
       l$unitPrice,
+      l$isAvailable,
+      l$unavailableReason,
+      l$featuredAsset,
       l$unitPriceWithTax,
       l$quantity,
       l$linePriceWithTax,
@@ -2221,14 +2809,24 @@ class Fragment$Cart$lines {
     if (l$id != lOther$id) {
       return false;
     }
-    final l$featuredAsset = featuredAsset;
-    final lOther$featuredAsset = other.featuredAsset;
-    if (l$featuredAsset != lOther$featuredAsset) {
-      return false;
-    }
     final l$unitPrice = unitPrice;
     final lOther$unitPrice = other.unitPrice;
     if (l$unitPrice != lOther$unitPrice) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
+      return false;
+    }
+    final l$featuredAsset = featuredAsset;
+    final lOther$featuredAsset = other.featuredAsset;
+    if (l$featuredAsset != lOther$featuredAsset) {
       return false;
     }
     final l$unitPriceWithTax = unitPriceWithTax;
@@ -2301,8 +2899,10 @@ abstract class CopyWith$Fragment$Cart$lines<TRes> {
 
   TRes call({
     String? id,
-    Fragment$Asset? featuredAsset,
     double? unitPrice,
+    bool? isAvailable,
+    String? unavailableReason,
+    Fragment$Asset? featuredAsset,
     double? unitPriceWithTax,
     int? quantity,
     double? linePriceWithTax,
@@ -2337,8 +2937,10 @@ class _CopyWithImpl$Fragment$Cart$lines<TRes>
 
   TRes call({
     Object? id = _undefined,
-    Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
+    Object? featuredAsset = _undefined,
     Object? unitPriceWithTax = _undefined,
     Object? quantity = _undefined,
     Object? linePriceWithTax = _undefined,
@@ -2350,12 +2952,18 @@ class _CopyWithImpl$Fragment$Cart$lines<TRes>
   }) =>
       _then(Fragment$Cart$lines(
         id: id == _undefined || id == null ? _instance.id : (id as String),
-        featuredAsset: featuredAsset == _undefined
-            ? _instance.featuredAsset
-            : (featuredAsset as Fragment$Asset?),
         unitPrice: unitPrice == _undefined || unitPrice == null
             ? _instance.unitPrice
             : (unitPrice as double),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
+        featuredAsset: featuredAsset == _undefined
+            ? _instance.featuredAsset
+            : (featuredAsset as Fragment$Asset?),
         unitPriceWithTax:
             unitPriceWithTax == _undefined || unitPriceWithTax == null
                 ? _instance.unitPriceWithTax
@@ -2421,8 +3029,10 @@ class _CopyWithStubImpl$Fragment$Cart$lines<TRes>
 
   call({
     String? id,
-    Fragment$Asset? featuredAsset,
     double? unitPrice,
+    bool? isAvailable,
+    String? unavailableReason,
+    Fragment$Asset? featuredAsset,
     double? unitPriceWithTax,
     int? quantity,
     double? linePriceWithTax,
@@ -2447,6 +3057,9 @@ class Fragment$Cart$lines$productVariant {
   Fragment$Cart$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -2454,10 +3067,17 @@ class Fragment$Cart$lines$productVariant {
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product: Fragment$Cart$lines$productVariant$product.fromJson(
+          (l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2465,6 +3085,12 @@ class Fragment$Cart$lines$productVariant {
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Fragment$Cart$lines$productVariant$product product;
 
   final String $__typename;
 
@@ -2474,6 +3100,12 @@ class Fragment$Cart$lines$productVariant {
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2483,10 +3115,16 @@ class Fragment$Cart$lines$productVariant {
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -2508,6 +3146,21 @@ class Fragment$Cart$lines$productVariant {
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -2541,8 +3194,12 @@ abstract class CopyWith$Fragment$Cart$lines$productVariant<TRes> {
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Fragment$Cart$lines$productVariant$product? product,
     String? $__typename,
   });
+  CopyWith$Fragment$Cart$lines$productVariant$product<TRes> get product;
 }
 
 class _CopyWithImpl$Fragment$Cart$lines$productVariant<TRes>
@@ -2561,6 +3218,9 @@ class _CopyWithImpl$Fragment$Cart$lines$productVariant<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart$lines$productVariant(
@@ -2568,10 +3228,25 @@ class _CopyWithImpl$Fragment$Cart$lines$productVariant<TRes>
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product as Fragment$Cart$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Fragment$Cart$lines$productVariant$product<TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Fragment$Cart$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Fragment$Cart$lines$productVariant<TRes>
@@ -2583,6 +3258,139 @@ class _CopyWithStubImpl$Fragment$Cart$lines$productVariant<TRes>
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Fragment$Cart$lines$productVariant$product? product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Fragment$Cart$lines$productVariant$product<TRes> get product =>
+      CopyWith$Fragment$Cart$lines$productVariant$product.stub(_res);
+}
+
+class Fragment$Cart$lines$productVariant$product {
+  Fragment$Cart$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Fragment$Cart$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$lines$productVariant$product
+    on Fragment$Cart$lines$productVariant$product {
+  CopyWith$Fragment$Cart$lines$productVariant$product<
+          Fragment$Cart$lines$productVariant$product>
+      get copyWith => CopyWith$Fragment$Cart$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$lines$productVariant$product<TRes> {
+  factory CopyWith$Fragment$Cart$lines$productVariant$product(
+    Fragment$Cart$lines$productVariant$product instance,
+    TRes Function(Fragment$Cart$lines$productVariant$product) then,
+  ) = _CopyWithImpl$Fragment$Cart$lines$productVariant$product;
+
+  factory CopyWith$Fragment$Cart$lines$productVariant$product.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$Cart$lines$productVariant$product<TRes>
+    implements CopyWith$Fragment$Cart$lines$productVariant$product<TRes> {
+  _CopyWithImpl$Fragment$Cart$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$lines$productVariant$product _instance;
+
+  final TRes Function(Fragment$Cart$lines$productVariant$product) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$Cart$lines$productVariant$product<TRes>
+    implements CopyWith$Fragment$Cart$lines$productVariant$product<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$lines$productVariant$product(this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -11681,6 +12489,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -11703,6 +12512,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -11722,6 +12532,9 @@ class Mutation$AddToCart$addItemToOrder$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$AddToCart$addItemToOrder$$Order$validationStatus.fromJson(
+              (l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -11766,6 +12579,9 @@ class Mutation$AddToCart$addItemToOrder$$Order
 
   final bool active;
 
+  final Mutation$AddToCart$addItemToOrder$$Order$validationStatus
+      validationStatus;
+
   final List<String> couponCodes;
 
   final List<Mutation$AddToCart$addItemToOrder$$Order$promotions> promotions;
@@ -11805,6 +12621,8 @@ class Mutation$AddToCart$addItemToOrder$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -11843,6 +12661,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -11862,6 +12681,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -11906,6 +12726,11 @@ class Mutation$AddToCart$addItemToOrder$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -12041,6 +12866,7 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order<TRes> {
     String? code,
     String? state,
     bool? active,
+    Mutation$AddToCart$addItemToOrder$$Order$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Mutation$AddToCart$addItemToOrder$$Order$promotions>? promotions,
     List<Mutation$AddToCart$addItemToOrder$$Order$lines>? lines,
@@ -12056,6 +12882,8 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order<TRes> {
     Mutation$AddToCart$addItemToOrder$$Order$customFields? customFields,
     String? $__typename,
   });
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<TRes>
+      get validationStatus;
   TRes promotions(
       Iterable<Mutation$AddToCart$addItemToOrder$$Order$promotions> Function(
               Iterable<
@@ -12102,6 +12930,7 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -12128,6 +12957,11 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$AddToCart$addItemToOrder$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -12177,6 +13011,13 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<TRes>
+      get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$AddToCart$addItemToOrder$$Order$promotions> Function(
@@ -12252,6 +13093,7 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
     String? code,
     String? state,
     bool? active,
+    Mutation$AddToCart$addItemToOrder$$Order$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Mutation$AddToCart$addItemToOrder$$Order$promotions>? promotions,
     List<Mutation$AddToCart$addItemToOrder$$Order$lines>? lines,
@@ -12269,6 +13111,11 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
   }) =>
       _res;
 
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<TRes>
+      get validationStatus =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -12281,6 +13128,453 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
       get customFields =>
           CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields.stub(
               _res);
+}
+
+class Mutation$AddToCart$addItemToOrder$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$AddToCart$addItemToOrder$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$AddToCart$addItemToOrder$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddToCart$addItemToOrder$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$AddToCart$addItemToOrder$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$Order$validationStatus
+    on Mutation$AddToCart$addItemToOrder$$Order$validationStatus {
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<
+          Mutation$AddToCart$addItemToOrder$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus(
+    Mutation$AddToCart$addItemToOrder$$Order$validationStatus instance,
+    TRes Function(Mutation$AddToCart$addItemToOrder$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus;
+
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+                      Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddToCart$addItemToOrder$$Order$validationStatus _instance;
+
+  final TRes Function(Mutation$AddToCart$addItemToOrder$$Order$validationStatus)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$AddToCart$addItemToOrder$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+                          Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems
+    on Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+          Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems(
+    Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$AddToCart$addItemToOrder$$Order$promotions
@@ -13297,6 +14591,8 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
   Mutation$AddToCart$addItemToOrder$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -13312,6 +14608,8 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -13324,6 +14622,8 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     return Mutation$AddToCart$addItemToOrder$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -13348,6 +14648,10 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -13375,6 +14679,10 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -13400,6 +14708,8 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -13412,6 +14722,8 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -13441,6 +14753,16 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -13522,6 +14844,8 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes> {
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -13560,6 +14884,8 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -13575,6 +14901,12 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -13647,6 +14979,8 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -13676,6 +15010,9 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant
   Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -13683,10 +15020,18 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -13694,6 +15039,13 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -13703,6 +15055,12 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -13712,10 +15070,16 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -13738,6 +15102,21 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -13775,8 +15154,14 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVa
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant<
@@ -13799,6 +15184,9 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVarian
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant(
@@ -13806,10 +15194,27 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVarian
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant<
@@ -13825,6 +15230,162 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVa
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product
+    on Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product {
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+          Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product(
+    Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;

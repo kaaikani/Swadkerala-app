@@ -80,12 +80,14 @@ class ProductVariant {
   final String name;
   final String? stockLevel;
   final double? price;
+  final bool? productEnabled; // Product's enabled status
 
   ProductVariant({
     required this.id,
     required this.name,
     this.stockLevel,
     this.price,
+    this.productEnabled,
   });
 
   factory ProductVariant.fromJson(Map<String, dynamic> json) {
@@ -95,11 +97,25 @@ class ProductVariant {
       return double.tryParse(value.toString());
     }
 
+    // Extract product enabled status
+    bool? parseProductEnabled(Map<String, dynamic> json) {
+      if (json['product'] != null) {
+        final product = json['product'] as Map<String, dynamic>;
+        if (product['enabled'] != null) {
+          return product['enabled'] is bool 
+              ? product['enabled'] as bool
+              : product['enabled'].toString().toLowerCase() == 'true';
+        }
+      }
+      return null;
+    }
+
     return ProductVariant(
       id: json['id'].toString(),
       name: json['name'] ?? '',
       stockLevel: json['stockLevel']?.toString(),
       price: parseDouble(json['price']),
+      productEnabled: parseProductEnabled(json),
     );
   }
 }
@@ -132,9 +148,9 @@ class OrderLine {
   });
 
   factory OrderLine.fromJson(Map<String, dynamic> json) {
-    bool parseBool(dynamic value) {
+    bool parseBool(dynamic value, {bool defaultValue = true}) {
       if (value is bool) return value;
-      if (value == null) return true;
+      if (value == null) return defaultValue;
       return value.toString().toLowerCase() == 'true';
     }
 
@@ -156,7 +172,11 @@ class OrderLine {
           ? List<Discount>.from(
               json['discounts'].map((x) => Discount.fromJson(x)))
           : [],
-      isAvailable: parseBool(json['isAvailable']),
+      // If isAvailable is null, check unavailableReason - if it exists, assume unavailable
+      // Otherwise default to true (available) for backward compatibility
+      isAvailable: json.containsKey('isAvailable')
+          ? parseBool(json['isAvailable'], defaultValue: json['unavailableReason'] != null ? false : true)
+          : (json['unavailableReason'] != null ? false : true),
       unavailableReason: json['unavailableReason']?.toString(),
     );
   }

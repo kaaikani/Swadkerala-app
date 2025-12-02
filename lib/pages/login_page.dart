@@ -10,6 +10,7 @@ import '../services/sim_detection_service.dart';
 import '../services/sms_autofill_service.dart';
 import '../theme/theme.dart';
 import '../utils/navigation_helper.dart';
+import '../utils/responsive.dart';
 import '../services/analytics_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -52,7 +53,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _clearAllCache();
       _authController.resetFormField();
-      _autoFillTimer = Timer(const Duration(milliseconds: 1500), () {
+      _autoFillTimer = Timer(const Duration(milliseconds: 300), () {
         _autoFillPhoneNumber();
       });
     });
@@ -85,7 +86,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     try {
       await _smsAutofillService.initialize();
     } catch (e) {
-      debugPrint('[LoginPage] Error initializing SMS autofill: $e');
+// debugPrint('[LoginPage] Error initializing SMS autofill: $e');
     }
   }
 
@@ -98,12 +99,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       _authController.setLoggedIn(false);
       _authController.setOtpSent(false);
     } catch (e) {
-      debugPrint('[LoginPage] Error clearing cache: $e');
+// debugPrint('[LoginPage] Error clearing cache: $e');
     }
   }
 
   Future<void> _autoFillPhoneNumber() async {
-    if (!mounted) return; // Check if widget is still mounted
+    if (!mounted) return;
     setState(() => _isDetectingSim = true);
     try {
       final simService = SimDetectionService();
@@ -119,7 +120,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
       List<SimInfo> simInfoList =
           await simService.getAllSimInfoWithRetry().timeout(
-                const Duration(seconds: 15),
+                const Duration(seconds: 3),
                 onTimeout: () => <SimInfo>[],
               );
 
@@ -137,7 +138,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         }
       }
     } catch (e) {
-      debugPrint('[LoginPage] SIM detection failed: $e');
+// debugPrint('[LoginPage] SIM detection failed: $e');
     } finally {
       if (mounted) setState(() => _isDetectingSim = false);
     }
@@ -179,29 +180,25 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         if (otp.length == 4 && _otpError == null) _verifyOtp();
       });
     } catch (e) {
-      debugPrint('[LoginPage] SMS autofill error: $e');
+// debugPrint('[LoginPage] SMS autofill error: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final gradientColors = [
-      AppColors.gradientStart,
-      AppColors.gradientEnd,
-      isDarkMode ? AppColors.background : AppColors.backgroundLight,
-    ];
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: gradientColors,
-            stops: const [0.0, 0.6, 1.0],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.button.withValues(alpha: 0.1),
+              AppColors.buttonLight.withValues(alpha: 0.05),
+              AppColors.background,
+            ],
+            stops: const [0.0, 0.3, 1.0],
           ),
         ),
         child: SafeArea(
@@ -209,27 +206,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 40),
-
-                    // Logo and Welcome Section
-                    _buildHeader(),
-
-                    const SizedBox(height: 50),
-
-                    // Main Form Card
-                    _buildFormCard(),
-
-                    const SizedBox(height: 30),
-
-                    // Sign Up Link
-                    _buildSignUpLink(),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  // Top decorative section
+                  _buildTopSection(),
+                  
+                  // Main content card
+                  Expanded(
+                    child: _buildMainContent(),
+                  ),
+                ],
               ),
             ),
           ),
@@ -238,227 +224,261 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildHeader() {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final Color primaryTextColor = AppColors.textLight;
-    final Color subtitleColor =
-        primaryTextColor.withValues(alpha: isDarkMode ? 0.7 : 0.85);
-
-    return Column(
-      children: [
-        // Logo
-        Container(
-          width: 96,
-          height: 96,
-          decoration: BoxDecoration(
-            color: AppColors.card.withValues(alpha: isDarkMode ? 0.95 : 1),
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: [
-              BoxShadow(
-                color: isDarkMode
-                    ? Colors.black.withValues(alpha: 0.45)
-                    : AppColors.shadowMedium,
-                blurRadius: 24,
-                offset: const Offset(0, 12),
+  Widget _buildTopSection() {
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUtils.rp(32)),
+      child: Column(
+        children: [
+          SizedBox(height: ResponsiveUtils.rp(20)),
+          // App Logo/Icon
+          Container(
+            width: ResponsiveUtils.rp(80),
+            height: ResponsiveUtils.rp(80),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.button, AppColors.buttonLight],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-            ],
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.button.withValues(alpha: 0.3),
+                  blurRadius: ResponsiveUtils.rp(20),
+                  offset: Offset(0, ResponsiveUtils.rp(10)),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.shopping_bag_rounded,
+              size: ResponsiveUtils.rp(40),
+              color: Colors.white,
+            ),
           ),
-          child: Icon(
-            Icons.shopping_bag_outlined,
-            size: 48,
-            color: AppColors.button,
+          SizedBox(height: ResponsiveUtils.rp(24)),
+          Text(
+            'Welcome Back',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(28),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.5,
+            ),
           ),
-        ),
-
-        const SizedBox(height: 30),
-
-        // Welcome Text
-        Text(
-          'Welcome Back!',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.headlineMedium?.copyWith(
-                color: primaryTextColor,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
-              ) ??
-              TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
-                color: primaryTextColor,
-                letterSpacing: 0.5,
-              ),
-        ),
-
-        const SizedBox(height: 8),
-
-        Text(
-          'Sign in to continue',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(
-                color: subtitleColor,
-                fontWeight: FontWeight.w400,
-              ) ??
-              TextStyle(
-                fontSize: 16,
-                color: subtitleColor,
-              ),
-        ),
-      ],
+          SizedBox(height: ResponsiveUtils.rp(8)),
+          Text(
+            'Sign in to your account',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(16),
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildFormCard() {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOutCubic,
+  Widget _buildMainContent() {
+    return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.card,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.borderLight),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(ResponsiveUtils.rp(32)),
+          topRight: Radius.circular(ResponsiveUtils.rp(32)),
+        ),
         boxShadow: [
           BoxShadow(
-            color: isDarkMode
-                ? Colors.black.withValues(alpha: 0.35)
-                : AppColors.shadowMedium,
-            blurRadius: 28,
-            offset: const Offset(0, 16),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: ResponsiveUtils.rp(20),
+            offset: Offset(0, -5),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Phone Number Section
-            _buildPhoneSection(),
-
-            const SizedBox(height: 24),
-
-            // OTP Section
-            Obx(
-              () => AnimatedSwitcher(
-                duration: const Duration(milliseconds: 280),
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                child: _authController.isOtpSent
-                    ? Column(
-                        key: const ValueKey('otp-section'),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildOtpSection(),
-                          const SizedBox(height: 20),
-                        ],
-                      )
-                    : const SizedBox.shrink(),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            
+            // Progress indicator
+            _buildProgressIndicator(),
+            
+            SizedBox(height: ResponsiveUtils.rp(32)),
+            
+            // Form content - using Flexible instead of Expanded
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Phone or OTP section
+                    Obx(() => _authController.isOtpSent
+                        ? _buildOtpSection()
+                        : _buildPhoneSection()),
+                    
+                    SizedBox(height: ResponsiveUtils.rp(24)),
+                    
+                    // Action button
+                    _buildActionButton(),
+                    
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    
+                    // Resend OTP
+                    Obx(() => _authController.isOtpSent
+                        ? _buildResendSection()
+                        : const SizedBox.shrink()),
+                  ],
+                ),
               ),
             ),
-
-            // Action Button
-            _buildActionButton(),
-
-            const SizedBox(height: 12),
-
-            // Resend OTP
-            Obx(
-              () => AnimatedSwitcher(
-                duration: const Duration(milliseconds: 280),
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                child: _authController.isOtpSent
-                    ? Padding(
-                        key: const ValueKey('resend-section'),
-                        padding: const EdgeInsets.only(top: 8),
-                        child: _buildResendSection(),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ),
+            
+            SizedBox(height: ResponsiveUtils.rp(16)),
+            
+            // Sign up link
+            _buildSignUpLink(),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildProgressIndicator() {
+    return Obx(() {
+      final currentStep = _authController.isOtpSent ? 1 : 0;
+      
+      return Row(
+        children: [
+          _buildProgressDot(isActive: currentStep == 0, isCompleted: currentStep > 0),
+          Expanded(
+            child: Container(
+              height: 3,
+              margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                color: currentStep > 0
+                    ? AppColors.button
+                    : AppColors.border.withValues(alpha: 0.3),
+              ),
+            ),
+          ),
+          _buildProgressDot(isActive: currentStep == 1, isCompleted: false),
+        ],
+      );
+    });
+  }
+
+  Widget _buildProgressDot({required bool isActive, required bool isCompleted}) {
+    return Container(
+      width: ResponsiveUtils.rp(12),
+      height: ResponsiveUtils.rp(12),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isCompleted
+            ? AppColors.button
+            : isActive
+                ? AppColors.button
+                : AppColors.border.withValues(alpha: 0.3),
+      ),
+      child: isCompleted
+          ? Icon(
+              Icons.check,
+              size: ResponsiveUtils.rp(8),
+              color: Colors.white,
+            )
+          : null,
+    );
+  }
+
   Widget _buildPhoneSection() {
-    final theme = Theme.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Mobile Number',
-          style: theme.textTheme.titleMedium?.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.2,
-              ) ??
-              TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+          'Enter Mobile Number',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(18),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
         ),
-        const SizedBox(height: 15),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        Text(
+          'We\'ll send you a verification code',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textSecondary,
+          ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(24)),
         _buildPhoneField(),
         if (_phoneFieldTouched && _phoneError != null)
-          _buildErrorMessage(_phoneError!),
-        if (_phoneFieldTouched &&
-            _phoneError == null &&
-            _authController.phoneNumber.text.length == 10)
-          _buildSuccessMessage('Valid phone number'),
+          Padding(
+            padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+            child: _buildErrorMessage(_phoneError!),
+          ),
       ],
     );
   }
 
   Widget _buildOtpSection() {
-    final theme = Theme.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(Icons.verified_user, color: AppColors.success, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'Enter OTP',
-              style: theme.textTheme.titleMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ) ??
-                  TextStyle(
-                    fontSize: 18,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Enter OTP',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(18),
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(4)),
+                Text(
+                  'Sent to +91 ${_authController.phoneNumber.text}',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(13),
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _authController.setOtpSent(false);
+                  _authController.otpController.clear();
+                  _otpFieldTouched = false;
+                  _otpError = null;
+                });
+              },
+              child: Text(
+                'Change',
+                style: TextStyle(
+                  color: AppColors.button,
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Sent to +91 ${_authController.phoneNumber.text}',
-          style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ) ??
-              TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-        ),
-        const SizedBox(height: 15),
+        SizedBox(height: ResponsiveUtils.rp(24)),
         _buildOtpField(),
         if (_otpFieldTouched && _otpError != null)
-          _buildErrorMessage(_otpError!),
-        if (_otpFieldTouched &&
-            _otpError == null &&
-            _authController.otpController.text.length == 4)
-          _buildSuccessMessage('Valid OTP'),
+          Padding(
+            padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+            child: _buildErrorMessage(_otpError!),
+          ),
       ],
     );
   }
@@ -469,60 +489,40 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         _phoneError == null &&
         _authController.phoneNumber.text.length == 10;
 
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
     final suffix = _buildPhoneSuffixIcon(hasError, isValid);
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
+    return Container(
       decoration: BoxDecoration(
         color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
         border: Border.all(
           color: hasError
               ? AppColors.errorLight
               : isValid
                   ? AppColors.successLight
                   : AppColors.inputBorder,
-          width: 1.6,
+          width: 1.5,
         ),
-        boxShadow: [
-          if (isValid)
-            BoxShadow(
-              color: AppColors.success.withValues(alpha: 0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            decoration: BoxDecoration(
-              color: AppColors.card.withValues(alpha: isDarkMode ? 0.8 : 1),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18),
-                bottomLeft: Radius.circular(18),
-              ),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.rp(16),
+              vertical: ResponsiveUtils.rp(16),
             ),
             child: Text(
               '+91',
-              style: theme.textTheme.titleMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ) ??
-                  TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(16),
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
           Container(
             width: 1,
-            height: 40,
+            height: ResponsiveUtils.rp(24),
             color: AppColors.border,
           ),
           Expanded(
@@ -530,16 +530,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               controller: _authController.phoneNumber,
               keyboardType: TextInputType.phone,
               enabled: !_authController.isOtpSent && !_isDetectingSim,
-              style: theme.textTheme.titleMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ) ??
-                  TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(16),
+                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+              ),
               cursorColor: AppColors.button,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -552,20 +547,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 _validatePhone(value);
               },
               decoration: InputDecoration(
-                hintText: 'Enter 10 digit mobile number',
+                hintText: 'Enter mobile number',
                 hintStyle: TextStyle(
-                  color: AppColors.textSecondary.withValues(alpha: 0.45),
-                  fontSize: 16,
+                  color: AppColors.textSecondary.withValues(alpha: 0.5),
+                  fontSize: ResponsiveUtils.sp(16),
                 ),
                 border: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-                suffixIcon: suffix == null
-                    ? null
-                    : Padding(
-                        padding: const EdgeInsets.only(right: 14),
-                        child: suffix,
-                      ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(16),
+                  vertical: ResponsiveUtils.rp(16),
+                ),
+                suffixIcon: suffix,
               ),
             ),
           ),
@@ -576,13 +568,30 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Widget? _buildPhoneSuffixIcon(bool hasError, bool isValid) {
     if (_isDetectingSim) {
-      return Skeletons.smallBox(size: 22);
+      return Padding(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+        child: Skeletons.smallBox(size: ResponsiveUtils.rp(20)),
+      );
     }
     if (isValid) {
-      return const Icon(Icons.check_circle, color: AppColors.success, size: 24);
+      return Padding(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+        child: Icon(
+          Icons.check_circle,
+          color: AppColors.success,
+          size: ResponsiveUtils.rp(20),
+        ),
+      );
     }
     if (hasError) {
-      return const Icon(Icons.error_outline, color: AppColors.error, size: 24);
+      return Padding(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+        child: Icon(
+          Icons.error_outline,
+          color: AppColors.error,
+          size: ResponsiveUtils.rp(20),
+        ),
+      );
     }
     return null;
   }
@@ -593,39 +602,32 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         _otpError == null &&
         _authController.otpController.text.length == 4;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+    return Container(
       decoration: BoxDecoration(
         color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
         border: Border.all(
           color: hasError
               ? AppColors.errorLight
               : isValid
                   ? AppColors.successLight
                   : AppColors.inputBorder,
-          width: 1.6,
+          width: 1.5,
         ),
-        boxShadow: [
-          if (isValid)
-            BoxShadow(
-              color: AppColors.success.withValues(alpha: 0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-        ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.rp(20),
+        vertical: ResponsiveUtils.rp(20),
+      ),
       child: TextField(
         controller: _authController.otpController,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: 26,
-          fontWeight: FontWeight.w600,
+          fontSize: ResponsiveUtils.sp(24),
+          fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
-          letterSpacing: 18,
+          letterSpacing: ResponsiveUtils.rp(12),
         ),
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
@@ -643,9 +645,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         decoration: InputDecoration(
           hintText: '○ ○ ○ ○',
           hintStyle: TextStyle(
-            color: AppColors.textSecondary.withValues(alpha: 0.35),
-            fontSize: 24,
-            letterSpacing: 18,
+            color: AppColors.textSecondary.withValues(alpha: 0.3),
+            fontSize: ResponsiveUtils.sp(24),
+            letterSpacing: ResponsiveUtils.rp(12),
           ),
           border: InputBorder.none,
         ),
@@ -663,71 +665,49 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           : (_phoneError == null &&
               _authController.phoneNumber.text.length == 10);
 
-      final gradient = isEnabled
-          ? LinearGradient(
-              colors: const [
-                AppColors.button,
-                AppColors.buttonLight,
-              ],
-            )
-          : null;
-
-      final Color disabledColor =
-          AppColors.inputBorder.withValues(alpha: Get.isDarkMode ? 0.3 : 0.6);
-
-      return AnimatedContainer(
-        duration: const Duration(milliseconds: 240),
-        curve: Curves.easeOutCubic,
-        width: double.infinity,
-        height: 58,
+      return Container(
+        height: ResponsiveUtils.rp(56),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          gradient: gradient,
-          color: gradient == null ? disabledColor : null,
-          boxShadow: gradient == null
-              ? null
-              : [
-                  BoxShadow(
-                    color: AppColors.button.withValues(alpha: 0.28),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+          gradient: isEnabled
+              ? LinearGradient(
+                  colors: [AppColors.button, AppColors.buttonLight],
+                )
+              : null,
+          color: isEnabled ? null : AppColors.inputBorder,
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: (isLoading || !isEnabled) ? null : _handleButtonPress,
-            borderRadius: BorderRadius.circular(18),
-            splashColor: AppColors.buttonLight.withValues(alpha: 0.25),
-            highlightColor: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
             child: Center(
               child: isLoading
-                  ? Skeletons.textLine(width: 120, height: 18)
+                  ? SizedBox(
+                      width: ResponsiveUtils.rp(24),
+                      height: ResponsiveUtils.rp(24),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          isOtpSent
-                              ? Icons.verified_outlined
-                              : Icons.send_rounded,
-                          color: AppColors.buttonText,
-                          size: 22,
+                          isOtpSent ? Icons.verified : Icons.arrow_forward_rounded,
+                          color: Colors.white,
+                          size: ResponsiveUtils.rp(20),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
                         Text(
-                          isOtpSent ? 'Verify & Login' : 'Send OTP',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        color: AppColors.buttonText,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.4,
-                                      ) ??
-                                  const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.buttonText,
-                                  ),
+                          isOtpSent ? 'Verify & Login' : 'Continue',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: ResponsiveUtils.sp(16),
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ],
                     ),
@@ -739,162 +719,86 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Widget _buildResendSection() {
-    final theme = Theme.of(context);
     return Column(
       children: [
         Text(
           "Didn't receive the code?",
-          style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ) ??
-              TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 15,
-              ),
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: ResponsiveUtils.sp(14),
+          ),
         ),
-        const SizedBox(height: 8),
-        TextButton.icon(
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        TextButton(
           onPressed: _authController.isLoading ? null : _handleResendOtp,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            foregroundColor: AppColors.button,
-            textStyle: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
+          child: Text(
+            'Resend OTP',
+            style: TextStyle(
+              color: AppColors.button,
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.w600,
             ),
           ),
-          icon: const Icon(Icons.refresh_rounded, size: 18),
-          label: const Text('Resend OTP'),
         ),
       ],
     );
   }
 
   Widget _buildSignUpLink() {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final overlayColor = isDarkMode
-        ? AppColors.textLight.withValues(alpha: 0.06)
-        : AppColors.textLight.withValues(alpha: 0.12);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 26),
-      decoration: BoxDecoration(
-        color: overlayColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-            color:
-                AppColors.textLight.withValues(alpha: isDarkMode ? 0.12 : 0.2)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Don't have an account? ",
-            style: theme.textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textLight.withValues(alpha: 0.85),
-                  fontWeight: FontWeight.w500,
-                ) ??
-                TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textLight.withValues(alpha: 0.85),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "Don't have an account? ",
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: ResponsiveUtils.sp(14),
           ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: () => Get.toNamed('/signup'),
-            child: Text(
-              'Sign Up',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textLight,
-                    fontWeight: FontWeight.w700,
-                    decoration: TextDecoration.underline,
-                    decorationThickness: 2,
-                  ) ??
-                  const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textLight,
-                    decoration: TextDecoration.underline,
-                  ),
+        ),
+        GestureDetector(
+          onTap: () => Get.toNamed('/signup'),
+          child: Text(
+            'Sign Up',
+            style: TextStyle(
+              color: AppColors.button,
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildErrorMessage(String message) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final Color background =
-        AppColors.error.withValues(alpha: isDarkMode ? 0.18 : 0.12);
-    final Color border =
-        AppColors.error.withValues(alpha: isDarkMode ? 0.45 : 0.25);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: border),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.error_outline, color: AppColors.error, size: 18),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                message,
-                style: TextStyle(
-                  color:
-                      AppColors.error.withValues(alpha: isDarkMode ? 0.9 : 0.8),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+      decoration: BoxDecoration(
+        color: AppColors.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+        border: Border.all(
+          color: AppColors.error.withValues(alpha: 0.3),
         ),
       ),
-    );
-  }
-
-  Widget _buildSuccessMessage(String message) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final Color background =
-        AppColors.success.withValues(alpha: isDarkMode ? 0.18 : 0.12);
-    final Color border =
-        AppColors.success.withValues(alpha: isDarkMode ? 0.35 : 0.22);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: border),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.check_circle, color: AppColors.success, size: 18),
-            const SizedBox(width: 8),
-            Text(
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: AppColors.error,
+            size: ResponsiveUtils.rp(16),
+          ),
+          SizedBox(width: ResponsiveUtils.rp(8)),
+          Expanded(
+            child: Text(
               message,
               style: TextStyle(
-                color:
-                    AppColors.success.withValues(alpha: isDarkMode ? 0.9 : 0.8),
-                fontSize: 13,
+                color: AppColors.error,
+                fontSize: ResponsiveUtils.sp(12),
                 fontWeight: FontWeight.w500,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -917,14 +821,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           content: Row(
             children: [
               const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
+              SizedBox(width: ResponsiveUtils.rp(12)),
               Expanded(child: Text(_phoneError!)),
             ],
           ),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+          ),
         ),
       );
       return;
@@ -944,14 +849,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           content: Row(
             children: [
               const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
+              SizedBox(width: ResponsiveUtils.rp(12)),
               Expanded(child: Text(_otpError!)),
             ],
           ),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+          ),
         ),
       );
       return;
@@ -959,10 +865,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
     final success = await _authController.verifyOtp(context);
     if (success) {
-      // Track login event
       await AnalyticsService().logLogin(loginMethod: 'OTP');
-      
-      // Redirect to intended route if exists, otherwise go to home
       await NavigationHelper.redirectToIntendedRoute();
     }
   }
@@ -973,7 +876,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _autoFillTimer?.cancel(); // Cancel the timer to prevent setState after dispose
+    _autoFillTimer?.cancel();
     _fadeController.dispose();
     _slideController.dispose();
     _smsAutofillService.stopListening();

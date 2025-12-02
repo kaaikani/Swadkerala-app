@@ -5923,6 +5923,7 @@ class Fragment$Cart {
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -5944,6 +5945,7 @@ class Fragment$Cart {
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -5963,6 +5965,8 @@ class Fragment$Cart {
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus: Fragment$Cart$validationStatus.fromJson(
+          (l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -6003,6 +6007,8 @@ class Fragment$Cart {
 
   final bool active;
 
+  final Fragment$Cart$validationStatus validationStatus;
+
   final List<String> couponCodes;
 
   final List<Fragment$Cart$promotions> promotions;
@@ -6041,6 +6047,8 @@ class Fragment$Cart {
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -6079,6 +6087,7 @@ class Fragment$Cart {
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -6098,6 +6107,7 @@ class Fragment$Cart {
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -6141,6 +6151,11 @@ class Fragment$Cart {
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -6273,6 +6288,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
     String? code,
     String? state,
     bool? active,
+    Fragment$Cart$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Fragment$Cart$promotions>? promotions,
     List<Fragment$Cart$lines>? lines,
@@ -6288,6 +6304,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
     Fragment$Cart$customFields? customFields,
     String? $__typename,
   });
+  CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus;
   TRes promotions(
       Iterable<Fragment$Cart$promotions> Function(
               Iterable<
@@ -6329,6 +6346,7 @@ class _CopyWithImpl$Fragment$Cart<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -6355,6 +6373,10 @@ class _CopyWithImpl$Fragment$Cart<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus:
+            validationStatus == _undefined || validationStatus == null
+                ? _instance.validationStatus
+                : (validationStatus as Fragment$Cart$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -6400,6 +6422,12 @@ class _CopyWithImpl$Fragment$Cart<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Fragment$Cart$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Fragment$Cart$promotions> Function(
@@ -6470,6 +6498,7 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
     String? code,
     String? state,
     bool? active,
+    Fragment$Cart$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Fragment$Cart$promotions>? promotions,
     List<Fragment$Cart$lines>? lines,
@@ -6486,6 +6515,9 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
     String? $__typename,
   }) =>
       _res;
+
+  CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus =>
+      CopyWith$Fragment$Cart$validationStatus.stub(_res);
 
   promotions(_fn) => _res;
 
@@ -6535,6 +6567,85 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
       arguments: [],
       directives: [],
       selectionSet: null,
+    ),
+    FieldNode(
+      name: NameNode(value: 'validationStatus'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: SelectionSetNode(selections: [
+        FieldNode(
+          name: NameNode(value: 'isValid'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'hasUnavailableItems'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'totalUnavailableItems'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'unavailableItems'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: SelectionSetNode(selections: [
+            FieldNode(
+              name: NameNode(value: 'orderLineId'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'productName'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'variantName'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'reason'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ]),
+        ),
+        FieldNode(
+          name: NameNode(value: '__typename'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
     ),
     FieldNode(
       name: NameNode(value: 'couponCodes'),
@@ -6702,6 +6813,20 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
           selectionSet: null,
         ),
         FieldNode(
+          name: NameNode(value: 'isAvailable'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'unavailableReason'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
           name: NameNode(value: 'customFields'),
           alias: null,
           arguments: [],
@@ -6781,6 +6906,42 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
               arguments: [],
               directives: [],
               selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'stockLevel'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'price'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'product'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: SelectionSetNode(selections: [
+                FieldNode(
+                  name: NameNode(value: 'enabled'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+                FieldNode(
+                  name: NameNode(value: '__typename'),
+                  alias: null,
+                  arguments: [],
+                  directives: [],
+                  selectionSet: null,
+                ),
+              ]),
             ),
             FieldNode(
               name: NameNode(value: '__typename'),
@@ -7083,6 +7244,415 @@ extension ClientExtension$Fragment$Cart on graphql.GraphQLClient {
     );
     return result == null ? null : Fragment$Cart.fromJson(result);
   }
+}
+
+class Fragment$Cart$validationStatus {
+  Fragment$Cart$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Fragment$Cart$validationStatus.fromJson(Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) => Fragment$Cart$validationStatus$unavailableItems.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<Fragment$Cart$validationStatus$unavailableItems> unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$validationStatus
+    on Fragment$Cart$validationStatus {
+  CopyWith$Fragment$Cart$validationStatus<Fragment$Cart$validationStatus>
+      get copyWith => CopyWith$Fragment$Cart$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$validationStatus<TRes> {
+  factory CopyWith$Fragment$Cart$validationStatus(
+    Fragment$Cart$validationStatus instance,
+    TRes Function(Fragment$Cart$validationStatus) then,
+  ) = _CopyWithImpl$Fragment$Cart$validationStatus;
+
+  factory CopyWith$Fragment$Cart$validationStatus.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Fragment$Cart$validationStatus$unavailableItems>? unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Fragment$Cart$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Fragment$Cart$validationStatus$unavailableItems<
+                      Fragment$Cart$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Fragment$Cart$validationStatus<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus<TRes> {
+  _CopyWithImpl$Fragment$Cart$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$validationStatus _instance;
+
+  final TRes Function(Fragment$Cart$validationStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems:
+            unavailableItems == _undefined || unavailableItems == null
+                ? _instance.unavailableItems
+                : (unavailableItems
+                    as List<Fragment$Cart$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Fragment$Cart$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Fragment$Cart$validationStatus$unavailableItems<
+                          Fragment$Cart$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map(
+              (e) => CopyWith$Fragment$Cart$validationStatus$unavailableItems(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Fragment$Cart$validationStatus<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$validationStatus(this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Fragment$Cart$validationStatus$unavailableItems>? unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Fragment$Cart$validationStatus$unavailableItems {
+  Fragment$Cart$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Fragment$Cart$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$validationStatus$unavailableItems
+    on Fragment$Cart$validationStatus$unavailableItems {
+  CopyWith$Fragment$Cart$validationStatus$unavailableItems<
+          Fragment$Cart$validationStatus$unavailableItems>
+      get copyWith => CopyWith$Fragment$Cart$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$validationStatus$unavailableItems<TRes> {
+  factory CopyWith$Fragment$Cart$validationStatus$unavailableItems(
+    Fragment$Cart$validationStatus$unavailableItems instance,
+    TRes Function(Fragment$Cart$validationStatus$unavailableItems) then,
+  ) = _CopyWithImpl$Fragment$Cart$validationStatus$unavailableItems;
+
+  factory CopyWith$Fragment$Cart$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$Cart$validationStatus$unavailableItems<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus$unavailableItems<TRes> {
+  _CopyWithImpl$Fragment$Cart$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$validationStatus$unavailableItems _instance;
+
+  final TRes Function(Fragment$Cart$validationStatus$unavailableItems) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$Cart$validationStatus$unavailableItems<TRes>
+    implements CopyWith$Fragment$Cart$validationStatus$unavailableItems<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$validationStatus$unavailableItems(this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Fragment$Cart$promotions {
@@ -8004,6 +8574,8 @@ class Fragment$Cart$lines {
   Fragment$Cart$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -8018,6 +8590,8 @@ class Fragment$Cart$lines {
   factory Fragment$Cart$lines.fromJson(Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -8030,6 +8604,8 @@ class Fragment$Cart$lines {
     return Fragment$Cart$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -8052,6 +8628,10 @@ class Fragment$Cart$lines {
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -8077,6 +8657,10 @@ class Fragment$Cart$lines {
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -8102,6 +8686,8 @@ class Fragment$Cart$lines {
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -8114,6 +8700,8 @@ class Fragment$Cart$lines {
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -8142,6 +8730,16 @@ class Fragment$Cart$lines {
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -8220,6 +8818,8 @@ abstract class CopyWith$Fragment$Cart$lines<TRes> {
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -8256,6 +8856,8 @@ class _CopyWithImpl$Fragment$Cart$lines<TRes>
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -8271,6 +8873,12 @@ class _CopyWithImpl$Fragment$Cart$lines<TRes>
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -8340,6 +8948,8 @@ class _CopyWithStubImpl$Fragment$Cart$lines<TRes>
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -8365,6 +8975,9 @@ class Fragment$Cart$lines$productVariant {
   Fragment$Cart$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -8372,10 +8985,17 @@ class Fragment$Cart$lines$productVariant {
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product: Fragment$Cart$lines$productVariant$product.fromJson(
+          (l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -8383,6 +9003,12 @@ class Fragment$Cart$lines$productVariant {
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Fragment$Cart$lines$productVariant$product product;
 
   final String $__typename;
 
@@ -8392,6 +9018,12 @@ class Fragment$Cart$lines$productVariant {
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -8401,10 +9033,16 @@ class Fragment$Cart$lines$productVariant {
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -8426,6 +9064,21 @@ class Fragment$Cart$lines$productVariant {
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -8459,8 +9112,12 @@ abstract class CopyWith$Fragment$Cart$lines$productVariant<TRes> {
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Fragment$Cart$lines$productVariant$product? product,
     String? $__typename,
   });
+  CopyWith$Fragment$Cart$lines$productVariant$product<TRes> get product;
 }
 
 class _CopyWithImpl$Fragment$Cart$lines$productVariant<TRes>
@@ -8479,6 +9136,9 @@ class _CopyWithImpl$Fragment$Cart$lines$productVariant<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart$lines$productVariant(
@@ -8486,10 +9146,25 @@ class _CopyWithImpl$Fragment$Cart$lines$productVariant<TRes>
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product as Fragment$Cart$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Fragment$Cart$lines$productVariant$product<TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Fragment$Cart$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Fragment$Cart$lines$productVariant<TRes>
@@ -8501,6 +9176,139 @@ class _CopyWithStubImpl$Fragment$Cart$lines$productVariant<TRes>
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Fragment$Cart$lines$productVariant$product? product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Fragment$Cart$lines$productVariant$product<TRes> get product =>
+      CopyWith$Fragment$Cart$lines$productVariant$product.stub(_res);
+}
+
+class Fragment$Cart$lines$productVariant$product {
+  Fragment$Cart$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Fragment$Cart$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$lines$productVariant$product
+    on Fragment$Cart$lines$productVariant$product {
+  CopyWith$Fragment$Cart$lines$productVariant$product<
+          Fragment$Cart$lines$productVariant$product>
+      get copyWith => CopyWith$Fragment$Cart$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$lines$productVariant$product<TRes> {
+  factory CopyWith$Fragment$Cart$lines$productVariant$product(
+    Fragment$Cart$lines$productVariant$product instance,
+    TRes Function(Fragment$Cart$lines$productVariant$product) then,
+  ) = _CopyWithImpl$Fragment$Cart$lines$productVariant$product;
+
+  factory CopyWith$Fragment$Cart$lines$productVariant$product.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$Cart$lines$productVariant$product<TRes>
+    implements CopyWith$Fragment$Cart$lines$productVariant$product<TRes> {
+  _CopyWithImpl$Fragment$Cart$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$lines$productVariant$product _instance;
+
+  final TRes Function(Fragment$Cart$lines$productVariant$product) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$Cart$lines$productVariant$product<TRes>
+    implements CopyWith$Fragment$Cart$lines$productVariant$product<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$lines$productVariant$product(this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -10310,6 +11118,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -10332,6 +11141,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -10352,6 +11162,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus: Query$ActiveOrder$activeOrder$validationStatus.fromJson(
+          (l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -10395,6 +11207,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
 
   final bool active;
 
+  final Query$ActiveOrder$activeOrder$validationStatus validationStatus;
+
   final List<String> couponCodes;
 
   final List<Query$ActiveOrder$activeOrder$promotions> promotions;
@@ -10435,6 +11249,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -10474,6 +11290,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -10494,6 +11311,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -10543,6 +11361,11 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -10678,6 +11501,7 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder<TRes> {
     String? code,
     String? state,
     bool? active,
+    Query$ActiveOrder$activeOrder$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Query$ActiveOrder$activeOrder$promotions>? promotions,
     List<Query$ActiveOrder$activeOrder$lines>? lines,
@@ -10693,6 +11517,8 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder<TRes> {
     Query$ActiveOrder$activeOrder$customFields? customFields,
     String? $__typename,
   });
+  CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes>
+      get validationStatus;
   TRes promotions(
       Iterable<Query$ActiveOrder$activeOrder$promotions> Function(
               Iterable<
@@ -10739,6 +11565,7 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -10768,6 +11595,11 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus:
+            validationStatus == _undefined || validationStatus == null
+                ? _instance.validationStatus
+                : (validationStatus
+                    as Query$ActiveOrder$activeOrder$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -10814,6 +11646,13 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes>
+      get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Query$ActiveOrder$activeOrder$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Query$ActiveOrder$activeOrder$promotions> Function(
@@ -10889,6 +11728,7 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder<TRes>
     String? code,
     String? state,
     bool? active,
+    Query$ActiveOrder$activeOrder$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Query$ActiveOrder$activeOrder$promotions>? promotions,
     List<Query$ActiveOrder$activeOrder$lines>? lines,
@@ -10906,6 +11746,10 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder<TRes>
   }) =>
       _res;
 
+  CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes>
+      get validationStatus =>
+          CopyWith$Query$ActiveOrder$activeOrder$validationStatus.stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -10916,6 +11760,438 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder<TRes>
 
   CopyWith$Query$ActiveOrder$activeOrder$customFields<TRes> get customFields =>
       CopyWith$Query$ActiveOrder$activeOrder$customFields.stub(_res);
+}
+
+class Query$ActiveOrder$activeOrder$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Query$ActiveOrder$activeOrder$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Query$ActiveOrder$activeOrder$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Query$ActiveOrder$activeOrder$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Query$ActiveOrder$activeOrder$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ActiveOrder$activeOrder$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ActiveOrder$activeOrder$validationStatus
+    on Query$ActiveOrder$activeOrder$validationStatus {
+  CopyWith$Query$ActiveOrder$activeOrder$validationStatus<
+          Query$ActiveOrder$activeOrder$validationStatus>
+      get copyWith => CopyWith$Query$ActiveOrder$activeOrder$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes> {
+  factory CopyWith$Query$ActiveOrder$activeOrder$validationStatus(
+    Query$ActiveOrder$activeOrder$validationStatus instance,
+    TRes Function(Query$ActiveOrder$activeOrder$validationStatus) then,
+  ) = _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus;
+
+  factory CopyWith$Query$ActiveOrder$activeOrder$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$ActiveOrder$activeOrder$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Query$ActiveOrder$activeOrder$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+                      Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus<TRes>
+    implements CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes> {
+  _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ActiveOrder$activeOrder$validationStatus _instance;
+
+  final TRes Function(Query$ActiveOrder$activeOrder$validationStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$ActiveOrder$activeOrder$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Query$ActiveOrder$activeOrder$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+                          Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$validationStatus<TRes>
+    implements CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes> {
+  _CopyWithStubImpl$Query$ActiveOrder$activeOrder$validationStatus(this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Query$ActiveOrder$activeOrder$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Query$ActiveOrder$activeOrder$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Query$ActiveOrder$activeOrder$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Query$ActiveOrder$activeOrder$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$ActiveOrder$activeOrder$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems
+    on Query$ActiveOrder$activeOrder$validationStatus$unavailableItems {
+  CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+          Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems(
+    Query$ActiveOrder$activeOrder$validationStatus$unavailableItems instance,
+    TRes Function(
+            Query$ActiveOrder$activeOrder$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems;
+
+  factory CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ActiveOrder$activeOrder$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+      Query$ActiveOrder$activeOrder$validationStatus$unavailableItems) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$ActiveOrder$activeOrder$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Query$ActiveOrder$activeOrder$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Query$ActiveOrder$activeOrder$promotions
@@ -11882,6 +13158,8 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
   Query$ActiveOrder$activeOrder$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -11897,6 +13175,8 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -11909,6 +13189,8 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
     return Query$ActiveOrder$activeOrder$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -11932,6 +13214,10 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -11957,6 +13243,10 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -11982,6 +13272,8 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -11994,6 +13286,8 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -12023,6 +13317,16 @@ class Query$ActiveOrder$activeOrder$lines implements Fragment$Cart$lines {
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -12103,6 +13407,8 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder$lines<TRes> {
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -12140,6 +13446,8 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$lines<TRes>
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -12155,6 +13463,12 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$lines<TRes>
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -12227,6 +13541,8 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$lines<TRes>
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -12255,6 +13571,9 @@ class Query$ActiveOrder$activeOrder$lines$productVariant
   Query$ActiveOrder$activeOrder$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -12262,10 +13581,18 @@ class Query$ActiveOrder$activeOrder$lines$productVariant
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Query$ActiveOrder$activeOrder$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Query$ActiveOrder$activeOrder$lines$productVariant$product.fromJson(
+              (l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -12273,6 +13600,12 @@ class Query$ActiveOrder$activeOrder$lines$productVariant
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Query$ActiveOrder$activeOrder$lines$productVariant$product product;
 
   final String $__typename;
 
@@ -12282,6 +13615,12 @@ class Query$ActiveOrder$activeOrder$lines$productVariant
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -12291,10 +13630,16 @@ class Query$ActiveOrder$activeOrder$lines$productVariant
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -12316,6 +13661,21 @@ class Query$ActiveOrder$activeOrder$lines$productVariant
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -12352,8 +13712,13 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant<
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Query$ActiveOrder$activeOrder$lines$productVariant$product? product,
     String? $__typename,
   });
+  CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product<TRes>
+      get product;
 }
 
 class _CopyWithImpl$Query$ActiveOrder$activeOrder$lines$productVariant<TRes>
@@ -12373,6 +13738,9 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$lines$productVariant<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$ActiveOrder$activeOrder$lines$productVariant(
@@ -12380,10 +13748,27 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$lines$productVariant<TRes>
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Query$ActiveOrder$activeOrder$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product<TRes>
+      get product {
+    final local$product = _instance.product;
+    return CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$lines$productVariant<TRes>
@@ -12397,6 +13782,154 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$lines$productVariant<TRes>
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Query$ActiveOrder$activeOrder$lines$productVariant$product? product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product<TRes>
+      get product =>
+          CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product
+              .stub(_res);
+}
+
+class Query$ActiveOrder$activeOrder$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Query$ActiveOrder$activeOrder$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Query$ActiveOrder$activeOrder$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Query$ActiveOrder$activeOrder$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$ActiveOrder$activeOrder$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$ActiveOrder$activeOrder$lines$productVariant$product
+    on Query$ActiveOrder$activeOrder$lines$productVariant$product {
+  CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product<
+          Query$ActiveOrder$activeOrder$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product(
+    Query$ActiveOrder$activeOrder$lines$productVariant$product instance,
+    TRes Function(Query$ActiveOrder$activeOrder$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Query$ActiveOrder$activeOrder$lines$productVariant$product;
+
+  factory CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$ActiveOrder$activeOrder$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$ActiveOrder$activeOrder$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Query$ActiveOrder$activeOrder$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Query$ActiveOrder$activeOrder$lines$productVariant$product _instance;
+
+  final TRes Function(
+      Query$ActiveOrder$activeOrder$lines$productVariant$product) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$ActiveOrder$activeOrder$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Query$ActiveOrder$activeOrder$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Query$ActiveOrder$activeOrder$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -14434,6 +15967,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -14456,6 +15990,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -14475,6 +16010,9 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -14518,6 +16056,9 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
 
   final bool active;
 
+  final Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
+      validationStatus;
+
   final List<String> couponCodes;
 
   final List<Mutation$RemoveOrderLine$removeOrderLine$$Order$promotions>
@@ -14560,6 +16101,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -14598,6 +16141,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -14617,6 +16161,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -14661,6 +16206,11 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -14797,6 +16347,8 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes> {
     String? code,
     String? state,
     bool? active,
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$promotions>?
         promotions,
@@ -14814,6 +16366,8 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes> {
     Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields? customFields,
     String? $__typename,
   });
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$RemoveOrderLine$removeOrderLine$$Order$promotions> Function(
               Iterable<
@@ -14860,6 +16414,7 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -14886,6 +16441,11 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -14936,6 +16496,13 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$RemoveOrderLine$removeOrderLine$$Order$promotions> Function(
@@ -15011,6 +16578,8 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
     String? code,
     String? state,
     bool? active,
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$promotions>?
         promotions,
@@ -15030,6 +16599,12 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
   }) =>
       _res;
 
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -15042,6 +16617,456 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
       get customFields =>
           CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
+    on Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus {
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus instance,
+    TRes Function(
+            Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus;
+
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+                      Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+      Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+                          Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems
+    on Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems(
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$RemoveOrderLine$removeOrderLine$$Order$promotions
@@ -16077,6 +18102,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
   Mutation$RemoveOrderLine$removeOrderLine$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -16092,6 +18119,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -16104,6 +18133,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
     return Mutation$RemoveOrderLine$removeOrderLine$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -16128,6 +18159,10 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -16155,6 +18190,10 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -16180,6 +18219,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -16192,6 +18233,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -16221,6 +18264,16 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -16304,6 +18357,8 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines<
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -16345,6 +18400,8 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines<TRes>
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -16360,6 +18417,12 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines<TRes>
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -16435,6 +18498,8 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines<
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -16466,6 +18531,9 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant
   Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -16473,10 +18541,18 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -16484,6 +18560,13 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -16493,6 +18576,12 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -16502,10 +18591,16 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -16528,6 +18623,21 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -16567,8 +18677,14 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$pr
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant<
@@ -16593,6 +18709,9 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$produc
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -16601,10 +18720,27 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$produc
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant<
@@ -16620,6 +18756,162 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$pr
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product
+    on Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product {
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product(
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -18539,6 +20831,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -18561,6 +20854,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -18580,6 +20874,9 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -18626,6 +20923,9 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
 
   final bool active;
 
+  final Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
+      validationStatus;
+
   final List<String> couponCodes;
 
   final List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$promotions>
@@ -18670,6 +20970,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -18707,6 +21009,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -18726,6 +21029,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -18774,6 +21078,11 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -18908,6 +21217,8 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
     String? code,
     String? state,
     bool? active,
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$promotions>?
         promotions,
@@ -18926,6 +21237,8 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
     Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields?
         customFields,
   });
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$promotions> Function(
               Iterable<
@@ -18976,6 +21289,7 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -19004,6 +21318,11 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -19051,6 +21370,13 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
             : (customFields
                 as Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields?),
       ));
+
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$promotions> Function(
@@ -19130,6 +21456,8 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
     String? code,
     String? state,
     bool? active,
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$promotions>?
         promotions,
@@ -19150,6 +21478,12 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
   }) =>
       _res;
 
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -19163,6 +21497,459 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
       get customFields =>
           CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
+    on Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus {
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
+        instance,
+    TRes Function(
+            Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus;
+
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+                      Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+                          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems
+    on Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems(
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$promotions
@@ -20205,6 +22992,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
   Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -20220,6 +23009,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -20232,6 +23023,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
     return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -20256,6 +23049,10 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -20284,6 +23081,10 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -20309,6 +23110,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -20321,6 +23124,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -20351,6 +23156,16 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -20435,6 +23250,8 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -20478,6 +23295,8 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$line
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -20493,6 +23312,12 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$line
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -20569,6 +23394,8 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -20600,6 +23427,9 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVaria
   Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -20607,10 +23437,18 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVaria
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -20618,6 +23456,13 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVaria
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -20627,6 +23472,12 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVaria
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -20636,10 +23487,16 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVaria
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -20662,6 +23519,21 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVaria
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -20701,8 +23573,14 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant<
@@ -20727,6 +23605,9 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$line
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -20735,10 +23616,27 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$line
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant<
@@ -20754,6 +23652,162 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product
+    on Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product {
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product(
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -23384,6 +26438,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -23406,6 +26461,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -23425,6 +26481,9 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -23469,6 +26528,9 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
 
   final bool active;
 
+  final Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
+      validationStatus;
+
   final List<String> couponCodes;
 
   final List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$promotions>
@@ -23511,6 +26573,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -23548,6 +26612,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -23567,6 +26632,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -23615,6 +26681,11 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -23747,6 +26818,8 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes> {
     String? code,
     String? state,
     bool? active,
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$promotions>?
         promotions,
@@ -23763,6 +26836,8 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes> {
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts>? discounts,
     Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields? customFields,
   });
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$AdjustOrderLine$adjustOrderLine$$Order$promotions> Function(
               Iterable<
@@ -23810,6 +26885,7 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -23838,6 +26914,11 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -23885,6 +26966,13 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
             : (customFields
                 as Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields?),
       ));
+
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$AdjustOrderLine$adjustOrderLine$$Order$promotions> Function(
@@ -23961,6 +27049,8 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
     String? code,
     String? state,
     bool? active,
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$promotions>?
         promotions,
@@ -23979,6 +27069,12 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
   }) =>
       _res;
 
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -23991,6 +27087,456 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
       get customFields =>
           CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
+    on Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus {
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus instance,
+    TRes Function(
+            Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus;
+
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+                      Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+      Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+                          Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems
+    on Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems(
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$AdjustOrderLine$adjustOrderLine$$Order$promotions
@@ -25026,6 +28572,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
   Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -25041,6 +28589,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -25053,6 +28603,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
     return Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -25077,6 +28629,10 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -25104,6 +28660,10 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -25129,6 +28689,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -25141,6 +28703,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -25170,6 +28734,16 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -25253,6 +28827,8 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines<
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -25294,6 +28870,8 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines<TRes>
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -25309,6 +28887,12 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines<TRes>
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -25384,6 +28968,8 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines<
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -25415,6 +29001,9 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant
   Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -25422,10 +29011,18 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -25433,6 +29030,13 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -25442,6 +29046,12 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -25451,10 +29061,16 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -25477,6 +29093,21 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -25516,8 +29147,14 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$pr
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant<
@@ -25542,6 +29179,9 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$produc
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -25550,10 +29190,27 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$produc
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant<
@@ -25569,6 +29226,162 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$pr
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product
+    on Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product {
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product(
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -27290,6 +31103,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -27313,6 +31127,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -27336,6 +31151,9 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -27385,6 +31203,9 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
 
   final bool active;
 
+  final Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
+      validationStatus;
+
   final List<String> couponCodes;
 
   final List<
@@ -27433,6 +31254,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -27471,6 +31294,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -27491,6 +31315,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -27544,6 +31369,11 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -27681,6 +31511,8 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
     String? code,
     String? state,
     bool? active,
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$promotions>?
         promotions,
@@ -27702,6 +31534,8 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   });
   CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$shippingAddress<
       TRes> get shippingAddress;
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$promotions> Function(
               Iterable<
@@ -27754,6 +31588,7 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -27786,6 +31621,11 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -27842,6 +31682,13 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
             .stub(_then(_instance))
         : CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$shippingAddress(
             local$shippingAddress, (e) => call(shippingAddress: e));
+  }
+
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
   }
 
   TRes promotions(
@@ -27925,6 +31772,8 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
     String? code,
     String? state,
     bool? active,
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$promotions>?
         promotions,
@@ -27950,6 +31799,12 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
           TRes>
       get shippingAddress =>
           CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$shippingAddress
+              .stub(_res);
+
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
               .stub(_res);
 
   promotions(_fn) => _res;
@@ -28303,6 +32158,459 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
     String? phoneNumber,
     String? $__typename,
     Map<String, dynamic>? customFields,
+  }) =>
+      _res;
+}
+
+class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
+    on Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus {
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
+        instance,
+    TRes Function(
+            Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus;
+
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+                      Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+                          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems
+    on Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems(
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
   }) =>
       _res;
 }
@@ -29350,6 +33658,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
   Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -29365,6 +33675,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -29377,6 +33689,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
     return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -29401,6 +33715,10 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -29429,6 +33747,10 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -29454,6 +33776,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -29466,6 +33790,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -29496,6 +33822,16 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -29581,6 +33917,8 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -29625,6 +33963,8 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$l
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -29640,6 +33980,12 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$l
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -29716,6 +34062,8 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -29747,6 +34095,9 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVa
   Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -29754,10 +34105,18 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVa
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -29765,6 +34124,13 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVa
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -29774,6 +34140,12 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVa
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -29783,10 +34155,16 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVa
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -29809,6 +34187,21 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVa
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -29848,8 +34241,14 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant<
@@ -29874,6 +34273,9 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$l
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -29882,10 +34284,27 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$l
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant<
@@ -29901,6 +34320,162 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product
+    on Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product {
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product(
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -32669,6 +37244,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -32691,6 +37267,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -32710,6 +37287,9 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -32754,6 +37334,9 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   final String state;
 
   final bool active;
+
+  final Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
+      validationStatus;
 
   final List<String> couponCodes;
 
@@ -32800,6 +37383,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -32838,6 +37423,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -32857,6 +37443,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -32901,6 +37488,11 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -33040,6 +37632,8 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     String? code,
     String? state,
     bool? active,
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$promotions>?
         promotions,
@@ -33059,6 +37653,8 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
         customFields,
     String? $__typename,
   });
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$promotions> Function(
               Iterable<
@@ -33109,6 +37705,7 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -33135,6 +37732,11 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -33185,6 +37787,13 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$promotions> Function(
@@ -33264,6 +37873,8 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     String? code,
     String? state,
     bool? active,
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$promotions>?
         promotions,
@@ -33285,6 +37896,12 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   }) =>
       _res;
 
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -33298,6 +37915,459 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
       get customFields =>
           CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
+    on Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus {
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
+        instance,
+    TRes Function(
+            Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus;
+
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+                      Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+                          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems
+    on Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems(
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$promotions
@@ -34342,6 +39412,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
   Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -34357,6 +39429,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -34369,6 +39443,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
     return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -34393,6 +39469,10 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -34421,6 +39501,10 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -34446,6 +39530,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -34458,6 +39544,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -34488,6 +39576,16 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -34573,6 +39671,8 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -34617,6 +39717,8 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lin
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -34632,6 +39734,12 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lin
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -34708,6 +39816,8 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -34739,6 +39849,9 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVari
   Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -34746,10 +39859,18 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVari
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -34757,6 +39878,13 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVari
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -34766,6 +39894,12 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVari
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -34775,10 +39909,16 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVari
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -34801,6 +39941,21 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVari
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -34840,8 +39995,14 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant<
@@ -34866,6 +40027,9 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lin
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -34874,10 +40038,27 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lin
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant<
@@ -34893,6 +40074,162 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product
+    on Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product {
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product(
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -38416,6 +43753,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -38444,6 +43782,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -38470,6 +43809,9 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Query$GetOrderByCode$orderByCode$validationStatus.fromJson(
+              (l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -38532,6 +43874,8 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
 
   final bool active;
 
+  final Query$GetOrderByCode$orderByCode$validationStatus validationStatus;
+
   final List<String> couponCodes;
 
   final List<Query$GetOrderByCode$orderByCode$promotions> promotions;
@@ -38584,6 +43928,8 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -38636,6 +43982,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -38662,6 +44009,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -38713,6 +44061,11 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -38893,6 +44246,7 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode<TRes> {
     String? code,
     String? state,
     bool? active,
+    Query$GetOrderByCode$orderByCode$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Query$GetOrderByCode$orderByCode$promotions>? promotions,
     List<Query$GetOrderByCode$orderByCode$lines>? lines,
@@ -38915,6 +44269,8 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode<TRes> {
     List<Query$GetOrderByCode$orderByCode$payments>? payments,
     Query$GetOrderByCode$orderByCode$customer? customer,
   });
+  CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
+      get validationStatus;
   TRes promotions(
       Iterable<Query$GetOrderByCode$orderByCode$promotions> Function(
               Iterable<
@@ -38971,6 +44327,7 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -39004,6 +44361,11 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus:
+            validationStatus == _undefined || validationStatus == null
+                ? _instance.validationStatus
+                : (validationStatus
+                    as Query$GetOrderByCode$orderByCode$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -39073,6 +44435,13 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
             ? _instance.customer
             : (customer as Query$GetOrderByCode$orderByCode$customer?),
       ));
+
+  CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
+      get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Query$GetOrderByCode$orderByCode$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Query$GetOrderByCode$orderByCode$promotions> Function(
@@ -39190,6 +44559,7 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode<TRes>
     String? code,
     String? state,
     bool? active,
+    Query$GetOrderByCode$orderByCode$validationStatus? validationStatus,
     List<String>? couponCodes,
     List<Query$GetOrderByCode$orderByCode$promotions>? promotions,
     List<Query$GetOrderByCode$orderByCode$lines>? lines,
@@ -39213,6 +44583,10 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode<TRes>
     Query$GetOrderByCode$orderByCode$customer? customer,
   }) =>
       _res;
+
+  CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
+      get validationStatus =>
+          CopyWith$Query$GetOrderByCode$orderByCode$validationStatus.stub(_res);
 
   promotions(_fn) => _res;
 
@@ -39238,6 +44612,443 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode<TRes>
 
   CopyWith$Query$GetOrderByCode$orderByCode$customer<TRes> get customer =>
       CopyWith$Query$GetOrderByCode$orderByCode$customer.stub(_res);
+}
+
+class Query$GetOrderByCode$orderByCode$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Query$GetOrderByCode$orderByCode$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Query$GetOrderByCode$orderByCode$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Query$GetOrderByCode$orderByCode$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetOrderByCode$orderByCode$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetOrderByCode$orderByCode$validationStatus
+    on Query$GetOrderByCode$orderByCode$validationStatus {
+  CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<
+          Query$GetOrderByCode$orderByCode$validationStatus>
+      get copyWith =>
+          CopyWith$Query$GetOrderByCode$orderByCode$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<
+    TRes> {
+  factory CopyWith$Query$GetOrderByCode$orderByCode$validationStatus(
+    Query$GetOrderByCode$orderByCode$validationStatus instance,
+    TRes Function(Query$GetOrderByCode$orderByCode$validationStatus) then,
+  ) = _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus;
+
+  factory CopyWith$Query$GetOrderByCode$orderByCode$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+                      Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
+    implements
+        CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<TRes> {
+  _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetOrderByCode$orderByCode$validationStatus _instance;
+
+  final TRes Function(Query$GetOrderByCode$orderByCode$validationStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetOrderByCode$orderByCode$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+                          Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
+    implements
+        CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<TRes> {
+  _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems
+    on Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems {
+  CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+          Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems(
+    Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems instance,
+    TRes Function(
+            Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems;
+
+  factory CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+      Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Query$GetOrderByCode$orderByCode$promotions
@@ -40216,6 +46027,8 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
   Query$GetOrderByCode$orderByCode$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -40231,6 +46044,8 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -40243,6 +46058,8 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
     return Query$GetOrderByCode$orderByCode$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -40266,6 +46083,10 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -40291,6 +46112,10 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -40316,6 +46141,8 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -40328,6 +46155,8 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -40357,6 +46186,16 @@ class Query$GetOrderByCode$orderByCode$lines implements Fragment$Cart$lines {
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -40437,6 +46276,8 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode$lines<TRes> {
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -40474,6 +46315,8 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines<TRes>
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -40489,6 +46332,12 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines<TRes>
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -40561,6 +46410,8 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$lines<TRes>
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -40589,6 +46440,9 @@ class Query$GetOrderByCode$orderByCode$lines$productVariant
   Query$GetOrderByCode$orderByCode$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -40596,10 +46450,17 @@ class Query$GetOrderByCode$orderByCode$lines$productVariant
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Query$GetOrderByCode$orderByCode$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product: Query$GetOrderByCode$orderByCode$lines$productVariant$product
+          .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -40607,6 +46468,12 @@ class Query$GetOrderByCode$orderByCode$lines$productVariant
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Query$GetOrderByCode$orderByCode$lines$productVariant$product product;
 
   final String $__typename;
 
@@ -40616,6 +46483,12 @@ class Query$GetOrderByCode$orderByCode$lines$productVariant
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -40625,10 +46498,16 @@ class Query$GetOrderByCode$orderByCode$lines$productVariant
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -40650,6 +46529,21 @@ class Query$GetOrderByCode$orderByCode$lines$productVariant
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -40686,8 +46580,13 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant<
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Query$GetOrderByCode$orderByCode$lines$productVariant$product? product,
     String? $__typename,
   });
+  CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product<TRes>
+      get product;
 }
 
 class _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines$productVariant<TRes>
@@ -40708,6 +46607,9 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines$productVariant<TRes>
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetOrderByCode$orderByCode$lines$productVariant(
@@ -40715,10 +46617,27 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines$productVariant<TRes>
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Query$GetOrderByCode$orderByCode$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product<TRes>
+      get product {
+    final local$product = _instance.product;
+    return CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$lines$productVariant<
@@ -40733,6 +46652,155 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$lines$productVariant<
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Query$GetOrderByCode$orderByCode$lines$productVariant$product? product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product<TRes>
+      get product =>
+          CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product
+              .stub(_res);
+}
+
+class Query$GetOrderByCode$orderByCode$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Query$GetOrderByCode$orderByCode$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Query$GetOrderByCode$orderByCode$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Query$GetOrderByCode$orderByCode$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetOrderByCode$orderByCode$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetOrderByCode$orderByCode$lines$productVariant$product
+    on Query$GetOrderByCode$orderByCode$lines$productVariant$product {
+  CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product<
+          Query$GetOrderByCode$orderByCode$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product(
+    Query$GetOrderByCode$orderByCode$lines$productVariant$product instance,
+    TRes Function(Query$GetOrderByCode$orderByCode$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines$productVariant$product;
+
+  factory CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Query$GetOrderByCode$orderByCode$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetOrderByCode$orderByCode$lines$productVariant$product _instance;
+
+  final TRes Function(
+      Query$GetOrderByCode$orderByCode$lines$productVariant$product) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetOrderByCode$orderByCode$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Query$GetOrderByCode$orderByCode$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -43615,6 +49683,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -43637,6 +49706,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -43656,6 +49726,9 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -43700,6 +49773,9 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
 
   final bool active;
 
+  final Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
+      validationStatus;
+
   final List<String> couponCodes;
 
   final List<Mutation$AddPayment$addPaymentToOrder$$Order$promotions>
@@ -43740,6 +49816,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -43778,6 +49856,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -43797,6 +49876,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -43841,6 +49921,11 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -43976,6 +50061,8 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order<TRes> {
     String? code,
     String? state,
     bool? active,
+    Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$promotions>? promotions,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$lines>? lines,
@@ -43992,6 +50079,8 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order<TRes> {
     Mutation$AddPayment$addPaymentToOrder$$Order$customFields? customFields,
     String? $__typename,
   });
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<TRes>
+      get validationStatus;
   TRes promotions(
       Iterable<Mutation$AddPayment$addPaymentToOrder$$Order$promotions> Function(
               Iterable<
@@ -44038,6 +50127,7 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -44064,6 +50154,11 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -44114,6 +50209,13 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<TRes>
+      get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$AddPayment$addPaymentToOrder$$Order$promotions> Function(
@@ -44189,6 +50291,8 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
     String? code,
     String? state,
     bool? active,
+    Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$promotions>? promotions,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$lines>? lines,
@@ -44207,6 +50311,11 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
   }) =>
       _res;
 
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<TRes>
+      get validationStatus =>
+          CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -44219,6 +50328,454 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
       get customFields =>
           CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
+    on Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus {
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<
+          Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
+    Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus instance,
+    TRes Function(Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus;
+
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+                      Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus _instance;
+
+  final TRes Function(
+      Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+                          Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems
+    on Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+          Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems(
+    Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$AddPayment$addPaymentToOrder$$Order$promotions
@@ -45247,6 +51804,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
   Mutation$AddPayment$addPaymentToOrder$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -45262,6 +51821,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -45274,6 +51835,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
     return Mutation$AddPayment$addPaymentToOrder$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -45298,6 +51861,10 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -45325,6 +51892,10 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -45350,6 +51921,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -45362,6 +51935,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -45391,6 +51966,16 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -45474,6 +52059,8 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines<
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -45514,6 +52101,8 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines<TRes>
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -45529,6 +52118,12 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines<TRes>
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -45603,6 +52198,8 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines<TRes>
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -45634,6 +52231,9 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant
   Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -45641,10 +52241,18 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -45652,6 +52260,13 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -45661,6 +52276,12 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -45670,10 +52291,16 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -45696,6 +52323,21 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -45734,8 +52376,14 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$produ
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant<
@@ -45759,6 +52407,9 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVa
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant(
@@ -45766,10 +52417,27 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVa
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant<
@@ -45785,6 +52453,162 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$produ
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product
+    on Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product {
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+          Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product(
+    Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -49316,6 +56140,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -49338,6 +56163,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -49357,6 +56183,9 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -49401,6 +56230,9 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
   final String state;
 
   final bool active;
+
+  final Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
+      validationStatus;
 
   final List<String> couponCodes;
 
@@ -49449,6 +56281,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -49487,6 +56321,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -49506,6 +56341,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -49551,6 +56387,11 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -49690,6 +56531,8 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
     String? code,
     String? state,
     bool? active,
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$promotions>?
         promotions,
@@ -49710,6 +56553,8 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
         customFields,
     String? $__typename,
   });
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$TransitionOrderToState$transitionOrderToState$$Order$promotions> Function(
               Iterable<
@@ -49760,6 +56605,7 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -49786,6 +56632,11 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -49836,6 +56687,13 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$TransitionOrderToState$transitionOrderToState$$Order$promotions> Function(
@@ -49915,6 +56773,8 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
     String? code,
     String? state,
     bool? active,
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$promotions>?
         promotions,
@@ -49937,6 +56797,12 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
   }) =>
       _res;
 
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -49950,6 +56816,459 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
       get customFields =>
           CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
+    on Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus {
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
+        instance,
+    TRes Function(
+            Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus;
+
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+                      Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+                          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems
+    on Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems(
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$TransitionOrderToState$transitionOrderToState$$Order$promotions
@@ -50995,6 +58314,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
   Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -51010,6 +58331,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -51022,6 +58345,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
     return Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -51046,6 +58371,10 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -51074,6 +58403,10 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -51099,6 +58432,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -51111,6 +58446,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -51141,6 +58478,16 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -51227,6 +58574,8 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -51272,6 +58621,8 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -51287,6 +58638,12 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -51363,6 +58720,8 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -51394,6 +58753,9 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$produc
   Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -51401,10 +58763,18 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$produc
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -51412,6 +58782,13 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$produc
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -51421,6 +58798,12 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$produc
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -51430,10 +58813,16 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$produc
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -51456,6 +58845,21 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$produc
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -51495,8 +58899,14 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant<
@@ -51521,6 +58931,9 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -51529,10 +58942,27 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant<
@@ -51548,6 +58978,162 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product
+    on Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product {
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product(
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -53506,6 +61092,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -53528,6 +61115,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -53547,6 +61135,9 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -53591,6 +61182,9 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
   final String state;
 
   final bool active;
+
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
+      validationStatus;
 
   final List<String> couponCodes;
 
@@ -53639,6 +61233,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -53677,6 +61273,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -53696,6 +61293,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -53741,6 +61339,11 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -53882,6 +61485,8 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
     String? code,
     String? state,
     bool? active,
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$promotions>?
         promotions,
@@ -53902,6 +61507,8 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
         customFields,
     String? $__typename,
   });
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$promotions> Function(
               Iterable<
@@ -53954,6 +61561,7 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -53980,6 +61588,11 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -54030,6 +61643,13 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$promotions> Function(
@@ -54109,6 +61729,8 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
     String? code,
     String? state,
     bool? active,
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$promotions>?
         promotions,
@@ -54131,6 +61753,12 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
   }) =>
       _res;
 
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -54144,6 +61772,459 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
       get customFields =>
           CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
+    on Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus {
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
+        instance,
+    TRes Function(
+            Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus;
+
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+                      Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+                          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems
+    on Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems(
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$promotions
@@ -55189,6 +63270,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
   Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -55204,6 +63287,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -55216,6 +63301,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
     return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -55240,6 +63327,10 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -55268,6 +63359,10 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -55293,6 +63388,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -55305,6 +63402,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -55335,6 +63434,16 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -55421,6 +63530,8 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -55466,6 +63577,8 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -55482,6 +63595,12 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -55558,6 +63677,8 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -55589,6 +63710,9 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$
   Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -55596,10 +63720,18 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -55607,6 +63739,13 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -55616,6 +63755,12 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -55625,10 +63770,16 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -55651,6 +63802,21 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -55690,8 +63856,14 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant<
@@ -55716,6 +63888,9 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -55724,10 +63899,27 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant<
@@ -55743,6 +63935,162 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product
+    on Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product {
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product(
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;
@@ -57689,6 +66037,7 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
     required this.code,
     required this.state,
     required this.active,
+    required this.validationStatus,
     required this.couponCodes,
     required this.promotions,
     required this.lines,
@@ -57711,6 +66060,7 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
     final l$code = json['code'];
     final l$state = json['state'];
     final l$active = json['active'];
+    final l$validationStatus = json['validationStatus'];
     final l$couponCodes = json['couponCodes'];
     final l$promotions = json['promotions'];
     final l$lines = json['lines'];
@@ -57730,6 +66080,9 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
       code: (l$code as String),
       state: (l$state as String),
       active: (l$active as bool),
+      validationStatus:
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus
+              .fromJson((l$validationStatus as Map<String, dynamic>)),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       promotions: (l$promotions as List<dynamic>)
@@ -57774,6 +66127,9 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
   final String state;
 
   final bool active;
+
+  final Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus
+      validationStatus;
 
   final List<String> couponCodes;
 
@@ -57822,6 +66178,8 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
     _resultData['state'] = l$state;
     final l$active = active;
     _resultData['active'] = l$active;
+    final l$validationStatus = validationStatus;
+    _resultData['validationStatus'] = l$validationStatus.toJson();
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$promotions = promotions;
@@ -57860,6 +66218,7 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
     final l$code = code;
     final l$state = state;
     final l$active = active;
+    final l$validationStatus = validationStatus;
     final l$couponCodes = couponCodes;
     final l$promotions = promotions;
     final l$lines = lines;
@@ -57879,6 +66238,7 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
       l$code,
       l$state,
       l$active,
+      l$validationStatus,
       Object.hashAll(l$couponCodes.map((v) => v)),
       Object.hashAll(l$promotions.map((v) => v)),
       Object.hashAll(l$lines.map((v) => v)),
@@ -57924,6 +66284,11 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order
     final l$active = active;
     final lOther$active = other.active;
     if (l$active != lOther$active) {
+      return false;
+    }
+    final l$validationStatus = validationStatus;
+    final lOther$validationStatus = other.validationStatus;
+    if (l$validationStatus != lOther$validationStatus) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -58064,6 +66429,8 @@ abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$
     String? code,
     String? state,
     bool? active,
+    Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$promotions>?
         promotions,
@@ -58084,6 +66451,8 @@ abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$
         customFields,
     String? $__typename,
   });
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+      TRes> get validationStatus;
   TRes promotions(
       Iterable<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$promotions> Function(
               Iterable<
@@ -58135,6 +66504,7 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
     Object? code = _undefined,
     Object? state = _undefined,
     Object? active = _undefined,
+    Object? validationStatus = _undefined,
     Object? couponCodes = _undefined,
     Object? promotions = _undefined,
     Object? lines = _undefined,
@@ -58161,6 +66531,11 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
         active: active == _undefined || active == null
             ? _instance.active
             : (active as bool),
+        validationStatus: validationStatus == _undefined ||
+                validationStatus == null
+            ? _instance.validationStatus
+            : (validationStatus
+                as Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -58211,6 +66586,13 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+      TRes> get validationStatus {
+    final local$validationStatus = _instance.validationStatus;
+    return CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus(
+        local$validationStatus, (e) => call(validationStatus: e));
+  }
 
   TRes promotions(
           Iterable<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$promotions> Function(
@@ -58290,6 +66672,8 @@ class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$
     String? code,
     String? state,
     bool? active,
+    Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus?
+        validationStatus,
     List<String>? couponCodes,
     List<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$promotions>?
         promotions,
@@ -58312,6 +66696,12 @@ class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$
   }) =>
       _res;
 
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+          TRes>
+      get validationStatus =>
+          CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus
+              .stub(_res);
+
   promotions(_fn) => _res;
 
   lines(_fn) => _res;
@@ -58325,6 +66715,459 @@ class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$
       get customFields =>
           CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields
               .stub(_res);
+}
+
+class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus
+    implements Fragment$Cart$validationStatus {
+  Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus({
+    required this.isValid,
+    required this.hasUnavailableItems,
+    required this.totalUnavailableItems,
+    required this.unavailableItems,
+    this.$__typename = 'CartValidationStatus',
+  });
+
+  factory Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasUnavailableItems = json['hasUnavailableItems'];
+    final l$totalUnavailableItems = json['totalUnavailableItems'];
+    final l$unavailableItems = json['unavailableItems'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus(
+      isValid: (l$isValid as bool),
+      hasUnavailableItems: (l$hasUnavailableItems as bool),
+      totalUnavailableItems: (l$totalUnavailableItems as int),
+      unavailableItems: (l$unavailableItems as List<dynamic>)
+          .map((e) =>
+              Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasUnavailableItems;
+
+  final int totalUnavailableItems;
+
+  final List<
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems>
+      unavailableItems;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    _resultData['totalUnavailableItems'] = l$totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    _resultData['unavailableItems'] =
+        l$unavailableItems.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final l$unavailableItems = unavailableItems;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasUnavailableItems,
+      l$totalUnavailableItems,
+      Object.hashAll(l$unavailableItems.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasUnavailableItems = hasUnavailableItems;
+    final lOther$hasUnavailableItems = other.hasUnavailableItems;
+    if (l$hasUnavailableItems != lOther$hasUnavailableItems) {
+      return false;
+    }
+    final l$totalUnavailableItems = totalUnavailableItems;
+    final lOther$totalUnavailableItems = other.totalUnavailableItems;
+    if (l$totalUnavailableItems != lOther$totalUnavailableItems) {
+      return false;
+    }
+    final l$unavailableItems = unavailableItems;
+    final lOther$unavailableItems = other.unavailableItems;
+    if (l$unavailableItems.length != lOther$unavailableItems.length) {
+      return false;
+    }
+    for (int i = 0; i < l$unavailableItems.length; i++) {
+      final l$unavailableItems$entry = l$unavailableItems[i];
+      final lOther$unavailableItems$entry = lOther$unavailableItems[i];
+      if (l$unavailableItems$entry != lOther$unavailableItems$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus
+    on Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus {
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus(
+    Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus
+        instance,
+    TRes Function(
+            Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus;
+
+  factory CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  });
+  TRes unavailableItems(
+      Iterable<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems> Function(
+              Iterable<
+                  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+                      Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasUnavailableItems = _undefined,
+    Object? totalUnavailableItems = _undefined,
+    Object? unavailableItems = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasUnavailableItems:
+            hasUnavailableItems == _undefined || hasUnavailableItems == null
+                ? _instance.hasUnavailableItems
+                : (hasUnavailableItems as bool),
+        totalUnavailableItems:
+            totalUnavailableItems == _undefined || totalUnavailableItems == null
+                ? _instance.totalUnavailableItems
+                : (totalUnavailableItems as int),
+        unavailableItems: unavailableItems == _undefined ||
+                unavailableItems == null
+            ? _instance.unavailableItems
+            : (unavailableItems as List<
+                Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes unavailableItems(
+          Iterable<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems> Function(
+                  Iterable<
+                      CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+                          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems>>)
+              _fn) =>
+      call(
+          unavailableItems: _fn(_instance.unavailableItems.map((e) =>
+              CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasUnavailableItems,
+    int? totalUnavailableItems,
+    List<Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems>?
+        unavailableItems,
+    String? $__typename,
+  }) =>
+      _res;
+
+  unavailableItems(_fn) => _res;
+}
+
+class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems
+    implements Fragment$Cart$validationStatus$unavailableItems {
+  Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.reason,
+    this.$__typename = 'UnavailableCartItem',
+  });
+
+  factory Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems
+    on Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems {
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems(
+    Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems
+        instance,
+    TRes Function(
+            Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems;
+
+  factory CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$validationStatus$unavailableItems(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$promotions
@@ -59370,6 +68213,8 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
   Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines({
     required this.id,
     required this.quantity,
+    required this.isAvailable,
+    this.unavailableReason,
     this.customFields,
     this.featuredAsset,
     required this.unitPrice,
@@ -59385,6 +68230,8 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$quantity = json['quantity'];
+    final l$isAvailable = json['isAvailable'];
+    final l$unavailableReason = json['unavailableReason'];
     final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
@@ -59397,6 +68244,8 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
     return Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines(
       id: (l$id as String),
       quantity: (l$quantity as int),
+      isAvailable: (l$isAvailable as bool),
+      unavailableReason: (l$unavailableReason as String?),
       customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -59421,6 +68270,10 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
   final String id;
 
   final int quantity;
+
+  final bool isAvailable;
+
+  final String? unavailableReason;
 
   final Map<String, dynamic>? customFields;
 
@@ -59449,6 +68302,10 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
     _resultData['id'] = l$id;
     final l$quantity = quantity;
     _resultData['quantity'] = l$quantity;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$unavailableReason = unavailableReason;
+    _resultData['unavailableReason'] = l$unavailableReason;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
@@ -59474,6 +68331,8 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
   int get hashCode {
     final l$id = id;
     final l$quantity = quantity;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
@@ -59486,6 +68345,8 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
     return Object.hashAll([
       l$id,
       l$quantity,
+      l$isAvailable,
+      l$unavailableReason,
       l$customFields,
       l$featuredAsset,
       l$unitPrice,
@@ -59516,6 +68377,16 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines
     final l$quantity = quantity;
     final lOther$quantity = other.quantity;
     if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (l$unavailableReason != lOther$unavailableReason) {
       return false;
     }
     final l$customFields = customFields;
@@ -59602,6 +68473,8 @@ abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$
   TRes call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -59647,6 +68520,8 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
   TRes call({
     Object? id = _undefined,
     Object? quantity = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
@@ -59663,6 +68538,12 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
         quantity: quantity == _undefined || quantity == null
             ? _instance.quantity
             : (quantity as int),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        unavailableReason: unavailableReason == _undefined
+            ? _instance.unavailableReason
+            : (unavailableReason as String?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Map<String, dynamic>?),
@@ -59739,6 +68620,8 @@ class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$
   call({
     String? id,
     int? quantity,
+    bool? isAvailable,
+    String? unavailableReason,
     Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
@@ -59770,6 +68653,9 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$produ
   Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant({
     required this.id,
     required this.name,
+    required this.stockLevel,
+    required this.price,
+    required this.product,
     this.$__typename = 'ProductVariant',
   });
 
@@ -59777,10 +68663,18 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$produ
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$stockLevel = json['stockLevel'];
+    final l$price = json['price'];
+    final l$product = json['product'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant(
       id: (l$id as String),
       name: (l$name as String),
+      stockLevel: (l$stockLevel as String),
+      price: (l$price as num).toDouble(),
+      product:
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product
+              .fromJson((l$product as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -59788,6 +68682,13 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$produ
   final String id;
 
   final String name;
+
+  final String stockLevel;
+
+  final double price;
+
+  final Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product
+      product;
 
   final String $__typename;
 
@@ -59797,6 +68698,12 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$produ
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -59806,10 +68713,16 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$produ
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$stockLevel = stockLevel;
+    final l$price = price;
+    final l$product = product;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
+      l$stockLevel,
+      l$price,
+      l$product,
       l$$__typename,
     ]);
   }
@@ -59832,6 +68745,21 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$produ
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -59871,8 +68799,14 @@ abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$
   TRes call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product?
+        product,
     String? $__typename,
   });
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+      TRes> get product;
 }
 
 class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant<
@@ -59897,6 +68831,9 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? stockLevel = _undefined,
+    Object? price = _undefined,
+    Object? product = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -59905,10 +68842,27 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant<
@@ -59924,6 +68878,162 @@ class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$
   call({
     String? id,
     String? name,
+    String? stockLevel,
+    double? price,
+    Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+          TRes>
+      get product =>
+          CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product
+              .stub(_res);
+}
+
+class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product
+    implements Fragment$Cart$lines$productVariant$product {
+  Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product({
+    required this.enabled,
+    this.$__typename = 'Product',
+  });
+
+  factory Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product(
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product
+    on Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product {
+  CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product(
+    Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product
+        instance,
+    TRes Function(
+            Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product;
+
+  factory CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product;
+
+  TRes call({
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product(
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$lines$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? enabled,
     String? $__typename,
   }) =>
       _res;

@@ -32,7 +32,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     super.initState();
     // Fetch favorites when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint('[Favorites] Fetching customer favorites...');
+// debugPrint('[Favorites] Fetching customer favorites...');
       bannerController.getCustomerFavorites();
     });
   }
@@ -54,7 +54,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   /// Handle removing a product from favorites
   Future<void> _handleRemoveFavorite(
       String productId, String productName) async {
-    debugPrint('[Favorites] Removing product: $productName (ID: $productId)');
+// debugPrint('[Favorites] Removing product: $productName (ID: $productId)');
 
     // Add small delay to ensure image has time to render if loading
     await Future.delayed(const Duration(milliseconds: 100));
@@ -62,9 +62,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     final success = await bannerController.toggleFavorite(productId: productId);
 
     if (success) {
-      showSuccessSnackbar('$productName removed from favorites');
-      debugPrint(
-          '[Favorites] Successfully removed. Remaining: ${bannerController.favoritesList.length}');
+/// debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.favoritesList.length}');
     } else {
       showErrorSnackbar('Failed to remove from favorites');
     }
@@ -88,7 +86,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
         productVariantId: variantId, quantity: 1);
 
     if (success) {
-      showSuccessSnackbar('$productName added to cart');
       if (mounted) setState(() {});
     } else {
       showErrorSnackbar('Failed to add to cart');

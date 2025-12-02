@@ -7,6 +7,7 @@ import '../controllers/theme_controller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
+import '../utils/bill_generator.dart';
 import '../services/graphql_client.dart';
 import '../graphql/order.graphql.dart';
 import '../widgets/premium_card.dart';
@@ -41,15 +42,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future<void> _loadOrderDetails() async {
     try {
-      debugPrint('[OrderDetail] Loading order with code: ${widget.orderCode}');
+// debugPrint('[OrderDetail] Loading order with code: ${widget.orderCode}');
       final order = await orderController.getOrderByCode(widget.orderCode);
       if (order == null) {
-        debugPrint('[OrderDetail] Order not found for code: ${widget.orderCode}');
+// debugPrint('[OrderDetail] Order not found for code: ${widget.orderCode}');
       } else {
-        debugPrint('[OrderDetail] Order loaded successfully: ${order.code}');
+// debugPrint('[OrderDetail] Order loaded successfully: ${order.code}');
       }
     } catch (e) {
-      debugPrint('[OrderDetail] Error loading order details: $e');
+// debugPrint('[OrderDetail] Error loading order details: $e');
     }
   }
 
@@ -105,6 +106,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   _buildStatusHeader(order),
                   
                   SizedBox(height: ResponsiveUtils.rp(12)),
+                  
+                  // Share Invoice Button - only show for non-cancelled orders
+                  if (order.state.toLowerCase() != 'cancelled')
+                    _buildShareInvoiceButton(order),
+                  
+                  if (order.state.toLowerCase() != 'cancelled')
+                    SizedBox(height: ResponsiveUtils.rp(12)),
                   
                   // Products Section
                   if (order.lines.isNotEmpty) _buildProductsCard(order),
@@ -197,6 +205,64 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildShareInvoiceButton(dynamic order) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () => _shareInvoice(order),
+        icon: Icon(Icons.share, size: ResponsiveUtils.rp(20)),
+        label: Text('Share Invoice'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.button,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _shareInvoice(dynamic order) async {
+    // Don't allow sharing for cancelled orders
+    final isCancelled = order.state?.toString().toLowerCase() == 'cancelled';
+    if (isCancelled) {
+      Get.snackbar(
+        'Error',
+        'Cannot share invoice for cancelled orders',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+    
+    try {
+      utilityController.setLoadingState(true);
+      // The order from orderController.currentOrder is already in the correct format
+      final orderModel = orderController.currentOrder.value;
+      if (orderModel != null) {
+        await BillGenerator.generateAndShare(orderModel);
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to load order details',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to generate invoice: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      utilityController.setLoadingState(false);
+    }
   }
 
   Widget _buildStatusHeader(dynamic order) {
@@ -959,7 +1025,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       );
 
       if (response.hasException) {
-        debugPrint('[OrderDetail] Error requesting cancellation: ${response.exception}');
+// debugPrint('[OrderDetail] Error requesting cancellation: ${response.exception}');
         Get.snackbar(
           'Error',
           'Failed to request cancellation. Please try again.',
@@ -988,7 +1054,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         colorText: Colors.white,
       );
     } catch (e) {
-      debugPrint('[OrderDetail] Exception requesting cancellation: $e');
+// debugPrint('[OrderDetail] Exception requesting cancellation: $e');
       Get.snackbar(
         'Error',
         'Failed to request cancellation. Please try again.',

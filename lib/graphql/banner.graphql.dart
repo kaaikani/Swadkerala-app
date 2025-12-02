@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'order.graphql.dart';
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
@@ -12624,13 +12625,13 @@ class Mutation$RemoveCouponCode {
     return Mutation$RemoveCouponCode(
       removeCouponCode: l$removeCouponCode == null
           ? null
-          : Mutation$RemoveCouponCode$removeCouponCode.fromJson(
+          : Fragment$Cart.fromJson(
               (l$removeCouponCode as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final Mutation$RemoveCouponCode$removeCouponCode? removeCouponCode;
+  final Fragment$Cart? removeCouponCode;
 
   final String $__typename;
 
@@ -12695,11 +12696,10 @@ abstract class CopyWith$Mutation$RemoveCouponCode<TRes> {
       _CopyWithStubImpl$Mutation$RemoveCouponCode;
 
   TRes call({
-    Mutation$RemoveCouponCode$removeCouponCode? removeCouponCode,
+    Fragment$Cart? removeCouponCode,
     String? $__typename,
   });
-  CopyWith$Mutation$RemoveCouponCode$removeCouponCode<TRes>
-      get removeCouponCode;
+  CopyWith$Fragment$Cart<TRes> get removeCouponCode;
 }
 
 class _CopyWithImpl$Mutation$RemoveCouponCode<TRes>
@@ -12722,19 +12722,17 @@ class _CopyWithImpl$Mutation$RemoveCouponCode<TRes>
       _then(Mutation$RemoveCouponCode(
         removeCouponCode: removeCouponCode == _undefined
             ? _instance.removeCouponCode
-            : (removeCouponCode as Mutation$RemoveCouponCode$removeCouponCode?),
+            : (removeCouponCode as Fragment$Cart?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
 
-  CopyWith$Mutation$RemoveCouponCode$removeCouponCode<TRes>
-      get removeCouponCode {
+  CopyWith$Fragment$Cart<TRes> get removeCouponCode {
     final local$removeCouponCode = _instance.removeCouponCode;
     return local$removeCouponCode == null
-        ? CopyWith$Mutation$RemoveCouponCode$removeCouponCode.stub(
-            _then(_instance))
-        : CopyWith$Mutation$RemoveCouponCode$removeCouponCode(
+        ? CopyWith$Fragment$Cart.stub(_then(_instance))
+        : CopyWith$Fragment$Cart(
             local$removeCouponCode, (e) => call(removeCouponCode: e));
   }
 }
@@ -12746,14 +12744,13 @@ class _CopyWithStubImpl$Mutation$RemoveCouponCode<TRes>
   TRes _res;
 
   call({
-    Mutation$RemoveCouponCode$removeCouponCode? removeCouponCode,
+    Fragment$Cart? removeCouponCode,
     String? $__typename,
   }) =>
       _res;
 
-  CopyWith$Mutation$RemoveCouponCode$removeCouponCode<TRes>
-      get removeCouponCode =>
-          CopyWith$Mutation$RemoveCouponCode$removeCouponCode.stub(_res);
+  CopyWith$Fragment$Cart<TRes> get removeCouponCode =>
+      CopyWith$Fragment$Cart.stub(_res);
 }
 
 const documentNodeMutationRemoveCouponCode = DocumentNode(definitions: [
@@ -12784,13 +12781,17 @@ const documentNodeMutationRemoveCouponCode = DocumentNode(definitions: [
         ],
         directives: [],
         selectionSet: SelectionSetNode(selections: [
+          FragmentSpreadNode(
+            name: NameNode(value: 'Cart'),
+            directives: [],
+          ),
           FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
             arguments: [],
             directives: [],
             selectionSet: null,
-          )
+          ),
         ]),
       ),
       FieldNode(
@@ -12802,6 +12803,8 @@ const documentNodeMutationRemoveCouponCode = DocumentNode(definitions: [
       ),
     ]),
   ),
+  fragmentDefinitionCart,
+  fragmentDefinitionAsset,
 ]);
 Mutation$RemoveCouponCode _parserFn$Mutation$RemoveCouponCode(
         Map<String, dynamic> data) =>
@@ -13016,98 +13019,4 @@ class Mutation$RemoveCouponCode$Widget
             result,
           ),
         );
-}
-
-class Mutation$RemoveCouponCode$removeCouponCode {
-  Mutation$RemoveCouponCode$removeCouponCode({this.$__typename = 'Order'});
-
-  factory Mutation$RemoveCouponCode$removeCouponCode.fromJson(
-      Map<String, dynamic> json) {
-    final l$$__typename = json['__typename'];
-    return Mutation$RemoveCouponCode$removeCouponCode(
-        $__typename: (l$$__typename as String));
-  }
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$$__typename = $__typename;
-    return Object.hashAll([l$$__typename]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Mutation$RemoveCouponCode$removeCouponCode ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Mutation$RemoveCouponCode$removeCouponCode
-    on Mutation$RemoveCouponCode$removeCouponCode {
-  CopyWith$Mutation$RemoveCouponCode$removeCouponCode<
-          Mutation$RemoveCouponCode$removeCouponCode>
-      get copyWith => CopyWith$Mutation$RemoveCouponCode$removeCouponCode(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Mutation$RemoveCouponCode$removeCouponCode<TRes> {
-  factory CopyWith$Mutation$RemoveCouponCode$removeCouponCode(
-    Mutation$RemoveCouponCode$removeCouponCode instance,
-    TRes Function(Mutation$RemoveCouponCode$removeCouponCode) then,
-  ) = _CopyWithImpl$Mutation$RemoveCouponCode$removeCouponCode;
-
-  factory CopyWith$Mutation$RemoveCouponCode$removeCouponCode.stub(TRes res) =
-      _CopyWithStubImpl$Mutation$RemoveCouponCode$removeCouponCode;
-
-  TRes call({String? $__typename});
-}
-
-class _CopyWithImpl$Mutation$RemoveCouponCode$removeCouponCode<TRes>
-    implements CopyWith$Mutation$RemoveCouponCode$removeCouponCode<TRes> {
-  _CopyWithImpl$Mutation$RemoveCouponCode$removeCouponCode(
-    this._instance,
-    this._then,
-  );
-
-  final Mutation$RemoveCouponCode$removeCouponCode _instance;
-
-  final TRes Function(Mutation$RemoveCouponCode$removeCouponCode) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({Object? $__typename = _undefined}) =>
-      _then(Mutation$RemoveCouponCode$removeCouponCode(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
-}
-
-class _CopyWithStubImpl$Mutation$RemoveCouponCode$removeCouponCode<TRes>
-    implements CopyWith$Mutation$RemoveCouponCode$removeCouponCode<TRes> {
-  _CopyWithStubImpl$Mutation$RemoveCouponCode$removeCouponCode(this._res);
-
-  TRes _res;
-
-  call({String? $__typename}) => _res;
 }

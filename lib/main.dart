@@ -27,7 +27,7 @@ import 'theme/theme.dart';
 /// when the app starts
 Future<void> checkAppUpdate() async {
   try {
-    debugPrint('[Main] Starting app update check...');
+// debugPrint('[Main] Starting app update check...');
     
     // Initialize BannerController for GraphQL calls
     final bannerController = Get.put(BannerController());
@@ -35,9 +35,9 @@ Future<void> checkAppUpdate() async {
     // Try to fetch update info from GraphQL
     try {
       await bannerController.getAppUpdateInfo();
-      debugPrint('[Main] GraphQL update info fetched successfully');
+// debugPrint('[Main] GraphQL update info fetched successfully');
     } catch (e) {
-      debugPrint('[Main] GraphQL update info fetch failed: $e');
+// debugPrint('[Main] GraphQL update info fetch failed: $e');
     }
     
     // Get the update service
@@ -45,29 +45,29 @@ Future<void> checkAppUpdate() async {
     
     // Check if immediate update is needed
     if (updateService.isImmediateUpdateEnabled) {
-      debugPrint('[Main] Immediate update is enabled');
+// debugPrint('[Main] Immediate update is enabled');
       
       // Check Play Store for updates
       try {
         final updateAvailable = await updateService.checkPlayStoreDirectly();
         if (updateAvailable) {
-          debugPrint('[Main] Update available on Play Store');
+// debugPrint('[Main] Update available on Play Store');
         } else {
-          debugPrint('[Main] No update available on Play Store');
+// debugPrint('[Main] No update available on Play Store');
         }
       } catch (e) {
-        debugPrint('[Main] Play Store check failed: $e');
+// debugPrint('[Main] Play Store check failed: $e');
         if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
-          debugPrint('[Main] App not installed from Play Store - update check skipped');
+// debugPrint('[Main] App not installed from Play Store - update check skipped');
         }
       }
     } else {
-      debugPrint('[Main] Immediate update is disabled');
+// debugPrint('[Main] Immediate update is disabled');
     }
     
-    debugPrint('[Main] App update check completed');
+// debugPrint('[Main] App update check completed');
   } catch (e) {
-    debugPrint('[Main] Error during app update check: $e');
+// debugPrint('[Main] Error during app update check: $e');
   }
 }
 
@@ -93,7 +93,7 @@ Future<void> checkAppUpdate() async {
 /// Returns true if update is available, false otherwise
 Future<bool> performAppUpdateCheck() async {
   try {
-    debugPrint('[AppUpdate] Performing comprehensive app update check...');
+// debugPrint('[AppUpdate] Performing comprehensive app update check...');
     
     // Get BannerController (create if not exists)
     BannerController bannerController;
@@ -107,10 +107,10 @@ Future<bool> performAppUpdateCheck() async {
     bool graphqlSuccess = false;
     try {
       await bannerController.getAppUpdateInfo();
-      debugPrint('[AppUpdate] GraphQL update info fetched successfully');
+// debugPrint('[AppUpdate] GraphQL update info fetched successfully');
       graphqlSuccess = true;
     } catch (e) {
-      debugPrint('[AppUpdate] GraphQL update info fetch failed: $e');
+// debugPrint('[AppUpdate] GraphQL update info fetch failed: $e');
       graphqlSuccess = false;
     }
     
@@ -119,26 +119,26 @@ Future<bool> performAppUpdateCheck() async {
     
     // Check if GraphQL provided update info
     if (graphqlSuccess && updateService.latestVersion != updateService.currentVersion) {
-      debugPrint('[AppUpdate] GraphQL provided version info: ${updateService.currentVersion} -> ${updateService.latestVersion}');
-      debugPrint('[AppUpdate] Immediate update enabled: ${updateService.isImmediateUpdateEnabled}');
+// debugPrint('[AppUpdate] GraphQL provided version info: ${updateService.currentVersion} -> ${updateService.latestVersion}');
+// debugPrint('[AppUpdate] Immediate update enabled: ${updateService.isImmediateUpdateEnabled}');
       return updateService.isImmediateUpdateEnabled;
     } else {
       // GraphQL failed or didn't provide version info - fallback to Play Store check
-      debugPrint('[AppUpdate] GraphQL failed or no version info, checking Play Store directly...');
+// debugPrint('[AppUpdate] GraphQL failed or no version info, checking Play Store directly...');
       try {
         final updateAvailable = await updateService.checkPlayStoreDirectly();
-        debugPrint('[AppUpdate] Play Store check result: $updateAvailable');
+// debugPrint('[AppUpdate] Play Store check result: $updateAvailable');
         return updateAvailable;
       } catch (e) {
-        debugPrint('[AppUpdate] Play Store check failed: $e');
+// debugPrint('[AppUpdate] Play Store check failed: $e');
         if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
-          debugPrint('[AppUpdate] App not installed from Play Store');
+// debugPrint('[AppUpdate] App not installed from Play Store');
         }
         return false;
       }
     }
   } catch (e) {
-    debugPrint('[AppUpdate] Error during comprehensive update check: $e');
+// debugPrint('[AppUpdate] Error during comprehensive update check: $e');
     return false;
   }
 }
@@ -153,7 +153,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> _initializeFirebase() async {
   if (kIsWeb) {
     // Skip Firebase initialization on Web (no options configured).
-    debugPrint('[Main] Skipping Firebase initialization on Web.');
+// debugPrint('[Main] Skipping Firebase initialization on Web.');
     return;
   }
 
@@ -169,6 +169,24 @@ Future<void> _initializeFirebase() async {
     final messaging = FirebaseMessaging.instance;
     await messaging.requestPermission();
 
+    // Get and print FCM token
+    try {
+      final token = await messaging.getToken();
+// debugPrint('🔥 [FCM] Token: $token');
+      if (token != null) {
+// debugPrint('🔥 [FCM] Token length: ${token.length}');
+      } else {
+// debugPrint('🔥 [FCM] Token is null');
+      }
+    } catch (e) {
+// debugPrint('🔥 [FCM] Error getting token: $e');
+    }
+
+    // Listen for token refresh
+    messaging.onTokenRefresh.listen((newToken) {
+// debugPrint('🔥 [FCM] Token refreshed: $newToken');
+    });
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       NotificationService.instance.showRemoteNotification(message);
       NotificationService.instance.showSnackbar(message);
@@ -183,7 +201,7 @@ Future<void> _initializeFirebase() async {
     final remoteConfigService = Get.put(RemoteConfigService());
     await remoteConfigService.initialize();
   } catch (e, stackTrace) {
-    debugPrint('[Main] Firebase initialization error: $e');
+// debugPrint('[Main] Firebase initialization error: $e');
     CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Firebase initialization failed');
   }
 }
