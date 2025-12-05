@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     try {
       await _smsAutofillService.initialize();
     } catch (e) {
-// debugPrint('[LoginPage] Error initializing SMS autofill: $e');
+debugPrint('[LoginPage] Error initializing SMS autofill: $e');
     }
   }
 
@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       _authController.setLoggedIn(false);
       _authController.setOtpSent(false);
     } catch (e) {
-// debugPrint('[LoginPage] Error clearing cache: $e');
+debugPrint('[LoginPage] Error clearing cache: $e');
     }
   }
 
@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         }
       }
     } catch (e) {
-// debugPrint('[LoginPage] SIM detection failed: $e');
+debugPrint('[LoginPage] SIM detection failed: $e');
     } finally {
       if (mounted) setState(() => _isDetectingSim = false);
     }
@@ -180,7 +180,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         if (otp.length == 4 && _otpError == null) _verifyOtp();
       });
     } catch (e) {
-// debugPrint('[LoginPage] SMS autofill error: $e');
+debugPrint('[LoginPage] SMS autofill error: $e');
     }
   }
 

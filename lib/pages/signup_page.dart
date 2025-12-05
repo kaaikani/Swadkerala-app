@@ -88,7 +88,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     try {
       await _smsAutofillService.initialize();
     } catch (e) {
-// debugPrint('[SignupPage] SMS autofill init error: $e');
+debugPrint('[SignupPage] SMS autofill init error: $e');
     }
   }
 
@@ -100,7 +100,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         if (otp.length == 4 && _otpError == null) _verifyOtp();
       });
     } catch (e) {
-// debugPrint('[SignupPage] SMS autofill error: $e');
+debugPrint('[SignupPage] SMS autofill error: $e');
     }
   }
 

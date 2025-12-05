@@ -11262,21 +11262,7 @@ const documentNodeMutationApplyCouponCode = DocumentNode(definitions: [
                 directives: [],
                 selectionSet: SelectionSetNode(selections: [
                   FieldNode(
-                    name: NameNode(value: 'razorpay_order_id'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
                     name: NameNode(value: 'otherInstructions'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'clientRequestToCancel'),
                     alias: null,
                     arguments: [],
                     directives: [],
@@ -11970,42 +11956,28 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
 
 class Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields {
   Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields({
-    this.razorpay_order_id,
     this.otherInstructions,
-    this.clientRequestToCancel,
     this.$__typename = 'OrderCustomFields',
   });
 
   factory Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$razorpay_order_id = json['razorpay_order_id'];
     final l$otherInstructions = json['otherInstructions'];
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields(
-      razorpay_order_id: (l$razorpay_order_id as String?),
       otherInstructions: (l$otherInstructions as String?),
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String? razorpay_order_id;
-
   final String? otherInstructions;
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$razorpay_order_id = razorpay_order_id;
-    _resultData['razorpay_order_id'] = l$razorpay_order_id;
     final l$otherInstructions = otherInstructions;
     _resultData['otherInstructions'] = l$otherInstructions;
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -12013,14 +11985,10 @@ class Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields {
 
   @override
   int get hashCode {
-    final l$razorpay_order_id = razorpay_order_id;
     final l$otherInstructions = otherInstructions;
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
     return Object.hashAll([
-      l$razorpay_order_id,
       l$otherInstructions,
-      l$clientRequestToCancel,
       l$$__typename,
     ]);
   }
@@ -12035,19 +12003,9 @@ class Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields {
         runtimeType != other.runtimeType) {
       return false;
     }
-    final l$razorpay_order_id = razorpay_order_id;
-    final lOther$razorpay_order_id = other.razorpay_order_id;
-    if (l$razorpay_order_id != lOther$razorpay_order_id) {
-      return false;
-    }
     final l$otherInstructions = otherInstructions;
     final lOther$otherInstructions = other.otherInstructions;
     if (l$otherInstructions != lOther$otherInstructions) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -12083,9 +12041,7 @@ abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFi
       _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields;
 
   TRes call({
-    String? razorpay_order_id,
     String? otherInstructions,
-    int? clientRequestToCancel,
     String? $__typename,
   });
 }
@@ -12108,21 +12064,13 @@ class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
-    Object? razorpay_order_id = _undefined,
     Object? otherInstructions = _undefined,
-    Object? clientRequestToCancel = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields(
-        razorpay_order_id: razorpay_order_id == _undefined
-            ? _instance.razorpay_order_id
-            : (razorpay_order_id as String?),
         otherInstructions: otherInstructions == _undefined
             ? _instance.otherInstructions
             : (otherInstructions as String?),
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -12140,9 +12088,7 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFi
   TRes _res;
 
   call({
-    String? razorpay_order_id,
     String? otherInstructions,
-    int? clientRequestToCancel,
     String? $__typename,
   }) =>
       _res;

@@ -10,14 +10,12 @@ abstract class BaseController extends GetxController {
   /// Handle GraphQL response errors and show error dialog
   bool handleGraphQLError(QueryResult response, {String? customErrorMessage}) {
     if (response.hasException) {
-// debugPrint('[BaseController] GraphQL Exception: ${response.exception}');
       
       // Early check: Suppress ResponseFormatException (JSON parsing errors) - don't show dialog
       final exceptionStr = response.exception.toString();
       if (exceptionStr.contains('ResponseFormatException') ||
           exceptionStr.contains('FormatException') ||
           exceptionStr.contains('Unexpected character')) {
-// debugPrint('[BaseController] ResponseFormatException suppressed (early check): ${response.exception}');
         return true;
       }
       
@@ -41,20 +39,17 @@ abstract class BaseController extends GetxController {
         // Suppress ResponseFormatException (JSON parsing errors) - these are typically network/parsing issues
         if (linkException.toString().contains('ResponseFormatException') ||
             linkException.toString().contains('FormatException')) {
-// debugPrint('[BaseController] ResponseFormatException suppressed: $linkException');
           return true;
         }
 
         if (linkException is NetworkException || linkException is ServerException) {
           // Connection or server issues shouldn't display a dialog
-// debugPrint('[BaseController] Network/Server exception suppressed: $linkException');
           
           // Check for specific connection errors
           final exceptionStr = linkException.toString();
           if (exceptionStr.contains('Connection closed before full header was received') ||
               exceptionStr.contains('Connection closed') ||
               exceptionStr.contains('SocketException')) {
-// debugPrint('[BaseController] Connection error detected - this is likely a network/server issue');
           }
           
           return true;
@@ -85,7 +80,6 @@ abstract class BaseController extends GetxController {
           linkException.originalException is TimeoutException;
 
       if (isTimeout) {
-// debugPrint('[BaseController] Timeout exception suppressed: $linkException');
         return true;
       }
 
@@ -95,7 +89,6 @@ abstract class BaseController extends GetxController {
         if (linkExceptionStr.contains('ResponseFormatException') ||
             linkExceptionStr.contains('FormatException') ||
             linkExceptionStr.contains('Unexpected character')) {
-// debugPrint('[BaseController] ResponseFormatException suppressed (additional check): $linkException');
           return true;
         }
       }
@@ -109,7 +102,6 @@ abstract class BaseController extends GetxController {
 
   /// Handle generic exceptions and show error dialog
   void handleException(dynamic exception, {String? customErrorMessage}) {
-// debugPrint('[BaseController] Exception: $exception');
     
     String errorMessage = customErrorMessage ?? 'An unexpected error occurred';
     
@@ -129,7 +121,6 @@ abstract class BaseController extends GetxController {
 
     final isTimeout = exception is TimeoutException;
     if (isTimeout) {
-// debugPrint('[BaseController] Timeout exception suppressed in handleException: $exception');
       return;
     }
 

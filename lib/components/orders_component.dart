@@ -67,17 +67,20 @@ class OrdersComponent extends StatelessWidget {
         final state = order.state?.toString().toLowerCase() ?? '';
         
         switch (filter) {
+          case OrderFilter.paid:
+            // Check for payment settled state only - fully paid orders
+            return state == 'paymentsettled';
+          
+          case OrderFilter.paymentAuthorized:
+            // Check for payment authorized state only - order confirmed but payment not yet settled
+            return state == 'paymentauthorized';
+          
           case OrderFilter.delivered:
             // Check for delivered/fulfilled/shipped states
             return state == 'fulfilled' || 
                    state == 'delivered' || 
                    state == 'shipped' ||
                    state == 'partiallyfulfilled';
-          
-          case OrderFilter.paymentAuthorized:
-            // Check for payment authorized/settled states
-            return state == 'paymentauthorized' || 
-                   state == 'paymentsettled';
           
           case OrderFilter.cancelled:
             // Cancelled orders are already filtered out, so return empty
@@ -101,8 +104,6 @@ class OrdersComponent extends StatelessWidget {
   }
 
   Widget _buildOrderCard(dynamic order) {
-    final isCancellationRequested = order.customFields?.clientRequestToCancel == 1 ||
-        order.customFields?.clientRequestToCancel == true;
     final isCancelled = order.state.toLowerCase() == 'cancelled';
     
     return GestureDetector(
@@ -154,17 +155,13 @@ class OrdersComponent extends StatelessWidget {
                               padding: EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: isCancellationRequested
-                                    ? Colors.orange
-                                    : (isCancelled
-                                        ? AppColors.grey600
-                                        : _getStatusColor(order.state)),
+                                color: isCancelled
+                                    ? AppColors.grey600
+                                    : _getStatusColor(order.state),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                isCancellationRequested
-                                    ? 'Cancellation Requested'
-                                    : _formatOrderStatus(order.state),
+                                _formatOrderStatus(order.state),
                                 style: TextStyle(
                                   fontSize: ResponsiveUtils.sp(10),
                                   fontWeight: FontWeight.w600,
@@ -343,13 +340,17 @@ class OrdersComponent extends StatelessWidget {
     String message;
     
     switch (currentFilter) {
+      case OrderFilter.paid:
+        title = 'No Paid Orders';
+        message = 'You don\'t have any paid orders yet';
+        break;
+      case OrderFilter.paymentAuthorized:
+        title = 'No Order Confirmed';
+        message = 'You don\'t have any confirmed orders yet';
+        break;
       case OrderFilter.delivered:
         title = 'No Delivered Orders';
         message = 'You don\'t have any delivered orders yet';
-        break;
-      case OrderFilter.paymentAuthorized:
-        title = 'No Payment Authorized Orders';
-        message = 'You don\'t have any orders with authorized payment';
         break;
       case OrderFilter.cancelled:
         title = 'No Cancelled Orders';
@@ -487,7 +488,7 @@ class OrdersComponent extends StatelessWidget {
   }
 
   void _viewOrderDetails(dynamic order) {
-// debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.code}');
+debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.code}');
     Get.toNamed('/order-detail', arguments: order.code);
   }
 
@@ -525,7 +526,7 @@ class OrdersComponent extends StatelessWidget {
         );
       }
     } catch (e) {
-// debugPrint('[OrdersComponent] Error sharing invoice: $e');
+debugPrint('[OrdersComponent] Error sharing invoice: $e');
       Get.snackbar(
         'Error',
         'Failed to generate invoice: $e',

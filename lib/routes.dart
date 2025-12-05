@@ -160,7 +160,7 @@ class AppRoutes {
         
         // If productId is null or empty, redirect to home
         if (productId == null || productId.isEmpty) {
-// debugPrint('[Routes] ProductDetailPage: Missing productId, redirecting to home');
+debugPrint('[Routes] ProductDetailPage: Missing productId, redirecting to home');
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Get.offAllNamed(AppRoutes.home);
           });

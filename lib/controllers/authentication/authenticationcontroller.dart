@@ -55,16 +55,16 @@ class AuthController extends BaseController {
     final authToken = GraphqlService.authToken;
     final channelToken = GraphqlService.channelToken;
     
-// debugPrint('[AuthController] Checking login status from GraphqlService...');
-// debugPrint('[AuthController] Auth token: ${authToken.isNotEmpty ? 'present' : 'missing'}');
-// debugPrint('[AuthController] Channel token: ${channelToken.isNotEmpty ? 'present' : 'missing'}');
+debugPrint('[AuthController] Checking login status from GraphqlService...');
+debugPrint('[AuthController] Auth token: ${authToken.isNotEmpty ? 'present' : 'missing'}');
+debugPrint('[AuthController] Channel token: ${channelToken.isNotEmpty ? 'present' : 'missing'}');
     
     if (authToken.isNotEmpty && channelToken.isNotEmpty) {
       setLoggedIn(true);
-// debugPrint('[AuthController] Login status updated to true based on GraphqlService tokens');
+debugPrint('[AuthController] Login status updated to true based on GraphqlService tokens');
     } else {
       setLoggedIn(false);
-// debugPrint('[AuthController] Login status updated to false - tokens missing');
+              debugPrint('[AuthController] Login status updated to false - tokens missing');
     }
   }
 
@@ -81,19 +81,19 @@ class AuthController extends BaseController {
         final isValid = await _verifyTokensAreValid();
         if (isValid) {
           setLoggedIn(true);
-// debugPrint('[AuthController] User already logged in with valid tokens');
+debugPrint('[AuthController] User already logged in with valid tokens');
         } else {
           setLoggedIn(false);
-// debugPrint('[AuthController] Tokens found but invalid, clearing login status');
+debugPrint('[AuthController] Tokens found but invalid, clearing login status');
           // Clear invalid tokens
           await _clearInvalidTokens();
         }
       } else {
         setLoggedIn(false);
-// debugPrint('[AuthController] No valid tokens found, user not logged in');
+debugPrint('[AuthController] No valid tokens found, user not logged in');
       }
     } catch (e) {
-// debugPrint('[AuthController] Error checking login status: $e');
+debugPrint('[AuthController] Error checking login status: $e');
       setLoggedIn(false);
     }
   }
@@ -116,7 +116,7 @@ class AuthController extends BaseController {
           if (error.message.toLowerCase().contains('unauthorized') ||
               error.message.toLowerCase().contains('authentication') ||
               error.message.toLowerCase().contains('token')) {
-// debugPrint('[AuthController] Authentication error detected: ${error.message}');
+debugPrint('[AuthController] Authentication error detected: ${error.message}');
             return false;
           }
         }
@@ -124,7 +124,7 @@ class AuthController extends BaseController {
       
       return true; // Tokens appear to be valid
     } catch (e) {
-// debugPrint('[AuthController] Error verifying tokens: $e');
+debugPrint('[AuthController] Error verifying tokens: $e');
       return false; // Assume invalid on error
     }
   }
@@ -137,9 +137,9 @@ class AuthController extends BaseController {
       await _storage.remove('auth_token');
       await _storage.remove('channel_token');
       await _storage.remove('channel_code');
-// debugPrint('[AuthController] Invalid tokens cleared');
+debugPrint('[AuthController] Invalid tokens cleared');
     } catch (e) {
-// debugPrint('[AuthController] Error clearing invalid tokens: $e');
+debugPrint('[AuthController] Error clearing invalid tokens: $e');
     }
   }
 
@@ -174,7 +174,7 @@ class AuthController extends BaseController {
     final domain = dotenv.env['EMAIL_DOMAIN'] ?? '@kaikani.com';
     final email = '${phoneNumber.text}$domain';
 
-// debugPrint('[AuthController] Using email: $email');
+debugPrint('[AuthController] Using email: $email');
 
     try {
       final response = await GraphqlService.client.value.query$GetChannelsByCustomerEmail(
@@ -190,7 +190,7 @@ class AuthController extends BaseController {
       final modelResponse = ChannelsByEmailResponse.fromJson(response.parsedData?.toJson() ?? {});
       final channels = modelResponse.getChannelsByCustomerEmail;
 
-// debugPrint('[AuthController] Channels found: ${channels.length}');
+debugPrint('[AuthController] Channels found: ${channels.length}');
 
       if (channels.isEmpty) {
         ErrorDialog.showError('Kindly register');
@@ -202,7 +202,7 @@ class AuthController extends BaseController {
       await _storage.write('channel_token', channel.token);
       await GraphqlService.setToken(key: 'channel', token: channel.token);
 
-// debugPrint('[AuthController] Channel saved - Code: ${channel.code}, Token: ${channel.token}');
+debugPrint('[AuthController] Channel saved - Code: ${channel.code}, Token: ${channel.token}');
       // Use GetX snackbar to avoid context issues
       Get.snackbar(
         '',
@@ -217,7 +217,7 @@ class AuthController extends BaseController {
 
       return true;
     } catch (e) {
-// debugPrint('[AuthController] Exception in checkEmailAndGetChannel: $e');
+debugPrint('[AuthController] Exception in checkEmailAndGetChannel: $e');
       handleException(e, customErrorMessage: 'Failed to verify phone number');
       return false;
     } finally {
@@ -235,13 +235,13 @@ class AuthController extends BaseController {
     final domain = dotenv.env['EMAIL_DOMAIN'] ?? '@kaikani.com';
     final email = '${phoneNumber.text}$domain';
 
-// debugPrint('[AuthController] Checking if user exists with email: $email');
+debugPrint('[AuthController] Checking if user exists with email: $email');
 
     try {
       // First, clear any channel token to search across ALL channels
       final originalChannelToken = GraphqlService.channelToken;
       await GraphqlService.setToken(key: 'channel', token: originalChannelToken);
-// debugPrint('[AuthController] Cleared channel token for global search');
+debugPrint('[AuthController] Cleared channel token for global search');
 
       final response = await GraphqlService.client.value.query$GetChannelsByCustomerEmail(
         Options$Query$GetChannelsByCustomerEmail(
@@ -252,20 +252,20 @@ class AuthController extends BaseController {
       // Restore original channel token
       if (originalChannelToken.isNotEmpty) {
         await GraphqlService.setToken(key: 'channel', token: originalChannelToken);
-// debugPrint('[AuthController] Restored channel token: $originalChannelToken');
+debugPrint('[AuthController] Restored channel token: $originalChannelToken');
       }
 
       if (response.hasException) {
-// debugPrint('[AuthController] Error checking user existence: ${response.exception}');
+debugPrint('[AuthController] Error checking user existence: ${response.exception}');
         return false; // Assume user doesn't exist on error
       }
 
       final modelResponse = ChannelsByEmailResponse.fromJson(response.parsedData?.toJson() ?? {});
       final channels = modelResponse.getChannelsByCustomerEmail;
 
-// debugPrint('[AuthController] User exists check - Channels found: ${channels.length}');
+debugPrint('[AuthController] User exists check - Channels found: ${channels.length}');
       if (channels.isNotEmpty) {
-// debugPrint('[AuthController] Channel details: ${channels.map((c) => '${c.code}:${c.token}').join(', ')}');
+debugPrint('[AuthController] Channel details: ${channels.map((c) => '${c.code}:${c.token}').join(', ')}');
       }
 
       if (channels.isEmpty) {
@@ -275,10 +275,10 @@ class AuthController extends BaseController {
       // User exists - save their channel info
       // final channel = channels.first; // Unused variable
 
-// debugPrint('[AuthController] User exists in channel: ${channels.first.code}');
+debugPrint('[AuthController] User exists in channel: ${channels.first.code}');
       return true; // User exists
     } catch (e) {
-// debugPrint('[AuthController] Exception checking user existence: $e');
+debugPrint('[AuthController] Exception checking user existence: $e');
       return false; // Assume user doesn't exist on error
     } finally {
       setLoading(false);
@@ -303,7 +303,7 @@ class AuthController extends BaseController {
     }
 
     setLoading(true);
-// debugPrint('[AuthController] Sending OTP to: ${phoneNumber.text}');
+debugPrint('[AuthController] Sending OTP to: ${phoneNumber.text}');
 
     try {
       final response = await GraphqlService.client.value.mutate$SendPhoneOtp(
@@ -318,13 +318,13 @@ class AuthController extends BaseController {
 
       // Debug: Log the raw response data
       final rawResult = response.parsedData?.sendPhoneOtp;
-// debugPrint('[AuthController] Raw sendPhoneOtp value: $rawResult (type: ${rawResult.runtimeType})');
+debugPrint('[AuthController] Raw sendPhoneOtp value: $rawResult (type: ${rawResult.runtimeType})');
 
       final success = rawResult != null && rawResult != false && rawResult != "false" && rawResult != 0;
 
       if (success) {
         setOtpSent(true);
-// debugPrint('[AuthController] OTP sent successfully');
+debugPrint('[AuthController] OTP sent successfully');
         Get.snackbar(
           '',
           'OTP sent successfully!',
@@ -337,13 +337,13 @@ class AuthController extends BaseController {
         );
         return true;
       } else {
-// debugPrint('[AuthController] OTP send failed - raw value: $rawResult');
+debugPrint('[AuthController] OTP send failed - raw value: $rawResult');
         ErrorDialog.showError('Failed to send OTP');
         return false;
       }
 
     } catch (e) {
-// debugPrint('[AuthController] Exception in sendOtp: $e');
+debugPrint('[AuthController] Exception in sendOtp: $e');
       handleException(e, customErrorMessage: 'Failed to send OTP');
       return false;
     } finally {
@@ -364,7 +364,7 @@ class AuthController extends BaseController {
     }
 
     setLoading(true);
-// debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
+debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
 
     try {
       // Trim first and last name
@@ -412,7 +412,7 @@ class AuthController extends BaseController {
           setLoggedIn(true);
           resetFormField();
 
-// debugPrint('[AuthController] Login successful');
+debugPrint('[AuthController] Login successful');
           SnackBarWidget.show(
             context,
             'Login successful!',
@@ -433,7 +433,7 @@ class AuthController extends BaseController {
       return false;
 
     } catch (e) {
-// debugPrint('[AuthController] Exception in verifyOtp: $e');
+debugPrint('[AuthController] Exception in verifyOtp: $e');
       handleException(e, customErrorMessage: 'OTP verification failed');
       return false;
     } finally {
@@ -459,7 +459,7 @@ class AuthController extends BaseController {
     }
 
     setLoading(true);
-// debugPrint('[AuthController] Resending OTP to: ${phoneNumber.text}');
+debugPrint('[AuthController] Resending OTP to: ${phoneNumber.text}');
 
     try {
       final response = await GraphqlService.client.value.mutate$ResendPhoneOtp(
@@ -474,7 +474,7 @@ class AuthController extends BaseController {
 
       final rawResult = response.parsedData?.resendPhoneOtp;
       final success = rawResult != null && rawResult != false && rawResult != "false" && rawResult != 0;
-// debugPrint('[AuthController] OTP resend result: $success');
+debugPrint('[AuthController] OTP resend result: $success');
 
       if (success) {
         Get.snackbar(
@@ -494,7 +494,7 @@ class AuthController extends BaseController {
       return success;
 
     } catch (e) {
-// debugPrint('[AuthController] Exception in resendOtp: $e');
+debugPrint('[AuthController] Exception in resendOtp: $e');
       handleException(e, customErrorMessage: 'Failed to resend OTP');
       return false;
     } finally {
@@ -505,7 +505,7 @@ class AuthController extends BaseController {
   /// Logout user
   Future<void> logout(BuildContext context) async {
     setLoading(true);
-// debugPrint('[AuthController] Logging out user');
+debugPrint('[AuthController] Logging out user');
 
     try {
       final response = await GraphqlService.client.value.mutate$LogoutUser(
@@ -513,10 +513,10 @@ class AuthController extends BaseController {
       );
 
       if (response.hasException) {
-// debugPrint('[AuthController] Logout error: ${response.exception}');
+debugPrint('[AuthController] Logout error: ${response.exception}');
       } else {
         // final success = response.parsedData?.logout.success ?? false; // Unused variable
-// debugPrint('[AuthController] Logout result: ${response.parsedData?.logout.success ?? false}');
+debugPrint('[AuthController] Logout result: ${response.parsedData?.logout.success ?? false}');
       }
 
       // Clear all stored data and cache
@@ -530,7 +530,7 @@ class AuthController extends BaseController {
       setOtpSent(false);
       resetFormField();
 
-// debugPrint('[AuthController] User logged out and all cache cleared successfully');
+debugPrint('[AuthController] User logged out and all cache cleared successfully');
       Get.snackbar(
         '',
         'Logged out successfully',
@@ -546,9 +546,9 @@ class AuthController extends BaseController {
       Future.microtask(() => Get.offAllNamed('/login'));
 
     } catch (e) {
-// debugPrint('[AuthController] Exception in logout: $e');
+debugPrint('[AuthController] Exception in logout: $e');
       // Don't show error dialog for logout - just log it
-// debugPrint('[AuthController] Logout error handled silently');
+debugPrint('[AuthController] Logout error handled silently');
     } finally {
       setLoading(false);
     }
@@ -557,12 +557,12 @@ class AuthController extends BaseController {
   /// Clear all app data and cache
   Future<void> _clearAllAppData() async {
     try {
-// debugPrint('[AuthController] Starting comprehensive cache clearing...');
+debugPrint('[AuthController] Starting comprehensive cache clearing...');
       
       // Clear GraphQL tokens
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
-// debugPrint('[AuthController] GraphQL tokens cleared');
+debugPrint('[AuthController] GraphQL tokens cleared');
       
       // Clear all storage data
       await _storage.remove('auth_token');
@@ -670,7 +670,7 @@ class AuthController extends BaseController {
       
       // Clear all keys (nuclear option)
       await _storage.erase();
-// debugPrint('[AuthController] Storage completely erased');
+debugPrint('[AuthController] Storage completely erased');
       
       // Clear any GetX controllers that might have cached data
       try {
@@ -681,14 +681,14 @@ class AuthController extends BaseController {
           customerController.addresses.clear();
           customerController.orders.clear();
           customerController.isEditingProfile.value = false;
-// debugPrint('[AuthController] Customer controller data cleared');
+debugPrint('[AuthController] Customer controller data cleared');
         }
         
         // Clear cart controller data
         if (Get.isRegistered<CartController>()) {
           final cartController = Get.find<CartController>();
           cartController.clearCart();
-// debugPrint('[AuthController] Cart controller data cleared');
+debugPrint('[AuthController] Cart controller data cleared');
         }
         
         // Clear banner controller data
@@ -697,28 +697,28 @@ class AuthController extends BaseController {
           bannerController.availableCouponCodes.clear();
           bannerController.couponCodesLoaded.value = false;
           bannerController.appliedCouponCodes.clear();
-// debugPrint('[AuthController] Banner controller data cleared');
+debugPrint('[AuthController] Banner controller data cleared');
         }
         
         // Clear order controller data
         if (Get.isRegistered<OrderController>()) {
-// debugPrint('[AuthController] Order controller data cleared');
+debugPrint('[AuthController] Order controller data cleared');
         }
         
         // Clear utility controller data
         if (Get.isRegistered<UtilityController>()) {
           final utilityController = Get.find<UtilityController>();
           utilityController.setLoadingState(false);
-// debugPrint('[AuthController] Utility controller data cleared');
+debugPrint('[AuthController] Utility controller data cleared');
         }
         
       } catch (controllerError) {
-// debugPrint('[AuthController] Error clearing controllers: $controllerError');
+debugPrint('[AuthController] Error clearing controllers: $controllerError');
       }
       
-// debugPrint('[AuthController] ✅ All storage data and controllers cleared successfully');
+debugPrint('[AuthController] ✅ All storage data and controllers cleared successfully');
     } catch (e) {
-// debugPrint('[AuthController] ❌ Error clearing storage: $e');
+debugPrint('[AuthController] ❌ Error clearing storage: $e');
     }
   }
 

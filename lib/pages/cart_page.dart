@@ -128,7 +128,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         }
       }
     } catch (e) {
-// debugPrint('Error getting coupon minimum amount: $e');
+debugPrint('Error getting coupon minimum amount: $e');
     }
     return null;
   }
@@ -197,7 +197,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   Future<void> _applyCouponCode(String couponCode) async {
     // Check if coupon has products to add
     final hasProducts = bannerController.hasCouponProducts(couponCode);
-// debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
+debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
     
     final result = hasProducts 
         ? await bannerController.applyCouponCodeWithProducts(couponCode)
@@ -261,9 +261,9 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   }
 
   void _proceedToCheckout() {
-// debugPrint('[CartPage] _proceedToCheckout called');
-// debugPrint('[CartPage] Shipping methods count: ${orderController.shippingMethods.length}');
-// debugPrint('[CartPage] Selected shipping method: ${orderController.selectedShippingMethod.value?.name ?? "null"}');
+debugPrint('[CartPage] _proceedToCheckout called');
+debugPrint('[CartPage] Shipping methods count: ${orderController.shippingMethods.length}');
+debugPrint('[CartPage] Selected shipping method: ${orderController.selectedShippingMethod.value?.name ?? "null"}');
     
     if (cartController.cartItemCount == 0) {
       showErrorSnackbar('Your cart is empty');
@@ -275,7 +275,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     if (cart != null && cart.validationStatus != null) {
       final validationStatus = cart.validationStatus!;
       if (validationStatus.hasUnavailableItems && validationStatus.unavailableItems.isNotEmpty) {
-// debugPrint('[CartPage] ❌ ValidationStatus shows ${validationStatus.totalUnavailableItems} unavailable items');
+debugPrint('[CartPage] ❌ ValidationStatus shows ${validationStatus.totalUnavailableItems} unavailable items');
         // Iterate through unavailable items (unused in loop, just for logging)
         for (final _ in validationStatus.unavailableItems) {
           // Logging is commented out, so variable is unused
@@ -339,7 +339,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         
         if (isUnavailable) {
           unavailableItems.add(i);
-// debugPrint('[CartPage] Item $i is unavailable - isAvailable: ${line.isAvailable}, stockLevel: $stockLevel, productEnabled: ${line.productVariant.productEnabled}, unavailableReason: ${line.unavailableReason}');
+debugPrint('[CartPage] Item $i is unavailable - isAvailable: ${line.isAvailable}, stockLevel: $stockLevel, productEnabled: ${line.productVariant.productEnabled}, unavailableReason: ${line.unavailableReason}');
         }
       }
       
@@ -366,8 +366,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
             if (isProductDisabled || isDisabledByReason) disabledCount++;
           }
         }
-// debugPrint('[CartPage] ❌ Found ${unavailableItems.length} unavailable items: $outOfStockCount out of stock, $lowStockCount low stock, $disabledCount disabled');
-// debugPrint('[CartPage] ❌ Blocking checkout - Please remove unavailable items');
+debugPrint('[CartPage] ❌ Found ${unavailableItems.length} unavailable items: $outOfStockCount out of stock, $lowStockCount low stock, $disabledCount disabled');
+debugPrint('[CartPage] ❌ Blocking checkout - Please remove unavailable items');
         showErrorSnackbar('Some product out of stock remove product from cart to proceed');
         
         // Auto-expand list if there are more than 3 items and list is collapsed
@@ -397,7 +397,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
     // Check if shipping methods are available
     if (orderController.shippingMethods.isEmpty) {
-// debugPrint('[CartPage] ❌ No shipping methods available');
+debugPrint('[CartPage] ❌ No shipping methods available');
       showErrorSnackbar('No shipping methods available. Please contact support.');
       return;
     }
@@ -421,22 +421,22 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     
     final isShippingMethodValid = isMethodSelected && isMethodApplied;
     
-// debugPrint('[CartPage] Shipping method validation:');
-// debugPrint('[CartPage] - selectedMethod: ${selectedMethod != null ? "not null" : "null"}');
-// debugPrint('[CartPage] - method ID: ${selectedMethod?.id ?? "null"}');
-// debugPrint('[CartPage] - method Name: ${selectedMethod?.name ?? "null"}');
-// debugPrint('[CartPage] - currentOrder: ${currentOrder != null ? "exists" : "null"}');
-// debugPrint('[CartPage] - order shippingLines count: ${currentOrder?.shippingLines.length ?? 0}');
-// debugPrint('[CartPage] - isMethodSelected: $isMethodSelected');
-// debugPrint('[CartPage] - isMethodApplied: $isMethodApplied');
-// debugPrint('[CartPage] - isShippingMethodValid: $isShippingMethodValid');
+debugPrint('[CartPage] Shipping method validation:');
+debugPrint('[CartPage] - selectedMethod: ${selectedMethod != null ? "not null" : "null"}');
+debugPrint('[CartPage] - method ID: ${selectedMethod?.id ?? "null"}');
+debugPrint('[CartPage] - method Name: ${selectedMethod?.name ?? "null"}');
+debugPrint('[CartPage] - currentOrder: ${currentOrder != null ? "exists" : "null"}');
+debugPrint('[CartPage] - order shippingLines count: ${currentOrder?.shippingLines.length ?? 0}');
+debugPrint('[CartPage] - isMethodSelected: $isMethodSelected');
+debugPrint('[CartPage] - isMethodApplied: $isMethodApplied');
+debugPrint('[CartPage] - isShippingMethodValid: $isShippingMethodValid');
     
     if (!isShippingMethodValid) {
-// debugPrint('[CartPage] ❌ Shipping method validation FAILED - preventing checkout');
+debugPrint('[CartPage] ❌ Shipping method validation FAILED - preventing checkout');
       
       // If method is selected but not applied, clear the selection
       if (isMethodSelected && !isMethodApplied) {
-// debugPrint('[CartPage] Clearing selected shipping method (not applied to order)');
+debugPrint('[CartPage] Clearing selected shipping method (not applied to order)');
         orderController.selectedShippingMethod.value = null;
       }
       
@@ -484,15 +484,15 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         finalCheck.id == '0' || 
         finalCheck.id == 'null' ||
         !finalIsApplied) {
-// debugPrint('[CartPage] ❌ Final validation check FAILED - blocking navigation');
-// debugPrint('[CartPage] Final check - ID: ${finalCheck?.id ?? "null"}, Name: ${finalCheck?.name ?? "null"}');
-// debugPrint('[CartPage] Final check - isApplied: $finalIsApplied');
+debugPrint('[CartPage] ❌ Final validation check FAILED - blocking navigation');
+debugPrint('[CartPage] Final check - ID: ${finalCheck?.id ?? "null"}, Name: ${finalCheck?.name ?? "null"}');
+debugPrint('[CartPage] Final check - isApplied: $finalIsApplied');
       showErrorSnackbar('Please select a delivery method before checkout');
       return; // Block navigation
     }
     
-// debugPrint('[CartPage] ✅ All validations passed, proceeding to checkout');
-// debugPrint('[CartPage] Selected shipping method: ${selectedMethod.name} (ID: ${selectedMethod.id})');
+debugPrint('[CartPage] ✅ All validations passed, proceeding to checkout');
+debugPrint('[CartPage] Selected shipping method: ${selectedMethod.name} (ID: ${selectedMethod.id})');
 
     // Track begin checkout event
     final cartForAnalytics = cartController.cart.value;
@@ -514,7 +514,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       );
     }
 
-// debugPrint('[CartPage] 🚀 Navigating to checkout page...');
+debugPrint('[CartPage] 🚀 Navigating to checkout page...');
     NavigationHelper.navigateToCheckout();
   }
 
@@ -571,7 +571,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         if (matchingMethod != null) {
           orderController.selectedShippingMethod.value = matchingMethod;
           _lastAppliedShippingMethodId = matchingMethod.id;
-// debugPrint('[CartPage] Loaded existing shipping method: ${matchingMethod.name}');
+debugPrint('[CartPage] Loaded existing shipping method: ${matchingMethod.name}');
           return; // Already has a shipping method, no need to auto-apply
         }
       }
@@ -581,11 +581,11 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
           orderController.shippingMethods.length == 1) {
         final singleMethod = orderController.shippingMethods.first;
         orderController.selectedShippingMethod.value = singleMethod;
-// debugPrint('[CartPage] Auto-applying single shipping method: ${singleMethod.name}');
+debugPrint('[CartPage] Auto-applying single shipping method: ${singleMethod.name}');
         await _applyShippingMethod(showFeedback: false, force: true);
       }
     } catch (e) {
-// debugPrint('[CartPage] Error loading existing shipping method: $e');
+debugPrint('[CartPage] Error loading existing shipping method: $e');
     }
   }
 
@@ -634,7 +634,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         }
       }
     } catch (e) {
-// debugPrint('[CartPage] Error loading existing coupon codes: $e');
+debugPrint('[CartPage] Error loading existing coupon codes: $e');
     }
   }
 
@@ -728,7 +728,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         }
       }
     } catch (e) {
-// debugPrint('[CartPage] Error loading existing loyalty points: $e');
+debugPrint('[CartPage] Error loading existing loyalty points: $e');
     }
   }
 
@@ -755,7 +755,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         }
       }
     } catch (e) {
-// debugPrint('[CartPage] Error loading existing instructions: $e');
+debugPrint('[CartPage] Error loading existing instructions: $e');
     }
   }
 
@@ -880,6 +880,93 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                 ),
               ),
             ),
+
+            // Amount to apply coupon code section (above bottom navigation bar)
+            Obx(() {
+              final cart = cartController.cart.value;
+              if (cart == null) return SizedBox.shrink();
+
+              // Check for out of stock items
+              final hasOutOfStockItems = cart.lines.any((line) {
+                final stockLevel = line.productVariant.stockLevel?.toUpperCase();
+                final isLowStock = stockLevel == 'LOW_STOCK';
+                final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
+                final isProductDisabled = line.productVariant.productEnabled == false;
+                return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
+              });
+
+              if (hasOutOfStockItems) return SizedBox.shrink();
+
+              // Get eligible coupons
+              final subTotal = cart.subTotalWithTax.toInt();
+              final eligibleCoupons = bannerController.getEligibleCoupons(subTotal);
+
+              if (eligibleCoupons.isEmpty) return SizedBox.shrink();
+
+              final coupon = eligibleCoupons.first;
+              final requiredAmount = bannerController.getRequiredAmount(coupon);
+              final difference = requiredAmount - subTotal;
+
+              if (difference <= 0 || difference >= 40000) return SizedBox.shrink();
+
+              final differenceInRupees = difference / 100;
+
+              return Container(
+                margin: EdgeInsets.only(
+                  left: ResponsiveUtils.rp(16),
+                  right: ResponsiveUtils.rp(16),
+                  bottom: ResponsiveUtils.rp(8),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(16),
+                  vertical: ResponsiveUtils.rp(16),
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF1a1a2e), // Dark blue-gray
+                      const Color(0xFF16213e), // Darker blue
+                      const Color(0xFF0f3460), // Deep blue
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: ResponsiveUtils.rp(8),
+                      offset: Offset(0, ResponsiveUtils.rp(4)),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.local_offer_rounded,
+                      color: Colors.white,
+                      size: ResponsiveUtils.rp(24),
+                    ),
+                    SizedBox(width: ResponsiveUtils.rp(12)),
+                    Expanded(
+                      child: Text(
+                        'Add ₹${differenceInRupees.toStringAsFixed(2)} more to unlock coupon \'${coupon.couponCode}\'',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(16),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
 
             // Checkout Section - Fixed Bottom Navigation Bar
             SafeArea(
@@ -1999,7 +2086,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                                     : () async {
                                         // Check if coupon has products to add
                                         final hasProducts = bannerController.hasCouponProducts(coupon.couponCode);
-// debugPrint('[CartPage] Coupon ${coupon.couponCode} has products: $hasProducts');
+debugPrint('[CartPage] Coupon ${coupon.couponCode} has products: $hasProducts');
                                         
                                         final result = hasProducts
                                             ? await bannerController.applyCouponCodeWithProducts(coupon.couponCode)

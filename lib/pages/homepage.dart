@@ -308,8 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         );
       } catch (e) {
-// debugPrint('🔥 _buildShippingTicker crashed: $e');
-// debugPrint('$stack');
+debugPrint('🔥 _buildShippingTicker crashed: $e');
         return const SizedBox.shrink();
       }
     });

@@ -510,13 +510,11 @@ class OrderCustomFields {
   final int? loyaltyPointsUsed;
   final int? loyaltyPointsEarned;
   final String? otherInstructions;
-  final bool? clientRequestToCancel;
 
   OrderCustomFields({
     this.loyaltyPointsUsed,
     this.loyaltyPointsEarned,
     this.otherInstructions,
-    this.clientRequestToCancel,
   });
 
   factory OrderCustomFields.fromJson(Map<String, dynamic> json) {
@@ -525,7 +523,6 @@ class OrderCustomFields {
         loyaltyPointsUsed: _parseIntField(json['loyaltyPointsUsed']),
         loyaltyPointsEarned: _parseIntField(json['loyaltyPointsEarned']),
         otherInstructions: json['otherInstructions']?.toString(),
-        clientRequestToCancel: _parseBoolField(json['clientRequestToCancel']),
       );
     } catch (e) {
       return OrderCustomFields();
@@ -544,30 +541,6 @@ class OrderCustomFields {
         return int.tryParse(value);
       } else if (value is bool) {
         return value ? 1 : 0;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static bool? _parseBoolField(dynamic value) {
-    if (value == null) return null;
-    
-    try {
-      if (value is bool) {
-        return value;
-      } else if (value is int) {
-        return value != 0;
-      } else if (value is String) {
-        final lowerValue = value.toLowerCase();
-        if (lowerValue == 'true' || lowerValue == '1') {
-          return true;
-        } else if (lowerValue == 'false' || lowerValue == '0') {
-          return false;
-        }
-        return null;
       } else {
         return null;
       }

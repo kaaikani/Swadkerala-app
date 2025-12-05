@@ -7182,19 +7182,12 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
       directives: [],
       selectionSet: SelectionSetNode(selections: [
         FieldNode(
-          name: NameNode(value: 'clientRequestToCancel'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
-        ),
-        FieldNode(
           name: NameNode(value: '__typename'),
           alias: null,
           arguments: [],
           directives: [],
           selectionSet: null,
-        ),
+        )
       ]),
     ),
     FieldNode(
@@ -10067,28 +10060,17 @@ class _CopyWithStubImpl$Fragment$Cart$discounts<TRes>
 }
 
 class Fragment$Cart$customFields {
-  Fragment$Cart$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Fragment$Cart$customFields({this.$__typename = 'OrderCustomFields'});
 
   factory Fragment$Cart$customFields.fromJson(Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
-    return Fragment$Cart$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+    return Fragment$Cart$customFields($__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -10096,12 +10078,8 @@ class Fragment$Cart$customFields {
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -10111,11 +10089,6 @@ class Fragment$Cart$customFields {
     }
     if (other is! Fragment$Cart$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -10145,10 +10118,7 @@ abstract class CopyWith$Fragment$Cart$customFields<TRes> {
   factory CopyWith$Fragment$Cart$customFields.stub(TRes res) =
       _CopyWithStubImpl$Fragment$Cart$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Fragment$Cart$customFields<TRes>
@@ -10164,18 +10134,11 @@ class _CopyWithImpl$Fragment$Cart$customFields<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Fragment$Cart$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Fragment$Cart$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
@@ -10184,11 +10147,7 @@ class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Fragment$Asset {
@@ -10908,21 +10867,7 @@ const documentNodeQueryActiveOrder = DocumentNode(definitions: [
                     selectionSet: null,
                   ),
                   FieldNode(
-                    name: NameNode(value: 'razorpay_order_id'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
                     name: NameNode(value: 'otherInstructions'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'clientRequestToCancel'),
                     alias: null,
                     arguments: [],
                     directives: [],
@@ -14721,33 +14666,25 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$discounts<TRes>
 class Query$ActiveOrder$activeOrder$customFields
     implements Fragment$Cart$customFields {
   Query$ActiveOrder$activeOrder$customFields({
-    this.clientRequestToCancel,
     this.$__typename = 'OrderCustomFields',
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
-    this.razorpay_order_id,
     this.otherInstructions,
   });
 
   factory Query$ActiveOrder$activeOrder$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
-    final l$razorpay_order_id = json['razorpay_order_id'];
     final l$otherInstructions = json['otherInstructions'];
     return Query$ActiveOrder$activeOrder$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
       $__typename: (l$$__typename as String),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
-      razorpay_order_id: (l$razorpay_order_id as String?),
       otherInstructions: (l$otherInstructions as String?),
     );
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
@@ -14755,22 +14692,16 @@ class Query$ActiveOrder$activeOrder$customFields
 
   final int? loyaltyPointsUsed;
 
-  final String? razorpay_order_id;
-
   final String? otherInstructions;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
-    final l$razorpay_order_id = razorpay_order_id;
-    _resultData['razorpay_order_id'] = l$razorpay_order_id;
     final l$otherInstructions = otherInstructions;
     _resultData['otherInstructions'] = l$otherInstructions;
     return _resultData;
@@ -14778,18 +14709,14 @@ class Query$ActiveOrder$activeOrder$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
-    final l$razorpay_order_id = razorpay_order_id;
     final l$otherInstructions = otherInstructions;
     return Object.hashAll([
-      l$clientRequestToCancel,
       l$$__typename,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
-      l$razorpay_order_id,
       l$otherInstructions,
     ]);
   }
@@ -14801,11 +14728,6 @@ class Query$ActiveOrder$activeOrder$customFields
     }
     if (other is! Query$ActiveOrder$activeOrder$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -14821,11 +14743,6 @@ class Query$ActiveOrder$activeOrder$customFields
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
     if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
-      return false;
-    }
-    final l$razorpay_order_id = razorpay_order_id;
-    final lOther$razorpay_order_id = other.razorpay_order_id;
-    if (l$razorpay_order_id != lOther$razorpay_order_id) {
       return false;
     }
     final l$otherInstructions = otherInstructions;
@@ -14857,11 +14774,9 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder$customFields<TRes> {
       _CopyWithStubImpl$Query$ActiveOrder$activeOrder$customFields;
 
   TRes call({
-    int? clientRequestToCancel,
     String? $__typename,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
-    String? razorpay_order_id,
     String? otherInstructions,
   });
 }
@@ -14880,17 +14795,12 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$customFields<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
-    Object? clientRequestToCancel = _undefined,
     Object? $__typename = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
-    Object? razorpay_order_id = _undefined,
     Object? otherInstructions = _undefined,
   }) =>
       _then(Query$ActiveOrder$activeOrder$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -14900,9 +14810,6 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$customFields<TRes>
         loyaltyPointsUsed: loyaltyPointsUsed == _undefined
             ? _instance.loyaltyPointsUsed
             : (loyaltyPointsUsed as int?),
-        razorpay_order_id: razorpay_order_id == _undefined
-            ? _instance.razorpay_order_id
-            : (razorpay_order_id as String?),
         otherInstructions: otherInstructions == _undefined
             ? _instance.otherInstructions
             : (otherInstructions as String?),
@@ -14916,11 +14823,9 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$customFields<TRes>
   TRes _res;
 
   call({
-    int? clientRequestToCancel,
     String? $__typename,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
-    String? razorpay_order_id,
     String? otherInstructions,
   }) =>
       _res;
@@ -19750,29 +19655,20 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$discount
 
 class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -19780,12 +19676,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -19796,11 +19688,6 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
     if (other
             is! Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -19835,10 +19722,7 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFi
           TRes res) =
       _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
@@ -19858,18 +19742,11 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
+  TRes call({Object? $__typename = _undefined}) =>
       _then(Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
@@ -19882,11 +19759,7 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFi
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$RemoveAllOrderLines {
@@ -24657,29 +24530,20 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
 
 class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -24687,12 +24551,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -24703,11 +24563,6 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
     if (other
             is! Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -24744,10 +24599,7 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
           TRes res) =
       _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
@@ -24769,19 +24621,11 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$cust
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
@@ -24794,11 +24638,7 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Variables$Mutation$AdjustOrderLine {
@@ -30220,29 +30060,20 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$discount
 
 class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -30250,12 +30081,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -30266,11 +30093,6 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
     if (other
             is! Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -30305,10 +30127,7 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFi
           TRes res) =
       _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
@@ -30328,18 +30147,11 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
+  TRes call({Object? $__typename = _undefined}) =>
       _then(Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
@@ -30352,11 +30164,7 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFi
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Variables$Mutation$SetShippingAddress {
@@ -35328,29 +35136,20 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
 
 class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -35358,12 +35157,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -35374,11 +35169,6 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
     if (other
             is! Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -35415,10 +35205,7 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
           TRes res) =
       _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
@@ -35440,19 +35227,11 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$c
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
@@ -35465,11 +35244,7 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$SetShippingAddress$setOrderShippingAddress$$NoActiveOrderError
@@ -41079,29 +40854,20 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
 
 class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -41109,12 +40875,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -41125,11 +40887,6 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
     if (other
             is! Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -41166,10 +40923,7 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
           TRes res) =
       _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
@@ -41191,19 +40945,11 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$cus
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
@@ -41216,11 +40962,7 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$SetShippingMethod$setOrderShippingMethod$$OrderModificationError
@@ -43473,13 +43215,6 @@ const documentNodeQueryGetOrderByCode = DocumentNode(definitions: [
               ),
               FieldNode(
                 name: NameNode(value: 'loyaltyPointsUsed'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'clientRequestToCancel'),
                 alias: null,
                 arguments: [],
                 directives: [],
@@ -47596,7 +47331,6 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$discounts<TRes>
 class Query$GetOrderByCode$orderByCode$customFields
     implements Fragment$Cart$customFields {
   Query$GetOrderByCode$orderByCode$customFields({
-    this.clientRequestToCancel,
     this.$__typename = 'OrderCustomFields',
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
@@ -47604,19 +47338,15 @@ class Query$GetOrderByCode$orderByCode$customFields
 
   factory Query$GetOrderByCode$orderByCode$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     return Query$GetOrderByCode$orderByCode$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
       $__typename: (l$$__typename as String),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
     );
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
@@ -47626,8 +47356,6 @@ class Query$GetOrderByCode$orderByCode$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -47639,12 +47367,10 @@ class Query$GetOrderByCode$orderByCode$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     return Object.hashAll([
-      l$clientRequestToCancel,
       l$$__typename,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
@@ -47658,11 +47384,6 @@ class Query$GetOrderByCode$orderByCode$customFields
     }
     if (other is! Query$GetOrderByCode$orderByCode$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -47705,7 +47426,6 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
       _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields;
 
   TRes call({
-    int? clientRequestToCancel,
     String? $__typename,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
@@ -47726,15 +47446,11 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
-    Object? clientRequestToCancel = _undefined,
     Object? $__typename = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
   }) =>
       _then(Query$GetOrderByCode$orderByCode$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -47754,7 +47470,6 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
   TRes _res;
 
   call({
-    int? clientRequestToCancel,
     String? $__typename,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
@@ -53440,29 +53155,20 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$discounts<
 
 class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$AddPayment$addPaymentToOrder$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$AddPayment$addPaymentToOrder$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -53470,12 +53176,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -53485,11 +53187,6 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
     }
     if (other is! Mutation$AddPayment$addPaymentToOrder$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -53524,10 +53221,7 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customField
           TRes res) =
       _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
@@ -53547,18 +53241,11 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
+  TRes call({Object? $__typename = _undefined}) =>
       _then(Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
@@ -53571,11 +53258,7 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customField
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$AddPayment$addPaymentToOrder$$OrderPaymentStateError
@@ -54559,46 +54242,46 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$NoActiveOrderErro
       _res;
 }
 
-class Variables$Mutation$CancelOrderOnClientRequest {
-  factory Variables$Mutation$CancelOrderOnClientRequest({
+class Variables$Mutation$RequestOrderCancellation {
+  factory Variables$Mutation$RequestOrderCancellation({
     required String orderId,
-    required int value,
+    required String reason,
   }) =>
-      Variables$Mutation$CancelOrderOnClientRequest._({
+      Variables$Mutation$RequestOrderCancellation._({
         r'orderId': orderId,
-        r'value': value,
+        r'reason': reason,
       });
 
-  Variables$Mutation$CancelOrderOnClientRequest._(this._$data);
+  Variables$Mutation$RequestOrderCancellation._(this._$data);
 
-  factory Variables$Mutation$CancelOrderOnClientRequest.fromJson(
+  factory Variables$Mutation$RequestOrderCancellation.fromJson(
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     final l$orderId = data['orderId'];
     result$data['orderId'] = (l$orderId as String);
-    final l$value = data['value'];
-    result$data['value'] = (l$value as int);
-    return Variables$Mutation$CancelOrderOnClientRequest._(result$data);
+    final l$reason = data['reason'];
+    result$data['reason'] = (l$reason as String);
+    return Variables$Mutation$RequestOrderCancellation._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
   String get orderId => (_$data['orderId'] as String);
 
-  int get value => (_$data['value'] as int);
+  String get reason => (_$data['reason'] as String);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$orderId = orderId;
     result$data['orderId'] = l$orderId;
-    final l$value = value;
-    result$data['value'] = l$value;
+    final l$reason = reason;
+    result$data['reason'] = l$reason;
     return result$data;
   }
 
-  CopyWith$Variables$Mutation$CancelOrderOnClientRequest<
-          Variables$Mutation$CancelOrderOnClientRequest>
-      get copyWith => CopyWith$Variables$Mutation$CancelOrderOnClientRequest(
+  CopyWith$Variables$Mutation$RequestOrderCancellation<
+          Variables$Mutation$RequestOrderCancellation>
+      get copyWith => CopyWith$Variables$Mutation$RequestOrderCancellation(
             this,
             (i) => i,
           );
@@ -54608,7 +54291,7 @@ class Variables$Mutation$CancelOrderOnClientRequest {
     if (identical(this, other)) {
       return true;
     }
-    if (other is! Variables$Mutation$CancelOrderOnClientRequest ||
+    if (other is! Variables$Mutation$RequestOrderCancellation ||
         runtimeType != other.runtimeType) {
       return false;
     }
@@ -54617,9 +54300,9 @@ class Variables$Mutation$CancelOrderOnClientRequest {
     if (l$orderId != lOther$orderId) {
       return false;
     }
-    final l$value = value;
-    final lOther$value = other.value;
-    if (l$value != lOther$value) {
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
       return false;
     }
     return true;
@@ -54628,94 +54311,94 @@ class Variables$Mutation$CancelOrderOnClientRequest {
   @override
   int get hashCode {
     final l$orderId = orderId;
-    final l$value = value;
+    final l$reason = reason;
     return Object.hashAll([
       l$orderId,
-      l$value,
+      l$reason,
     ]);
   }
 }
 
-abstract class CopyWith$Variables$Mutation$CancelOrderOnClientRequest<TRes> {
-  factory CopyWith$Variables$Mutation$CancelOrderOnClientRequest(
-    Variables$Mutation$CancelOrderOnClientRequest instance,
-    TRes Function(Variables$Mutation$CancelOrderOnClientRequest) then,
-  ) = _CopyWithImpl$Variables$Mutation$CancelOrderOnClientRequest;
+abstract class CopyWith$Variables$Mutation$RequestOrderCancellation<TRes> {
+  factory CopyWith$Variables$Mutation$RequestOrderCancellation(
+    Variables$Mutation$RequestOrderCancellation instance,
+    TRes Function(Variables$Mutation$RequestOrderCancellation) then,
+  ) = _CopyWithImpl$Variables$Mutation$RequestOrderCancellation;
 
-  factory CopyWith$Variables$Mutation$CancelOrderOnClientRequest.stub(
-          TRes res) =
-      _CopyWithStubImpl$Variables$Mutation$CancelOrderOnClientRequest;
+  factory CopyWith$Variables$Mutation$RequestOrderCancellation.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$RequestOrderCancellation;
 
   TRes call({
     String? orderId,
-    int? value,
+    String? reason,
   });
 }
 
-class _CopyWithImpl$Variables$Mutation$CancelOrderOnClientRequest<TRes>
-    implements CopyWith$Variables$Mutation$CancelOrderOnClientRequest<TRes> {
-  _CopyWithImpl$Variables$Mutation$CancelOrderOnClientRequest(
+class _CopyWithImpl$Variables$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Variables$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithImpl$Variables$Mutation$RequestOrderCancellation(
     this._instance,
     this._then,
   );
 
-  final Variables$Mutation$CancelOrderOnClientRequest _instance;
+  final Variables$Mutation$RequestOrderCancellation _instance;
 
-  final TRes Function(Variables$Mutation$CancelOrderOnClientRequest) _then;
+  final TRes Function(Variables$Mutation$RequestOrderCancellation) _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
     Object? orderId = _undefined,
-    Object? value = _undefined,
+    Object? reason = _undefined,
   }) =>
-      _then(Variables$Mutation$CancelOrderOnClientRequest._({
+      _then(Variables$Mutation$RequestOrderCancellation._({
         ..._instance._$data,
         if (orderId != _undefined && orderId != null)
           'orderId': (orderId as String),
-        if (value != _undefined && value != null) 'value': (value as int),
+        if (reason != _undefined && reason != null)
+          'reason': (reason as String),
       }));
 }
 
-class _CopyWithStubImpl$Variables$Mutation$CancelOrderOnClientRequest<TRes>
-    implements CopyWith$Variables$Mutation$CancelOrderOnClientRequest<TRes> {
-  _CopyWithStubImpl$Variables$Mutation$CancelOrderOnClientRequest(this._res);
+class _CopyWithStubImpl$Variables$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Variables$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$RequestOrderCancellation(this._res);
 
   TRes _res;
 
   call({
     String? orderId,
-    int? value,
+    String? reason,
   }) =>
       _res;
 }
 
-class Mutation$CancelOrderOnClientRequest {
-  Mutation$CancelOrderOnClientRequest({
-    required this.cancelOrderOnClientRequest,
+class Mutation$RequestOrderCancellation {
+  Mutation$RequestOrderCancellation({
+    required this.requestOrderCancellation,
     this.$__typename = 'Mutation',
   });
 
-  factory Mutation$CancelOrderOnClientRequest.fromJson(
+  factory Mutation$RequestOrderCancellation.fromJson(
       Map<String, dynamic> json) {
-    final l$cancelOrderOnClientRequest = json['cancelOrderOnClientRequest'];
+    final l$requestOrderCancellation = json['requestOrderCancellation'];
     final l$$__typename = json['__typename'];
-    return Mutation$CancelOrderOnClientRequest(
-      cancelOrderOnClientRequest: Fragment$Cart.fromJson(
-          (l$cancelOrderOnClientRequest as Map<String, dynamic>)),
+    return Mutation$RequestOrderCancellation(
+      requestOrderCancellation: Fragment$Cart.fromJson(
+          (l$requestOrderCancellation as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final Fragment$Cart cancelOrderOnClientRequest;
+  final Fragment$Cart requestOrderCancellation;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$cancelOrderOnClientRequest = cancelOrderOnClientRequest;
-    _resultData['cancelOrderOnClientRequest'] =
-        l$cancelOrderOnClientRequest.toJson();
+    final l$requestOrderCancellation = requestOrderCancellation;
+    _resultData['requestOrderCancellation'] =
+        l$requestOrderCancellation.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -54723,10 +54406,10 @@ class Mutation$CancelOrderOnClientRequest {
 
   @override
   int get hashCode {
-    final l$cancelOrderOnClientRequest = cancelOrderOnClientRequest;
+    final l$requestOrderCancellation = requestOrderCancellation;
     final l$$__typename = $__typename;
     return Object.hashAll([
-      l$cancelOrderOnClientRequest,
+      l$requestOrderCancellation,
       l$$__typename,
     ]);
   }
@@ -54736,13 +54419,13 @@ class Mutation$CancelOrderOnClientRequest {
     if (identical(this, other)) {
       return true;
     }
-    if (other is! Mutation$CancelOrderOnClientRequest ||
+    if (other is! Mutation$RequestOrderCancellation ||
         runtimeType != other.runtimeType) {
       return false;
     }
-    final l$cancelOrderOnClientRequest = cancelOrderOnClientRequest;
-    final lOther$cancelOrderOnClientRequest = other.cancelOrderOnClientRequest;
-    if (l$cancelOrderOnClientRequest != lOther$cancelOrderOnClientRequest) {
+    final l$requestOrderCancellation = requestOrderCancellation;
+    final lOther$requestOrderCancellation = other.requestOrderCancellation;
+    if (l$requestOrderCancellation != lOther$requestOrderCancellation) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -54754,88 +54437,85 @@ class Mutation$CancelOrderOnClientRequest {
   }
 }
 
-extension UtilityExtension$Mutation$CancelOrderOnClientRequest
-    on Mutation$CancelOrderOnClientRequest {
-  CopyWith$Mutation$CancelOrderOnClientRequest<
-          Mutation$CancelOrderOnClientRequest>
-      get copyWith => CopyWith$Mutation$CancelOrderOnClientRequest(
+extension UtilityExtension$Mutation$RequestOrderCancellation
+    on Mutation$RequestOrderCancellation {
+  CopyWith$Mutation$RequestOrderCancellation<Mutation$RequestOrderCancellation>
+      get copyWith => CopyWith$Mutation$RequestOrderCancellation(
             this,
             (i) => i,
           );
 }
 
-abstract class CopyWith$Mutation$CancelOrderOnClientRequest<TRes> {
-  factory CopyWith$Mutation$CancelOrderOnClientRequest(
-    Mutation$CancelOrderOnClientRequest instance,
-    TRes Function(Mutation$CancelOrderOnClientRequest) then,
-  ) = _CopyWithImpl$Mutation$CancelOrderOnClientRequest;
+abstract class CopyWith$Mutation$RequestOrderCancellation<TRes> {
+  factory CopyWith$Mutation$RequestOrderCancellation(
+    Mutation$RequestOrderCancellation instance,
+    TRes Function(Mutation$RequestOrderCancellation) then,
+  ) = _CopyWithImpl$Mutation$RequestOrderCancellation;
 
-  factory CopyWith$Mutation$CancelOrderOnClientRequest.stub(TRes res) =
-      _CopyWithStubImpl$Mutation$CancelOrderOnClientRequest;
+  factory CopyWith$Mutation$RequestOrderCancellation.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$RequestOrderCancellation;
 
   TRes call({
-    Fragment$Cart? cancelOrderOnClientRequest,
+    Fragment$Cart? requestOrderCancellation,
     String? $__typename,
   });
-  CopyWith$Fragment$Cart<TRes> get cancelOrderOnClientRequest;
+  CopyWith$Fragment$Cart<TRes> get requestOrderCancellation;
 }
 
-class _CopyWithImpl$Mutation$CancelOrderOnClientRequest<TRes>
-    implements CopyWith$Mutation$CancelOrderOnClientRequest<TRes> {
-  _CopyWithImpl$Mutation$CancelOrderOnClientRequest(
+class _CopyWithImpl$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithImpl$Mutation$RequestOrderCancellation(
     this._instance,
     this._then,
   );
 
-  final Mutation$CancelOrderOnClientRequest _instance;
+  final Mutation$RequestOrderCancellation _instance;
 
-  final TRes Function(Mutation$CancelOrderOnClientRequest) _then;
+  final TRes Function(Mutation$RequestOrderCancellation) _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
-    Object? cancelOrderOnClientRequest = _undefined,
+    Object? requestOrderCancellation = _undefined,
     Object? $__typename = _undefined,
   }) =>
-      _then(Mutation$CancelOrderOnClientRequest(
-        cancelOrderOnClientRequest: cancelOrderOnClientRequest == _undefined ||
-                cancelOrderOnClientRequest == null
-            ? _instance.cancelOrderOnClientRequest
-            : (cancelOrderOnClientRequest as Fragment$Cart),
+      _then(Mutation$RequestOrderCancellation(
+        requestOrderCancellation: requestOrderCancellation == _undefined ||
+                requestOrderCancellation == null
+            ? _instance.requestOrderCancellation
+            : (requestOrderCancellation as Fragment$Cart),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
 
-  CopyWith$Fragment$Cart<TRes> get cancelOrderOnClientRequest {
-    final local$cancelOrderOnClientRequest =
-        _instance.cancelOrderOnClientRequest;
-    return CopyWith$Fragment$Cart(local$cancelOrderOnClientRequest,
-        (e) => call(cancelOrderOnClientRequest: e));
+  CopyWith$Fragment$Cart<TRes> get requestOrderCancellation {
+    final local$requestOrderCancellation = _instance.requestOrderCancellation;
+    return CopyWith$Fragment$Cart(local$requestOrderCancellation,
+        (e) => call(requestOrderCancellation: e));
   }
 }
 
-class _CopyWithStubImpl$Mutation$CancelOrderOnClientRequest<TRes>
-    implements CopyWith$Mutation$CancelOrderOnClientRequest<TRes> {
-  _CopyWithStubImpl$Mutation$CancelOrderOnClientRequest(this._res);
+class _CopyWithStubImpl$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithStubImpl$Mutation$RequestOrderCancellation(this._res);
 
   TRes _res;
 
   call({
-    Fragment$Cart? cancelOrderOnClientRequest,
+    Fragment$Cart? requestOrderCancellation,
     String? $__typename,
   }) =>
       _res;
 
-  CopyWith$Fragment$Cart<TRes> get cancelOrderOnClientRequest =>
+  CopyWith$Fragment$Cart<TRes> get requestOrderCancellation =>
       CopyWith$Fragment$Cart.stub(_res);
 }
 
-const documentNodeMutationCancelOrderOnClientRequest =
-    DocumentNode(definitions: [
+const documentNodeMutationRequestOrderCancellation = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.mutation,
-    name: NameNode(value: 'CancelOrderOnClientRequest'),
+    name: NameNode(value: 'RequestOrderCancellation'),
     variableDefinitions: [
       VariableDefinitionNode(
         variable: VariableNode(name: NameNode(value: 'orderId')),
@@ -54847,9 +54527,9 @@ const documentNodeMutationCancelOrderOnClientRequest =
         directives: [],
       ),
       VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'value')),
+        variable: VariableNode(name: NameNode(value: 'reason')),
         type: NamedTypeNode(
-          name: NameNode(value: 'Int'),
+          name: NameNode(value: 'String'),
           isNonNull: true,
         ),
         defaultValue: DefaultValueNode(value: null),
@@ -54859,7 +54539,7 @@ const documentNodeMutationCancelOrderOnClientRequest =
     directives: [],
     selectionSet: SelectionSetNode(selections: [
       FieldNode(
-        name: NameNode(value: 'cancelOrderOnClientRequest'),
+        name: NameNode(value: 'requestOrderCancellation'),
         alias: null,
         arguments: [
           ArgumentNode(
@@ -54867,8 +54547,8 @@ const documentNodeMutationCancelOrderOnClientRequest =
             value: VariableNode(name: NameNode(value: 'orderId')),
           ),
           ArgumentNode(
-            name: NameNode(value: 'value'),
-            value: VariableNode(name: NameNode(value: 'value')),
+            name: NameNode(value: 'reason'),
+            value: VariableNode(name: NameNode(value: 'reason')),
           ),
         ],
         directives: [],
@@ -54898,28 +54578,28 @@ const documentNodeMutationCancelOrderOnClientRequest =
   fragmentDefinitionCart,
   fragmentDefinitionAsset,
 ]);
-Mutation$CancelOrderOnClientRequest
-    _parserFn$Mutation$CancelOrderOnClientRequest(Map<String, dynamic> data) =>
-        Mutation$CancelOrderOnClientRequest.fromJson(data);
-typedef OnMutationCompleted$Mutation$CancelOrderOnClientRequest = FutureOr<void>
+Mutation$RequestOrderCancellation _parserFn$Mutation$RequestOrderCancellation(
+        Map<String, dynamic> data) =>
+    Mutation$RequestOrderCancellation.fromJson(data);
+typedef OnMutationCompleted$Mutation$RequestOrderCancellation = FutureOr<void>
     Function(
   Map<String, dynamic>?,
-  Mutation$CancelOrderOnClientRequest?,
+  Mutation$RequestOrderCancellation?,
 );
 
-class Options$Mutation$CancelOrderOnClientRequest
-    extends graphql.MutationOptions<Mutation$CancelOrderOnClientRequest> {
-  Options$Mutation$CancelOrderOnClientRequest({
+class Options$Mutation$RequestOrderCancellation
+    extends graphql.MutationOptions<Mutation$RequestOrderCancellation> {
+  Options$Mutation$RequestOrderCancellation({
     String? operationName,
-    required Variables$Mutation$CancelOrderOnClientRequest variables,
+    required Variables$Mutation$RequestOrderCancellation variables,
     graphql.FetchPolicy? fetchPolicy,
     graphql.ErrorPolicy? errorPolicy,
     graphql.CacheRereadPolicy? cacheRereadPolicy,
     Object? optimisticResult,
-    Mutation$CancelOrderOnClientRequest? typedOptimisticResult,
+    Mutation$RequestOrderCancellation? typedOptimisticResult,
     graphql.Context? context,
-    OnMutationCompleted$Mutation$CancelOrderOnClientRequest? onCompleted,
-    graphql.OnMutationUpdate<Mutation$CancelOrderOnClientRequest>? update,
+    OnMutationCompleted$Mutation$RequestOrderCancellation? onCompleted,
+    graphql.OnMutationUpdate<Mutation$RequestOrderCancellation>? update,
     graphql.OnError? onError,
   })  : onCompletedWithParsed = onCompleted,
         super(
@@ -54936,15 +54616,15 @@ class Options$Mutation$CancelOrderOnClientRequest
                     data,
                     data == null
                         ? null
-                        : _parserFn$Mutation$CancelOrderOnClientRequest(data),
+                        : _parserFn$Mutation$RequestOrderCancellation(data),
                   ),
           update: update,
           onError: onError,
-          document: documentNodeMutationCancelOrderOnClientRequest,
-          parserFn: _parserFn$Mutation$CancelOrderOnClientRequest,
+          document: documentNodeMutationRequestOrderCancellation,
+          parserFn: _parserFn$Mutation$RequestOrderCancellation,
         );
 
-  final OnMutationCompleted$Mutation$CancelOrderOnClientRequest?
+  final OnMutationCompleted$Mutation$RequestOrderCancellation?
       onCompletedWithParsed;
 
   @override
@@ -54956,16 +54636,16 @@ class Options$Mutation$CancelOrderOnClientRequest
       ];
 }
 
-class WatchOptions$Mutation$CancelOrderOnClientRequest
-    extends graphql.WatchQueryOptions<Mutation$CancelOrderOnClientRequest> {
-  WatchOptions$Mutation$CancelOrderOnClientRequest({
+class WatchOptions$Mutation$RequestOrderCancellation
+    extends graphql.WatchQueryOptions<Mutation$RequestOrderCancellation> {
+  WatchOptions$Mutation$RequestOrderCancellation({
     String? operationName,
-    required Variables$Mutation$CancelOrderOnClientRequest variables,
+    required Variables$Mutation$RequestOrderCancellation variables,
     graphql.FetchPolicy? fetchPolicy,
     graphql.ErrorPolicy? errorPolicy,
     graphql.CacheRereadPolicy? cacheRereadPolicy,
     Object? optimisticResult,
-    Mutation$CancelOrderOnClientRequest? typedOptimisticResult,
+    Mutation$RequestOrderCancellation? typedOptimisticResult,
     graphql.Context? context,
     Duration? pollInterval,
     bool? eagerlyFetchResults,
@@ -54979,44 +54659,44 @@ class WatchOptions$Mutation$CancelOrderOnClientRequest
           cacheRereadPolicy: cacheRereadPolicy,
           optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
           context: context,
-          document: documentNodeMutationCancelOrderOnClientRequest,
+          document: documentNodeMutationRequestOrderCancellation,
           pollInterval: pollInterval,
           eagerlyFetchResults: eagerlyFetchResults,
           carryForwardDataOnException: carryForwardDataOnException,
           fetchResults: fetchResults,
-          parserFn: _parserFn$Mutation$CancelOrderOnClientRequest,
+          parserFn: _parserFn$Mutation$RequestOrderCancellation,
         );
 }
 
-extension ClientExtension$Mutation$CancelOrderOnClientRequest
+extension ClientExtension$Mutation$RequestOrderCancellation
     on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Mutation$CancelOrderOnClientRequest>>
-      mutate$CancelOrderOnClientRequest(
-              Options$Mutation$CancelOrderOnClientRequest options) async =>
+  Future<graphql.QueryResult<Mutation$RequestOrderCancellation>>
+      mutate$RequestOrderCancellation(
+              Options$Mutation$RequestOrderCancellation options) async =>
           await this.mutate(options);
-  graphql.ObservableQuery<Mutation$CancelOrderOnClientRequest>
-      watchMutation$CancelOrderOnClientRequest(
-              WatchOptions$Mutation$CancelOrderOnClientRequest options) =>
+  graphql.ObservableQuery<Mutation$RequestOrderCancellation>
+      watchMutation$RequestOrderCancellation(
+              WatchOptions$Mutation$RequestOrderCancellation options) =>
           this.watchMutation(options);
 }
 
-class Mutation$CancelOrderOnClientRequest$HookResult {
-  Mutation$CancelOrderOnClientRequest$HookResult(
+class Mutation$RequestOrderCancellation$HookResult {
+  Mutation$RequestOrderCancellation$HookResult(
     this.runMutation,
     this.result,
   );
 
-  final RunMutation$Mutation$CancelOrderOnClientRequest runMutation;
+  final RunMutation$Mutation$RequestOrderCancellation runMutation;
 
-  final graphql.QueryResult<Mutation$CancelOrderOnClientRequest> result;
+  final graphql.QueryResult<Mutation$RequestOrderCancellation> result;
 }
 
-Mutation$CancelOrderOnClientRequest$HookResult
-    useMutation$CancelOrderOnClientRequest(
-        [WidgetOptions$Mutation$CancelOrderOnClientRequest? options]) {
+Mutation$RequestOrderCancellation$HookResult
+    useMutation$RequestOrderCancellation(
+        [WidgetOptions$Mutation$RequestOrderCancellation? options]) {
   final result = graphql_flutter.useMutation(
-      options ?? WidgetOptions$Mutation$CancelOrderOnClientRequest());
-  return Mutation$CancelOrderOnClientRequest$HookResult(
+      options ?? WidgetOptions$Mutation$RequestOrderCancellation());
+  return Mutation$RequestOrderCancellation$HookResult(
     (variables, {optimisticResult, typedOptimisticResult}) =>
         result.runMutation(
       variables.toJson(),
@@ -55026,23 +54706,23 @@ Mutation$CancelOrderOnClientRequest$HookResult
   );
 }
 
-graphql.ObservableQuery<Mutation$CancelOrderOnClientRequest>
-    useWatchMutation$CancelOrderOnClientRequest(
-            WatchOptions$Mutation$CancelOrderOnClientRequest options) =>
+graphql.ObservableQuery<Mutation$RequestOrderCancellation>
+    useWatchMutation$RequestOrderCancellation(
+            WatchOptions$Mutation$RequestOrderCancellation options) =>
         graphql_flutter.useWatchMutation(options);
 
-class WidgetOptions$Mutation$CancelOrderOnClientRequest
-    extends graphql.MutationOptions<Mutation$CancelOrderOnClientRequest> {
-  WidgetOptions$Mutation$CancelOrderOnClientRequest({
+class WidgetOptions$Mutation$RequestOrderCancellation
+    extends graphql.MutationOptions<Mutation$RequestOrderCancellation> {
+  WidgetOptions$Mutation$RequestOrderCancellation({
     String? operationName,
     graphql.FetchPolicy? fetchPolicy,
     graphql.ErrorPolicy? errorPolicy,
     graphql.CacheRereadPolicy? cacheRereadPolicy,
     Object? optimisticResult,
-    Mutation$CancelOrderOnClientRequest? typedOptimisticResult,
+    Mutation$RequestOrderCancellation? typedOptimisticResult,
     graphql.Context? context,
-    OnMutationCompleted$Mutation$CancelOrderOnClientRequest? onCompleted,
-    graphql.OnMutationUpdate<Mutation$CancelOrderOnClientRequest>? update,
+    OnMutationCompleted$Mutation$RequestOrderCancellation? onCompleted,
+    graphql.OnMutationUpdate<Mutation$RequestOrderCancellation>? update,
     graphql.OnError? onError,
   })  : onCompletedWithParsed = onCompleted,
         super(
@@ -55058,15 +54738,15 @@ class WidgetOptions$Mutation$CancelOrderOnClientRequest
                     data,
                     data == null
                         ? null
-                        : _parserFn$Mutation$CancelOrderOnClientRequest(data),
+                        : _parserFn$Mutation$RequestOrderCancellation(data),
                   ),
           update: update,
           onError: onError,
-          document: documentNodeMutationCancelOrderOnClientRequest,
-          parserFn: _parserFn$Mutation$CancelOrderOnClientRequest,
+          document: documentNodeMutationRequestOrderCancellation,
+          parserFn: _parserFn$Mutation$RequestOrderCancellation,
         );
 
-  final OnMutationCompleted$Mutation$CancelOrderOnClientRequest?
+  final OnMutationCompleted$Mutation$RequestOrderCancellation?
       onCompletedWithParsed;
 
   @override
@@ -55078,27 +54758,26 @@ class WidgetOptions$Mutation$CancelOrderOnClientRequest
       ];
 }
 
-typedef RunMutation$Mutation$CancelOrderOnClientRequest
-    = graphql.MultiSourceResult<Mutation$CancelOrderOnClientRequest> Function(
-  Variables$Mutation$CancelOrderOnClientRequest, {
+typedef RunMutation$Mutation$RequestOrderCancellation
+    = graphql.MultiSourceResult<Mutation$RequestOrderCancellation> Function(
+  Variables$Mutation$RequestOrderCancellation, {
   Object? optimisticResult,
-  Mutation$CancelOrderOnClientRequest? typedOptimisticResult,
+  Mutation$RequestOrderCancellation? typedOptimisticResult,
 });
-typedef Builder$Mutation$CancelOrderOnClientRequest = widgets.Widget Function(
-  RunMutation$Mutation$CancelOrderOnClientRequest,
-  graphql.QueryResult<Mutation$CancelOrderOnClientRequest>?,
+typedef Builder$Mutation$RequestOrderCancellation = widgets.Widget Function(
+  RunMutation$Mutation$RequestOrderCancellation,
+  graphql.QueryResult<Mutation$RequestOrderCancellation>?,
 );
 
-class Mutation$CancelOrderOnClientRequest$Widget
-    extends graphql_flutter.Mutation<Mutation$CancelOrderOnClientRequest> {
-  Mutation$CancelOrderOnClientRequest$Widget({
+class Mutation$RequestOrderCancellation$Widget
+    extends graphql_flutter.Mutation<Mutation$RequestOrderCancellation> {
+  Mutation$RequestOrderCancellation$Widget({
     widgets.Key? key,
-    WidgetOptions$Mutation$CancelOrderOnClientRequest? options,
-    required Builder$Mutation$CancelOrderOnClientRequest builder,
+    WidgetOptions$Mutation$RequestOrderCancellation? options,
+    required Builder$Mutation$RequestOrderCancellation builder,
   }) : super(
           key: key,
-          options:
-              options ?? WidgetOptions$Mutation$CancelOrderOnClientRequest(),
+          options: options ?? WidgetOptions$Mutation$RequestOrderCancellation(),
           builder: (
             run,
             result,
@@ -59986,29 +59665,20 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
 
 class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -60016,12 +59686,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -60032,11 +59698,6 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
     if (other
             is! Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -60073,10 +59734,7 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
           TRes res) =
       _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
@@ -60098,19 +59756,11 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
@@ -60123,11 +59773,7 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$TransitionOrderToState$transitionOrderToState$$OrderStateTransitionError
@@ -64943,29 +64589,20 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
 
 class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -64973,12 +64610,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -64989,11 +64622,6 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
     if (other
             is! Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -65030,10 +64658,7 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
           TRes res) =
       _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
@@ -65055,19 +64680,11 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
@@ -65080,11 +64697,7 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$TransitionToArrangingPayment$transitionOrderToState$$OrderStateTransitionError
@@ -69886,29 +69499,20 @@ class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$
 
 class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -69916,12 +69520,8 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customField
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -69932,11 +69532,6 @@ class Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customField
     if (other
             is! Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -69973,10 +69568,7 @@ abstract class CopyWith$Mutation$TransitionToAddingItems$transitionOrderToState$
           TRes res) =
       _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields<
@@ -69998,19 +69590,11 @@ class _CopyWithImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Ord
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$$Order$customFields<
@@ -70023,11 +69607,7 @@ class _CopyWithStubImpl$Mutation$TransitionToAddingItems$transitionOrderToState$
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$TransitionToAddingItems$transitionOrderToState$$OrderStateTransitionError
@@ -70641,74 +70221,47 @@ const documentNodeMutationGenerateRazorpayOrderId = DocumentNode(definitions: [
         ],
         directives: [],
         selectionSet: SelectionSetNode(selections: [
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'RazorpayOrderIdSuccess'),
-              isNonNull: false,
-            )),
+          FieldNode(
+            name: NameNode(value: 'amount'),
+            alias: null,
+            arguments: [],
             directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'razorpayOrderId'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'keyId'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'keySecret'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
+            selectionSet: null,
           ),
-          InlineFragmentNode(
-            typeCondition: TypeConditionNode(
-                on: NamedTypeNode(
-              name: NameNode(value: 'RazorpayOrderIdGenerationError'),
-              isNonNull: false,
-            )),
+          FieldNode(
+            name: NameNode(value: 'currency'),
+            alias: null,
+            arguments: [],
             directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'errorCode'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'message'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'errorMessage'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'keyId'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'razorpayOrderId'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'success'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -70949,31 +70502,64 @@ class Mutation$GenerateRazorpayOrderId$Widget
 }
 
 class Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId {
-  Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId(
-      {required this.$__typename});
+  Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId({
+    this.amount,
+    this.currency,
+    this.errorMessage,
+    this.keyId,
+    this.razorpayOrderId,
+    this.success,
+    this.$__typename = 'RazorpayOrderIdSuccess',
+  });
 
   factory Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId.fromJson(
       Map<String, dynamic> json) {
-    switch (json["__typename"] as String) {
-      case "RazorpayOrderIdSuccess":
-        return Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess
-            .fromJson(json);
-
-      case "RazorpayOrderIdGenerationError":
-        return Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError
-            .fromJson(json);
-
-      default:
-        final l$$__typename = json['__typename'];
-        return Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId(
-            $__typename: (l$$__typename as String));
-    }
+    final l$amount = json['amount'];
+    final l$currency = json['currency'];
+    final l$errorMessage = json['errorMessage'];
+    final l$keyId = json['keyId'];
+    final l$razorpayOrderId = json['razorpayOrderId'];
+    final l$success = json['success'];
+    final l$$__typename = json['__typename'];
+    return Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId(
+      amount: (l$amount as int?),
+      currency: (l$currency as String?),
+      errorMessage: (l$errorMessage as String?),
+      keyId: (l$keyId as String?),
+      razorpayOrderId: (l$razorpayOrderId as String?),
+      success: (l$success as bool?),
+      $__typename: (l$$__typename as String),
+    );
   }
+
+  final int? amount;
+
+  final String? currency;
+
+  final String? errorMessage;
+
+  final String? keyId;
+
+  final String? razorpayOrderId;
+
+  final bool? success;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$amount = amount;
+    _resultData['amount'] = l$amount;
+    final l$currency = currency;
+    _resultData['currency'] = l$currency;
+    final l$errorMessage = errorMessage;
+    _resultData['errorMessage'] = l$errorMessage;
+    final l$keyId = keyId;
+    _resultData['keyId'] = l$keyId;
+    final l$razorpayOrderId = razorpayOrderId;
+    _resultData['razorpayOrderId'] = l$razorpayOrderId;
+    final l$success = success;
+    _resultData['success'] = l$success;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -70981,8 +70567,22 @@ class Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId {
 
   @override
   int get hashCode {
+    final l$amount = amount;
+    final l$currency = currency;
+    final l$errorMessage = errorMessage;
+    final l$keyId = keyId;
+    final l$razorpayOrderId = razorpayOrderId;
+    final l$success = success;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$$__typename]);
+    return Object.hashAll([
+      l$amount,
+      l$currency,
+      l$errorMessage,
+      l$keyId,
+      l$razorpayOrderId,
+      l$success,
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -70992,6 +70592,36 @@ class Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId {
     }
     if (other is! Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$amount = amount;
+    final lOther$amount = other.amount;
+    if (l$amount != lOther$amount) {
+      return false;
+    }
+    final l$currency = currency;
+    final lOther$currency = other.currency;
+    if (l$currency != lOther$currency) {
+      return false;
+    }
+    final l$errorMessage = errorMessage;
+    final lOther$errorMessage = other.errorMessage;
+    if (l$errorMessage != lOther$errorMessage) {
+      return false;
+    }
+    final l$keyId = keyId;
+    final lOther$keyId = other.keyId;
+    if (l$keyId != lOther$keyId) {
+      return false;
+    }
+    final l$razorpayOrderId = razorpayOrderId;
+    final lOther$razorpayOrderId = other.razorpayOrderId;
+    if (l$razorpayOrderId != lOther$razorpayOrderId) {
+      return false;
+    }
+    final l$success = success;
+    final lOther$success = other.success;
+    if (l$success != lOther$success) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -71012,59 +70642,6 @@ extension UtilityExtension$Mutation$GenerateRazorpayOrderId$generateRazorpayOrde
             this,
             (i) => i,
           );
-  _T when<_T>({
-    required _T Function(
-            Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess)
-        razorpayOrderIdSuccess,
-    required _T Function(
-            Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError)
-        razorpayOrderIdGenerationError,
-    required _T Function() orElse,
-  }) {
-    switch ($__typename) {
-      case "RazorpayOrderIdSuccess":
-        return razorpayOrderIdSuccess(this
-            as Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess);
-
-      case "RazorpayOrderIdGenerationError":
-        return razorpayOrderIdGenerationError(this
-            as Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError);
-
-      default:
-        return orElse();
-    }
-  }
-
-  _T maybeWhen<_T>({
-    _T Function(
-            Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess)?
-        razorpayOrderIdSuccess,
-    _T Function(
-            Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError)?
-        razorpayOrderIdGenerationError,
-    required _T Function() orElse,
-  }) {
-    switch ($__typename) {
-      case "RazorpayOrderIdSuccess":
-        if (razorpayOrderIdSuccess != null) {
-          return razorpayOrderIdSuccess(this
-              as Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess);
-        } else {
-          return orElse();
-        }
-
-      case "RazorpayOrderIdGenerationError":
-        if (razorpayOrderIdGenerationError != null) {
-          return razorpayOrderIdGenerationError(this
-              as Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError);
-        } else {
-          return orElse();
-        }
-
-      default:
-        return orElse();
-    }
-  }
 }
 
 abstract class CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId<
@@ -71079,7 +70656,15 @@ abstract class CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId
           TRes res) =
       _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId;
 
-  TRes call({String? $__typename});
+  TRes call({
+    int? amount,
+    String? currency,
+    String? errorMessage,
+    String? keyId,
+    String? razorpayOrderId,
+    bool? success,
+    String? $__typename,
+  });
 }
 
 class _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId<
@@ -71099,11 +70684,31 @@ class _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId<
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? $__typename = _undefined}) =>
+  TRes call({
+    Object? amount = _undefined,
+    Object? currency = _undefined,
+    Object? errorMessage = _undefined,
+    Object? keyId = _undefined,
+    Object? razorpayOrderId = _undefined,
+    Object? success = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
       _then(Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
+        amount: amount == _undefined ? _instance.amount : (amount as int?),
+        currency:
+            currency == _undefined ? _instance.currency : (currency as String?),
+        errorMessage: errorMessage == _undefined
+            ? _instance.errorMessage
+            : (errorMessage as String?),
+        keyId: keyId == _undefined ? _instance.keyId : (keyId as String?),
+        razorpayOrderId: razorpayOrderId == _undefined
+            ? _instance.razorpayOrderId
+            : (razorpayOrderId as String?),
+        success: success == _undefined ? _instance.success : (success as bool?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
 }
 
 class _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId<
@@ -71116,356 +70721,13 @@ class _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId
 
   TRes _res;
 
-  call({String? $__typename}) => _res;
-}
-
-class Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess
-    implements Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId {
-  Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess({
-    required this.razorpayOrderId,
-    required this.keyId,
-    required this.keySecret,
-    this.$__typename = 'RazorpayOrderIdSuccess',
-  });
-
-  factory Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess.fromJson(
-      Map<String, dynamic> json) {
-    final l$razorpayOrderId = json['razorpayOrderId'];
-    final l$keyId = json['keyId'];
-    final l$keySecret = json['keySecret'];
-    final l$$__typename = json['__typename'];
-    return Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess(
-      razorpayOrderId: (l$razorpayOrderId as String),
-      keyId: (l$keyId as String),
-      keySecret: (l$keySecret as String),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String razorpayOrderId;
-
-  final String keyId;
-
-  final String keySecret;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$razorpayOrderId = razorpayOrderId;
-    _resultData['razorpayOrderId'] = l$razorpayOrderId;
-    final l$keyId = keyId;
-    _resultData['keyId'] = l$keyId;
-    final l$keySecret = keySecret;
-    _resultData['keySecret'] = l$keySecret;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$razorpayOrderId = razorpayOrderId;
-    final l$keyId = keyId;
-    final l$keySecret = keySecret;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$razorpayOrderId,
-      l$keyId,
-      l$keySecret,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other
-            is! Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$razorpayOrderId = razorpayOrderId;
-    final lOther$razorpayOrderId = other.razorpayOrderId;
-    if (l$razorpayOrderId != lOther$razorpayOrderId) {
-      return false;
-    }
-    final l$keyId = keyId;
-    final lOther$keyId = other.keyId;
-    if (l$keyId != lOther$keyId) {
-      return false;
-    }
-    final l$keySecret = keySecret;
-    final lOther$keySecret = other.keySecret;
-    if (l$keySecret != lOther$keySecret) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess
-    on Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess {
-  CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess<
-          Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess>
-      get copyWith =>
-          CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess<
-    TRes> {
-  factory CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess(
-    Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess
-        instance,
-    TRes Function(
-            Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess)
-        then,
-  ) = _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess;
-
-  factory CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess;
-
-  TRes call({
-    String? razorpayOrderId,
-    String? keyId,
-    String? keySecret,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess<
-        TRes>
-    implements
-        CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess<
-            TRes> {
-  _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess(
-    this._instance,
-    this._then,
-  );
-
-  final Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess
-      _instance;
-
-  final TRes Function(
-          Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess)
-      _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? razorpayOrderId = _undefined,
-    Object? keyId = _undefined,
-    Object? keySecret = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess(
-        razorpayOrderId:
-            razorpayOrderId == _undefined || razorpayOrderId == null
-                ? _instance.razorpayOrderId
-                : (razorpayOrderId as String),
-        keyId: keyId == _undefined || keyId == null
-            ? _instance.keyId
-            : (keyId as String),
-        keySecret: keySecret == _undefined || keySecret == null
-            ? _instance.keySecret
-            : (keySecret as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess<
-        TRes>
-    implements
-        CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess<
-            TRes> {
-  _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdSuccess(
-      this._res);
-
-  TRes _res;
-
   call({
-    String? razorpayOrderId,
+    int? amount,
+    String? currency,
+    String? errorMessage,
     String? keyId,
-    String? keySecret,
-    String? $__typename,
-  }) =>
-      _res;
-}
-
-class Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError
-    implements Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId {
-  Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError({
-    this.errorCode,
-    this.message,
-    this.$__typename = 'RazorpayOrderIdGenerationError',
-  });
-
-  factory Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError.fromJson(
-      Map<String, dynamic> json) {
-    final l$errorCode = json['errorCode'];
-    final l$message = json['message'];
-    final l$$__typename = json['__typename'];
-    return Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError(
-      errorCode: (l$errorCode as String?),
-      message: (l$message as String?),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String? errorCode;
-
-  final String? message;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$errorCode = errorCode;
-    _resultData['errorCode'] = l$errorCode;
-    final l$message = message;
-    _resultData['message'] = l$message;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$errorCode = errorCode;
-    final l$message = message;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$errorCode,
-      l$message,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other
-            is! Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$errorCode = errorCode;
-    final lOther$errorCode = other.errorCode;
-    if (l$errorCode != lOther$errorCode) {
-      return false;
-    }
-    final l$message = message;
-    final lOther$message = other.message;
-    if (l$message != lOther$message) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError
-    on Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError {
-  CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError<
-          Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError>
-      get copyWith =>
-          CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError<
-    TRes> {
-  factory CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError(
-    Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError
-        instance,
-    TRes Function(
-            Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError)
-        then,
-  ) = _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError;
-
-  factory CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError;
-
-  TRes call({
-    String? errorCode,
-    String? message,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError<
-        TRes>
-    implements
-        CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError<
-            TRes> {
-  _CopyWithImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError(
-    this._instance,
-    this._then,
-  );
-
-  final Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError
-      _instance;
-
-  final TRes Function(
-          Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError)
-      _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? errorCode = _undefined,
-    Object? message = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(
-          Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError(
-        errorCode: errorCode == _undefined
-            ? _instance.errorCode
-            : (errorCode as String?),
-        message:
-            message == _undefined ? _instance.message : (message as String?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError<
-        TRes>
-    implements
-        CopyWith$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError<
-            TRes> {
-  _CopyWithStubImpl$Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId$$RazorpayOrderIdGenerationError(
-      this._res);
-
-  TRes _res;
-
-  call({
-    String? errorCode,
-    String? message,
+    String? razorpayOrderId,
+    bool? success,
     String? $__typename,
   }) =>
       _res;

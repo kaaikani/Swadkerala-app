@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:graphql/client.dart' as graphql;
-
+import 'package:flutter/foundation.dart';
 import '../../graphql/cart.graphql.dart'; // Generated GraphQL queries/mutations
 import '../../graphql/order.graphql.dart';
 import '../../services/graphql_client.dart';
@@ -19,7 +19,6 @@ class CartController extends BaseController {
 
   Future<bool> addToCart(
       {required int productVariantId, int quantity = 1}) async {
-/// debugPrint(  '[Cart] Starting addToCart: variantId=$productVariantId quantity=$quantity');
 
     try {
       final response = await GraphqlService.client.value.mutate$AddToCart(
@@ -45,7 +44,6 @@ class CartController extends BaseController {
       final addItemResult = response.parsedData?.addItemToOrder;
 
       if (addItemResult == null) {
-// debugPrint('[Cart] No addItemToOrder result');
         return false;
       }
 
@@ -55,7 +53,6 @@ class CartController extends BaseController {
       }
 
       cart.value = Order.fromJson(addItemResult.toJson());
-/// debugPrint(  '[Cart] Item added. State: ${cart.value?.state}, active: ${cart.value?.active}. Cart now has ${cart.value?.totalQuantity} items.');
 
       if (!await _ensureOrderConsistency()) {
         return false;
@@ -63,19 +60,19 @@ class CartController extends BaseController {
 
       return true;
     } catch (e) {
-// debugPrint('[Cart] Exception: $e');
+debugPrint('[Cart] Exception: $e');
       handleException(e, customErrorMessage: 'Failed to add item to cart');
       error.value =
           ErrorResult(errorCode: "NETWORK_ERROR", message: e.toString());
       return false;
     } finally {
-// debugPrint('[Cart] addToCart finished.');
+debugPrint('[Cart] addToCart finished.');
     }
   }
 
   /// Get active order (current cart)
   Future<bool> getActiveOrder() async {
-// debugPrint('[Cart] Fetching active order...');
+debugPrint('[Cart] Fetching active order...');
 
     try {
       final response = await GraphqlService.client.value.query$GetCartTotals(
@@ -95,65 +92,61 @@ class CartController extends BaseController {
         final orderJson = orderData.toJson();
         
         // Debug: Print all order data
-// debugPrint('═══════════════════════════════════════════════════════════');
-// debugPrint('[Cart] ========== ACTIVE ORDER DATA ==========');
-// debugPrint('[Cart] Order ID: ${orderJson['id']}');
-// debugPrint('[Cart] Order Code: ${orderJson['code']}');
-// debugPrint('[Cart] State: ${orderJson['state']}');
-// debugPrint('[Cart] Active: ${orderJson['active']}');
-// debugPrint('[Cart] Total Quantity: ${orderJson['totalQuantity']}');
-// debugPrint('[Cart] Subtotal: ${orderJson['subTotal']}');
-// debugPrint('[Cart] Subtotal With Tax: ${orderJson['subTotalWithTax']}');
-// debugPrint('[Cart] Total: ${orderJson['total']}');
-// debugPrint('[Cart] Total With Tax: ${orderJson['totalWithTax']}');
-// debugPrint('[Cart] Shipping: ${orderJson['shipping']}');
-// debugPrint('[Cart] Shipping With Tax: ${orderJson['shippingWithTax']}');
-// debugPrint('[Cart] Coupon Codes: ${orderJson['couponCodes']}');
+debugPrint('═══════════════════════════════════════════════════════════');
+debugPrint('[Cart] ========== ACTIVE ORDER DATA ==========');
+debugPrint('[Cart] Order ID: ${orderJson['id']}');
+debugPrint('[Cart] Order Code: ${orderJson['code']}');
+debugPrint('[Cart] State: ${orderJson['state']}');
+debugPrint('[Cart] Active: ${orderJson['active']}');
+debugPrint('[Cart] Total Quantity: ${orderJson['totalQuantity']}');
+debugPrint('[Cart] Subtotal: ${orderJson['subTotal']}');
+debugPrint('[Cart] Subtotal With Tax: ${orderJson['subTotalWithTax']}');
+debugPrint('[Cart] Total: ${orderJson['total']}');
+debugPrint('[Cart] Total With Tax: ${orderJson['totalWithTax']}');
+debugPrint('[Cart] Shipping: ${orderJson['shipping']}');
+debugPrint('[Cart] Shipping With Tax: ${orderJson['shippingWithTax']}');
+debugPrint('[Cart] Coupon Codes: ${orderJson['couponCodes']}');
         
         // Validation Status
         if (orderJson['validationStatus'] != null) {
           final validationStatus = orderJson['validationStatus'] as Map<String, dynamic>;
-// debugPrint('[Cart] ──── Validation Status ────');
-// debugPrint('[Cart] Is Valid: ${validationStatus['isValid']}');
-// debugPrint('[Cart] Has Unavailable Items: ${validationStatus['hasUnavailableItems']}');
-// debugPrint('[Cart] Total Unavailable Items: ${validationStatus['totalUnavailableItems']}');
+debugPrint('[Cart] ──── Validation Status ────');
+debugPrint('[Cart] Is Valid: ${validationStatus['isValid']}');
+debugPrint('[Cart] Has Unavailable Items: ${validationStatus['hasUnavailableItems']}');
+debugPrint('[Cart] Total Unavailable Items: ${validationStatus['totalUnavailableItems']}');
           if (validationStatus['unavailableItems'] != null) {
             final unavailableItems = validationStatus['unavailableItems'] as List<dynamic>;
-// debugPrint('[Cart] Unavailable Items Count: ${unavailableItems.length}');
+debugPrint('[Cart] Unavailable Items Count: ${unavailableItems.length}');
             for (int i = 0; i < unavailableItems.length; i++) {
               // ignore: unused_local_variable
               final itemData = unavailableItems[i] as Map<String, dynamic>;
-// debugPrint('[Cart]   [$i] OrderLineId: ${itemData['orderLineId']}');
-// debugPrint('[Cart]   [$i] ProductName: ${itemData['productName']}');
-// debugPrint('[Cart]   [$i] VariantName: ${itemData['variantName']}');
-// debugPrint('[Cart]   [$i] Reason: ${itemData['reason']}');
+debugPrint('[Cart]   [$i] OrderLineId: ${itemData['orderLineId']}');
+debugPrint('[Cart]   [$i] ProductName: ${itemData['productName']}');
+debugPrint('[Cart]   [$i] VariantName: ${itemData['variantName']}');
+debugPrint('[Cart]   [$i] Reason: ${itemData['reason']}');
             }
           }
         } else {
-// debugPrint('[Cart] Validation Status: null');
+debugPrint('[Cart] Validation Status: null');
         }
         
         // Order Lines
         if (orderJson['lines'] != null) {
           final lines = orderJson['lines'] as List<dynamic>;
-// debugPrint('[Cart] ──── Order Lines (${lines.length}) ────');
+debugPrint('[Cart] ──── Order Lines (${lines.length}) ────');
           for (int i = 0; i < lines.length; i++) {
             final line = lines[i] as Map<String, dynamic>;
-// debugPrint('[Cart]   Line [$i]:');
-// debugPrint('[Cart]     ID: ${line['id']}');
-// debugPrint('[Cart]     Quantity: ${line['quantity']}');
-// debugPrint('[Cart]     Unit Price: ${line['unitPrice']}');
-// debugPrint('[Cart]     Unit Price With Tax: ${line['unitPriceWithTax']}');
-// debugPrint('[Cart]     Line Price With Tax: ${line['linePriceWithTax']}');
-// debugPrint('[Cart]     Is Available: ${line['isAvailable']}');
-// debugPrint('[Cart]     Unavailable Reason: ${line['unavailableReason']}');
+debugPrint('[Cart]   Line [$i]:');
+debugPrint('[Cart]     ID: ${line['id']}');
+debugPrint('[Cart]     Quantity: ${line['quantity']}');
+debugPrint('[Cart]     Unit Price: ${line['unitPrice']}');
+debugPrint('[Cart]     Unit Price With Tax: ${line['unitPriceWithTax']}');
+debugPrint('[Cart]     Line Price With Tax: ${line['linePriceWithTax']}');
+debugPrint('[Cart]     Is Available: ${line['isAvailable']}');
+debugPrint('[Cart]     Unavailable Reason: ${line['unavailableReason']}');
             if (line['productVariant'] != null) {
               // final variant = line['productVariant'] as Map<String, dynamic>; // Unused variable
-// debugPrint('[Cart]     Product Variant:');
-// debugPrint('[Cart]       ID: ${variantData['id']}');
-// debugPrint('[Cart]       Name: ${variantData['name']}');
-// debugPrint('[Cart]       Stock Level: ${variantData['stockLevel']}');
-// debugPrint('[Cart]       Price: ${variantData['price']}');
+
             }
           }
         }
@@ -161,32 +154,48 @@ class CartController extends BaseController {
         // Shipping Lines
         if (orderJson['shippingLines'] != null) {
           final shippingLines = orderJson['shippingLines'] as List<dynamic>;
-// debugPrint('[Cart] ──── Shipping Lines (${shippingLines.length}) ────');
+debugPrint('[Cart] ──── Shipping Lines (${shippingLines.length}) ────');
           for (int i = 0; i < shippingLines.length; i++) {
             final shippingLine = shippingLines[i] as Map<String, dynamic>;
-// debugPrint('[Cart]   Shipping Line [$i]:');
-// debugPrint('[Cart]     Price With Tax: ${shippingLine['priceWithTax']}');
+debugPrint('[Cart]   Shipping Line [$i]:');
+debugPrint('[Cart]     Price With Tax: ${shippingLine['priceWithTax']}');
             if (shippingLine['shippingMethod'] != null) {
               // ignore: unused_local_variable
               final methodData = shippingLine['shippingMethod'] as Map<String, dynamic>;
-// debugPrint('[Cart]     Method ID: ${methodData['id']}');
-// debugPrint('[Cart]     Method Code: ${methodData['code']}');
-// debugPrint('[Cart]     Method Name: ${methodData['name']}');
+debugPrint('[Cart]     Method ID: ${methodData['id']}');
+debugPrint('[Cart]     Method Code: ${methodData['code']}');
+debugPrint('[Cart]     Method Name: ${methodData['name']}');
             }
           }
         }
         
-// debugPrint('[Cart] ===================================================');
-// debugPrint('═══════════════════════════════════════════════════════════');
+debugPrint('[Cart] ===================================================');
+debugPrint('═══════════════════════════════════════════════════════════');
         
-        cart.value = Order.fromJson(orderJson);
-/// debugPrint(  '[Cart] Active order loaded with ${cart.value?.totalQuantity ?? 0} items');
-        return true;
+        // Only update cart if order has lines or is a valid order
+        // This prevents clearing the cart when server returns empty/null order
+        final hasLines = orderJson['lines'] != null && 
+                       (orderJson['lines'] as List).isNotEmpty;
+        final hasValidTotal = (orderJson['totalQuantity'] ?? 0) > 0;
+        
+        if (hasLines || hasValidTotal) {
+          cart.value = Order.fromJson(orderJson);
+debugPrint(  '[Cart] Active order loaded with ${cart.value?.totalQuantity ?? 0} items');
+          return true;
+        } else {
+debugPrint('[Cart] Warning: Order data has no lines, preserving current cart');
+          // Don't update cart if order has no lines - preserve current cart state
+          // This prevents clearing the cart when server returns incomplete data
+          return cart.value != null; // Return true if we have existing cart, false otherwise
+        }
       }
 
-      return false;
+      // If orderData is null, don't clear the cart - preserve existing state
+      // This prevents clearing the cart when server temporarily returns null
+debugPrint('[Cart] No active order found, preserving current cart state');
+      return cart.value != null; // Return true if we have existing cart, false otherwise
     } catch (e) {
-// debugPrint('[Cart] Exception: $e');
+debugPrint('[Cart] Exception: $e');
       handleException(e, customErrorMessage: 'Failed to load cart');
       return false;
     } finally {}
@@ -197,7 +206,7 @@ class CartController extends BaseController {
       {required String orderLineId, required int quantity}) async {
     // Ensure minimum quantity is 1
     if (quantity < 1) {
-// debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
+debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
       quantity = 1;
     }
     
@@ -218,7 +227,7 @@ class CartController extends BaseController {
 
       final result = response.parsedData?.adjustOrderLine;
       if (result == null) {
-// debugPrint('[Cart] No adjustOrderLine result');
+debugPrint('[Cart] No adjustOrderLine result');
         return false;
       }
 
@@ -228,14 +237,14 @@ class CartController extends BaseController {
       }
 
       cart.value = Order.fromJson(result.toJson());
-// debugPrint(  '[Cart] Order line adjusted. State: ${cart.value?.state}, qty: ${cart.value?.totalQuantity}');
+debugPrint(  '[Cart] Order line adjusted. State: ${cart.value?.state}, qty: ${cart.value?.totalQuantity}');
       
       // Also update OrderController to keep them in sync
       try {
         orderController.currentOrder.value = order_models.OrderModel.fromJson(result.toJson());
-//         debugPrint('[Cart] OrderController updated after adjusting line');
+debugPrint('[Cart] OrderController updated after adjusting line');
       } catch (e) {
-//         debugPrint('[Cart] Could not update OrderController: $e');
+debugPrint('[Cart] Could not update OrderController: $e');
       }
 
       if (!await _ensureOrderConsistency()) {
@@ -244,7 +253,7 @@ class CartController extends BaseController {
 
       return true;
     } catch (e) {
-// debugPrint('[Cart] Adjust line error: $e');
+debugPrint('[Cart] Adjust line error: $e');
       handleException(e, customErrorMessage: 'Failed to update cart item');
       return false;
     } finally {}
@@ -336,7 +345,7 @@ class CartController extends BaseController {
   void clearCart() {
     cart.value = null;
     error.value = null;
-// debugPrint('[Cart] Cart cleared');
+debugPrint('[Cart] Cart cleared');
   }
 
   /// Check if any applied coupon has free_shipping action
@@ -345,52 +354,52 @@ class CartController extends BaseController {
 
     final order = cart.value!;
 
-// debugPrint('[Cart] Checking for free shipping coupon...');
-/// debugPrint(  '[Cart] Current shipping cost: ${order.shipping}, ${order.shippingWithTax}');
-// debugPrint('[Cart] Applied coupon codes: ${order.couponCodes}');
-// debugPrint('[Cart] Promotions count: ${order.promotions.length}');
+debugPrint('[Cart] Checking for free shipping coupon...');
+debugPrint(  '[Cart] Current shipping cost: ${order.shipping}, ${order.shippingWithTax}');
+debugPrint('[Cart] Applied coupon codes: ${order.couponCodes}');
+debugPrint('[Cart] Promotions count: ${order.promotions.length}');
 
     // Check if shipping cost is 0
     if (order.shipping == 0 && order.shippingWithTax == 0) {
-// debugPrint('[Cart] Shipping cost is 0 - free shipping detected');
+debugPrint('[Cart] Shipping cost is 0 - free shipping detected');
       return true;
     }
 
     // Check promotions for free_shipping action
     for (final promotion in order.promotions) {
-// debugPrint('[Cart] Checking promotion: ${promotion.name}');
-// debugPrint('[Cart] Promotion actions count: ${promotion.actions.length}');
+debugPrint('[Cart] Checking promotion: ${promotion.name}');
+debugPrint('[Cart] Promotion actions count: ${promotion.actions.length}');
 
       for (final action in promotion.actions) {
-// debugPrint('[Cart] Action code: ${action.code}');
+debugPrint('[Cart] Action code: ${action.code}');
         if (action.code == 'free_shipping') {
-/// debugPrint(  '[Cart] Found free_shipping action in promotion: ${promotion.name}');
+debugPrint(  '[Cart] Found free_shipping action in promotion: ${promotion.name}');
           return true;
         }
       }
     }
 
-// debugPrint('[Cart] No free shipping coupon found');
+debugPrint('[Cart] No free shipping coupon found');
     return false;
   }
 
   /// Get shipping display text
   String getShippingDisplayText() {
     if (hasFreeShippingCoupon()) {
-// debugPrint('[Cart] Returning Free for shipping display');
+debugPrint('[Cart] Returning Free for shipping display');
       return 'Free';
     }
 
     if (cart.value == null) return 'Rs 0';
 
     final shippingCost = cart.value!.shippingWithTax;
-/// debugPrint(  '[Cart] Returning shipping cost: ${formatPrice(shippingCost.toInt())}');
+debugPrint(  '[Cart] Returning shipping cost: ${formatPrice(shippingCost.toInt())}');
     return formatPrice(shippingCost.toInt());
   }
 
   /// Force refresh cart data to get updated shipping costs
   Future<void> refreshCartData() async {
-// debugPrint('[Cart] Refreshing cart data...');
+debugPrint('[Cart] Refreshing cart data...');
     await getActiveOrder();
   }
 
@@ -408,7 +417,7 @@ class CartController extends BaseController {
       return true;
     }
 
-/// debugPrint(  '[Cart] Detected locked/inconsistent order (state: ${current.state}, qty: ${current.totalQuantity}). Refreshing...');
+debugPrint(  '[Cart] Detected locked/inconsistent order (state: ${current.state}, qty: ${current.totalQuantity}). Refreshing...');
     await getActiveOrder();
     final refreshed = cart.value;
 
@@ -434,21 +443,21 @@ class CartController extends BaseController {
   }
 
   void _setCartError(String code, String message) {
-// debugPrint('[Cart] Error [$code]: $message');
+debugPrint('[Cart] Error [$code]: $message');
     error.value = ErrorResult(errorCode: code, message: message);
     handleException(Exception(message), customErrorMessage: message);
   }
 
   void _handleAddToCartError(Mutation$AddToCart$addItemToOrder result) {
     final message = _mapAddToCartErrorMessage(result);
-// debugPrint('[Cart] AddToCart error (${result.$__typename}): $message');
+debugPrint('[Cart] AddToCart error (${result.$__typename}): $message');
     _setCartError(result.$__typename, message);
   }
 
   void _handleAdjustOrderError(
       Mutation$AdjustOrderLine$adjustOrderLine result) {
     final message = _mapAdjustOrderErrorMessage(result);
-/// debugPrint(  '[Cart] AdjustOrderLine error (${result.$__typename}): $message');
+debugPrint(  '[Cart] AdjustOrderLine error (${result.$__typename}): $message');
     _setCartError(result.$__typename, message);
   }
 

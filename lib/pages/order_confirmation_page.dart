@@ -39,7 +39,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     try {
       await orderController.getOrderByCode(widget.orderId);
     } catch (e) {
-// debugPrint('[OrderConfirmation] Error loading order details: $e');
+debugPrint('[OrderConfirmation] Error loading order details: $e');
     }
   }
 

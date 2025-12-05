@@ -770,12 +770,13 @@ type Mutation {
     applyLoyaltyPointsToActiveOrder(amount: Int!): Order!
     "Authenticates the user using a named authentication strategy"
     authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
-    cancelOrderOnClientRequest(orderId: ID!, value: Int!): Order!
+    cancelOrderOnClientRequest(orderId: ID!, reason: String!): Order!
+    requestOrderCancellation(orderId: ID!, reason: String!): Order!
     "Create a new Customer Address"
     createCustomerAddress(input: CreateAddressInput!): Address!
     "Delete an existing Address"
     deleteCustomerAddress(id: ID!): Success!
-    generateRazorpayOrderId(orderId: ID!): generateRazorpayOrderIdResult!
+    generateRazorpayOrderId(orderId: ID!): RazorpayOrderIdSuccess!
     """
 
     Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
@@ -1463,9 +1464,12 @@ type RazorpayOrderIdGenerationError {
 }
 
 type RazorpayOrderIdSuccess {
-    keyId: String!
-    keySecret: String!
-    razorpayOrderId: String!
+    amount: Int
+    currency: String
+    errorMessage: String
+    keyId: String
+    razorpayOrderId: String
+    success: Boolean
 }
 
 type Refund implements Node {

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/io_client.dart' as http_io;
@@ -25,9 +26,17 @@ class GraphqlService {
   }
 
   static GraphQLClient _createClient() {
-// print("🔧 _createClient called with authToken: $_authToken, channelToken: $_channelToken");
+    debugPrint("🔧 [GraphQL Client] Creating client with tokens:");
+    debugPrint("   - Vendure Token (auth): ${_authToken.isNotEmpty ? 'Bearer $_authToken' : 'NOT SET'}");
+    debugPrint("   - Channel Token: ${_channelToken.isNotEmpty ? _channelToken : 'NOT SET'}");
 
-    final authLink = AuthLink(getToken: () async => _authToken.isNotEmpty ? 'Bearer $_authToken' : null);
+    final authLink = AuthLink(getToken: () async {
+      final token = _authToken.isNotEmpty ? 'Bearer $_authToken' : null;
+      if (token != null) {
+        debugPrint("🔑 [GraphQL Client] Authorization header: $token");
+      }
+      return token;
+    });
 
     // Create HTTP client with improved timeout and connection settings
     // Configure HttpClient for better connection handling and stability
@@ -40,17 +49,30 @@ class GraphqlService {
     
     final httpClient = http_io.IOClient(httpClientInstance);
     
+    // Prepare headers
+    final headers = <String, String>{
+      if (_channelToken.isNotEmpty) _channelTokenKey: _channelToken,
+      'x-device-medium': 'android',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Connection': 'keep-alive', // Keep connection alive for reuse
+      'Accept-Encoding': 'gzip, deflate', // Enable compression
+    };
+    
+    // Debug print headers
+    debugPrint("📋 [GraphQL Client] HTTP Headers:");
+    headers.forEach((key, value) {
+      if (key == _channelTokenKey) {
+        debugPrint("   - $key: $value");
+      } else {
+        debugPrint("   - $key: $value");
+      }
+    });
+    
     final httpLink = HttpLink(
       dotenv.env['SHOP_API_URL'] ?? '',
       httpClient: httpClient,
-      defaultHeaders: {
-        if (_channelToken.isNotEmpty) _channelTokenKey: _channelToken,
-        'x-device-medium': 'android',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Connection': 'keep-alive', // Keep connection alive for reuse
-        'Accept-Encoding': 'gzip, deflate', // Enable compression
-      },
+      defaultHeaders: headers,
     );
 
     // Chain: auth -> http
@@ -69,17 +91,20 @@ class GraphqlService {
 
   // Initialize from storage
   static Future<void> initialize() async {
-// print("⚡ Initializing GraphqlService...");
+    debugPrint("⚡ [GraphQL Client] Initializing GraphqlService...");
     await GetStorage.init();
     _authToken = _storage.read('auth_token') ?? "";
     _channelToken = _storage.read('channel_token') ?? "";
-// print("✅ Tokens loaded - authToken: $_authToken, channelToken: $_channelToken");
+    debugPrint("✅ [GraphQL Client] Tokens loaded from storage:");
+    debugPrint("   - Vendure Token (auth_token): ${_authToken.isNotEmpty ? '${_authToken.substring(0, _authToken.length > 20 ? 20 : _authToken.length)}...' : 'NOT SET'}");
+    debugPrint("   - Channel Token (channel_token): ${_channelToken.isNotEmpty ? '${_channelToken.substring(0, _channelToken.length > 20 ? 20 : _channelToken.length)}...' : 'NOT SET'}");
     _client ??= ValueNotifier(_createClient());
   }
 
   // Generic setter for token
   static Future<void> setToken({required String key, required String token}) async {
-// print("📝 setToken called for $key: $token");
+    debugPrint("📝 [GraphQL Client] setToken called for $key");
+    debugPrint("   - Token value: ${token.length > 20 ? '${token.substring(0, 20)}...' : token}");
     if (key == 'auth') {
       if (_authToken != token) _authToken = token;
     } else if (key == 'channel') {
@@ -87,7 +112,7 @@ class GraphqlService {
     }
     await _storage.write('${key}_token', token);
     _client?.value = _createClient();
-// print("✅ $key token updated and client recreated");
+    debugPrint("✅ [GraphQL Client] $key token updated and client recreated");
   }
 
   // Generic clear token

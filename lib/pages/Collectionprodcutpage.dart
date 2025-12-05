@@ -44,22 +44,22 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   @override
   void initState() {
     super.initState();
-/// debugPrint(  '🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
+debugPrint(  '🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-/// debugPrint(  '🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
+debugPrint(  '🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
       
       try {
         await controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug);
         
         // Check if collection was found after fetch attempt
         if (controller.currentCollection.value == null) {
-// debugPrint('⚠️ [CollectionProductsPage] Collection not found, handling redirect...');
+debugPrint('⚠️ [CollectionProductsPage] Collection not found, handling redirect...');
           _handleCollectionNotFound();
           return;
         }
         
       } catch (e) {
-// debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
+debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
         _handleCollectionNotFound();
         return;
       }
@@ -617,18 +617,18 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                              authToken.isNotEmpty && 
                              channelToken.isNotEmpty;
       
-// debugPrint('🔍 [CollectionProductsPage] Authentication status: $isAuthenticated');
+debugPrint('🔍 [CollectionProductsPage] Authentication status: $isAuthenticated');
       
       if (isAuthenticated) {
-// debugPrint('🏠 [CollectionProductsPage] User authenticated - redirecting to home');
+debugPrint('🏠 [CollectionProductsPage] User authenticated - redirecting to home');
         Get.offAllNamed(AppRoutes.home);
       } else {
-// debugPrint('🔐 [CollectionProductsPage] User not authenticated - redirecting to login');
+debugPrint('🔐 [CollectionProductsPage] User not authenticated - redirecting to login');
         Get.offAllNamed(AppRoutes.login);
       }
       
     } catch (e) {
-// debugPrint('❌ [CollectionProductsPage] Error checking auth status: $e');
+debugPrint('❌ [CollectionProductsPage] Error checking auth status: $e');
       // Fallback to home page if there's any error
       Get.offAllNamed(AppRoutes.home);
     }

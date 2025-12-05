@@ -41,20 +41,20 @@ class CustomerController extends BaseController {
       utilityController.setLoadingState(false);
       error.value = '';
 
-// debugPrint('[Customer] Fetching active customer...');
+debugPrint('[Customer] Fetching active customer...');
 
       final response =
           await GraphqlService.client.value.query$GetActiveCustomer();
 
       // Check if error contains "User not found" - handle specially
       if (response.hasException) {
-// debugPrint('[Customer] Exception: ${response.exception}');
+debugPrint('[Customer] Exception: ${response.exception}');
 
         // Check if error contains "User not found"
         final exceptionString = response.exception.toString().toLowerCase();
         if (exceptionString.contains('user not found') ||
             exceptionString.contains('user not found with this email')) {
-/// debugPrint(  '[Customer] User not found error detected - triggering logout');
+debugPrint(  '[Customer] User not found error detected - triggering logout');
           error.value = 'User not found. Please login again.';
 
           // Trigger logout and redirect to login
@@ -74,7 +74,7 @@ class CustomerController extends BaseController {
       if (customerData != null) {
         // Convert the GraphQL response to a Map
         final customerJson = customerData.toJson();
-// debugPrint('[Customer] Raw customer data: $customerJson');
+debugPrint('[Customer] Raw customer data: $customerJson');
 
         activeCustomer.value = CustomerModel.fromJson(customerJson);
         addresses.value = activeCustomer.value?.addresses ?? [];
@@ -91,21 +91,23 @@ class CustomerController extends BaseController {
           );
         }
 
-/// debugPrint(  '[Customer] Customer loaded: ${activeCustomer.value?.firstName} ${activeCustomer.value?.lastName}');
-// debugPrint('[Customer] Addresses: ${addresses.length}');
-// debugPrint('[Customer] Orders: ${orders.length}');
+debugPrint(  '[Customer] Customer loaded: ${activeCustomer.value?.firstName} ${activeCustomer.value?.lastName}');
+debugPrint('[Customer] Addresses: ${addresses.length}');
+debugPrint('[Customer] Orders: ${orders.length}');
       } else {
         error.value = 'No customer data found';
-// debugPrint('[Customer] No customer data found');
+debugPrint('[Customer] No customer data found when this occurs clear cache and log out and go to login page');
+        // Clear cache and logout when customer data is null
+        await handleCustomerDataNotFound();
       }
     } catch (e) {
-// debugPrint('[Customer] Error: $e');
+debugPrint('[Customer] Error: $e');
 
       // Check if error contains "User not found"
       final errorString = e.toString().toLowerCase();
       if (errorString.contains('user not found') ||
           errorString.contains('user not found with this email')) {
-/// debugPrint(  '[Customer] User not found error detected in catch - triggering logout');
+debugPrint(  '[Customer] User not found error detected in catch - triggering logout');
         error.value = 'User not found. Please login again.';
 
         // Trigger logout and redirect to login
@@ -125,10 +127,10 @@ class CustomerController extends BaseController {
   Future<bool> updateCustomer() async {
     try {
       utilityController.setLoadingState(true);
-// debugPrint('[Customer] Updating customer profile...');
+debugPrint('[Customer] Updating customer profile...');
 
       // Log the input values clearly
-/// debugPrint(  '[Customer] Mutation input: firstName=${firstNameController.value}, lastName=${lastNameController.value}');
+debugPrint(  '[Customer] Mutation input: firstName=${firstNameController.value}, lastName=${lastNameController.value}');
 
       // Prepare mutation input
       final input = Input$UpdateCustomerInput(
@@ -152,7 +154,7 @@ class CustomerController extends BaseController {
       }
 
       // Log full mutation response
-// debugPrint('[Customer] Mutation response: ${response.data}');
+debugPrint('[Customer] Mutation response: ${response.data}');
 
       final result = response.parsedData?.updateCustomer;
 
@@ -161,17 +163,17 @@ class CustomerController extends BaseController {
         await getActiveCustomer();
 
         isEditingProfile.value = false;
-// debugPrint('[Customer] Profile updated successfully');
+debugPrint('[Customer] Profile updated successfully');
 
         // Log new customer data to confirm
 
         return true;
       }
 
-// debugPrint('[Customer] Mutation returned null result');
+debugPrint('[Customer] Mutation returned null result');
       return false;
     } catch (e) {
-// debugPrint('[Customer] Update error: $e');
+debugPrint('[Customer] Update error: $e');
       handleException(e, customErrorMessage: 'Failed to update profile');
       return false;
     } finally {
@@ -184,7 +186,7 @@ class CustomerController extends BaseController {
     try {
       utilityController.setLoadingState(true);
 
-// debugPrint('[Customer] Creating address...');
+debugPrint('[Customer] Creating address...');
 
       final input = Input$CreateAddressInput(
         fullName: address.fullName,
@@ -217,13 +219,13 @@ class CustomerController extends BaseController {
         await getActiveCustomer();
         // Force UI refresh
         addresses.refresh();
-// debugPrint('[Customer] Address created successfully');
+debugPrint('[Customer] Address created successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-// debugPrint('[Customer] Create address error: $e');
+debugPrint('[Customer] Create address error: $e');
       handleException(e, customErrorMessage: 'Failed to create address');
       return false;
     } finally {
@@ -236,7 +238,7 @@ class CustomerController extends BaseController {
     try {
       utilityController.setLoadingState(true);
 
-// debugPrint('[Customer] Updating address...');
+debugPrint('[Customer] Updating address...');
 
       final input = Input$UpdateAddressInput(
         id: address.id,
@@ -270,13 +272,13 @@ class CustomerController extends BaseController {
         await getActiveCustomer();
         // Force UI refresh
         addresses.refresh();
-// debugPrint('[Customer] Address updated successfully');
+debugPrint('[Customer] Address updated successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-// debugPrint('[Customer] Update address error: $e');
+debugPrint('[Customer] Update address error: $e');
       handleException(e, customErrorMessage: 'Failed to update address');
       return false;
     } finally {
@@ -289,7 +291,7 @@ class CustomerController extends BaseController {
     try {
       utilityController.setLoadingState(true);
 
-// debugPrint('[Customer] Deleting address: $addressId');
+debugPrint('[Customer] Deleting address: $addressId');
 
       final response =
           await GraphqlService.client.value.mutate$DeleteCustomerAddress(
@@ -309,13 +311,13 @@ class CustomerController extends BaseController {
         await getActiveCustomer();
         // Force UI refresh
         addresses.refresh();
-// debugPrint('[Customer] Address deleted successfully');
+debugPrint('[Customer] Address deleted successfully');
         return true;
       }
 
       return false;
     } catch (e) {
-// debugPrint('[Customer] Delete address error: $e');
+debugPrint('[Customer] Delete address error: $e');
       handleException(e, customErrorMessage: 'Failed to delete address');
       return false;
     } finally {
@@ -351,7 +353,7 @@ class CustomerController extends BaseController {
   /// Handle user not found error - logout and redirect
   Future<void> _handleUserNotFoundError() async {
     try {
-// debugPrint('[Customer] Handling user not found error...');
+debugPrint('[Customer] Handling user not found error...');
 
       // Clear local data immediately
       activeCustomer.value = null;
@@ -372,9 +374,42 @@ class CustomerController extends BaseController {
       // Navigate to login page
       Get.offAllNamed('/login');
 
-// debugPrint('[Customer] User logged out due to user not found error');
+debugPrint('[Customer] User logged out due to user not found error');
     } catch (e) {
-// debugPrint('[Customer] Error handling user not found: $e');
+debugPrint('[Customer] Error handling user not found: $e');
+      // Still navigate to login even if cleanup fails
+      Get.offAllNamed('/login');
+    }
+  }
+
+  /// Handle customer data not found - clear cache and logout
+  /// This method is public so other controllers can call it
+  Future<void> handleCustomerDataNotFound() async {
+    try {
+debugPrint('[Customer] Handling customer data not found - clearing cache and logging out...');
+
+      // Clear local data immediately
+      activeCustomer.value = null;
+      addresses.clear();
+      orders.clear();
+      isEditingProfile.value = false;
+
+      // Clear authentication tokens
+      await GraphqlService.clearToken('auth');
+      await GraphqlService.clearToken('channel');
+
+      // Show message to user
+      ErrorDialog.show(
+        title: 'Session Expired',
+        message: 'No customer data found. Please login again.',
+      );
+
+      // Navigate to login page
+      Get.offAllNamed('/login');
+
+debugPrint('[Customer] User logged out due to customer data not found');
+    } catch (e) {
+debugPrint('[Customer] Error handling customer data not found: $e');
       // Still navigate to login even if cleanup fails
       Get.offAllNamed('/login');
     }
@@ -383,7 +418,7 @@ class CustomerController extends BaseController {
   /// Logout customer
   Future<void> logout() async {
     try {
-// debugPrint('[Customer] Logging out...');
+debugPrint('[Customer] Logging out...');
 
       final response = await GraphqlService.client.value.mutate$LogoutUser(
         Options$Mutation$LogoutUser(),
@@ -391,7 +426,7 @@ class CustomerController extends BaseController {
 
       // Don't show error dialog for logout - just log it
       if (response.hasException) {
-// debugPrint('[Customer] Logout exception: ${response.exception}');
+debugPrint('[Customer] Logout exception: ${response.exception}');
       }
 
       // Clear local data
@@ -407,9 +442,9 @@ class CustomerController extends BaseController {
       // Navigate to login
       Get.offAllNamed('/login');
 
-// debugPrint('[Customer] Logged out successfully');
+debugPrint('[Customer] Logged out successfully');
     } catch (e) {
-// debugPrint('[Customer] Logout error: $e');
+debugPrint('[Customer] Logout error: $e');
       // Still navigate to login even if logout fails
       Get.offAllNamed('/login');
     }

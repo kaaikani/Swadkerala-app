@@ -212,9 +212,7 @@ mutation ApplyCouponCode($input: String!) {
             id
             couponCodes
             customFields {
-                razorpay_order_id
                 otherInstructions
-                clientRequestToCancel
             }
             total
         }

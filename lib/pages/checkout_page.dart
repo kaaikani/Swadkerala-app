@@ -44,6 +44,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   // Address selection
   AddressModel? _selectedAddress;
+  
+  // Blink animation for address card
+  final RxBool _shouldBlinkAddress = false.obs;
 
   // Expandable sections for slide-down animations
   // ignore: unused_field
@@ -56,6 +59,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   // Loyalty Points
   final _loyaltyPointsController = TextEditingController();
+  final RxBool _applyAllPoints = false.obs; // Toggle for apply all vs manual
 
   // Other Instructions
   final _otherInstructionsController = TextEditingController();
@@ -80,19 +84,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void initState() {
     super.initState();
     _razorpayService = RazorpayService();
-// debugPrint('[CheckoutPage] initState called');
+debugPrint('[CheckoutPage] initState called');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-// debugPrint('[CheckoutPage] PostFrameCallback executing...');
+debugPrint('[CheckoutPage] PostFrameCallback executing...');
       // Load shipping address first (at the top)
       _loadCustomerAddresses();
       // Then load other data
       _loadShippingMethods();
-// debugPrint('[CheckoutPage] About to call _loadCouponCodes()');
+debugPrint('[CheckoutPage] About to call _loadCouponCodes()');
       _loadCouponCodes();
-// debugPrint('[CheckoutPage] _loadCouponCodes() call completed');
-// debugPrint('[CheckoutPage] About to call _loadLoyaltyPointsConfig()');
+debugPrint('[CheckoutPage] _loadCouponCodes() call completed');
+debugPrint('[CheckoutPage] About to call _loadLoyaltyPointsConfig()');
       _loadLoyaltyPointsConfig();
-// debugPrint('[CheckoutPage] _loadLoyaltyPointsConfig() call completed');
+debugPrint('[CheckoutPage] _loadLoyaltyPointsConfig() call completed');
       _loadExistingInstructions();
       _loadExistingCouponCodes();
       _loadExistingLoyaltyPoints();
@@ -155,7 +159,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
       return;
     }
 
-    // Don't auto-select delivery method if already selected
+    // If there's only one shipping method, auto-select it
+    final hasSingleMethod = orderController.shippingMethods.length == 1;
+    if (hasSingleMethod) {
+      final singleMethod = orderController.shippingMethods.first;
+      // Auto-select if not already selected
+      if (orderController.selectedShippingMethod.value?.id != singleMethod.id) {
+        orderController.selectedShippingMethod.value = singleMethod;
+        // Auto-apply the single method
+        await _applyShippingMethod(force: true);
+        return;
+      }
+      // If already selected, just refresh payment methods if needed
+      if (orderController.paymentMethods.isEmpty) {
+        await _refreshPaymentMethods();
+      }
+      return;
+    }
+
+    // Don't auto-select delivery method if already selected (for multiple methods)
     if (orderController.selectedShippingMethod.value != null) {
       // If shipping method already selected, just refresh payment methods if needed
       if (orderController.paymentMethods.isEmpty) {
@@ -239,60 +261,60 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _loadCouponCodes() async {
-// debugPrint('[CheckoutPage] ===== LOADING COUPON CODES =====');
-// debugPrint('[CheckoutPage] BannerController available: true');
-/// debugPrint(  '[CheckoutPage] Current coupon codes count: ${bannerController.availableCouponCodes.length}');
-/// debugPrint(  '[CheckoutPage] Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
+debugPrint('[CheckoutPage] ===== LOADING COUPON CODES =====');
+debugPrint('[CheckoutPage] BannerController available: true');
+debugPrint(  '[CheckoutPage] Current coupon codes count: ${bannerController.availableCouponCodes.length}');
+debugPrint(  '[CheckoutPage] Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
 
     try {
-/// debugPrint(  '[CheckoutPage] Calling bannerController.getCouponCodeList()...');
+debugPrint(  '[CheckoutPage] Calling bannerController.getCouponCodeList()...');
       await bannerController.getCouponCodeList();
-/// debugPrint(  '[CheckoutPage] bannerController.getCouponCodeList() completed');
+debugPrint(  '[CheckoutPage] bannerController.getCouponCodeList() completed');
 
-/// debugPrint(  '[CheckoutPage] After loading - Coupon codes count: ${bannerController.availableCouponCodes.length}');
-/// debugPrint(  '[CheckoutPage] After loading - Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
+debugPrint(  '[CheckoutPage] After loading - Coupon codes count: ${bannerController.availableCouponCodes.length}');
+debugPrint(  '[CheckoutPage] After loading - Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
 
       if (bannerController.availableCouponCodes.isNotEmpty) {
-/// debugPrint(  '[CheckoutPage] ✅ Successfully loaded ${bannerController.availableCouponCodes.length} coupon codes');
+debugPrint(  '[CheckoutPage] ✅ Successfully loaded ${bannerController.availableCouponCodes.length} coupon codes');
         for (int i = 0; i < bannerController.availableCouponCodes.length; i++) {
           // final coupon = bannerController.availableCouponCodes[i]; // Unused variable
-// debugPrint( '[CheckoutPage] Coupon $i: ${bannerController.availableCouponCodes[i].name} (${bannerController.availableCouponCodes[i].couponCode}) - Enabled: ${bannerController.availableCouponCodes[i].enabled}');
+debugPrint( '[CheckoutPage] Coupon $i: ${bannerController.availableCouponCodes[i].name} (${bannerController.availableCouponCodes[i].couponCode}) - Enabled: ${bannerController.availableCouponCodes[i].enabled}');
         }
       } else {
-// debugPrint('[CheckoutPage] ❌ No coupon codes loaded');
+debugPrint('[CheckoutPage] ❌ No coupon codes loaded');
       }
     } catch (e) {
-// debugPrint('[CheckoutPage] ❌ Error loading coupon codes: $e');
-// debugPrint('[CheckoutPage] Error type: ${e.runtimeType}');
-// debugPrint('[CheckoutPage] Stack trace: ${StackTrace.current}');
+debugPrint('[CheckoutPage] ❌ Error loading coupon codes: $e');
+debugPrint('[CheckoutPage] Error type: ${e.runtimeType}');
+debugPrint('[CheckoutPage] Stack trace: ${StackTrace.current}');
     }
 
-// debugPrint('[CheckoutPage] ===== COUPON CODE LOADING COMPLETED =====');
+debugPrint('[CheckoutPage] ===== COUPON CODE LOADING COMPLETED =====');
   }
 
   Future<void> _loadLoyaltyPointsConfig() async {
-// debugPrint('[CheckoutPage] ===== LOADING LOYALTY POINTS CONFIG =====');
+debugPrint('[CheckoutPage] ===== LOADING LOYALTY POINTS CONFIG =====');
 
     try {
-/// debugPrint(  '[CheckoutPage] Calling bannerController.fetchLoyaltyPointsConfig()...');
+debugPrint(  '[CheckoutPage] Calling bannerController.fetchLoyaltyPointsConfig()...');
       await bannerController.fetchLoyaltyPointsConfig();
-/// debugPrint(  '[CheckoutPage] bannerController.fetchLoyaltyPointsConfig() completed');
+debugPrint(  '[CheckoutPage] bannerController.fetchLoyaltyPointsConfig() completed');
 
       final config = bannerController.loyaltyPointsConfig.value;
       if (config != null) {
-/// debugPrint(  '[CheckoutPage] ✅ Successfully loaded loyalty points config');
-// debugPrint('[CheckoutPage] Rupees per point: ${config.rupeesPerPoint}');
-// debugPrint('[CheckoutPage] Points per rupee: ${config.pointsPerRupee}');
+debugPrint(  '[CheckoutPage] ✅ Successfully loaded loyalty points config');
+debugPrint('[CheckoutPage] Rupees per point: ${config.rupeesPerPoint}');
+debugPrint('[CheckoutPage] Points per rupee: ${config.pointsPerRupee}');
       } else {
-// debugPrint('[CheckoutPage] ❌ No loyalty points config loaded');
+debugPrint('[CheckoutPage] ❌ No loyalty points config loaded');
       }
     } catch (e) {
-// debugPrint('[CheckoutPage] ❌ Error loading loyalty points config: $e');
-// debugPrint('[CheckoutPage] Error type: ${e.runtimeType}');
-// debugPrint('[CheckoutPage] Stack trace: ${StackTrace.current}');
+debugPrint('[CheckoutPage] ❌ Error loading loyalty points config: $e');
+debugPrint('[CheckoutPage] Error type: ${e.runtimeType}');
+debugPrint('[CheckoutPage] Stack trace: ${StackTrace.current}');
     }
 
-/// debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====');
+debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====');
   }
 
   Future<void> _loadExistingInstructions() async {
@@ -320,29 +342,29 @@ class _CheckoutPageState extends State<CheckoutPage> {
             });
           }
           
-// debugPrint('[CheckoutPage] Loaded existing instructions: $instructions');
+debugPrint('[CheckoutPage] Loaded existing instructions: $instructions');
         }
       }
     } catch (e) {
-// debugPrint('[CheckoutPage] Error loading existing instructions: $e');
+debugPrint('[CheckoutPage] Error loading existing instructions: $e');
     }
   }
 
   /// Load existing coupon codes from the order
   Future<void> _loadExistingCouponCodes() async {
     try {
-// debugPrint('[CheckoutPage] Loading existing coupon codes from order...');
+debugPrint('[CheckoutPage] Loading existing coupon codes from order...');
       await cartController.getActiveOrder();
       
       final cart = cartController.cart.value;
       if (cart != null && cart.couponCodes.isNotEmpty) {
-// debugPrint('[CheckoutPage] Found ${cart.couponCodes.length} coupon codes in order: ${cart.couponCodes}');
+debugPrint('[CheckoutPage] Found ${cart.couponCodes.length} coupon codes in order: ${cart.couponCodes}');
         
         // Sync applied coupon codes with the order
         for (final couponCode in cart.couponCodes) {
           if (!bannerController.appliedCouponCodes.contains(couponCode)) {
             bannerController.appliedCouponCodes.add(couponCode);
-// debugPrint('[CheckoutPage] Added coupon code to applied list: $couponCode');
+debugPrint('[CheckoutPage] Added coupon code to applied list: $couponCode');
           }
         }
         
@@ -352,22 +374,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
             .toList();
         for (final code in codesToRemove) {
           bannerController.appliedCouponCodes.remove(code);
-// debugPrint('[CheckoutPage] Removed coupon code from applied list: $code');
+debugPrint('[CheckoutPage] Removed coupon code from applied list: $code');
         }
         
-// debugPrint('[CheckoutPage] Synced applied coupon codes: ${bannerController.appliedCouponCodes}');
+debugPrint('[CheckoutPage] Synced applied coupon codes: ${bannerController.appliedCouponCodes}');
       } else {
-// debugPrint('[CheckoutPage] No coupon codes found in order');
+debugPrint('[CheckoutPage] No coupon codes found in order');
       }
     } catch (e) {
-// debugPrint('[CheckoutPage] Error loading existing coupon codes: $e');
+debugPrint('[CheckoutPage] Error loading existing coupon codes: $e');
     }
   }
 
   /// Load existing loyalty points from the order
   Future<void> _loadExistingLoyaltyPoints() async {
     try {
-// debugPrint('[CheckoutPage] Loading existing loyalty points from order...');
+debugPrint('[CheckoutPage] Loading existing loyalty points from order...');
       await orderController.getActiveOrder(skipLoading: true);
       
       final order = orderController.currentOrder.value;
@@ -375,7 +397,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         final loyaltyPointsUsed = order.customFields!.loyaltyPointsUsed;
         
         if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-// debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
+debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
           
           // Sync loyalty points state
           bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
@@ -384,10 +406,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
           // Update the text field to show applied points
           if (mounted) {
             _loyaltyPointsController.text = loyaltyPointsUsed.toString();
-// debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
+debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
           }
         } else {
-// debugPrint('[CheckoutPage] No loyalty points found in order');
+debugPrint('[CheckoutPage] No loyalty points found in order');
           // Reset if no points are applied
           bannerController.loyaltyPointsApplied.value = false;
           bannerController.loyaltyPointsUsed.value = 0;
@@ -397,7 +419,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         }
       }
     } catch (e) {
-// debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
+debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
     }
   }
 
@@ -431,6 +453,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _onPlaceOrder() async {
+    // Check if address is missing and trigger blink
+    if (_selectedAddress == null) {
+      _triggerAddressBlink();
+      showErrorSnackbar('Please select a delivery address');
+      return;
+    }
+    
     // Validate checkout before proceeding
     if (!_validateCheckout()) {
       return;
@@ -460,23 +489,45 @@ class _CheckoutPageState extends State<CheckoutPage> {
     // Then proceed to payment (shipping method should already be set)
     await _handlePayment();
   }
+  
+  /// Trigger blink animation on address card
+  void _triggerAddressBlink() {
+    // Create a repeating blink effect (3 blinks)
+    int blinkCount = 0;
+    const totalBlinks = 3;
+    const blinkDuration = Duration(milliseconds: 200);
+    
+    Timer.periodic(blinkDuration, (timer) {
+      blinkCount++;
+      if (blinkCount % 2 == 1) {
+        _shouldBlinkAddress.value = true;
+      } else {
+        _shouldBlinkAddress.value = false;
+      }
+      
+      if (blinkCount >= totalBlinks * 2) {
+        timer.cancel();
+        _shouldBlinkAddress.value = false;
+      }
+    });
+  }
 
   /// Handle Razorpay online payment
   Future<void> _handleRazorpayPayment() async {
-// debugPrint('[Checkout] [Razorpay] Starting payment flow...');
+debugPrint('[Checkout] [Razorpay] Starting payment flow...');
     // final currentOrderBeforeTransition = orderController.currentOrder.value; // Unused variable
-// debugPrint('[Checkout] [Razorpay] Order state before transition: ${orderController.currentOrder.value?.state ?? "null"}');
-// debugPrint('[Checkout] [Razorpay] Order ID before transition: ${orderController.currentOrder.value?.id ?? "null"}');
+debugPrint('[Checkout] [Razorpay] Order state before transition: ${orderController.currentOrder.value?.state ?? "null"}');
+debugPrint('[Checkout] [Razorpay] Order ID before transition: ${orderController.currentOrder.value?.id ?? "null"}');
     
     // Transition to ArrangingPayment state
     final transitioned = await orderController.transitionToArrangingPayment();
     if (!transitioned) {
-// debugPrint('[Checkout] ❌ [Razorpay] Failed to transition to ArrangingPayment state');
-// debugPrint('[Checkout] [Razorpay] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
+debugPrint('[Checkout] ❌ [Razorpay] Failed to transition to ArrangingPayment state');
+debugPrint('[Checkout] [Razorpay] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
       showErrorSnackbar('Failed to process order');
       return;
     }
-// debugPrint('[Checkout] ✅ [Razorpay] Successfully transitioned to ArrangingPayment state');
+debugPrint('[Checkout] ✅ [Razorpay] Successfully transitioned to ArrangingPayment state');
 
     // Refresh order to get latest state from server
     await orderController.getActiveOrder(skipLoading: true);
@@ -489,22 +540,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
     // Verify order is in ArrangingPayment state before generating Razorpay order
     final currentOrder = orderController.currentOrder.value;
     if (currentOrder != null && currentOrder.state != 'ArrangingPayment') {
-// debugPrint('[Checkout] ⚠️ Order state mismatch - Current: ${currentOrder.state}, Expected: ArrangingPayment');
-// debugPrint('[Checkout] Order ID: ${currentOrder.id}, Order Code: ${currentOrder.code}');
-// debugPrint('[Checkout] Order Active: ${currentOrder.active}');
+debugPrint('[Checkout] ⚠️ Order state mismatch - Current: ${currentOrder.state}, Expected: ArrangingPayment');
+debugPrint('[Checkout] Order ID: ${currentOrder.id}, Order Code: ${currentOrder.code}');
+debugPrint('[Checkout] Order Active: ${currentOrder.active}');
       // Try refreshing one more time
       await orderController.getActiveOrder(skipLoading: true);
       await cartController.getActiveOrder();
       final refreshedOrder = orderController.currentOrder.value;
       if (refreshedOrder?.state != 'ArrangingPayment') {
-// debugPrint('[Checkout] ❌ Order state error after refresh - State: ${refreshedOrder?.state ?? "null"}, Expected: ArrangingPayment');
-// debugPrint('[Checkout] Refreshed Order ID: ${refreshedOrder?.id ?? "null"}, Order Code: ${refreshedOrder?.code ?? "null"}');
-// debugPrint('[Checkout] Refreshed Order Active: ${refreshedOrder?.active ?? "null"}');
-// debugPrint('[Checkout] Cart Order State: ${cartController.cart.value?.state ?? "null"}');
+debugPrint('[Checkout] ❌ Order state error after refresh - State: ${refreshedOrder?.state ?? "null"}, Expected: ArrangingPayment');
+debugPrint('[Checkout] Refreshed Order ID: ${refreshedOrder?.id ?? "null"}, Order Code: ${refreshedOrder?.code ?? "null"}');
+debugPrint('[Checkout] Refreshed Order Active: ${refreshedOrder?.active ?? "null"}');
+debugPrint('[Checkout] Cart Order State: ${cartController.cart.value?.state ?? "null"}');
         showErrorSnackbar('Order state error. Please try again.');
         return;
       } else {
-// debugPrint('[Checkout] ✅ Order state corrected after refresh - State: ${refreshedOrder?.state ?? "null"}');
+debugPrint('[Checkout] ✅ Order state corrected after refresh - State: ${refreshedOrder?.state ?? "null"}');
       }
     }
 
@@ -528,33 +579,56 @@ class _CheckoutPageState extends State<CheckoutPage> {
         : (orderController.selectedShippingMethod.value?.priceWithTax ?? 0);
     final amount = orderTotal + shippingCost;
 
-/// debugPrint(  '[Checkout] Order Total: $orderTotal, Shipping: $shippingCost, Final Amount: $amount');
-/// debugPrint(  '[Checkout] Free shipping coupon applied: ${cartController.hasFreeShippingCoupon()}');
+debugPrint(  '[Checkout] Order Total: $orderTotal, Shipping: $shippingCost, Final Amount: $amount');
+debugPrint(  '[Checkout] Free shipping coupon applied: ${cartController.hasFreeShippingCoupon()}');
 
     // Generate Razorpay Order ID from backend
     showSuccessSnackbar('Generating payment order...');
     final razorpayOrder =
         await orderController.generateRazorpayOrderId(orderId);
 
-    if (razorpayOrder == null) {
+    if (razorpayOrder == null || 
+        razorpayOrder.razorpayOrderId == null || 
+        razorpayOrder.keyId == null) {
       // Error message is already shown by the controller's error handling
-// debugPrint('[Checkout] Razorpay order generation failed');
+debugPrint('[Checkout] Razorpay order generation failed');
       return;
     }
 
-/// debugPrint(  '[Checkout] Razorpay Order ID: ${razorpayOrder.razorpayOrderId}');
-// debugPrint('[Checkout] Razorpay Key ID: ${razorpayOrder.keyId}');
+debugPrint(  '[Checkout] Razorpay Order ID: ${razorpayOrder.razorpayOrderId}');
+debugPrint('[Checkout] Razorpay Key ID: ${razorpayOrder.keyId}');
+debugPrint('[Checkout] Razorpay Amount: ${razorpayOrder.amount}');
+debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
 
+    // Ensure customer data is loaded before getting phone number
+    if (customerController.activeCustomer.value == null) {
+      await customerController.getActiveCustomer();
+    }
+    
     // Get customer phone number - prioritize address phone, fallback to customer phone
+    // Ensure we always have a phone number for Razorpay
     final customer = customerController.activeCustomer.value;
     String customerPhone = '';
     
+    // Priority 1: Selected address phone number
     if (_selectedAddress?.phoneNumber != null && 
         _selectedAddress!.phoneNumber.isNotEmpty) {
-      customerPhone = _selectedAddress!.phoneNumber;
-    } else if (customer?.phoneNumber != null && 
-               customer!.phoneNumber!.isNotEmpty) {
-      customerPhone = customer.phoneNumber!;
+      customerPhone = _selectedAddress!.phoneNumber.trim();
+    } 
+    // Priority 2: Customer profile phone number
+    else if (customer?.phoneNumber != null && 
+             customer!.phoneNumber!.isNotEmpty) {
+      customerPhone = customer.phoneNumber!.trim();
+    }
+    // Priority 3: Try to get from customer addresses
+    else if (customer != null && customer.addresses.isNotEmpty) {
+      // Try to find phone number from any address
+      for (var address in customer.addresses) {
+        if (address.phoneNumber.isNotEmpty) {
+          customerPhone = address.phoneNumber.trim();
+          break;
+        }
+      }
     }
 
     // Validate phone number before proceeding
@@ -562,21 +636,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
       showErrorSnackbar('Phone number is required for payment. Please add a phone number to your address or profile.');
       return;
     }
+    
+    // Ensure phone number is properly formatted (remove spaces, ensure it starts with country code if needed)
+    customerPhone = customerPhone.replaceAll(' ', '').replaceAll('-', '');
+    
+    debugPrint('[Checkout] Customer Phone (cleaned): $customerPhone');
+    debugPrint('[Checkout] Customer Phone Length: ${customerPhone.length}');
 
-// debugPrint('[Checkout] Customer Phone: $customerPhone');
+    // Use amount from response if available, otherwise use calculated amount
+    final paymentAmount = razorpayOrder.amount ?? amount;
 
     // Open Razorpay payment gateway with backend-generated order ID
     _razorpayService.openPaymentGateway(
-      razorpayOrderId: razorpayOrder.razorpayOrderId,
-      razorpayKeyId: razorpayOrder.keyId,
-      amountInPaise: amount, // Already in paise/cents
+      razorpayOrderId: razorpayOrder.razorpayOrderId!,
+      razorpayKeyId: razorpayOrder.keyId!,
+      amountInPaise: paymentAmount, // Use amount from response or calculated amount
       customerName: _selectedAddress?.fullName ?? 
           (customer != null ? '${customer.firstName} ${customer.lastName}'.trim() : 'Customer'),
       customerEmail: customer?.emailAddress ?? 'customer@example.com',
       customerPhone: customerPhone,
       description: 'Order #${orderCode ?? orderId}',
       onPaymentSuccess: (response) async {
-/// debugPrint(  '[Checkout] Razorpay payment successful: ${response.paymentId}');
+debugPrint(  '[Checkout] Razorpay payment successful: ${response.paymentId}');
 
         // Get latest order for payment - refresh to get current state
         await orderController.getActiveOrder(skipLoading: true);
@@ -586,85 +667,78 @@ class _CheckoutPageState extends State<CheckoutPage> {
         final latestCartOrder = cartController.cart.value;
         final latestOrderCode = latestOrderModel?.code ?? latestCartOrder?.code ?? orderCode;
 
-        // Add payment to order - online payment: don't pass metadata
-        final success = await orderController.addPayment(
-          method: 'online', // Use 'online' as the method code
-          metadata: null, // Don't pass metadata for online payment
-        );
-
-        if (success) {
-          // Get latest order for analytics
-          final orderForAnalyticsModel = orderController.currentOrder.value;
-          final orderForAnalyticsCart = cartController.cart.value;
-          
-          // Use whichever is available
-          if (orderForAnalyticsModel != null) {
-            // Track purchase event using OrderModel
-            final items = orderForAnalyticsModel.lines.map((line) {
-              return analytics.AnalyticsEventItem(
-                itemId: line.productVariant.id,
-                itemName: line.productVariant.name,
-                itemCategory: 'Product',
-                price: line.unitPriceWithTax / 100.0,
-                quantity: line.quantity,
-              );
-            }).toList();
-            
-            await AnalyticsService().logPurchase(
-              transactionId: orderForAnalyticsModel.code.isNotEmpty ? orderForAnalyticsModel.code : orderForAnalyticsModel.id,
-              value: orderForAnalyticsModel.totalWithTax / 100.0,
-              currency: 'INR',
-              items: items,
-              parameters: {
-                'payment_method': 'razorpay',
-                'payment_id': response.paymentId ?? '',
-              },
+        // Online payment: Don't use addPaymentToOrder - payment is handled by Razorpay
+        // Just transition the order to next state
+        
+        // Get latest order for analytics
+        final orderForAnalyticsModel = orderController.currentOrder.value;
+        final orderForAnalyticsCart = cartController.cart.value;
+        
+        // Use whichever is available
+        if (orderForAnalyticsModel != null) {
+          // Track purchase event using OrderModel
+          final items = orderForAnalyticsModel.lines.map((line) {
+            return analytics.AnalyticsEventItem(
+              itemId: line.productVariant.id,
+              itemName: line.productVariant.name,
+              itemCategory: 'Product',
+              price: line.unitPriceWithTax / 100.0,
+              quantity: line.quantity,
             );
-          } else if (orderForAnalyticsCart != null) {
-            // Track purchase event using Order (from cart)
-            final items = orderForAnalyticsCart.lines.map((line) {
-              return analytics.AnalyticsEventItem(
-                itemId: line.productVariant.id,
-                itemName: line.productVariant.name,
-                itemCategory: 'Product',
-                price: line.unitPriceWithTax / 100.0,
-                quantity: line.quantity,
-              );
-            }).toList();
-            
-            await AnalyticsService().logPurchase(
-              transactionId: orderForAnalyticsCart.code.isNotEmpty ? orderForAnalyticsCart.code : orderForAnalyticsCart.id,
-              value: orderForAnalyticsCart.totalWithTax / 100.0,
-              currency: 'INR',
-              items: items,
-              parameters: {
-                'payment_method': 'razorpay',
-                'payment_id': response.paymentId ?? '',
-              },
-            );
-          }
+          }).toList();
           
-          // Try to transition order to next state
-// debugPrint('[Checkout] Payment successful, transitioning order...');
-          final transitioned = await orderController.transitionToNextState();
-          final finalOrderCode = latestOrderCode ?? orderId;
-          if (transitioned) {
-            // Clear cart after successful order placement
-            cartController.clearCart();
-            showSuccessSnackbar('Payment successful! Order placed.');
-            Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
-          } else {
-            // Clear cart after successful order placement
-            cartController.clearCart();
-            showSuccessSnackbar('Payment successful! Order will be processed.');
-            Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
-          }
+          await AnalyticsService().logPurchase(
+            transactionId: orderForAnalyticsModel.code.isNotEmpty ? orderForAnalyticsModel.code : orderForAnalyticsModel.id,
+            value: orderForAnalyticsModel.totalWithTax / 100.0,
+            currency: 'INR',
+            items: items,
+            parameters: {
+              'payment_method': 'razorpay',
+              'payment_id': response.paymentId ?? '',
+            },
+          );
+        } else if (orderForAnalyticsCart != null) {
+          // Track purchase event using Order (from cart)
+          final items = orderForAnalyticsCart.lines.map((line) {
+            return analytics.AnalyticsEventItem(
+              itemId: line.productVariant.id,
+              itemName: line.productVariant.name,
+              itemCategory: 'Product',
+              price: line.unitPriceWithTax / 100.0,
+              quantity: line.quantity,
+            );
+          }).toList();
+          
+          await AnalyticsService().logPurchase(
+            transactionId: orderForAnalyticsCart.code.isNotEmpty ? orderForAnalyticsCart.code : orderForAnalyticsCart.id,
+            value: orderForAnalyticsCart.totalWithTax / 100.0,
+            currency: 'INR',
+            items: items,
+            parameters: {
+              'payment_method': 'razorpay',
+              'payment_id': response.paymentId ?? '',
+            },
+          );
+        }
+        
+        // Try to transition order to next state
+debugPrint('[Checkout] Payment successful, transitioning order...');
+        final transitioned = await orderController.transitionToNextState();
+        final finalOrderCode = latestOrderCode ?? orderId;
+        if (transitioned) {
+          // Clear cart after successful order placement
+          cartController.clearCart();
+          showSuccessSnackbar('Payment successful! Order placed.');
+          Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
         } else {
-          showErrorSnackbar('Payment completed but order failed to update');
+          // Clear cart after successful order placement
+          cartController.clearCart();
+          showSuccessSnackbar('Payment successful! Order will be processed.');
+          Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
         }
       },
       onPaymentFailure: (response) {
-// debugPrint('[Checkout] Razorpay payment failed: ${response.message}');
+debugPrint('[Checkout] Razorpay payment failed: ${response.message}');
         showErrorSnackbar('Payment failed: ${response.message}');
       },
     );
@@ -672,20 +746,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   /// Handle Cash on Delivery payment
   Future<void> _handleCODPayment() async {
-// debugPrint('[Checkout] [COD] Starting payment flow...');
+debugPrint('[Checkout] [COD] Starting payment flow...');
     // final currentOrderBeforeTransition = orderController.currentOrder.value; // Unused variable
-// debugPrint('[Checkout] [COD] Order state before transition: ${orderController.currentOrder.value?.state ?? "null"}');
-// debugPrint('[Checkout] [COD] Order ID before transition: ${orderController.currentOrder.value?.id ?? "null"}');
+debugPrint('[Checkout] [COD] Order state before transition: ${orderController.currentOrder.value?.state ?? "null"}');
+debugPrint('[Checkout] [COD] Order ID before transition: ${orderController.currentOrder.value?.id ?? "null"}');
     
     // Transition to ArrangingPayment state
     final transitioned = await orderController.transitionToArrangingPayment();
     if (!transitioned) {
-// debugPrint('[Checkout] ❌ [COD] Failed to transition to ArrangingPayment state');
-// debugPrint('[Checkout] [COD] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
+debugPrint('[Checkout] ❌ [COD] Failed to transition to ArrangingPayment state');
+debugPrint('[Checkout] [COD] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
       showErrorSnackbar('Failed to process order');
       return;
     }
-// debugPrint('[Checkout] ✅ [COD] Successfully transitioned to ArrangingPayment state');
+debugPrint('[Checkout] ✅ [COD] Successfully transitioned to ArrangingPayment state');
 
     // Refresh order to get latest state from server
     await orderController.getActiveOrder(skipLoading: true);
@@ -696,40 +770,40 @@ class _CheckoutPageState extends State<CheckoutPage> {
     // Verify order is in ArrangingPayment state before adding payment
     final currentOrder = orderController.currentOrder.value;
     if (currentOrder != null && currentOrder.state != 'ArrangingPayment') {
-// debugPrint('[Checkout] ⚠️ [COD] Order state mismatch - Current: ${currentOrder.state}, Expected: ArrangingPayment');
-// debugPrint('[Checkout] [COD] Order ID: ${currentOrder.id}, Order Code: ${currentOrder.code}');
-// debugPrint('[Checkout] [COD] Order Active: ${currentOrder.active}');
+debugPrint('[Checkout] ⚠️ [COD] Order state mismatch - Current: ${currentOrder.state}, Expected: ArrangingPayment');
+debugPrint('[Checkout] [COD] Order ID: ${currentOrder.id}, Order Code: ${currentOrder.code}');
+debugPrint('[Checkout] [COD] Order Active: ${currentOrder.active}');
       // Try refreshing one more time
       await orderController.getActiveOrder(skipLoading: true);
       await cartController.getActiveOrder();
       final refreshedOrder = orderController.currentOrder.value;
       if (refreshedOrder?.state != 'ArrangingPayment') {
-// debugPrint('[Checkout] ❌ [COD] Order state error after refresh - State: ${refreshedOrder?.state ?? "null"}, Expected: ArrangingPayment');
-// debugPrint('[Checkout] [COD] Refreshed Order ID: ${refreshedOrder?.id ?? "null"}, Order Code: ${refreshedOrder?.code ?? "null"}');
-// debugPrint('[Checkout] [COD] Refreshed Order Active: ${refreshedOrder?.active ?? "null"}');
-// debugPrint('[Checkout] [COD] Cart Order State: ${cartController.cart.value?.state ?? "null"}');
-// debugPrint('[Checkout] [COD] Transition result was: $transitioned');
+debugPrint('[Checkout] ❌ [COD] Order state error after refresh - State: ${refreshedOrder?.state ?? "null"}, Expected: ArrangingPayment');
+debugPrint('[Checkout] [COD] Refreshed Order ID: ${refreshedOrder?.id ?? "null"}, Order Code: ${refreshedOrder?.code ?? "null"}');
+debugPrint('[Checkout] [COD] Refreshed Order Active: ${refreshedOrder?.active ?? "null"}');
+debugPrint('[Checkout] [COD] Cart Order State: ${cartController.cart.value?.state ?? "null"}');
+debugPrint('[Checkout] [COD] Transition result was: $transitioned');
         showErrorSnackbar('Order state error. Please try again.');
         return;
       } else {
-// debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${refreshedOrder?.state ?? "null"}');
+debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${refreshedOrder?.state ?? "null"}');
       }
     }
 
-    // Add payment - offline payment: pass metadata with total, payment method, and payment id
+    // Add payment - offline payment: pass metadata with total, payment method, and transaction id
     final orderModel = orderController.currentOrder.value;
     final cartOrder = cartController.cart.value;
     
     // Calculate total from order model or cart
     int orderTotal = 0;
-    String? paymentId;
+    String? transactionId;
     
     if (orderModel != null) {
       orderTotal = orderModel.totalWithTax.toInt();
-      paymentId = orderModel.code.isNotEmpty ? orderModel.code : orderModel.id;
+      transactionId = orderModel.code.isNotEmpty ? orderModel.code : orderModel.id;
     } else if (cartOrder != null) {
       orderTotal = cartOrder.totalWithTax.toInt();
-      paymentId = cartOrder.code.isNotEmpty ? cartOrder.code : cartOrder.id;
+      transactionId = cartOrder.code.isNotEmpty ? cartOrder.code : cartOrder.id;
     }
     
     final shippingCost = cartController.hasFreeShippingCoupon()
@@ -743,7 +817,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       metadata: {
         'total': finalTotal.toString(),
         'payment_method': paymentMethod.code,
-        'payment_id': paymentId ?? 'N/A',
+        'transaction_id': transactionId ?? 'N/A',
       },
     );
 
@@ -788,20 +862,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   /// Apply loyalty points
   Future<void> _applyLoyaltyPoints() async {
-    final pointsText = _loyaltyPointsController.text.trim();
-    if (pointsText.isEmpty) {
-      showErrorSnackbar('Please enter loyalty points amount');
-      return;
-    }
+    final availablePoints = customerController.loyaltyPoints;
+    int points;
+    
+    // If "Apply All" is selected, use all available points
+    if (_applyAllPoints.value) {
+      points = availablePoints;
+    } else {
+      // Manual entry
+      final pointsText = _loyaltyPointsController.text.trim();
+      if (pointsText.isEmpty) {
+        showErrorSnackbar('Please enter loyalty points amount');
+        return;
+      }
 
-    final points = int.tryParse(pointsText);
-    if (points == null || points <= 0) {
-      showErrorSnackbar('Please enter a valid loyalty points amount');
-      return;
+      points = int.tryParse(pointsText) ?? 0;
+      if (points <= 0) {
+        showErrorSnackbar('Please enter a valid loyalty points amount');
+        return;
+      }
     }
 
     // Check if user has enough loyalty points available
-    final availablePoints = customerController.loyaltyPoints;
     if (points > availablePoints) {
       showErrorSnackbar(
           'Insufficient loyalty points! You have $availablePoints points available. Earn more points to apply loyalty points.');
@@ -818,6 +900,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     final success = await bannerController.applyLoyaltyPoints(points);
     if (success) {
+      // Update controller text with applied points
+      _loyaltyPointsController.text = points.toString();
+      // If applied all points, keep toggle on; otherwise turn it off
+      if (!_applyAllPoints.value) {
+        _applyAllPoints.value = false; // Keep manual mode
+      }
       showSuccessSnackbar('Loyalty points applied successfully');
       setState(() {}); // Refresh UI
     } else {
@@ -830,6 +918,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final success = await bannerController.removeLoyaltyPoints();
     if (success) {
       _loyaltyPointsController.clear();
+      _applyAllPoints.value = false; // Reset toggle
       showSuccessSnackbar('Loyalty points removed successfully');
       setState(() {}); // Refresh UI
     } else {
@@ -896,11 +985,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
             // Coupon codes list
             Expanded(
               child: Obx(() {
-/// debugPrint(  '[CheckoutPage] Bottom sheet - Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
-/// debugPrint(  '[CheckoutPage] Bottom sheet - Available coupons count: ${bannerController.availableCouponCodes.length}');
+debugPrint(  '[CheckoutPage] Bottom sheet - Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
+debugPrint(  '[CheckoutPage] Bottom sheet - Available coupons count: ${bannerController.availableCouponCodes.length}');
 
                 if (!bannerController.couponCodesLoaded.value) {
-/// debugPrint(  '[CheckoutPage] Bottom sheet - Showing loading indicator');
+debugPrint(  '[CheckoutPage] Bottom sheet - Showing loading indicator');
                   return Center(
                     child: CircularProgressIndicator(color: AppColors.button),
                   );
@@ -910,10 +999,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     .where((coupon) => coupon.enabled)
                     .toList();
 
-/// debugPrint(  '[CheckoutPage] Bottom sheet - Enabled coupons count: ${enabledCoupons.length}');
+debugPrint(  '[CheckoutPage] Bottom sheet - Enabled coupons count: ${enabledCoupons.length}');
 
                 if (enabledCoupons.isEmpty) {
-/// debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty state');
+debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty state');
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1205,11 +1294,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                             final hasProducts = bannerController
                                                 .hasCouponProducts(
                                                     coupon.couponCode);
-// debugPrint('[CheckoutPage] Coupon ${coupon.couponCode} has products: $hasProducts');
+debugPrint('[CheckoutPage] Coupon ${coupon.couponCode} has products: $hasProducts');
                                             
                                             if (hasProducts) {
                                               // Coupon has products to add
-// debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}');
+debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}');
                                               final result = await bannerController
                                                   .applyCouponCodeWithProducts(
                                                       coupon.couponCode);
@@ -1666,166 +1755,243 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Delivery Address',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(18),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              if (_selectedAddress != null)
-                TextButton(
-                  onPressed: () async {
-                    await Get.toNamed('/addresses');
-                    await _loadCustomerAddresses();
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        Obx(() {
+          final shouldBlink = _shouldBlinkAddress.value;
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Delivery Address',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(18),
+                    fontWeight: FontWeight.bold,
+                    color: shouldBlink && _selectedAddress == null
+                        ? AppColors.error
+                        : AppColors.textPrimary,
                   ),
-                  child: Text(
-                    'Change',
-                    style: TextStyle(
-                      color: AppColors.button,
-                      fontSize: ResponsiveUtils.sp(14),
-                      fontWeight: FontWeight.w600,
+                ),
+                if (_selectedAddress != null)
+                  TextButton(
+                    onPressed: () async {
+                      await Get.toNamed('/addresses');
+                      await _loadCustomerAddresses();
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      'Change',
+                      style: TextStyle(
+                        color: AppColors.button,
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        }),
         SizedBox(height: ResponsiveUtils.rp(16)),
         if (_selectedAddress == null)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-            child: Column(
-              children: [
-                Text(
-                  'No delivery address selected',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(14),
-                    color: AppColors.textSecondary,
-                  ),
+          Obx(() {
+            final shouldBlink = _shouldBlinkAddress.value;
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                padding: EdgeInsets.all(shouldBlink ? ResponsiveUtils.rp(4) : 0),
+                decoration: BoxDecoration(
+                  color: shouldBlink
+                      ? AppColors.error.withValues(alpha: 0.1)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  border: shouldBlink
+                      ? Border.all(
+                          color: AppColors.error.withValues(alpha: 0.5),
+                          width: 2,
+                        )
+                      : null,
                 ),
-                SizedBox(height: ResponsiveUtils.rp(12)),
-                ElevatedButton(
-                  onPressed: () async {
-                    await Get.toNamed('/addresses');
-                    await _loadCustomerAddresses();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.button,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveUtils.rp(24),
-                      vertical: ResponsiveUtils.rp(12),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                    ),
-                  ),
-                  child: Text('Add Address'),
-                ),
-              ],
-            ),
-          )
-        else
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _selectedAddress!.fullName,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(16),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(8)),
-                Text(
-                  '${_selectedAddress!.streetLine1}${_selectedAddress!.streetLine2.isNotEmpty ? ', ${_selectedAddress!.streetLine2}' : ''}, ${_selectedAddress!.city}${_selectedAddress!.province.isNotEmpty ? ', ${_selectedAddress!.province}' : ''}',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(14),
-                    color: AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(8)),
-                Row(
+                child: Column(
                   children: [
-                    Text(
-                      _selectedAddress!.phoneNumber,
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(14),
-                        color: AppColors.textSecondary,
+                    Container(
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                      decoration: BoxDecoration(
+                        color: shouldBlink
+                            ? AppColors.error.withValues(alpha: 0.15)
+                            : AppColors.buttonLight.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                        border: Border.all(
+                          color: shouldBlink
+                              ? AppColors.error.withValues(alpha: 0.8)
+                              : AppColors.button.withValues(alpha: 0.2),
+                          width: shouldBlink ? 2.5 : 1.5,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.location_off_outlined,
+                            size: ResponsiveUtils.rp(48),
+                            color: shouldBlink ? AppColors.error : AppColors.textSecondary,
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(12)),
+                          Text(
+                            'No delivery address selected',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(15),
+                              color: shouldBlink ? AppColors.error : AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(16)),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              await Get.toNamed('/addresses');
+                              await _loadCustomerAddresses();
+                            },
+                            icon: Icon(Icons.add_location_alt_rounded, size: ResponsiveUtils.rp(20)),
+                            label: Text('Add Address'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: shouldBlink ? AppColors.error : AppColors.button,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(24),
+                                vertical: ResponsiveUtils.rp(14),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                              ),
+                              elevation: shouldBlink ? 4 : 2,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    if (_selectedAddress!.defaultShippingAddress) ...[
-                      SizedBox(width: ResponsiveUtils.rp(12)),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(8),
-                          vertical: ResponsiveUtils.rp(4),
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.button.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
-                        ),
-                        child: Text(
-                          'Default',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(12),
-                            color: AppColors.button,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          })
+        else
+          Obx(() {
+            final shouldBlink = _shouldBlinkAddress.value;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              padding: EdgeInsets.all(shouldBlink ? ResponsiveUtils.rp(4) : 0),
+              decoration: BoxDecoration(
+                color: shouldBlink
+                    ? AppColors.error.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                border: shouldBlink
+                    ? Border.all(
+                        color: AppColors.error.withValues(alpha: 0.5),
+                        width: 2,
+                      )
+                    : null,
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+                child: Container(
+                  padding: EdgeInsets.all(shouldBlink ? ResponsiveUtils.rp(16) : 0),
+                  decoration: BoxDecoration(
+                    color: shouldBlink
+                        ? AppColors.error.withValues(alpha: 0.15)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    border: shouldBlink
+                        ? Border.all(
+                            color: AppColors.error.withValues(alpha: 0.8),
+                            width: 2.5,
+                          )
+                        : null,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _selectedAddress!.fullName,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(16),
+                          fontWeight: FontWeight.w600,
+                          color: shouldBlink ? AppColors.error : AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(8)),
+                      Text(
+                        '${_selectedAddress!.streetLine1}${_selectedAddress!.streetLine2.isNotEmpty ? ', ${_selectedAddress!.streetLine2}' : ''}, ${_selectedAddress!.city}${_selectedAddress!.province.isNotEmpty ? ', ${_selectedAddress!.province}' : ''}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(14),
+                          color: shouldBlink ? AppColors.error : AppColors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(8)),
+                      Row(
+                        children: [
+                          Text(
+                            _selectedAddress!.phoneNumber,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              color: shouldBlink ? AppColors.error : AppColors.textSecondary,
+                            ),
+                          ),
+                          if (_selectedAddress!.defaultShippingAddress) ...[
+                            SizedBox(width: ResponsiveUtils.rp(12)),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(8),
+                                vertical: ResponsiveUtils.rp(4),
+                              ),
+                              decoration: BoxDecoration(
+                                color: shouldBlink
+                                    ? AppColors.error.withValues(alpha: 0.2)
+                                    : AppColors.button.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
+                              ),
+                              child: Text(
+                                'Default',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(12),
+                                  color: shouldBlink ? AppColors.error : AppColors.button,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
       ],
     );
   }
 
   Widget _buildPaymentMethodSection() {
-    return Obx(() {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-            child: Text(
-              'Payment Method',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(18),
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: ResponsiveUtils.rp(16)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+          child: CheckoutPaymentSection(
+            orderController: orderController,
           ),
-          SizedBox(height: ResponsiveUtils.rp(16)),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-            child: CheckoutPaymentSection(
-              orderController: orderController,
-            ),
-          ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
   }
 
   // ignore: unused_element
@@ -1865,62 +2031,73 @@ class _CheckoutPageState extends State<CheckoutPage> {
   // ignore: unused_element
   Widget _buildAddressCard() {
     if (_selectedAddress == null) {
-      return _buildSectionCard(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
-              decoration: BoxDecoration(
-                color: AppColors.buttonLight.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                border: Border.all(
-                  color: AppColors.button.withValues(alpha: 0.2),
-                  width: 1.5,
+      return Obx(() {
+        final shouldBlink = _shouldBlinkAddress.value;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+          child: _buildSectionCard(
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                  decoration: BoxDecoration(
+                    color: shouldBlink
+                        ? AppColors.error.withValues(alpha: 0.15)
+                        : AppColors.buttonLight.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    border: Border.all(
+                      color: shouldBlink
+                          ? AppColors.error.withValues(alpha: 0.8)
+                          : AppColors.button.withValues(alpha: 0.2),
+                      width: shouldBlink ? 2.5 : 1.5,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.location_off_outlined,
+                        size: ResponsiveUtils.rp(48),
+                        color: shouldBlink ? AppColors.error : AppColors.textSecondary,
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(12)),
+                      Text(
+                        'No delivery address selected',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(15),
+                          color: shouldBlink ? AppColors.error : AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(16)),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await Get.toNamed('/addresses');
+                          await _loadCustomerAddresses();
+                        },
+                        icon: Icon(Icons.add_location_alt_rounded, size: ResponsiveUtils.rp(20)),
+                        label: Text('Add Address'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: shouldBlink ? AppColors.error : AppColors.button,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(24),
+                            vertical: ResponsiveUtils.rp(14),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          ),
+                          elevation: shouldBlink ? 4 : 2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.location_off_outlined,
-                    size: ResponsiveUtils.rp(48),
-                    color: AppColors.textSecondary,
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  Text(
-                    'No delivery address selected',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(15),
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(16)),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      await Get.toNamed('/addresses');
-                      await _loadCustomerAddresses();
-                    },
-                    icon: Icon(Icons.add_location_alt_rounded, size: ResponsiveUtils.rp(20)),
-                    label: Text('Add Address'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.button,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.rp(24),
-                        vertical: ResponsiveUtils.rp(14),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                      ),
-                      elevation: 2,
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
-          ],
-        ),
-      );
+          ),
+        );
+      });
     }
 
     return _buildSectionCard(
@@ -2071,6 +2248,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
       final cart = cartController.cart.value;
       final total = cart?.totalWithTax ?? 0;
 
+      // Check for out of stock items
+      final hasOutOfStockItems = cart?.lines.any((line) {
+        final stockLevel = line.productVariant.stockLevel?.toUpperCase();
+        final isLowStock = stockLevel == 'LOW_STOCK';
+        final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
+        final isProductDisabled = line.productVariant.productEnabled == false;
+        return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
+      }) ?? false;
+
+      // Get eligible coupons
+      final subTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
+      final eligibleCoupons = bannerController.getEligibleCoupons(subTotal);
+
       return Container(
         padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
         decoration: BoxDecoration(
@@ -2085,63 +2275,164 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         child: SafeArea(
           top: false,
-          child: isLoading
-              ? Container(
-                  height: ResponsiveUtils.rp(60),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Out of stock banner (if applicable)
+              if (hasOutOfStockItems) ...[
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                  margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-                    color: AppColors.inputBorder,
-                  ),
-                  child: Center(
-                    child: SizedBox(
-                      width: ResponsiveUtils.rp(24),
-                      height: ResponsiveUtils.rp(24),
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                    border: Border.all(
+                      color: AppColors.error.withValues(alpha: 0.3),
                     ),
                   ),
-                )
-              : SlideAction(
-                  key: _slideActionKey,
-                  height: ResponsiveUtils.rp(60),
-                  borderRadius: ResponsiveUtils.rp(16),
-                  innerColor: Colors.white,
-                  outerColor: isEnabled
-                      ? AppColors.button
-                      : AppColors.inputBorder,
-                  text: isEnabled && total > 0
-                      ? 'Place Order - ₹${(total / 100).toStringAsFixed(2)}'
-                      : 'Place Order',
-                  textStyle: TextStyle(
-                    fontSize: ResponsiveUtils.sp(16),
-                    fontWeight: FontWeight.bold,
-                    color: isEnabled ? Colors.white : AppColors.textSecondary,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.warning_rounded,
+                        color: AppColors.error,
+                        size: ResponsiveUtils.rp(20),
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(8)),
+                      Expanded(
+                        child: Text(
+                          'Some items are out of stock. Please remove them to proceed.',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(12),
+                            color: AppColors.error,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  sliderButtonIcon: Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: isEnabled ? AppColors.button : AppColors.textSecondary,
-                    size: ResponsiveUtils.rp(20),
-                  ),
-                  sliderButtonIconPadding: ResponsiveUtils.rp(12),
-                  submittedIcon: Icon(
-                    Icons.check_circle_rounded,
-                    color: Colors.white,
-                    size: ResponsiveUtils.rp(20),
-                  ),
-                  onSubmit: () {
-                    if (!isLoading && isEnabled) {
-                      _onPlaceOrder();
-                      // Reset the slider after a delay
-                      Future.delayed(
-                        const Duration(milliseconds: 1000),
-                        () => _slideActionKey.currentState?.reset(),
-                      );
-                    }
-                    return null;
-                  },
                 ),
+              ],
+
+              // Amount to apply coupon code section
+              if (!hasOutOfStockItems && eligibleCoupons.isNotEmpty) ...[
+                Obx(() {
+                  final coupon = eligibleCoupons.first;
+                  final requiredAmount = bannerController.getRequiredAmount(coupon);
+                  final currentSubTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
+                  final difference = requiredAmount - currentSubTotal;
+
+                  if (difference > 0) {
+                    final differenceInRupees = difference / 100;
+                    return Container(
+                    
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF1a1a2e), // Dark blue-gray
+                            const Color(0xFF16213e), // Darker blue
+                            const Color(0xFF0f3460), // Deep blue
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: ResponsiveUtils.rp(8),
+                            offset: Offset(0, ResponsiveUtils.rp(4)),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.local_offer_rounded,
+                            color: Colors.white,
+                            size: ResponsiveUtils.rp(18),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Add ₹${differenceInRupees.toStringAsFixed(2)} more to unlock coupon \'${coupon.couponCode}\'',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                              
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return SizedBox.shrink();
+                }),
+              ],
+
+              // Place Order Button
+              isLoading
+                  ? Container(
+                      height: ResponsiveUtils.rp(60),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                        color: AppColors.inputBorder,
+                      ),
+                      child: Center(
+                        child: SizedBox(
+                          width: ResponsiveUtils.rp(24),
+                          height: ResponsiveUtils.rp(24),
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      ),
+                    )
+                  : SlideAction(
+                      key: _slideActionKey,
+                      height: ResponsiveUtils.rp(60),
+                      borderRadius: ResponsiveUtils.rp(16),
+                      innerColor: Colors.white,
+                      outerColor: isEnabled
+                          ? AppColors.button
+                          : AppColors.inputBorder,
+                      text: isEnabled && total > 0
+                          ? 'Place Order - ₹${(total / 100).toStringAsFixed(2)}'
+                          : 'Place Order',
+                      textStyle: TextStyle(
+                        fontSize: ResponsiveUtils.sp(16),
+                        fontWeight: FontWeight.bold,
+                        color: isEnabled ? Colors.white : AppColors.textSecondary,
+                      ),
+                      sliderButtonIcon: Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: isEnabled ? AppColors.button : AppColors.textSecondary,
+                        size: ResponsiveUtils.rp(20),
+                      ),
+                      sliderButtonIconPadding: ResponsiveUtils.rp(12),
+                      submittedIcon: Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                        size: ResponsiveUtils.rp(20),
+                      ),
+                      onSubmit: () {
+                        if (!isLoading && isEnabled) {
+                          _onPlaceOrder();
+                          // Reset the slider after a delay
+                          Future.delayed(
+                            const Duration(milliseconds: 1000),
+                            () => _slideActionKey.currentState?.reset(),
+                          );
+                        }
+                        return null;
+                      },
+                    ),
+            ],
+          ),
         ),
       );
     });
@@ -2538,6 +2829,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           Obx(() {
             final isApplied = bannerController.loyaltyPointsApplied.value;
             final appliedPoints = bannerController.loyaltyPointsUsed.value;
+            final availablePoints = customerController.loyaltyPoints;
             
             // Update controller text when points are applied
             if (isApplied && _loyaltyPointsController.text != appliedPoints.toString()) {
@@ -2546,117 +2838,215 @@ class _CheckoutPageState extends State<CheckoutPage> {
               });
             }
             
-            return Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _loyaltyPointsController,
-                        keyboardType: TextInputType.number,
-                        enabled: !isApplied, // Disable when applied
-                        style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(14),
-                            color: isApplied 
-                                ? AppColors.success 
-                                : AppColors.textPrimary),
-                        decoration: InputDecoration(
-                          hintText: isApplied 
-                              ? 'Applied: $appliedPoints points' 
-                              : 'Enter points',
-                          hintStyle: TextStyle(
-                              color: isApplied 
-                                  ? AppColors.success 
-                                  : AppColors.textTertiary,
-                              fontSize: ResponsiveUtils.sp(14)),
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(ResponsiveUtils.rp(8)),
-                              borderSide: BorderSide(
-                                color: isApplied 
-                                    ? AppColors.success 
-                                    : AppColors.border,
-                              )),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(ResponsiveUtils.rp(8)),
-                              borderSide: BorderSide(
-                                color: isApplied 
-                                    ? AppColors.success 
-                                    : AppColors.border,
-                              )),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(ResponsiveUtils.rp(8)),
-                              borderSide: BorderSide(
-                                color: isApplied 
-                                    ? AppColors.success 
-                                    : AppColors.button,
-                                width: 2,
-                              )),
-                          filled: true,
-                          fillColor: isApplied 
-                              ? AppColors.success.withOpacity(0.1)
-                              : AppColors.inputFill,
-                          suffixIcon: isApplied
-                              ? Icon(
-                                  Icons.check_circle,
-                                  color: AppColors.success,
-                                  size: ResponsiveUtils.rp(20),
-                                )
-                              : null,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: ResponsiveUtils.rp(8)),
-                    ElevatedButton(
-                      onPressed: isApplied ? _removeLoyaltyPoints : _applyLoyaltyPoints,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isApplied 
-                            ? AppColors.error 
-                            : AppColors.button,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: ResponsiveUtils.rp(16),
-                            vertical: ResponsiveUtils.rp(12)),
-                      ),
-                      child: Text(isApplied ? 'Remove' : 'Apply'),
-                    ),
-                  ],
-                ),
-                if (isApplied) ...[
-                  SizedBox(height: ResponsiveUtils.rp(8)),
+            // If applied, show applied state with remove toggle
+            if (isApplied) {
+              return Column(
+                children: [
                   Container(
-                    padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
                     decoration: BoxDecoration(
                       color: AppColors.success.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                       border: Border.all(
                         color: AppColors.success.withOpacity(0.3),
+                        width: 2,
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: AppColors.success,
-                              size: ResponsiveUtils.rp(18),
-                            ),
-                            SizedBox(width: ResponsiveUtils.rp(8)),
-                            Text(
-                              'Applied: $appliedPoints points',
-                              style: TextStyle(
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
                                   color: AppColors.success,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: ResponsiveUtils.sp(14)),
+                                  size: ResponsiveUtils.rp(24),
+                                ),
+                                SizedBox(width: ResponsiveUtils.rp(12)),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Applied Points',
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: ResponsiveUtils.sp(12),
+                                      ),
+                                    ),
+                                    SizedBox(height: ResponsiveUtils.rp(4)),
+                                    Text(
+                                      '$appliedPoints points',
+                                      style: TextStyle(
+                                        color: AppColors.success,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: ResponsiveUtils.sp(18),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Obx(() => Switch(
+                              value: true, // Always true when applied
+                              onChanged: (value) {
+                                // When toggled off, remove points
+                                if (!value) {
+                                  _removeLoyaltyPoints();
+                                }
+                              },
+                              activeColor: AppColors.success,
+                            )),
+                          ],
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(12)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton.icon(
+                              onPressed: _removeLoyaltyPoints,
+                              icon: Icon(
+                                Icons.remove_circle_outline,
+                                color: AppColors.error,
+                                size: ResponsiveUtils.rp(18),
+                              ),
+                              label: Text(
+                                'Remove Points',
+                                style: TextStyle(
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: ResponsiveUtils.sp(14),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
+                  ),
+                ],
+              );
+            }
+            
+            // Not applied - show apply options
+            return Column(
+              children: [
+                // Toggle for Apply All vs Manual
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                  decoration: BoxDecoration(
+                    color: AppColors.inputFill,
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                    border: Border.all(
+                      color: AppColors.border,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.stars,
+                            color: AppColors.button,
+                            size: ResponsiveUtils.rp(20),
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(12)),
+                          Text(
+                            'Apply All Points',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(8)),
+                          Text(
+                            '($availablePoints points)',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(12),
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Obx(() => Switch(
+                        value: _applyAllPoints.value,
+                        onChanged: (value) {
+                          _applyAllPoints.value = value;
+                          if (value) {
+                            // Auto-apply all points when toggle is turned on
+                            final availablePoints = customerController.loyaltyPoints;
+                            _loyaltyPointsController.text = availablePoints.toString();
+                            _applyLoyaltyPoints();
+                          } else {
+                            // Clear text field when switching to manual
+                            _loyaltyPointsController.clear();
+                          }
+                        },
+                        activeColor: AppColors.button,
+                      )),
+                    ],
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(12)),
+                // Manual entry field (only show when not applying all)
+                if (!_applyAllPoints.value) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _loyaltyPointsController,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            color: AppColors.textPrimary,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Enter points manually',
+                            hintStyle: TextStyle(
+                              color: AppColors.textTertiary,
+                              fontSize: ResponsiveUtils.sp(14),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                              borderSide: BorderSide(
+                                color: AppColors.border,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                              borderSide: BorderSide(
+                                color: AppColors.border,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                              borderSide: BorderSide(
+                                color: AppColors.button,
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: AppColors.inputFill,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(8)),
+                      ElevatedButton(
+                        onPressed: _applyLoyaltyPoints,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.button,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(16),
+                            vertical: ResponsiveUtils.rp(12),
+                          ),
+                        ),
+                        child: Text('Apply'),
+                      ),
+                    ],
                   ),
                 ],
               ],

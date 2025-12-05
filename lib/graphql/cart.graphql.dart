@@ -1264,19 +1264,12 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
       directives: [],
       selectionSet: SelectionSetNode(selections: [
         FieldNode(
-          name: NameNode(value: 'clientRequestToCancel'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
-        ),
-        FieldNode(
           name: NameNode(value: '__typename'),
           alias: null,
           arguments: [],
           directives: [],
           selectionSet: null,
-        ),
+        )
       ]),
     ),
     FieldNode(
@@ -4149,28 +4142,17 @@ class _CopyWithStubImpl$Fragment$Cart$discounts<TRes>
 }
 
 class Fragment$Cart$customFields {
-  Fragment$Cart$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Fragment$Cart$customFields({this.$__typename = 'OrderCustomFields'});
 
   factory Fragment$Cart$customFields.fromJson(Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
-    return Fragment$Cart$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+    return Fragment$Cart$customFields($__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -4178,12 +4160,8 @@ class Fragment$Cart$customFields {
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -4193,11 +4171,6 @@ class Fragment$Cart$customFields {
     }
     if (other is! Fragment$Cart$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -4227,10 +4200,7 @@ abstract class CopyWith$Fragment$Cart$customFields<TRes> {
   factory CopyWith$Fragment$Cart$customFields.stub(TRes res) =
       _CopyWithStubImpl$Fragment$Cart$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Fragment$Cart$customFields<TRes>
@@ -4246,18 +4216,11 @@ class _CopyWithImpl$Fragment$Cart$customFields<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Fragment$Cart$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+  TRes call({Object? $__typename = _undefined}) => _then(
+      Fragment$Cart$customFields(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
@@ -4266,11 +4229,7 @@ class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Fragment$Asset {
@@ -16210,29 +16169,20 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$discounts<TRes>
 
 class Mutation$AddToCart$addItemToOrder$$Order$customFields
     implements Fragment$Cart$customFields {
-  Mutation$AddToCart$addItemToOrder$$Order$customFields({
-    this.clientRequestToCancel,
-    this.$__typename = 'OrderCustomFields',
-  });
+  Mutation$AddToCart$addItemToOrder$$Order$customFields(
+      {this.$__typename = 'OrderCustomFields'});
 
   factory Mutation$AddToCart$addItemToOrder$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Mutation$AddToCart$addItemToOrder$$Order$customFields(
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
-      $__typename: (l$$__typename as String),
-    );
+        $__typename: (l$$__typename as String));
   }
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -16240,12 +16190,8 @@ class Mutation$AddToCart$addItemToOrder$$Order$customFields
 
   @override
   int get hashCode {
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$clientRequestToCancel,
-      l$$__typename,
-    ]);
+    return Object.hashAll([l$$__typename]);
   }
 
   @override
@@ -16255,11 +16201,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$customFields
     }
     if (other is! Mutation$AddToCart$addItemToOrder$$Order$customFields ||
         runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -16293,10 +16234,7 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<
           TRes res) =
       _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields;
 
-  TRes call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  });
+  TRes call({String? $__typename});
 }
 
 class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
@@ -16314,18 +16252,11 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({
-    Object? clientRequestToCancel = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
+  TRes call({Object? $__typename = _undefined}) =>
       _then(Mutation$AddToCart$addItemToOrder$$Order$customFields(
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
 }
 
 class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<
@@ -16337,11 +16268,7 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<
 
   TRes _res;
 
-  call({
-    int? clientRequestToCancel,
-    String? $__typename,
-  }) =>
-      _res;
+  call({String? $__typename}) => _res;
 }
 
 class Mutation$AddToCart$addItemToOrder$$OrderModificationError

@@ -3,7 +3,7 @@ import '../../graphql/product.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import 'Collectionmodel.dart';
-
+import 'package:flutter/foundation.dart';
 class CollectionsController extends GetxController {
   RxList<Collection> allCollections = <Collection>[].obs;
   RxList<Product> allProducts = <Product>[].obs;
@@ -24,17 +24,17 @@ class CollectionsController extends GetxController {
   Future<bool> fetchAllCollections({bool force = false}) async {
     // Prevent multiple simultaneous fetches
     if (_isFetching) {
-// debugPrint('[Collection] Already fetching, skipping duplicate request');
+debugPrint('[Collection] Already fetching, skipping duplicate request');
       return false;
     }
 
     // Don't fetch again if we already have collections (unless forced)
     if (!force && allCollections.isNotEmpty) {
-// debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
+debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
       return true;
     }
 
-// debugPrint('[Collection] Starting fetchAllCollections...');
+debugPrint('[Collection] Starting fetchAllCollections...');
     _isFetching = true;
 
     utilityController.setLoadingState(true);
@@ -47,7 +47,7 @@ class CollectionsController extends GetxController {
       );
 
       if (response.hasException) {
-/// debugPrint(  '[Collection] GraphQL Exception: ${response.exception.toString()}');
+debugPrint(  '[Collection] GraphQL Exception: ${response.exception.toString()}');
         return false;
       }
 
@@ -89,27 +89,26 @@ class CollectionsController extends GetxController {
         });
         
         allCollections.value = collections;
-// debugPrint('[Collection] Loaded ${allCollections.length} collections');
+debugPrint('[Collection] Loaded ${allCollections.length} collections');
       } else {
-// debugPrint('[Collection] No collections found');
+debugPrint('[Collection] No collections found');
       }
 
       return true;
     } catch (e) {
-// debugPrint('[Collection] Exception fetching collections: $e');
-// debugPrint('[Collection] Stacktrace: $stacktrace');
+debugPrint('[Collection] Exception fetching collections: $e');
       return false;
     } finally {
       _isFetching = false;
       utilityController.setLoadingState(false);
-// debugPrint('[Collection] fetchAllCollections finished.');
+debugPrint('[Collection] fetchAllCollections finished.');
     }
   }
 
 
   Future<bool> fetchCollectionproducts({String? slug, String? id}) async {
-// debugPrint('=== [Collection] fetchCollectionproducts START ===');
-// debugPrint('[Collection] Parameters: slug="$slug", id="$id"');
+debugPrint('=== [Collection] fetchCollectionproducts START ===');
+debugPrint('[Collection] Parameters: slug="$slug", id="$id"');
 
     // Clear previous data before loading new collection
     currentCollection.value = null;
@@ -127,7 +126,7 @@ class CollectionsController extends GetxController {
       );
 
       if (response.hasException) {
-// debugPrint('⚠️ [Collection] GraphQL Exception: ${response.exception}');
+debugPrint('⚠️ [Collection] GraphQL Exception: ${response.exception}');
         return false;
       }
 
@@ -135,10 +134,10 @@ class CollectionsController extends GetxController {
 
       if (collectionData != null) {
         currentCollection.value = Collection.fromJson(collectionData.toJson());
-// debugPrint('✅ [Collection] Loaded Collection: ${currentCollection.value?.name}');
+debugPrint('✅ [Collection] Loaded Collection: ${currentCollection.value?.name}');
 
         final productItems = collectionData.productVariants.items;
-// debugPrint('📦 Product Variants count: ${productItems.length}');
+debugPrint('📦 Product Variants count: ${productItems.length}');
 
         // Filter unique products by product.id and group variants
         final loggedProductIds = <String>{};
@@ -160,21 +159,20 @@ class CollectionsController extends GetxController {
             loggedProductIds.add(productId);
             uniqueProductVariants.add(item); // Store the first variant
             selectedVariantIdByProductId[productId] = item.id;
-// debugPrint('• Product: ${product.name} | ID: ${productId} | Variants: ${variantsByProductId[productId]!.length}');
+debugPrint('• Product: ${product.name} | ID: ${productId} | Variants: ${variantsByProductId[productId]!.length}');
           }
         }
       } else {
-// debugPrint('⚠️ [Collection] No collection found for slug="$slug" id="$id"');
+debugPrint('⚠️ [Collection] No collection found for slug="$slug" id="$id"');
       }
 
       return true;
     } catch (e) {
-// debugPrint('❌ [Collection] Exception: $e');
-// debugPrint('❌ [Collection] Stacktrace: $stacktrace');
+debugPrint('❌ [Collection] Exception: $e');
       return false;
     } finally {
       utilityController.setLoadingState(false);
-// debugPrint('=== [Collection] fetchCollectionproducts END ===');
+debugPrint('=== [Collection] fetchCollectionproducts END ===');
     }
   }
 

@@ -12,7 +12,7 @@ class RemoteConfigService extends GetxController {
   /// Initialize Firebase Remote Config
   Future<void> initialize() async {
     if (kIsWeb) {
-// debugPrint('[RemoteConfig] Skipping initialization on Web');
+debugPrint('[RemoteConfig] Skipping initialization on Web');
       return;
     }
 
@@ -36,10 +36,10 @@ class RemoteConfigService extends GetxController {
       // Load shipping ticker text
       await _loadShippingTickerText();
       
-// debugPrint('[RemoteConfig] Initialized successfully');
-// debugPrint('[RemoteConfig] Shipping ticker text: ${shippingTickerText.value}');
+debugPrint('[RemoteConfig] Initialized successfully');
+debugPrint('[RemoteConfig] Shipping ticker text: ${shippingTickerText.value}');
     } catch (e, stackTrace) {
-// debugPrint('[RemoteConfig] Initialization error: $e');
+debugPrint('[RemoteConfig] Initialization error: $e');
       CrashlyticsService.instance.recordError(
         e,
         stackTrace,
@@ -56,13 +56,13 @@ class RemoteConfigService extends GetxController {
       final text = _remoteConfig!.getString('shipping_ticker_text');
       if (text.isNotEmpty) {
         shippingTickerText.value = text;
-// debugPrint('[RemoteConfig] Loaded shipping ticker text: $text');
+debugPrint('[RemoteConfig] Loaded shipping ticker text: $text');
       } else {
         shippingTickerText.value = '';
-// debugPrint('[RemoteConfig] Shipping ticker text is empty');
+debugPrint('[RemoteConfig] Shipping ticker text is empty');
       }
     } catch (e, stackTrace) {
-// debugPrint('[RemoteConfig] Error loading shipping ticker text: $e');
+debugPrint('[RemoteConfig] Error loading shipping ticker text: $e');
       CrashlyticsService.instance.recordError(
         e,
         stackTrace,
@@ -81,12 +81,12 @@ class RemoteConfigService extends GetxController {
       
       if (updated) {
         await _loadShippingTickerText();
-// debugPrint('[RemoteConfig] Config updated successfully');
+debugPrint('[RemoteConfig] Config updated successfully');
       } else {
-// debugPrint('[RemoteConfig] No config updates available');
+debugPrint('[RemoteConfig] No config updates available');
       }
     } catch (e, stackTrace) {
-// debugPrint('[RemoteConfig] Error fetching config: $e');
+debugPrint('[RemoteConfig] Error fetching config: $e');
       CrashlyticsService.instance.recordError(
         e,
         stackTrace,

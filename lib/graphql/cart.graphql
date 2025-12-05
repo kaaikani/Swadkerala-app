@@ -133,7 +133,7 @@ fragment Cart on Order {
         __typename
     }
     customFields {
-        clientRequestToCancel
+
     }
     __typename
 }

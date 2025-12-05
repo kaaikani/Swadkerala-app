@@ -22,9 +22,9 @@ class AnalyticsService {
         'platform': defaultTargetPlatform.toString(),
       });
 
-// debugPrint('[Analytics] ✅ Google Analytics initialized successfully');
+debugPrint('[Analytics] ✅ Google Analytics initialized successfully');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error initializing analytics: $e');
+debugPrint('[Analytics] ❌ Error initializing analytics: $e');
     }
   }
 
@@ -45,9 +45,9 @@ class AnalyticsService {
         screenClass: screenClass ?? screenName,
         parameters: parameters,
       );
-// debugPrint('[Analytics] 📊 Screen view: $screenName');
+debugPrint('[Analytics] 📊 Screen view: $screenName');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging screen view: $e');
+debugPrint('[Analytics] ❌ Error logging screen view: $e');
     }
   }
 
@@ -63,9 +63,9 @@ class AnalyticsService {
         name: name,
         parameters: parameters,
       );
-// debugPrint('[Analytics] 📊 Event: $name');
+debugPrint('[Analytics] 📊 Event: $name');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging event: $e');
+debugPrint('[Analytics] ❌ Error logging event: $e');
     }
   }
 
@@ -75,9 +75,9 @@ class AnalyticsService {
       if (_analytics == null) return;
 
       await _analytics!.logLogin(loginMethod: loginMethod ?? 'unknown');
-// debugPrint('[Analytics] 📊 Login: ${loginMethod ?? 'unknown'}');
+debugPrint('[Analytics] 📊 Login: ${loginMethod ?? 'unknown'}');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging login: $e');
+debugPrint('[Analytics] ❌ Error logging login: $e');
     }
   }
 
@@ -87,9 +87,9 @@ class AnalyticsService {
       if (_analytics == null) return;
 
       await _analytics!.logSignUp(signUpMethod: signUpMethod ?? 'unknown');
-// debugPrint('[Analytics] 📊 Sign up: ${signUpMethod ?? 'unknown'}');
+debugPrint('[Analytics] 📊 Sign up: ${signUpMethod ?? 'unknown'}');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging sign up: $e');
+debugPrint('[Analytics] ❌ Error logging sign up: $e');
     }
   }
 
@@ -118,9 +118,9 @@ class AnalyticsService {
           ),
         ],
       );
-// debugPrint('[Analytics] 📊 Add to cart: $itemName');
+debugPrint('[Analytics] 📊 Add to cart: $itemName');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging add to cart: $e');
+debugPrint('[Analytics] ❌ Error logging add to cart: $e');
     }
   }
 
@@ -149,9 +149,9 @@ class AnalyticsService {
           ),
         ],
       );
-// debugPrint('[Analytics] 📊 Remove from cart: $itemName');
+debugPrint('[Analytics] 📊 Remove from cart: $itemName');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging remove from cart: $e');
+debugPrint('[Analytics] ❌ Error logging remove from cart: $e');
     }
   }
 
@@ -169,9 +169,9 @@ class AnalyticsService {
         currency: currency,
         items: items,
       );
-// debugPrint('[Analytics] 📊 Begin checkout: $value $currency');
+debugPrint('[Analytics] 📊 Begin checkout: $value $currency');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging begin checkout: $e');
+debugPrint('[Analytics] ❌ Error logging begin checkout: $e');
     }
   }
 
@@ -193,9 +193,9 @@ class AnalyticsService {
         items: items,
         parameters: parameters,
       );
-// debugPrint('[Analytics] 📊 Purchase: $transactionId');
+debugPrint('[Analytics] 📊 Purchase: $transactionId');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging purchase: $e');
+debugPrint('[Analytics] ❌ Error logging purchase: $e');
     }
   }
 
@@ -207,9 +207,9 @@ class AnalyticsService {
       if (_analytics == null) return;
 
       await _analytics!.logSearch(searchTerm: searchTerm);
-// debugPrint('[Analytics] 📊 Search: $searchTerm');
+debugPrint('[Analytics] 📊 Search: $searchTerm');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging search: $e');
+debugPrint('[Analytics] ❌ Error logging search: $e');
     }
   }
 
@@ -236,9 +236,9 @@ class AnalyticsService {
           ),
         ],
       );
-// debugPrint('[Analytics] 📊 View item: $itemName');
+debugPrint('[Analytics] 📊 View item: $itemName');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging view item: $e');
+debugPrint('[Analytics] ❌ Error logging view item: $e');
     }
   }
 
@@ -265,9 +265,9 @@ class AnalyticsService {
           ),
         ],
       );
-// debugPrint('[Analytics] 📊 Add to wishlist: $itemName');
+debugPrint('[Analytics] 📊 Add to wishlist: $itemName');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging add to wishlist: $e');
+debugPrint('[Analytics] ❌ Error logging add to wishlist: $e');
     }
   }
 
@@ -290,9 +290,9 @@ class AnalyticsService {
           'currency': currency,
         },
       );
-// debugPrint('[Analytics] 📊 Apply coupon: $couponCode');
+debugPrint('[Analytics] 📊 Apply coupon: $couponCode');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error logging apply coupon: $e');
+debugPrint('[Analytics] ❌ Error logging apply coupon: $e');
     }
   }
 
@@ -305,9 +305,9 @@ class AnalyticsService {
       if (_analytics == null) return;
 
       await _analytics!.setUserProperty(name: name, value: value);
-// debugPrint('[Analytics] 📊 User property: $name = $value');
+debugPrint('[Analytics] 📊 User property: $name = $value');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error setting user property: $e');
+debugPrint('[Analytics] ❌ Error setting user property: $e');
     }
   }
 
@@ -317,9 +317,9 @@ class AnalyticsService {
       if (_analytics == null) return;
 
       await _analytics!.setUserId(id: userId);
-// debugPrint('[Analytics] 📊 User ID: $userId');
+debugPrint('[Analytics] 📊 User ID: $userId');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error setting user ID: $e');
+debugPrint('[Analytics] ❌ Error setting user ID: $e');
     }
   }
 
@@ -330,9 +330,9 @@ class AnalyticsService {
 
       await _analytics!.resetAnalyticsData();
       await _analytics!.setUserId(id: null);
-// debugPrint('[Analytics] 📊 Analytics data reset');
+debugPrint('[Analytics] 📊 Analytics data reset');
     } catch (e) {
-// debugPrint('[Analytics] ❌ Error resetting analytics: $e');
+debugPrint('[Analytics] ❌ Error resetting analytics: $e');
     }
   }
 }

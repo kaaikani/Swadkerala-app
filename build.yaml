@@ -5,7 +5,7 @@ targets:
         options:
           schema:
             - lib/graphql/schema.graphql
-            - https://kaaikani.co.in/shop-api
+            - https://demo.htagbilling.com/shop-api
           output_dir: lib/generated
           documents:
             - lib/graphql/**/*.graphql   # This will include authenticate.graphql

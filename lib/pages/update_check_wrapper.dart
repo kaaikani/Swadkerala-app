@@ -28,11 +28,11 @@ class _UpdateCheckWrapperState extends State<UpdateCheckWrapper> {
     try {
       final updateService = InAppUpdateService();
 
-/// debugPrint(  '[UpdateCheckWrapper] isImmediateUpdateEnabled: ${updateService.isImmediateUpdateEnabled}');
+debugPrint(  '[UpdateCheckWrapper] isImmediateUpdateEnabled: ${updateService.isImmediateUpdateEnabled}');
 
       // Check Play Store for updates when immediate update is enabled
       if (updateService.isImmediateUpdateEnabled) {
-/// debugPrint(  '[UpdateCheckWrapper] Update required - showing update screen...');
+debugPrint(  '[UpdateCheckWrapper] Update required - showing update screen...');
 
         // ALWAYS show update screen when update is required
         if (mounted) {
@@ -46,13 +46,13 @@ class _UpdateCheckWrapperState extends State<UpdateCheckWrapper> {
         try {
           // final updateAvailable = await updateService.checkForUpdate(); // Unused variable
           await updateService.checkForUpdate();
-/// debugPrint(  '[UpdateCheckWrapper] Play Store check completed');
+debugPrint(  '[UpdateCheckWrapper] Play Store check completed');
         } catch (e) {
-// debugPrint('[UpdateCheckWrapper] Play Store check failed: $e');
-/// debugPrint(  '[UpdateCheckWrapper] This may happen if app is not installed from Play Store');
+debugPrint('[UpdateCheckWrapper] Play Store check failed: $e');
+debugPrint(  '[UpdateCheckWrapper] This may happen if app is not installed from Play Store');
         }
       } else {
-/// debugPrint(  '[UpdateCheckWrapper] No update required - proceeding to login');
+debugPrint(  '[UpdateCheckWrapper] No update required - proceeding to login');
         if (mounted) {
           setState(() {
             _updateAvailable = false;
@@ -61,7 +61,7 @@ class _UpdateCheckWrapperState extends State<UpdateCheckWrapper> {
         }
       }
     } catch (e) {
-/// debugPrint(  '[UpdateCheckWrapper] Error checking for immediate update: $e');
+debugPrint(  '[UpdateCheckWrapper] Error checking for immediate update: $e');
     } finally {
       // Only set _isCheckingUpdate to false if no update is available
       if (mounted && !_updateAvailable) {
@@ -74,17 +74,17 @@ class _UpdateCheckWrapperState extends State<UpdateCheckWrapper> {
 
   @override
   Widget build(BuildContext context) {
-/// debugPrint(  '[UpdateCheckWrapper] Build called - _updateAvailable: $_updateAvailable, _isCheckingUpdate: $_isCheckingUpdate');
+debugPrint(  '[UpdateCheckWrapper] Build called - _updateAvailable: $_updateAvailable, _isCheckingUpdate: $_isCheckingUpdate');
 
     // Show update screen if update is available
     if (_updateAvailable) {
-// debugPrint('[UpdateCheckWrapper] Showing UpdateScreen');
+debugPrint('[UpdateCheckWrapper] Showing UpdateScreen');
       return UpdateScreen();
     }
 
     // Show loading while checking for updates
     if (_isCheckingUpdate) {
-// debugPrint('[UpdateCheckWrapper] Showing loading screen');
+debugPrint('[UpdateCheckWrapper] Showing loading screen');
       return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -107,7 +107,7 @@ class _UpdateCheckWrapperState extends State<UpdateCheckWrapper> {
     }
 
     // Proceed to auth wrapper if no update is needed
-// debugPrint('[UpdateCheckWrapper] Showing AuthWrapper');
+debugPrint('[UpdateCheckWrapper] Showing AuthWrapper');
     return const AuthWrapper();
   }
 }

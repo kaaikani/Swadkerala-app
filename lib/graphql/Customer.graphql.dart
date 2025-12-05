@@ -5840,13 +5840,6 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                             selectionSet: null,
                           ),
                           FieldNode(
-                            name: NameNode(value: 'clientRequestToCancel'),
-                            alias: null,
-                            arguments: [],
-                            directives: [],
-                            selectionSet: null,
-                          ),
-                          FieldNode(
                             name: NameNode(value: '__typename'),
                             alias: null,
                             arguments: [],
@@ -9668,7 +9661,6 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     this.loyaltyPointsUsed,
     this.loyaltyPointsEarned,
     this.otherInstructions,
-    this.clientRequestToCancel,
     this.$__typename = 'OrderCustomFields',
   });
 
@@ -9677,13 +9669,11 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$otherInstructions = json['otherInstructions'];
-    final l$clientRequestToCancel = json['clientRequestToCancel'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       otherInstructions: (l$otherInstructions as String?),
-      clientRequestToCancel: (l$clientRequestToCancel as int?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -9693,8 +9683,6 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
   final int? loyaltyPointsEarned;
 
   final String? otherInstructions;
-
-  final int? clientRequestToCancel;
 
   final String $__typename;
 
@@ -9706,8 +9694,6 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$otherInstructions = otherInstructions;
     _resultData['otherInstructions'] = l$otherInstructions;
-    final l$clientRequestToCancel = clientRequestToCancel;
-    _resultData['clientRequestToCancel'] = l$clientRequestToCancel;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -9718,13 +9704,11 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$otherInstructions = otherInstructions;
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$loyaltyPointsUsed,
       l$loyaltyPointsEarned,
       l$otherInstructions,
-      l$clientRequestToCancel,
       l$$__typename,
     ]);
   }
@@ -9752,11 +9736,6 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     final l$otherInstructions = otherInstructions;
     final lOther$otherInstructions = other.otherInstructions;
     if (l$otherInstructions != lOther$otherInstructions) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -9796,7 +9775,6 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
-    int? clientRequestToCancel,
     String? $__typename,
   });
 }
@@ -9823,7 +9801,6 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFi
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? otherInstructions = _undefined,
-    Object? clientRequestToCancel = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
@@ -9836,9 +9813,6 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFi
         otherInstructions: otherInstructions == _undefined
             ? _instance.otherInstructions
             : (otherInstructions as String?),
-        clientRequestToCancel: clientRequestToCancel == _undefined
-            ? _instance.clientRequestToCancel
-            : (clientRequestToCancel as int?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -9859,7 +9833,6 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
-    int? clientRequestToCancel,
     String? $__typename,
   }) =>
       _res;

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import '../routes.dart';
-
+import 'package:flutter/foundation.dart';
 /// Centralized navigation helper for consistent navigation across the app
 class NavigationHelper {
   /// Navigate to product detail page
@@ -68,7 +68,7 @@ class NavigationHelper {
                          Get.arguments?['intendedRoute'] as String?;
     final intendedArguments = Get.arguments?['intendedArguments'];
     
-// debugPrint('[NavigationHelper] Intended route: $intendedRoute, arguments: $intendedArguments');
+debugPrint('[NavigationHelper] Intended route: $intendedRoute, arguments: $intendedArguments');
     
     if (intendedRoute != null && intendedRoute.isNotEmpty) {
       try {
@@ -82,13 +82,13 @@ class NavigationHelper {
         } else {
           await Get.toNamed(intendedRoute);
         }
-// debugPrint('[NavigationHelper] Successfully navigated to intended route: $intendedRoute with home in stack');
+debugPrint('[NavigationHelper] Successfully navigated to intended route: $intendedRoute with home in stack');
       } catch (e) {
-// debugPrint('[NavigationHelper] Error navigating to intended route: $e');
+debugPrint('[NavigationHelper] Error navigating to intended route: $e');
         Get.offAllNamed(AppRoutes.home);
       }
     } else {
-// debugPrint('[NavigationHelper] No intended route found, navigating to home');
+debugPrint('[NavigationHelper] No intended route found, navigating to home');
       Get.offAllNamed(AppRoutes.home);
     }
   }

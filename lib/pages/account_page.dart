@@ -944,17 +944,17 @@ class _AccountPageState extends State<AccountPage> {
       final webStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=$packageName');
 
-// debugPrint('[AccountPage] Opening Play Store for package: $packageName');
+debugPrint('[AccountPage] Opening Play Store for package: $packageName');
 
       if (await canLaunchUrl(playStoreUrl)) {
         await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
-// debugPrint('[AccountPage] Opened Play Store app');
+debugPrint('[AccountPage] Opened Play Store app');
       } else {
         await launchUrl(webStoreUrl, mode: LaunchMode.externalApplication);
-// debugPrint('[AccountPage] Opened Play Store in browser');
+debugPrint('[AccountPage] Opened Play Store in browser');
       }
     } catch (e) {
-// debugPrint('[AccountPage] Error opening Play Store: $e');
+debugPrint('[AccountPage] Error opening Play Store: $e');
       showErrorSnackbar('Could not open Play Store: $e');
     }
   }

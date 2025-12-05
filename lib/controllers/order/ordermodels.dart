@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 class OrderModel {
   final String id;
   final String code;
@@ -106,11 +107,11 @@ class OrderModel {
       if (addressData is Map<String, dynamic>) {
         return OrderAddress.fromJson(addressData);
       } else {
-// debugPrint('[OrderModel] $type address is not a Map, got: ${addressData.runtimeType}, value: $addressData');
+debugPrint('[OrderModel] $type address is not a Map, got: ${addressData.runtimeType}, value: $addressData');
         return null;
       }
     } catch (e) {
-// debugPrint('[OrderModel] Error parsing $type address: $e');
+debugPrint('[OrderModel] Error parsing $type address: $e');
       return null;
     }
   }
@@ -120,14 +121,14 @@ class OrderModel {
     
     try {
       if (customFieldsData is Map<String, dynamic>) {
-// debugPrint('[OrderModel] Custom fields data: $customFieldsData');
+debugPrint('[OrderModel] Custom fields data: $customFieldsData');
         return OrderCustomFields.fromJson(customFieldsData);
       } else {
-// debugPrint('[OrderModel] Custom fields is not a Map, got: ${customFieldsData.runtimeType}, value: $customFieldsData');
+debugPrint('[OrderModel] Custom fields is not a Map, got: ${customFieldsData.runtimeType}, value: $customFieldsData');
         return null;
       }
     } catch (e) {
-// debugPrint('[OrderModel] Error parsing custom fields: $e');
+debugPrint('[OrderModel] Error parsing custom fields: $e');
       return null;
     }
   }
@@ -380,21 +381,32 @@ class ErrorResult {
 }
 
 class RazorpayOrderResponse {
-  final String razorpayOrderId;
-  final String keyId;
-  final String keySecret;
+  final int? amount;
+  final String? currency;
+  final String? errorMessage;
+  final String? keyId;
+  final String? razorpayOrderId;
+  final bool? success;
 
   RazorpayOrderResponse({
-    required this.razorpayOrderId,
-    required this.keyId,
-    required this.keySecret,
+    this.amount,
+    this.currency,
+    this.errorMessage,
+    this.keyId,
+    this.razorpayOrderId,
+    this.success,
   });
 
   factory RazorpayOrderResponse.fromJson(Map<String, dynamic> json) {
     return RazorpayOrderResponse(
-      razorpayOrderId: json['razorpayOrderId'] ?? '',
-      keyId: json['keyId'] ?? '',
-      keySecret: json['keySecret'] ?? '',
+      amount: json['amount'] != null 
+          ? ((json['amount'] is int) ? json['amount'] : (json['amount'] as num?)?.toInt())
+          : null,
+      currency: json['currency'] as String?,
+      errorMessage: json['errorMessage'] as String?,
+      keyId: json['keyId'] as String?,
+      razorpayOrderId: json['razorpayOrderId'] as String?,
+      success: json['success'] as bool?,
     );
   }
 }
@@ -466,25 +478,19 @@ class Payment {
 class OrderCustomFields {
   final int? loyaltyPointsEarned;
   final int? loyaltyPointsUsed;
-  final String? razorpayOrderId;
   final String? otherInstructions;
-  final int? clientRequestToCancel;
 
   OrderCustomFields({
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
-    this.razorpayOrderId,
     this.otherInstructions,
-    this.clientRequestToCancel,
   });
 
   factory OrderCustomFields.fromJson(Map<String, dynamic> json) {
     return OrderCustomFields(
       loyaltyPointsEarned: _parseInt(json['loyaltyPointsEarned']),
       loyaltyPointsUsed: _parseInt(json['loyaltyPointsUsed']),
-      razorpayOrderId: json['razorpay_order_id'],
       otherInstructions: json['otherInstructions'],
-      clientRequestToCancel: _parseInt(json['clientRequestToCancel']),
     );
   }
 

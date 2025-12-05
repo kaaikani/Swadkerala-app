@@ -2340,9 +2340,10 @@ type Mutation {
   sendPhoneOtp(phoneNumber: String!): String
   resendPhoneOtp(phoneNumber: String!): String
   togglePromotionState(promotionId: ID!, value: Boolean!): Promotion!
-  cancelOrderOnClientRequest(orderId: ID!, value: Int!): Order!
+  cancelOrderOnClientRequest(orderId: ID!, reason: String!): Order!
+  requestOrderCancellation(orderId: ID!, reason: String!): Order!
   otherInstructions(orderId: ID!, value: String!): Order!
-  generateRazorpayOrderId(orderId: ID!): generateRazorpayOrderIdResult!
+  generateRazorpayOrderId(orderId: ID!): RazorpayOrderIdSuccess!
   applyLoyaltyPointsToActiveOrder(amount: Int!): Order!
   removeLoyaltyPointsFromActiveOrder: Order
   updateOrderPlacedAtIST(orderId: ID!): DateTime!
@@ -3583,9 +3584,12 @@ type RazorpayOrderIdGenerationError {
 }
 
 type RazorpayOrderIdSuccess {
-  razorpayOrderId: String!
-  keyId: String!
-  keySecret: String!
+  amount: Int
+  currency: String
+  errorMessage: String
+  keyId: String
+  razorpayOrderId: String
+  success: Boolean
 }
 
 union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError

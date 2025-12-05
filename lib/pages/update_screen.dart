@@ -37,13 +37,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
       });
 
       // If immediate update fails (e.g., app not from Play Store), open Play Store
-// debugPrint('[UpdateScreen] Immediate update failed: $e');
-// debugPrint('[UpdateScreen] Falling back to Play Store...');
+debugPrint('[UpdateScreen] Immediate update failed: $e');
+debugPrint('[UpdateScreen] Falling back to Play Store...');
 
       try {
         await _openPlayStoreForUpdate();
       } catch (playStoreError) {
-// debugPrint('[UpdateScreen] Play Store fallback also failed: $playStoreError');
+debugPrint('[UpdateScreen] Play Store fallback also failed: $playStoreError');
 
         // Show error dialog with only retry option (no bypass)
         showDialog(
@@ -99,7 +99,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
       final Uri webStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=$packageName');
 
-// debugPrint('[UpdateScreen] Opening Play Store...');
+debugPrint('[UpdateScreen] Opening Play Store...');
 
       // Try to open Play Store app
       if (await canLaunchUrl(playStoreUrl)) {
@@ -118,7 +118,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         ),
       );
     } catch (e) {
-// debugPrint('[UpdateScreen] Error opening Play Store: $e');
+debugPrint('[UpdateScreen] Error opening Play Store: $e');
       rethrow; // Re-throw to be caught by the calling method
     }
   }

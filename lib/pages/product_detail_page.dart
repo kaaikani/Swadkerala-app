@@ -80,12 +80,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           .map((option) => option.name!)
           .join(', ');
       if (optionNames.isNotEmpty) {
-/// debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, Options: ${variant.options.length}, Option Names: $optionNames');
+debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, Options: ${variant.options.length}, Option Names: $optionNames');
         return optionNames;
       }
     }
     // If no options, show variant name as fallback
-/// debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, No options found, using variant name: ${variant.name}');
+debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, No options found, using variant name: ${variant.name}');
     return variant.name;
   }
 
@@ -167,7 +167,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         }
       }
     } catch (e) {
-// debugPrint('[ProductDetailPage] Error getting shadow price: $e');
+debugPrint('[ProductDetailPage] Error getting shadow price: $e');
     }
     return null;
   }

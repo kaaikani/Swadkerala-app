@@ -13,9 +13,7 @@ query ActiveOrder {
             customFields {
                 loyaltyPointsEarned
                 loyaltyPointsUsed
-                razorpay_order_id
                 otherInstructions
-                clientRequestToCancel
             }
             total
         }
@@ -148,7 +146,6 @@ query GetOrderByCode($code: String!) {
         customFields {
             loyaltyPointsEarned
             loyaltyPointsUsed
-            clientRequestToCancel
         }
         customer {
             id
@@ -175,9 +172,10 @@ mutation AddPayment($input: PaymentInput!) {
     }
 }
 
-mutation CancelOrderOnClientRequest($orderId: ID!,$value: Int!){
-    cancelOrderOnClientRequest(orderId: $orderId, value: $value){
+mutation RequestOrderCancellation($orderId: ID!, $reason: String!) {
+    requestOrderCancellation(orderId: $orderId, reason: $reason) {
         ...Cart
+        __typename
     }
 }
 query NextOrderStates{
@@ -209,15 +207,12 @@ mutation TransitionToAddingItems {
 
 mutation GenerateRazorpayOrderId($orderId: ID!) {
     generateRazorpayOrderId(orderId: $orderId) {
-        ... on RazorpayOrderIdSuccess {
-            razorpayOrderId
-            keyId
-            keySecret
-        }
-        ... on RazorpayOrderIdGenerationError {
-            errorCode
-            message
-        }
+        amount
+        currency
+        errorMessage
+        keyId
+        razorpayOrderId
+        success
     }
 }
 
@@ -342,7 +337,6 @@ fragment Cart on Order {
         __typename
     }
     customFields {
-        clientRequestToCancel
     }
     __typename
 }

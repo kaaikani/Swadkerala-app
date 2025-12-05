@@ -33,7 +33,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
     super.initState();
     // Fetch frequently ordered products when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-// debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
+debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
       bannerController.getFrequentlyOrderedProducts();
     });
   }

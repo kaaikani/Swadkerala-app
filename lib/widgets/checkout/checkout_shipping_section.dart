@@ -84,6 +84,10 @@ class CheckoutShippingSection extends StatelessWidget {
           onShippingMethodSelected();
         });
       }
+      
+      // For UI display: if there's only one method, show it as selected even if not applied
+      final displayAsSelected = hasSingleMethod && singleMethod != null;
+      final displayMethod = displayAsSelected ? singleMethod : validSelectedMethod;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,23 +110,23 @@ class CheckoutShippingSection extends StatelessWidget {
                   vertical: ResponsiveUtils.rp(4),
                 ),
                 decoration: BoxDecoration(
-                  color: isApplied
+                  color: (isApplied || displayAsSelected)
                       ? AppColors.success.withValues(alpha: 0.1)
                       : AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                   border: Border.all(
-                    color: isApplied
+                    color: (isApplied || displayAsSelected)
                         ? AppColors.success
                         : AppColors.error,
                     width: 1,
                   ),
                 ),
                 child: Text(
-                  isApplied ? 'Applied' : 'Not Applied',
+                  (isApplied || displayAsSelected) ? 'Selected' : 'Not Selected',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(12),
                     fontWeight: FontWeight.w600,
-                    color: isApplied
+                    color: (isApplied || displayAsSelected)
                         ? AppColors.success
                         : AppColors.error,
                   ),
@@ -187,13 +191,15 @@ class CheckoutShippingSection extends StatelessWidget {
                 color: AppColors.inputFill,
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                 border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.5),
+                  color: displayMethod != null
+                      ? AppColors.success.withValues(alpha: 0.5)
+                      : AppColors.border.withValues(alpha: 0.5),
                   width: 1.5,
                 ),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<dynamic>(
-                  value: validSelectedMethod,
+                  value: displayMethod ?? validSelectedMethod,
                   isExpanded: true,
                   hint: Text(
                     'Select Shipping Method',
