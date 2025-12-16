@@ -8,6 +8,7 @@ import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/customer/customer_models.dart';
 import '../controllers/banner/bannercontroller.dart';
+import '../controllers/banner/bannermodels.dart';
 import '../controllers/theme_controller.dart';
 import '../services/razorpay_service.dart';
 import '../services/analytics_service.dart';
@@ -56,6 +57,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
   
   // SlideAction key for resetting
   final GlobalKey<SlideActionState> _slideActionKey = GlobalKey<SlideActionState>();
+  
+  // Track order placement state to prevent slider reset on success
+  bool _orderPlacedSuccessfully = false;
 
   // Loyalty Points
   final _loyaltyPointsController = TextEditingController();
@@ -457,17 +461,32 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
     if (_selectedAddress == null) {
       _triggerAddressBlink();
       showErrorSnackbar('Please select a delivery address');
+      // Reset slider on error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
     
     // Validate checkout before proceeding
     if (!_validateCheckout()) {
+      // Reset slider on validation error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
     
     // Validate payment method
     if (orderController.selectedPaymentMethod.value == null) {
       showErrorSnackbar('Please select a payment method');
+      // Reset slider on error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
 
@@ -525,6 +544,11 @@ debugPrint('[Checkout] [Razorpay] Order ID before transition: ${orderController.
 debugPrint('[Checkout] ❌ [Razorpay] Failed to transition to ArrangingPayment state');
 debugPrint('[Checkout] [Razorpay] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
       showErrorSnackbar('Failed to process order');
+      // Reset slider on error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
 debugPrint('[Checkout] ✅ [Razorpay] Successfully transitioned to ArrangingPayment state');
@@ -570,6 +594,11 @@ debugPrint('[Checkout] ✅ Order state corrected after refresh - State: ${refres
     
     if (orderId == null) {
       showErrorSnackbar('Order not found');
+      // Reset slider on error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
 
@@ -592,6 +621,11 @@ debugPrint(  '[Checkout] Free shipping coupon applied: ${cartController.hasFreeS
         razorpayOrder.keyId == null) {
       // Error message is already shown by the controller's error handling
 debugPrint('[Checkout] Razorpay order generation failed');
+      // Reset slider on error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
 
@@ -634,6 +668,11 @@ debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
     // Validate phone number before proceeding
     if (customerPhone.isEmpty) {
       showErrorSnackbar('Phone number is required for payment. Please add a phone number to your address or profile.');
+      // Reset slider on error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
     
@@ -667,8 +706,29 @@ debugPrint(  '[Checkout] Razorpay payment successful: ${response.paymentId}');
         final latestCartOrder = cartController.cart.value;
         final latestOrderCode = latestOrderModel?.code ?? latestCartOrder?.code ?? orderCode;
 
-        // Online payment: Don't use addPaymentToOrder - payment is handled by Razorpay
-        // Just transition the order to next state
+        // Prepare Razorpay payment metadata
+        final metadata = {
+          "razorpayPaymentId": response.paymentId ?? '',
+          "razorpayOrderId": response.orderId ?? '',
+          "razorpaySignature": response.signature ?? '',
+        };
+
+debugPrint('[Checkout] Adding payment to order with Razorpay metadata: $metadata');
+
+        // Add payment to order with Razorpay metadata
+        // Order should be in ArrangingPayment state at this point
+        final paymentMethod = orderController.selectedPaymentMethod.value?.code ?? 'razorpay';
+        final paymentAdded = await orderController.addPayment(
+          method: paymentMethod,
+          metadata: metadata,
+        );
+
+        if (!paymentAdded) {
+debugPrint('[Checkout] ⚠️ Failed to add payment to order, but continuing with order processing');
+          // Continue even if payment addition fails - payment was successful on Razorpay side
+        } else {
+debugPrint('[Checkout] ✅ Payment successfully added to order with metadata');
+        }
         
         // Get latest order for analytics
         final orderForAnalyticsModel = orderController.currentOrder.value;
@@ -725,6 +785,9 @@ debugPrint(  '[Checkout] Razorpay payment successful: ${response.paymentId}');
 debugPrint('[Checkout] Payment successful, transitioning order...');
         final transitioned = await orderController.transitionToNextState();
         final finalOrderCode = latestOrderCode ?? orderId;
+        // Mark order as placed successfully - don't reset slider
+        _orderPlacedSuccessfully = true;
+        
         if (transitioned) {
           // Clear cart after successful order placement
           cartController.clearCart();
@@ -740,6 +803,11 @@ debugPrint('[Checkout] Payment successful, transitioning order...');
       onPaymentFailure: (response) {
 debugPrint('[Checkout] Razorpay payment failed: ${response.message}');
         showErrorSnackbar('Payment failed: ${response.message}');
+        // Reset slider on error so user can try again
+        Future.delayed(
+          const Duration(milliseconds: 500),
+          () => _slideActionKey.currentState?.reset(),
+        );
       },
     );
   }
@@ -757,6 +825,11 @@ debugPrint('[Checkout] [COD] Order ID before transition: ${orderController.curre
 debugPrint('[Checkout] ❌ [COD] Failed to transition to ArrangingPayment state');
 debugPrint('[Checkout] [COD] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
       showErrorSnackbar('Failed to process order');
+      // Reset slider on error
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
       return;
     }
 debugPrint('[Checkout] ✅ [COD] Successfully transitioned to ArrangingPayment state');
@@ -846,6 +919,9 @@ debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${
         );
       }
       
+      // Mark order as placed successfully - don't reset slider
+      _orderPlacedSuccessfully = true;
+      
       // Clear cart after successful order placement
       cartController.clearCart();
       showSuccessSnackbar('Order placed successfully!');
@@ -857,6 +933,11 @@ debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${
       }
     } else {
       showErrorSnackbar('Payment failed');
+      // Reset slider on error so user can try again
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _slideActionKey.currentState?.reset(),
+      );
     }
   }
 
@@ -1580,6 +1661,41 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
       final total = cart?.totalWithTax ?? 0;
       final hasFreeShipping = cartController.hasFreeShippingCoupon();
       
+      // Get applied coupon details
+      final appliedCouponCode = bannerController.getCurrentlyAppliedCoupon();
+      String? appliedCouponName;
+      bool hasFreeShippingInCoupon = false;
+      
+      if (appliedCouponCode != null) {
+        // Find the coupon in available coupons to get its name
+        final coupon = bannerController.availableCouponCodes.firstWhere(
+          (c) => c.couponCode.toUpperCase() == appliedCouponCode.toUpperCase(),
+          orElse: () => CouponCodeModel(
+            id: '',
+            name: '',
+            couponCode: '',
+            enabled: false,
+            createdAt: '',
+            updatedAt: '',
+            description: '',
+            startsAt: '',
+            endsAt: '',
+            perCustomerUsageLimit: 0,
+            usageLimit: 0,
+            actions: [],
+            conditions: [],
+          ),
+        );
+        
+        if (coupon.id.isNotEmpty) {
+          appliedCouponName = coupon.name;
+          // Check if coupon has free_shipping action
+          hasFreeShippingInCoupon = coupon.actions.any(
+            (action) => action.code == 'free_shipping',
+          );
+        }
+      }
+      
       // Loyalty Points
       final loyaltyPointsUsed = bannerController.loyaltyPointsUsed.value;
       final loyaltyPointsApplied = bannerController.loyaltyPointsApplied.value;
@@ -1626,13 +1742,68 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                   '₹${(subtotal / 100).toStringAsFixed(2)}',
                 ),
                 SizedBox(height: ResponsiveUtils.rp(12)),
-                _buildSummaryRow(
-                  'Delivery Charge',
-                  hasFreeShipping 
-                      ? 'FREE' 
-                      : '₹${(shipping / 100).toStringAsFixed(2)}',
-                  valueColor: hasFreeShipping ? AppColors.success : null,
-                ),
+                // Delivery Charge - Show "FREE" with coupon code if applicable
+                if (hasFreeShipping && hasFreeShippingInCoupon && appliedCouponCode != null) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Delivery Charge',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(15),
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(4)),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.local_offer,
+                                  size: ResponsiveUtils.rp(14),
+                                  color: AppColors.success,
+                                ),
+                                SizedBox(width: ResponsiveUtils.rp(4)),
+                                Flexible(
+                                  child: Text(
+                                    'Applied: ${appliedCouponCode}',
+                                    style: TextStyle(
+                                      fontSize: ResponsiveUtils.sp(12),
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.success,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        'FREE',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(15),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  _buildSummaryRow(
+                    'Delivery Charge',
+                    hasFreeShipping 
+                        ? 'FREE' 
+                        : '₹${(shipping / 100).toStringAsFixed(2)}',
+                    valueColor: hasFreeShipping ? AppColors.success : null,
+                  ),
+                ],
                 
                 // Loyalty Points Discount
                 if (loyaltyPointsApplied && loyaltyPointsUsed > 0 && loyaltyDiscountAmount > 0) ...[
@@ -1644,13 +1815,47 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                   ),
                 ],
                 
-                // Coupon Discount
+                // Coupon Discount - Show with coupon code name
                 if (bannerController.appliedCouponCodes.isNotEmpty && couponDiscount > 0) ...[
                   SizedBox(height: ResponsiveUtils.rp(12)),
-                  _buildSummaryRow(
-                    'Coupon Discount',
-                    '-₹${(couponDiscount / 100).toStringAsFixed(2)}',
-                    valueColor: AppColors.success,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.local_offer,
+                              size: ResponsiveUtils.rp(16),
+                              color: AppColors.success,
+                            ),
+                            SizedBox(width: ResponsiveUtils.rp(6)),
+                            Flexible(
+                              child: Text(
+                                appliedCouponName != null 
+                                    ? 'Coupon: $appliedCouponName'
+                                    : 'Coupon Discount',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(15),
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textSecondary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '-₹${(couponDiscount / 100).toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(15),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
                 
@@ -2244,6 +2449,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
     return Obx(() {
       final isLoading = utilityController.isLoadingRx.value;
       final isEnabled = _selectedAddress != null &&
+          orderController.selectedShippingMethod.value != null &&
           orderController.selectedPaymentMethod.value != null;
       final cart = cartController.cart.value;
       final total = cart?.totalWithTax ?? 0;
@@ -2420,13 +2626,10 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                         size: ResponsiveUtils.rp(20),
                       ),
                       onSubmit: () {
-                        if (!isLoading && isEnabled) {
+                        if (!isLoading && isEnabled && !_orderPlacedSuccessfully) {
                           _onPlaceOrder();
-                          // Reset the slider after a delay
-                          Future.delayed(
-                            const Duration(milliseconds: 1000),
-                            () => _slideActionKey.currentState?.reset(),
-                          );
+                          // Don't reset on success - slider will show tick and stay
+                          // Only reset on error (handled in error callbacks)
                         }
                         return null;
                       },

@@ -122,7 +122,7 @@ query GetActiveCustomer {
                 defaultShippingAddress
                 defaultBillingAddress
             }
-            orders {
+            orders(options: { take: 10, skip: 0 }) {
 
                 totalItems
                 items {
@@ -219,5 +219,75 @@ query GetLoyaltyPointTransactions {
     }
 }
 
-
-
+query GetCustomerOrders($skip: Int!, $take: Int!) {
+    activeCustomer {
+        __typename
+        ... on Customer {
+            orders(options: { skip: $skip, take: $take }) {
+                totalItems
+                items {
+                    id
+                    currencyCode
+                    orderPlacedAt
+                    lines {
+                        id
+                        quantity
+                        productVariant {
+                            name
+                        }
+                        featuredAsset {
+                            name
+                            preview
+                        }
+                    }
+                    active
+                    discounts {
+                        amount
+                    }
+                    code
+                    state
+                    customer {
+                        firstName
+                        lastName
+                    }
+                    shippingAddress {
+                        country
+                        city
+                        phoneNumber
+                        streetLine1
+                        streetLine2
+                        postalCode
+                        fullName
+                    }
+                    surcharges {
+                        price
+                        priceWithTax
+                    }
+                    couponCodes
+                    payments {
+                        state
+                        createdAt
+                        method
+                        amount
+                        transactionId
+                    }
+                    totalQuantity
+                    totalWithTax
+                    billingAddress {
+                        postalCode
+                        streetLine2
+                        fullName
+                        city
+                        phoneNumber
+                        streetLine1
+                    }
+                    customFields {
+                        loyaltyPointsUsed
+                        loyaltyPointsEarned
+                        otherInstructions
+                    }
+                }
+            }
+        }
+    }
+}

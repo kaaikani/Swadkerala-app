@@ -270,9 +270,13 @@ class AddressComponent extends StatelessWidget {
       return;
     }
 
+    bool isDeleting = false;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      barrierDismissible: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12))),
@@ -292,14 +296,27 @@ class AddressComponent extends StatelessWidget {
                 style: TextStyle(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: isDeleting ? null : () async {
+              // Prevent multiple clicks
+              setState(() {
+                isDeleting = true;
+              });
+              
               // Double check before deletion
               if (customerController.addresses.length <= 1) {
-                Navigator.pop(context);
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
                 showErrorSnackbar('Cannot delete the only address. At least one address must be kept.');
                 return;
               }
-              Navigator.pop(context);
+              
+              // Close dialog first
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
+              
+              // Perform deletion
               final success = await customerController.deleteAddress(addressId);
               if (success) {
                 customerController.refreshAddresses();
@@ -312,9 +329,19 @@ class AddressComponent extends StatelessWidget {
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.textLight,
             ),
-            child: Text('Delete', style: TextStyle(color: AppColors.textLight)),
+            child: isDeleting
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.textLight),
+                    ),
+                  )
+                : Text('Delete', style: TextStyle(color: AppColors.textLight)),
           ),
         ],
+      ),
       ),
     );
   }

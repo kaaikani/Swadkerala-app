@@ -243,7 +243,11 @@ Future<void> main() async {
     Get.put<AuthController>(AuthController());
     Get.put(CartController());
     Get.put(CollectionsController());
+    
+    // Initialize theme controller early and ensure storage is ready
     final themeController = Get.put(ThemeController());
+    // Ensure theme is loaded before app starts
+    // The constructor already loads it, but we ensure it's ready
     
     // Check for app updates
     await checkAppUpdate();
@@ -264,15 +268,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final analyticsObserver = AnalyticsService().observer;
     
-    return Obx(() => GetMaterialApp(
-      title: 'Kaaikani',
-      theme: AppTheme.lightTheme(),
-      darkTheme: AppTheme.darkTheme(),
-      themeMode: themeController.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.initial,
-      getPages: AppRoutes.routes,
-      navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
-    ));
+    return Obx(() {
+      // Force theme update by rebuilding when theme changes
+      final isDark = themeController.isDarkMode;
+      
+      return GetMaterialApp(
+        title: 'Kaaikani',
+        theme: AppTheme.lightTheme(),
+        darkTheme: AppTheme.darkTheme(),
+        themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+        debugShowCheckedModeBanner: false,
+        initialRoute: AppRoutes.initial,
+        getPages: AppRoutes.routes,
+        navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
+      );
+    });
   }
 }

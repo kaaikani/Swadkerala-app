@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/banner/bannercontroller.dart';
@@ -6,8 +7,7 @@ import '../controllers/banner/bannermodels.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../widgets/appbar.dart';
-import '../widgets/button.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/cart_button_with_badge.dart';
 import '../widgets/snackbar.dart';
 import '../theme/colors.dart';
 import '../utils/price_formatter.dart';
@@ -97,6 +97,12 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
     return Scaffold(
       appBar: AppBarWidget(
         title: 'My Favorites',
+        actions: [
+          CartButtonWithBadge(
+            cartController: cartController,
+            useIconButton: true,
+          ),
+        ],
       ),
       body: Obx(() {
         if (utilityController.isLoadingRx.value) {
@@ -108,26 +114,16 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
             .where((item) => item.product.enabled == true)
             .toList();
 
-        if (enabledFavorites.isEmpty) {
-          return EmptyState(
-            icon: Icons.favorite_border,
-            title: 'No Favorites Yet',
-            subtitle: 'Double tap on any product to add it to your favorites',
-            action: AppButton(
-              text: 'Browse Products',
-              onPressed: () async {
-                Get.back();
-              },
-            ),
-          );
-        }
-
+        // Wrap both empty state and grid with RefreshIndicator
         return RefreshIndicator(
           onRefresh: () async {
+            debugPrint('[Favorites] Refreshing favorites list...');
             await bannerController.getCustomerFavorites();
           },
           color: AppColors.refreshIndicator,
-          child: GridView.builder(
+          child: enabledFavorites.isEmpty
+              ? _buildEmptyState()
+              : GridView.builder(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(
               horizontal: ResponsiveUtils.rp(16),
@@ -161,6 +157,131 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
           ),
         );
       }),
+    );
+  }
+
+  /// Build empty state with improved UI
+  Widget _buildEmptyState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final appBarHeight = AppBar().preferredSize.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        height: screenHeight - appBarHeight - statusBarHeight,
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUtils.rp(24),
+          vertical: ResponsiveUtils.rp(40),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Large heart icon with gradient background
+              Container(
+                width: ResponsiveUtils.rp(140),
+                height: ResponsiveUtils.rp(140),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDark
+                        ? [
+                            Colors.grey[800]!.withOpacity(0.3),
+                            Colors.grey[700]!.withOpacity(0.2),
+                          ]
+                        : [
+                            AppColors.greenBackground,
+                            AppColors.primaryLight,
+                          ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.black.withOpacity(0.3)
+                          : AppColors.greenPrimary.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.favorite_border_rounded,
+                    size: ResponsiveUtils.rp(70),
+                    color: isDark
+                        ? Colors.grey[400]
+                        : AppColors.greenPrimary.withOpacity(0.6),
+                  ),
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(40)),
+              // Title with better styling
+              Text(
+                'No Favorites Yet',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(24),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: ResponsiveUtils.rp(16)),
+              // Subtitle with better styling
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(20),
+                ),
+                child: Text(
+                  'Double tap on any product to add it to your favorites',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(15),
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(48)),
+              // Browse Products button with better styling
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      vertical: ResponsiveUtils.rp(16),
+                      horizontal: ResponsiveUtils.rp(24),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveUtils.rp(12),
+                      ),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: Text(
+                    'Browse Products',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(16),
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

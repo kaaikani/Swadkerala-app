@@ -6,6 +6,7 @@ import '../graphql/banner.graphql.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../widgets/appbar.dart';
+import '../widgets/cart_button_with_badge.dart';
 import '../widgets/button.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/snackbar.dart';
@@ -68,6 +69,12 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
     return Scaffold(
       appBar: AppBarWidget(
         title: 'Frequently Ordered',
+        actions: [
+          CartButtonWithBadge(
+            cartController: cartController,
+            useIconButton: true,
+          ),
+        ],
       ),
       body: Obx(() {
         if (utilityController.isLoadingRx.value) {

@@ -9,7 +9,7 @@ import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
 import '../utils/bill_generator.dart';
 import '../services/graphql_client.dart';
-import '../graphql/order.graphql.dart';
+import '../graphql/banner.graphql.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/responsive_spacing.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -133,10 +133,8 @@ debugPrint('[OrderDetail] Error loading order details: $e');
                   // Payment Information
                   if (order.payments.isNotEmpty) _buildPaymentCard(order),
                   
-                  // Cancel Order Button
-                  if (order.state.toLowerCase() != 'cancelled' &&
-                      order.state.toLowerCase() != 'fulfilled' &&
-                      order.state.toLowerCase() != 'delivered')
+                  // Cancel Order Button - only show if cancellation not already requested
+                  if (_shouldShowCancelButton(order))
                     _buildCancelOrderButton(order),
                   
                   SizedBox(height: ResponsiveUtils.rp(20)),
@@ -875,6 +873,16 @@ debugPrint('[OrderDetail] Error loading order details: $e');
     );
   }
 
+  bool _shouldShowCancelButton(dynamic order) {
+    final orderState = order.state.toLowerCase();
+    final isCancellationRequested = orderState.contains('cancel') && 
+                                     orderState.contains('request');
+    return orderState != 'cancelled' &&
+           orderState != 'fulfilled' &&
+           orderState != 'delivered' &&
+           !isCancellationRequested;
+  }
+
   Widget _buildCancelOrderButton(dynamic order) {
     final isCancelled = order.state.toLowerCase() == 'cancelled';
     
@@ -1161,88 +1169,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
     );
   }
 
-  Future<void> _requestOrderCancellation(dynamic order, String reason) async {
-    try {
-      utilityController.setLoadingState(true);
-      
-      // Check if mutation is available (backend might not support it yet)
-      try {
-        final response = await GraphqlService.client.value.mutate$RequestOrderCancellation(
-          Options$Mutation$RequestOrderCancellation(
-            variables: Variables$Mutation$RequestOrderCancellation(
-              orderId: order.id,
-              reason: reason,
-            ),
-          ),
-        );
 
-        if (response.hasException) {
-          final errorMessage = response.exception?.graphqlErrors.firstOrNull?.message ?? '';
-          if (errorMessage.contains('Cannot query field "requestOrderCancellation"')) {
-            Get.snackbar(
-              'Feature Not Available',
-              'Order cancellation is not available on the server yet. Please contact support.',
-              backgroundColor: Colors.orange,
-              colorText: Colors.white,
-              duration: Duration(seconds: 4),
-            );
-            return;
-          }
-          
-          debugPrint('[OrderDetail] Error requesting cancellation: ${response.exception}');
-          Get.snackbar(
-            'Error',
-            'Failed to request cancellation. Please try again.',
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-          return;
-        }
-
-        if (response.parsedData?.requestOrderCancellation == null) {
-          Get.snackbar(
-            'Error',
-            'Failed to request cancellation. Please try again.',
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-          return;
-        }
-
-        await orderController.getOrderByCode(widget.orderCode);
-        
-        Get.snackbar(
-          'Success',
-          'Cancellation request submitted successfully',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-      } catch (e) {
-        if (e.toString().contains('requestOrderCancellation') || 
-            e.toString().contains('Cannot query field')) {
-          Get.snackbar(
-            'Feature Not Available',
-            'Order cancellation is not available on the server yet. Please contact support.',
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
-            duration: Duration(seconds: 4),
-          );
-          return;
-        }
-        rethrow;
-      }
-    } catch (e) {
-      debugPrint('[OrderDetail] Exception requesting cancellation: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to request cancellation. Please try again.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    } finally {
-      utilityController.setLoadingState(false);
-    }
-  }
 
   Widget _buildShimmerLoading() {
     return Skeletonizer(
@@ -1347,6 +1274,76 @@ debugPrint('[OrderDetail] Error loading order details: $e');
         return AppColors.grey600;
       default:
         return Colors.grey;
+    }
+  }
+
+  Future<void> _requestOrderCancellation(dynamic order, String reason) async {
+    try {
+      utilityController.setLoadingState(true);
+      
+      try {
+        final response = await GraphqlService.client.value.mutate$RequestOrderCancellation(
+          Options$Mutation$RequestOrderCancellation(
+            variables: Variables$Mutation$RequestOrderCancellation(
+              orderId: order.id,
+              reason: reason,
+            ),
+          ),
+        );
+
+        if (response.hasException) {
+          final errorMessage = response.exception?.graphqlErrors.firstOrNull?.message ?? '';
+          Get.snackbar(
+            'Error',
+            errorMessage.isNotEmpty ? errorMessage : 'Failed to request order cancellation. Please try again.',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return;
+        }
+
+        if (response.parsedData?.requestOrderCancellation == null) {
+          Get.snackbar(
+            'Error',
+            'Failed to request cancellation. Please try again.',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return;
+        }
+
+        await orderController.getOrderByCode(widget.orderCode);
+        
+        Get.snackbar(
+          'Success',
+          'Cancellation request submitted successfully',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } catch (e) {
+        if (e.toString().contains('requestOrderCancellation') || 
+            e.toString().contains('Cannot query field')) {
+          Get.snackbar(
+            'Feature Not Available',
+            'Order cancellation is not available on the server yet. Please contact support.',
+            backgroundColor: Colors.orange,
+            colorText: Colors.white,
+            duration: Duration(seconds: 4),
+          );
+          return;
+        }
+        rethrow;
+      }
+    } catch (e) {
+      debugPrint('[OrderDetail] Exception requesting cancellation: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to request cancellation. Please try again.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      utilityController.setLoadingState(false);
     }
   }
 }

@@ -386,8 +386,11 @@ class _AddressesPageState extends State<AddressesPage> {
       return;
     }
 
+    bool isDeleting = false;
+
     Get.dialog(
-      AlertDialog(
+      StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
@@ -406,10 +409,17 @@ class _AddressesPageState extends State<AddressesPage> {
             child: Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: isDeleting ? null : () async {
+              // Prevent multiple clicks
+              setState(() {
+                isDeleting = true;
+              });
+              
               // Double check before deletion
               if (customerController.addresses.length <= 1) {
-                Get.back();
+                if (Get.isDialogOpen == true) {
+                  Get.back();
+                }
                 SnackBarWidget.show(
                   context,
                   'Cannot delete the only address. At least one address must be kept.',
@@ -417,7 +427,13 @@ class _AddressesPageState extends State<AddressesPage> {
                 );
                 return;
               }
-              Get.back();
+              
+              // Close dialog first
+              if (Get.isDialogOpen == true) {
+                Get.back();
+              }
+              
+              // Perform deletion
               final success = await customerController.deleteAddress(addressId);
               if (success) {
                 customerController.refreshAddresses();
@@ -430,10 +446,21 @@ class _AddressesPageState extends State<AddressesPage> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: Text('Delete'),
+            child: isDeleting
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Text('Delete'),
           ),
         ],
       ),
+      ),
+      barrierDismissible: true,
     );
   }
 }

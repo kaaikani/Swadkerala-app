@@ -57,11 +57,6 @@ object GeneratedPluginRegistrant {
             Log.e(TAG, "Error registering plugin flutter_local_notifications, com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin", e)
         }
         try {
-            flutterEngine.plugins.add(io.github.ponnamkarthik.toast.fluttertoast.FlutterToastPlugin())
-        } catch (e: Exception) {
-            Log.e(TAG, "Error registering plugin fluttertoast, io.github.ponnamkarthik.toast.fluttertoast.FlutterToastPlugin", e)
-        }
-        try {
             flutterEngine.plugins.add(de.ffuf.in_app_update.InAppUpdatePlugin())
         } catch (e: Exception) {
             Log.e(TAG, "Error registering plugin in_app_update, de.ffuf.in_app_update.InAppUpdatePlugin", e)

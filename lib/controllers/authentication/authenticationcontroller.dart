@@ -193,7 +193,7 @@ debugPrint('[AuthController] Using email: $email');
 debugPrint('[AuthController] Channels found: ${channels.length}');
 
       if (channels.isEmpty) {
-        ErrorDialog.showError('Kindly register');
+        ErrorDialog.showError('Phone number not registered. Please sign up first.');
         return false;
       }
 
@@ -401,10 +401,23 @@ debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
           await GraphqlService.setToken(key: 'auth', token: authToken);
 
           // 2️⃣ Fetch channels for this user using email
-          final channelFetched = await checkEmailAndGetChannel(context);
+          // For new registrations, channels might not be immediately available
+          // Retry a few times with delay
+          bool channelFetched = false;
+          for (int i = 0; i < 3; i++) {
+            channelFetched = await checkEmailAndGetChannel(context);
+            if (channelFetched) break;
+            if (i < 2) {
+              // Wait before retry (only for first 2 attempts)
+              await Future.delayed(Duration(milliseconds: 500));
+            }
+          }
 
           if (!channelFetched) {
-            // Channel fetch failed
+            // Channel fetch failed - show appropriate message
+            ErrorDialog.showError(
+              'Registration successful, but there was an issue setting up your account. Please try logging in.',
+            );
             return false;
           }
 
@@ -505,32 +518,46 @@ debugPrint('[AuthController] Exception in resendOtp: $e');
   /// Logout user
   Future<void> logout(BuildContext context) async {
     setLoading(true);
-debugPrint('[AuthController] Logging out user');
+debugPrint('🚪 [AuthController] ========== LOGOUT STARTED ==========');
+debugPrint('🚪 [AuthController] Logging out user...');
 
     try {
+debugPrint('🚪 [AuthController] Step 1: Calling GraphQL logout mutation...');
       final response = await GraphqlService.client.value.mutate$LogoutUser(
         Options$Mutation$LogoutUser(),
       );
 
       if (response.hasException) {
-debugPrint('[AuthController] Logout error: ${response.exception}');
+debugPrint('❌ [AuthController] Logout mutation error: ${response.exception}');
+debugPrint('❌ [AuthController] Exception details: ${response.exception?.graphqlErrors}');
       } else {
-        // final success = response.parsedData?.logout.success ?? false; // Unused variable
-debugPrint('[AuthController] Logout result: ${response.parsedData?.logout.success ?? false}');
+        final success = response.parsedData?.logout.success ?? false;
+debugPrint('✅ [AuthController] Logout mutation result: $success');
+        if (success) {
+debugPrint('✅ [AuthController] Server confirmed logout success');
+        } else {
+debugPrint('⚠️ [AuthController] Server returned logout failure');
+        }
       }
 
+debugPrint('🚪 [AuthController] Step 2: Clearing all app data and cache...');
       // Clear all stored data and cache
       await _clearAllAppData();
+debugPrint('✅ [AuthController] All app data cleared');
 
+debugPrint('🚪 [AuthController] Step 3: Resetting analytics data...');
       // Reset analytics data
       await AnalyticsService().resetAnalytics();
+debugPrint('✅ [AuthController] Analytics data reset');
 
+debugPrint('🚪 [AuthController] Step 4: Resetting auth state...');
       // Reset auth state
       setLoggedIn(false);
       setOtpSent(false);
       resetFormField();
+debugPrint('✅ [AuthController] Auth state reset - isLoggedIn: false, isOtpSent: false');
 
-debugPrint('[AuthController] User logged out and all cache cleared successfully');
+debugPrint('🚪 [AuthController] Step 5: Showing success message...');
       Get.snackbar(
         '',
         'Logged out successfully',
@@ -541,28 +568,66 @@ debugPrint('[AuthController] User logged out and all cache cleared successfully'
         margin: const EdgeInsets.all(16),
         borderRadius: 12,
       );
+debugPrint('✅ [AuthController] Success message shown');
+debugPrint('✅ [AuthController] Success message: "Logged out successfully"');
+debugPrint('✅ [AuthController] Success message displayed to user');
 
+debugPrint('🚪 [AuthController] Step 6: Navigating to login page...');
       // Navigate to login page
-      Future.microtask(() => Get.offAllNamed('/login'));
+      Future.microtask(() {
+debugPrint('🚪 [AuthController] Executing navigation to /login');
+        Get.offAllNamed('/login');
+debugPrint('✅ [AuthController] Navigation completed');
+      });
 
-    } catch (e) {
-debugPrint('[AuthController] Exception in logout: $e');
+debugPrint('✅ [AuthController] ========== LOGOUT COMPLETED SUCCESSFULLY ==========');
+    } catch (e, stackTrace) {
+debugPrint('❌ [AuthController] ========== LOGOUT EXCEPTION ==========');
+debugPrint('❌ [AuthController] Exception in logout: $e');
+debugPrint('❌ [AuthController] Stack trace: $stackTrace');
       // Don't show error dialog for logout - just log it
-debugPrint('[AuthController] Logout error handled silently');
+debugPrint('⚠️ [AuthController] Logout error handled silently - continuing with cleanup');
+      
+      // Still try to clear data even if logout mutation failed
+      try {
+debugPrint('🚪 [AuthController] Attempting cleanup despite error...');
+        await _clearAllAppData();
+        setLoggedIn(false);
+        setOtpSent(false);
+        resetFormField();
+debugPrint('✅ [AuthController] Cleanup completed despite error');
+        Future.microtask(() => Get.offAllNamed('/login'));
+      } catch (cleanupError) {
+debugPrint('❌ [AuthController] Cleanup also failed: $cleanupError');
+      }
     } finally {
       setLoading(false);
+debugPrint('🚪 [AuthController] Loading state set to false');
+debugPrint('🚪 [AuthController] ========== LOGOUT PROCESS ENDED ==========');
     }
   }
 
   /// Clear all app data and cache
   Future<void> _clearAllAppData() async {
     try {
-debugPrint('[AuthController] Starting comprehensive cache clearing...');
+debugPrint('🗑️ [AuthController] ========== CACHE CLEARING STARTED ==========');
+debugPrint('🗑️ [AuthController] Starting comprehensive cache clearing...');
       
-      // Clear GraphQL tokens
+debugPrint('🗑️ [AuthController] Step 1: Clearing GraphQL tokens...');
+      // Clear GraphQL tokens (this also recreates the client)
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
-debugPrint('[AuthController] GraphQL tokens cleared');
+debugPrint('✅ [AuthController] GraphQL tokens cleared and client recreated');
+      
+debugPrint('🗑️ [AuthController] Step 2: Clearing Flutter image cache...');
+      // Clear Flutter image cache
+      try {
+        imageCache.clear();
+        imageCache.clearLiveImages();
+debugPrint('✅ [AuthController] Image cache cleared (all images and live images)');
+      } catch (e) {
+debugPrint('❌ [AuthController] Error clearing image cache: $e');
+      }
       
       // Clear all storage data
       await _storage.remove('auth_token');
@@ -668,10 +733,12 @@ debugPrint('[AuthController] GraphQL tokens cleared');
       await _storage.remove('all_storage');
       await _storage.remove('everything_storage');
       
+debugPrint('🗑️ [AuthController] Step 3: Erasing all storage data...');
       // Clear all keys (nuclear option)
       await _storage.erase();
-debugPrint('[AuthController] Storage completely erased');
+debugPrint('✅ [AuthController] Storage completely erased (all keys removed)');
       
+debugPrint('🗑️ [AuthController] Step 4: Clearing GetX controllers...');
       // Clear any GetX controllers that might have cached data
       try {
         // Clear customer controller data
@@ -681,14 +748,18 @@ debugPrint('[AuthController] Storage completely erased');
           customerController.addresses.clear();
           customerController.orders.clear();
           customerController.isEditingProfile.value = false;
-debugPrint('[AuthController] Customer controller data cleared');
+debugPrint('✅ [AuthController] Customer controller data cleared (activeCustomer, addresses, orders)');
+        } else {
+debugPrint('⚠️ [AuthController] CustomerController not registered, skipping');
         }
         
         // Clear cart controller data
         if (Get.isRegistered<CartController>()) {
           final cartController = Get.find<CartController>();
           cartController.clearCart();
-debugPrint('[AuthController] Cart controller data cleared');
+debugPrint('✅ [AuthController] Cart controller data cleared');
+        } else {
+debugPrint('⚠️ [AuthController] CartController not registered, skipping');
         }
         
         // Clear banner controller data
@@ -697,28 +768,36 @@ debugPrint('[AuthController] Cart controller data cleared');
           bannerController.availableCouponCodes.clear();
           bannerController.couponCodesLoaded.value = false;
           bannerController.appliedCouponCodes.clear();
-debugPrint('[AuthController] Banner controller data cleared');
+debugPrint('✅ [AuthController] Banner controller data cleared (coupon codes, applied codes)');
+        } else {
+debugPrint('⚠️ [AuthController] BannerController not registered, skipping');
         }
         
         // Clear order controller data
         if (Get.isRegistered<OrderController>()) {
-debugPrint('[AuthController] Order controller data cleared');
+debugPrint('✅ [AuthController] Order controller found (no specific data to clear)');
+        } else {
+debugPrint('⚠️ [AuthController] OrderController not registered, skipping');
         }
         
         // Clear utility controller data
         if (Get.isRegistered<UtilityController>()) {
           final utilityController = Get.find<UtilityController>();
           utilityController.setLoadingState(false);
-debugPrint('[AuthController] Utility controller data cleared');
+debugPrint('✅ [AuthController] Utility controller data cleared (loading state reset)');
+        } else {
+debugPrint('⚠️ [AuthController] UtilityController not registered, skipping');
         }
         
       } catch (controllerError) {
-debugPrint('[AuthController] Error clearing controllers: $controllerError');
+debugPrint('❌ [AuthController] Error clearing controllers: $controllerError');
       }
       
-debugPrint('[AuthController] ✅ All storage data and controllers cleared successfully');
-    } catch (e) {
-debugPrint('[AuthController] ❌ Error clearing storage: $e');
+debugPrint('✅ [AuthController] ========== CACHE CLEARING COMPLETED SUCCESSFULLY ==========');
+    } catch (e, stackTrace) {
+debugPrint('❌ [AuthController] ========== CACHE CLEARING ERROR ==========');
+debugPrint('❌ [AuthController] Error clearing storage: $e');
+debugPrint('❌ [AuthController] Stack trace: $stackTrace');
     }
   }
 

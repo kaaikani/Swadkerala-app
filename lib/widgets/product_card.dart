@@ -256,35 +256,43 @@ class _AddToCartButtonState extends State<_AddToCartButton>
       builder: (context, child) {
         return Transform.scale(
           scale: _scaleAnimation.value,
-          child: Material(
-            color: Colors.transparent,
-            shape: const CircleBorder(),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: widget.onPressed,
-              child: Container(
-                height: resolvedSize,
-                width: resolvedSize,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [AppColors.buttonLight, AppColors.button],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.18),
-                      blurRadius: ResponsiveUtils.rp(10),
-                      offset: Offset(0, ResponsiveUtils.rp(4)),
+          child: GestureDetector(
+            // Consume double tap to prevent it from bubbling to parent ProductCard
+            // This prevents favorites toggle when double-tapping add to cart button
+            onDoubleTap: () {
+              // Consume the double tap event - do nothing but prevent propagation
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: widget.onPressed,
+                child: Container(
+                  height: resolvedSize,
+                  width: resolvedSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [AppColors.buttonLight, AppColors.button],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: resolvedSize * 0.45,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.18),
+                        blurRadius: ResponsiveUtils.rp(10),
+                        offset: Offset(0, ResponsiveUtils.rp(4)),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: resolvedSize * 0.45,
+                    ),
                   ),
                 ),
               ),

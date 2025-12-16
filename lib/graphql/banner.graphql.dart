@@ -12966,3 +12966,761 @@ class Mutation$RemoveCouponCode$Widget
           ),
         );
 }
+
+class Variables$Mutation$RequestOrderCancellation {
+  factory Variables$Mutation$RequestOrderCancellation({
+    required String orderId,
+    required String reason,
+  }) =>
+      Variables$Mutation$RequestOrderCancellation._({
+        r'orderId': orderId,
+        r'reason': reason,
+      });
+
+  Variables$Mutation$RequestOrderCancellation._(this._$data);
+
+  factory Variables$Mutation$RequestOrderCancellation.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$orderId = data['orderId'];
+    result$data['orderId'] = (l$orderId as String);
+    final l$reason = data['reason'];
+    result$data['reason'] = (l$reason as String);
+    return Variables$Mutation$RequestOrderCancellation._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get orderId => (_$data['orderId'] as String);
+
+  String get reason => (_$data['reason'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$orderId = orderId;
+    result$data['orderId'] = l$orderId;
+    final l$reason = reason;
+    result$data['reason'] = l$reason;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$RequestOrderCancellation<
+          Variables$Mutation$RequestOrderCancellation>
+      get copyWith => CopyWith$Variables$Mutation$RequestOrderCancellation(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$RequestOrderCancellation ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderId = orderId;
+    final lOther$orderId = other.orderId;
+    if (l$orderId != lOther$orderId) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderId = orderId;
+    final l$reason = reason;
+    return Object.hashAll([
+      l$orderId,
+      l$reason,
+    ]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$RequestOrderCancellation<TRes> {
+  factory CopyWith$Variables$Mutation$RequestOrderCancellation(
+    Variables$Mutation$RequestOrderCancellation instance,
+    TRes Function(Variables$Mutation$RequestOrderCancellation) then,
+  ) = _CopyWithImpl$Variables$Mutation$RequestOrderCancellation;
+
+  factory CopyWith$Variables$Mutation$RequestOrderCancellation.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$RequestOrderCancellation;
+
+  TRes call({
+    String? orderId,
+    String? reason,
+  });
+}
+
+class _CopyWithImpl$Variables$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Variables$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithImpl$Variables$Mutation$RequestOrderCancellation(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$RequestOrderCancellation _instance;
+
+  final TRes Function(Variables$Mutation$RequestOrderCancellation) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderId = _undefined,
+    Object? reason = _undefined,
+  }) =>
+      _then(Variables$Mutation$RequestOrderCancellation._({
+        ..._instance._$data,
+        if (orderId != _undefined && orderId != null)
+          'orderId': (orderId as String),
+        if (reason != _undefined && reason != null)
+          'reason': (reason as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Variables$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$RequestOrderCancellation(this._res);
+
+  TRes _res;
+
+  call({
+    String? orderId,
+    String? reason,
+  }) =>
+      _res;
+}
+
+class Mutation$RequestOrderCancellation {
+  Mutation$RequestOrderCancellation({
+    required this.requestOrderCancellation,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$RequestOrderCancellation.fromJson(
+      Map<String, dynamic> json) {
+    final l$requestOrderCancellation = json['requestOrderCancellation'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RequestOrderCancellation(
+      requestOrderCancellation:
+          Mutation$RequestOrderCancellation$requestOrderCancellation.fromJson(
+              (l$requestOrderCancellation as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$RequestOrderCancellation$requestOrderCancellation
+      requestOrderCancellation;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$requestOrderCancellation = requestOrderCancellation;
+    _resultData['requestOrderCancellation'] =
+        l$requestOrderCancellation.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$requestOrderCancellation = requestOrderCancellation;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$requestOrderCancellation,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$RequestOrderCancellation ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$requestOrderCancellation = requestOrderCancellation;
+    final lOther$requestOrderCancellation = other.requestOrderCancellation;
+    if (l$requestOrderCancellation != lOther$requestOrderCancellation) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RequestOrderCancellation
+    on Mutation$RequestOrderCancellation {
+  CopyWith$Mutation$RequestOrderCancellation<Mutation$RequestOrderCancellation>
+      get copyWith => CopyWith$Mutation$RequestOrderCancellation(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RequestOrderCancellation<TRes> {
+  factory CopyWith$Mutation$RequestOrderCancellation(
+    Mutation$RequestOrderCancellation instance,
+    TRes Function(Mutation$RequestOrderCancellation) then,
+  ) = _CopyWithImpl$Mutation$RequestOrderCancellation;
+
+  factory CopyWith$Mutation$RequestOrderCancellation.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$RequestOrderCancellation;
+
+  TRes call({
+    Mutation$RequestOrderCancellation$requestOrderCancellation?
+        requestOrderCancellation,
+    String? $__typename,
+  });
+  CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation<TRes>
+      get requestOrderCancellation;
+}
+
+class _CopyWithImpl$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithImpl$Mutation$RequestOrderCancellation(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RequestOrderCancellation _instance;
+
+  final TRes Function(Mutation$RequestOrderCancellation) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? requestOrderCancellation = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$RequestOrderCancellation(
+        requestOrderCancellation: requestOrderCancellation == _undefined ||
+                requestOrderCancellation == null
+            ? _instance.requestOrderCancellation
+            : (requestOrderCancellation
+                as Mutation$RequestOrderCancellation$requestOrderCancellation),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation<TRes>
+      get requestOrderCancellation {
+    final local$requestOrderCancellation = _instance.requestOrderCancellation;
+    return CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation(
+        local$requestOrderCancellation,
+        (e) => call(requestOrderCancellation: e));
+  }
+}
+
+class _CopyWithStubImpl$Mutation$RequestOrderCancellation<TRes>
+    implements CopyWith$Mutation$RequestOrderCancellation<TRes> {
+  _CopyWithStubImpl$Mutation$RequestOrderCancellation(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$RequestOrderCancellation$requestOrderCancellation?
+        requestOrderCancellation,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation<TRes>
+      get requestOrderCancellation =>
+          CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation
+              .stub(_res);
+}
+
+const documentNodeMutationRequestOrderCancellation = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.mutation,
+    name: NameNode(value: 'RequestOrderCancellation'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'orderId')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'ID'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'reason')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'requestOrderCancellation'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'orderId'),
+            value: VariableNode(name: NameNode(value: 'orderId')),
+          ),
+          ArgumentNode(
+            name: NameNode(value: 'reason'),
+            value: VariableNode(name: NameNode(value: 'reason')),
+          ),
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'code'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'state'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Mutation$RequestOrderCancellation _parserFn$Mutation$RequestOrderCancellation(
+        Map<String, dynamic> data) =>
+    Mutation$RequestOrderCancellation.fromJson(data);
+typedef OnMutationCompleted$Mutation$RequestOrderCancellation = FutureOr<void>
+    Function(
+  Map<String, dynamic>?,
+  Mutation$RequestOrderCancellation?,
+);
+
+class Options$Mutation$RequestOrderCancellation
+    extends graphql.MutationOptions<Mutation$RequestOrderCancellation> {
+  Options$Mutation$RequestOrderCancellation({
+    String? operationName,
+    required Variables$Mutation$RequestOrderCancellation variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$RequestOrderCancellation? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$RequestOrderCancellation? onCompleted,
+    graphql.OnMutationUpdate<Mutation$RequestOrderCancellation>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$RequestOrderCancellation(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationRequestOrderCancellation,
+          parserFn: _parserFn$Mutation$RequestOrderCancellation,
+        );
+
+  final OnMutationCompleted$Mutation$RequestOrderCancellation?
+      onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+class WatchOptions$Mutation$RequestOrderCancellation
+    extends graphql.WatchQueryOptions<Mutation$RequestOrderCancellation> {
+  WatchOptions$Mutation$RequestOrderCancellation({
+    String? operationName,
+    required Variables$Mutation$RequestOrderCancellation variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$RequestOrderCancellation? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeMutationRequestOrderCancellation,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Mutation$RequestOrderCancellation,
+        );
+}
+
+extension ClientExtension$Mutation$RequestOrderCancellation
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$RequestOrderCancellation>>
+      mutate$RequestOrderCancellation(
+              Options$Mutation$RequestOrderCancellation options) async =>
+          await this.mutate(options);
+  graphql.ObservableQuery<Mutation$RequestOrderCancellation>
+      watchMutation$RequestOrderCancellation(
+              WatchOptions$Mutation$RequestOrderCancellation options) =>
+          this.watchMutation(options);
+}
+
+class Mutation$RequestOrderCancellation$HookResult {
+  Mutation$RequestOrderCancellation$HookResult(
+    this.runMutation,
+    this.result,
+  );
+
+  final RunMutation$Mutation$RequestOrderCancellation runMutation;
+
+  final graphql.QueryResult<Mutation$RequestOrderCancellation> result;
+}
+
+Mutation$RequestOrderCancellation$HookResult
+    useMutation$RequestOrderCancellation(
+        [WidgetOptions$Mutation$RequestOrderCancellation? options]) {
+  final result = graphql_flutter.useMutation(
+      options ?? WidgetOptions$Mutation$RequestOrderCancellation());
+  return Mutation$RequestOrderCancellation$HookResult(
+    (variables, {optimisticResult, typedOptimisticResult}) =>
+        result.runMutation(
+      variables.toJson(),
+      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+    ),
+    result.result,
+  );
+}
+
+graphql.ObservableQuery<Mutation$RequestOrderCancellation>
+    useWatchMutation$RequestOrderCancellation(
+            WatchOptions$Mutation$RequestOrderCancellation options) =>
+        graphql_flutter.useWatchMutation(options);
+
+class WidgetOptions$Mutation$RequestOrderCancellation
+    extends graphql.MutationOptions<Mutation$RequestOrderCancellation> {
+  WidgetOptions$Mutation$RequestOrderCancellation({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$RequestOrderCancellation? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$RequestOrderCancellation? onCompleted,
+    graphql.OnMutationUpdate<Mutation$RequestOrderCancellation>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$RequestOrderCancellation(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationRequestOrderCancellation,
+          parserFn: _parserFn$Mutation$RequestOrderCancellation,
+        );
+
+  final OnMutationCompleted$Mutation$RequestOrderCancellation?
+      onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+typedef RunMutation$Mutation$RequestOrderCancellation
+    = graphql.MultiSourceResult<Mutation$RequestOrderCancellation> Function(
+  Variables$Mutation$RequestOrderCancellation, {
+  Object? optimisticResult,
+  Mutation$RequestOrderCancellation? typedOptimisticResult,
+});
+typedef Builder$Mutation$RequestOrderCancellation = widgets.Widget Function(
+  RunMutation$Mutation$RequestOrderCancellation,
+  graphql.QueryResult<Mutation$RequestOrderCancellation>?,
+);
+
+class Mutation$RequestOrderCancellation$Widget
+    extends graphql_flutter.Mutation<Mutation$RequestOrderCancellation> {
+  Mutation$RequestOrderCancellation$Widget({
+    widgets.Key? key,
+    WidgetOptions$Mutation$RequestOrderCancellation? options,
+    required Builder$Mutation$RequestOrderCancellation builder,
+  }) : super(
+          key: key,
+          options: options ?? WidgetOptions$Mutation$RequestOrderCancellation(),
+          builder: (
+            run,
+            result,
+          ) =>
+              builder(
+            (
+              variables, {
+              optimisticResult,
+              typedOptimisticResult,
+            }) =>
+                run(
+              variables.toJson(),
+              optimisticResult:
+                  optimisticResult ?? typedOptimisticResult?.toJson(),
+            ),
+            result,
+          ),
+        );
+}
+
+class Mutation$RequestOrderCancellation$requestOrderCancellation {
+  Mutation$RequestOrderCancellation$requestOrderCancellation({
+    required this.id,
+    required this.code,
+    required this.state,
+    this.$__typename = 'Order',
+  });
+
+  factory Mutation$RequestOrderCancellation$requestOrderCancellation.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$code = json['code'];
+    final l$state = json['state'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RequestOrderCancellation$requestOrderCancellation(
+      id: (l$id as String),
+      code: (l$code as String),
+      state: (l$state as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String code;
+
+  final String state;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$state = state;
+    _resultData['state'] = l$state;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$code = code;
+    final l$state = state;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$code,
+      l$state,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$RequestOrderCancellation$requestOrderCancellation ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$state = state;
+    final lOther$state = other.state;
+    if (l$state != lOther$state) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RequestOrderCancellation$requestOrderCancellation
+    on Mutation$RequestOrderCancellation$requestOrderCancellation {
+  CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation<
+          Mutation$RequestOrderCancellation$requestOrderCancellation>
+      get copyWith =>
+          CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation<
+    TRes> {
+  factory CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation(
+    Mutation$RequestOrderCancellation$requestOrderCancellation instance,
+    TRes Function(Mutation$RequestOrderCancellation$requestOrderCancellation)
+        then,
+  ) = _CopyWithImpl$Mutation$RequestOrderCancellation$requestOrderCancellation;
+
+  factory CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RequestOrderCancellation$requestOrderCancellation;
+
+  TRes call({
+    String? id,
+    String? code,
+    String? state,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$RequestOrderCancellation$requestOrderCancellation<
+        TRes>
+    implements
+        CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation<
+            TRes> {
+  _CopyWithImpl$Mutation$RequestOrderCancellation$requestOrderCancellation(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RequestOrderCancellation$requestOrderCancellation _instance;
+
+  final TRes Function(
+      Mutation$RequestOrderCancellation$requestOrderCancellation) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? code = _undefined,
+    Object? state = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$RequestOrderCancellation$requestOrderCancellation(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        state: state == _undefined || state == null
+            ? _instance.state
+            : (state as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$RequestOrderCancellation$requestOrderCancellation<
+        TRes>
+    implements
+        CopyWith$Mutation$RequestOrderCancellation$requestOrderCancellation<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RequestOrderCancellation$requestOrderCancellation(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? code,
+    String? state,
+    String? $__typename,
+  }) =>
+      _res;
+}

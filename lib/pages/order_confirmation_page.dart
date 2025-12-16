@@ -141,7 +141,7 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
                 ),
                 SizedBox(height: ResponsiveUtils.rp(24)),
 
-                // Share Bill Button
+             /*   // Share Bill Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -160,7 +160,7 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
                   ),
                 ),
                 SizedBox(height: ResponsiveUtils.rp(24)),
-
+*/
                 // Order Details Card
                 Container(
                   decoration: BoxDecoration(

@@ -229,4 +229,13 @@ mutation RemoveCouponCode($couponCode: String!){
     }
 }
 
+mutation RequestOrderCancellation($orderId: ID!, $reason: String!) {
+    requestOrderCancellation(orderId: $orderId, reason: $reason) {
+        id
+        code
+        state
+        __typename
+    }
+}
+
 

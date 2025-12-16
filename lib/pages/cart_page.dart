@@ -86,6 +86,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       }
       // Load shipping methods
       await orderController.getEligibleShippingMethods();
+      // Refresh order to get latest shipping lines
+      await orderController.getActiveOrder(skipLoading: true);
       // Load existing shipping method from order
       _loadExistingShippingMethod();
       // Load loyalty points config

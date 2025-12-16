@@ -15,6 +15,7 @@ import '../widgets/responsive_text.dart';
 import '../widgets/responsive_icon.dart';
 import '../widgets/shimmers.dart';
 import '../widgets/snackbar.dart';
+import '../widgets/cart_button_with_badge.dart';
 import '../services/analytics_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -268,67 +269,10 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
         onPressed: () => Get.back(),
       ),
       actions: [
-        // Cart Button with Total Item Count in Center
-        Obx(() {
-          final cartItemCount = cartController.cartItemCount;
-          return Padding(
-            padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
-            child: Container(
-              width: ResponsiveUtils.rp(48),
-              height: ResponsiveUtils.rp(48),
-              decoration: BoxDecoration(
-                color: AppColors.card.withValues(alpha: 0.95),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.15),
-                    blurRadius: ResponsiveUtils.rp(12),
-                    offset: Offset(0, ResponsiveUtils.rp(4)),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => Get.toNamed('/cart'),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(24)),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Cart Icon
-                      Icon(
-                        Icons.shopping_cart_rounded,
-                        color: AppColors.textPrimary,
-                        size: ResponsiveUtils.rp(26),
-                      ),
-                      // Total Item Count at Top of Icon
-                      if (cartItemCount > 0)
-                        Positioned(
-                          top: ResponsiveUtils.rp(4),
-                          child: Text(
-                            cartItemCount > 99 ? '99+' : '$cartItemCount',
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: ResponsiveUtils.sp(11),
-                              fontWeight: FontWeight.w800,
-                              height: 1.0,
-                              shadows: [
-                                Shadow(
-                                  color: AppColors.card,
-                                  blurRadius: ResponsiveUtils.rp(4),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
+        CartButtonWithBadge(
+          cartController: cartController,
+          useIconButton: false,
+        ),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: images.isNotEmpty && images.first.isNotEmpty

@@ -11,19 +11,19 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       
-      // Color Scheme - Zomato Theme
+      // Color Scheme - Clean Light Theme
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.zomatoRed,
         brightness: Brightness.light,
-        primary: AppColors.zomatoBackground,
+        primary: Colors.white,
         secondary: AppColors.zomatoOrange,
         error: AppColors.error,
-        surface: AppColors.surface,
-        background: AppColors.zomatoBackground,
+        surface: Colors.white,
+        background: Colors.white,
       ),
       
-      // Scaffold Background - Zomato tint
-      scaffoldBackgroundColor: AppColors.zomatoBackground,
+      // Scaffold Background - Pure white for consistency
+      scaffoldBackgroundColor: Colors.white,
       
       // AppBar Theme
       appBarTheme: AppBarTheme(

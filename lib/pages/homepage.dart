@@ -28,6 +28,7 @@ import '../services/analytics_service.dart';
 import '../services/graphql_client.dart';
 import '../services/remote_config_service.dart';
 import '../graphql/banner.graphql.dart';
+import '../controllers/theme_controller.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -45,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final OrderController orderController = Get.put(OrderController());
   final CustomerController customerController = Get.put(CustomerController());
   final UtilityController utilityController = Get.put(UtilityController());
+  final ThemeController themeController = Get.find<ThemeController>();
   
   // Track selected variant for each product in favorites
   final Map<String, String> _selectedVariantIds = {};
@@ -75,9 +77,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final channelCode = box.read('channel_code') ?? '';
     final cityName = _formatCityName(channelCode);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: RefreshIndicator(
+    // Observe theme changes to rebuild the entire page
+    return Obx(() {
+      // Force rebuild when theme changes
+      final _ = themeController.isDarkMode;
+      
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: RefreshIndicator(
         onRefresh: () async {
           // Create list of futures based on authentication status
           List<Future> futures = [
@@ -113,7 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: Obx(() => BottomNavComponent(
             cartCount: cartController.cartItemCount,
           )),
-    );
+      );
+    });
   }
 
   SliverToBoxAdapter _buildHeader(String cityName) {

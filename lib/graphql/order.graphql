@@ -172,12 +172,6 @@ mutation AddPayment($input: PaymentInput!) {
     }
 }
 
-mutation RequestOrderCancellation($orderId: ID!, $reason: String!) {
-    requestOrderCancellation(orderId: $orderId, reason: $reason) {
-        ...Cart
-        __typename
-    }
-}
 query NextOrderStates{
     nextOrderStates
 }

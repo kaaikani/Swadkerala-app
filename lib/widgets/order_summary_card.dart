@@ -30,6 +30,8 @@ class OrderSummaryCard extends StatelessWidget {
   final VoidCallback? onToggleLoyaltyPoints;
   final int? couponDiscount; // Discount amount in paise
   final String? appliedCouponName; // Name of applied coupon
+  final String? appliedCouponCode; // Code of applied coupon
+  final bool? hasFreeShippingCoupon; // Whether coupon provides free shipping
 
   const OrderSummaryCard({
     Key? key,
@@ -53,6 +55,8 @@ class OrderSummaryCard extends StatelessWidget {
     this.onToggleLoyaltyPoints,
     this.couponDiscount,
     this.appliedCouponName,
+    this.appliedCouponCode,
+    this.hasFreeShippingCoupon,
   }) : super(key: key);
 
   @override
@@ -324,24 +328,74 @@ class OrderSummaryCard extends StatelessWidget {
           ],
           // Shipping Cost Display - Show if shipping method is applied
           if (shippingMethod != null && shippingMethod!.isNotEmpty && shippingMethod == 'Applied') ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ResponsiveText(
-                  'Shipping Cost',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
-                ResponsiveText(
-                  shipping.isNotEmpty ? shipping : 'Free',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ],
-            ),
+            // Show delivery charge with coupon code if free shipping from coupon
+            if (hasFreeShippingCoupon == true && appliedCouponCode != null) ...[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ResponsiveText(
+                        'Shipping Cost',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                      ResponsiveText(
+                        'Free',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.success,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.local_offer,
+                        size: ResponsiveUtils.rp(14),
+                        color: AppColors.success,
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(4)),
+                      Flexible(
+                        child: ResponsiveText(
+                          'Applied: $appliedCouponCode',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.success,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ] else ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ResponsiveText(
+                    'Shipping Cost',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
+                  ResponsiveText(
+                    shipping.isNotEmpty ? shipping : 'Free',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: (shipping.isEmpty || shipping.toLowerCase() == 'free') 
+                        ? AppColors.success 
+                        : AppColors.textPrimary,
+                  ),
+                ],
+              ),
+            ],
             SizedBox(height: ResponsiveUtils.rp(8)),
           ],
           // Coupon Discount - Show below shipping cost if applied
@@ -350,21 +404,27 @@ class OrderSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.local_offer,
-                      size: ResponsiveUtils.rp(16),
-                      color: AppColors.success,
-                    ),
-                    SizedBox(width: ResponsiveUtils.rp(6)),
-                    ResponsiveText(
-                      appliedCouponName!,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
-                  ],
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.local_offer,
+                        size: ResponsiveUtils.rp(16),
+                        color: AppColors.success,
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(6)),
+                      Flexible(
+                        child: ResponsiveText(
+                          'Coupon: $appliedCouponName',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 ResponsiveText(
                   '-${PriceFormatter.formatPrice(couponDiscount!)}',

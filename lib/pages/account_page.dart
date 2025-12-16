@@ -56,22 +56,27 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0.5,
-        title: Text(
-          'My Account',
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(18),
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+    // Observe theme changes to rebuild the entire page
+    return Obx(() {
+      // Force rebuild when theme changes
+      final _ = themeController.isDarkMode;
+      
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.surface,
+          elevation: 0.5,
+          title: Text(
+            'My Account',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(18),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Obx(() {
+        body: Obx(() {
         if (utilityController.isLoadingRx.value) {
           return _buildShimmerAccount();
         }
@@ -122,7 +127,8 @@ class _AccountPageState extends State<AccountPage> {
           ),
         );
       }),
-    );
+      );
+    });
   }
 
   Widget _buildProfileCard(CustomerModel customer) {
@@ -517,7 +523,7 @@ class _AccountPageState extends State<AccountPage> {
           trailing: Switch(
             value: themeController.isDarkMode,
             onChanged: (value) {
-              themeController.toggleTheme();
+              themeController.setDarkMode(value);
             },
             activeColor: AppColors.button,
           ),
@@ -551,7 +557,10 @@ class _AccountPageState extends State<AccountPage> {
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: 16),
           child: OutlinedButton(
-            onPressed: _showLogoutDialog,
+            onPressed: () {
+debugPrint('📱 [AccountPage] Logout button pressed by user');
+              _showLogoutDialog();
+            },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red,
               side: BorderSide(color: Colors.red),
@@ -889,6 +898,8 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   void _showLogoutDialog() {
+debugPrint('📱 [AccountPage] ========== LOGOUT DIALOG REQUESTED ==========');
+debugPrint('📱 [AccountPage] User clicked logout button');
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(
@@ -904,7 +915,10 @@ class _AccountPageState extends State<AccountPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+debugPrint('📱 [AccountPage] User cancelled logout dialog');
+              Get.back();
+            },
             child: Text(
               'Cancel',
               style: TextStyle(color: Colors.grey),
@@ -912,8 +926,12 @@ class _AccountPageState extends State<AccountPage> {
           ),
           ElevatedButton(
             onPressed: () {
+debugPrint('📱 [AccountPage] User confirmed logout');
+debugPrint('📱 [AccountPage] Closing dialog and calling authController.logout()');
               Get.back();
+debugPrint('📱 [AccountPage] Dialog closed, initiating logout process...');
               authController.logout(context);
+debugPrint('📱 [AccountPage] Logout call completed');
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: Text('Logout'),
@@ -921,6 +939,7 @@ class _AccountPageState extends State<AccountPage> {
         ],
       ),
     );
+debugPrint('📱 [AccountPage] Logout dialog displayed');
   }
 
   Future<void> _shareApp() async {

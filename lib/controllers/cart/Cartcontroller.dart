@@ -16,11 +16,68 @@ class CartController extends BaseController {
   Rx<ErrorResult?> error = Rx<ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
   final OrderController orderController = Get.put(OrderController());
+  
+  // Flag to prevent concurrent transitions to AddingItems
+  bool _isTransitioningToAddingItems = false;
 
   Future<bool> addToCart(
       {required int productVariantId, int quantity = 1}) async {
 
     try {
+      // Check if order exists and is in a state that prevents adding items
+      final currentCart = cart.value;
+      if (currentCart != null) {
+        final currentState = currentCart.state.toLowerCase();
+        
+        // Don't transition if order is in ArrangingPayment - user should complete payment first
+        if (currentState == 'arrangingpayment') {
+          debugPrint('[Cart] Order is in ArrangingPayment state. Cannot add items. Please complete or cancel payment first.');
+          error.value = ErrorResult(
+            errorCode: "ORDER_IN_PAYMENT",
+            message: 'Cannot add items while payment is being arranged. Please complete or cancel the payment first.',
+          );
+          return false;
+        }
+        
+        // If order is in other non-AddingItems state and not already transitioning, transition to AddingItems first
+        if (currentState != 'addingitems' && !_isTransitioningToAddingItems) {
+          _isTransitioningToAddingItems = true;
+          try {
+            debugPrint('[Cart] Order is in $currentState state, transitioning to AddingItems before adding item...');
+            
+            // Transition to AddingItems state
+            final transitioned = await orderController.transitionToState('AddingItems', skipLoading: true);
+            if (!transitioned) {
+              debugPrint('[Cart] Failed to transition order to AddingItems state');
+              error.value = ErrorResult(
+                errorCode: "TRANSITION_FAILED",
+                message: 'Unable to modify order. Please try again.',
+              );
+              return false;
+            }
+            
+            // Refresh cart to get updated state
+            await getActiveOrder();
+          } finally {
+            _isTransitioningToAddingItems = false;
+          }
+        } else if (_isTransitioningToAddingItems) {
+          // If transition is already in progress, wait a bit and check again
+          debugPrint('[Cart] Transition to AddingItems in progress, waiting...');
+          await Future.delayed(Duration(milliseconds: 500));
+          // Try to get updated cart state
+          await getActiveOrder();
+          final updatedState = cart.value?.state.toLowerCase();
+          if (updatedState != 'addingitems') {
+            error.value = ErrorResult(
+              errorCode: "TRANSITION_IN_PROGRESS",
+              message: 'Please wait for the current operation to complete.',
+            );
+            return false;
+          }
+        }
+      }
+      
       final response = await GraphqlService.client.value.mutate$AddToCart(
         Options$Mutation$AddToCart(
           variables: Variables$Mutation$AddToCart(
@@ -211,6 +268,60 @@ debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
     }
     
     try {
+      // Check if order exists and is in a state that prevents modifying items
+      final currentCart = cart.value;
+      if (currentCart != null) {
+        final currentState = currentCart.state.toLowerCase();
+        
+        // Don't transition if order is in ArrangingPayment - user should complete payment first
+        if (currentState == 'arrangingpayment') {
+          debugPrint('[Cart] Order is in ArrangingPayment state. Cannot modify items. Please complete or cancel payment first.');
+          error.value = ErrorResult(
+            errorCode: "ORDER_IN_PAYMENT",
+            message: 'Cannot modify items while payment is being arranged. Please complete or cancel the payment first.',
+          );
+          return false;
+        }
+        
+        // If order is in other non-AddingItems state and not already transitioning, transition to AddingItems first
+        if (currentState != 'addingitems' && !_isTransitioningToAddingItems) {
+          _isTransitioningToAddingItems = true;
+          try {
+            debugPrint('[Cart] Order is in $currentState state, transitioning to AddingItems before adjusting line...');
+            
+            // Transition to AddingItems state
+            final transitioned = await orderController.transitionToState('AddingItems', skipLoading: true);
+            if (!transitioned) {
+              debugPrint('[Cart] Failed to transition order to AddingItems state');
+              error.value = ErrorResult(
+                errorCode: "TRANSITION_FAILED",
+                message: 'Unable to modify order. Please try again.',
+              );
+              return false;
+            }
+            
+            // Refresh cart to get updated state
+            await getActiveOrder();
+          } finally {
+            _isTransitioningToAddingItems = false;
+          }
+        } else if (_isTransitioningToAddingItems) {
+          // If transition is already in progress, wait a bit and check again
+          debugPrint('[Cart] Transition to AddingItems in progress, waiting...');
+          await Future.delayed(Duration(milliseconds: 500));
+          // Try to get updated cart state
+          await getActiveOrder();
+          final updatedState = cart.value?.state.toLowerCase();
+          if (updatedState != 'addingitems') {
+            error.value = ErrorResult(
+              errorCode: "TRANSITION_IN_PROGRESS",
+              message: 'Please wait for the current operation to complete.',
+            );
+            return false;
+          }
+        }
+      }
+      
       final response = await GraphqlService.client.value.mutate$AdjustOrderLine(
         Options$Mutation$AdjustOrderLine(
           variables: Variables$Mutation$AdjustOrderLine(

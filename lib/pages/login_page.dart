@@ -764,6 +764,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
               fontSize: ResponsiveUtils.sp(14),
               fontWeight: FontWeight.w600,
             ),
+            textAlign: TextAlign.end,
           ),
         ),
       ],

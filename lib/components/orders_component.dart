@@ -10,7 +10,7 @@ import '../utils/bill_generator.dart';
 import '../theme/colors.dart';
 import '../pages/orders_page.dart';
 
-class OrdersComponent extends StatelessWidget {
+class OrdersComponent extends StatefulWidget {
   final CustomerController customerController;
   final OrderFilter filter;
 
@@ -21,30 +21,73 @@ class OrdersComponent extends StatelessWidget {
   });
 
   @override
+  State<OrdersComponent> createState() => _OrdersComponentState();
+}
+
+class _OrdersComponentState extends State<OrdersComponent> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      // Load more when user scrolls to 80% of the list
+      widget.customerController.loadMoreOrders();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.find<ThemeController>();
 
     return Obx(() {
       // Observe theme changes
       final _ = themeController.isDarkMode;
-      final allOrders = customerController.orders;
+      final allOrders = widget.customerController.orders;
       final filteredOrders = _filterOrders(allOrders);
+      final hasMore = widget.customerController.hasMoreOrders.value;
+      final isLoadingMore = widget.customerController.isLoadingMoreOrders.value;
 
-      if (filteredOrders.isEmpty) {
-        return _buildEmptyOrdersState(filter);
+      if (filteredOrders.isEmpty && !isLoadingMore) {
+        return _buildEmptyOrdersState(widget.filter);
       }
 
-        return RefreshIndicator(
+      return RefreshIndicator(
         onRefresh: () async {
-          await customerController.getActiveCustomer();
+          // Reset pagination on refresh
+          widget.customerController.hasMoreOrders.value = true;
+          await widget.customerController.getActiveCustomer();
         },
         color: AppColors.refreshIndicator,
         child: ListView.separated(
+          controller: _scrollController,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          itemCount: filteredOrders.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          itemCount: filteredOrders.length + (hasMore || isLoadingMore ? 1 : 0),
+          separatorBuilder: (context, index) {
+            if (index < filteredOrders.length - 1) {
+              return const SizedBox(height: 12);
+            }
+            return const SizedBox.shrink();
+          },
           itemBuilder: (context, index) {
-            return _buildOrderCard(filteredOrders[index]);
+            if (index < filteredOrders.length) {
+              return _buildOrderCard(filteredOrders[index]);
+            } else {
+              // Loading indicator at the bottom
+              return _buildLoadingIndicator(isLoadingMore, hasMore);
+            }
           },
         ),
       );
@@ -60,13 +103,13 @@ class OrdersComponent extends StatelessWidget {
       return state != 'cancelled';
     }).toList();
     
-    if (filter == OrderFilter.all) {
+    if (widget.filter == OrderFilter.all) {
       filtered = nonCancelledOrders;
     } else {
       filtered = nonCancelledOrders.where((order) {
         final state = order.state?.toString().toLowerCase() ?? '';
         
-        switch (filter) {
+        switch (widget.filter) {
           case OrderFilter.paid:
             // Check for payment settled state only - fully paid orders
             return state == 'paymentsettled';
@@ -89,6 +132,7 @@ class OrdersComponent extends StatelessWidget {
           case OrderFilter.all:
             return true;
         }
+        return false;
       }).toList();
     }
     
@@ -99,8 +143,44 @@ class OrdersComponent extends StatelessWidget {
       return dateB.compareTo(dateA); // Descending order
     });
     
-    // Limit to 10 most recent orders
-    return filtered.take(10).toList();
+    // Return all filtered orders (no limit for lazy loading)
+    return filtered;
+  }
+
+  Widget _buildLoadingIndicator(bool isLoadingMore, bool hasMore) {
+    if (!isLoadingMore && !hasMore) {
+      return const SizedBox.shrink();
+    }
+    
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: isLoadingMore
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Loading more orders...',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              )
+            : Text(
+                'No more orders',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+      ),
+    );
   }
 
   Widget _buildOrderCard(dynamic order) {
@@ -232,7 +312,7 @@ class OrdersComponent extends StatelessWidget {
                   Row(
                     children: [
                       // Share Invoice Button - only show for non-cancelled orders
-                      if (!isCancelled)
+                    /*  if (!isCancelled)
                         IconButton(
                           onPressed: () => _shareInvoice(order),
                           icon: Icon(
@@ -243,7 +323,7 @@ class OrdersComponent extends StatelessWidget {
                           tooltip: 'Share Invoice',
                           padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
                           constraints: BoxConstraints(),
-                        ),
+                        ),*/
                       if (!isCancelled) SizedBox(width: ResponsiveUtils.rp(8)),
                       // View Details Button
                       TextButton(

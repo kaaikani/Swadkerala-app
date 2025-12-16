@@ -11,6 +11,7 @@ import '../services/graphql_client.dart';
 import '../graphql/product.graphql.dart';
 import '../widgets/Variant bottom sheet.dart' show VariantBottomSheet;
 import '../widgets/appbar.dart';
+import '../widgets/cart_button_with_badge.dart';
 // import '../widgets/snackbar.dart'; // Unused import
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
@@ -370,6 +371,7 @@ debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
   // --- Start of UI Restructure: Blinkit Style ---
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -381,6 +383,10 @@ debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
             onPressed: () {
               Get.toNamed('/search');
             },
+          ),
+          CartButtonWithBadge(
+            cartController: cartController,
+            useIconButton: true,
           ),
         ],
       ),

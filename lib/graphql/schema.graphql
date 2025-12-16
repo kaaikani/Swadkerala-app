@@ -4112,3 +4112,7 @@ type Zone implements Node {
   customFields: JSON
 }
 
+  customFields: JSON
+}
+
+

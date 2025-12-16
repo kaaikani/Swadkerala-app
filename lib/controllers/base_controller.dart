@@ -15,8 +15,19 @@ abstract class BaseController extends GetxController {
       final exceptionStr = response.exception.toString();
       if (exceptionStr.contains('ResponseFormatException') ||
           exceptionStr.contains('FormatException') ||
-          exceptionStr.contains('Unexpected character')) {
+          exceptionStr.contains('Unexpected character') ||
+          exceptionStr.contains('CacheMissException') ||
+          exceptionStr.contains('cache.readQuery')) {
         return true;
+      }
+      
+      // Check linkException for cache errors
+      if (response.exception?.linkException != null) {
+        final linkExceptionStr = response.exception!.linkException.toString();
+        if (linkExceptionStr.contains('CacheMissException') ||
+            linkExceptionStr.contains('cache.readQuery')) {
+          return true;
+        }
       }
       
       String errorMessage = customErrorMessage ?? 'An error occurred';

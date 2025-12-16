@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:graphql_flutter/graphql_flutter.dart' as graphql;
+import 'package:graphql_flutter/graphql_flutter.dart' show FetchPolicy;
 import 'package:recipe.app/graphql/Customer.graphql.dart';
 import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/schema.graphql.dart';
@@ -19,6 +20,12 @@ class CustomerController extends BaseController {
   final RxBool isEditingProfile = false.obs;
   final RxString error = ''.obs;
   final UtilityController utilityController = Get.find();
+  
+  // Pagination state
+  final RxInt totalOrdersCount = 0.obs;
+  final RxBool isLoadingMoreOrders = false.obs;
+  final RxBool hasMoreOrders = true.obs;
+  static const int ordersPerPage = 10;
 
   RxBool get isLoading => utilityController.isLoadingRx;
 
@@ -78,7 +85,18 @@ debugPrint('[Customer] Raw customer data: $customerJson');
 
         activeCustomer.value = CustomerModel.fromJson(customerJson);
         addresses.value = activeCustomer.value?.addresses ?? [];
-        orders.value = activeCustomer.value?.orders?.items ?? [];
+        
+        // Reset pagination state on initial load
+        final ordersData = activeCustomer.value?.orders;
+        if (ordersData != null) {
+          orders.value = ordersData.items ?? [];
+          totalOrdersCount.value = ordersData.totalItems ?? 0;
+          hasMoreOrders.value = orders.length < totalOrdersCount.value;
+        } else {
+          orders.value = [];
+          totalOrdersCount.value = 0;
+          hasMoreOrders.value = false;
+        }
 
         _initializeProfileFields();
 
@@ -120,6 +138,166 @@ debugPrint(  '[Customer] User not found error detected in catch - triggering log
       error.value = 'Failed to load customer data: $e';
     } finally {
       utilityController.setLoadingState(false);
+    }
+  }
+
+  /// Load more orders with pagination
+  Future<bool> loadMoreOrders() async {
+    // Don't load if already loading or no more orders
+    if (isLoadingMoreOrders.value || !hasMoreOrders.value) {
+      return false;
+    }
+
+    try {
+      isLoadingMoreOrders.value = true;
+      final skip = orders.length;
+      
+      debugPrint('[Customer] Loading more orders: skip=$skip, take=$ordersPerPage');
+
+      // Use raw GraphQL query until code generation runs
+      const query = '''
+        query GetCustomerOrders(\$skip: Int!, \$take: Int!) {
+          activeCustomer {
+            __typename
+            ... on Customer {
+              orders(options: { skip: \$skip, take: \$take }) {
+                totalItems
+                items {
+                  id
+                  currencyCode
+                  orderPlacedAt
+                  lines {
+                    id
+                    quantity
+                    productVariant {
+                      name
+                    }
+                    featuredAsset {
+                      name
+                      preview
+                    }
+                  }
+                  active
+                  discounts {
+                    amount
+                  }
+                  code
+                  state
+                  customer {
+                    firstName
+                    lastName
+                  }
+                  shippingAddress {
+                    country
+                    city
+                    phoneNumber
+                    streetLine1
+                    streetLine2
+                    postalCode
+                    fullName
+                  }
+                  surcharges {
+                    price
+                    priceWithTax
+                  }
+                  couponCodes
+                  payments {
+                    state
+                    createdAt
+                    method
+                    amount
+                    transactionId
+                  }
+                  totalQuantity
+                  totalWithTax
+                  billingAddress {
+                    postalCode
+                    streetLine2
+                    fullName
+                    city
+                    phoneNumber
+                    streetLine1
+                  }
+                  customFields {
+                    loyaltyPointsUsed
+                    loyaltyPointsEarned
+                    otherInstructions
+                  }
+                }
+              }
+            }
+          }
+        }
+      ''';
+
+      final response = await GraphqlService.client.value.query(
+        graphql.QueryOptions(
+          document: graphql.gql(query),
+          variables: {
+            'skip': skip,
+            'take': ordersPerPage,
+          },
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
+
+      if (response.hasException) {
+        final exception = response.exception;
+        final exceptionString = exception.toString();
+        
+        // Ignore cache-related exceptions (they're not real errors)
+        if (exceptionString.contains('CacheMissException') ||
+            exceptionString.contains('cache.readQuery')) {
+          debugPrint('[Customer] Cache miss (expected) - continuing with network data');
+          // Continue processing if we have data despite cache miss
+          if (response.data == null) {
+            debugPrint('[Customer] No data available after cache miss');
+            return false;
+          }
+        } else {
+          // Only show error dialog for real errors, not cache misses
+          debugPrint('[Customer] Error loading more orders: $exception');
+          // Don't show error dialog for pagination - just fail silently
+          return false;
+        }
+      }
+
+      final data = response.data;
+      if (data != null && data['activeCustomer'] != null) {
+        final customerData = data['activeCustomer'];
+        if (customerData != null && customerData['orders'] != null) {
+          final ordersData = customerData['orders'];
+          final newOrders = ordersData['items'] as List<dynamic>? ?? [];
+          final totalItems = ordersData['totalItems'] as int? ?? 0;
+          
+          if (newOrders.isNotEmpty) {
+            // Convert GraphQL orders to OrderModel
+            final orderModels = newOrders.map((order) {
+              return OrderModel.fromJson(order as Map<String, dynamic>);
+            }).toList();
+            
+            orders.addAll(orderModels);
+            totalOrdersCount.value = totalItems;
+            hasMoreOrders.value = orders.length < totalOrdersCount.value;
+            
+            debugPrint('[Customer] Loaded ${newOrders.length} more orders. Total: ${orders.length}/${totalOrdersCount.value}');
+            return true;
+          } else {
+            hasMoreOrders.value = false;
+            debugPrint('[Customer] No more orders to load');
+            return false;
+          }
+        }
+      }
+      
+      hasMoreOrders.value = false;
+      return false;
+    } catch (e) {
+      debugPrint('[Customer] Exception loading more orders: $e');
+      handleException(e, customErrorMessage: 'Failed to load more orders');
+      return false;
+    } finally {
+      isLoadingMoreOrders.value = false;
     }
   }
 
