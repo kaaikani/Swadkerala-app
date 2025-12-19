@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_number/mobile_number.dart';
 
@@ -35,6 +37,12 @@ class SimDetectionService {
   
   /// Check if phone permission is granted
   Future<bool> hasPhonePermission() async {
+    // Platform check: mobile_number has limited iOS support
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[SimDetectionService] Phone permission check skipped - not on Android platform');
+      return false;
+    }
+
     try {
       return await MobileNumber.hasPhonePermission;
     } catch (e) {
@@ -45,6 +53,12 @@ debugPrint('[SimDetectionService] Error checking permission: $e');
 
   /// Request phone permission
   Future<bool> requestPhonePermission() async {
+    // Platform check: mobile_number has limited iOS support
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[SimDetectionService] Phone permission request skipped - not on Android platform');
+      return false;
+    }
+
     try {
 debugPrint('[SimDetectionService] Requesting phone permission...');
       
@@ -75,6 +89,12 @@ debugPrint('[SimDetectionService] Error requesting permission: $e');
 
   /// Get all available SIM information with timeout and caching
   Future<List<SimInfo>> getAllSimInfo({bool forcePermissionRequest = false}) async {
+    // Platform check: mobile_number has limited iOS support
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[SimDetectionService] SIM detection skipped - not on Android platform. iOS requires manual phone number input.');
+      return []; // Return empty list for iOS/Web
+    }
+
     // Check cache first (but not if forcing permission request)
     if (!forcePermissionRequest && 
         _cachedSimInfo != null && 
@@ -98,7 +118,7 @@ debugPrint('[SimDetectionService] No phone permission - will return empty list')
         return simInfoList;
       }
 
-      // Get SIM cards with timeout
+      // Get SIM cards with timeout (Android only)
       List<SimCard>? simCards = await MobileNumber.getSimCards?.timeout(
         const Duration(seconds: 2),
         onTimeout: () {

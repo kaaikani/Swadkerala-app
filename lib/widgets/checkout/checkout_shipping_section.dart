@@ -25,6 +25,8 @@ class CheckoutShippingSection extends StatelessWidget {
         return SizedBox.shrink();
       }
 
+      final hasSingleMethod = orderController.shippingMethods.length == 1;
+      final singleMethod = hasSingleMethod ? orderController.shippingMethods.first : null;
       final selectedMethod = orderController.selectedShippingMethod.value;
       
       // Find the matching method from the list to ensure object equality
@@ -48,7 +50,7 @@ class CheckoutShippingSection extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(16)),
             child: Text(
-              'Select Delivery Method',
+              hasSingleMethod ? 'Delivery Method' : 'Select Delivery Method',
               style: TextStyle(
                 fontSize: ResponsiveUtils.sp(20),
                 fontWeight: FontWeight.bold,
@@ -57,106 +59,170 @@ class CheckoutShippingSection extends StatelessWidget {
             ),
           ),
 
-          // Dropdown for Shipping Methods
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.card,
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-              border: Border.all(
-                color: AppColors.border,
-                width: 1,
+          // Show simple card for single method, dropdown for multiple methods
+          if (hasSingleMethod && singleMethod != null)
+            // Single method - show as simple card (no dropdown)
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                border: Border.all(
+                  color: AppColors.border,
+                  width: 1,
+                ),
               ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<ShippingMethod>(
-                value: matchingSelectedMethod,
-                isExpanded: true,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  size: ResponsiveUtils.rp(24),
-                  color: AppColors.icon,
-                ),
-                hint: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ResponsiveUtils.rp(16),
-                    vertical: ResponsiveUtils.rp(12),
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(16),
+                vertical: ResponsiveUtils.rp(16),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.local_shipping_rounded,
+                    color: AppColors.button,
+                    size: ResponsiveUtils.rp(24),
                   ),
-                  child: Text(
-                    'Select delivery method',
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          singleMethod.name,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(16),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        if (singleMethod.description.isNotEmpty) ...[
+                          SizedBox(height: ResponsiveUtils.rp(4)),
+                          Text(
+                            singleMethod.description,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(13),
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  Text(
+                    cartController.formatPrice(singleMethod.priceWithTax),
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(15),
-                      color: AppColors.textSecondary,
+                      fontSize: ResponsiveUtils.sp(16),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.button,
                     ),
                   ),
+                ],
+              ),
+            )
+          else
+            // Multiple methods - show dropdown
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                border: Border.all(
+                  color: AppColors.border,
+                  width: 1,
                 ),
-                items: orderController.shippingMethods.map((method) {
-                  final priceText = cartController.formatPrice(method.priceWithTax);
-                  return DropdownMenuItem<ShippingMethod>(
-                    value: method,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.rp(16),
-                        vertical: ResponsiveUtils.rp(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              method.description.isNotEmpty
-                                  ? '${method.name} - ${method.description} • $priceText'
-                                  : '${method.name} • $priceText',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(13),
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.textPrimary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<ShippingMethod>(
+                  value: matchingSelectedMethod,
+                  isExpanded: true,
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    size: ResponsiveUtils.rp(24),
+                    color: AppColors.icon,
+                  ),
+                  hint: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(16),
+                      vertical: ResponsiveUtils.rp(12),
+                    ),
+                    child: Text(
+                      'Select delivery method',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(15),
+                        color: AppColors.textSecondary,
                       ),
                     ),
-                  );
-                }).toList(),
-                onChanged: (ShippingMethod? newMethod) async {
-                  if (newMethod == null) return;
-                  if (orderController.selectedShippingMethod.value?.id == newMethod.id) {
-                    return;
-                  }
-                  orderController.selectedShippingMethod.value = newMethod;
-                  await onShippingMethodSelected();
-                },
-                selectedItemBuilder: (BuildContext context) {
-                  return orderController.shippingMethods.map((method) {
+                  ),
+                  items: orderController.shippingMethods.map((method) {
                     final priceText = cartController.formatPrice(method.priceWithTax);
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.rp(16),
-                        vertical: ResponsiveUtils.rp(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${method.name} • $priceText',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(15),
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                    return DropdownMenuItem<ShippingMethod>(
+                      value: method,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(16),
+                          vertical: ResponsiveUtils.rp(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                method.description.isNotEmpty
+                                    ? '${method.name} - ${method.description} • $priceText'
+                                    : '${method.name} • $priceText',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(13),
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
-                  }).toList();
-                },
+                  }).toList(),
+                  onChanged: (ShippingMethod? newMethod) async {
+                    if (newMethod == null) return;
+                    if (orderController.selectedShippingMethod.value?.id == newMethod.id) {
+                      return;
+                    }
+                    orderController.selectedShippingMethod.value = newMethod;
+                    await onShippingMethodSelected();
+                  },
+                  selectedItemBuilder: (BuildContext context) {
+                    return orderController.shippingMethods.map((method) {
+                      final priceText = cartController.formatPrice(method.priceWithTax);
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(16),
+                          vertical: ResponsiveUtils.rp(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${method.name} • $priceText',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(15),
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList();
+                  },
+                ),
               ),
             ),
-          ),
         ],
       );
     });

@@ -273,14 +273,14 @@ class MyApp extends StatelessWidget {
       final isDark = themeController.isDarkMode;
       
       return GetMaterialApp(
-        title: 'Kaaikani',
-        theme: AppTheme.lightTheme(),
-        darkTheme: AppTheme.darkTheme(),
+      title: 'Kaaikani',
+      theme: AppTheme.lightTheme(),
+      darkTheme: AppTheme.darkTheme(),
         themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-        debugShowCheckedModeBanner: false,
-        initialRoute: AppRoutes.initial,
-        getPages: AppRoutes.routes,
-        navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
+      debugShowCheckedModeBanner: false,
+      initialRoute: AppRoutes.initial,
+      getPages: AppRoutes.routes,
+      navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
       );
     });
   }

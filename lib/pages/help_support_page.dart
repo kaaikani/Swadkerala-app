@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../widgets/snackbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../theme/colors.dart';
@@ -276,13 +277,7 @@ class HelpSupportPage extends StatelessWidget {
   }
 
   void _showErrorSnackbar(String message) {
-    Get.snackbar(
-      'Error',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
+    SnackBarWidget.showError(message);
   }
 }
 

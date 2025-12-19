@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
@@ -69,6 +71,48 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void dispose() {
     _imagePageController.dispose();
     super.dispose();
+  }
+
+  /// Generate shareable deep link URL for this product
+  String _generateShareLink() {
+    // Get base URL from environment variables
+    final baseUrl = dotenv.env['DEEP_LINK_URL'] ?? 
+                    dotenv.env['APP_URL'] ?? 
+                    dotenv.env['SHOP_API_URL']?.replaceAll('/shop-api', '') ??
+                    'https://kaaikani.co.in';
+    
+    // Remove trailing slash if present
+    final cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    
+    // Get product name for better sharing experience
+    final productName = productDetail?.name ?? widget.productName ?? 'Product';
+    
+    // Generate deep link URL with query parameters
+    // Format: https://domain.com?page=product&productId=xxx&productName=xxx
+    final shareLink = '$cleanBaseUrl?page=product&productId=${widget.productId}&productName=${Uri.encodeComponent(productName)}';
+    
+    return shareLink;
+  }
+
+  /// Share product link
+  Future<void> _shareProduct() async {
+    try {
+      final shareLink = _generateShareLink();
+      final productName = productDetail?.name ?? widget.productName ?? 'this product';
+      
+      // Share text with link
+      final shareText = 'Check out $productName on Kaaikani!\n\n$shareLink';
+      
+      await Share.share(
+        shareText,
+        subject: 'Check out $productName',
+      );
+      
+      debugPrint('[ProductDetail] Shared product link: $shareLink');
+    } catch (e) {
+      debugPrint('[ProductDetail] Error sharing product: $e');
+      showErrorSnackbar('Failed to share product');
+    }
   }
 
   /// Get display name from variant options, fallback to variant name
@@ -269,6 +313,38 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
         onPressed: () => Get.back(),
       ),
       actions: [
+        // Share button
+        Padding(
+          padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+          child: Container(
+            width: ResponsiveUtils.rp(48),
+            height: ResponsiveUtils.rp(48),
+            decoration: BoxDecoration(
+              color: AppColors.card.withOpacity(0.95),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: ResponsiveUtils.rp(12),
+                  offset: Offset(0, ResponsiveUtils.rp(4)),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _shareProduct,
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(24)),
+                child: Icon(
+                  Icons.share_rounded,
+                  color: AppColors.icon,
+                  size: ResponsiveUtils.rp(22),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Cart button
         CartButtonWithBadge(
           cartController: cartController,
           useIconButton: false,
@@ -1707,27 +1783,13 @@ class _QuantityDialogWidgetState extends State<_QuantityDialogWidget> {
             if (qty != null && qty > 0) {
               if (qty > widget.maxQuantity) {
                 // Use Get.snackbar to avoid context issues
-                Get.snackbar(
-                  'Error',
-                  'Maximum quantity is ${widget.maxQuantity}',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.red,
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 2),
-                );
+                SnackBarWidget.showError('Maximum quantity is ${widget.maxQuantity}');
                 return;
               }
               widget.onAdd(qty);
             } else {
               // Use Get.snackbar to avoid context issues
-              Get.snackbar(
-                'Error',
-                'Please enter a valid quantity',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: Colors.red,
-                colorText: Colors.white,
-                duration: const Duration(seconds: 2),
-              );
+              SnackBarWidget.showError('Please enter a valid quantity');
             }
           },
           style: ElevatedButton.styleFrom(

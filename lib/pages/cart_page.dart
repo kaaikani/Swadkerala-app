@@ -36,6 +36,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
   // Loyalty Points
   final _loyaltyPointsController = TextEditingController();
+  final FocusNode _loyaltyPointsFocusNode = FocusNode();
 
   // Scroll controller and keys
   final ScrollController _scrollController = ScrollController();
@@ -48,6 +49,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
   // Other Instructions
   final _otherInstructionsController = TextEditingController();
+  final FocusNode _otherInstructionsFocusNode = FocusNode();
   Timer? _instructionsDebounceTimer;
   bool _showInstructionsOptions = false;
   bool _showOtherTextField = false;
@@ -61,6 +63,13 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   ];
 
   String? _lastAppliedShippingMethodId;
+
+  // Animation states for item removal
+  String? _removingItemId; // Track which item is being removed (single item)
+  bool _isClearingCart = false; // Track if cart is being cleared (all items)
+  
+  // Local loading flag to prevent flicker on initial load
+  bool _isInitialLoading = true;
 
   @override
   void initState() {
@@ -78,24 +87,40 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       ),
     );
     
+    // Load data without showing loading state to prevent flicker
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      cartController.getActiveOrder();
-      // Load coupon codes
-      if (!bannerController.couponCodesLoaded.value) {
-        bannerController.getCouponCodeList();
+      // Load cart first
+      await cartController.getActiveOrder();
+      
+      // Load other data in parallel without blocking
+      Future.wait([
+        if (!bannerController.couponCodesLoaded.value)
+          bannerController.getCouponCodeList(),
+        orderController.getEligibleShippingMethods(),
+        bannerController.fetchLoyaltyPointsConfig(),
+      ], eagerError: false).then((_) async {
+        // After shipping methods are loaded, check for single method
+        if (orderController.shippingMethods.length == 1) {
+          final singleMethod = orderController.shippingMethods.first;
+          orderController.selectedShippingMethod.value = singleMethod;
+          debugPrint('[CartPage] Auto-selected single shipping method: ${singleMethod.name}');
+          await _applyShippingMethod(showFeedback: false, force: true);
+        }
+        
+        // Refresh order to get latest shipping lines
+        await orderController.getActiveOrder(skipLoading: true);
+        _loadExistingShippingMethod();
+        _loadExistingCouponCodes();
+        _loadExistingLoyaltyPoints();
+        _loadExistingInstructions();
+      });
+      
+      // Mark initial loading as complete after first frame
+      if (mounted) {
+        setState(() {
+          _isInitialLoading = false;
+        });
       }
-      // Load shipping methods
-      await orderController.getEligibleShippingMethods();
-      // Refresh order to get latest shipping lines
-      await orderController.getActiveOrder(skipLoading: true);
-      // Load existing shipping method from order
-      _loadExistingShippingMethod();
-      // Load loyalty points config
-      bannerController.fetchLoyaltyPointsConfig();
-      // Load existing data
-      _loadExistingCouponCodes();
-      _loadExistingLoyaltyPoints();
-      _loadExistingInstructions();
       
       // Track screen view
       AnalyticsService().logScreenView(screenName: 'Cart');
@@ -106,7 +131,9 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   void dispose() {
     _instructionsDebounceTimer?.cancel();
     _loyaltyPointsController.dispose();
+    _loyaltyPointsFocusNode.dispose();
     _otherInstructionsController.dispose();
+    _otherInstructionsFocusNode.dispose();
     _scrollController.dispose();
     _blinkAnimationController.dispose();
     super.dispose();
@@ -231,6 +258,14 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
 
 
   Future<void> _handleRemoveItem(String orderLineId, String productName) async {
+    // Set removing state to trigger slide-out animation
+    setState(() {
+      _removingItemId = orderLineId;
+    });
+
+    // Wait for animation to complete (slide-out)
+    await Future.delayed(const Duration(milliseconds: 300));
+
     final success = await orderController.removeOrderLine(orderLineId);
 
     if (success) {
@@ -238,9 +273,21 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
       cartController.cart.value = orderController.currentOrder.value != null
           ? cartController.cart.value
           : null;
-      showSuccessSnackbar('$productName removed from cart');
+      
+      // Clear removing state
+      setState(() {
+        _removingItemId = null;
+      });
+      
+      // Show success snackbar with different style for single item removal
+      SnackBarWidget.showSuccess('$productName removed from cart');
+      
       await cartController.getActiveOrder();
     } else {
+      // Clear removing state on failure
+      setState(() {
+        _removingItemId = null;
+      });
       showErrorSnackbar('Failed to remove item');
     }
   }
@@ -544,20 +591,67 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
 
     if (confirmed != true) return;
 
+    // Set clearing state to trigger fade-out animation for all items
+    setState(() {
+      _isClearingCart = true;
+    });
+
+    // Wait for animation to complete (fade-out)
+    await Future.delayed(const Duration(milliseconds: 400));
+
     final success = await orderController.removeAllOrderLines();
 
     if (success) {
+      // Clear clearing state
+      setState(() {
+        _isClearingCart = false;
+      });
+      
       // Refresh cart to reflect changes
       await cartController.getActiveOrder();
-      showSuccessSnackbar('Cart cleared successfully');
+      
+      // Show success snackbar with different style for clear cart
+      SnackBarWidget.showWarning('Cart cleared successfully');
     } else {
+      // Clear clearing state on failure
+      setState(() {
+        _isClearingCart = false;
+      });
       showErrorSnackbar('Failed to clear cart');
     }
   }
 
   // Shipping Method Methods
+
   Future<void> _loadExistingShippingMethod() async {
     try {
+      // If there's only one shipping method, always set and apply it
+      if (orderController.shippingMethods.length == 1) {
+        final singleMethod = orderController.shippingMethods.first;
+        
+        // Always set the single method
+        orderController.selectedShippingMethod.value = singleMethod;
+        debugPrint('[CartPage] Auto-selected single shipping method: ${singleMethod.name}');
+        
+        // Check if it's already applied to the order
+        await orderController.getActiveOrder(skipLoading: true);
+        final order = orderController.currentOrder.value;
+        final isAlreadyApplied = order != null &&
+            order.shippingLines.isNotEmpty &&
+            order.shippingLines.any((line) => line.shippingMethod.id == singleMethod.id);
+        
+        // Only apply if not already applied
+        if (!isAlreadyApplied) {
+          debugPrint('[CartPage] Auto-applying single shipping method: ${singleMethod.name}');
+          await _applyShippingMethod(showFeedback: false, force: true);
+        } else {
+          _lastAppliedShippingMethodId = singleMethod.id;
+          debugPrint('[CartPage] Single shipping method already applied: ${singleMethod.name}');
+        }
+        return;
+      }
+      
+      // Multiple methods - check for existing shipping method from order
       await orderController.getActiveOrder(skipLoading: true);
       final order = orderController.currentOrder.value;
       
@@ -573,21 +667,20 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
         if (matchingMethod != null) {
           orderController.selectedShippingMethod.value = matchingMethod;
           _lastAppliedShippingMethodId = matchingMethod.id;
-debugPrint('[CartPage] Loaded existing shipping method: ${matchingMethod.name}');
+          debugPrint('[CartPage] Loaded existing shipping method: ${matchingMethod.name}');
           return; // Already has a shipping method, no need to auto-apply
         }
       }
       
-      // If no existing shipping method and only one method available, auto-apply it
+      // If no existing shipping method and multiple methods available, select first one but don't auto-apply
       if (orderController.selectedShippingMethod.value == null &&
-          orderController.shippingMethods.length == 1) {
-        final singleMethod = orderController.shippingMethods.first;
-        orderController.selectedShippingMethod.value = singleMethod;
-debugPrint('[CartPage] Auto-applying single shipping method: ${singleMethod.name}');
-        await _applyShippingMethod(showFeedback: false, force: true);
+          orderController.shippingMethods.isNotEmpty) {
+        final firstMethod = orderController.shippingMethods.first;
+        orderController.selectedShippingMethod.value = firstMethod;
+        debugPrint('[CartPage] Selected first shipping method: ${firstMethod.name} (user needs to confirm)');
       }
     } catch (e) {
-debugPrint('[CartPage] Error loading existing shipping method: $e');
+      debugPrint('[CartPage] Error loading existing shipping method: $e');
     }
   }
 
@@ -778,12 +871,15 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
           constraints: BoxConstraints(),
         ),],
       ),
-      body: Obx(() {
-        if (utilityController.isLoadingRx.value) {
-          return _buildShimmerList();
-        }
+      body: GetBuilder<UtilityController>(
+        builder: (utilityCtrl) {
+          // Only show shimmer on initial load, not on subsequent loading states
+          if (_isInitialLoading && utilityCtrl.isLoading) {
+            return _buildShimmerList();
+          }
 
-        final cart = cartController.cart.value;
+          return Obx(() {
+            final cart = cartController.cart.value;
 
         if (cart == null || cart.lines.isEmpty) {
           return _buildEmptyCartUI();
@@ -993,7 +1089,9 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             ),
           ],
         );
-      }),
+          });
+        },
+      ),
     );
   }
 
@@ -1014,6 +1112,8 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
 
           // Cart Items List
           _CartItemsList(
+            removingItemId: _removingItemId,
+            isClearingCart: _isClearingCart,
             key: _cartItemsListKey,
             cart: cart,
             cartController: cartController,
@@ -1269,6 +1369,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                       Expanded(
                         child: TextFormField(
                           controller: _loyaltyPointsController,
+                          focusNode: _loyaltyPointsFocusNode,
                           keyboardType: TextInputType.number,
                           enabled: !isApplied,
                           style: TextStyle(
@@ -1860,6 +1961,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
               SizedBox(height: ResponsiveUtils.rp(8)),
               TextField(
                 controller: _otherInstructionsController,
+                focusNode: _otherInstructionsFocusNode,
                 maxLines: 2,
                 style: TextStyle(fontSize: ResponsiveUtils.sp(12)),
                 decoration: InputDecoration(
@@ -2358,6 +2460,8 @@ class _CartItemsList extends StatefulWidget {
   final Function(String, int) onQuantityChange;
   final Function(String, String) onRemoveItem;
   final ScrollController scrollController;
+  final String? removingItemId; // Item being removed (single item - slide-out)
+  final bool isClearingCart; // Cart being cleared (all items - fade-out)
 
   const _CartItemsList({
     Key? key,
@@ -2367,6 +2471,8 @@ class _CartItemsList extends StatefulWidget {
     required this.onQuantityChange,
     required this.onRemoveItem,
     required this.scrollController,
+    this.removingItemId,
+    this.isClearingCart = false,
   }) : super(key: key);
 
   @override
@@ -2505,24 +2611,42 @@ class _CartItemsListState extends State<_CartItemsList> {
           statusMessage = 'OUT OF STOCK - Please remove from cart';
         }
 
-        return CartItemCardPremium(
-          imageUrl: imageUrl,
-          productName: variant.name,
-          variantName: null,
-          unitPrice: widget.cartController.formatPrice(unitPriceInt),
-          totalPrice: widget.cartController
-              .formatPrice(line.linePriceWithTax.toInt()),
-          quantity: line.quantity,
-          onIncreaseQuantity: isUnavailable
-              ? null
-              : () => widget.onQuantityChange(line.id, line.quantity + 1),
-          onDecreaseQuantity: isUnavailable
-              ? null
-              : () => widget.onQuantityChange(line.id, line.quantity - 1),
-          onRemove: () => widget.onRemoveItem(line.id, variant.name),
-          isLoading: isLoading,
-          isUnavailable: isUnavailable,
-          statusMessage: isUnavailable ? statusMessage : null,
+        // Check if this item is being removed (single item removal - slide-out)
+        final isRemoving = widget.removingItemId == line.id;
+        // Check if cart is being cleared (all items - fade-out)
+        final isFadingOut = widget.isClearingCart;
+
+        return AnimatedOpacity(
+          opacity: isRemoving || isFadingOut ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            transform: isRemoving
+                ? Matrix4.translationValues(
+                    MediaQuery.of(context).size.width, 0, 0)
+                : Matrix4.identity(),
+            child: CartItemCardPremium(
+            imageUrl: imageUrl,
+            productName: variant.name,
+            variantName: null,
+            unitPrice: widget.cartController.formatPrice(unitPriceInt),
+            totalPrice: widget.cartController
+                .formatPrice(line.linePriceWithTax.toInt()),
+            quantity: line.quantity,
+            onIncreaseQuantity: isUnavailable
+                ? null
+                : () => widget.onQuantityChange(line.id, line.quantity + 1),
+            onDecreaseQuantity: isUnavailable
+                ? null
+                : () => widget.onQuantityChange(line.id, line.quantity - 1),
+            onRemove: () => widget.onRemoveItem(line.id, variant.name),
+            isLoading: isLoading,
+            isUnavailable: isUnavailable,
+            statusMessage: isUnavailable ? statusMessage : null,
+            ),
+          ),
         );
       },
     );

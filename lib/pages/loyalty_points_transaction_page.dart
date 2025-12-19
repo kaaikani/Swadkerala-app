@@ -13,15 +13,52 @@ class LoyaltyPointsTransactionPage extends StatefulWidget {
 }
 
 class _LoyaltyPointsTransactionPageState
-    extends State<LoyaltyPointsTransactionPage> {
+    extends State<LoyaltyPointsTransactionPage> with SingleTickerProviderStateMixin {
   final CustomerController customerController = Get.find<CustomerController>();
   List<LoyaltyTransaction> _transactions = [];
+  List<LoyaltyTransaction> _filteredTransactions = [];
   bool _isLoading = true;
+  late TabController _tabController;
+  TransactionFilter _currentFilter = TransactionFilter.all;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_onTabChanged);
     _fetchTransactions();
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    setState(() {
+      _currentFilter = TransactionFilter.values[_tabController.index];
+      _applyFilter();
+    });
+  }
+
+  void _applyFilter() {
+    switch (_currentFilter) {
+      case TransactionFilter.all:
+        _filteredTransactions = _transactions;
+        break;
+      case TransactionFilter.earned:
+        _filteredTransactions = _transactions
+            .where((t) => t.type == TransactionType.earned)
+            .toList();
+        break;
+      case TransactionFilter.used:
+        _filteredTransactions = _transactions
+            .where((t) => t.type == TransactionType.used)
+            .toList();
+        break;
+    }
   }
 
   Future<void> _fetchTransactions() async {
@@ -30,10 +67,8 @@ class _LoyaltyPointsTransactionPageState
     });
 
     try {
-      // Fetch orders with loyalty points data
       await customerController.getActiveCustomer();
 
-      // Build transactions from orders
       final orders = customerController.orders;
       final transactions = <LoyaltyTransaction>[];
 
@@ -45,43 +80,41 @@ class _LoyaltyPointsTransactionPageState
         final orderCode = order.code;
         final orderState = order.state;
 
-        // Add earned transaction
         if (loyaltyPointsEarned > 0) {
           transactions.add(LoyaltyTransaction(
             type: TransactionType.earned,
             points: loyaltyPointsEarned,
             date: orderPlacedAt,
-            description: 'Earned on Order #$orderCode',
+            description: 'Earned from Order',
             orderCode: orderCode,
             orderState: orderState,
           ));
         }
 
-        // Add used transaction
         if (loyaltyPointsUsed > 0) {
           transactions.add(LoyaltyTransaction(
             type: TransactionType.used,
             points: loyaltyPointsUsed,
             date: orderPlacedAt,
-            description: 'Used on Order #$orderCode',
+            description: 'Redeemed for Order',
             orderCode: orderCode,
             orderState: orderState,
           ));
         }
       }
 
-      // Sort by date (newest first)
       transactions.sort((a, b) => b.date.compareTo(a.date));
 
       setState(() {
         _transactions = transactions;
+        _applyFilter();
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
+      debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
     }
   }
 
@@ -89,17 +122,24 @@ debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
   Widget build(BuildContext context) {
     final customer = customerController.activeCustomer.value;
     final availablePoints = customer?.customFields?.loyaltyPointsAvailable ?? 0;
+    final totalEarned = _transactions
+        .where((t) => t.type == TransactionType.earned)
+        .fold<int>(0, (sum, t) => sum + t.points);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        elevation: 0.5,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_rounded, color: AppColors.textPrimary),
+          onPressed: () => Get.back(),
+        ),
         title: Text(
           'Loyalty Points',
           style: TextStyle(
-            fontSize: ResponsiveUtils.sp(18),
-            fontWeight: FontWeight.w600,
+            fontSize: ResponsiveUtils.sp(20),
+            fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
         ),
@@ -107,46 +147,30 @@ debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
       ),
       body: Column(
         children: [
-          // Balance Card
+          // Enhanced Balance Card
+          _buildBalanceCard(availablePoints, totalEarned),
+          
+          // Filter Tabs
           Container(
-            margin: EdgeInsets.all(ResponsiveUtils.rp(16)),
-            padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.button,
-                  AppColors.button.withValues(alpha: 0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            color: AppColors.surface,
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: AppColors.button,
+              indicatorWeight: 3,
+              labelColor: AppColors.button,
+              unselectedLabelColor: AppColors.textSecondary,
+              labelStyle: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.w600,
               ),
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.button.withValues(alpha: 0.3),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Text(
-                  'Available Points',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: ResponsiveUtils.sp(14),
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(8)),
-                Text(
-                  '$availablePoints',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: ResponsiveUtils.sp(32),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              unselectedLabelStyle: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.normal,
+              ),
+              tabs: [
+                Tab(text: 'All'),
+                Tab(text: 'Earned'),
+                Tab(text: 'Used'),
               ],
             ),
           ),
@@ -154,47 +178,13 @@ debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
           // Transactions List
           Expanded(
             child: _isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.button,
-                    ),
-                  )
-                : _transactions.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.account_balance_wallet_outlined,
-                              size: 64,
-                              color: AppColors.textSecondary,
-                            ),
-                            SizedBox(height: ResponsiveUtils.rp(16)),
-                            Text(
-                              'No transactions yet',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(16),
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
+                ? _buildLoadingState()
+                : _filteredTransactions.isEmpty
+                    ? _buildEmptyState()
                     : RefreshIndicator(
                         onRefresh: _fetchTransactions,
-                        color: AppColors.refreshIndicator,
-                        child: ListView.separated(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: ResponsiveUtils.rp(16),
-                            vertical: ResponsiveUtils.rp(8),
-                          ),
-                          itemCount: _transactions.length,
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: ResponsiveUtils.rp(8)),
-                          itemBuilder: (context, index) {
-                            return _buildTransactionCard(_transactions[index]);
-                          },
-                        ),
+                        color: AppColors.button,
+                        child: _buildTransactionsList(),
                       ),
           ),
         ],
@@ -202,121 +192,115 @@ debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
     );
   }
 
-  Widget _buildTransactionCard(LoyaltyTransaction transaction) {
-    final isEarned = transaction.type == TransactionType.earned;
-    final color = isEarned ? Colors.green : Colors.red;
-    final icon = isEarned ? Icons.add_circle : Icons.remove_circle;
-    final prefix = isEarned ? '+' : '-';
-
-    // Format date and time
-    final formattedDate = _formatDate(transaction.date);
-    final formattedTime = _formatTime(transaction.date);
-
+  Widget _buildBalanceCard(int availablePoints, int totalEarned) {
     return Container(
+      margin: EdgeInsets.all(ResponsiveUtils.rp(16)),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.2),
-          width: 1,
+        gradient: LinearGradient(
+          colors: [
+            AppColors.button,
+            AppColors.button.withValues(alpha: 0.85),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.button.withValues(alpha: 0.4),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-        child: Row(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon
-            Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: ResponsiveUtils.rp(24),
-              ),
-            ),
-            SizedBox(width: ResponsiveUtils.rp(16)),
-
-            // Transaction Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    transaction.description,
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(15),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Available Points',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(4)),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        size: ResponsiveUtils.rp(12),
-                        color: AppColors.textSecondary,
-                      ),
-                      SizedBox(width: ResponsiveUtils.rp(4)),
-                      Text(
-                        '$formattedDate • $formattedTime',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(12),
-                          color: AppColors.textSecondary,
+                    SizedBox(height: ResponsiveUtils.rp(8)),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '$availablePoints',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: ResponsiveUtils.sp(40),
+                            fontWeight: FontWeight.bold,
+                            height: 1,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  if (transaction.orderCode != null) ...[
-                    SizedBox(height: ResponsiveUtils.rp(4)),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.rp(8),
-                        vertical: ResponsiveUtils.rp(4),
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.button.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                      ),
-                      child: Text(
-                        'Order: ${transaction.orderCode}',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(11),
-                          color: AppColors.button,
-                          fontWeight: FontWeight.w500,
+                        SizedBox(width: ResponsiveUtils.rp(8)),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(6)),
+                          child: Text(
+                            'pts',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: ResponsiveUtils.sp(16),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
-                ],
-              ),
-            ),
-
-            // Points Amount
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '$prefix${transaction.points}',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(18),
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
                 ),
-                SizedBox(height: ResponsiveUtils.rp(4)),
-                Text(
-                  'points',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(11),
-                    color: AppColors.textSecondary,
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  ),
+                  child: Icon(
+                    Icons.stars_rounded,
+                    color: Colors.white,
+                    size: ResponsiveUtils.rp(32),
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: ResponsiveUtils.rp(20)),
+            Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.trending_up_rounded,
+                    color: Colors.white,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Text(
+                    'Total Earned: $totalEarned pts',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.95),
+                      fontSize: ResponsiveUtils.sp(13),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -324,22 +308,312 @@ debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
     );
   }
 
-  String _formatDate(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${months[date.month - 1]} ${date.day.toString().padLeft(2, '0')}, ${date.year}';
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            color: AppColors.button,
+            strokeWidth: 3,
+          ),
+          SizedBox(height: ResponsiveUtils.rp(16)),
+          Text(
+            'Loading transactions...',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+            decoration: BoxDecoration(
+              color: AppColors.button.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.account_balance_wallet_outlined,
+              size: ResponsiveUtils.rp(64),
+              color: AppColors.button,
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(24)),
+          Text(
+            'No transactions found',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(18),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(8)),
+          Text(
+            _currentFilter == TransactionFilter.all
+                ? 'Your loyalty points transactions will appear here'
+                : _currentFilter == TransactionFilter.earned
+                    ? 'You haven\'t earned any points yet'
+                    : 'You haven\'t used any points yet',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              color: AppColors.textSecondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionsList() {
+    // Group transactions by date
+    final groupedTransactions = <String, List<LoyaltyTransaction>>{};
+    
+    for (final transaction in _filteredTransactions) {
+      final dateKey = _getDateKey(transaction.date);
+      if (!groupedTransactions.containsKey(dateKey)) {
+        groupedTransactions[dateKey] = [];
+      }
+      groupedTransactions[dateKey]!.add(transaction);
+    }
+
+    final sortedDates = groupedTransactions.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
+
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.rp(16),
+        vertical: ResponsiveUtils.rp(12),
+      ),
+      itemCount: sortedDates.length,
+      itemBuilder: (context, index) {
+        final dateKey = sortedDates[index];
+        final transactions = groupedTransactions[dateKey]!;
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Date Header
+            Padding(
+              padding: EdgeInsets.only(
+                left: ResponsiveUtils.rp(4),
+                top: index == 0 ? 0 : ResponsiveUtils.rp(16),
+                bottom: ResponsiveUtils.rp(12),
+              ),
+              child: Text(
+                _formatDateHeader(transactions.first.date),
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(13),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+            // Transactions for this date
+            ...transactions.map((transaction) => Padding(
+              padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+              child: _buildTransactionCard(transaction),
+            )),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTransactionCard(LoyaltyTransaction transaction) {
+    final isEarned = transaction.type == TransactionType.earned;
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        border: Border.all(
+          color: isEarned
+              ? Colors.green.withValues(alpha: 0.2)
+              : Colors.orange.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+          onTap: () {
+            // Could show transaction details
+          },
+          child: Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+            child: Row(
+              children: [
+                // Icon Container
+                Container(
+                  width: ResponsiveUtils.rp(48),
+                  height: ResponsiveUtils.rp(48),
+                  decoration: BoxDecoration(
+                    color: isEarned
+                        ? Colors.green.withValues(alpha: 0.15)
+                        : Colors.orange.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  ),
+                  child: Icon(
+                    isEarned ? Icons.add_circle_rounded : Icons.remove_circle_rounded,
+                    color: isEarned ? Colors.green.shade700 : Colors.orange.shade700,
+                    size: ResponsiveUtils.rp(24),
+                  ),
+                ),
+                SizedBox(width: ResponsiveUtils.rp(16)),
+
+                // Transaction Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        transaction.description,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(15),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(6)),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: ResponsiveUtils.rp(14),
+                            color: AppColors.textSecondary,
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(4)),
+                          Text(
+                            _formatTime(transaction.date),
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(12),
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          if (transaction.orderCode != null) ...[
+                            SizedBox(width: ResponsiveUtils.rp(12)),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(8),
+                                vertical: ResponsiveUtils.rp(4),
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.button.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                              ),
+                              child: Text(
+                                '#${transaction.orderCode}',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(11),
+                                  color: AppColors.button,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Points Amount
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          isEarned ? '+' : '-',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(18),
+                            fontWeight: FontWeight.bold,
+                            color: isEarned ? Colors.green.shade700 : Colors.orange.shade700,
+                            height: 1,
+                          ),
+                        ),
+                        Text(
+                          '${transaction.points}',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(20),
+                            fontWeight: FontWeight.bold,
+                            color: isEarned ? Colors.green.shade700 : Colors.orange.shade700,
+                            height: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(2)),
+                    Text(
+                      'points',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(11),
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getDateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDateHeader(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(Duration(days: 1));
+    final transactionDate = DateTime(date.year, date.month, date.day);
+
+    if (transactionDate == today) {
+      return 'Today';
+    } else if (transactionDate == yesterday) {
+      return 'Yesterday';
+    } else {
+      final months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
+      return '${months[date.month - 1]} ${date.day}, ${date.year}';
+    }
   }
 
   String _formatTime(DateTime date) {
@@ -374,3 +648,8 @@ enum TransactionType {
   used,
 }
 
+enum TransactionFilter {
+  all,
+  earned,
+  used,
+}

@@ -16,7 +16,7 @@ class CartController extends BaseController {
   Rx<ErrorResult?> error = Rx<ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
   final OrderController orderController = Get.put(OrderController());
-  
+
   // Flag to prevent concurrent transitions to AddingItems
   bool _isTransitioningToAddingItems = false;
 

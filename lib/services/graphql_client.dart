@@ -59,6 +59,13 @@ class GraphqlService {
       'Accept-Encoding': 'gzip, deflate', // Enable compression
     };
     
+    // Debug print channel token header
+    if (_channelToken.isNotEmpty) {
+      debugPrint("🔑 [GraphQL Client] Channel Token header: $_channelTokenKey: $_channelToken");
+    } else {
+      debugPrint("🔑 [GraphQL Client] Channel Token header: NOT SET");
+    }
+    
     // Debug print headers
     debugPrint("📋 [GraphQL Client] HTTP Headers:");
     headers.forEach((key, value) {

@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:in_app_update/in_app_update.dart';
@@ -50,6 +52,13 @@ debugPrint('[InAppUpdate] Error initializing service: $e');
   /// Check for available updates
   /// Returns true if an update is available
   Future<bool> checkForUpdate() async {
+    // Platform check: in_app_update only works on Android
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[InAppUpdate] Skipping update check - not on Android platform');
+      _isUpdateAvailable = false;
+      return false;
+    }
+
     if (_isCheckingUpdate) {
 debugPrint('[InAppUpdate] Already checking for updates');
       return _isUpdateAvailable;
@@ -59,7 +68,7 @@ debugPrint('[InAppUpdate] Already checking for updates');
       _isCheckingUpdate = true;
 debugPrint('[InAppUpdate] Checking for updates...');
 
-      // Check Play Store for updates first
+      // Check Play Store for updates first (Android only)
       _updateInfo = await InAppUpdate.checkForUpdate();
       
       if (_updateInfo != null) {
@@ -106,10 +115,16 @@ debugPrint('[InAppUpdate] Other error occurred during update check');
   /// Check Play Store directly for updates (fallback when GraphQL fails)
   /// Returns true if an update is available
   Future<bool> checkPlayStoreDirectly() async {
+    // Platform check: in_app_update only works on Android
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[InAppUpdate] Skipping Play Store check - not on Android platform');
+      return false;
+    }
+
     try {
 debugPrint('[InAppUpdate] Checking Play Store directly...');
       
-      // Check Play Store for updates
+      // Check Play Store for updates (Android only)
       final updateInfo = await InAppUpdate.checkForUpdate();
       
       final updateAvailable = updateInfo.updateAvailability == UpdateAvailability.updateAvailable;
@@ -139,6 +154,13 @@ debugPrint('[InAppUpdate] Other error occurred during Play Store check');
   /// Perform immediate update (blocks the app until update is installed)
   /// Use this when IMMEDIATE_UPDATE=true
   Future<void> performImmediateUpdate() async {
+    // Platform check: in_app_update only works on Android
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[InAppUpdate] Skipping immediate update - not on Android platform');
+      showErrorSnackbar('Updates are only available on Android. Please update from the App Store.');
+      return;
+    }
+
     try {
       if (_updateInfo == null || !_isUpdateAvailable) {
 debugPrint('[InAppUpdate] No update available for immediate update');
@@ -165,6 +187,13 @@ debugPrint('[InAppUpdate] Error performing immediate update: $e');
   /// Perform flexible update (downloads in background, user can continue using app)
   /// Use this when IMMEDIATE_UPDATE=false
   Future<void> performFlexibleUpdate() async {
+    // Platform check: in_app_update only works on Android
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[InAppUpdate] Skipping flexible update - not on Android platform');
+      showErrorSnackbar('Updates are only available on Android. Please update from the App Store.');
+      return;
+    }
+
     try {
       if (_updateInfo == null || !_isUpdateAvailable) {
 debugPrint('[InAppUpdate] No update available for flexible update');
@@ -185,13 +214,15 @@ debugPrint('[InAppUpdate] Starting flexible update...');
       // Show download progress
       showSuccessSnackbar('Update downloading in background...');
       
-      // Listen for download completion
-      InAppUpdate.completeFlexibleUpdate().then((_) {
+      // Listen for download completion (Android only)
+      if (Platform.isAndroid && !kIsWeb) {
+        InAppUpdate.completeFlexibleUpdate().then((_) {
 debugPrint('[InAppUpdate] Flexible update completed, app will restart');
-        _showUpdateCompleteDialog();
-      }).catchError((e) {
+          _showUpdateCompleteDialog();
+        }).catchError((e) {
 debugPrint('[InAppUpdate] Error completing flexible update: $e');
-      });
+        });
+      }
     } catch (e) {
 debugPrint('[InAppUpdate] Error performing flexible update: $e');
       showErrorSnackbar('Update failed: $e');
@@ -477,7 +508,9 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  InAppUpdate.completeFlexibleUpdate();
+                  if (Platform.isAndroid && !kIsWeb) {
+                    InAppUpdate.completeFlexibleUpdate();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
@@ -504,10 +537,18 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
   /// Check for updates and determine update type (simplified flow)
   /// This replaces the BannerController logic
   Future<void> checkForUpdatesAndDetermineType() async {
+    // Platform check: in_app_update only works on Android
+    if (!Platform.isAndroid || kIsWeb) {
+      debugPrint('[InAppUpdate] Skipping update check flow - not on Android platform');
+      _isUpdateAvailable = false;
+      _isImmediateUpdateEnabled = false;
+      return;
+    }
+
     try {
 debugPrint('[InAppUpdate] Starting simplified update check flow...');
       
-      // STEP 1: Check Play Store for updates
+      // STEP 1: Check Play Store for updates (Android only)
 debugPrint('[InAppUpdate] Step 1: Checking Play Store for updates...');
       final updateInfo = await InAppUpdate.checkForUpdate();
       

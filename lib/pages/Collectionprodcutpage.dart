@@ -41,26 +41,32 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   final CartController cartController = Get.put(CartController());
   final BannerController bannerController = Get.put(BannerController());
   final UtilityController utilityController = Get.find();
+  
+  // Scroll controller for lazy loading
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-debugPrint(  '🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
+    // Add scroll listener for lazy loading
+    _scrollController.addListener(_onScroll);
+    
+    debugPrint('🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-debugPrint(  '🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
+      debugPrint('🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
       
       try {
         await controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug);
         
         // Check if collection was found after fetch attempt
         if (controller.currentCollection.value == null) {
-debugPrint('⚠️ [CollectionProductsPage] Collection not found, handling redirect...');
+          debugPrint('⚠️ [CollectionProductsPage] Collection not found, handling redirect...');
           _handleCollectionNotFound();
           return;
         }
         
       } catch (e) {
-debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
+        debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
         _handleCollectionNotFound();
         return;
       }
@@ -69,6 +75,34 @@ debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
       bannerController.getCustomerFavorites();
       cartController.getActiveOrder();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// Handle scroll to detect when to load more products
+  void _onScroll() {
+    if (_scrollController.position.pixels >= 
+        _scrollController.position.maxScrollExtent - 200) {
+      // Load more when user is 200px from bottom
+      if (controller.hasMoreItems && !controller.isLoadingMore) {
+        _loadMoreProducts();
+      }
+    }
+  }
+
+  /// Load more products
+  Future<void> _loadMoreProducts() async {
+    if (controller.isLoadingMore || !controller.hasMoreItems) {
+      return;
+    }
+    
+    debugPrint('📥 [CollectionProductsPage] Loading more products...');
+    await controller.loadMoreProducts();
   }
 
   /// Handle add to cart - show selector only when explicitly allowed.
@@ -413,15 +447,16 @@ debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
         return RefreshIndicator(
           onRefresh: () async {
             await Future.wait([
-              controller.fetchCollectionproducts(id: widget.collectionId),
+              controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug),
               bannerController.getCustomerFavorites(),
             ]);
           },
           color: AppColors.refreshIndicator,
           child: GridView.builder(
+            controller: _scrollController,
             // Reduced padding for denser layout
             padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
-            itemCount: variants.length,
+            itemCount: variants.length + (controller.hasMoreItems ? 1 : 0), // Add 1 for loading indicator
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: ResponsiveUtils.rp(8), // Reduced spacing
@@ -430,6 +465,10 @@ debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
                   0.60, // Significantly reduced aspect ratio for a shorter card
             ),
             itemBuilder: (context, index) {
+              // Show loading indicator at the end
+              if (index >= variants.length) {
+                return _buildLoadingIndicator();
+              }
               final variant = variants[index];
               final product = variant.product;
 
@@ -607,6 +646,32 @@ debugPrint('❌ [CollectionProductsPage] Error fetching collection: $e');
             ),
           );
         },
+      ),
+    );
+  }
+
+  /// Build loading indicator for lazy loading
+  Widget _buildLoadingIndicator() {
+    return Container(
+      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              color: AppColors.button,
+              strokeWidth: 2,
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            Text(
+              'Loading more...',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(12),
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

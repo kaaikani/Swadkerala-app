@@ -98,8 +98,6 @@ union UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | 
 
 union VerifyCustomerAccountResult = CurrentUser | MissingPasswordError | NativeAuthStrategyError | PasswordAlreadySetError | PasswordValidationError | VerificationTokenExpiredError | VerificationTokenInvalidError
 
-union generateRazorpayOrderIdResult = RazorpayOrderIdGenerationError | RazorpayOrderIdSuccess
-
 type Address implements Node {
     city: String
     company: String
@@ -598,6 +596,15 @@ type FulfillmentLine {
     quantity: Int!
 }
 
+type GenerateRazorpayOrderIdResult {
+    amount: Int
+    currency: String
+    errorMessage: String
+    keyId: String
+    razorpayOrderId: String
+    success: Boolean!
+}
+
 "Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it."
 type GuestCheckoutError implements ErrorResult {
     errorCode: ErrorCode!
@@ -770,13 +777,11 @@ type Mutation {
     applyLoyaltyPointsToActiveOrder(amount: Int!): Order!
     "Authenticates the user using a named authentication strategy"
     authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
-    cancelOrderOnClientRequest(orderId: ID!, reason: String!): Order!
-    requestOrderCancellation(orderId: ID!, reason: String!): Order!
     "Create a new Customer Address"
     createCustomerAddress(input: CreateAddressInput!): Address!
     "Delete an existing Address"
     deleteCustomerAddress(id: ID!): Success!
-    generateRazorpayOrderId(orderId: ID!): RazorpayOrderIdSuccess!
+    generateRazorpayOrderId(orderId: ID!): GenerateRazorpayOrderIdResult!
     """
 
     Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
@@ -787,6 +792,7 @@ type Mutation {
     login(password: String!, rememberMe: Boolean, username: String!): NativeAuthenticationResult!
     "End the current authenticated session"
     logout: Success!
+    "Add other instructions to the order custom fields"
     otherInstructions(orderId: ID!, value: String!): Order!
     "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
     refreshCustomerVerification(emailAddress: String!): RefreshCustomerVerificationResult!
@@ -815,6 +821,12 @@ type Mutation {
     removeLoyaltyPointsFromActiveOrder: Order
     "Remove an OrderLine from the Order"
     removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
+    """
+
+    Allows a customer to request cancellation for their order.
+    The reason string can be any text or JSON sent from the client.
+    """
+    requestOrderCancellation(orderId: ID!, reason: String!): Order!
     "Requests a password reset email to be sent"
     requestPasswordReset(emailAddress: String!): RequestPasswordResetResult
     """
@@ -865,7 +877,6 @@ type Mutation {
     updateCustomerEmailAddress(token: String!): UpdateCustomerEmailAddressResult!
     "Update the password of the active Customer"
     updateCustomerPassword(currentPassword: String!, newPassword: String!): UpdateCustomerPasswordResult!
-    updateOrderPlacedAtIST(orderId: ID!): DateTime!
     """
 
     Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
@@ -984,14 +995,10 @@ type OrderAddress {
 }
 
 type OrderCustomFields {
-    clientRequestToCancel: Int
     deviceMedium: String
     loyaltyPointsEarned: Int
     loyaltyPointsUsed: Int
     otherInstructions: String
-    placedAtISTFormatted: DateTime
-    razorpayStatus: String
-    razorpay_order_id: String
 }
 
 "Returned when an order operation is rejected by an OrderInterceptor method."
@@ -1210,6 +1217,12 @@ type PaymentMethodTranslation {
     languageCode: LanguageCode!
     name: String!
     updatedAt: DateTime!
+}
+
+type PostalCode {
+    code: String!
+    id: ID!
+    isAnywhere: Boolean!
 }
 
 "The price range where the result has more than one price"
@@ -1431,6 +1444,7 @@ type Query {
     getChannelsByCustomerPhoneNumber(phoneNumber: String!): [Channel!]!
     getCouponCodeList: CoupcodesList!
     getPasswordResetToken: String!
+    getRazorpayOrderStatus(orderId: ID!): RazorpayOrderStatus
     loyaltyPointsConfig: LoyaltyPointsConfig
     "Returns information about the current authenticated User"
     me: CurrentUser
@@ -1450,6 +1464,7 @@ type Query {
     general anonymous access to Order data.
     """
     orderByCode(code: String!): Order
+    postalCodes: [PostalCode!]!
     "Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an error will result."
     product(id: ID, slug: String): Product
     "Get a list of Products"
@@ -1458,18 +1473,22 @@ type Query {
     search(input: SearchInput!): SearchResponse!
 }
 
-type RazorpayOrderIdGenerationError {
-    errorCode: String
-    message: String
+type RazorpayOrderStatus {
+    amountDue: Int
+    amountPaid: Int
+    attempts: Int
+    history: [RazorpayPaymentAttempt]
+    razorpayOrderId: String
+    status: String
 }
 
-type RazorpayOrderIdSuccess {
+type RazorpayPaymentAttempt {
     amount: Int
-    currency: String
-    errorMessage: String
-    keyId: String
-    razorpayOrderId: String
-    success: Boolean
+    createdAt: String
+    errorReason: String
+    id: String!
+    method: String
+    status: String!
 }
 
 type Refund implements Node {
@@ -2230,6 +2249,7 @@ enum HistoryEntryType {
     ORDER_CUSTOMER_UPDATED
     ORDER_FULFILLMENT
     ORDER_FULFILLMENT_TRANSITION
+    ORDER_LINE_PRICE_UPDATED
     ORDER_MODIFIED
     ORDER_NOTE
     ORDER_PAYMENT_TRANSITION
@@ -2643,6 +2663,8 @@ enum Permission {
     CreateOrder
     "Grants permission to create PaymentMethod"
     CreatePaymentMethod
+    "Grants permission to create PostalCode"
+    CreatePostalCode
     "Grants permission to create Product"
     CreateProduct
     "Grants permission to create Promotion"
@@ -2689,6 +2711,8 @@ enum Permission {
     DeleteOrder
     "Grants permission to delete PaymentMethod"
     DeletePaymentMethod
+    "Grants permission to delete PostalCode"
+    DeletePostalCode
     "Grants permission to delete Product"
     DeleteProduct
     "Grants permission to delete Promotion"
@@ -2743,6 +2767,8 @@ enum Permission {
     ReadOrder
     "Grants permission to read PaymentMethod"
     ReadPaymentMethod
+    "Grants permission to read PostalCode"
+    ReadPostalCode
     "Grants permission to read Product"
     ReadProduct
     "Grants permission to read Promotion"
@@ -2793,6 +2819,8 @@ enum Permission {
     UpdateOrder
     "Grants permission to update PaymentMethod"
     UpdatePaymentMethod
+    "Grants permission to update PostalCode"
+    UpdatePostalCode
     "Grants permission to update Product"
     UpdateProduct
     "Grants permission to update Promotion"
@@ -3210,7 +3238,6 @@ input OrderFilterParameter {
     _and: [OrderFilterParameter!]
     _or: [OrderFilterParameter!]
     active: BooleanOperators
-    clientRequestToCancel: NumberOperators
     code: StringOperators
     createdAt: DateOperators
     currencyCode: StringOperators
@@ -3220,9 +3247,6 @@ input OrderFilterParameter {
     loyaltyPointsUsed: NumberOperators
     orderPlacedAt: DateOperators
     otherInstructions: StringOperators
-    placedAtISTFormatted: DateOperators
-    razorpayStatus: StringOperators
-    razorpay_order_id: StringOperators
     shipping: NumberOperators
     shippingWithTax: NumberOperators
     state: StringOperators
@@ -3249,7 +3273,6 @@ input OrderListOptions {
 }
 
 input OrderSortParameter {
-    clientRequestToCancel: SortOrder
     code: SortOrder
     createdAt: SortOrder
     deviceMedium: SortOrder
@@ -3258,9 +3281,6 @@ input OrderSortParameter {
     loyaltyPointsUsed: SortOrder
     orderPlacedAt: SortOrder
     otherInstructions: SortOrder
-    placedAtISTFormatted: SortOrder
-    razorpayStatus: SortOrder
-    razorpay_order_id: SortOrder
     shipping: SortOrder
     shippingWithTax: SortOrder
     state: SortOrder
@@ -3459,16 +3479,9 @@ input UpdateCustomerInput {
 }
 
 input UpdateOrderCustomFieldsInput {
-    clientRequestToCancel: Int
     deviceMedium: String
     loyaltyPointsEarned: Int
     loyaltyPointsUsed: Int
-    otherInstructions: String
-    razorpay_order_id: String
-}
-
-input UpdateOrderInput {
-    customFields: UpdateOrderCustomFieldsInput
 }
 
 input UpdateOrderInput {

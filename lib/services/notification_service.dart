@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import '../widgets/snackbar.dart';
 
 class NotificationService {
   NotificationService._();
@@ -28,6 +28,12 @@ class NotificationService {
 
   Future<void> initialize() async {
     if (_initialized) return;
+    // Use custom notification icon with green background
+    // Note: User needs to create notification_icon.png in drawable folders
+    // If not found, Android will fallback to ic_launcher
+    // The icon should be white/transparent logo on transparent background
+    // Android will apply the system accent color (green) as background
+    // Fallback to default launcher icon if custom icon doesn't exist
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidSettings);
 
@@ -61,7 +67,10 @@ class NotificationService {
       playSound: true,
       enableVibration: true,
       showWhen: true,
-      icon: '@mipmap/ic_launcher',
+      icon: '@mipmap/ic_launcher', // Small icon - fallback to launcher if custom icon not found
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'), // Large icon - fallback to launcher if custom icon not found
+      color: const Color(0xFF22A45D), // Green color for notification accent (matches AppColors.greenPrimary)
+      colorized: true, // Enable colorization
       styleInformation: BigTextStyleInformation(
         notification.body ?? '',
         contentTitle: notification.title ?? 'Kaaikani',
@@ -78,17 +87,14 @@ class NotificationService {
   }
 
   void showSnackbar(RemoteMessage message) {
-    final title = message.notification?.title ?? 'Kaaikani';
     final body = message.notification?.body ?? '';
     if (body.isEmpty) return;
 
-    Get.snackbar(
-      title,
+    SnackBarWidget.show(
+      null,
       body,
-      snackPosition: SnackPosition.TOP,
-      duration: const Duration(seconds: 4),
       backgroundColor: Colors.black87,
-      colorText: Colors.white,
+      duration: const Duration(seconds: 4),
     );
   }
 }

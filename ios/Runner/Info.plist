@@ -66,5 +66,20 @@
 	<array>
 		<string>applinks:kaaikani.co.in</string>
 	</array>
+	<!-- Phone Number Permission (for mobile_number package - iOS has limited support) -->
+	<key>NSPhoneNumberUsageDescription</key>
+	<string>We need access to your phone number for account verification and faster login</string>
+	<!-- SMS Autofill Permission -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use this to improve your experience and provide personalized content</string>
+	<!-- Camera Permission (if used for QR codes or product scanning) -->
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to scan QR codes and capture product images</string>
+	<!-- Photo Library Permission (if used for saving images) -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need photo library access to save and share images</string>
+	<!-- Location Permission (if used) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need location access to provide location-based services</string>
 </dict>
 </plist>

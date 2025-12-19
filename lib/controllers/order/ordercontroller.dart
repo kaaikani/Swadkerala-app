@@ -5,6 +5,7 @@ import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../base_controller.dart';
 import '../../utils/price_formatter.dart';
+import '../../widgets/loading_dialog.dart';
 import 'ordermodels.dart';
 import 'package:flutter/foundation.dart';
 
@@ -248,54 +249,30 @@ debugPrint('[Order] Remove all order lines error: $e');
   /// Get eligible shipping methods
   Future<bool> getEligibleShippingMethods() async {
     try {
-debugPrint('[Order] Starting getEligibleShippingMethods...');
       utilityController.setLoadingState(false);
 
-      // Prepare query options
       final options = Options$Query$GetEligibleShippingMethods();
-
-      // Print out what’s being fetched (query + variables)
-debugPrint(  '[Order] Preparing to send GraphQL query: GetEligibleShippingMethods');
-debugPrint('[Order] Query variables: ${options.variables}');
-
-debugPrint(  '[Order] Sending GraphQL query for eligible shipping methods...');
       final response = await GraphqlService.client.value
           .query$GetEligibleShippingMethods(options);
 
-debugPrint(  '[Order] GraphQL response received: ${response.data != null ? 'Data present' : 'No data'}');
-debugPrint('[Order] Checking response for errors...');
-
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to load shipping methods')) {
-debugPrint('[Order] Response contained errors');
         return false;
       }
 
       final methods = response.parsedData?.eligibleShippingMethods;
-debugPrint(  '[Order] Parsed methods: ${methods != null ? methods.length : 0}');
 
       if (methods != null) {
         shippingMethods.value =
             methods.map((m) => ShippingMethod.fromJson(m.toJson())).toList();
-
-debugPrint(  '[Order] Loaded ${shippingMethods.length} shipping methods successfully');
-        // ignore: unused_local_variable
-        for (var shippingMethod in shippingMethods) {
-debugPrint('[Order] Method: ${shippingMethod.name} (ID: ${shippingMethod.id})');
-        }
-
         return true;
-      } else {
-debugPrint('[Order] No eligible shipping methods found in response.');
       }
 
       return false;
     } catch (e) {
-debugPrint('[Order] Get shipping methods error: $e');
       handleException(e, customErrorMessage: 'Failed to load shipping methods');
       return false;
     } finally {
-debugPrint(  '[Order] Finished getEligibleShippingMethods. Resetting loading state.');
       utilityController.setLoadingState(false);
     }
   }
@@ -390,9 +367,23 @@ debugPrint('[Order] Set shipping method error: $e');
     bool skipLoading = false,
   }) async {
     try {
-      // Don't show loading indicator for shipping address (non-blocking)
+      debugPrint('═══════════════════════════════════════════════════════════');
+      debugPrint('[Order] ========== SET SHIPPING ADDRESS START ==========');
+      debugPrint('[Order] Full Name: $fullName');
+      debugPrint('[Order] Phone Number: $phoneNumber');
+      debugPrint('[Order] Street Line 1: $streetLine1');
+      debugPrint('[Order] Street Line 2: ${streetLine2 ?? "N/A"}');
+      debugPrint('[Order] City: $city');
+      debugPrint('[Order] Province: ${province ?? "N/A"}');
+      debugPrint('[Order] Postal Code: $postalCode');
+      debugPrint('[Order] Country Code: $countryCode');
+      debugPrint('[Order] Skip Loading: $skipLoading');
+      debugPrint('[Order] Current Order ID: ${currentOrder.value?.id ?? "N/A"}');
+      debugPrint('[Order] Current Order Code: ${currentOrder.value?.code ?? "N/A"}');
+      
+      // Show loading dialog for shipping address
       if (!skipLoading) {
-        utilityController.setLoadingState(true);
+        LoadingDialog.show(message: 'Please wait');
       }
 
       final input = Input$CreateAddressInput(
@@ -406,6 +397,9 @@ debugPrint('[Order] Set shipping method error: $e');
         province: province,
       );
 
+      debugPrint('[Order] Created address input object');
+      debugPrint('[Order] Sending GraphQL mutation: SetShippingAddress');
+
       final response =
           await GraphqlService.client.value.mutate$SetShippingAddress(
         Options$Mutation$SetShippingAddress(
@@ -415,27 +409,59 @@ debugPrint('[Order] Set shipping method error: $e');
         ),
       );
 
+      debugPrint('[Order] GraphQL response received: ${response.data != null ? "Data present" : "No data"}');
+      debugPrint('[Order] Response has exception: ${response.hasException}');
+
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to set shipping address')) {
+        debugPrint('[Order] ❌ Response contained errors - shipping address not set');
+        debugPrint('[Order] ========== SET SHIPPING ADDRESS FAILED ==========');
+        debugPrint('═══════════════════════════════════════════════════════════');
         return false;
       }
 
       final result = response.parsedData?.setOrderShippingAddress;
       if (result != null) {
-        currentOrder.value = OrderModel.fromJson(result.toJson());
-debugPrint('[Order] Shipping address set successfully');
+        final orderJson = result.toJson();
+        debugPrint('[Order] ✅ Shipping address set successfully');
+        debugPrint('[Order] Updated Order ID: ${orderJson['id']}');
+        debugPrint('[Order] Updated Order Code: ${orderJson['code']}');
+        debugPrint('[Order] Updated Order State: ${orderJson['state']}');
+        
+        // Check if shipping address is in the result
+        if (orderJson.containsKey('shippingAddress') && orderJson['shippingAddress'] != null) {
+          final shippingAddr = orderJson['shippingAddress'];
+          debugPrint('[Order] Shipping Address in Order:');
+          debugPrint('[Order]   - Full Name: ${shippingAddr['fullName'] ?? "N/A"}');
+          debugPrint('[Order]   - Street Line 1: ${shippingAddr['streetLine1'] ?? "N/A"}');
+          debugPrint('[Order]   - City: ${shippingAddr['city'] ?? "N/A"}');
+          debugPrint('[Order]   - Postal Code: ${shippingAddr['postalCode'] ?? "N/A"}');
+        } else {
+          debugPrint('[Order] ⚠️ Warning: Shipping address not found in order response');
+        }
+        
+        currentOrder.value = OrderModel.fromJson(orderJson);
+        debugPrint('[Order] ========== SET SHIPPING ADDRESS SUCCESS ==========');
+        debugPrint('═══════════════════════════════════════════════════════════');
         return true;
       }
 
+      debugPrint('[Order] ❌ No result in response - shipping address not set');
+      debugPrint('[Order] ========== SET SHIPPING ADDRESS FAILED ==========');
+      debugPrint('═══════════════════════════════════════════════════════════');
       return false;
-    } catch (e) {
-debugPrint('[Order] Set shipping address error: $e');
+    } catch (e, stackTrace) {
+      debugPrint('[Order] ❌ Exception setting shipping address: $e');
+      debugPrint('[Order] Stack trace: $stackTrace');
+      debugPrint('[Order] ========== SET SHIPPING ADDRESS ERROR ==========');
+      debugPrint('═══════════════════════════════════════════════════════════');
       handleException(e, customErrorMessage: 'Failed to set shipping address');
       return false;
     } finally {
       if (!skipLoading) {
-        utilityController.setLoadingState(false);
+        LoadingDialog.hide();
       }
+      debugPrint('[Order] Loading state reset');
     }
   }
 

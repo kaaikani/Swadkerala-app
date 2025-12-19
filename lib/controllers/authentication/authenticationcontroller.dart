@@ -157,16 +157,7 @@ debugPrint('[AuthController] Error clearing invalid tokens: $e');
   Future<bool> checkEmailAndGetChannel(BuildContext? context) async {
     if (!_isValidPhoneNumber(phoneNumber.text)) {
       // Use GetX snackbar to avoid context issues
-      Get.snackbar(
-        '',
-        'Please enter a valid Phone number',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      SnackBarWidget.showError('Please enter a valid Phone number');
       return false;
     }
 
@@ -204,16 +195,7 @@ debugPrint('[AuthController] Channels found: ${channels.length}');
 
 debugPrint('[AuthController] Channel saved - Code: ${channel.code}, Token: ${channel.token}');
       // Use GetX snackbar to avoid context issues
-      Get.snackbar(
-        '',
-        'Phone number verified!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.accent,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      SnackBarWidget.showSuccess('Phone number verified!');
 
       return true;
     } catch (e) {
@@ -289,16 +271,7 @@ debugPrint('[AuthController] Exception checking user existence: $e');
   Future<bool> sendOtp(BuildContext? context)
   async {
     if (!_isValidPhoneNumber(phoneNumber.text)) {
-      Get.snackbar(
-        '',
-        'Please enter a valid phone number',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      SnackBarWidget.showError('Please enter a valid phone number');
       return false;
     }
 
@@ -325,16 +298,6 @@ debugPrint('[AuthController] Raw sendPhoneOtp value: $rawResult (type: ${rawResu
       if (success) {
         setOtpSent(true);
 debugPrint('[AuthController] OTP sent successfully');
-        Get.snackbar(
-          '',
-          'OTP sent successfully!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.accent,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
         return true;
       } else {
 debugPrint('[AuthController] OTP send failed - raw value: $rawResult');
@@ -426,11 +389,7 @@ debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
           resetFormField();
 
 debugPrint('[AuthController] Login successful');
-          SnackBarWidget.show(
-            context,
-            'Login successful!',
-            backgroundColor: AppColors.accent,
-          );
+
           return true;
         }
       }
@@ -458,16 +417,7 @@ debugPrint('[AuthController] Exception in verifyOtp: $e');
   /// Resend OTP
   Future<bool> resendOtp(BuildContext? context) async {
     if (!_isValidPhoneNumber(phoneNumber.text)) {
-      Get.snackbar(
-        '',
-        'Please enter a valid phone number',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      SnackBarWidget.showError('Please enter a valid phone number');
       return false;
     }
 
@@ -490,16 +440,7 @@ debugPrint('[AuthController] Resending OTP to: ${phoneNumber.text}');
 debugPrint('[AuthController] OTP resend result: $success');
 
       if (success) {
-        Get.snackbar(
-          '',
-          'OTP resent successfully!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.accent,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        SnackBarWidget.showSuccess('OTP resent successfully!');
       } else {
         ErrorDialog.showError('Failed to resend OTP');
       }
@@ -537,7 +478,7 @@ debugPrint('✅ [AuthController] Logout mutation result: $success');
 debugPrint('✅ [AuthController] Server confirmed logout success');
         } else {
 debugPrint('⚠️ [AuthController] Server returned logout failure');
-        }
+      }
       }
 
 debugPrint('🚪 [AuthController] Step 2: Clearing all app data and cache...');
@@ -558,16 +499,7 @@ debugPrint('🚪 [AuthController] Step 4: Resetting auth state...');
 debugPrint('✅ [AuthController] Auth state reset - isLoggedIn: false, isOtpSent: false');
 
 debugPrint('🚪 [AuthController] Step 5: Showing success message...');
-      Get.snackbar(
-        '',
-        'Logged out successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.accent,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      SnackBarWidget.showSuccess('Logged out successfully');
 debugPrint('✅ [AuthController] Success message shown');
 debugPrint('✅ [AuthController] Success message: "Logged out successfully"');
 debugPrint('✅ [AuthController] Success message displayed to user');

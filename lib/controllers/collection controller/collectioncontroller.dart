@@ -18,6 +18,12 @@ class CollectionsController extends GetxController {
   // Track the currently selected variant ID per product for UI dropdowns
   RxMap<String, String> selectedVariantIdByProductId = <String, String>{}.obs;
 
+  // Lazy loading state - client-side pagination
+  static const int _itemsPerPage = 20;
+  int _displayedItemsCount = 0;
+  List<Query$Products$collection$productVariants$items> _allUniqueVariants = [];
+  bool _isLoadingMore = false;
+
   // Flag to prevent multiple simultaneous fetches
   bool _isFetching = false;
 
@@ -107,14 +113,16 @@ debugPrint('[Collection] fetchAllCollections finished.');
 
 
   Future<bool> fetchCollectionproducts({String? slug, String? id}) async {
-debugPrint('=== [Collection] fetchCollectionproducts START ===');
-debugPrint('[Collection] Parameters: slug="$slug", id="$id"');
+    debugPrint('=== [Collection] fetchCollectionproducts START ===');
+    debugPrint('[Collection] Parameters: slug="$slug", id="$id"');
 
     // Clear previous data before loading new collection
     currentCollection.value = null;
     uniqueProductVariants.clear();
     variantsByProductId.clear();
     selectedVariantIdByProductId.clear();
+    _allUniqueVariants.clear();
+    _displayedItemsCount = 0;
 
     utilityController.setLoadingState(true);
 
@@ -126,7 +134,7 @@ debugPrint('[Collection] Parameters: slug="$slug", id="$id"');
       );
 
       if (response.hasException) {
-debugPrint('⚠️ [Collection] GraphQL Exception: ${response.exception}');
+        debugPrint('⚠️ [Collection] GraphQL Exception: ${response.exception}');
         return false;
       }
 
@@ -134,15 +142,13 @@ debugPrint('⚠️ [Collection] GraphQL Exception: ${response.exception}');
 
       if (collectionData != null) {
         currentCollection.value = Collection.fromJson(collectionData.toJson());
-debugPrint('✅ [Collection] Loaded Collection: ${currentCollection.value?.name}');
+        debugPrint('✅ [Collection] Loaded Collection: ${currentCollection.value?.name}');
 
         final productItems = collectionData.productVariants.items;
-debugPrint('📦 Product Variants count: ${productItems.length}');
+        debugPrint('📦 Product Variants count: ${productItems.length}');
 
         // Filter unique products by product.id and group variants
         final loggedProductIds = <String>{};
-        uniqueProductVariants.clear();
-        variantsByProductId.clear();
         
         for (var item in productItems) {
           final product = item.product;
@@ -157,24 +163,68 @@ debugPrint('📦 Product Variants count: ${productItems.length}');
           // Add first variant to unique list for display
           if (!loggedProductIds.contains(productId)) {
             loggedProductIds.add(productId);
-            uniqueProductVariants.add(item); // Store the first variant
+            _allUniqueVariants.add(item); // Store all variants
             selectedVariantIdByProductId[productId] = item.id;
-debugPrint('• Product: ${product.name} | ID: ${productId} | Variants: ${variantsByProductId[productId]!.length}');
+            debugPrint('• Product: ${product.name} | ID: $productId | Variants: ${variantsByProductId[productId]!.length}');
           }
         }
+        
+        // Initially display first batch
+        _displayedItemsCount = _allUniqueVariants.length < _itemsPerPage 
+            ? _allUniqueVariants.length 
+            : _itemsPerPage;
+        uniqueProductVariants.value = _allUniqueVariants.take(_displayedItemsCount).toList();
+        
+        debugPrint('📊 [Collection] Lazy Loading: displaying $_displayedItemsCount of ${_allUniqueVariants.length} products');
       } else {
-debugPrint('⚠️ [Collection] No collection found for slug="$slug" id="$id"');
+        debugPrint('⚠️ [Collection] No collection found for slug="$slug" id="$id"');
       }
 
       return true;
     } catch (e) {
-debugPrint('❌ [Collection] Exception: $e');
+      debugPrint('❌ [Collection] Exception: $e');
       return false;
     } finally {
       utilityController.setLoadingState(false);
-debugPrint('=== [Collection] fetchCollectionproducts END ===');
+      debugPrint('=== [Collection] fetchCollectionproducts END ===');
     }
   }
+
+  /// Load more products (client-side pagination)
+  Future<bool> loadMoreProducts() async {
+    if (_isLoadingMore || !hasMoreItems) {
+      return false;
+    }
+    
+    _isLoadingMore = true;
+    
+    try {
+      // Simulate loading delay for better UX
+      await Future.delayed(Duration(milliseconds: 300));
+      
+      final nextBatchStart = _displayedItemsCount;
+      final nextBatchEnd = (nextBatchStart + _itemsPerPage).clamp(0, _allUniqueVariants.length);
+      
+      if (nextBatchStart < _allUniqueVariants.length) {
+        final newItems = _allUniqueVariants.sublist(nextBatchStart, nextBatchEnd);
+        uniqueProductVariants.addAll(newItems);
+        _displayedItemsCount = nextBatchEnd;
+        
+        debugPrint('📥 [Collection] Loaded more: $_displayedItemsCount of ${_allUniqueVariants.length} products');
+        return true;
+      }
+      
+      return false;
+    } finally {
+      _isLoadingMore = false;
+    }
+  }
+
+  /// Check if there are more items to load
+  bool get hasMoreItems => _displayedItemsCount < _allUniqueVariants.length;
+  
+  /// Check if currently loading more items
+  bool get isLoadingMore => _isLoadingMore;
 
   /// Returns the list of variants for the given product ID (empty list if none)
   List<Query$Products$collection$productVariants$items> getVariantsForProduct(String productId) {

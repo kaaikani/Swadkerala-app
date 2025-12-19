@@ -20,7 +20,7 @@ class ThemeController extends GetxController {
     if (!_storage.hasData('isDarkMode')) {
       _isDarkMode.value = false;
     } else {
-      _isDarkMode.value = _storage.read('isDarkMode') ?? false;
+    _isDarkMode.value = _storage.read('isDarkMode') ?? false;
     }
   }
   

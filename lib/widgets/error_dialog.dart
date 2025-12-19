@@ -141,4 +141,72 @@ class ErrorDialog {
 
     show(message: errorMessage);
   }
+
+  /// Show warning dialog with custom message (for coupon errors, etc.)
+  static void showWarning({
+    String? title,
+    required String message,
+    String? buttonText,
+    VoidCallback? onClose,
+  }) {
+    // Use Get.context or Get.dialog
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: AppColors.button,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title ?? 'Warning',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            fontSize: 15,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              if (onClose != null) {
+                onClose();
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.button,
+              foregroundColor: AppColors.buttonText,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(buttonText ?? 'OK'),
+          ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  /// Show warning from string
+  static void showWarningMessage(String message) {
+    showWarning(message: message);
+  }
 }

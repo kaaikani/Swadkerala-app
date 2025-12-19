@@ -3,6 +3,7 @@ import '../widgets/shimmers.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../services/sim_detection_service.dart';
+import '../theme/colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -152,7 +153,7 @@ debugPrint('[SplashScreen] Permission request error: $e');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple,
+      backgroundColor: AppColors.greenPrimary, // Green background
       body: Center(
         child: AnimatedBuilder(
           animation: _animationController,
@@ -164,12 +165,12 @@ debugPrint('[SplashScreen] Permission request error: $e');
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // App Logo/Icon
+                    // App Logo/Icon with white background container
                     Container(
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.white, // White background for the logo container
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -179,10 +180,32 @@ debugPrint('[SplashScreen] Permission request error: $e');
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.shopping_bag,
-                        size: 60,
-                        color: Colors.deepPurple,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Image.asset(
+                          'assets/images/kklogo.png',
+                          fit: BoxFit.contain,
+                          width: 80,
+                          height: 80,
+                          errorBuilder: (context, error, stackTrace) {
+                            debugPrint('[SplashScreen] ❌ Error loading logo: $error');
+                            debugPrint('[SplashScreen] StackTrace: $stackTrace');
+                            // Fallback to icon if image not found
+                            return const Icon(
+                              Icons.shopping_bag,
+                              size: 60,
+                              color: AppColors.greenPrimary,
+                            );
+                          },
+                          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                            if (wasSynchronouslyLoaded) {
+                              debugPrint('[SplashScreen] ✅ Logo loaded synchronously');
+                            } else if (frame != null) {
+                              debugPrint('[SplashScreen] ✅ Logo loaded asynchronously');
+                            }
+                            return child;
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),

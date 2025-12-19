@@ -83,24 +83,36 @@ class _CheckoutPageState extends State<CheckoutPage> {
   ];
 
   String? _lastAppliedShippingMethodId;
+  
+  // Local loading flag to prevent flicker on initial load
+  bool _isInitialLoading = true;
 
   @override
   void initState() {
     super.initState();
     _razorpayService = RazorpayService();
-debugPrint('[CheckoutPage] initState called');
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-debugPrint('[CheckoutPage] PostFrameCallback executing...');
+    debugPrint('[CheckoutPage] initState called');
+    
+    // Load data without showing loading state to prevent flicker
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      debugPrint('[CheckoutPage] PostFrameCallback executing...');
       // Load shipping address first (at the top)
-      _loadCustomerAddresses();
-      // Then load other data
-      _loadShippingMethods();
-debugPrint('[CheckoutPage] About to call _loadCouponCodes()');
-      _loadCouponCodes();
-debugPrint('[CheckoutPage] _loadCouponCodes() call completed');
-debugPrint('[CheckoutPage] About to call _loadLoyaltyPointsConfig()');
-      _loadLoyaltyPointsConfig();
-debugPrint('[CheckoutPage] _loadLoyaltyPointsConfig() call completed');
+      await _loadCustomerAddresses();
+      // Then load other data in parallel
+      await Future.wait([
+        _loadShippingMethods(),
+        _loadCouponCodes(),
+        _loadLoyaltyPointsConfig(),
+      ], eagerError: false);
+      
+      // Mark initial loading as complete
+      if (mounted) {
+        setState(() {
+          _isInitialLoading = false;
+        });
+      }
+      
+      // Load existing state (non-critical, can happen after initial render)
       _loadExistingInstructions();
       _loadExistingCouponCodes();
       _loadExistingLoyaltyPoints();
@@ -492,7 +504,7 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
 
     // Set shipping address when placing order
     if (_selectedAddress != null) {
-      await orderController.setShippingAddress(
+      final addressSet = await orderController.setShippingAddress(
         fullName: _selectedAddress!.fullName,
         phoneNumber: _selectedAddress!.phoneNumber,
         streetLine1: _selectedAddress!.streetLine1,
@@ -503,6 +515,17 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
         countryCode: _selectedAddress!.country.code,
         skipLoading: true,
       );
+      
+      // If shipping address failed to set, don't proceed to payment
+      if (!addressSet) {
+        showErrorSnackbar('Failed to set shipping address. Please try again.');
+        // Reset slider on error
+        Future.delayed(
+          const Duration(milliseconds: 500),
+          () => _slideActionKey.currentState?.reset(),
+        );
+        return;
+      }
     }
 
     // Then proceed to payment (shipping method should already be set)
@@ -1474,9 +1497,10 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Container(
         child: SafeArea(
           child: Column(
             children: [
@@ -1485,12 +1509,14 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
               
               // Content Area
               Expanded(
-                child: Obx(() {
-                  if (utilityController.isLoadingRx.value) {
-                    return _buildShimmerCheckout();
-                  }
+                child: GetBuilder<UtilityController>(
+                  builder: (utilityCtrl) {
+                    // Only show shimmer on initial load, not on subsequent loading states
+                    if (_isInitialLoading && utilityCtrl.isLoading) {
+                      return _buildShimmerCheckout();
+                    }
 
-                  return RefreshIndicator(
+                    return RefreshIndicator(
                     onRefresh: () async {
                       await Future.wait([
                         _loadCustomerAddresses(),
@@ -1536,7 +1562,8 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                       ),
                     ),
                   );
-                }),
+                  },
+                ),
               ),
 
               // Place Order Button
@@ -1545,7 +1572,8 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
           ),
         ),
       ),
-    );
+      );
+    });
   }
 
   Widget _buildCustomAppBar() {
@@ -1558,7 +1586,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
         color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.shadowLight,
             blurRadius: ResponsiveUtils.rp(10),
             offset: Offset(0, ResponsiveUtils.rp(2)),
           ),
@@ -1572,7 +1600,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
               borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: AppColors.shadowLight,
                   blurRadius: ResponsiveUtils.rp(8),
                   offset: Offset(0, ResponsiveUtils.rp(2)),
                 ),
@@ -1628,12 +1656,12 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
         // Order Summary Section
         _buildOrderSummarySection(),
         
-        Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.background),
+        Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
         
         // Delivery Address Section
         _buildDeliveryAddressSection(),
         
-        Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.background),
+        Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
         
         // Payment Method Section
         _buildPaymentMethodSection(),
@@ -2065,7 +2093,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                             label: Text('Add Address'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: shouldBlink ? AppColors.error : AppColors.button,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.buttonText,
                               padding: EdgeInsets.symmetric(
                                 horizontal: ResponsiveUtils.rp(24),
                                 vertical: ResponsiveUtils.rp(14),
@@ -2422,7 +2450,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                     children: [
                       Icon(
                         Icons.check_circle_rounded,
-                        color: Colors.white,
+                        color: AppColors.buttonText,
                         size: ResponsiveUtils.rp(14),
                       ),
                       SizedBox(width: ResponsiveUtils.rp(4)),
@@ -2430,7 +2458,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                         'Default',
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(12),
-                          color: Colors.white,
+                          color: AppColors.buttonText,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -2543,7 +2571,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
+                            color: AppColors.shadowMedium,
                             blurRadius: ResponsiveUtils.rp(8),
                             offset: Offset(0, ResponsiveUtils.rp(4)),
                           ),
@@ -2554,7 +2582,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                         children: [
                           Icon(
                             Icons.local_offer_rounded,
-                            color: Colors.white,
+                            color: AppColors.buttonText,
                             size: ResponsiveUtils.rp(18),
                           ),
                           Expanded(
@@ -2563,7 +2591,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: AppColors.buttonText,
                                 letterSpacing: 0.5,
                               ),
                               
@@ -2588,21 +2616,21 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                         color: AppColors.inputBorder,
                       ),
                       child: Center(
-                        child: SizedBox(
-                          width: ResponsiveUtils.rp(24),
-                          height: ResponsiveUtils.rp(24),
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          child: SizedBox(
+                            width: ResponsiveUtils.rp(24),
+                            height: ResponsiveUtils.rp(24),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.buttonText),
+                            ),
                           ),
-                        ),
                       ),
                     )
                   : SlideAction(
                       key: _slideActionKey,
                       height: ResponsiveUtils.rp(60),
                       borderRadius: ResponsiveUtils.rp(16),
-                      innerColor: Colors.white,
+                      innerColor: AppColors.buttonText,
                       outerColor: isEnabled
                           ? AppColors.button
                           : AppColors.inputBorder,
@@ -2612,7 +2640,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                       textStyle: TextStyle(
                         fontSize: ResponsiveUtils.sp(16),
                         fontWeight: FontWeight.bold,
-                        color: isEnabled ? Colors.white : AppColors.textSecondary,
+                        color: isEnabled ? AppColors.buttonText : AppColors.textSecondary,
                       ),
                       sliderButtonIcon: Icon(
                         Icons.arrow_forward_ios_rounded,
@@ -2622,7 +2650,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                       sliderButtonIconPadding: ResponsiveUtils.rp(12),
                       submittedIcon: Icon(
                         Icons.check_circle_rounded,
-                        color: Colors.white,
+                        color: AppColors.buttonText,
                         size: ResponsiveUtils.rp(20),
                       ),
                       onSubmit: () {
@@ -2754,7 +2782,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
         border: Border.all(
           color: AppColors.border.withValues(alpha: 0.2),
@@ -2762,7 +2790,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.shadowLight,
             blurRadius: ResponsiveUtils.rp(6),
             offset: Offset(0, ResponsiveUtils.rp(2)),
           ),
@@ -2863,7 +2891,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                   child: Text(
                     '$appliedCount Applied',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.buttonText,
                       fontSize: ResponsiveUtils.sp(12),
                       fontWeight: FontWeight.bold,
                     ),
@@ -3263,77 +3291,80 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
 
 
   Widget _buildShimmerCheckout() {
-    return Skeletonizer(
-      enabled: true,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Address section shimmer
-            Container(
-              height: ResponsiveUtils.rp(120),
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(12),
+    return Obx(() {
+      final isDarkMode = themeController.isDarkMode;
+      return Skeletonizer(
+        enabled: true,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Address section shimmer
+              Container(
+                height: ResponsiveUtils.rp(120),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(16)),
-            // Payment method shimmer
-            Container(
-              height: ResponsiveUtils.rp(20),
-              width: ResponsiveUtils.rp(150),
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(4),
+              SizedBox(height: ResponsiveUtils.rp(16)),
+              // Payment method shimmer
+              Container(
+                height: ResponsiveUtils.rp(20),
+                width: ResponsiveUtils.rp(150),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(12)),
-            ...List.generate(
-                2,
-                (index) => Container(
-                      height: ResponsiveUtils.rp(60),
-                      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                      decoration: BoxDecoration(
-                        color: AppColors.shimmerBase,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    )),
-            SizedBox(height: ResponsiveUtils.rp(24)),
-            // Order summary shimmer
-            Container(
-              height: ResponsiveUtils.rp(20),
-              width: ResponsiveUtils.rp(150),
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(4),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              ...List.generate(
+                  2,
+                  (index) => Container(
+                        height: ResponsiveUtils.rp(60),
+                        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+                        decoration: BoxDecoration(
+                          color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      )),
+              SizedBox(height: ResponsiveUtils.rp(24)),
+              // Order summary shimmer
+              Container(
+                height: ResponsiveUtils.rp(20),
+                width: ResponsiveUtils.rp(150),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(12)),
-            ...List.generate(
-                4,
-                (index) => Container(
-                      height: ResponsiveUtils.rp(40),
-                      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
-                      decoration: BoxDecoration(
-                        color: AppColors.shimmerBase,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    )),
-            SizedBox(height: ResponsiveUtils.rp(24)),
-            // Place order button shimmer
-            Container(
-              height: ResponsiveUtils.rp(48),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.circular(8),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              ...List.generate(
+                  4,
+                  (index) => Container(
+                        height: ResponsiveUtils.rp(40),
+                        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
+                        decoration: BoxDecoration(
+                          color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      )),
+              SizedBox(height: ResponsiveUtils.rp(24)),
+              // Place order button shimmer
+              Container(
+                height: ResponsiveUtils.rp(48),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 

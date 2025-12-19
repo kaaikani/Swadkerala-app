@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../widgets/shimmers.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -6,6 +8,7 @@ import 'package:in_app_update/in_app_update.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/authentication/authenticationcontroller.dart';
+import '../widgets/snackbar.dart';
 import 'auth_wrapper.dart';
 
 class UpdateScreen extends StatefulWidget {
@@ -19,6 +22,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
   final AuthController authController = Get.find<AuthController>();
 
   void _performImmediateUpdate() async {
+    // Platform check: in_app_update only works on Android
+    if (!Platform.isAndroid || kIsWeb) {
+      // For iOS, open App Store instead
+      await _openAppStoreForUpdate();
+      return;
+    }
+
     // Clear cache or perform logout before starting the update
     /*
  await _clearCacheOrLogout();
@@ -29,7 +39,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
     });
 
     try {
-      // First try to perform immediate update
+      // First try to perform immediate update (Android only)
       await InAppUpdate.performImmediateUpdate();
     } catch (e) {
       setState(() {
@@ -91,7 +101,7 @@ debugPrint('[UpdateScreen] Play Store fallback also failed: $playStoreError');
     }
   }
 
-  /// Open Play Store to update the app
+  /// Open Play Store to update the app (Android)
   Future<void> _openPlayStoreForUpdate() async {
     try {
       const packageName = 'com.kaaikani.kaaikani';
@@ -110,16 +120,45 @@ debugPrint('[UpdateScreen] Opening Play Store...');
       }
 
       // Show message that user should return after updating
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please update the app and return to continue'),
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.blue,
-        ),
+      SnackBarWidget.showInfo(
+        'Please update the app and return to continue',
+        duration: const Duration(seconds: 5),
       );
     } catch (e) {
 debugPrint('[UpdateScreen] Error opening Play Store: $e');
       rethrow; // Re-throw to be caught by the calling method
+    }
+  }
+
+  /// Open App Store to update the app (iOS)
+  Future<void> _openAppStoreForUpdate() async {
+    try {
+      // Replace with your actual App Store app ID
+      const appId = 'YOUR_APP_STORE_ID'; // TODO: Replace with actual App Store ID
+      final Uri appStoreUrl = Uri.parse('https://apps.apple.com/app/id$appId');
+      final Uri itmsUrl = Uri.parse('itms-apps://apps.apple.com/app/id$appId');
+
+debugPrint('[UpdateScreen] Opening App Store...');
+
+      // Try to open App Store app
+      if (await canLaunchUrl(itmsUrl)) {
+        await launchUrl(itmsUrl, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback to web browser
+        await launchUrl(appStoreUrl, mode: LaunchMode.externalApplication);
+      }
+
+      // Show message that user should return after updating
+      SnackBarWidget.showInfo(
+        'Please update the app and return to continue',
+        duration: const Duration(seconds: 5),
+      );
+    } catch (e) {
+debugPrint('[UpdateScreen] Error opening App Store: $e');
+      SnackBarWidget.showInfo(
+        'Unable to open App Store. Please update manually from the App Store.',
+        duration: const Duration(seconds: 5),
+      );
     }
   }
 
@@ -325,21 +364,14 @@ class AppErrorWidget extends StatelessWidget {
         if (await canLaunchUrl(phoneUri)) {
           await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not make a call')),
-          );
+          SnackBarWidget.showError('Could not make a call');
         }
       } catch (e) {
 // print('Error launching call: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('An error occurred while making the call')),
-        );
+        SnackBarWidget.showError('An error occurred while making the call');
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Help call number not available')),
-      );
+      SnackBarWidget.showError('Help call number not available');
     }
   }
 
@@ -353,9 +385,7 @@ class AppErrorWidget extends StatelessWidget {
     if (await canLaunchUrl(whatsappUri)) {
       await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not launch WhatsApp')),
-      );
+      SnackBarWidget.showError('Could not launch WhatsApp');
     }
   }
 }

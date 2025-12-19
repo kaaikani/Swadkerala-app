@@ -25,6 +25,7 @@ import '../utils/price_formatter.dart';
 import '../utils/navigation_helper.dart';
 import '../components/bottomnavigationbar.dart';
 import '../services/analytics_service.dart';
+import '../widgets/snackbar.dart';
 import '../services/graphql_client.dart';
 import '../services/remote_config_service.dart';
 import '../graphql/banner.graphql.dart';
@@ -78,11 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final cityName = _formatCityName(channelCode);
 
     // Observe theme changes to rebuild the entire page
+    // Access the observable directly through a getter that GetX can track
     return Obx(() {
-      // Force rebuild when theme changes
-      final _ = themeController.isDarkMode;
+      // Access the theme value - GetX will track this through the getter
+      final isDarkMode = themeController.isDarkMode;
       
+      // Use the value in the widget tree so GetX can properly track it
       return Scaffold(
+        key: ValueKey('home_${isDarkMode}'), // Use in key to ensure GetX tracks it
         backgroundColor: AppColors.background,
         body: RefreshIndicator(
         onRefresh: () async {
@@ -152,18 +156,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   _buildLocationInfo(cityName),
                   SizedBox(width: ResponsiveUtils.rp(12)),
                 ],
-                // Account Text with Icon
+                // Account Icon
                 InkWell(
                   onTap: () => Get.toNamed('/account'),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.person,
-                        color: AppColors.textPrimary,
-                        size: ResponsiveUtils.rp(24),
-                      ),
-                    ],
+                  child: Icon(
+                    Icons.person,
+                    color: AppColors.textPrimary,
+                    size: ResponsiveUtils.rp(32),
                   ),
                 ),
                 SizedBox(width: ResponsiveUtils.rp(12)),
@@ -254,17 +253,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildShippingTicker() {
+    // Check if service is registered before using Obx
+    if (!Get.isRegistered<RemoteConfigService>()) {
+      return const SizedBox.shrink();
+    }
+    
     return Obx(() {
-      try {
-        // Get Remote Config service
-        final remoteConfigService = Get.find<RemoteConfigService>();
-        // Access observable directly instead of calling methods
-        final tickerText = remoteConfigService.shippingTickerText.value;
-        
-        // Only show if text is fetched from Remote Config
-        if (tickerText.isEmpty) {
-          return const SizedBox.shrink();
-        }
+      // Get Remote Config service - it's guaranteed to exist due to check above
+      final remoteConfigService = Get.find<RemoteConfigService>();
+      // Access observable directly - this must happen for GetX to track it
+      final tickerText = remoteConfigService.shippingTickerText.value;
+      
+      // Only show if text is fetched from Remote Config
+      if (tickerText.isEmpty) {
+        return const SizedBox.shrink();
+      }
 
         return Container(
           width: double.infinity,
@@ -315,10 +318,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         );
-      } catch (e) {
-debugPrint('🔥 _buildShippingTicker crashed: $e');
-        return const SizedBox.shrink();
-      }
     });
   }
 
@@ -468,10 +467,9 @@ debugPrint('🔥 _buildShippingTicker crashed: $e');
                       shadowPriceText: null,
                       onAddToCart: () {
                         if (selectedVariantId.isEmpty) {
-                          Get.snackbar(
-                            'Variant unavailable',
+                          SnackBarWidget.showWarning(
                             'Unable to add this item right now.',
-                            snackPosition: SnackPosition.BOTTOM,
+                            title: 'Variant unavailable',
                           );
                         } else {
                           _addVariantToCartById(
@@ -609,10 +607,9 @@ debugPrint('🔥 _buildShippingTicker crashed: $e');
                       shadowPriceText: null,
                       onAddToCart: () {
                         if (selectedVariantId.isEmpty) {
-                          Get.snackbar(
-                            'Variant unavailable',
+                          SnackBarWidget.showWarning(
                             'Unable to add this item right now.',
-                            snackPosition: SnackPosition.BOTTOM,
+                            title: 'Variant unavailable',
                           );
                         } else {
                           _addVariantToCartById(
@@ -964,10 +961,9 @@ debugPrint('🔥 _buildShippingTicker crashed: $e');
       String variantId, String productName) async {
     final parsedVariantId = int.tryParse(variantId);
     if (parsedVariantId == null) {
-      Get.snackbar(
-        'Variant unavailable',
+      SnackBarWidget.showWarning(
         'Unable to add $productName right now.',
-        snackPosition: SnackPosition.BOTTOM,
+        title: 'Variant unavailable',
       );
       return;
     }

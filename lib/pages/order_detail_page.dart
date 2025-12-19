@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../widgets/snackbar.dart';
+import '../widgets/loading_dialog.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
@@ -228,38 +230,23 @@ debugPrint('[OrderDetail] Error loading order details: $e');
     // Don't allow sharing for cancelled orders
     final isCancelled = order.state?.toString().toLowerCase() == 'cancelled';
     if (isCancelled) {
-      Get.snackbar(
-        'Error',
-        'Cannot share invoice for cancelled orders',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      SnackBarWidget.showError('Cannot share invoice for cancelled orders');
       return;
     }
     
     try {
-      utilityController.setLoadingState(true);
+      LoadingDialog.show(message: 'Please wait');
       // The order from orderController.currentOrder is already in the correct format
       final orderModel = orderController.currentOrder.value;
       if (orderModel != null) {
         await BillGenerator.generateAndShare(orderModel);
       } else {
-        Get.snackbar(
-          'Error',
-          'Failed to load order details',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        SnackBarWidget.showError('Failed to load order details');
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to generate invoice: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      SnackBarWidget.showError('Failed to generate invoice: $e');
     } finally {
-      utilityController.setLoadingState(false);
+      LoadingDialog.hide();
     }
   }
 
@@ -918,258 +905,15 @@ debugPrint('[OrderDetail] Error loading order details: $e');
   }
 
   void _showCancelOrderDialog(dynamic order) {
-    String? selectedReason;
-    final TextEditingController otherReasonController = TextEditingController();
-    bool showOtherTextField = false;
-
     Get.dialog(
-      StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.warning_amber_rounded,
-                    color: Colors.orange, size: ResponsiveUtils.rp(28)),
-                SizedBox(width: ResponsiveUtils.rp(12)),
-                Expanded(
-                  child: Text(
-                    'Request Order Cancellation',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(18),
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Please select a reason for cancellation:',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(16)),
-                  // Reason 1: Changed my mind
-                  _buildReasonOption(
-                    context,
-                    setState,
-                    'Changed my mind',
-                    selectedReason,
-                    (value) {
-                      setState(() {
-                        selectedReason = value;
-                        showOtherTextField = false;
-                        otherReasonController.clear();
-                      });
-                    },
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  // Reason 2: Found better price elsewhere
-                  _buildReasonOption(
-                    context,
-                    setState,
-                    'Found better price elsewhere',
-                    selectedReason,
-                    (value) {
-                      setState(() {
-                        selectedReason = value;
-                        showOtherTextField = false;
-                        otherReasonController.clear();
-                      });
-                    },
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  // Reason 3: Delivery time too long
-                  _buildReasonOption(
-                    context,
-                    setState,
-                    'Delivery time too long',
-                    selectedReason,
-                    (value) {
-                      setState(() {
-                        selectedReason = value;
-                        showOtherTextField = false;
-                        otherReasonController.clear();
-                      });
-                    },
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  // Reason 4: Ordered by mistake
-                  _buildReasonOption(
-                    context,
-                    setState,
-                    'Ordered by mistake',
-                    selectedReason,
-                    (value) {
-                      setState(() {
-                        selectedReason = value;
-                        showOtherTextField = false;
-                        otherReasonController.clear();
-                      });
-                    },
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  // Other option
-                  _buildReasonOption(
-                    context,
-                    setState,
-                    'Other',
-                    selectedReason,
-                    (value) {
-                      setState(() {
-                        selectedReason = value;
-                        showOtherTextField = true;
-                      });
-                    },
-                  ),
-                  // Other reason text field
-                  if (showOtherTextField) ...[
-                    SizedBox(height: ResponsiveUtils.rp(16)),
-                    TextField(
-                      controller: otherReasonController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        hintText: 'Please specify your reason...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                        ),
-                        contentPadding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-                      ),
-                      onChanged: (value) {
-                        setState(() {});
-                      },
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  otherReasonController.dispose();
-                  Get.back();
-                },
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: (selectedReason != null && 
-                            (selectedReason != 'Other' || 
-                             (selectedReason == 'Other' && otherReasonController.text.trim().isNotEmpty)))
-                    ? () async {
-                        final reason = selectedReason == 'Other' 
-                            ? otherReasonController.text.trim()
-                            : selectedReason!;
-                        otherReasonController.dispose();
-                        Get.back();
-                        await _requestOrderCancellation(order, reason);
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                  ),
-                ),
-                child: Text(
-                  'Request Cancellation',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
-          );
-        },
+      _CancelOrderDialogContent(
+        order: order,
+        onCancelRequested: (reason) => _requestOrderCancellation(order, reason),
       ),
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.5),
     );
   }
-
-  Widget _buildReasonOption(
-    BuildContext context,
-    StateSetter setState,
-    String reason,
-    String? selectedReason,
-    Function(String) onSelected,
-  ) {
-    final isSelected = selectedReason == reason;
-    return InkWell(
-      onTap: () => onSelected(reason),
-      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-      child: Container(
-        padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.error.withValues(alpha: 0.1)
-              : AppColors.inputFill,
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.error
-                : AppColors.border,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: ResponsiveUtils.rp(20),
-              height: ResponsiveUtils.rp(20),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.error
-                      : AppColors.border,
-                  width: 2,
-                ),
-                color: isSelected
-                    ? AppColors.error
-                    : Colors.transparent,
-              ),
-              child: isSelected
-                  ? Icon(
-                      Icons.check,
-                      size: ResponsiveUtils.rp(14),
-                      color: Colors.white,
-                    )
-                  : null,
-            ),
-            SizedBox(width: ResponsiveUtils.rp(12)),
-            Expanded(
-              child: Text(
-                reason,
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(14),
-                  fontWeight: isSelected
-                      ? FontWeight.w600
-                      : FontWeight.w400,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
 
   Widget _buildShimmerLoading() {
     return Skeletonizer(
@@ -1293,42 +1037,27 @@ debugPrint('[OrderDetail] Error loading order details: $e');
 
         if (response.hasException) {
           final errorMessage = response.exception?.graphqlErrors.firstOrNull?.message ?? '';
-          Get.snackbar(
-            'Error',
+          SnackBarWidget.showError(
             errorMessage.isNotEmpty ? errorMessage : 'Failed to request order cancellation. Please try again.',
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
           );
           return;
         }
 
         if (response.parsedData?.requestOrderCancellation == null) {
-          Get.snackbar(
-            'Error',
-            'Failed to request cancellation. Please try again.',
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
+          SnackBarWidget.showError('Failed to request cancellation. Please try again.');
           return;
         }
 
         await orderController.getOrderByCode(widget.orderCode);
         
-        Get.snackbar(
-          'Success',
-          'Cancellation request submitted successfully',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        SnackBarWidget.showSuccess('Cancellation request submitted successfully');
       } catch (e) {
         if (e.toString().contains('requestOrderCancellation') || 
             e.toString().contains('Cannot query field')) {
-          Get.snackbar(
-            'Feature Not Available',
+          SnackBarWidget.showWarning(
             'Order cancellation is not available on the server yet. Please contact support.',
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
-            duration: Duration(seconds: 4),
+            title: 'Feature Not Available',
+            duration: const Duration(seconds: 4),
           );
           return;
         }
@@ -1336,14 +1065,278 @@ debugPrint('[OrderDetail] Error loading order details: $e');
       }
     } catch (e) {
       debugPrint('[OrderDetail] Exception requesting cancellation: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to request cancellation. Please try again.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      SnackBarWidget.showError('Failed to request cancellation. Please try again.');
     } finally {
       utilityController.setLoadingState(false);
     }
+  }
+}
+
+/// Separate StatefulWidget for cancel order dialog to properly manage TextEditingController lifecycle
+class _CancelOrderDialogContent extends StatefulWidget {
+  final dynamic order;
+  final Function(String) onCancelRequested;
+
+  const _CancelOrderDialogContent({
+    required this.order,
+    required this.onCancelRequested,
+  });
+
+  @override
+  State<_CancelOrderDialogContent> createState() => _CancelOrderDialogContentState();
+}
+
+class _CancelOrderDialogContentState extends State<_CancelOrderDialogContent> {
+  String? selectedReason;
+  late final TextEditingController otherReasonController;
+  bool showOtherTextField = false;
+
+  @override
+  void initState() {
+    super.initState();
+    otherReasonController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    otherReasonController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded,
+                    color: Colors.orange, size: ResponsiveUtils.rp(28)),
+                SizedBox(width: ResponsiveUtils.rp(12)),
+                Expanded(
+                  child: Text(
+                    'Request Order Cancellation',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(18),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Please select a reason for cancellation:',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    // Reason 1: Changed my mind
+                    _buildDialogReasonOption(
+                      context,
+                      setState,
+                      'Changed my mind',
+                      selectedReason,
+                      (value) {
+                        setState(() {
+                          selectedReason = value;
+                          showOtherTextField = false;
+                          otherReasonController.clear();
+                        });
+                      },
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    // Reason 2: Found better price elsewhere
+                    _buildDialogReasonOption(
+                      context,
+                      setState,
+                      'Found better price elsewhere',
+                      selectedReason,
+                      (value) {
+                        setState(() {
+                          selectedReason = value;
+                          showOtherTextField = false;
+                          otherReasonController.clear();
+                        });
+                      },
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    // Reason 3: Delivery time too long
+                    _buildDialogReasonOption(
+                      context,
+                      setState,
+                      'Delivery time too long',
+                      selectedReason,
+                      (value) {
+                        setState(() {
+                          selectedReason = value;
+                          showOtherTextField = false;
+                          otherReasonController.clear();
+                        });
+                      },
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    // Reason 4: Ordered by mistake
+                    _buildDialogReasonOption(
+                      context,
+                      setState,
+                      'Ordered by mistake',
+                      selectedReason,
+                      (value) {
+                        setState(() {
+                          selectedReason = value;
+                          showOtherTextField = false;
+                          otherReasonController.clear();
+                        });
+                      },
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    // Other option
+                    _buildDialogReasonOption(
+                      context,
+                      setState,
+                      'Other',
+                      selectedReason,
+                      (value) {
+                        setState(() {
+                          selectedReason = value;
+                          showOtherTextField = true;
+                        });
+                      },
+                    ),
+                    // Other reason text field
+                    if (showOtherTextField) ...[
+                      SizedBox(height: ResponsiveUtils.rp(16)),
+                      TextField(
+                        controller: otherReasonController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: 'Please specify your reason...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                          ),
+                          contentPadding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                        ),
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ElevatedButton(
+                  onPressed: (selectedReason != null && 
+                              (selectedReason != 'Other' || 
+                               (selectedReason == 'Other' && otherReasonController.text.trim().isNotEmpty)))
+                      ? () async {
+                          final reason = selectedReason == 'Other' 
+                              ? otherReasonController.text.trim()
+                              : selectedReason!;
+                          Get.back();
+                          // Request cancellation after dialog is closed
+                          widget.onCancelRequested(reason);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                    ),
+                  ),
+                  child: Text(
+                    'Request Cancellation',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+  }
+
+  Widget _buildDialogReasonOption(
+    BuildContext context,
+    StateSetter setState,
+    String reason,
+    String? selectedReason,
+    ValueChanged<String> onSelected,
+  ) {
+    final isSelected = selectedReason == reason;
+    return GestureDetector(
+      onTap: () => onSelected(reason),
+      child: Container(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.button.withOpacity(0.1)
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+          border: Border.all(
+            color: isSelected ? AppColors.button : AppColors.border,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: ResponsiveUtils.rp(20),
+              height: ResponsiveUtils.rp(20),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? AppColors.button : Colors.transparent,
+                border: Border.all(
+                  color: isSelected ? AppColors.button : AppColors.border,
+                  width: 2,
+                ),
+              ),
+              child: isSelected
+                  ? Icon(
+                      Icons.check,
+                      size: ResponsiveUtils.rp(14),
+                      color: Colors.white,
+                    )
+                  : null,
+            ),
+            SizedBox(width: ResponsiveUtils.rp(12)),
+            Expanded(
+              child: Text(
+                reason,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

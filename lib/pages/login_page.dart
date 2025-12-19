@@ -12,6 +12,7 @@ import '../theme/theme.dart';
 import '../utils/navigation_helper.dart';
 import '../utils/responsive.dart';
 import '../services/analytics_service.dart';
+import '../widgets/snackbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -817,22 +818,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
     _validatePhone(_authController.phoneNumber.text);
 
     if (_phoneError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: ResponsiveUtils.rp(12)),
-              Expanded(child: Text(_phoneError!)),
-            ],
-          ),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-          ),
-        ),
-      );
+      SnackBarWidget.showError(_phoneError!);
       return;
     }
 
@@ -845,22 +831,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
     _validateOtp(_authController.otpController.text);
 
     if (_otpError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: ResponsiveUtils.rp(12)),
-              Expanded(child: Text(_otpError!)),
-            ],
-          ),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-          ),
-        ),
-      );
+      SnackBarWidget.showError(_otpError!);
       return;
     }
 

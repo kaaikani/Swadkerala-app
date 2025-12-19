@@ -1,87 +1,139 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../theme/colors.dart';
+import '../utils/responsive.dart';
 
+/// Centralized snackbar utility class
+/// Use this class instead of calling Get.snackbar directly
 class SnackBarWidget {
+  /// Show a basic snackbar
   static void show(
     BuildContext? context,
     String message, {
     Color? backgroundColor,
+
     Duration duration = const Duration(seconds: 2),
   }) {
-    // If context is null or widget is disposed, use GetX snackbar instead
-    if (context == null || !context.mounted) {
-      _showWithGetX(message, backgroundColor: backgroundColor, duration: duration);
-      return;
-    }
+    _showWithGetX(
 
-    try {
-      final bgColor = backgroundColor ?? AppColors.background;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            message,
-            style: TextStyle(color: AppColors.buttonText),
-          ),
-          backgroundColor: bgColor,
-          behavior: SnackBarBehavior.floating,
-          duration: duration,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-    } catch (e) {
-      // If ScaffoldMessenger fails, fallback to GetX
-      _showWithGetX(message, backgroundColor: backgroundColor, duration: duration);
-    }
+      message: message,
+      backgroundColor: backgroundColor ?? AppColors.background,
+      duration: duration,
+    );
   }
 
-  static void _showWithGetX(
+  /// Show success snackbar
+  static void showSuccess(
     String message, {
-    Color? backgroundColor,
+    String? title,
     Duration duration = const Duration(seconds: 2),
+    SnackPosition position = SnackPosition.TOP,
   }) {
-    final bgColor = backgroundColor ?? AppColors.background;
-    Get.snackbar(
-      '',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: bgColor,
-      colorText: AppColors.buttonText,
+    _showWithGetX(
+      title: title ?? 'Success',
+      message: message,
+      backgroundColor: AppColors.success,
+      textColor: AppColors.buttonText,
       duration: duration,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 12,
+      position: position,
+      icon: Icons.check_circle,
+    );
+  }
+
+  /// Show error snackbar
+  static void showError(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+    SnackPosition position = SnackPosition.BOTTOM,
+  }) {
+    _showWithGetX(
+      title: title ?? 'Error',
+      message: message,
+      backgroundColor: AppColors.error,
+      textColor: AppColors.buttonText,
+      duration: duration,
+      position: position,
+      icon: Icons.error,
+    );
+  }
+
+  /// Show warning snackbar
+  static void showWarning(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+    SnackPosition position = SnackPosition.BOTTOM,
+  }) {
+    _showWithGetX(
+      title: title ?? 'Warning',
+      message: message,
+      backgroundColor: AppColors.warning,
+      textColor: AppColors.buttonText,
+      duration: duration,
+      position: position,
+      icon: Icons.warning_amber_rounded,
+    );
+  }
+
+  /// Show info snackbar
+  static void showInfo(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 2),
+    SnackPosition position = SnackPosition.BOTTOM,
+  }) {
+    _showWithGetX(
+      title: title ?? 'Info',
+      message: message,
+      backgroundColor: AppColors.info,
+      textColor: AppColors.buttonText,
+      duration: duration,
+      position: position,
+      icon: Icons.info,
+    );
+  }
+
+  /// Internal method to show snackbar using GetX
+  static void _showWithGetX({
+    String? title,
+    required String message,
+    required Color backgroundColor,
+    Color? textColor,
+    Duration duration = const Duration(seconds: 2),
+    SnackPosition position = SnackPosition.TOP,
+    IconData? icon,
+  }) {
+    Get.snackbar(
+      title ?? '',
+      message,
+      snackPosition: position,
+      backgroundColor: backgroundColor,
+      colorText: textColor ?? AppColors.buttonText,
+      duration: duration,
+      margin: EdgeInsets.all(ResponsiveUtils.rp(16)),
+      borderRadius: ResponsiveUtils.rp(12),
       isDismissible: true,
+      dismissDirection: DismissDirection.horizontal,
+      forwardAnimationCurve: Curves.easeOutBack,
+      reverseAnimationCurve: Curves.easeInBack,
+      icon: icon != null
+          ? Icon(
+              icon,
+              color: textColor ?? AppColors.buttonText,
+              size: ResponsiveUtils.rp(24),
+            )
+          : null,
     );
   }
 }
 
-/// Helper function to show success snackbar using GetX
+/// Helper function to show success snackbar (for backward compatibility)
 void showSuccessSnackbar(String message) {
-  Get.snackbar(
-    'Success',
-    message,
-    snackPosition: SnackPosition.TOP,
-    backgroundColor: Colors.green,
-    colorText: Colors.white,
-    duration: const Duration(seconds: 2),
-    margin: const EdgeInsets.all(16),
-    borderRadius: 12,
-    icon: const Icon(Icons.check_circle, color: Colors.white),
-  );
+  SnackBarWidget.showSuccess(message);
 }
 
+/// Helper function to show error snackbar (for backward compatibility)
 void showErrorSnackbar(String message) {
-  Get.snackbar(
-    'Error',
-    message,
-    snackPosition: SnackPosition.BOTTOM,
-    backgroundColor: Colors.red,
-    colorText: Colors.white,
-    duration: const Duration(seconds: 3),
-    margin: const EdgeInsets.all(16),
-    borderRadius: 12,
-    icon: const Icon(Icons.error, color: Colors.white),
-  );
+  SnackBarWidget.showError(message);
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../widgets/snackbar.dart';
+import '../widgets/loading_dialog.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/customer/customer_controller.dart';
@@ -47,14 +49,13 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
     final orderModel = orderController.currentOrder.value;
     if (orderModel != null) {
       try {
-        utilityController.setLoadingState(true);
+        LoadingDialog.show(message: 'Please wait');
         // Pass OrderModel directly to BillGenerator
         await BillGenerator.generateAndShare(orderModel);
       } catch (e) {
-        Get.snackbar('Error', 'Failed to generate bill: $e',
-            backgroundColor: Colors.red, colorText: Colors.white);
+        SnackBarWidget.showError('Failed to generate bill: $e');
       } finally {
-        utilityController.setLoadingState(false);
+        LoadingDialog.hide();
       }
     }
   }
@@ -141,7 +142,7 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
                 ),
                 SizedBox(height: ResponsiveUtils.rp(24)),
 
-             /*   // Share Bill Button
+              // Share Bill Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -160,7 +161,7 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
                   ),
                 ),
                 SizedBox(height: ResponsiveUtils.rp(24)),
-*/
+
                 // Order Details Card
                 Container(
                   decoration: BoxDecoration(

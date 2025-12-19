@@ -16,6 +16,7 @@ class AddressesPage extends StatefulWidget {
 class _AddressesPageState extends State<AddressesPage> {
   bool _showAddForm = false;
   dynamic _editingAddress;
+  bool _isUpdatingAddress = false; // Loading state for address updates
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class _AddressesPageState extends State<AddressesPage> {
           onPressed: () => Get.back(),
         ),
       ),
-      floatingActionButton: (_showAddForm || _editingAddress != null) ? null : FloatingActionButton.extended(
+      floatingActionButton: (_showAddForm || _editingAddress != null || _isUpdatingAddress) ? null : FloatingActionButton.extended(
         onPressed: () {
           setState(() {
             _showAddForm = true;
@@ -59,52 +60,96 @@ class _AddressesPageState extends State<AddressesPage> {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      body: Obx(() {
-        final addresses = customerController.addresses;
+      body: Stack(
+        children: [
+          Obx(() {
+            final addresses = customerController.addresses;
 
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              // Add Address Form (shown inline)
-              if (_showAddForm)
-                _buildAddAddressForm(context, customerController),
-              
-              // Edit Address Form (shown inline)
-              if (_editingAddress != null)
-                _buildEditAddressForm(context, customerController, _editingAddress),
-              
-              // Addresses List (only show when form is not visible)
-              if (!_showAddForm && _editingAddress == null) ...[
-                if (addresses.isEmpty)
-                  _buildEmptyState(context, customerController)
-                else
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Saved Addresses',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Add Address Form (shown inline)
+                  if (_showAddForm)
+                    _buildAddAddressForm(context, customerController),
+                  
+                  // Edit Address Form (shown inline)
+                  if (_editingAddress != null)
+                    _buildEditAddressForm(context, customerController, _editingAddress),
+                  
+                  // Addresses List (only show when form is not visible)
+                  if (!_showAddForm && _editingAddress == null) ...[
+                    if (addresses.isEmpty)
+                      _buildEmptyState(context, customerController)
+                    else
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          
+                            SizedBox(height: 12),
+                            ...addresses.map((address) => Padding(
+                              padding: EdgeInsets.only(bottom: 12),
+                              child: _buildAddressCard(
+                                  context, address, customerController),
+                            )).toList(),
+                          ],
                         ),
-                        SizedBox(height: 12),
-                        ...addresses.map((address) => Padding(
-                          padding: EdgeInsets.only(bottom: 12),
-                          child: _buildAddressCard(
-                              context, address, customerController),
-                        )).toList(),
-                      ],
-                    ),
+                      ),
+                  ],
+                ],
+              ),
+            );
+          }),
+          // Loading overlay
+          if (_isUpdatingAddress)
+            Container(
+              color: Colors.black.withValues(alpha: 0.3),
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
                   ),
-              ],
-            ],
-          ),
-        );
-      }),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                        strokeWidth: 3,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Please Wait...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Updating address',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -163,7 +208,7 @@ class _AddressesPageState extends State<AddressesPage> {
 
   Widget _buildAddressCard(BuildContext context, dynamic address,
       CustomerController customerController) {
-    final isDefault = address.defaultShippingAddress;
+    final hasMultipleAddresses = customerController.addresses.length > 1;
 
     // Build compact address text
     List<String> addressParts = [];
@@ -174,162 +219,294 @@ class _AddressesPageState extends State<AddressesPage> {
     String addressLine = addressParts.join(', ');
     String cityLine = '${address.city}${address.postalCode.isNotEmpty ? ', ${address.postalCode}' : ''}, ${address.country.name}';
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.card,
+    return Obx(() {
+      // Get current default address reactively
+      final currentDefaultAddress = customerController.addresses.firstWhereOrNull(
+        (addr) => addr.defaultShippingAddress,
+      );
+      final isCurrentlyDefault = address.id == currentDefaultAddress?.id;
+
+      return InkWell(
+        onTap: hasMultipleAddresses ? () async {
+          // Only allow tap to select if there are multiple addresses
+          if (!isCurrentlyDefault) {
+            await _setAsDefaultAndShipping(
+              context,
+              address,
+              customerController,
+            );
+          }
+        } : null,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isDefault ? AppColors.button : AppColors.border,
-          width: isDefault ? 2 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Location Icon
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isDefault
-                    ? AppColors.button.withValues(alpha: 0.1)
-                    : AppColors.background,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Icon(
-                Icons.location_on,
-                color: isDefault ? AppColors.button : AppColors.textSecondary,
-                size: 20,
-              ),
+        child: Container(
+          margin: EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isCurrentlyDefault ? AppColors.button : AppColors.border,
+              width: isCurrentlyDefault ? 2 : 1,
             ),
-            SizedBox(width: 12),
-            // Address Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Name and Default Badge
-                  Row(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Radio Button (only show if multiple addresses)
+                if (hasMultipleAddresses) ...[
+                  Radio<dynamic>(
+                    value: address,
+                    groupValue: currentDefaultAddress,
+                    onChanged: (dynamic selectedAddress) async {
+                      if (selectedAddress != null) {
+                        await _setAsDefaultAndShipping(
+                          context, 
+                          selectedAddress, 
+                          customerController,
+                        );
+                      }
+                    },
+                    activeColor: AppColors.button,
+                  ),
+                  SizedBox(width: 8),
+                ],
+                // Location Icon
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isCurrentlyDefault
+                        ? AppColors.button.withValues(alpha: 0.1)
+                        : AppColors.background,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    Icons.location_on,
+                    color: isCurrentlyDefault ? AppColors.button : AppColors.textSecondary,
+                    size: 20,
+                  ),
+                ),
+                SizedBox(width: 12),
+                // Address Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: Text(
-                          address.fullName,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      if (isDefault)
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.button,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'DEFAULT',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
+                      // Name and Default Badge
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              address.fullName,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
                           ),
+                          if (isCurrentlyDefault)
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.button,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'DEFAULT',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    SizedBox(height: 6),
+                    // Address lines (compact)
+                    if (addressLine.isNotEmpty)
+                      Text(
+                        addressLine,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textPrimary,
+                          height: 1.3,
                         ),
-                    ],
-                  ),
-                  SizedBox(height: 6),
-                  // Address lines (compact)
-                  if (addressLine.isNotEmpty)
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    SizedBox(height: 4),
+                    // City and postal code
                     Text(
-                      addressLine,
+                      cityLine,
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textPrimary,
+                        color: AppColors.textSecondary,
                         height: 1.3,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  SizedBox(height: 4),
-                  // City and postal code
-                  Text(
-                    cityLine,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                      height: 1.3,
-                    ),
-                  ),
-                  if (address.phoneNumber != null &&
-                      address.phoneNumber.isNotEmpty) ...[
-                    SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.phone, size: 12, color: AppColors.textSecondary),
-                        SizedBox(width: 4),
-                        Text(
-                          address.phoneNumber,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
+                    if (address.phoneNumber != null &&
+                        address.phoneNumber.isNotEmpty) ...[
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.phone, size: 12, color: AppColors.textSecondary),
+                          SizedBox(width: 4),
+                          Text(
+                            address.phoneNumber,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ],
+                ),
+              ),
+              SizedBox(width: 8),
+              // Action Buttons - Stop event propagation so they don't trigger card tap
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.edit_outlined, 
+                        color: AppColors.button, size: 20),
+                    onPressed: () => _showEditAddressDialog(
+                        context, address, customerController),
+                  ),
+                  SizedBox(height: 4),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.delete_outline, 
+                        color: Colors.red, size: 20),
+                    onPressed: () {
+                      // Check if this is the only address
+                      if (customerController.addresses.length <= 1) {
+                        SnackBarWidget.show(
+                          context,
+                          'Cannot delete the only address. At least one address must be kept.',
+                          backgroundColor: AppColors.error,
+                        );
+                        return;
+                      }
+                      _showDeleteDialog(context, address.id, customerController);
+                    },
+                  ),
                 ],
               ),
-            ),
-            SizedBox(width: 8),
-            // Action Buttons
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  icon: Icon(Icons.edit_outlined, 
-                      color: AppColors.button, size: 20),
-                  onPressed: () => _showEditAddressDialog(
-                      context, address, customerController),
-                ),
-                SizedBox(height: 4),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  icon: Icon(Icons.delete_outline, 
-                      color: Colors.red, size: 20),
-                  onPressed: () {
-                    // Check if this is the only address
-                    if (customerController.addresses.length <= 1) {
-                      SnackBarWidget.show(
-                        context,
-                        'Cannot delete the only address. At least one address must be kept.',
-                        backgroundColor: AppColors.error,
-                      );
-                      return;
-                    }
-                    _showDeleteDialog(context, address.id, customerController);
-                  },
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
+      );
+    });
+  }
+
+  /// Set address as both default shipping and default billing address
+  Future<void> _setAsDefaultAndShipping(
+    BuildContext context,
+    dynamic address,
+    CustomerController customerController,
+  ) async {
+    // Show loading indicator
+    setState(() {
+      _isUpdatingAddress = true;
+    });
+
+    try {
+      // Optimize: Update local state first for immediate UI feedback
+      // Create updated address models
+      final addressesToUpdate = <AddressModel>[];
+      
+      // First, unset all other addresses as default
+      for (final addr in customerController.addresses) {
+        if (addr.id != address.id && 
+            (addr.defaultShippingAddress || addr.defaultBillingAddress)) {
+          final updatedAddress = AddressModel(
+            id: addr.id,
+            fullName: addr.fullName,
+            streetLine1: addr.streetLine1,
+            streetLine2: addr.streetLine2,
+            city: addr.city,
+            province: addr.province,
+            postalCode: addr.postalCode,
+            phoneNumber: addr.phoneNumber,
+            company: addr.company,
+            defaultShippingAddress: false,
+            defaultBillingAddress: false,
+            country: addr.country,
+          );
+          addressesToUpdate.add(updatedAddress);
+        }
+      }
+
+      // Then set the selected address as default (both shipping and billing)
+      final selectedUpdatedAddress = AddressModel(
+        id: address.id,
+        fullName: address.fullName,
+        streetLine1: address.streetLine1,
+        streetLine2: address.streetLine2,
+        city: address.city,
+        province: address.province,
+        postalCode: address.postalCode,
+        phoneNumber: address.phoneNumber,
+        company: address.company,
+        defaultShippingAddress: true,
+        defaultBillingAddress: true,
+        country: address.country,
+      );
+      addressesToUpdate.add(selectedUpdatedAddress);
+
+      // Update all addresses in parallel for better performance
+      final updateResults = await Future.wait(
+        addressesToUpdate.map((addr) => customerController.updateAddress(addr)),
+        eagerError: false,
+      );
+
+      // Check if all updates succeeded
+      final allSuccess = updateResults.every((result) => result == true);
+      
+      if (allSuccess) {
+        // Refresh addresses to ensure UI is in sync
+        customerController.refreshAddresses();
+        if (mounted) {
+        }
+      } else {
+        // If update failed, refresh to get correct state from server
+        customerController.refreshAddresses();
+        if (mounted) {
+          showErrorSnackbar('Failed to set default address');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error setting default address: $e');
+      // Refresh to get correct state from server
+      customerController.refreshAddresses();
+      if (mounted) {
+        showErrorSnackbar('Failed to set default address');
+      }
+    } finally {
+      // Hide loading indicator
+      if (mounted) {
+        setState(() {
+          _isUpdatingAddress = false;
+        });
+      }
+    }
   }
 
   Widget _buildAddAddressForm(
@@ -418,7 +595,7 @@ class _AddressesPageState extends State<AddressesPage> {
               // Double check before deletion
               if (customerController.addresses.length <= 1) {
                 if (Get.isDialogOpen == true) {
-                  Get.back();
+                Get.back();
                 }
                 SnackBarWidget.show(
                   context,
@@ -430,7 +607,7 @@ class _AddressesPageState extends State<AddressesPage> {
               
               // Close dialog first
               if (Get.isDialogOpen == true) {
-                Get.back();
+              Get.back();
               }
               
               // Perform deletion

@@ -114,7 +114,7 @@ class _BannerComponentState extends State<BannerComponent> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              height: ResponsiveUtils.rp(200),
+              height: ResponsiveUtils.rp(220),
               child: PageView.builder(
                 controller: _pageController,
                 itemBuilder: (context, index) {
@@ -134,15 +134,18 @@ class _BannerComponentState extends State<BannerComponent> {
                       ? banner.assets.first.source
                       : '';
 
-                  return Container(
-                    child: ClipRRect(
-                      child: Stack(
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(0),
+                      vertical: ResponsiveUtils.rp(8),
+                    ),
+                    child: Stack(
                         fit: StackFit.expand,
                         children: [
                           imageUrl.isNotEmpty
                               ? Image.network(
                                   imageUrl,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   loadingBuilder: (context, child, progress) {
                                     if (progress == null) return child;
                                     return Container(
@@ -204,7 +207,6 @@ class _BannerComponentState extends State<BannerComponent> {
                           ),
                         ],
                       ),
-                    ),
                   );
                 },
               ),

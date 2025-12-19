@@ -61,22 +61,22 @@ class _AccountPageState extends State<AccountPage> {
       // Force rebuild when theme changes
       final _ = themeController.isDarkMode;
       
-      return Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.surface,
-          elevation: 0.5,
-          title: Text(
-            'My Account',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(18),
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0.5,
+        title: Text(
+          'My Account',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(18),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
           ),
-          centerTitle: true,
         ),
-        body: Obx(() {
+        centerTitle: true,
+      ),
+      body: Obx(() {
         if (utilityController.isLoadingRx.value) {
           return _buildShimmerAccount();
         }
@@ -127,7 +127,7 @@ class _AccountPageState extends State<AccountPage> {
           ),
         );
       }),
-      );
+    );
     });
   }
 

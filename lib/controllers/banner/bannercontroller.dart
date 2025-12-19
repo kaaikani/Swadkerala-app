@@ -272,17 +272,38 @@ debugPrint('[BannerController] Toggle favorite error: $e');
 
       // Check if this is just a cache miss exception (non-fatal)
       bool isCacheMissException = false;
+      bool isNetworkError = false;
       if (res.hasException) {
         final exception = res.exception;
         final exceptionString = exception?.toString() ?? '';
+        final linkException = exception?.linkException;
 
         isCacheMissException = exceptionString.contains('CacheMissException') ||
             exceptionString.contains('cache.readQuery') ||
             exceptionString.contains('Round trip cache re-read failed');
 
+        // Check for network/connection errors
+        isNetworkError = exceptionString.contains('Connection closed before full header was received') ||
+            exceptionString.contains('Connection closed') ||
+            exceptionString.contains('SocketException') ||
+            exceptionString.contains('ClientException') ||
+            exceptionString.contains('ServerException') ||
+            exceptionString.contains('NetworkException') ||
+            exceptionString.contains('TimeoutException') ||
+            (linkException != null && (
+              linkException.toString().contains('Connection closed') ||
+              linkException.toString().contains('ClientException') ||
+              linkException.toString().contains('ServerException')
+            ));
+
         if (isCacheMissException) {
           // Cache miss is expected and non-fatal - proceed to process data
 debugPrint( '[BannerController] Cache miss detected (non-fatal) - proceeding with data processing');
+        } else if (isNetworkError) {
+          // Network error - don't logout, just log and return
+debugPrint(       '[BannerController] GetCustomerFavorites Network Error: ${res.exception} - Not logging out');
+          utilityController.setLoadingState(false);
+          return; // Exit early, don't process data or logout
         } else {
           // For other exceptions, log but still try to process data if available
 debugPrint(       '[BannerController] GetCustomerFavorites Exception: ${res.exception}');
@@ -326,14 +347,20 @@ debugPrint('[BannerController] No favorites data found');
         favoriteProductIds.clear();
 debugPrint(  '[BannerController] Active customer is null or not a Customer type');
         
-        // Clear cache and logout when customer data is null
-        try {
-          final customerController = Get.find<CustomerController>();
-          await customerController.handleCustomerDataNotFound();
-        } catch (e) {
-          // If CustomerController is not found, handle logout directly
-          debugPrint('[BannerController] CustomerController not found, handling logout directly: $e');
-          await _handleCustomerDataNotFound();
+        // Only logout if it's NOT a network error
+        // Network errors should not trigger logout as they're temporary connection issues
+        if (!isNetworkError) {
+          // Clear cache and logout when customer data is null (only if not a network error)
+          try {
+            final customerController = Get.find<CustomerController>();
+            await customerController.handleCustomerDataNotFound();
+          } catch (e) {
+            // If CustomerController is not found, handle logout directly
+            debugPrint('[BannerController] CustomerController not found, handling logout directly: $e');
+            await _handleCustomerDataNotFound();
+          }
+        } else {
+          debugPrint('[BannerController] Network error detected - skipping logout to prevent unnecessary session termination');
         }
       }
 
@@ -880,6 +907,9 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
   /// Validate coupon code before applying
   Future<Map<String, dynamic>> validateCouponCode(String couponCode) async {
     try {
+      debugPrint('[BannerController] 🔍 Validating coupon code: $couponCode');
+      debugPrint('[BannerController] Available coupons count: ${availableCouponCodes.length}');
+      
       // First check if coupon code exists in available list
       final coupon = availableCouponCodes.firstWhere(
         (c) => c.couponCode.toLowerCase() == couponCode.toLowerCase(),
@@ -896,6 +926,9 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
       );
 
       if (coupon.id.isEmpty) {
+        debugPrint('[BannerController] ❌ Validation Error: Coupon code not found');
+        debugPrint('[BannerController] ❌ Error type: COUPON_NOT_FOUND');
+        debugPrint('[BannerController] ❌ Available coupon codes: ${availableCouponCodes.map((c) => c.couponCode).toList()}');
         return {
           'valid': false,
           'message': 'Coupon code not found',
@@ -903,8 +936,15 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
         };
       }
 
+      debugPrint('[BannerController] ✅ Coupon found: ${coupon.name} (${coupon.couponCode})');
+      debugPrint('[BannerController] Coupon enabled: ${coupon.enabled}');
+      debugPrint('[BannerController] Coupon starts at: ${coupon.startsAt}');
+      debugPrint('[BannerController] Coupon ends at: ${coupon.endsAt}');
+
       // Check if coupon is enabled
       if (!coupon.enabled) {
+        debugPrint('[BannerController] ❌ Validation Error: Coupon code is disabled');
+        debugPrint('[BannerController] ❌ Error type: COUPON_DISABLED');
         return {
           'valid': false,
           'message': 'Coupon code is disabled',
@@ -916,6 +956,9 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
       if (coupon.endsAt != null) {
         final endDate = DateTime.parse(coupon.endsAt!);
         if (DateTime.now().isAfter(endDate)) {
+          debugPrint('[BannerController] ❌ Validation Error: Coupon code has expired');
+          debugPrint('[BannerController] ❌ Error type: COUPON_EXPIRED');
+          debugPrint('[BannerController] ❌ End date: $endDate, Current date: ${DateTime.now()}');
           return {
             'valid': false,
             'message': 'Coupon code has expired',
@@ -928,6 +971,9 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
       if (coupon.startsAt != null) {
         final startDate = DateTime.parse(coupon.startsAt!);
         if (DateTime.now().isBefore(startDate)) {
+          debugPrint('[BannerController] ❌ Validation Error: Coupon code is not yet active');
+          debugPrint('[BannerController] ❌ Error type: COUPON_NOT_ACTIVE');
+          debugPrint('[BannerController] ❌ Start date: $startDate, Current date: ${DateTime.now()}');
           return {
             'valid': false,
             'message': 'Coupon code is not yet active',
@@ -938,6 +984,9 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
 
       // Check if already applied
       if (appliedCouponCodes.contains(couponCode)) {
+        debugPrint('[BannerController] ❌ Validation Error: Coupon code already applied');
+        debugPrint('[BannerController] ❌ Error type: COUPON_ALREADY_APPLIED');
+        debugPrint('[BannerController] ❌ Applied coupons: ${appliedCouponCodes.toList()}');
         return {
           'valid': false,
           'message': 'Coupon code already applied',
@@ -947,6 +996,9 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
 
       // Check if another coupon is already applied (one coupon per order policy)
       if (appliedCouponCodes.isNotEmpty) {
+        debugPrint('[BannerController] ❌ Validation Error: Another coupon already applied');
+        debugPrint('[BannerController] ❌ Error type: ANOTHER_COUPON_APPLIED');
+        debugPrint('[BannerController] ❌ Applied coupons: ${appliedCouponCodes.toList()}');
         return {
           'valid': false,
           'message':
@@ -957,8 +1009,14 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
       }
 
       // Check minimum order amount conditions
+      debugPrint('[BannerController] 🔍 Checking minimum order amount...');
       final minimumAmountValidation = await _validateMinimumOrderAmount(coupon);
       if (!minimumAmountValidation['valid']) {
+        debugPrint('[BannerController] ❌ Validation Error: Minimum order amount not met');
+        debugPrint('[BannerController] ❌ Error type: MINIMUM_ORDER_AMOUNT_NOT_MET');
+        debugPrint('[BannerController] ❌ Required amount: ${minimumAmountValidation['requiredAmount']}');
+        debugPrint('[BannerController] ❌ Current amount: ${minimumAmountValidation['currentAmount']}');
+        debugPrint('[BannerController] ❌ Error message: ${minimumAmountValidation['message']}');
         return {
           'valid': false,
           'message': minimumAmountValidation['message'],
@@ -968,13 +1026,17 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
         };
       }
 
+      debugPrint('[BannerController] ✅ Coupon validation passed: $couponCode');
       return {
         'valid': true,
         'message': 'Coupon code is valid',
         'coupon': coupon
       };
     } catch (e) {
-debugPrint('[BannerController] Validate coupon code error: $e');
+      debugPrint('[BannerController] ❌ Exception validating coupon code: $couponCode');
+      debugPrint('[BannerController] ❌ Error: $e');
+      debugPrint('[BannerController] ❌ Error type: ${e.runtimeType}');
+      debugPrint('[BannerController] ❌ Stack trace: ${StackTrace.current}');
       return {
         'valid': false,
         'message': 'Error validating coupon code',
@@ -1150,15 +1212,25 @@ debugPrint('[BannerController] Exception getting cart total: $e');
       utilityController.setLoadingState(true);
 
       // First validate the coupon code
+      debugPrint('[BannerController] 🔍 Validating coupon code: $couponCode');
       final validation = await validateCouponCode(couponCode);
       if (!validation['valid']) {
+        debugPrint('[BannerController] ❌ Coupon validation failed: ${validation['error']}');
+        debugPrint('[BannerController] ❌ Error message: ${validation['message']}');
         utilityController.setLoadingState(false);
+        // Show warning dialog for validation errors
+        ErrorDialog.showWarning(
+          message: validation['message'] as String,
+        );
+        // Refresh cart to ensure state is up to date
+        _refreshCartAfterCouponError();
         return {
           'success': false,
           'message': validation['message'],
           'error': validation['error']
         };
       }
+      debugPrint('[BannerController] ✅ Coupon validation passed: $couponCode');
 
       final res = await GraphqlService.client.value.mutate$ApplyCouponCode(
         Options$Mutation$ApplyCouponCode(
@@ -1168,7 +1240,11 @@ debugPrint('[BannerController] Exception getting cart total: $e');
 
       if (checkResponseForErrors(res,
           customErrorMessage: 'Failed to apply coupon code')) {
+        debugPrint('[BannerController] ❌ Network error applying coupon: $couponCode');
+        debugPrint('[BannerController] ❌ Response exception: ${res.exception}');
         utilityController.setLoadingState(false);
+        // Refresh cart to ensure state is up to date
+        _refreshCartAfterCouponError();
         return {
           'success': false,
           'message': 'Network error occurred',
@@ -1182,7 +1258,16 @@ debugPrint('[BannerController] Exception getting cart total: $e');
         // Check for various error types using pattern matching
         if (result
             is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeInvalidError) {
+          debugPrint('[BannerController] ❌ Coupon code invalid: $couponCode');
+          debugPrint('[BannerController] ❌ Error type: INVALID_COUPON');
+          debugPrint('[BannerController] ❌ Error details: ${result.toString()}');
           utilityController.setLoadingState(false);
+          // Show warning dialog
+          ErrorDialog.showWarning(
+            message: 'Invalid coupon code',
+          );
+          // Refresh cart to ensure state is up to date
+          _refreshCartAfterCouponError();
           return {
             'success': false,
             'message': 'Invalid coupon code',
@@ -1192,7 +1277,16 @@ debugPrint('[BannerController] Exception getting cart total: $e');
 
         if (result
             is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError) {
+          debugPrint('[BannerController] ❌ Coupon code expired: $couponCode');
+          debugPrint('[BannerController] ❌ Error type: COUPON_EXPIRED');
+          debugPrint('[BannerController] ❌ Error details: ${result.toString()}');
           utilityController.setLoadingState(false);
+          // Show warning dialog
+          ErrorDialog.showWarning(
+            message: 'Coupon code has expired',
+          );
+          // Refresh cart to ensure state is up to date
+          _refreshCartAfterCouponError();
           return {
             'success': false,
             'message': 'Coupon code has expired',
@@ -1202,7 +1296,12 @@ debugPrint('[BannerController] Exception getting cart total: $e');
 
         if (result
             is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError) {
+          debugPrint('[BannerController] ❌ Coupon usage limit reached: $couponCode');
+          debugPrint('[BannerController] ❌ Error type: COUPON_LIMIT');
+          debugPrint('[BannerController] ❌ Error details: ${result.toString()}');
           utilityController.setLoadingState(false);
+          // Refresh cart to ensure state is up to date
+          _refreshCartAfterCouponError();
           return {
             'success': false,
             'message': 'Coupon usage limit reached',
@@ -1305,21 +1404,52 @@ debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
         }
       }
 
+      debugPrint('[BannerController] ❌ Unknown error applying coupon: $couponCode');
+      debugPrint('[BannerController] ❌ Result type: ${result.runtimeType}');
+      debugPrint('[BannerController] ❌ Result data: ${result.toString()}');
       utilityController.setLoadingState(false);
+      // Refresh cart to ensure state is up to date
+      _refreshCartAfterCouponError();
       return {
         'success': false,
         'message': 'Unknown error occurred',
         'error': 'UNKNOWN_ERROR'
       };
     } catch (e) {
-debugPrint('[BannerController] Apply coupon code error: $e');
+      debugPrint('[BannerController] ❌ Exception applying coupon code: $couponCode');
+      debugPrint('[BannerController] ❌ Error: $e');
+      debugPrint('[BannerController] ❌ Error type: ${e.runtimeType}');
+      debugPrint('[BannerController] ❌ Stack trace: ${StackTrace.current}');
       handleException(e, customErrorMessage: 'Failed to apply coupon code');
       utilityController.setLoadingState(false);
+      // Refresh cart to ensure state is up to date
+      _refreshCartAfterCouponError();
       return {
         'success': false,
         'message': 'Error applying coupon code: $e',
         'error': 'APPLICATION_ERROR'
       };
+    }
+  }
+
+  /// Refresh cart after coupon application error
+  /// This ensures the cart state is up to date even when coupon fails
+  Future<void> _refreshCartAfterCouponError() async {
+    try {
+      debugPrint('[BannerController] 🔄 Refreshing cart after coupon error...');
+      final cartController = Get.find<CartController>();
+      final orderController = Get.find<OrderController>();
+      
+      // Refresh both controllers to ensure state is synchronized
+      await Future.wait([
+        cartController.getActiveOrder(),
+        orderController.getActiveOrder(skipLoading: true),
+      ], eagerError: false);
+      
+      debugPrint('[BannerController] ✅ Cart refreshed after coupon error');
+    } catch (e) {
+      debugPrint('[BannerController] ⚠️ Failed to refresh cart after coupon error: $e');
+      // Don't throw - this is a best-effort refresh
     }
   }
 
@@ -1626,6 +1756,8 @@ debugPrint('[BannerController] Step 2: Removing coupon code...');
 
       if (checkResponseForErrors(res,
           customErrorMessage: 'Failed to remove coupon code')) {
+        debugPrint('[BannerController] ❌ Network error removing coupon: $couponCode');
+        debugPrint('[BannerController] ❌ Response exception: ${res.exception}');
         utilityController.setLoadingState(false);
         return false;
       }
@@ -1987,10 +2119,12 @@ debugPrint('[BannerController] ❌ Rollback complete. Coupon will not be applied
         'totalFailed': failedProducts.length,
       };
     } catch (e) {
-debugPrint('[BannerController] Add coupon products to cart error: $e');
+      debugPrint('[BannerController] Add coupon products to cart error: $e');
       handleException(e,
           customErrorMessage: 'Failed to add coupon products to cart');
       utilityController.setLoadingState(false);
+      // Refresh cart to ensure state is up to date after error
+      _refreshCartAfterCouponError();
       return {
         'success': false,
         'message': 'Error adding coupon products to cart: $e',
@@ -2038,6 +2172,9 @@ debugPrint(  '[BannerController] ❌ Not applying coupon code due to product add
             errorMessage = 'Failed to add all coupon products. Coupon not applied.';
           }
           
+          // Refresh cart to ensure state is up to date after product addition failure
+          _refreshCartAfterCouponError();
+          
           return {
             'success': false,
             'message': errorMessage,
@@ -2078,24 +2215,34 @@ debugPrint(  '[BannerController] Successfully applied coupon with products for: 
           'orderTotal': couponResult['orderTotal'],
         };
       } else {
-debugPrint(  '[BannerController] Products added but failed to apply coupon: ${couponResult['message']}');
+        debugPrint('[BannerController] ❌ Products added but failed to apply coupon: $couponCode');
+        debugPrint('[BannerController] ❌ Coupon error: ${couponResult['message']}');
+        debugPrint('[BannerController] ❌ Coupon error type: ${couponResult['error']}');
 
         // ROLLBACK: Remove the products that were added since coupon application failed
         if (hasProducts) {
-debugPrint(  '[BannerController] Rolling back: Removing added products due to coupon application failure...');
+          debugPrint('[BannerController] 🔄 Rolling back: Removing added products due to coupon application failure...');
           final rollbackResult = await _rollbackAddedProducts(couponCode);
 
           if (rollbackResult['success']) {
-debugPrint(  '[BannerController] Successfully rolled back added products');
+            debugPrint('[BannerController] ✅ Successfully rolled back added products');
           } else {
-debugPrint(  '[BannerController] Failed to rollback added products: ${rollbackResult['message']}');
+            debugPrint('[BannerController] ❌ Failed to rollback added products: ${rollbackResult['message']}');
           }
         }
 
+        // Show warning dialog for coupon application failure
+        final errorMessage = 'Failed to apply coupon: ${couponResult['message']}.${hasProducts ? ' Added products have been removed.' : ''}';
+        ErrorDialog.showWarning(
+          message: errorMessage,
+        );
+
+        // Refresh cart to ensure state is up to date after rollback
+        _refreshCartAfterCouponError();
+
         return {
           'success': false,
-          'message':
-              'Failed to apply coupon: ${couponResult['message']}.${hasProducts ? ' Added products have been removed.' : ''}',
+          'message': errorMessage,
           'addedProducts': addResult['addedProducts'] ?? [],
           'couponApplied': false,
           'couponError': couponResult['message'],
@@ -2103,15 +2250,22 @@ debugPrint(  '[BannerController] Failed to rollback added products: ${rollbackRe
         };
       }
     } catch (e) {
-debugPrint('[BannerController] Apply coupon with products error: $e');
+      debugPrint('[BannerController] ❌ Exception applying coupon with products: $couponCode');
+      debugPrint('[BannerController] ❌ Error: $e');
+      debugPrint('[BannerController] ❌ Error type: ${e.runtimeType}');
+      debugPrint('[BannerController] ❌ Stack trace: ${StackTrace.current}');
 
       // ROLLBACK: If there's an exception, try to remove any products that might have been added
-debugPrint(  '[BannerController] Exception occurred, attempting rollback...');
+      debugPrint('[BannerController] 🔄 Exception occurred, attempting rollback...');
       try {
         await _rollbackAddedProducts(couponCode);
-debugPrint(  '[BannerController] Rollback completed');
+        debugPrint('[BannerController] ✅ Rollback completed');
+        // Refresh cart after rollback
+        _refreshCartAfterCouponError();
       } catch (rollbackError) {
-debugPrint(  '[BannerController] Rollback failed with error: $rollbackError');
+        debugPrint('[BannerController] Rollback failed with error: $rollbackError');
+        // Still refresh cart even if rollback failed
+        _refreshCartAfterCouponError();
       }
 
       return {

@@ -7,6 +7,7 @@ import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../../widgets/error_dialog.dart';
+import '../../widgets/loading_dialog.dart';
 import '../../services/analytics_service.dart';
 import '../base_controller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
@@ -54,19 +55,43 @@ debugPrint('[Customer] Fetching active customer...');
           await GraphqlService.client.value.query$GetActiveCustomer();
 
       // Check if error contains "User not found" - handle specially
+      bool isNetworkError = false;
       if (response.hasException) {
 debugPrint('[Customer] Exception: ${response.exception}');
 
+        final exception = response.exception;
+        final exceptionString = exception?.toString() ?? '';
+        final linkException = exception?.linkException;
+
+        // Check for network/connection errors
+        final linkExceptionStr = linkException?.toString() ?? '';
+        isNetworkError = exceptionString.contains('Connection closed before full header was received') ||
+            exceptionString.contains('Connection closed') ||
+            exceptionString.contains('SocketException') ||
+            exceptionString.contains('ClientException') ||
+            exceptionString.contains('ServerException') ||
+            exceptionString.contains('NetworkException') ||
+            exceptionString.contains('TimeoutException') ||
+            linkExceptionStr.contains('Connection closed') ||
+            linkExceptionStr.contains('ClientException') ||
+            linkExceptionStr.contains('ServerException');
+
         // Check if error contains "User not found"
-        final exceptionString = response.exception.toString().toLowerCase();
-        if (exceptionString.contains('user not found') ||
-            exceptionString.contains('user not found with this email')) {
+        if (exceptionString.toLowerCase().contains('user not found') ||
+            exceptionString.toLowerCase().contains('user not found with this email')) {
 debugPrint(  '[Customer] User not found error detected - triggering logout');
           error.value = 'User not found. Please login again.';
 
           // Trigger logout and redirect to login
           await _handleUserNotFoundError();
           return;
+        }
+
+        // For network errors, don't show error dialog and don't logout
+        if (isNetworkError) {
+debugPrint('[Customer] Network error detected - not logging out: ${response.exception}');
+          error.value = 'Network error. Please check your connection.';
+          return; // Exit early, don't process data or logout
         }
 
         // Use base controller error handling for other errors
@@ -89,8 +114,8 @@ debugPrint('[Customer] Raw customer data: $customerJson');
         // Reset pagination state on initial load
         final ordersData = activeCustomer.value?.orders;
         if (ordersData != null) {
-          orders.value = ordersData.items ?? [];
-          totalOrdersCount.value = ordersData.totalItems ?? 0;
+          orders.value = ordersData.items;
+          totalOrdersCount.value = ordersData.totalItems;
           hasMoreOrders.value = orders.length < totalOrdersCount.value;
         } else {
           orders.value = [];
@@ -115,8 +140,15 @@ debugPrint('[Customer] Orders: ${orders.length}');
       } else {
         error.value = 'No customer data found';
 debugPrint('[Customer] No customer data found when this occurs clear cache and log out and go to login page');
-        // Clear cache and logout when customer data is null
-        await handleCustomerDataNotFound();
+        // Only logout if it's NOT a network error
+        // Network errors should not trigger logout as they're temporary connection issues
+        if (!isNetworkError) {
+          // Clear cache and logout when customer data is null (only if not a network error)
+          await handleCustomerDataNotFound();
+        } else {
+          debugPrint('[Customer] Network error detected - skipping logout to prevent unnecessary session termination');
+          error.value = 'Network error. Please check your connection and try again.';
+        }
       }
     } catch (e) {
 debugPrint('[Customer] Error: $e');
@@ -362,7 +394,7 @@ debugPrint('[Customer] Update error: $e');
   /// Create new address
   Future<bool> createAddress(AddressModel address) async {
     try {
-      utilityController.setLoadingState(true);
+      LoadingDialog.show(message: 'Please wait');
 
 debugPrint('[Customer] Creating address...');
 
@@ -407,14 +439,14 @@ debugPrint('[Customer] Create address error: $e');
       handleException(e, customErrorMessage: 'Failed to create address');
       return false;
     } finally {
-      utilityController.setLoadingState(false);
+      LoadingDialog.hide();
     }
   }
 
   /// Update existing address
   Future<bool> updateAddress(AddressModel address) async {
     try {
-      utilityController.setLoadingState(true);
+      LoadingDialog.show(message: 'Please wait');
 
 debugPrint('[Customer] Updating address...');
 
@@ -460,7 +492,7 @@ debugPrint('[Customer] Update address error: $e');
       handleException(e, customErrorMessage: 'Failed to update address');
       return false;
     } finally {
-      utilityController.setLoadingState(false);
+      LoadingDialog.hide();
     }
   }
 

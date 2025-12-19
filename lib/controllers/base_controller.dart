@@ -104,8 +104,8 @@ abstract class BaseController extends GetxController {
         }
       }
 
-      // Show error dialog
-      ErrorDialog.showError(errorMessage);
+      // Show warning dialog for query errors
+      ErrorDialog.showWarning(message: errorMessage);
       return true;
     }
     return false;

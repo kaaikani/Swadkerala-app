@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/order/ordercontroller.dart';
-import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/theme_controller.dart';
 import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
 import '../utils/bill_generator.dart';
 import '../theme/colors.dart';
 import '../pages/orders_page.dart';
+import '../widgets/snackbar.dart';
+import '../widgets/loading_dialog.dart';
 
 class OrdersComponent extends StatefulWidget {
   final CustomerController customerController;
@@ -132,7 +133,6 @@ class _OrdersComponentState extends State<OrdersComponent> {
           case OrderFilter.all:
             return true;
         }
-        return false;
       }).toList();
     }
     
@@ -312,7 +312,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                   Row(
                     children: [
                       // Share Invoice Button - only show for non-cancelled orders
-                    /*  if (!isCancelled)
+                   if (!isCancelled)
                         IconButton(
                           onPressed: () => _shareInvoice(order),
                           icon: Icon(
@@ -323,7 +323,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                           tooltip: 'Share Invoice',
                           padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
                           constraints: BoxConstraints(),
-                        ),*/
+                        ),
                       if (!isCancelled) SizedBox(width: ResponsiveUtils.rp(8)),
                       // View Details Button
                       TextButton(
@@ -576,20 +576,14 @@ debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.co
     // Don't allow sharing for cancelled orders
     final isCancelled = order.state?.toString().toLowerCase() == 'cancelled';
     if (isCancelled) {
-      Get.snackbar(
-        'Error',
-        'Cannot share invoice for cancelled orders',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      SnackBarWidget.showError('Cannot share invoice for cancelled orders');
       return;
     }
     
     try {
       final orderController = Get.find<OrderController>();
-      final utilityController = Get.find<UtilityController>();
       
-      utilityController.setLoadingState(true);
+      LoadingDialog.show(message: 'Please wait');
       
       // Fetch full order details using order code
       final orderModel = await orderController.getOrderByCode(order.code);
@@ -598,24 +592,13 @@ debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.co
         // Use BillGenerator to generate and share the invoice
         await BillGenerator.generateAndShare(orderModel);
       } else {
-        Get.snackbar(
-          'Error',
-          'Failed to load order details',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        SnackBarWidget.showError('Failed to load order details');
       }
     } catch (e) {
 debugPrint('[OrdersComponent] Error sharing invoice: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to generate invoice: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      SnackBarWidget.showError('Failed to generate invoice: $e');
     } finally {
-      final utilityController = Get.find<UtilityController>();
-      utilityController.setLoadingState(false);
+      LoadingDialog.hide();
     }
   }
 }

@@ -39,10 +39,7 @@ class VariantBottomSheet extends StatelessWidget {
       quantity: 1,
     );
 
-    if (success) {
-      // ignore: unused_local_variable
-      final displayName = _getVariantDisplayName(variant);
-    } else {
+    if (!success) {
       showErrorSnackbar('Failed to add to cart');
     }
   }
