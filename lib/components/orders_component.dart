@@ -7,6 +7,7 @@ import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
 import '../utils/bill_generator.dart';
 import '../theme/colors.dart';
+import '../utils/app_strings.dart';
 import '../pages/orders_page.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/loading_dialog.dart';
@@ -253,7 +254,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          _formatDate(order.orderPlacedAt),
+                          _formatDate(order.orderPlacedAt ?? DateTime.now()),
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(12),
                             color: AppColors.textSecondary,
@@ -487,7 +488,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                     Get.offNamed('/orders', arguments: OrderFilter.all);
                   },
                   icon: const Icon(Icons.list, size: 20),
-                  label: const Text('View All Orders'),
+                  label: const Text(AppStrings.viewAllOrders),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,
                     foregroundColor: Colors.white,
@@ -504,7 +505,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                 ElevatedButton.icon(
                   onPressed: () => Get.toNamed('/home'),
                   icon: const Icon(Icons.shopping_cart, size: 20),
-                  label: const Text('Start Shopping'),
+                  label: const Text(AppStrings.startShopping),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,
                     foregroundColor: Colors.white,
@@ -568,7 +569,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
   }
 
   void _viewOrderDetails(dynamic order) {
-debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.code}');
+    debugPrint('[OrdersComponent] Viewing order details for code: ${order.code}');
     Get.toNamed('/order-detail', arguments: order.code);
   }
 
@@ -583,7 +584,7 @@ debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.co
     try {
       final orderController = Get.find<OrderController>();
       
-      LoadingDialog.show(message: 'Please wait');
+      LoadingDialog.show(message: AppStrings.pleaseWait);
       
       // Fetch full order details using order code
       final orderModel = await orderController.getOrderByCode(order.code);
@@ -595,7 +596,7 @@ debugPrint(        '[OrdersComponent] Viewing order details for code: ${order.co
         SnackBarWidget.showError('Failed to load order details');
       }
     } catch (e) {
-debugPrint('[OrdersComponent] Error sharing invoice: $e');
+      debugPrint('[OrdersComponent] Error sharing invoice: $e');
       SnackBarWidget.showError('Failed to generate invoice: $e');
     } finally {
       LoadingDialog.hide();

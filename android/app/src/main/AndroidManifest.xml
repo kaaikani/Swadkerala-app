@@ -8,6 +8,13 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    
+    <!-- Location permissions for address auto-fill -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    
+    <!-- Permission to get Google accounts -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <application
         android:label="Kaaikani"

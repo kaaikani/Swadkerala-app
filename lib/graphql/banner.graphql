@@ -86,6 +86,14 @@ query GetCustomerFavorites {
                             price
                             priceWithTax
                             currencyCode
+                            options {
+                                id
+                                name
+                                group {
+                                    id
+                                    name
+                                }
+                            }
                         }
 
 
@@ -115,7 +123,14 @@ query GetFrequentlyOrderedProducts {
                 price
                 priceWithTax
                 currencyCode
-
+                options {
+                    id
+                    name
+                    group {
+                        id
+                        name
+                    }
+                }
             }
             featuredAsset {
                 preview
@@ -237,5 +252,4 @@ mutation RequestOrderCancellation($orderId: ID!, $reason: String!) {
         __typename
     }
 }
-
 

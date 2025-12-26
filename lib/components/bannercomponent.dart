@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/banner/bannercontroller.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import '../controllers/banner/bannermodels.dart';
 import 'dart:async';
 
 import '../controllers/utilitycontroller/utilitycontroller.dart';
@@ -11,6 +10,7 @@ import '../utils/responsive.dart';
 import '../widgets/responsive_container.dart';
 import '../widgets/responsive_spacing.dart';
 import '../widgets/responsive_icon.dart';
+import '../graphql/banner.graphql.dart';
 
 class BannerComponent extends StatefulWidget {
   const BannerComponent({super.key});
@@ -129,7 +129,7 @@ class _BannerComponentState extends State<BannerComponent> {
                     );
                   }
 
-                  final BannerModel banner = banners[index % banners.length];
+                  final Query$customBanners$customBanners banner = banners[index % banners.length];
                   final String imageUrl = banner.assets.isNotEmpty
                       ? banner.assets.first.source
                       : '';

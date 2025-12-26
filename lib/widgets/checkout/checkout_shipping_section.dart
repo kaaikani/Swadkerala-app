@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
-import '../../controllers/order/ordermodels.dart';
+import '../../graphql/order.graphql.dart';
 import '../../utils/responsive.dart';
 import '../../theme/colors.dart';
 
@@ -31,7 +31,7 @@ class CheckoutShippingSection extends StatelessWidget {
       
       // Find the matching method from the list to ensure object equality
       // DropdownButton requires the value to be the same instance as in items list
-      ShippingMethod? matchingSelectedMethod;
+      Query$GetEligibleShippingMethods$eligibleShippingMethods? matchingSelectedMethod;
       if (selectedMethod != null) {
         try {
           matchingSelectedMethod = orderController.shippingMethods.firstWhere(
@@ -112,7 +112,7 @@ class CheckoutShippingSection extends StatelessWidget {
                   ),
                   SizedBox(width: ResponsiveUtils.rp(12)),
                   Text(
-                    cartController.formatPrice(singleMethod.priceWithTax),
+                    cartController.formatPrice(singleMethod.priceWithTax.toInt()),
                     style: TextStyle(
                       fontSize: ResponsiveUtils.sp(16),
                       fontWeight: FontWeight.bold,
@@ -134,7 +134,7 @@ class CheckoutShippingSection extends StatelessWidget {
                 ),
               ),
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<ShippingMethod>(
+                child: DropdownButton<Query$GetEligibleShippingMethods$eligibleShippingMethods>(
                   value: matchingSelectedMethod,
                   isExpanded: true,
                   icon: Icon(
@@ -156,8 +156,8 @@ class CheckoutShippingSection extends StatelessWidget {
                     ),
                   ),
                   items: orderController.shippingMethods.map((method) {
-                    final priceText = cartController.formatPrice(method.priceWithTax);
-                    return DropdownMenuItem<ShippingMethod>(
+                    final priceText = cartController.formatPrice(method.priceWithTax.toInt());
+                    return DropdownMenuItem<Query$GetEligibleShippingMethods$eligibleShippingMethods>(
                       value: method,
                       child: Padding(
                         padding: EdgeInsets.symmetric(
@@ -185,7 +185,7 @@ class CheckoutShippingSection extends StatelessWidget {
                       ),
                     );
                   }).toList(),
-                  onChanged: (ShippingMethod? newMethod) async {
+                  onChanged: (Query$GetEligibleShippingMethods$eligibleShippingMethods? newMethod) async {
                     if (newMethod == null) return;
                     if (orderController.selectedShippingMethod.value?.id == newMethod.id) {
                       return;
@@ -195,7 +195,7 @@ class CheckoutShippingSection extends StatelessWidget {
                   },
                   selectedItemBuilder: (BuildContext context) {
                     return orderController.shippingMethods.map((method) {
-                      final priceText = cartController.formatPrice(method.priceWithTax);
+                      final priceText = cartController.formatPrice(method.priceWithTax.toInt());
                       return Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: ResponsiveUtils.rp(16),

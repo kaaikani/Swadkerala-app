@@ -9,9 +9,11 @@ import '../controllers/theme_controller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
+import '../utils/app_strings.dart';
 import '../utils/bill_generator.dart';
 import '../services/graphql_client.dart';
 import '../graphql/banner.graphql.dart';
+import '../graphql/order.graphql.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/responsive_spacing.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -127,13 +129,14 @@ debugPrint('[OrderDetail] Error loading order details: $e');
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   
                   // Delivery Information
-                  if (order.shippingAddress != null || order.shippingLines.isNotEmpty)
+                  if ((order is Query$GetOrderByCode$orderByCode && order.shippingAddress != null) || order.shippingLines.isNotEmpty)
                     _buildDeliveryCard(order),
                   
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   
                   // Payment Information
-                  if (order.payments.isNotEmpty) _buildPaymentCard(order),
+                  if (order is Query$GetOrderByCode$orderByCode && order.payments != null && order.payments!.isNotEmpty) 
+                    _buildPaymentCard(order),
                   
                   // Cancel Order Button - only show if cancellation not already requested
                   if (_shouldShowCancelButton(order))
@@ -188,7 +191,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
             ElevatedButton.icon(
               onPressed: () => Get.back(),
               icon: Icon(Icons.arrow_back, size: ResponsiveUtils.rp(18)),
-              label: Text('Go Back'),
+              label: Text(AppStrings.goBack),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.button,
                 foregroundColor: Colors.white,
@@ -213,7 +216,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
       child: ElevatedButton.icon(
         onPressed: () => _shareInvoice(order),
         icon: Icon(Icons.share, size: ResponsiveUtils.rp(20)),
-        label: Text('Share Invoice'),
+        label: Text(AppStrings.shareInvoice),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.button,
           foregroundColor: Colors.white,
@@ -278,7 +281,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
                     ),
                     SizedBox(height: ResponsiveUtils.rp(6)),
                     Text(
-                      _formatPrice(order.totalWithTax),
+                      _formatPrice(order.totalWithTax.toInt()),
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(24),
                         fontWeight: FontWeight.bold,
@@ -428,7 +431,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
                   ),
                   Spacer(),
                   Text(
-                    PriceFormatter.formatPrice(line.linePriceWithTax),
+                    PriceFormatter.formatPrice(line.linePriceWithTax.toInt()),
                     style: TextStyle(
                       fontSize: ResponsiveUtils.sp(15),
                       fontWeight: FontWeight.bold,
@@ -467,9 +470,9 @@ debugPrint('[OrderDetail] Error loading order details: $e');
             ],
           ),
           SizedBox(height: ResponsiveUtils.rp(16)),
-          _buildPriceRow('Subtotal', order.subTotalWithTax),
+          _buildPriceRow('Subtotal', order.subTotalWithTax.toInt()),
           SizedBox(height: ResponsiveUtils.rp(10)),
-          _buildPriceRow('Shipping', order.shippingWithTax),
+          _buildPriceRow('Shipping', order.shippingWithTax.toInt()),
           // Loyalty Points Used
           if (order.customFields?.loyaltyPointsUsed != null &&
               order.customFields!.loyaltyPointsUsed! > 0) ...[
@@ -512,7 +515,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
                     discount.description.isNotEmpty
                         ? discount.description
                         : 'Discount',
-                    -discount.amountWithTax,
+                    -discount.amountWithTax.toInt(),
                     isDiscount: true,
                   ),
                 )),
@@ -532,7 +535,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
                 ),
               ),
               Text(
-                _formatPrice(order.totalWithTax),
+                _formatPrice(order.totalWithTax.toInt()),
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(20),
                   fontWeight: FontWeight.bold,
@@ -637,7 +640,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
             ],
           ),
           SizedBox(height: ResponsiveUtils.rp(16)),
-          if (order.shippingAddress != null) ...[
+          if (order is Query$GetOrderByCode$orderByCode && order.shippingAddress != null) ...[
             _buildDeliverySection(
               'Delivery Address',
               Icons.location_on_outlined,
@@ -698,12 +701,12 @@ debugPrint('[OrderDetail] Error loading order details: $e');
     
     // Line 1: Name and Street Line 1
     String line1 = '';
-    if (address.fullName.isNotEmpty) {
+    if (address.fullName != null && address.fullName.isNotEmpty) {
       line1 = address.fullName;
-      if (address.streetLine1.isNotEmpty) {
+      if (address.streetLine1 != null && address.streetLine1.isNotEmpty) {
         line1 += ', ${address.streetLine1}';
       }
-    } else if (address.streetLine1.isNotEmpty) {
+    } else if (address.streetLine1 != null && address.streetLine1.isNotEmpty) {
       line1 = address.streetLine1;
     }
     if (line1.isNotEmpty) parts.add(line1);
@@ -713,7 +716,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
     if (address.streetLine2 != null && address.streetLine2!.isNotEmpty) {
       line2 = address.streetLine2!;
     }
-    if (address.city.isNotEmpty) {
+    if (address.city != null && address.city.isNotEmpty) {
       if (line2.isNotEmpty) {
         line2 += ', ${address.city}';
       } else {
@@ -757,11 +760,14 @@ debugPrint('[OrderDetail] Error loading order details: $e');
     if (cost == 0) {
       return '${method.name.isNotEmpty ? method.name : "Standard Shipping"} - Free';
     }
-    return '${method.name.isNotEmpty ? method.name : "Standard Shipping"} - ${PriceFormatter.formatPrice(cost)}';
+    return '${method.name.isNotEmpty ? method.name : "Standard Shipping"} - ${PriceFormatter.formatPrice(cost.toInt())}';
   }
 
   Widget _buildPaymentCard(dynamic order) {
-    final payment = order.payments.first;
+    if (order is! Query$GetOrderByCode$orderByCode || order.payments == null || order.payments!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final payment = order.payments!.first;
     final paymentMethod = _formatPaymentMethod(payment.method);
     final paymentStatus = _formatPaymentStatus(payment.state);
     final statusColor = _getPaymentStatusColor(payment.state);
@@ -952,10 +958,18 @@ debugPrint('[OrderDetail] Error loading order details: $e');
   }
 
   String _formatOrderStatus(String state) {
-    switch (state.toLowerCase()) {
-      case 'paymentauthorized':
+    final stateLower = state.toLowerCase();
+    
+    // Check for cancellation request first (before checking cancelled)
+    if (stateLower.contains('cancel') && stateLower.contains('request')) {
+      return 'Cancellation Requested';
+    }
+    
+    switch (stateLower) {
       case 'paymentsettled':
-        return 'Confirmed';
+        return 'Paid';
+      case 'paymentauthorized':
+        return 'Order Confirmed';
       case 'arrangingpayment':
         return 'Pending';
       case 'cancelled':
@@ -966,10 +980,17 @@ debugPrint('[OrderDetail] Error loading order details: $e');
   }
 
   Color _getStatusColor(String state) {
-    switch (state.toLowerCase()) {
-      case 'paymentauthorized':
+    final stateLower = state.toLowerCase();
+    
+    // Check for cancellation request first
+    if (stateLower.contains('cancel') && stateLower.contains('request')) {
+      return Colors.orange; // Use orange for cancellation requested
+    }
+    
+    switch (stateLower) {
       case 'paymentsettled':
-        return const Color(0xFF00B761);
+      case 'paymentauthorized':
+        return const Color(0xFF00B761); // Green for paid/confirmed
       case 'arrangingpayment':
         return Colors.orange;
       case 'cancelled':
@@ -1056,7 +1077,7 @@ debugPrint('[OrderDetail] Error loading order details: $e');
             e.toString().contains('Cannot query field')) {
           SnackBarWidget.showWarning(
             'Order cancellation is not available on the server yet. Please contact support.',
-            title: 'Feature Not Available',
+            title: AppStrings.featureNotAvailable,
             duration: const Duration(seconds: 4),
           );
           return;
@@ -1222,7 +1243,7 @@ class _CancelOrderDialogContentState extends State<_CancelOrderDialogContent> {
                         controller: otherReasonController,
                         maxLines: 3,
                         decoration: InputDecoration(
-                          hintText: 'Please specify your reason...',
+                          hintText: AppStrings.pleaseSpecifyReason,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                           ),
@@ -1285,17 +1306,18 @@ class _CancelOrderDialogContentState extends State<_CancelOrderDialogContent> {
     StateSetter setState,
     String reason,
     String? selectedReason,
-    ValueChanged<String> onSelected,
+    Function(String) onTap,
   ) {
     final isSelected = selectedReason == reason;
-    return GestureDetector(
-      onTap: () => onSelected(reason),
+    return InkWell(
+      onTap: () => onTap(reason),
       child: Container(
         padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.button.withOpacity(0.1)
-              : AppColors.surface,
+              ? AppColors.button.withValues(alpha: 0.1)
+              : AppColors.card,
           borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
           border: Border.all(
             color: isSelected ? AppColors.button : AppColors.border,
@@ -1304,24 +1326,10 @@ class _CancelOrderDialogContentState extends State<_CancelOrderDialogContent> {
         ),
         child: Row(
           children: [
-            Container(
-              width: ResponsiveUtils.rp(20),
-              height: ResponsiveUtils.rp(20),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected ? AppColors.button : Colors.transparent,
-                border: Border.all(
-                  color: isSelected ? AppColors.button : AppColors.border,
-                  width: 2,
-                ),
-              ),
-              child: isSelected
-                  ? Icon(
-                      Icons.check,
-                      size: ResponsiveUtils.rp(14),
-                      color: Colors.white,
-                    )
-                  : null,
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              color: isSelected ? AppColors.button : AppColors.textSecondary,
+              size: ResponsiveUtils.rp(20),
             ),
             SizedBox(width: ResponsiveUtils.rp(12)),
             Expanded(
@@ -1329,8 +1337,8 @@ class _CancelOrderDialogContentState extends State<_CancelOrderDialogContent> {
                 reason,
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(14),
+                  color: isSelected ? AppColors.button : AppColors.textPrimary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  color: AppColors.textPrimary,
                 ),
               ),
             ),

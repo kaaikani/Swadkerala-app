@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/collection controller/Collectionmodel.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../graphql/product.graphql.dart';
 import '../theme/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../utils/responsive.dart';
@@ -14,7 +14,7 @@ import '../widgets/responsive_icon.dart';
 class VerticalListComponent extends StatelessWidget {
   final String title;
   final bool showPrice;
-  final void Function(Collection) onTap;
+  final void Function(Query$Collections$collections$items) onTap;
 
   const VerticalListComponent({
     Key? key,
@@ -30,15 +30,15 @@ class VerticalListComponent extends StatelessWidget {
       final utilityController = Get.find<UtilityController>();
 
       final bool isLoading = utilityController.isLoadingRx.value;
-      final List<Collection> items = collectionsController.allCollections;
+      final items = collectionsController.allCollections;
       final displayItems = isLoading
-          ? List<Collection>.filled(
+          ? List<Query$Collections$collections$items>.filled(
               6,
-              Collection(
+              Query$Collections$collections$items(
                 id: '',
                 name: 'Loading...',
                 slug: '',
-                productVariants: ProductVariants(totalItems: 0),
+                productVariants: Query$Collections$collections$items$productVariants(totalItems: 0),
               ))
           : items;
 

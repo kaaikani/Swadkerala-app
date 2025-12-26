@@ -103,7 +103,7 @@ fragment Cart on Order {
             type
             __typename
         }
-        customFields
+
         __typename
     }
     totalQuantity
@@ -132,9 +132,7 @@ fragment Cart on Order {
         type
         __typename
     }
-    customFields {
 
-    }
     __typename
 }
 

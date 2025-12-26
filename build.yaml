@@ -3,12 +3,17 @@ targets:
     builders:
       graphql_codegen:
         options:
-          schema:
-            - lib/graphql/schema.graphql
-            - https://demo.htagbilling.com/shop-api
-          output_dir: lib/generated
+          schema: lib/graphql/schema.graphql
+          output_dir: lib/graphql
           documents:
-            - lib/graphql/**/*.graphql   # This will include authenticate.graphql
+            - lib/graphql/authenticate.graphql
+            - lib/graphql/banner.graphql
+            - lib/graphql/cart.graphql
+            - lib/graphql/Customer.graphql
+            - lib/graphql/order.graphql
+            - lib/graphql/product.graphql
+            - lib/graphql/app_update.graphql
+            - lib/graphql/loyalty_points_config.graphql
           scalars:
             DateTime:
               type: DateTime

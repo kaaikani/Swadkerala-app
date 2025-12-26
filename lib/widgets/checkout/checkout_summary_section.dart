@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart/Cartcontroller.dart';
-import '../../controllers/cart/cartmodels.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../controllers/banner/bannercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
+import '../../graphql/cart.graphql.dart';
 
 class CheckoutSummarySection extends StatefulWidget {
   final CartController cartController;
@@ -318,7 +318,7 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
     );
   }
 
-  Widget _buildCartItem(OrderLine line) {
+  Widget _buildCartItem(Fragment$Cart$lines line) {
     // Check if product was added via coupon code
     final variantId = line.productVariant.id;
     final isCouponProduct = _isProductAddedByCoupon(variantId);

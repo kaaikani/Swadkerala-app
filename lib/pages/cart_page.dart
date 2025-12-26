@@ -6,19 +6,22 @@ import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
-import '../controllers/banner/bannermodels.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../widgets/appbar.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/cart_item_card_premium.dart';
 import '../widgets/checkout/checkout_shipping_section.dart';
 import '../utils/responsive.dart';
+import '../utils/app_strings.dart';
 import '../widgets/responsive_spacing.dart';
 import '../widgets/premium_card.dart';
 import '../theme/colors.dart';
 import '../utils/navigation_helper.dart';
 import '../services/analytics_service.dart';
+import '../utils/analytics_helper.dart';
 import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
+import '../graphql/order.graphql.dart';
+import '../graphql/banner.graphql.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -37,6 +40,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   // Loyalty Points
   final _loyaltyPointsController = TextEditingController();
   final FocusNode _loyaltyPointsFocusNode = FocusNode();
+  final RxBool _applyAllPoints = false.obs; // Toggle for apply all vs manual
+  final RxBool _showManualInput = false.obs; // Show/hide manual input field
 
   // Scroll controller and keys
   final ScrollController _scrollController = ScrollController();
@@ -70,6 +75,9 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   
   // Local loading flag to prevent flicker on initial load
   bool _isInitialLoading = true;
+  
+  // Track which order line is currently being adjusted (for loading state)
+  final Set<String> _adjustingOrderLineIds = <String>{};
 
   @override
   void initState() {
@@ -87,6 +95,11 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       ),
     );
     
+    _refreshData();
+  }
+
+  /// Refresh data - called from initState and when returning to page
+  void _refreshData() {
     // Load data without showing loading state to prevent flicker
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Load cart first
@@ -140,18 +153,14 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   }
 
   /// Get minimum order amount from coupon conditions
-  int? _getCouponMinimumAmount(CouponCodeModel coupon) {
+  int? _getCouponMinimumAmount(Query$GetCouponCodeList$getCouponCodeList$items coupon) {
     try {
       for (final condition in coupon.conditions) {
         if (condition.code == 'minimum_order_amount') {
           for (final arg in condition.args) {
             if (arg.name == 'amount') {
-              final value = arg.value;
-              if (value is num) {
-                return value.toInt();
-              } else if (value is String) {
-                return int.tryParse(value);
-              }
+              // arg.value is always String, so parse it directly
+              return int.tryParse(arg.value);
             }
           }
         }
@@ -165,9 +174,9 @@ debugPrint('Error getting coupon minimum amount: $e');
   /// Get applicable coupons - show coupons with minimum amounts 500, 1000, 1500
   /// regardless of cart value. Validation happens when applying.
   // ignore: unused_element
-  List<CouponCodeModel> _getApplicableCoupons(int cartTotal) {
+  List<Query$GetCouponCodeList$getCouponCodeList$items> _getApplicableCoupons(int cartTotal) {
     final coupons = bannerController.availableCouponCodes;
-    final applicableCoupons = <CouponCodeModel>[];
+    final applicableCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[];
 
     for (final coupon in coupons) {
       if (!coupon.enabled) continue;
@@ -192,9 +201,9 @@ debugPrint('Error getting coupon minimum amount: $e');
   /// Calculate coupon suggestion based on cart total
   /// Returns coupon and amount short if user is close to qualifying
   // ignore: unused_element
-  Map<String, dynamic> _calculateCouponInfo(double totalPrice, List<CouponCodeModel> coupons) {
+  Map<String, dynamic> _calculateCouponInfo(double totalPrice, List<Query$GetCouponCodeList$getCouponCodeList$items> coupons) {
     final totalInPaise = (totalPrice * 100).toInt(); // Convert to paise
-    CouponCodeModel? suggestedCoupon;
+    Query$GetCouponCodeList$getCouponCodeList$items? suggestedCoupon;
     int? amountShort;
 
     for (final coupon in coupons) {
@@ -269,11 +278,6 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
     final success = await orderController.removeOrderLine(orderLineId);
 
     if (success) {
-      // Update cart controller
-      cartController.cart.value = orderController.currentOrder.value != null
-          ? cartController.cart.value
-          : null;
-      
       // Clear removing state
       setState(() {
         _removingItemId = null;
@@ -282,6 +286,7 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
       // Show success snackbar with different style for single item removal
       SnackBarWidget.showSuccess('$productName removed from cart');
       
+      // Refresh cart to ensure UI is updated with the latest state
       await cartController.getActiveOrder();
     } else {
       // Clear removing state on failure
@@ -294,18 +299,42 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
 
   Future<void> _handleQuantityChange(
       String orderLineId, int newQuantity) async {
+    debugPrint('[CartPage] _handleQuantityChange called - orderLineId: $orderLineId, newQuantity: $newQuantity');
+    
     // Ensure minimum quantity is 1
     if (newQuantity < 1) {
       newQuantity = 1;
+      debugPrint('[CartPage] Quantity adjusted to minimum 1');
     }
 
-    final success = await cartController.adjustOrderLine(
-      orderLineId: orderLineId,
-      quantity: newQuantity,
-    );
+    // Set loading state for this specific order line
+    setState(() {
+      _adjustingOrderLineIds.add(orderLineId);
+    });
 
-    if (!success) {
-      showErrorSnackbar('Failed to update quantity');
+    try {
+      debugPrint('[CartPage] Calling adjustOrderLine with orderLineId: $orderLineId, quantity: $newQuantity');
+      
+      final success = await cartController.adjustOrderLine(
+        orderLineId: orderLineId,
+        quantity: newQuantity,
+      );
+
+      debugPrint('[CartPage] adjustOrderLine result: $success');
+
+      if (success) {
+        // Refresh cart to ensure UI updates
+        debugPrint('[CartPage] Quantity updated successfully, refreshing cart...');
+        await cartController.getActiveOrder();
+      } else {
+        debugPrint('[CartPage] Failed to update quantity');
+        showErrorSnackbar('Failed to update quantity');
+      }
+    } finally {
+      // Clear loading state for this order line
+      setState(() {
+        _adjustingOrderLineIds.remove(orderLineId);
+      });
     }
   }
 
@@ -321,8 +350,8 @@ debugPrint('[CartPage] Selected shipping method: ${orderController.selectedShipp
 
     // Check validationStatus for unavailable items (e.g., "This variant is no longer available")
     final cart = cartController.cart.value;
-    if (cart != null && cart.validationStatus != null) {
-      final validationStatus = cart.validationStatus!;
+    if (cart != null) {
+      final validationStatus = cart.validationStatus;
       if (validationStatus.hasUnavailableItems && validationStatus.unavailableItems.isNotEmpty) {
 debugPrint('[CartPage] ❌ ValidationStatus shows ${validationStatus.totalUnavailableItems} unavailable items');
         // Iterate through unavailable items (unused in loop, just for logging)
@@ -372,13 +401,13 @@ debugPrint('[CartPage] ❌ ValidationStatus shows ${validationStatus.totalUnavai
       final unavailableItems = <int>[];
       for (int i = 0; i < cart.lines.length; i++) {
         final line = cart.lines[i];
-        final stockLevel = line.productVariant.stockLevel?.toUpperCase();
+        final stockLevel = line.productVariant.stockLevel.toUpperCase();
         final isLowStock = stockLevel == 'LOW_STOCK';
         final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
         final isStockUnavailable = isLowStock || isOutOfStock;
         
         // Check if product is disabled (multiple ways to detect)
-        final isProductDisabled = line.productVariant.productEnabled == false;
+        final isProductDisabled = line.productVariant.product.enabled == false;
         final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true ||
                                    line.unavailableReason?.toLowerCase().contains('no longer available') == true;
         final isProductDisabledAny = isProductDisabled || isDisabledByReason;
@@ -388,7 +417,7 @@ debugPrint('[CartPage] ❌ ValidationStatus shows ${validationStatus.totalUnavai
         
         if (isUnavailable) {
           unavailableItems.add(i);
-debugPrint('[CartPage] Item $i is unavailable - isAvailable: ${line.isAvailable}, stockLevel: $stockLevel, productEnabled: ${line.productVariant.productEnabled}, unavailableReason: ${line.unavailableReason}');
+debugPrint('[CartPage] Item $i is unavailable - isAvailable: ${line.isAvailable}, stockLevel: $stockLevel, productEnabled: ${line.productVariant.product.enabled}, unavailableReason: ${line.unavailableReason}');
         }
       }
       
@@ -403,10 +432,10 @@ debugPrint('[CartPage] Item $i is unavailable - isAvailable: ${line.isAvailable}
         for (int i = 0; i < cart.lines.length; i++) {
           if (unavailableItems.contains(i)) {
             final line = cart.lines[i];
-            final stockLevel = line.productVariant.stockLevel?.toUpperCase();
+            final stockLevel = line.productVariant.stockLevel.toUpperCase();
             final isLowStock = stockLevel == 'LOW_STOCK';
             final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-            final isProductDisabled = line.productVariant.productEnabled == false;
+            final isProductDisabled = line.productVariant.product.enabled == false;
             final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true ||
                                        line.unavailableReason?.toLowerCase().contains('no longer available') == true;
             
@@ -575,11 +604,19 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
         content: const Text('Are you sure you want to remove all items from your cart?'),
         actions: [
           TextButton(
-            onPressed: () => Get.back(result: false),
-            child: const Text('Cancel'),
+            onPressed: AnalyticsHelper.trackButton(
+              'Cancel - Clear Cart Dialog',
+              screenName: 'Cart',
+              callback: () => Get.back(result: false),
+            ),
+            child: const Text(AppStrings.cancel),
           ),
           TextButton(
-            onPressed: () => Get.back(result: true),
+            onPressed: AnalyticsHelper.trackButton(
+              'Confirm Clear Cart',
+              screenName: 'Cart',
+              callback: () => Get.back(result: true),
+            ),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
             ),
@@ -791,7 +828,11 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
     final success = await bannerController.applyLoyaltyPoints(points);
     if (success) {
       showSuccessSnackbar('Loyalty points applied successfully');
-      await cartController.getActiveOrder();
+      // Refresh both cart and order to update totals
+      await Future.wait([
+        cartController.getActiveOrder(),
+        orderController.getActiveOrder(skipLoading: true),
+      ]);
     } else {
       showErrorSnackbar('Failed to apply loyalty points');
     }
@@ -801,8 +842,14 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
     final success = await bannerController.removeLoyaltyPoints();
     if (success) {
       _loyaltyPointsController.clear();
+      _applyAllPoints.value = false;
+      _showManualInput.value = false;
       showSuccessSnackbar('Loyalty points removed successfully');
-      await cartController.getActiveOrder();
+      // Refresh both cart and order to update totals
+      await Future.wait([
+        cartController.getActiveOrder(),
+        orderController.getActiveOrder(skipLoading: true),
+      ]);
     } else {
       showErrorSnackbar('Failed to remove loyalty points');
     }
@@ -812,8 +859,9 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
     try {
       await orderController.getActiveOrder(skipLoading: true);
       final order = orderController.currentOrder.value;
-      if (order != null && order.customFields != null) {
-        final loyaltyPointsUsed = order.customFields!.loyaltyPointsUsed;
+      if (order != null && order is Query$ActiveOrder$activeOrder && order.customFields != null) {
+        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
+        final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
         if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
           bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
           bannerController.loyaltyPointsApplied.value = true;
@@ -830,9 +878,11 @@ debugPrint('[CartPage] Error loading existing loyalty points: $e');
   Future<void> _loadExistingInstructions() async {
     try {
       await orderController.getActiveOrder(skipLoading: true);
-      if (orderController.currentOrder.value?.customFields?.otherInstructions != null) {
-        final instructions = orderController.currentOrder.value!.customFields!.otherInstructions!;
-        if (instructions.isNotEmpty && mounted) {
+      final order = orderController.currentOrder.value;
+      if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
+        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
+        final instructions = customFields.otherInstructions;
+        if (instructions != null && instructions.isNotEmpty && mounted) {
           _otherInstructionsController.text = instructions;
           if (_defaultInstructions.contains(instructions)) {
             setState(() {
@@ -855,8 +905,23 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh data when returning to this page
+    _refreshData();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        // Refresh data when page is about to be popped (user navigating back)
+        if (!didPop) {
+          _refreshData();
+        }
+      },
+      child: Scaffold(
       appBar: AppBarWidget(
         title: 'Shopping Cart',
         actions: [  IconButton(
@@ -866,7 +931,11 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             size: ResponsiveUtils.rp(20),
           ),
           tooltip: 'Clear Cart',
-          onPressed: _handleClearCart,
+          onPressed: AnalyticsHelper.trackButton(
+            'Clear Cart - Icon',
+            screenName: 'Cart',
+            callback: _handleClearCart,
+          ),
           padding: EdgeInsets.zero,
           constraints: BoxConstraints(),
         ),],
@@ -986,10 +1055,10 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
 
               // Check for out of stock items
               final hasOutOfStockItems = cart.lines.any((line) {
-                final stockLevel = line.productVariant.stockLevel?.toUpperCase();
+                final stockLevel = line.productVariant.stockLevel.toUpperCase();
                 final isLowStock = stockLevel == 'LOW_STOCK';
                 final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-                final isProductDisabled = line.productVariant.productEnabled == false;
+                final isProductDisabled = line.productVariant.product.enabled == false;
                 return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
               });
 
@@ -1089,9 +1158,10 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             ),
           ],
         );
-          });
-        },
-      ),
+      });
+    },
+    ),
+    ),
     );
   }
 
@@ -1114,6 +1184,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
           _CartItemsList(
             removingItemId: _removingItemId,
             isClearingCart: _isClearingCart,
+            adjustingOrderLineIds: _adjustingOrderLineIds,
             key: _cartItemsListKey,
             cart: cart,
             cartController: cartController,
@@ -1259,21 +1330,135 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             }
             return SizedBox.shrink();
           }),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _showCouponCodesBottomSheet(),
-              icon: Icon(Icons.local_offer, size: ResponsiveUtils.rp(20)),
-              label: Text('Browse Coupons'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.button,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8))),
+          // Show applied coupon with remove button OR browse coupons button
+          Obx(() {
+            final isAnyCouponApplied = bannerController.isAnyCouponApplied();
+            final appliedCouponCode = bannerController.getCurrentlyAppliedCoupon();
+            
+            if (isAnyCouponApplied && appliedCouponCode != null) {
+              // Find the coupon details
+              Query$GetCouponCodeList$getCouponCodeList$items? appliedCoupon;
+              try {
+                appliedCoupon = bannerController.availableCouponCodes.firstWhere(
+                  (c) => (c.couponCode ?? '').toLowerCase() == appliedCouponCode.toLowerCase(),
+                );
+              } catch (e) {
+                // Coupon not found in list, show just the code
+              }
+              
+              return Container(
+                padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                  border: Border.all(
+                    color: AppColors.success.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: AppColors.success,
+                      size: ResponsiveUtils.rp(20),
+                    ),
+                    SizedBox(width: ResponsiveUtils.rp(12)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Coupon Applied',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(12),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(4)),
+                          Text(
+                            appliedCoupon?.name ?? appliedCouponCode,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          if (appliedCouponCode != appliedCoupon?.name && appliedCoupon?.name != null)
+                            Text(
+                              appliedCouponCode,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(12),
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: AnalyticsHelper.trackButtonAsync(
+                        'Remove Coupon',
+                        screenName: 'Cart',
+                        callback: () async {
+                        final success = await bannerController.removeCouponCode(appliedCouponCode);
+                        if (success) {
+                          await Future.delayed(Duration(milliseconds: 500));
+                          await Future.wait([
+                            cartController.getActiveOrder(),
+                            orderController.getActiveOrder(skipLoading: true),
+                          ]);
+                          showSuccessSnackbar('Coupon removed successfully');
+                        } else {
+                          showErrorSnackbar('Failed to remove coupon code');
+                        }
+                      },
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.error,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(16),
+                          vertical: ResponsiveUtils.rp(8),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                        ),
+                      ),
+                      child: Text(
+                        'Remove',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(12),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            
+            // Show browse coupons button when no coupon is applied
+            return SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: AnalyticsHelper.trackButton(
+                  'Browse Coupons',
+                  screenName: 'Cart',
+                  callback: () => _showCouponCodesBottomSheet(),
+                ),
+                icon: Icon(Icons.local_offer, size: ResponsiveUtils.rp(20)),
+                label: Text('Browse Coupons'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.button,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8))),
+                ),
               ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );
@@ -1355,6 +1540,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             Obx(() {
               final isApplied = bannerController.loyaltyPointsApplied.value;
               final appliedPoints = bannerController.loyaltyPointsUsed.value;
+              final availablePoints = customerController.loyaltyPoints;
               
               if (isApplied && _loyaltyPointsController.text != appliedPoints.toString()) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1364,6 +1550,102 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
               
               return Column(
                 children: [
+                  // Toggle and Edit button row (hidden when manual input is shown)
+                  if (!_showManualInput.value) ...[
+                    Row(
+                      children: [
+                        // Toggle Switch
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Switch(
+                                value: isApplied,
+                                onChanged: (value) {
+                                  if (value) {
+                                    // Apply all available points when toggle is ON
+                                    _applyAllPoints.value = true;
+                                    _loyaltyPointsController.text = availablePoints.toString();
+                                    _applyLoyaltyPoints();
+                                  } else {
+                                    // Remove points when toggle is OFF
+                                    _removeLoyaltyPoints();
+                                    _applyAllPoints.value = false;
+                                  }
+                                },
+                                activeColor: AppColors.success,
+                              ),
+                              SizedBox(width: ResponsiveUtils.rp(8)),
+                              Expanded(
+                                child: Text(
+                                  isApplied 
+                                      ? 'Points Applied ($appliedPoints)' 
+                                      : 'Apply All Points ($availablePoints)',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUtils.sp(14),
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(8)),
+                        // Edit Button
+                        Container(
+                          height: ResponsiveUtils.rp(40),
+                          decoration: BoxDecoration(
+                            color: AppColors.button.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                _showManualInput.value = true;
+                                // Set text field to current applied points if points are already applied
+                                if (isApplied && appliedPoints > 0) {
+                                  _loyaltyPointsController.text = appliedPoints.toString();
+                                }
+                                // Focus on text field when edit is clicked
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  _loyaltyPointsFocusNode.requestFocus();
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
+                                child: Center(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.edit,
+                                        color: Colors.white,
+                                        size: ResponsiveUtils.rp(16),
+                                      ),
+                                      SizedBox(width: ResponsiveUtils.rp(4)),
+                                      Text(
+                                        'Edit',
+                                        style: TextStyle(
+                                          fontSize: ResponsiveUtils.sp(12),
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  // Manual input field (shown when Edit is clicked, replaces toggle)
+                  if (_showManualInput.value) ...[
+                    SizedBox(height: ResponsiveUtils.rp(12)),
                   Row(
                     children: [
                       Expanded(
@@ -1371,57 +1653,67 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                           controller: _loyaltyPointsController,
                           focusNode: _loyaltyPointsFocusNode,
                           keyboardType: TextInputType.number,
-                          enabled: !isApplied,
+                            enabled: true, // Always enabled when manual input is shown
                           style: TextStyle(
                               fontSize: ResponsiveUtils.sp(14),
-                              color: isApplied 
-                                  ? AppColors.success 
-                                  : AppColors.textPrimary),
+                                color: AppColors.textPrimary),
                           decoration: InputDecoration(
                             hintText: isApplied 
-                                ? 'Applied: $appliedPoints points' 
-                                : 'Enter points',
+                                  ? 'Current: $appliedPoints points' 
+                                  : 'Enter points manually',
                             hintStyle: TextStyle(
-                                color: isApplied 
-                                    ? AppColors.success 
-                                    : AppColors.textTertiary,
+                                  color: AppColors.textTertiary,
                                 fontSize: ResponsiveUtils.sp(14)),
                             border: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.circular(ResponsiveUtils.rp(8)),
                                 borderSide: BorderSide(
-                                  color: isApplied 
-                                      ? AppColors.success 
-                                      : AppColors.border,
+                                    color: AppColors.border,
                                 )),
                             enabledBorder: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.circular(ResponsiveUtils.rp(8)),
                                 borderSide: BorderSide(
-                                  color: isApplied 
-                                      ? AppColors.success 
-                                      : AppColors.border,
+                                    color: AppColors.border,
                                 )),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.circular(ResponsiveUtils.rp(8)),
                                 borderSide: BorderSide(
-                                  color: isApplied 
-                                      ? AppColors.success 
-                                      : AppColors.button,
+                                    color: AppColors.button,
                                   width: 2,
                                 )),
                             filled: true,
-                            fillColor: isApplied 
-                                ? AppColors.success.withValues(alpha: 0.1)
-                                : AppColors.inputFill,
-                            suffixIcon: isApplied
-                                ? Icon(
-                                    Icons.check_circle,
-                                    color: AppColors.success,
+                              fillColor: AppColors.inputFill,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(8)),
+                        // Close button (to hide manual input and show toggle again)
+                        Container(
+                          height: ResponsiveUtils.rp(50),
+                          decoration: BoxDecoration(
+                            color: AppColors.textSecondary.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                _showManualInput.value = false;
+                                _loyaltyPointsFocusNode.unfocus();
+                              },
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.close,
+                                    color: AppColors.textSecondary,
                                     size: ResponsiveUtils.rp(20),
-                                  )
-                                : null,
+                                  ),
+                                ),
+                              ),
                           ),
                         ),
                       ),
@@ -1429,24 +1721,25 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                       Container(
                         height: ResponsiveUtils.rp(50),
                         decoration: BoxDecoration(
-                          gradient: !isApplied
-                              ? LinearGradient(
+                            gradient: LinearGradient(
                                   colors: [AppColors.button, AppColors.buttonLight],
-                                )
-                              : null,
-                          color: isApplied ? AppColors.error : null,
+                            ),
                           borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                         ),
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: isApplied ? _removeLoyaltyPoints : _applyLoyaltyPoints,
+                              onTap: () async {
+                                await _applyLoyaltyPoints();
+                                // Close manual input after applying
+                                _showManualInput.value = false;
+                              },
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                             child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
                               child: Center(
                                 child: Text(
-                                  isApplied ? 'Remove' : 'Apply',
+                                    AppStrings.apply,
                                   style: TextStyle(
                                     fontSize: ResponsiveUtils.sp(14),
                                     fontWeight: FontWeight.w700,
@@ -1460,6 +1753,39 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                       ),
                     ],
                   ),
+                  ],
+                  // Show applied points info when points are applied
+                  if (isApplied && !_showManualInput.value) ...[
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    Container(
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                        border: Border.all(
+                          color: AppColors.success.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: AppColors.success,
+                            size: ResponsiveUtils.rp(20),
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(8)),
+                          Text(
+                            'Applied: $appliedPoints points',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.success,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               );
             }),
@@ -1471,24 +1797,37 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
 
   Widget _buildOrderSummarySection() {
     return Obx(() {
+      // Watch both cart and order to ensure updates when points are applied
       final cart = cartController.cart.value;
-      if (cart == null) return SizedBox.shrink();
-      
       final order = orderController.currentOrder.value;
+      if (cart == null) return SizedBox.shrink();
       final shippingCost = order?.shippingWithTax ?? 0;
-      final loyaltyDiscount =
-          bannerController.loyaltyPointsApplied.value
-              ? bannerController.loyaltyPointsUsed.value
-              : 0;
       
-      // Calculate coupon discount from order discounts
+      // Get total directly from query - use order.total if available, otherwise cart.totalWithTax
+      final finalTotal = order?.total != null 
+          ? order!.total.toInt() 
+          : cart.totalWithTax.toInt();
+      
+      // Get loyalty discount from order discounts array (not calculated)
+      int loyaltyDiscount = 0;
+      if (order != null && order.discounts.isNotEmpty) {
+        // Loyalty points discount typically has adjustmentSource as "OTHER" or similar
+        // Look for discounts that are not PROMOTION or COUPON_CODE
+        loyaltyDiscount = order.discounts
+            .where((discount) => discount.adjustmentSource != 'PROMOTION' && 
+                                 discount.adjustmentSource != 'COUPON_CODE' &&
+                                 discount.adjustmentSource != 'DISTRIBUTED_ORDER_PROMOTION')
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+      }
+      
+      // Get coupon discount from order discounts array (not calculated)
       int couponDiscountTotal = 0;
       String? appliedCouponName;
       if (order != null && order.discounts.isNotEmpty) {
         couponDiscountTotal = order.discounts
             .where((discount) => discount.adjustmentSource == 'PROMOTION' || 
                                  discount.adjustmentSource == 'COUPON_CODE')
-            .fold(0, (sum, discount) => sum + discount.amountWithTax);
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
         
         if (bannerController.appliedCouponCodes.isNotEmpty) {
           if (bannerController.availableCouponCodes.isNotEmpty) {
@@ -1504,9 +1843,6 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
           }
         }
       }
-      
-      final cartTotal = cart.totalWithTax.toInt();
-      final finalTotal = cartTotal - loyaltyDiscount;
       
       return Container(
         padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
@@ -1679,15 +2015,15 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
 
   Widget _buildCheckoutSection() {
     return Obx(() {
+      // Watch both cart and order to ensure updates when points are applied
       final cart = cartController.cart.value;
+      final order = orderController.currentOrder.value;
       if (cart == null) return SizedBox.shrink();
       
-      final cartTotal = cart.totalWithTax.toInt();
-      final loyaltyDiscount =
-          bannerController.loyaltyPointsApplied.value
-              ? bannerController.loyaltyPointsUsed.value
-              : 0;
-      final finalTotal = cartTotal - loyaltyDiscount;
+      // Get total directly from query - use order.total if available, otherwise cart.totalWithTax
+      final finalTotal = order?.total != null 
+          ? order!.total.toInt() 
+          : cart.totalWithTax.toInt();
       
       // Button is always enabled if cart has items
       // Validation for unavailable items happens in _proceedToCheckout()
@@ -1726,7 +2062,13 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             child: Padding(
               padding: EdgeInsets.only(left: ResponsiveUtils.rp(16)),
               child: ElevatedButton(
-                onPressed: isButtonEnabled && !isLoading ? _proceedToCheckout : null,
+                onPressed: isButtonEnabled && !isLoading 
+                    ? AnalyticsHelper.trackButton(
+                        'Proceed to Checkout',
+                        screenName: 'Cart',
+                        callback: _proceedToCheckout,
+                      )
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.button,
                   foregroundColor: Colors.white,
@@ -1816,11 +2158,15 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
               ),
               if (!_showInstructionsOptions)
                 TextButton(
-                  onPressed: () {
+                  onPressed: AnalyticsHelper.trackButton(
+                    'Show More - Delivery Instructions',
+                    screenName: 'Cart',
+                    callback: () {
                     setState(() {
                       _showInstructionsOptions = true;
                     });
                   },
+                  ),
                   child: Text(
                     'Show more',
                     style: TextStyle(
@@ -2073,8 +2419,8 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                   itemBuilder: (context, index) {
                     final coupon = enabledCoupons[index];
                     final isApplied =
-                        bannerController.isCouponCodeApplied(coupon.couponCode);
-                    final descriptionText = (coupon.description ?? '').replaceAll(RegExp(r'<[^>]*>'), '');
+                        bannerController.isCouponCodeApplied(coupon.couponCode ?? '');
+                    final descriptionText = coupon.description.replaceAll(RegExp(r'<[^>]*>'), '');
 
                     return Card(
                       color: AppColors.surface,
@@ -2111,7 +2457,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                                         ResponsiveUtils.rp(6)),
                                   ),
                                   child: Text(
-                                    coupon.couponCode,
+                                    coupon.couponCode ?? '',
                                     style: TextStyle(
                                       color: AppColors.textLight,
                                       fontWeight: FontWeight.bold,
@@ -2177,24 +2523,32 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: isApplied
-                                    ? () async {
+                                    ? AnalyticsHelper.trackButtonAsync(
+                                        'Remove Coupon - List',
+                                        screenName: 'Cart',
+                                        callback: () async {
                                         final canRemove = bannerController.appliedCouponCodes.length < 2;
                                         if (!canRemove) {
                                           showErrorSnackbar('Cannot remove coupon when multiple coupons are applied');
                                           return;
                                         }
-                                        await bannerController.removeCouponCode(coupon.couponCode);
+                                        await bannerController.removeCouponCode(coupon.couponCode ?? '');
                                         // Cart is already updated by removeCouponCode - no need for additional refresh
                                         Navigator.pop(context);
-                                      }
-                                    : () async {
+                                        },
+                                      )
+                                    : AnalyticsHelper.trackButtonAsync(
+                                        'Apply Coupon - List',
+                                        screenName: 'Cart',
+                                        callback: () async {
                                         // Check if coupon has products to add
-                                        final hasProducts = bannerController.hasCouponProducts(coupon.couponCode);
-debugPrint('[CartPage] Coupon ${coupon.couponCode} has products: $hasProducts');
+                                        final couponCode = coupon.couponCode ?? '';
+                                        final hasProducts = bannerController.hasCouponProducts(couponCode);
+debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
                                         
                                         final result = hasProducts
-                                            ? await bannerController.applyCouponCodeWithProducts(coupon.couponCode)
-                                            : await bannerController.applyCouponCode(coupon.couponCode);
+                                            ? await bannerController.applyCouponCodeWithProducts(couponCode)
+                                            : await bannerController.applyCouponCode(couponCode);
                                         
                                         if (result['success'] == true) {
                                           // Cart is already updated by applyCouponCode/applyCouponCodeWithProducts - no need for additional refresh
@@ -2207,6 +2561,7 @@ debugPrint('[CartPage] Coupon ${coupon.couponCode} has products: $hasProducts');
                                           }
                                         }
                                       },
+                                    ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: isApplied
                                       ? AppColors.error
@@ -2303,9 +2658,13 @@ debugPrint('[CartPage] Coupon ${coupon.couponCode} has products: $hasProducts');
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
+                  onPressed: AnalyticsHelper.trackButtonAsync(
+                    'Close Empty Cart',
+                    screenName: 'Cart',
+                    callback: () async {
                     Get.back();
                   },
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.zomatoRed,
                     foregroundColor: Colors.white,
@@ -2462,6 +2821,7 @@ class _CartItemsList extends StatefulWidget {
   final ScrollController scrollController;
   final String? removingItemId; // Item being removed (single item - slide-out)
   final bool isClearingCart; // Cart being cleared (all items - fade-out)
+  final Set<String> adjustingOrderLineIds; // Order lines currently being adjusted
 
   const _CartItemsList({
     Key? key,
@@ -2473,6 +2833,7 @@ class _CartItemsList extends StatefulWidget {
     required this.scrollController,
     this.removingItemId,
     this.isClearingCart = false,
+    required this.adjustingOrderLineIds,
   }) : super(key: key);
 
   @override
@@ -2493,10 +2854,17 @@ class _CartItemsListState extends State<_CartItemsList> {
 
   @override
   Widget build(BuildContext context) {
-    final itemsToShow = _showAllItems 
-        ? widget.cart.lines 
-        : widget.cart.lines.take(3).toList();
-    final hasMoreItems = widget.cart.lines.length > 3;
+    // Use Obx to reactively listen to cart changes
+    return Obx(() {
+      final cart = widget.cartController.cart.value;
+      if (cart == null || cart.lines.isEmpty) {
+        return SizedBox.shrink();
+      }
+      
+      final itemsToShow = _showAllItems 
+          ? cart.lines 
+          : cart.lines.take(3).toList();
+      final hasMoreItems = cart.lines.length > 3;
 
     return ListView.builder(
       shrinkWrap: true,
@@ -2512,18 +2880,22 @@ class _CartItemsListState extends State<_CartItemsList> {
             padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
             child: Center(
               child: TextButton.icon(
-                onPressed: () {
+                onPressed: AnalyticsHelper.trackButton(
+                  'Show More Items',
+                  screenName: 'Cart',
+                  callback: () {
                   setState(() {
                     _showAllItems = true;
                   });
                 },
+                ),
                 icon: Icon(
                   Icons.expand_more,
                   color: AppColors.button,
                   size: ResponsiveUtils.rp(20),
                 ),
                 label: Text(
-                  'Show ${widget.cart.lines.length - 3} more items',
+                  'Show ${cart.lines.length - 3} more items',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(15),
                     fontWeight: FontWeight.w600,
@@ -2536,12 +2908,15 @@ class _CartItemsListState extends State<_CartItemsList> {
         }
 
         // Show "Show Less" button if all items are shown
-        if (_showAllItems && hasMoreItems && index == widget.cart.lines.length) {
+        if (_showAllItems && hasMoreItems && index == cart.lines.length) {
           return Padding(
             padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
             child: Center(
               child: TextButton.icon(
-                onPressed: () {
+                onPressed: AnalyticsHelper.trackButton(
+                  'Show Less Items',
+                  screenName: 'Cart',
+                  callback: () {
                   setState(() {
                     _showAllItems = false;
                   });
@@ -2556,6 +2931,7 @@ class _CartItemsListState extends State<_CartItemsList> {
                     }
                   });
                 },
+                ),
                 icon: Icon(
                   Icons.expand_less,
                   color: AppColors.button,
@@ -2578,16 +2954,17 @@ class _CartItemsListState extends State<_CartItemsList> {
         final variant = line.productVariant;
         final imageUrl = line.featuredAsset?.preview;
         final unitPriceInt = line.unitPriceWithTax.toInt();
-        final isLoading = widget.utilityController.isLoadingRx.value;
+        // Use local loading state for this specific order line instead of global loading
+        final isLoading = widget.adjustingOrderLineIds.contains(line.id);
         
         // Check stock level - treat LOW_STOCK and OUT_OF_STOCK as unavailable
-        final stockLevel = variant.stockLevel?.toUpperCase();
+        final stockLevel = variant.stockLevel.toUpperCase();
         final isLowStock = stockLevel == 'LOW_STOCK';
         final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
         final isStockUnavailable = isLowStock || isOutOfStock;
         
         // Check if product is disabled (from productEnabled field or unavailableReason)
-        final isProductDisabled = variant.productEnabled == false;
+        final isProductDisabled = variant.product.enabled == false;
         final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true;
         final isProductDisabledAny = isProductDisabled || isDisabledByReason;
         
@@ -2650,5 +3027,6 @@ class _CartItemsListState extends State<_CartItemsList> {
         );
       },
     );
+    });
   }
 }

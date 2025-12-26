@@ -106,20 +106,20 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   }
 
   /// Handle add to cart - show selector only when explicitly allowed.
-  void _handleAddToCart(
+  Future<bool> _handleAddToCart(
     Query$Products$collection$productVariants$items variant, {
     bool allowVariantSelector = true,
-  }) {
+  }) async {
     final product = variant.product;
     final allVariants = controller.getVariantsForProduct(product.id);
 
     if (!allowVariantSelector || allVariants.length <= 1) {
-      _addToCart(variant);
-      return;
+      return await _addToCart(variant);
     }
 
     // Multiple variants and selector allowed — show sheet for quick pick
     showVariantSheet(product.name, allVariants);
+    return false; // Return false when showing variant sheet
   }
 
   /// Get display name from variant options, fallback to variant name
@@ -288,14 +288,6 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                         ),
                       ),
                     ),
-                    if (isSelected) ...[
-                      SizedBox(width: ResponsiveUtils.rp(6)),
-                      Icon(
-                        Icons.check_circle_rounded,
-                        size: ResponsiveUtils.rp(16),
-                        color: AppColors.button,
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -329,11 +321,11 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   }
 
   /// Add a variant to cart
-  Future<void> _addToCart(
+  Future<bool> _addToCart(
       Query$Products$collection$productVariants$items variant) async {
     final variantId = int.tryParse(variant.id);
     if (variantId == null) {
-      return;
+      return false;
     }
 
     final success = await cartController.addToCart(
@@ -359,6 +351,8 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
         setState(() {});
       }
     }
+    
+    return success;
   }
 
   /// Show bottom sheet with variant options
@@ -437,10 +431,9 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
           return _buildShimmerGrid();
         }
 
-        final children = collection.children;
         final variants = controller.uniqueProductVariants;
 
-        if (children.isEmpty && variants.isEmpty) {
+        if (variants.isEmpty) {
           return const Center(child: Text('No products found'));
         }
 
@@ -454,15 +447,17 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
           color: AppColors.refreshIndicator,
           child: GridView.builder(
             controller: _scrollController,
-            // Reduced padding for denser layout
-            padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.rp(16),
+              vertical: ResponsiveUtils.rp(20),
+            ),
             itemCount: variants.length + (controller.hasMoreItems ? 1 : 0), // Add 1 for loading indicator
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: ResponsiveUtils.rp(8), // Reduced spacing
-              mainAxisSpacing: ResponsiveUtils.rp(8), // Reduced spacing
-              childAspectRatio:
-                  0.60, // Significantly reduced aspect ratio for a shorter card
+              crossAxisSpacing: ResponsiveUtils.rp(14),
+              mainAxisSpacing: ResponsiveUtils.rp(18),
+              childAspectRatio: ResponsiveUtils.rp(0.72),
             ),
             itemBuilder: (context, index) {
               // Show loading indicator at the end
@@ -549,16 +544,18 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   // Rest of the class methods (_buildShimmerGrid, etc.) remain the same...
 
   Widget _buildShimmerGrid() {
-    // Shimmer grid adjustment for new aspect ratio
     return Skeletonizer(
       enabled: true,
       child: GridView.builder(
-        padding: const EdgeInsets.all(8), // Reduced padding
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUtils.rp(16),
+          vertical: ResponsiveUtils.rp(20),
+        ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 8, // Reduced spacing
-          mainAxisSpacing: 8, // Reduced spacing
-          childAspectRatio: 0.60, // Adjusted aspect ratio
+          crossAxisSpacing: ResponsiveUtils.rp(14),
+          mainAxisSpacing: ResponsiveUtils.rp(18),
+          childAspectRatio: ResponsiveUtils.rp(0.72),
         ),
         itemCount: 8,
         itemBuilder: (context, index) {
@@ -595,47 +592,40 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                 Expanded(
                   flex: 3,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(8),
+                      vertical: ResponsiveUtils.rp(6),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         // Product name shimmer (2 lines)
                         Container(
-                          height: 14,
+                          height: ResponsiveUtils.rp(14),
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: AppColors.shimmerBase,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: ResponsiveUtils.rp(3)),
                         Container(
-                          height: 14,
-                          width: ResponsiveUtils.rp(100),
+                          height: ResponsiveUtils.rp(12),
+                          width: ResponsiveUtils.rp(80),
                           decoration: BoxDecoration(
                             color: AppColors.shimmerBase,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: ResponsiveUtils.rp(4)),
                         // Price shimmer
                         Container(
-                          height: 14,
+                          height: ResponsiveUtils.rp(14),
                           width: ResponsiveUtils.rp(50),
                           decoration: BoxDecoration(
                             color: AppColors.shimmerBase,
                             borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        Spacer(),
-                        // Button shimmer
-                        Container(
-                          height: 36,
-                          width:
-                              ResponsiveUtils.rp(80), // Smaller button shimmer
-                          decoration: BoxDecoration(
-                            color: AppColors.shimmerBase,
-                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ],

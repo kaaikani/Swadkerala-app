@@ -250,15 +250,25 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                 ),
               ],
             ),
-            child: Icon(
-              Icons.shopping_bag_rounded,
-              size: ResponsiveUtils.rp(40),
-              color: Colors.white,
+            child: Padding(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(15)),
+              child: Image.asset(
+                'assets/images/kklogo.png',
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback to icon if image not found
+                  return Icon(
+                    Icons.shopping_bag_rounded,
+                    size: ResponsiveUtils.rp(40),
+                    color: Colors.white,
+                  );
+                },
+              ),
             ),
           ),
           SizedBox(height: ResponsiveUtils.rp(24)),
           Text(
-            'Welcome Back',
+            'Welcome',
             style: TextStyle(
               fontSize: ResponsiveUtils.sp(28),
               fontWeight: FontWeight.bold,
@@ -268,7 +278,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
           ),
           SizedBox(height: ResponsiveUtils.rp(8)),
           Text(
-            'Sign in to your account',
+            'Sign in or create your account',
             style: TextStyle(
               fontSize: ResponsiveUtils.sp(16),
               color: AppColors.textSecondary,
@@ -325,6 +335,20 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                     
                     // Action button
                     _buildActionButton(),
+                    
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    
+                    // Divider with "OR"
+                    Obx(() => !_authController.isOtpSent
+                        ? _buildDivider()
+                        : const SizedBox.shrink()),
+                    
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    
+                    // Google Sign In button
+                    Obx(() => !_authController.isOtpSent
+                        ? _buildGoogleSignInButton()
+                        : const SizedBox.shrink()),
                     
                     SizedBox(height: ResponsiveUtils.rp(16)),
                     
@@ -745,6 +769,133 @@ debugPrint('[LoginPage] SMS autofill error: $e');
     );
   }
 
+  Widget _buildDivider() {
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(
+            color: AppColors.border.withValues(alpha: 0.3),
+            thickness: 1,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+          child: Text(
+            'OR',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Divider(
+            color: AppColors.border.withValues(alpha: 0.3),
+            thickness: 1,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    return Obx(() {
+      final isLoading = _authController.isLoading;
+      
+      return Container(
+        height: ResponsiveUtils.rp(56),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+          border: Border.all(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: ResponsiveUtils.rp(10),
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: isLoading ? null : _handleGoogleSignIn,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+            child: Center(
+              child: isLoading
+                  ? SizedBox(
+                      width: ResponsiveUtils.rp(24),
+                      height: ResponsiveUtils.rp(24),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Google icon - using a simple "G" text style
+                        Container(
+                          width: ResponsiveUtils.rp(24),
+                          height: ResponsiveUtils.rp(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                              width: 1,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'G',
+                              style: TextStyle(
+                                color: Colors.blue.shade700,
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Continue with Google',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: ResponsiveUtils.sp(16),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              Text(
+                                '(Login/Register)',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: ResponsiveUtils.sp(11),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
   Widget _buildSignUpLink() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -759,7 +910,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
         GestureDetector(
           onTap: () => Get.toNamed('/signup'),
           child: Text(
-            'Sign Up',
+            'Sign Up with Phone',
             style: TextStyle(
               color: AppColors.button,
               fontSize: ResponsiveUtils.sp(14),
@@ -844,6 +995,14 @@ debugPrint('[LoginPage] SMS autofill error: $e');
 
   Future<void> _handleResendOtp() async {
     await _authController.resendOtp(context);
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    final success = await _authController.signInWithGoogle(context);
+    if (success) {
+      await AnalyticsService().logLogin(loginMethod: 'Google');
+      await NavigationHelper.redirectToIntendedRoute();
+    }
   }
 
   @override

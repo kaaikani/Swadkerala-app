@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import 'responsive_text.dart';
@@ -115,7 +116,12 @@ class CartItemCardPremium extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               InkWell(
-                                onTap: canAdjust ? onDecreaseQuantity : null,
+                                onTap: canAdjust && onDecreaseQuantity != null
+                                    ? () {
+                                        debugPrint('[CartItemCard] Decrease quantity tapped - current quantity: $quantity');
+                                        onDecreaseQuantity!();
+                                      }
+                                    : null,
                                 child: Container(
                                   padding:
                                       EdgeInsets.all(ResponsiveUtils.rp(6)),
@@ -143,7 +149,12 @@ class CartItemCardPremium extends StatelessWidget {
                                 ),
                               ),
                               InkWell(
-                                onTap: canAdjust ? onIncreaseQuantity : null,
+                                onTap: canAdjust && onIncreaseQuantity != null
+                                    ? () {
+                                        debugPrint('[CartItemCard] Increase quantity tapped - current quantity: $quantity');
+                                        onIncreaseQuantity!();
+                                      }
+                                    : null,
                                 child: Container(
                                   padding:
                                       EdgeInsets.all(ResponsiveUtils.rp(6)),

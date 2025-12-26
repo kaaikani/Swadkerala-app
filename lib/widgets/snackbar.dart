@@ -45,10 +45,10 @@ class SnackBarWidget {
     String message, {
     String? title,
     Duration duration = const Duration(seconds: 3),
-    SnackPosition position = SnackPosition.BOTTOM,
+    SnackPosition position = SnackPosition.TOP,
   }) {
     _showWithGetX(
-      title: title ?? 'Error',
+      title: title ?? 'Warning',
       message: message,
       backgroundColor: AppColors.error,
       textColor: AppColors.buttonText,
@@ -63,7 +63,7 @@ class SnackBarWidget {
     String message, {
     String? title,
     Duration duration = const Duration(seconds: 3),
-    SnackPosition position = SnackPosition.BOTTOM,
+    SnackPosition position = SnackPosition.TOP,
   }) {
     _showWithGetX(
       title: title ?? 'Warning',
@@ -81,7 +81,7 @@ class SnackBarWidget {
     String message, {
     String? title,
     Duration duration = const Duration(seconds: 2),
-    SnackPosition position = SnackPosition.BOTTOM,
+    SnackPosition position = SnackPosition.TOP,
   }) {
     _showWithGetX(
       title: title ?? 'Info',

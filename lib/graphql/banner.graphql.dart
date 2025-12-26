@@ -4101,6 +4101,64 @@ const documentNodeQueryGetCustomerFavorites = DocumentNode(definitions: [
                                 selectionSet: null,
                               ),
                               FieldNode(
+                                name: NameNode(value: 'options'),
+                                alias: null,
+                                arguments: [],
+                                directives: [],
+                                selectionSet: SelectionSetNode(selections: [
+                                  FieldNode(
+                                    name: NameNode(value: 'id'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'name'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: 'group'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: SelectionSetNode(selections: [
+                                      FieldNode(
+                                        name: NameNode(value: 'id'),
+                                        alias: null,
+                                        arguments: [],
+                                        directives: [],
+                                        selectionSet: null,
+                                      ),
+                                      FieldNode(
+                                        name: NameNode(value: 'name'),
+                                        alias: null,
+                                        arguments: [],
+                                        directives: [],
+                                        selectionSet: null,
+                                      ),
+                                      FieldNode(
+                                        name: NameNode(value: '__typename'),
+                                        alias: null,
+                                        arguments: [],
+                                        directives: [],
+                                        selectionSet: null,
+                                      ),
+                                    ]),
+                                  ),
+                                  FieldNode(
+                                    name: NameNode(value: '__typename'),
+                                    alias: null,
+                                    arguments: [],
+                                    directives: [],
+                                    selectionSet: null,
+                                  ),
+                                ]),
+                              ),
+                              FieldNode(
                                 name: NameNode(value: '__typename'),
                                 alias: null,
                                 arguments: [],
@@ -5285,6 +5343,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     required this.price,
     required this.priceWithTax,
     required this.currencyCode,
+    required this.options,
     this.$__typename = 'ProductVariant',
   });
 
@@ -5295,6 +5354,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     final l$price = json['price'];
     final l$priceWithTax = json['priceWithTax'];
     final l$currencyCode = json['currencyCode'];
+    final l$options = json['options'];
     final l$$__typename = json['__typename'];
     return Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants(
       id: (l$id as String),
@@ -5302,6 +5362,11 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
       price: (l$price as num).toDouble(),
       priceWithTax: (l$priceWithTax as num).toDouble(),
       currencyCode: fromJson$Enum$CurrencyCode((l$currencyCode as String)),
+      options: (l$options as List<dynamic>)
+          .map((e) =>
+              Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -5315,6 +5380,10 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
   final double priceWithTax;
 
   final Enum$CurrencyCode currencyCode;
+
+  final List<
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>
+      options;
 
   final String $__typename;
 
@@ -5330,6 +5399,8 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     _resultData['priceWithTax'] = l$priceWithTax;
     final l$currencyCode = currencyCode;
     _resultData['currencyCode'] = toJson$Enum$CurrencyCode(l$currencyCode);
+    final l$options = options;
+    _resultData['options'] = l$options.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -5342,6 +5413,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     final l$price = price;
     final l$priceWithTax = priceWithTax;
     final l$currencyCode = currencyCode;
+    final l$options = options;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -5349,6 +5421,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
       l$price,
       l$priceWithTax,
       l$currencyCode,
+      Object.hashAll(l$options.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -5387,6 +5460,18 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     final lOther$currencyCode = other.currencyCode;
     if (l$currencyCode != lOther$currencyCode) {
       return false;
+    }
+    final l$options = options;
+    final lOther$options = other.options;
+    if (l$options.length != lOther$options.length) {
+      return false;
+    }
+    for (int i = 0; i < l$options.length; i++) {
+      final l$options$entry = l$options[i];
+      final lOther$options$entry = lOther$options[i];
+      if (l$options$entry != lOther$options$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -5428,8 +5513,16 @@ abstract class CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$item
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    List<Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>?
+        options,
     String? $__typename,
   });
+  TRes options(
+      Iterable<Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options> Function(
+              Iterable<
+                  CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+                      Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>>)
+          _fn);
 }
 
 class _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants<
@@ -5457,6 +5550,7 @@ class _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$pr
     Object? price = _undefined,
     Object? priceWithTax = _undefined,
     Object? currencyCode = _undefined,
+    Object? options = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -5474,10 +5568,27 @@ class _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$pr
         currencyCode: currencyCode == _undefined || currencyCode == null
             ? _instance.currencyCode
             : (currencyCode as Enum$CurrencyCode),
+        options: options == _undefined || options == null
+            ? _instance.options
+            : (options as List<
+                Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  TRes options(
+          Iterable<Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options> Function(
+                  Iterable<
+                      CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+                          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>>)
+              _fn) =>
+      call(
+          options: _fn(_instance.options.map((e) =>
+              CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options(
+                e,
+                (i) => i,
+              ))).toList());
 }
 
 class _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants<
@@ -5496,6 +5607,377 @@ class _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$item
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    List<Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>?
+        options,
+    String? $__typename,
+  }) =>
+      _res;
+
+  options(_fn) => _res;
+}
+
+class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options {
+  Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options({
+    required this.id,
+    required this.name,
+    required this.group,
+    this.$__typename = 'ProductOption',
+  });
+
+  factory Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$group = json['group'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options(
+      id: (l$id as String),
+      name: (l$name as String),
+      group:
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group
+              .fromJson((l$group as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group
+      group;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$group = group;
+    _resultData['group'] = l$group.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$group = group;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$group,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$group = group;
+    final lOther$group = other.group;
+    if (l$group != lOther$group) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options
+    on Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options {
+  CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>
+      get copyWith =>
+          CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+    TRes> {
+  factory CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options(
+    Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options
+        instance,
+    TRes Function(
+            Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options)
+        then,
+  ) = _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options;
+
+  factory CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options;
+
+  TRes call({
+    String? id,
+    String? name,
+    Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group?
+        group,
+    String? $__typename,
+  });
+  CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+      TRes> get group;
+}
+
+class _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+        TRes>
+    implements
+        CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+            TRes> {
+  _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options
+      _instance;
+
+  final TRes Function(
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? group = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        group: group == _undefined || group == null
+            ? _instance.group
+            : (group
+                as Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+      TRes> get group {
+    final local$group = _instance.group;
+    return CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group(
+        local$group, (e) => call(group: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+        TRes>
+    implements
+        CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group?
+        group,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+          TRes>
+      get group =>
+          CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group
+              .stub(_res);
+}
+
+class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group {
+  Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group({
+    required this.id,
+    required this.name,
+    this.$__typename = 'ProductOptionGroup',
+  });
+
+  factory Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group
+    on Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group {
+  CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group>
+      get copyWith =>
+          CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+    TRes> {
+  factory CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group(
+    Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group
+        instance,
+    TRes Function(
+            Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group)
+        then,
+  ) = _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group;
+
+  factory CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+        TRes>
+    implements
+        CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+            TRes> {
+  _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group
+      _instance;
+
+  final TRes Function(
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+        TRes>
+    implements
+        CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options$group(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
     String? $__typename,
   }) =>
       _res;
@@ -5758,6 +6240,64 @@ const documentNodeQueryGetFrequentlyOrderedProducts =
                     arguments: [],
                     directives: [],
                     selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'options'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'group'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(selections: [
+                          FieldNode(
+                            name: NameNode(value: 'id'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: 'name'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: '__typename'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                        ]),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
                   ),
                   FieldNode(
                     name: NameNode(value: '__typename'),
@@ -6476,6 +7016,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     required this.price,
     required this.priceWithTax,
     required this.currencyCode,
+    required this.options,
     this.$__typename = 'ProductVariant',
   });
 
@@ -6486,6 +7027,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     final l$price = json['price'];
     final l$priceWithTax = json['priceWithTax'];
     final l$currencyCode = json['currencyCode'];
+    final l$options = json['options'];
     final l$$__typename = json['__typename'];
     return Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants(
       id: (l$id as String),
@@ -6493,6 +7035,11 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
       price: (l$price as num).toDouble(),
       priceWithTax: (l$priceWithTax as num).toDouble(),
       currencyCode: fromJson$Enum$CurrencyCode((l$currencyCode as String)),
+      options: (l$options as List<dynamic>)
+          .map((e) =>
+              Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -6506,6 +7053,10 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
   final double priceWithTax;
 
   final Enum$CurrencyCode currencyCode;
+
+  final List<
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>
+      options;
 
   final String $__typename;
 
@@ -6521,6 +7072,8 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     _resultData['priceWithTax'] = l$priceWithTax;
     final l$currencyCode = currencyCode;
     _resultData['currencyCode'] = toJson$Enum$CurrencyCode(l$currencyCode);
+    final l$options = options;
+    _resultData['options'] = l$options.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -6533,6 +7086,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     final l$price = price;
     final l$priceWithTax = priceWithTax;
     final l$currencyCode = currencyCode;
+    final l$options = options;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -6540,6 +7094,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
       l$price,
       l$priceWithTax,
       l$currencyCode,
+      Object.hashAll(l$options.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -6578,6 +7133,18 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     final lOther$currencyCode = other.currencyCode;
     if (l$currencyCode != lOther$currencyCode) {
       return false;
+    }
+    final l$options = options;
+    final lOther$options = other.options;
+    if (l$options.length != lOther$options.length) {
+      return false;
+    }
+    for (int i = 0; i < l$options.length; i++) {
+      final l$options$entry = l$options[i];
+      final lOther$options$entry = lOther$options[i];
+      if (l$options$entry != lOther$options$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -6619,8 +7186,16 @@ abstract class CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProd
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>?
+        options,
     String? $__typename,
   });
+  TRes options(
+      Iterable<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options> Function(
+              Iterable<
+                  CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+                      Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>>)
+          _fn);
 }
 
 class _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants<
@@ -6648,6 +7223,7 @@ class _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts
     Object? price = _undefined,
     Object? priceWithTax = _undefined,
     Object? currencyCode = _undefined,
+    Object? options = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(
@@ -6665,10 +7241,27 @@ class _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts
         currencyCode: currencyCode == _undefined || currencyCode == null
             ? _instance.currencyCode
             : (currencyCode as Enum$CurrencyCode),
+        options: options == _undefined || options == null
+            ? _instance.options
+            : (options as List<
+                Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  TRes options(
+          Iterable<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options> Function(
+                  Iterable<
+                      CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+                          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>>)
+              _fn) =>
+      call(
+          options: _fn(_instance.options.map((e) =>
+              CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options(
+                e,
+                (i) => i,
+              ))).toList());
 }
 
 class _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants<
@@ -6687,6 +7280,377 @@ class _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProd
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>?
+        options,
+    String? $__typename,
+  }) =>
+      _res;
+
+  options(_fn) => _res;
+}
+
+class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options {
+  Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options({
+    required this.id,
+    required this.name,
+    required this.group,
+    this.$__typename = 'ProductOption',
+  });
+
+  factory Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$group = json['group'];
+    final l$$__typename = json['__typename'];
+    return Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options(
+      id: (l$id as String),
+      name: (l$name as String),
+      group:
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group
+              .fromJson((l$group as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group
+      group;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$group = group;
+    _resultData['group'] = l$group.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$group = group;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$group,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$group = group;
+    final lOther$group = other.group;
+    if (l$group != lOther$group) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options
+    on Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options {
+  CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>
+      get copyWith =>
+          CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+    TRes> {
+  factory CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options(
+    Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options
+        instance,
+    TRes Function(
+            Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options)
+        then,
+  ) = _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options;
+
+  factory CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options;
+
+  TRes call({
+    String? id,
+    String? name,
+    Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group?
+        group,
+    String? $__typename,
+  });
+  CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+      TRes> get group;
+}
+
+class _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+        TRes>
+    implements
+        CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+            TRes> {
+  _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options
+      _instance;
+
+  final TRes Function(
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? group = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        group: group == _undefined || group == null
+            ? _instance.group
+            : (group
+                as Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+      TRes> get group {
+    final local$group = _instance.group;
+    return CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group(
+        local$group, (e) => call(group: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+        TRes>
+    implements
+        CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options<
+            TRes> {
+  _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group?
+        group,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+          TRes>
+      get group =>
+          CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group
+              .stub(_res);
+}
+
+class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group {
+  Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group({
+    required this.id,
+    required this.name,
+    this.$__typename = 'ProductOptionGroup',
+  });
+
+  factory Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group
+    on Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group {
+  CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group>
+      get copyWith =>
+          CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+    TRes> {
+  factory CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group(
+    Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group
+        instance,
+    TRes Function(
+            Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group)
+        then,
+  ) = _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group;
+
+  factory CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+        TRes>
+    implements
+        CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+            TRes> {
+  _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group
+      _instance;
+
+  final TRes Function(
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+        TRes>
+    implements
+        CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group<
+            TRes> {
+  _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options$group(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
     String? $__typename,
   }) =>
       _res;

@@ -25,7 +25,6 @@ class Fragment$Cart {
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
-    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -47,7 +46,6 @@ class Fragment$Cart {
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
-    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart(
       id: (l$id as String),
@@ -80,10 +78,6 @@ class Fragment$Cart {
           .map((e) =>
               Fragment$Cart$discounts.fromJson((e as Map<String, dynamic>)))
           .toList(),
-      customFields: l$customFields == null
-          ? null
-          : Fragment$Cart$customFields.fromJson(
-              (l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -121,8 +115,6 @@ class Fragment$Cart {
   final List<Fragment$Cart$shippingLines> shippingLines;
 
   final List<Fragment$Cart$discounts> discounts;
-
-  final Fragment$Cart$customFields? customFields;
 
   final String $__typename;
 
@@ -163,8 +155,6 @@ class Fragment$Cart {
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
-    final l$customFields = customFields;
-    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -189,7 +179,6 @@ class Fragment$Cart {
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
-    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -209,7 +198,6 @@ class Fragment$Cart {
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
-      l$customFields,
       l$$__typename,
     ]);
   }
@@ -342,11 +330,6 @@ class Fragment$Cart {
         return false;
       }
     }
-    final l$customFields = customFields;
-    final lOther$customFields = other.customFields;
-    if (l$customFields != lOther$customFields) {
-      return false;
-    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -390,7 +373,6 @@ abstract class CopyWith$Fragment$Cart<TRes> {
     double? shippingWithTax,
     List<Fragment$Cart$shippingLines>? shippingLines,
     List<Fragment$Cart$discounts>? discounts,
-    Fragment$Cart$customFields? customFields,
     String? $__typename,
   });
   CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus;
@@ -414,7 +396,6 @@ abstract class CopyWith$Fragment$Cart<TRes> {
               Iterable<
                   CopyWith$Fragment$Cart$discounts<Fragment$Cart$discounts>>)
           _fn);
-  CopyWith$Fragment$Cart$customFields<TRes> get customFields;
 }
 
 class _CopyWithImpl$Fragment$Cart<TRes>
@@ -448,7 +429,6 @@ class _CopyWithImpl$Fragment$Cart<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
-    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart(
@@ -504,9 +484,6 @@ class _CopyWithImpl$Fragment$Cart<TRes>
         discounts: discounts == _undefined || discounts == null
             ? _instance.discounts
             : (discounts as List<Fragment$Cart$discounts>),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields as Fragment$Cart$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -566,14 +543,6 @@ class _CopyWithImpl$Fragment$Cart<TRes>
                     e,
                     (i) => i,
                   ))).toList());
-
-  CopyWith$Fragment$Cart$customFields<TRes> get customFields {
-    final local$customFields = _instance.customFields;
-    return local$customFields == null
-        ? CopyWith$Fragment$Cart$customFields.stub(_then(_instance))
-        : CopyWith$Fragment$Cart$customFields(
-            local$customFields, (e) => call(customFields: e));
-  }
 }
 
 class _CopyWithStubImpl$Fragment$Cart<TRes>
@@ -600,7 +569,6 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
     double? shippingWithTax,
     List<Fragment$Cart$shippingLines>? shippingLines,
     List<Fragment$Cart$discounts>? discounts,
-    Fragment$Cart$customFields? customFields,
     String? $__typename,
   }) =>
       _res;
@@ -615,9 +583,6 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
-
-  CopyWith$Fragment$Cart$customFields<TRes> get customFields =>
-      CopyWith$Fragment$Cart$customFields.stub(_res);
 }
 
 const fragmentDefinitionCart = FragmentDefinitionNode(
@@ -1078,13 +1043,6 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
           ]),
         ),
         FieldNode(
-          name: NameNode(value: 'customFields'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
-        ),
-        FieldNode(
           name: NameNode(value: '__typename'),
           alias: null,
           arguments: [],
@@ -1255,21 +1213,6 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
           directives: [],
           selectionSet: null,
         ),
-      ]),
-    ),
-    FieldNode(
-      name: NameNode(value: 'customFields'),
-      alias: null,
-      arguments: [],
-      directives: [],
-      selectionSet: SelectionSetNode(selections: [
-        FieldNode(
-          name: NameNode(value: '__typename'),
-          alias: null,
-          arguments: [],
-          directives: [],
-          selectionSet: null,
-        )
       ]),
     ),
     FieldNode(
@@ -2658,7 +2601,6 @@ class Fragment$Cart$lines {
     required this.discountedLinePriceWithTax,
     required this.productVariant,
     required this.discounts,
-    this.customFields,
     this.$__typename = 'OrderLine',
   });
 
@@ -2674,7 +2616,6 @@ class Fragment$Cart$lines {
     final l$discountedLinePriceWithTax = json['discountedLinePriceWithTax'];
     final l$productVariant = json['productVariant'];
     final l$discounts = json['discounts'];
-    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart$lines(
       id: (l$id as String),
@@ -2695,7 +2636,6 @@ class Fragment$Cart$lines {
           .map((e) => Fragment$Cart$lines$discounts.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
-      customFields: (l$customFields as Map<String, dynamic>?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2721,8 +2661,6 @@ class Fragment$Cart$lines {
   final Fragment$Cart$lines$productVariant productVariant;
 
   final List<Fragment$Cart$lines$discounts> discounts;
-
-  final Map<String, dynamic>? customFields;
 
   final String $__typename;
 
@@ -2750,8 +2688,6 @@ class Fragment$Cart$lines {
     _resultData['productVariant'] = l$productVariant.toJson();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
-    final l$customFields = customFields;
-    _resultData['customFields'] = l$customFields;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2770,7 +2706,6 @@ class Fragment$Cart$lines {
     final l$discountedLinePriceWithTax = discountedLinePriceWithTax;
     final l$productVariant = productVariant;
     final l$discounts = discounts;
-    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -2784,7 +2719,6 @@ class Fragment$Cart$lines {
       l$discountedLinePriceWithTax,
       l$productVariant,
       Object.hashAll(l$discounts.map((v) => v)),
-      l$customFields,
       l$$__typename,
     ]);
   }
@@ -2859,11 +2793,6 @@ class Fragment$Cart$lines {
         return false;
       }
     }
-    final l$customFields = customFields;
-    final lOther$customFields = other.customFields;
-    if (l$customFields != lOther$customFields) {
-      return false;
-    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -2902,7 +2831,6 @@ abstract class CopyWith$Fragment$Cart$lines<TRes> {
     double? discountedLinePriceWithTax,
     Fragment$Cart$lines$productVariant? productVariant,
     List<Fragment$Cart$lines$discounts>? discounts,
-    Map<String, dynamic>? customFields,
     String? $__typename,
   });
   CopyWith$Fragment$Asset<TRes> get featuredAsset;
@@ -2940,7 +2868,6 @@ class _CopyWithImpl$Fragment$Cart$lines<TRes>
     Object? discountedLinePriceWithTax = _undefined,
     Object? productVariant = _undefined,
     Object? discounts = _undefined,
-    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart$lines(
@@ -2978,9 +2905,6 @@ class _CopyWithImpl$Fragment$Cart$lines<TRes>
         discounts: discounts == _undefined || discounts == null
             ? _instance.discounts
             : (discounts as List<Fragment$Cart$lines$discounts>),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields as Map<String, dynamic>?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -3032,7 +2956,6 @@ class _CopyWithStubImpl$Fragment$Cart$lines<TRes>
     double? discountedLinePriceWithTax,
     Fragment$Cart$lines$productVariant? productVariant,
     List<Fragment$Cart$lines$discounts>? discounts,
-    Map<String, dynamic>? customFields,
     String? $__typename,
   }) =>
       _res;
@@ -4139,97 +4062,6 @@ class _CopyWithStubImpl$Fragment$Cart$discounts<TRes>
     String? $__typename,
   }) =>
       _res;
-}
-
-class Fragment$Cart$customFields {
-  Fragment$Cart$customFields({this.$__typename = 'OrderCustomFields'});
-
-  factory Fragment$Cart$customFields.fromJson(Map<String, dynamic> json) {
-    final l$$__typename = json['__typename'];
-    return Fragment$Cart$customFields($__typename: (l$$__typename as String));
-  }
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$$__typename = $__typename;
-    return Object.hashAll([l$$__typename]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Fragment$Cart$customFields ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Fragment$Cart$customFields
-    on Fragment$Cart$customFields {
-  CopyWith$Fragment$Cart$customFields<Fragment$Cart$customFields>
-      get copyWith => CopyWith$Fragment$Cart$customFields(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Fragment$Cart$customFields<TRes> {
-  factory CopyWith$Fragment$Cart$customFields(
-    Fragment$Cart$customFields instance,
-    TRes Function(Fragment$Cart$customFields) then,
-  ) = _CopyWithImpl$Fragment$Cart$customFields;
-
-  factory CopyWith$Fragment$Cart$customFields.stub(TRes res) =
-      _CopyWithStubImpl$Fragment$Cart$customFields;
-
-  TRes call({String? $__typename});
-}
-
-class _CopyWithImpl$Fragment$Cart$customFields<TRes>
-    implements CopyWith$Fragment$Cart$customFields<TRes> {
-  _CopyWithImpl$Fragment$Cart$customFields(
-    this._instance,
-    this._then,
-  );
-
-  final Fragment$Cart$customFields _instance;
-
-  final TRes Function(Fragment$Cart$customFields) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({Object? $__typename = _undefined}) => _then(
-      Fragment$Cart$customFields(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
-}
-
-class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
-    implements CopyWith$Fragment$Cart$customFields<TRes> {
-  _CopyWithStubImpl$Fragment$Cart$customFields(this._res);
-
-  TRes _res;
-
-  call({String? $__typename}) => _res;
 }
 
 class Fragment$Asset {
@@ -12461,7 +12293,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
-    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -12484,7 +12315,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
-    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$AddToCart$addItemToOrder$$Order(
       id: (l$id as String),
@@ -12522,10 +12352,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
               Mutation$AddToCart$addItemToOrder$$Order$discounts.fromJson(
                   (e as Map<String, dynamic>)))
           .toList(),
-      customFields: l$customFields == null
-          ? null
-          : Mutation$AddToCart$addItemToOrder$$Order$customFields.fromJson(
-              (l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -12566,8 +12392,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
 
   final List<Mutation$AddToCart$addItemToOrder$$Order$discounts> discounts;
 
-  final Mutation$AddToCart$addItemToOrder$$Order$customFields? customFields;
-
   final String $__typename;
 
   Map<String, dynamic> toJson() {
@@ -12607,8 +12431,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
-    final l$customFields = customFields;
-    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -12633,7 +12455,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
-    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -12653,7 +12474,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
-      l$customFields,
       l$$__typename,
     ]);
   }
@@ -12787,11 +12607,6 @@ class Mutation$AddToCart$addItemToOrder$$Order
         return false;
       }
     }
-    final l$customFields = customFields;
-    final lOther$customFields = other.customFields;
-    if (l$customFields != lOther$customFields) {
-      return false;
-    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -12838,7 +12653,6 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order<TRes> {
     double? shippingWithTax,
     List<Mutation$AddToCart$addItemToOrder$$Order$shippingLines>? shippingLines,
     List<Mutation$AddToCart$addItemToOrder$$Order$discounts>? discounts,
-    Mutation$AddToCart$addItemToOrder$$Order$customFields? customFields,
     String? $__typename,
   });
   CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<TRes>
@@ -12867,8 +12681,6 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order<TRes> {
                   CopyWith$Mutation$AddToCart$addItemToOrder$$Order$discounts<
                       Mutation$AddToCart$addItemToOrder$$Order$discounts>>)
           _fn);
-  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
-      get customFields;
 }
 
 class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
@@ -12902,7 +12714,6 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
-    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddToCart$addItemToOrder$$Order(
@@ -12962,10 +12773,6 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
             ? _instance.discounts
             : (discounts
                 as List<Mutation$AddToCart$addItemToOrder$$Order$discounts>),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields
-                as Mutation$AddToCart$addItemToOrder$$Order$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -13029,16 +12836,6 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
                 e,
                 (i) => i,
               ))).toList());
-
-  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
-      get customFields {
-    final local$customFields = _instance.customFields;
-    return local$customFields == null
-        ? CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields.stub(
-            _then(_instance))
-        : CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields(
-            local$customFields, (e) => call(customFields: e));
-  }
 }
 
 class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
@@ -13065,7 +12862,6 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
     double? shippingWithTax,
     List<Mutation$AddToCart$addItemToOrder$$Order$shippingLines>? shippingLines,
     List<Mutation$AddToCart$addItemToOrder$$Order$discounts>? discounts,
-    Mutation$AddToCart$addItemToOrder$$Order$customFields? customFields,
     String? $__typename,
   }) =>
       _res;
@@ -13082,11 +12878,6 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
-
-  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
-      get customFields =>
-          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields.stub(
-              _res);
 }
 
 class Mutation$AddToCart$addItemToOrder$$Order$validationStatus
@@ -14552,7 +14343,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     required this.quantity,
     required this.isAvailable,
     this.unavailableReason,
-    this.customFields,
     this.featuredAsset,
     required this.unitPrice,
     required this.unitPriceWithTax,
@@ -14569,7 +14359,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     final l$quantity = json['quantity'];
     final l$isAvailable = json['isAvailable'];
     final l$unavailableReason = json['unavailableReason'];
-    final l$customFields = json['customFields'];
     final l$featuredAsset = json['featuredAsset'];
     final l$unitPrice = json['unitPrice'];
     final l$unitPriceWithTax = json['unitPriceWithTax'];
@@ -14583,7 +14372,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
       quantity: (l$quantity as int),
       isAvailable: (l$isAvailable as bool),
       unavailableReason: (l$unavailableReason as String?),
-      customFields: (l$customFields as Map<String, dynamic>?),
       featuredAsset: l$featuredAsset == null
           ? null
           : Fragment$Asset.fromJson((l$featuredAsset as Map<String, dynamic>)),
@@ -14611,8 +14399,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
   final bool isAvailable;
 
   final String? unavailableReason;
-
-  final Map<String, dynamic>? customFields;
 
   final Fragment$Asset? featuredAsset;
 
@@ -14642,8 +14428,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     _resultData['isAvailable'] = l$isAvailable;
     final l$unavailableReason = unavailableReason;
     _resultData['unavailableReason'] = l$unavailableReason;
-    final l$customFields = customFields;
-    _resultData['customFields'] = l$customFields;
     final l$featuredAsset = featuredAsset;
     _resultData['featuredAsset'] = l$featuredAsset?.toJson();
     final l$unitPrice = unitPrice;
@@ -14669,7 +14453,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     final l$quantity = quantity;
     final l$isAvailable = isAvailable;
     final l$unavailableReason = unavailableReason;
-    final l$customFields = customFields;
     final l$featuredAsset = featuredAsset;
     final l$unitPrice = unitPrice;
     final l$unitPriceWithTax = unitPriceWithTax;
@@ -14683,7 +14466,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
       l$quantity,
       l$isAvailable,
       l$unavailableReason,
-      l$customFields,
       l$featuredAsset,
       l$unitPrice,
       l$unitPriceWithTax,
@@ -14722,11 +14504,6 @@ class Mutation$AddToCart$addItemToOrder$$Order$lines
     final l$unavailableReason = unavailableReason;
     final lOther$unavailableReason = other.unavailableReason;
     if (l$unavailableReason != lOther$unavailableReason) {
-      return false;
-    }
-    final l$customFields = customFields;
-    final lOther$customFields = other.customFields;
-    if (l$customFields != lOther$customFields) {
       return false;
     }
     final l$featuredAsset = featuredAsset;
@@ -14805,7 +14582,6 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes> {
     int? quantity,
     bool? isAvailable,
     String? unavailableReason,
-    Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
     double? unitPriceWithTax,
@@ -14845,7 +14621,6 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
     Object? quantity = _undefined,
     Object? isAvailable = _undefined,
     Object? unavailableReason = _undefined,
-    Object? customFields = _undefined,
     Object? featuredAsset = _undefined,
     Object? unitPrice = _undefined,
     Object? unitPriceWithTax = _undefined,
@@ -14866,9 +14641,6 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
         unavailableReason: unavailableReason == _undefined
             ? _instance.unavailableReason
             : (unavailableReason as String?),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields as Map<String, dynamic>?),
         featuredAsset: featuredAsset == _undefined
             ? _instance.featuredAsset
             : (featuredAsset as Fragment$Asset?),
@@ -14940,7 +14712,6 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$lines<TRes>
     int? quantity,
     bool? isAvailable,
     String? unavailableReason,
-    Map<String, dynamic>? customFields,
     Fragment$Asset? featuredAsset,
     double? unitPrice,
     double? unitPriceWithTax,
@@ -16165,110 +15936,6 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$discounts<TRes>
     String? $__typename,
   }) =>
       _res;
-}
-
-class Mutation$AddToCart$addItemToOrder$$Order$customFields
-    implements Fragment$Cart$customFields {
-  Mutation$AddToCart$addItemToOrder$$Order$customFields(
-      {this.$__typename = 'OrderCustomFields'});
-
-  factory Mutation$AddToCart$addItemToOrder$$Order$customFields.fromJson(
-      Map<String, dynamic> json) {
-    final l$$__typename = json['__typename'];
-    return Mutation$AddToCart$addItemToOrder$$Order$customFields(
-        $__typename: (l$$__typename as String));
-  }
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$$__typename = $__typename;
-    return Object.hashAll([l$$__typename]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Mutation$AddToCart$addItemToOrder$$Order$customFields ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$Order$customFields
-    on Mutation$AddToCart$addItemToOrder$$Order$customFields {
-  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<
-          Mutation$AddToCart$addItemToOrder$$Order$customFields>
-      get copyWith =>
-          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<
-    TRes> {
-  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields(
-    Mutation$AddToCart$addItemToOrder$$Order$customFields instance,
-    TRes Function(Mutation$AddToCart$addItemToOrder$$Order$customFields) then,
-  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields;
-
-  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields;
-
-  TRes call({String? $__typename});
-}
-
-class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
-    implements
-        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes> {
-  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields(
-    this._instance,
-    this._then,
-  );
-
-  final Mutation$AddToCart$addItemToOrder$$Order$customFields _instance;
-
-  final TRes Function(Mutation$AddToCart$addItemToOrder$$Order$customFields)
-      _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({Object? $__typename = _undefined}) =>
-      _then(Mutation$AddToCart$addItemToOrder$$Order$customFields(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
-}
-
-class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<
-        TRes>
-    implements
-        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes> {
-  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields(
-      this._res);
-
-  TRes _res;
-
-  call({String? $__typename}) => _res;
 }
 
 class Mutation$AddToCart$addItemToOrder$$OrderModificationError

@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import '../utils/app_config.dart';
+import '../utils/app_strings.dart';
 import '../widgets/premium_card.dart';
 
 class HelpSupportPage extends StatelessWidget {
@@ -14,10 +16,18 @@ class HelpSupportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final customerController = Get.find<CustomerController>();
     final customer = customerController.activeCustomer.value;
-    final customerName = customer != null
-        ? '${customer.firstName} ${customer.lastName}'.trim()
-        : 'User';
+    
+    // Build customer name properly handling empty values
+    String customerName = 'User';
+    if (customer != null) {
+      final firstName = customer.firstName.trim();
+      final lastName = customer.lastName.trim();
+      final fullName = '$firstName $lastName'.trim();
+      customerName = fullName.isNotEmpty ? fullName : 'User';
+    }
+    
     final customerPhone = customer?.phoneNumber ?? '';
+    final customerEmail = customer?.emailAddress ?? AppConfig.emailId;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -60,26 +70,26 @@ class HelpSupportPage extends StatelessWidget {
                   SizedBox(height: ResponsiveUtils.rp(16)),
                   _buildContactTile(
                     icon: Icons.phone_outlined,
-                    title: 'Phone Support',
-                    subtitle: '+91 1234567890',
+                    title: AppStrings.phoneSupport,
+                    subtitle: AppConfig.phoneNumber,
                     color: AppColors.success,
-                    onTap: () => _launchPhone('+911234567890'),
+                    onTap: () => _launchPhone(AppConfig.phoneNumber),
                   ),
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   _buildContactTile(
                     icon: Icons.chat_outlined,
-                    title: 'WhatsApp',
-                    subtitle: 'Chat with us on WhatsApp',
+                    title: AppStrings.whatsapp,
+                    subtitle: AppStrings.chatWithUsOnWhatsApp,
                     color: Color(0xFF25D366),
-                    onTap: () => _launchWhatsApp(customerName, customerPhone),
+                    onTap: () => _launchWhatsApp(customerName, customerPhone, customerEmail),
                   ),
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   _buildContactTile(
                     icon: Icons.email_outlined,
-                    title: 'Email Support',
-                    subtitle: 'support@yourcompany.com',
+                    title: AppStrings.emailSupport,
+                    subtitle: AppConfig.emailId,
                     color: AppColors.button,
-                    onTap: () => _launchEmail('support@yourcompany.com'),
+                    onTap: () => _launchEmail(AppConfig.emailId),
                   ),
                 ],
               ),
@@ -235,31 +245,32 @@ class HelpSupportPage extends StatelessWidget {
       if (await canLaunchUrl(url)) {
         await launchUrl(url);
       } else {
-        _showErrorSnackbar('Could not make phone call');
+        _showErrorSnackbar(AppStrings.couldNotMakePhoneCall);
       }
     } catch (e) {
-      _showErrorSnackbar('Error opening phone');
+      _showErrorSnackbar(AppStrings.errorOpeningPhone);
     }
   }
 
-  Future<void> _launchWhatsApp(String name, String phoneNumber) async {
+  Future<void> _launchWhatsApp(String name, String phoneNumber, String emailId) async {
     try {
-      // Format phone number (remove + and spaces)
-      final cleanPhone = phoneNumber.replaceAll(RegExp(r'[+\s]'), '');
+      // Format WhatsApp number (remove + and spaces)
+      final cleanWhatsAppPhone = AppConfig.whatsappNumber.replaceAll(RegExp(r'[+\s]'), '');
       
-      // WhatsApp URL with pre-filled message containing name and phone
-      // Content is empty as requested
-      final message = 'Name: $name\nPhone: $phoneNumber\n\n';
+      // WhatsApp URL with pre-filled message containing name, phone, and email
+      // Ensure name is not empty, use 'User' as fallback
+      final displayName = name.isNotEmpty ? name : 'User';
+      final message = 'Name: $displayName\nPhone: ${phoneNumber.isNotEmpty ? phoneNumber : 'N/A'}\nEmail: ${emailId.isNotEmpty ? emailId : 'N/A'}\n\n';
       final encodedMessage = Uri.encodeComponent(message);
-      final url = Uri.parse('https://wa.me/$cleanPhone?text=$encodedMessage');
+      final url = Uri.parse('https://wa.me/$cleanWhatsAppPhone?text=$encodedMessage');
       
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
-        _showErrorSnackbar('Could not open WhatsApp');
+        _showErrorSnackbar(AppStrings.couldNotOpenWhatsApp);
       }
     } catch (e) {
-      _showErrorSnackbar('Error opening WhatsApp');
+      _showErrorSnackbar(AppStrings.errorOpeningWhatsApp);
     }
   }
 
@@ -269,10 +280,10 @@ class HelpSupportPage extends StatelessWidget {
       if (await canLaunchUrl(url)) {
         await launchUrl(url);
       } else {
-        _showErrorSnackbar('Could not open email app');
+        _showErrorSnackbar(AppStrings.couldNotOpenEmailApp);
       }
     } catch (e) {
-      _showErrorSnackbar('Error opening email');
+      _showErrorSnackbar(AppStrings.errorOpeningEmail);
     }
   }
 
@@ -280,6 +291,10 @@ class HelpSupportPage extends StatelessWidget {
     SnackBarWidget.showError(message);
   }
 }
+
+
+
+
 
 
 

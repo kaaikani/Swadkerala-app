@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
-import 'schema.graphql.dart';
 
 class Variables$Mutation$Authenticate {
   factory Variables$Mutation$Authenticate({
@@ -1244,6 +1243,2444 @@ class _CopyWithStubImpl$Mutation$Authenticate$authenticate$$NotVerifiedError<
   call({String? $__typename}) => _res;
 }
 
+class Variables$Mutation$LoginWithPhoneOtp {
+  factory Variables$Mutation$LoginWithPhoneOtp({
+    required String phoneNumber,
+    required String code,
+  }) =>
+      Variables$Mutation$LoginWithPhoneOtp._({
+        r'phoneNumber': phoneNumber,
+        r'code': code,
+      });
+
+  Variables$Mutation$LoginWithPhoneOtp._(this._$data);
+
+  factory Variables$Mutation$LoginWithPhoneOtp.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$phoneNumber = data['phoneNumber'];
+    result$data['phoneNumber'] = (l$phoneNumber as String);
+    final l$code = data['code'];
+    result$data['code'] = (l$code as String);
+    return Variables$Mutation$LoginWithPhoneOtp._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get phoneNumber => (_$data['phoneNumber'] as String);
+
+  String get code => (_$data['code'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$phoneNumber = phoneNumber;
+    result$data['phoneNumber'] = l$phoneNumber;
+    final l$code = code;
+    result$data['code'] = l$code;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$LoginWithPhoneOtp<
+          Variables$Mutation$LoginWithPhoneOtp>
+      get copyWith => CopyWith$Variables$Mutation$LoginWithPhoneOtp(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$LoginWithPhoneOtp ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$phoneNumber = phoneNumber;
+    final lOther$phoneNumber = other.phoneNumber;
+    if (l$phoneNumber != lOther$phoneNumber) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$phoneNumber = phoneNumber;
+    final l$code = code;
+    return Object.hashAll([
+      l$phoneNumber,
+      l$code,
+    ]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$LoginWithPhoneOtp<TRes> {
+  factory CopyWith$Variables$Mutation$LoginWithPhoneOtp(
+    Variables$Mutation$LoginWithPhoneOtp instance,
+    TRes Function(Variables$Mutation$LoginWithPhoneOtp) then,
+  ) = _CopyWithImpl$Variables$Mutation$LoginWithPhoneOtp;
+
+  factory CopyWith$Variables$Mutation$LoginWithPhoneOtp.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$LoginWithPhoneOtp;
+
+  TRes call({
+    String? phoneNumber,
+    String? code,
+  });
+}
+
+class _CopyWithImpl$Variables$Mutation$LoginWithPhoneOtp<TRes>
+    implements CopyWith$Variables$Mutation$LoginWithPhoneOtp<TRes> {
+  _CopyWithImpl$Variables$Mutation$LoginWithPhoneOtp(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$LoginWithPhoneOtp _instance;
+
+  final TRes Function(Variables$Mutation$LoginWithPhoneOtp) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? phoneNumber = _undefined,
+    Object? code = _undefined,
+  }) =>
+      _then(Variables$Mutation$LoginWithPhoneOtp._({
+        ..._instance._$data,
+        if (phoneNumber != _undefined && phoneNumber != null)
+          'phoneNumber': (phoneNumber as String),
+        if (code != _undefined && code != null) 'code': (code as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Mutation$LoginWithPhoneOtp<TRes>
+    implements CopyWith$Variables$Mutation$LoginWithPhoneOtp<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$LoginWithPhoneOtp(this._res);
+
+  TRes _res;
+
+  call({
+    String? phoneNumber,
+    String? code,
+  }) =>
+      _res;
+}
+
+class Mutation$LoginWithPhoneOtp {
+  Mutation$LoginWithPhoneOtp({
+    required this.authenticate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$LoginWithPhoneOtp.fromJson(Map<String, dynamic> json) {
+    final l$authenticate = json['authenticate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithPhoneOtp(
+      authenticate: Mutation$LoginWithPhoneOtp$authenticate.fromJson(
+          (l$authenticate as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$LoginWithPhoneOtp$authenticate authenticate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$authenticate = authenticate;
+    _resultData['authenticate'] = l$authenticate.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$authenticate = authenticate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$authenticate,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithPhoneOtp ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$authenticate = authenticate;
+    final lOther$authenticate = other.authenticate;
+    if (l$authenticate != lOther$authenticate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithPhoneOtp
+    on Mutation$LoginWithPhoneOtp {
+  CopyWith$Mutation$LoginWithPhoneOtp<Mutation$LoginWithPhoneOtp>
+      get copyWith => CopyWith$Mutation$LoginWithPhoneOtp(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$LoginWithPhoneOtp<TRes> {
+  factory CopyWith$Mutation$LoginWithPhoneOtp(
+    Mutation$LoginWithPhoneOtp instance,
+    TRes Function(Mutation$LoginWithPhoneOtp) then,
+  ) = _CopyWithImpl$Mutation$LoginWithPhoneOtp;
+
+  factory CopyWith$Mutation$LoginWithPhoneOtp.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithPhoneOtp;
+
+  TRes call({
+    Mutation$LoginWithPhoneOtp$authenticate? authenticate,
+    String? $__typename,
+  });
+  CopyWith$Mutation$LoginWithPhoneOtp$authenticate<TRes> get authenticate;
+}
+
+class _CopyWithImpl$Mutation$LoginWithPhoneOtp<TRes>
+    implements CopyWith$Mutation$LoginWithPhoneOtp<TRes> {
+  _CopyWithImpl$Mutation$LoginWithPhoneOtp(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithPhoneOtp _instance;
+
+  final TRes Function(Mutation$LoginWithPhoneOtp) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? authenticate = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithPhoneOtp(
+        authenticate: authenticate == _undefined || authenticate == null
+            ? _instance.authenticate
+            : (authenticate as Mutation$LoginWithPhoneOtp$authenticate),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Mutation$LoginWithPhoneOtp$authenticate<TRes> get authenticate {
+    final local$authenticate = _instance.authenticate;
+    return CopyWith$Mutation$LoginWithPhoneOtp$authenticate(
+        local$authenticate, (e) => call(authenticate: e));
+  }
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithPhoneOtp<TRes>
+    implements CopyWith$Mutation$LoginWithPhoneOtp<TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithPhoneOtp(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$LoginWithPhoneOtp$authenticate? authenticate,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$LoginWithPhoneOtp$authenticate<TRes> get authenticate =>
+      CopyWith$Mutation$LoginWithPhoneOtp$authenticate.stub(_res);
+}
+
+const documentNodeMutationLoginWithPhoneOtp = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.mutation,
+    name: NameNode(value: 'LoginWithPhoneOtp'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'phoneNumber')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'code')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'authenticate'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'input'),
+            value: ObjectValueNode(fields: [
+              ObjectFieldNode(
+                name: NameNode(value: 'phoneOtp'),
+                value: ObjectValueNode(fields: [
+                  ObjectFieldNode(
+                    name: NameNode(value: 'phoneNumber'),
+                    value: VariableNode(name: NameNode(value: 'phoneNumber')),
+                  ),
+                  ObjectFieldNode(
+                    name: NameNode(value: 'code'),
+                    value: VariableNode(name: NameNode(value: 'code')),
+                  ),
+                ]),
+              )
+            ]),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'CurrentUser'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'id'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'identifier'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'InvalidCredentialsError'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'message'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'NotVerifiedError'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'message'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Mutation$LoginWithPhoneOtp _parserFn$Mutation$LoginWithPhoneOtp(
+        Map<String, dynamic> data) =>
+    Mutation$LoginWithPhoneOtp.fromJson(data);
+typedef OnMutationCompleted$Mutation$LoginWithPhoneOtp = FutureOr<void>
+    Function(
+  Map<String, dynamic>?,
+  Mutation$LoginWithPhoneOtp?,
+);
+
+class Options$Mutation$LoginWithPhoneOtp
+    extends graphql.MutationOptions<Mutation$LoginWithPhoneOtp> {
+  Options$Mutation$LoginWithPhoneOtp({
+    String? operationName,
+    required Variables$Mutation$LoginWithPhoneOtp variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$LoginWithPhoneOtp? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$LoginWithPhoneOtp? onCompleted,
+    graphql.OnMutationUpdate<Mutation$LoginWithPhoneOtp>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$LoginWithPhoneOtp(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationLoginWithPhoneOtp,
+          parserFn: _parserFn$Mutation$LoginWithPhoneOtp,
+        );
+
+  final OnMutationCompleted$Mutation$LoginWithPhoneOtp? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+class WatchOptions$Mutation$LoginWithPhoneOtp
+    extends graphql.WatchQueryOptions<Mutation$LoginWithPhoneOtp> {
+  WatchOptions$Mutation$LoginWithPhoneOtp({
+    String? operationName,
+    required Variables$Mutation$LoginWithPhoneOtp variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$LoginWithPhoneOtp? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeMutationLoginWithPhoneOtp,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Mutation$LoginWithPhoneOtp,
+        );
+}
+
+extension ClientExtension$Mutation$LoginWithPhoneOtp on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$LoginWithPhoneOtp>>
+      mutate$LoginWithPhoneOtp(
+              Options$Mutation$LoginWithPhoneOtp options) async =>
+          await this.mutate(options);
+  graphql.ObservableQuery<Mutation$LoginWithPhoneOtp>
+      watchMutation$LoginWithPhoneOtp(
+              WatchOptions$Mutation$LoginWithPhoneOtp options) =>
+          this.watchMutation(options);
+}
+
+class Mutation$LoginWithPhoneOtp$HookResult {
+  Mutation$LoginWithPhoneOtp$HookResult(
+    this.runMutation,
+    this.result,
+  );
+
+  final RunMutation$Mutation$LoginWithPhoneOtp runMutation;
+
+  final graphql.QueryResult<Mutation$LoginWithPhoneOtp> result;
+}
+
+Mutation$LoginWithPhoneOtp$HookResult useMutation$LoginWithPhoneOtp(
+    [WidgetOptions$Mutation$LoginWithPhoneOtp? options]) {
+  final result = graphql_flutter
+      .useMutation(options ?? WidgetOptions$Mutation$LoginWithPhoneOtp());
+  return Mutation$LoginWithPhoneOtp$HookResult(
+    (variables, {optimisticResult, typedOptimisticResult}) =>
+        result.runMutation(
+      variables.toJson(),
+      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+    ),
+    result.result,
+  );
+}
+
+graphql.ObservableQuery<Mutation$LoginWithPhoneOtp>
+    useWatchMutation$LoginWithPhoneOtp(
+            WatchOptions$Mutation$LoginWithPhoneOtp options) =>
+        graphql_flutter.useWatchMutation(options);
+
+class WidgetOptions$Mutation$LoginWithPhoneOtp
+    extends graphql.MutationOptions<Mutation$LoginWithPhoneOtp> {
+  WidgetOptions$Mutation$LoginWithPhoneOtp({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$LoginWithPhoneOtp? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$LoginWithPhoneOtp? onCompleted,
+    graphql.OnMutationUpdate<Mutation$LoginWithPhoneOtp>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$LoginWithPhoneOtp(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationLoginWithPhoneOtp,
+          parserFn: _parserFn$Mutation$LoginWithPhoneOtp,
+        );
+
+  final OnMutationCompleted$Mutation$LoginWithPhoneOtp? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+typedef RunMutation$Mutation$LoginWithPhoneOtp
+    = graphql.MultiSourceResult<Mutation$LoginWithPhoneOtp> Function(
+  Variables$Mutation$LoginWithPhoneOtp, {
+  Object? optimisticResult,
+  Mutation$LoginWithPhoneOtp? typedOptimisticResult,
+});
+typedef Builder$Mutation$LoginWithPhoneOtp = widgets.Widget Function(
+  RunMutation$Mutation$LoginWithPhoneOtp,
+  graphql.QueryResult<Mutation$LoginWithPhoneOtp>?,
+);
+
+class Mutation$LoginWithPhoneOtp$Widget
+    extends graphql_flutter.Mutation<Mutation$LoginWithPhoneOtp> {
+  Mutation$LoginWithPhoneOtp$Widget({
+    widgets.Key? key,
+    WidgetOptions$Mutation$LoginWithPhoneOtp? options,
+    required Builder$Mutation$LoginWithPhoneOtp builder,
+  }) : super(
+          key: key,
+          options: options ?? WidgetOptions$Mutation$LoginWithPhoneOtp(),
+          builder: (
+            run,
+            result,
+          ) =>
+              builder(
+            (
+              variables, {
+              optimisticResult,
+              typedOptimisticResult,
+            }) =>
+                run(
+              variables.toJson(),
+              optimisticResult:
+                  optimisticResult ?? typedOptimisticResult?.toJson(),
+            ),
+            result,
+          ),
+        );
+}
+
+class Mutation$LoginWithPhoneOtp$authenticate {
+  Mutation$LoginWithPhoneOtp$authenticate({required this.$__typename});
+
+  factory Mutation$LoginWithPhoneOtp$authenticate.fromJson(
+      Map<String, dynamic> json) {
+    switch (json["__typename"] as String) {
+      case "CurrentUser":
+        return Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser.fromJson(
+            json);
+
+      case "InvalidCredentialsError":
+        return Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError
+            .fromJson(json);
+
+      case "NotVerifiedError":
+        return Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError
+            .fromJson(json);
+
+      default:
+        final l$$__typename = json['__typename'];
+        return Mutation$LoginWithPhoneOtp$authenticate(
+            $__typename: (l$$__typename as String));
+    }
+  }
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithPhoneOtp$authenticate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithPhoneOtp$authenticate
+    on Mutation$LoginWithPhoneOtp$authenticate {
+  CopyWith$Mutation$LoginWithPhoneOtp$authenticate<
+          Mutation$LoginWithPhoneOtp$authenticate>
+      get copyWith => CopyWith$Mutation$LoginWithPhoneOtp$authenticate(
+            this,
+            (i) => i,
+          );
+  _T when<_T>({
+    required _T Function(Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser)
+        currentUser,
+    required _T Function(
+            Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError)
+        invalidCredentialsError,
+    required _T Function(
+            Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError)
+        notVerifiedError,
+    required _T Function() orElse,
+  }) {
+    switch ($__typename) {
+      case "CurrentUser":
+        return currentUser(
+            this as Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser);
+
+      case "InvalidCredentialsError":
+        return invalidCredentialsError(this
+            as Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError);
+
+      case "NotVerifiedError":
+        return notVerifiedError(
+            this as Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError);
+
+      default:
+        return orElse();
+    }
+  }
+
+  _T maybeWhen<_T>({
+    _T Function(Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser)?
+        currentUser,
+    _T Function(
+            Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError)?
+        invalidCredentialsError,
+    _T Function(Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError)?
+        notVerifiedError,
+    required _T Function() orElse,
+  }) {
+    switch ($__typename) {
+      case "CurrentUser":
+        if (currentUser != null) {
+          return currentUser(
+              this as Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser);
+        } else {
+          return orElse();
+        }
+
+      case "InvalidCredentialsError":
+        if (invalidCredentialsError != null) {
+          return invalidCredentialsError(this
+              as Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError);
+        } else {
+          return orElse();
+        }
+
+      case "NotVerifiedError":
+        if (notVerifiedError != null) {
+          return notVerifiedError(this
+              as Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError);
+        } else {
+          return orElse();
+        }
+
+      default:
+        return orElse();
+    }
+  }
+}
+
+abstract class CopyWith$Mutation$LoginWithPhoneOtp$authenticate<TRes> {
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate(
+    Mutation$LoginWithPhoneOtp$authenticate instance,
+    TRes Function(Mutation$LoginWithPhoneOtp$authenticate) then,
+  ) = _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate;
+
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate;
+
+  TRes call({String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate<TRes>
+    implements CopyWith$Mutation$LoginWithPhoneOtp$authenticate<TRes> {
+  _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithPhoneOtp$authenticate _instance;
+
+  final TRes Function(Mutation$LoginWithPhoneOtp$authenticate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? $__typename = _undefined}) =>
+      _then(Mutation$LoginWithPhoneOtp$authenticate(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate<TRes>
+    implements CopyWith$Mutation$LoginWithPhoneOtp$authenticate<TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate(this._res);
+
+  TRes _res;
+
+  call({String? $__typename}) => _res;
+}
+
+class Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser
+    implements Mutation$LoginWithPhoneOtp$authenticate {
+  Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser({
+    required this.id,
+    required this.identifier,
+    this.$__typename = 'CurrentUser',
+  });
+
+  factory Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$identifier = json['identifier'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser(
+      id: (l$id as String),
+      identifier: (l$identifier as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String identifier;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$identifier = identifier;
+    _resultData['identifier'] = l$identifier;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$identifier = identifier;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$identifier,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$identifier = identifier;
+    final lOther$identifier = other.identifier;
+    if (l$identifier != lOther$identifier) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser
+    on Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser {
+  CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser<
+          Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser>
+      get copyWith =>
+          CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser<
+    TRes> {
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser(
+    Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser instance,
+    TRes Function(Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser) then,
+  ) = _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser;
+
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser;
+
+  TRes call({
+    String? id,
+    String? identifier,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser<TRes>
+    implements
+        CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser<TRes> {
+  _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser _instance;
+
+  final TRes Function(Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? identifier = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        identifier: identifier == _undefined || identifier == null
+            ? _instance.identifier
+            : (identifier as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser<TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? identifier,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError
+    implements Mutation$LoginWithPhoneOtp$authenticate {
+  Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError({
+    required this.message,
+    this.$__typename = 'InvalidCredentialsError',
+  });
+
+  factory Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError.fromJson(
+      Map<String, dynamic> json) {
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError(
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError
+    on Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError {
+  CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError<
+          Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError>
+      get copyWith =>
+          CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError<
+    TRes> {
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError(
+    Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError instance,
+    TRes Function(
+            Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError)
+        then,
+  ) = _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError;
+
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError;
+
+  TRes call({
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError<
+            TRes> {
+  _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError
+      _instance;
+
+  final TRes Function(
+      Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError(
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError<
+            TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$InvalidCredentialsError(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError
+    implements Mutation$LoginWithPhoneOtp$authenticate {
+  Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError({
+    required this.message,
+    this.$__typename = 'NotVerifiedError',
+  });
+
+  factory Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError.fromJson(
+      Map<String, dynamic> json) {
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError(
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError
+    on Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError {
+  CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError<
+          Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError>
+      get copyWith =>
+          CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError<
+    TRes> {
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError(
+    Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError instance,
+    TRes Function(Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError)
+        then,
+  ) = _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError;
+
+  factory CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError;
+
+  TRes call({
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError<
+            TRes> {
+  _CopyWithImpl$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError _instance;
+
+  final TRes Function(Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError(
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError<
+            TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithPhoneOtp$authenticate$$NotVerifiedError(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Variables$Mutation$LoginWithGoogle {
+  factory Variables$Mutation$LoginWithGoogle({required String token}) =>
+      Variables$Mutation$LoginWithGoogle._({
+        r'token': token,
+      });
+
+  Variables$Mutation$LoginWithGoogle._(this._$data);
+
+  factory Variables$Mutation$LoginWithGoogle.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$token = data['token'];
+    result$data['token'] = (l$token as String);
+    return Variables$Mutation$LoginWithGoogle._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get token => (_$data['token'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$token = token;
+    result$data['token'] = l$token;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$LoginWithGoogle<
+          Variables$Mutation$LoginWithGoogle>
+      get copyWith => CopyWith$Variables$Mutation$LoginWithGoogle(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$LoginWithGoogle ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$token = token;
+    return Object.hashAll([l$token]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$LoginWithGoogle<TRes> {
+  factory CopyWith$Variables$Mutation$LoginWithGoogle(
+    Variables$Mutation$LoginWithGoogle instance,
+    TRes Function(Variables$Mutation$LoginWithGoogle) then,
+  ) = _CopyWithImpl$Variables$Mutation$LoginWithGoogle;
+
+  factory CopyWith$Variables$Mutation$LoginWithGoogle.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$LoginWithGoogle;
+
+  TRes call({String? token});
+}
+
+class _CopyWithImpl$Variables$Mutation$LoginWithGoogle<TRes>
+    implements CopyWith$Variables$Mutation$LoginWithGoogle<TRes> {
+  _CopyWithImpl$Variables$Mutation$LoginWithGoogle(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$LoginWithGoogle _instance;
+
+  final TRes Function(Variables$Mutation$LoginWithGoogle) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? token = _undefined}) =>
+      _then(Variables$Mutation$LoginWithGoogle._({
+        ..._instance._$data,
+        if (token != _undefined && token != null) 'token': (token as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Mutation$LoginWithGoogle<TRes>
+    implements CopyWith$Variables$Mutation$LoginWithGoogle<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$LoginWithGoogle(this._res);
+
+  TRes _res;
+
+  call({String? token}) => _res;
+}
+
+class Mutation$LoginWithGoogle {
+  Mutation$LoginWithGoogle({
+    required this.authenticate,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$LoginWithGoogle.fromJson(Map<String, dynamic> json) {
+    final l$authenticate = json['authenticate'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithGoogle(
+      authenticate: Mutation$LoginWithGoogle$authenticate.fromJson(
+          (l$authenticate as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$LoginWithGoogle$authenticate authenticate;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$authenticate = authenticate;
+    _resultData['authenticate'] = l$authenticate.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$authenticate = authenticate;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$authenticate,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithGoogle ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$authenticate = authenticate;
+    final lOther$authenticate = other.authenticate;
+    if (l$authenticate != lOther$authenticate) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithGoogle
+    on Mutation$LoginWithGoogle {
+  CopyWith$Mutation$LoginWithGoogle<Mutation$LoginWithGoogle> get copyWith =>
+      CopyWith$Mutation$LoginWithGoogle(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Mutation$LoginWithGoogle<TRes> {
+  factory CopyWith$Mutation$LoginWithGoogle(
+    Mutation$LoginWithGoogle instance,
+    TRes Function(Mutation$LoginWithGoogle) then,
+  ) = _CopyWithImpl$Mutation$LoginWithGoogle;
+
+  factory CopyWith$Mutation$LoginWithGoogle.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithGoogle;
+
+  TRes call({
+    Mutation$LoginWithGoogle$authenticate? authenticate,
+    String? $__typename,
+  });
+  CopyWith$Mutation$LoginWithGoogle$authenticate<TRes> get authenticate;
+}
+
+class _CopyWithImpl$Mutation$LoginWithGoogle<TRes>
+    implements CopyWith$Mutation$LoginWithGoogle<TRes> {
+  _CopyWithImpl$Mutation$LoginWithGoogle(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithGoogle _instance;
+
+  final TRes Function(Mutation$LoginWithGoogle) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? authenticate = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithGoogle(
+        authenticate: authenticate == _undefined || authenticate == null
+            ? _instance.authenticate
+            : (authenticate as Mutation$LoginWithGoogle$authenticate),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Mutation$LoginWithGoogle$authenticate<TRes> get authenticate {
+    final local$authenticate = _instance.authenticate;
+    return CopyWith$Mutation$LoginWithGoogle$authenticate(
+        local$authenticate, (e) => call(authenticate: e));
+  }
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithGoogle<TRes>
+    implements CopyWith$Mutation$LoginWithGoogle<TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithGoogle(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$LoginWithGoogle$authenticate? authenticate,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$LoginWithGoogle$authenticate<TRes> get authenticate =>
+      CopyWith$Mutation$LoginWithGoogle$authenticate.stub(_res);
+}
+
+const documentNodeMutationLoginWithGoogle = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.mutation,
+    name: NameNode(value: 'LoginWithGoogle'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'token')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'authenticate'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'input'),
+            value: ObjectValueNode(fields: [
+              ObjectFieldNode(
+                name: NameNode(value: 'google'),
+                value: ObjectValueNode(fields: [
+                  ObjectFieldNode(
+                    name: NameNode(value: 'token'),
+                    value: VariableNode(name: NameNode(value: 'token')),
+                  )
+                ]),
+              )
+            ]),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'CurrentUser'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'id'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'identifier'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'InvalidCredentialsError'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'message'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'NotVerifiedError'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'message'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Mutation$LoginWithGoogle _parserFn$Mutation$LoginWithGoogle(
+        Map<String, dynamic> data) =>
+    Mutation$LoginWithGoogle.fromJson(data);
+typedef OnMutationCompleted$Mutation$LoginWithGoogle = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Mutation$LoginWithGoogle?,
+);
+
+class Options$Mutation$LoginWithGoogle
+    extends graphql.MutationOptions<Mutation$LoginWithGoogle> {
+  Options$Mutation$LoginWithGoogle({
+    String? operationName,
+    required Variables$Mutation$LoginWithGoogle variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$LoginWithGoogle? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$LoginWithGoogle? onCompleted,
+    graphql.OnMutationUpdate<Mutation$LoginWithGoogle>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$LoginWithGoogle(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationLoginWithGoogle,
+          parserFn: _parserFn$Mutation$LoginWithGoogle,
+        );
+
+  final OnMutationCompleted$Mutation$LoginWithGoogle? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+class WatchOptions$Mutation$LoginWithGoogle
+    extends graphql.WatchQueryOptions<Mutation$LoginWithGoogle> {
+  WatchOptions$Mutation$LoginWithGoogle({
+    String? operationName,
+    required Variables$Mutation$LoginWithGoogle variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$LoginWithGoogle? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeMutationLoginWithGoogle,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Mutation$LoginWithGoogle,
+        );
+}
+
+extension ClientExtension$Mutation$LoginWithGoogle on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$LoginWithGoogle>> mutate$LoginWithGoogle(
+          Options$Mutation$LoginWithGoogle options) async =>
+      await this.mutate(options);
+  graphql.ObservableQuery<Mutation$LoginWithGoogle>
+      watchMutation$LoginWithGoogle(
+              WatchOptions$Mutation$LoginWithGoogle options) =>
+          this.watchMutation(options);
+}
+
+class Mutation$LoginWithGoogle$HookResult {
+  Mutation$LoginWithGoogle$HookResult(
+    this.runMutation,
+    this.result,
+  );
+
+  final RunMutation$Mutation$LoginWithGoogle runMutation;
+
+  final graphql.QueryResult<Mutation$LoginWithGoogle> result;
+}
+
+Mutation$LoginWithGoogle$HookResult useMutation$LoginWithGoogle(
+    [WidgetOptions$Mutation$LoginWithGoogle? options]) {
+  final result = graphql_flutter
+      .useMutation(options ?? WidgetOptions$Mutation$LoginWithGoogle());
+  return Mutation$LoginWithGoogle$HookResult(
+    (variables, {optimisticResult, typedOptimisticResult}) =>
+        result.runMutation(
+      variables.toJson(),
+      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+    ),
+    result.result,
+  );
+}
+
+graphql.ObservableQuery<Mutation$LoginWithGoogle>
+    useWatchMutation$LoginWithGoogle(
+            WatchOptions$Mutation$LoginWithGoogle options) =>
+        graphql_flutter.useWatchMutation(options);
+
+class WidgetOptions$Mutation$LoginWithGoogle
+    extends graphql.MutationOptions<Mutation$LoginWithGoogle> {
+  WidgetOptions$Mutation$LoginWithGoogle({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$LoginWithGoogle? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$LoginWithGoogle? onCompleted,
+    graphql.OnMutationUpdate<Mutation$LoginWithGoogle>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$LoginWithGoogle(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationLoginWithGoogle,
+          parserFn: _parserFn$Mutation$LoginWithGoogle,
+        );
+
+  final OnMutationCompleted$Mutation$LoginWithGoogle? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+typedef RunMutation$Mutation$LoginWithGoogle
+    = graphql.MultiSourceResult<Mutation$LoginWithGoogle> Function(
+  Variables$Mutation$LoginWithGoogle, {
+  Object? optimisticResult,
+  Mutation$LoginWithGoogle? typedOptimisticResult,
+});
+typedef Builder$Mutation$LoginWithGoogle = widgets.Widget Function(
+  RunMutation$Mutation$LoginWithGoogle,
+  graphql.QueryResult<Mutation$LoginWithGoogle>?,
+);
+
+class Mutation$LoginWithGoogle$Widget
+    extends graphql_flutter.Mutation<Mutation$LoginWithGoogle> {
+  Mutation$LoginWithGoogle$Widget({
+    widgets.Key? key,
+    WidgetOptions$Mutation$LoginWithGoogle? options,
+    required Builder$Mutation$LoginWithGoogle builder,
+  }) : super(
+          key: key,
+          options: options ?? WidgetOptions$Mutation$LoginWithGoogle(),
+          builder: (
+            run,
+            result,
+          ) =>
+              builder(
+            (
+              variables, {
+              optimisticResult,
+              typedOptimisticResult,
+            }) =>
+                run(
+              variables.toJson(),
+              optimisticResult:
+                  optimisticResult ?? typedOptimisticResult?.toJson(),
+            ),
+            result,
+          ),
+        );
+}
+
+class Mutation$LoginWithGoogle$authenticate {
+  Mutation$LoginWithGoogle$authenticate({required this.$__typename});
+
+  factory Mutation$LoginWithGoogle$authenticate.fromJson(
+      Map<String, dynamic> json) {
+    switch (json["__typename"] as String) {
+      case "CurrentUser":
+        return Mutation$LoginWithGoogle$authenticate$$CurrentUser.fromJson(
+            json);
+
+      case "InvalidCredentialsError":
+        return Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError
+            .fromJson(json);
+
+      case "NotVerifiedError":
+        return Mutation$LoginWithGoogle$authenticate$$NotVerifiedError.fromJson(
+            json);
+
+      default:
+        final l$$__typename = json['__typename'];
+        return Mutation$LoginWithGoogle$authenticate(
+            $__typename: (l$$__typename as String));
+    }
+  }
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$$__typename = $__typename;
+    return Object.hashAll([l$$__typename]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithGoogle$authenticate ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithGoogle$authenticate
+    on Mutation$LoginWithGoogle$authenticate {
+  CopyWith$Mutation$LoginWithGoogle$authenticate<
+          Mutation$LoginWithGoogle$authenticate>
+      get copyWith => CopyWith$Mutation$LoginWithGoogle$authenticate(
+            this,
+            (i) => i,
+          );
+  _T when<_T>({
+    required _T Function(Mutation$LoginWithGoogle$authenticate$$CurrentUser)
+        currentUser,
+    required _T Function(
+            Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError)
+        invalidCredentialsError,
+    required _T Function(
+            Mutation$LoginWithGoogle$authenticate$$NotVerifiedError)
+        notVerifiedError,
+    required _T Function() orElse,
+  }) {
+    switch ($__typename) {
+      case "CurrentUser":
+        return currentUser(
+            this as Mutation$LoginWithGoogle$authenticate$$CurrentUser);
+
+      case "InvalidCredentialsError":
+        return invalidCredentialsError(this
+            as Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError);
+
+      case "NotVerifiedError":
+        return notVerifiedError(
+            this as Mutation$LoginWithGoogle$authenticate$$NotVerifiedError);
+
+      default:
+        return orElse();
+    }
+  }
+
+  _T maybeWhen<_T>({
+    _T Function(Mutation$LoginWithGoogle$authenticate$$CurrentUser)?
+        currentUser,
+    _T Function(Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError)?
+        invalidCredentialsError,
+    _T Function(Mutation$LoginWithGoogle$authenticate$$NotVerifiedError)?
+        notVerifiedError,
+    required _T Function() orElse,
+  }) {
+    switch ($__typename) {
+      case "CurrentUser":
+        if (currentUser != null) {
+          return currentUser(
+              this as Mutation$LoginWithGoogle$authenticate$$CurrentUser);
+        } else {
+          return orElse();
+        }
+
+      case "InvalidCredentialsError":
+        if (invalidCredentialsError != null) {
+          return invalidCredentialsError(this
+              as Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError);
+        } else {
+          return orElse();
+        }
+
+      case "NotVerifiedError":
+        if (notVerifiedError != null) {
+          return notVerifiedError(
+              this as Mutation$LoginWithGoogle$authenticate$$NotVerifiedError);
+        } else {
+          return orElse();
+        }
+
+      default:
+        return orElse();
+    }
+  }
+}
+
+abstract class CopyWith$Mutation$LoginWithGoogle$authenticate<TRes> {
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate(
+    Mutation$LoginWithGoogle$authenticate instance,
+    TRes Function(Mutation$LoginWithGoogle$authenticate) then,
+  ) = _CopyWithImpl$Mutation$LoginWithGoogle$authenticate;
+
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate;
+
+  TRes call({String? $__typename});
+}
+
+class _CopyWithImpl$Mutation$LoginWithGoogle$authenticate<TRes>
+    implements CopyWith$Mutation$LoginWithGoogle$authenticate<TRes> {
+  _CopyWithImpl$Mutation$LoginWithGoogle$authenticate(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithGoogle$authenticate _instance;
+
+  final TRes Function(Mutation$LoginWithGoogle$authenticate) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? $__typename = _undefined}) =>
+      _then(Mutation$LoginWithGoogle$authenticate(
+          $__typename: $__typename == _undefined || $__typename == null
+              ? _instance.$__typename
+              : ($__typename as String)));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate<TRes>
+    implements CopyWith$Mutation$LoginWithGoogle$authenticate<TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate(this._res);
+
+  TRes _res;
+
+  call({String? $__typename}) => _res;
+}
+
+class Mutation$LoginWithGoogle$authenticate$$CurrentUser
+    implements Mutation$LoginWithGoogle$authenticate {
+  Mutation$LoginWithGoogle$authenticate$$CurrentUser({
+    required this.id,
+    required this.identifier,
+    this.$__typename = 'CurrentUser',
+  });
+
+  factory Mutation$LoginWithGoogle$authenticate$$CurrentUser.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$identifier = json['identifier'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithGoogle$authenticate$$CurrentUser(
+      id: (l$id as String),
+      identifier: (l$identifier as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String identifier;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$identifier = identifier;
+    _resultData['identifier'] = l$identifier;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$identifier = identifier;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$identifier,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithGoogle$authenticate$$CurrentUser ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$identifier = identifier;
+    final lOther$identifier = other.identifier;
+    if (l$identifier != lOther$identifier) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithGoogle$authenticate$$CurrentUser
+    on Mutation$LoginWithGoogle$authenticate$$CurrentUser {
+  CopyWith$Mutation$LoginWithGoogle$authenticate$$CurrentUser<
+          Mutation$LoginWithGoogle$authenticate$$CurrentUser>
+      get copyWith =>
+          CopyWith$Mutation$LoginWithGoogle$authenticate$$CurrentUser(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$LoginWithGoogle$authenticate$$CurrentUser<
+    TRes> {
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate$$CurrentUser(
+    Mutation$LoginWithGoogle$authenticate$$CurrentUser instance,
+    TRes Function(Mutation$LoginWithGoogle$authenticate$$CurrentUser) then,
+  ) = _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$CurrentUser;
+
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate$$CurrentUser.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$CurrentUser;
+
+  TRes call({
+    String? id,
+    String? identifier,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$CurrentUser<TRes>
+    implements
+        CopyWith$Mutation$LoginWithGoogle$authenticate$$CurrentUser<TRes> {
+  _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$CurrentUser(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithGoogle$authenticate$$CurrentUser _instance;
+
+  final TRes Function(Mutation$LoginWithGoogle$authenticate$$CurrentUser) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? identifier = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithGoogle$authenticate$$CurrentUser(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        identifier: identifier == _undefined || identifier == null
+            ? _instance.identifier
+            : (identifier as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$CurrentUser<TRes>
+    implements
+        CopyWith$Mutation$LoginWithGoogle$authenticate$$CurrentUser<TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$CurrentUser(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? identifier,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError
+    implements Mutation$LoginWithGoogle$authenticate {
+  Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError({
+    required this.message,
+    this.$__typename = 'InvalidCredentialsError',
+  });
+
+  factory Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError.fromJson(
+      Map<String, dynamic> json) {
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError(
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError
+    on Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError {
+  CopyWith$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError<
+          Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError>
+      get copyWith =>
+          CopyWith$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError<
+    TRes> {
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError(
+    Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError instance,
+    TRes Function(
+            Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError)
+        then,
+  ) = _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError;
+
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError;
+
+  TRes call({
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError<
+            TRes> {
+  _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError
+      _instance;
+
+  final TRes Function(
+      Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError(
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError<
+            TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$LoginWithGoogle$authenticate$$NotVerifiedError
+    implements Mutation$LoginWithGoogle$authenticate {
+  Mutation$LoginWithGoogle$authenticate$$NotVerifiedError({
+    required this.message,
+    this.$__typename = 'NotVerifiedError',
+  });
+
+  factory Mutation$LoginWithGoogle$authenticate$$NotVerifiedError.fromJson(
+      Map<String, dynamic> json) {
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Mutation$LoginWithGoogle$authenticate$$NotVerifiedError(
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$LoginWithGoogle$authenticate$$NotVerifiedError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError
+    on Mutation$LoginWithGoogle$authenticate$$NotVerifiedError {
+  CopyWith$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError<
+          Mutation$LoginWithGoogle$authenticate$$NotVerifiedError>
+      get copyWith =>
+          CopyWith$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError<
+    TRes> {
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError(
+    Mutation$LoginWithGoogle$authenticate$$NotVerifiedError instance,
+    TRes Function(Mutation$LoginWithGoogle$authenticate$$NotVerifiedError) then,
+  ) = _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError;
+
+  factory CopyWith$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError;
+
+  TRes call({
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError<TRes> {
+  _CopyWithImpl$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$LoginWithGoogle$authenticate$$NotVerifiedError _instance;
+
+  final TRes Function(Mutation$LoginWithGoogle$authenticate$$NotVerifiedError)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$LoginWithGoogle$authenticate$$NotVerifiedError(
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError<
+        TRes>
+    implements
+        CopyWith$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError<TRes> {
+  _CopyWithStubImpl$Mutation$LoginWithGoogle$authenticate$$NotVerifiedError(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Variables$Mutation$SendPhoneOtp {
   factory Variables$Mutation$SendPhoneOtp({required String phoneNumber}) =>
       Variables$Mutation$SendPhoneOtp._({
@@ -2184,1432 +4621,6 @@ class Mutation$ResendPhoneOtp$Widget
             result,
           ),
         );
-}
-
-class Variables$Query$GetChannelsByCustomerEmail {
-  factory Variables$Query$GetChannelsByCustomerEmail({required String email}) =>
-      Variables$Query$GetChannelsByCustomerEmail._({
-        r'email': email,
-      });
-
-  Variables$Query$GetChannelsByCustomerEmail._(this._$data);
-
-  factory Variables$Query$GetChannelsByCustomerEmail.fromJson(
-      Map<String, dynamic> data) {
-    final result$data = <String, dynamic>{};
-    final l$email = data['email'];
-    result$data['email'] = (l$email as String);
-    return Variables$Query$GetChannelsByCustomerEmail._(result$data);
-  }
-
-  Map<String, dynamic> _$data;
-
-  String get email => (_$data['email'] as String);
-
-  Map<String, dynamic> toJson() {
-    final result$data = <String, dynamic>{};
-    final l$email = email;
-    result$data['email'] = l$email;
-    return result$data;
-  }
-
-  CopyWith$Variables$Query$GetChannelsByCustomerEmail<
-          Variables$Query$GetChannelsByCustomerEmail>
-      get copyWith => CopyWith$Variables$Query$GetChannelsByCustomerEmail(
-            this,
-            (i) => i,
-          );
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Variables$Query$GetChannelsByCustomerEmail ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$email = email;
-    final lOther$email = other.email;
-    if (l$email != lOther$email) {
-      return false;
-    }
-    return true;
-  }
-
-  @override
-  int get hashCode {
-    final l$email = email;
-    return Object.hashAll([l$email]);
-  }
-}
-
-abstract class CopyWith$Variables$Query$GetChannelsByCustomerEmail<TRes> {
-  factory CopyWith$Variables$Query$GetChannelsByCustomerEmail(
-    Variables$Query$GetChannelsByCustomerEmail instance,
-    TRes Function(Variables$Query$GetChannelsByCustomerEmail) then,
-  ) = _CopyWithImpl$Variables$Query$GetChannelsByCustomerEmail;
-
-  factory CopyWith$Variables$Query$GetChannelsByCustomerEmail.stub(TRes res) =
-      _CopyWithStubImpl$Variables$Query$GetChannelsByCustomerEmail;
-
-  TRes call({String? email});
-}
-
-class _CopyWithImpl$Variables$Query$GetChannelsByCustomerEmail<TRes>
-    implements CopyWith$Variables$Query$GetChannelsByCustomerEmail<TRes> {
-  _CopyWithImpl$Variables$Query$GetChannelsByCustomerEmail(
-    this._instance,
-    this._then,
-  );
-
-  final Variables$Query$GetChannelsByCustomerEmail _instance;
-
-  final TRes Function(Variables$Query$GetChannelsByCustomerEmail) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({Object? email = _undefined}) =>
-      _then(Variables$Query$GetChannelsByCustomerEmail._({
-        ..._instance._$data,
-        if (email != _undefined && email != null) 'email': (email as String),
-      }));
-}
-
-class _CopyWithStubImpl$Variables$Query$GetChannelsByCustomerEmail<TRes>
-    implements CopyWith$Variables$Query$GetChannelsByCustomerEmail<TRes> {
-  _CopyWithStubImpl$Variables$Query$GetChannelsByCustomerEmail(this._res);
-
-  TRes _res;
-
-  call({String? email}) => _res;
-}
-
-class Query$GetChannelsByCustomerEmail {
-  Query$GetChannelsByCustomerEmail({
-    required this.getChannelsByCustomerEmail,
-    this.$__typename = 'Query',
-  });
-
-  factory Query$GetChannelsByCustomerEmail.fromJson(Map<String, dynamic> json) {
-    final l$getChannelsByCustomerEmail = json['getChannelsByCustomerEmail'];
-    final l$$__typename = json['__typename'];
-    return Query$GetChannelsByCustomerEmail(
-      getChannelsByCustomerEmail:
-          (l$getChannelsByCustomerEmail as List<dynamic>)
-              .map((e) =>
-                  Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
-                      .fromJson((e as Map<String, dynamic>)))
-              .toList(),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final List<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>
-      getChannelsByCustomerEmail;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$getChannelsByCustomerEmail = getChannelsByCustomerEmail;
-    _resultData['getChannelsByCustomerEmail'] =
-        l$getChannelsByCustomerEmail.map((e) => e.toJson()).toList();
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$getChannelsByCustomerEmail = getChannelsByCustomerEmail;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      Object.hashAll(l$getChannelsByCustomerEmail.map((v) => v)),
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Query$GetChannelsByCustomerEmail ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$getChannelsByCustomerEmail = getChannelsByCustomerEmail;
-    final lOther$getChannelsByCustomerEmail = other.getChannelsByCustomerEmail;
-    if (l$getChannelsByCustomerEmail.length !=
-        lOther$getChannelsByCustomerEmail.length) {
-      return false;
-    }
-    for (int i = 0; i < l$getChannelsByCustomerEmail.length; i++) {
-      final l$getChannelsByCustomerEmail$entry =
-          l$getChannelsByCustomerEmail[i];
-      final lOther$getChannelsByCustomerEmail$entry =
-          lOther$getChannelsByCustomerEmail[i];
-      if (l$getChannelsByCustomerEmail$entry !=
-          lOther$getChannelsByCustomerEmail$entry) {
-        return false;
-      }
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetChannelsByCustomerEmail
-    on Query$GetChannelsByCustomerEmail {
-  CopyWith$Query$GetChannelsByCustomerEmail<Query$GetChannelsByCustomerEmail>
-      get copyWith => CopyWith$Query$GetChannelsByCustomerEmail(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetChannelsByCustomerEmail<TRes> {
-  factory CopyWith$Query$GetChannelsByCustomerEmail(
-    Query$GetChannelsByCustomerEmail instance,
-    TRes Function(Query$GetChannelsByCustomerEmail) then,
-  ) = _CopyWithImpl$Query$GetChannelsByCustomerEmail;
-
-  factory CopyWith$Query$GetChannelsByCustomerEmail.stub(TRes res) =
-      _CopyWithStubImpl$Query$GetChannelsByCustomerEmail;
-
-  TRes call({
-    List<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>?
-        getChannelsByCustomerEmail,
-    String? $__typename,
-  });
-  TRes getChannelsByCustomerEmail(
-      Iterable<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail> Function(
-              Iterable<
-                  CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-                      Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>>)
-          _fn);
-}
-
-class _CopyWithImpl$Query$GetChannelsByCustomerEmail<TRes>
-    implements CopyWith$Query$GetChannelsByCustomerEmail<TRes> {
-  _CopyWithImpl$Query$GetChannelsByCustomerEmail(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetChannelsByCustomerEmail _instance;
-
-  final TRes Function(Query$GetChannelsByCustomerEmail) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? getChannelsByCustomerEmail = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByCustomerEmail(
-        getChannelsByCustomerEmail: getChannelsByCustomerEmail == _undefined ||
-                getChannelsByCustomerEmail == null
-            ? _instance.getChannelsByCustomerEmail
-            : (getChannelsByCustomerEmail as List<
-                Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-
-  TRes getChannelsByCustomerEmail(
-          Iterable<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail> Function(
-                  Iterable<
-                      CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-                          Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>>)
-              _fn) =>
-      call(
-          getChannelsByCustomerEmail: _fn(_instance.getChannelsByCustomerEmail
-              .map((e) =>
-                  CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-                    e,
-                    (i) => i,
-                  ))).toList());
-}
-
-class _CopyWithStubImpl$Query$GetChannelsByCustomerEmail<TRes>
-    implements CopyWith$Query$GetChannelsByCustomerEmail<TRes> {
-  _CopyWithStubImpl$Query$GetChannelsByCustomerEmail(this._res);
-
-  TRes _res;
-
-  call({
-    List<Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>?
-        getChannelsByCustomerEmail,
-    String? $__typename,
-  }) =>
-      _res;
-
-  getChannelsByCustomerEmail(_fn) => _res;
-}
-
-const documentNodeQueryGetChannelsByCustomerEmail = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetChannelsByCustomerEmail'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'email')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
-        ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'getChannelsByCustomerEmail'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'email'),
-            value: VariableNode(name: NameNode(value: 'email')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
-          FieldNode(
-            name: NameNode(value: 'id'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'code'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'token'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultCurrencyCode'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: '__typename'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-        ]),
-      ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetChannelsByCustomerEmail _parserFn$Query$GetChannelsByCustomerEmail(
-        Map<String, dynamic> data) =>
-    Query$GetChannelsByCustomerEmail.fromJson(data);
-typedef OnQueryComplete$Query$GetChannelsByCustomerEmail = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Query$GetChannelsByCustomerEmail?,
-);
-
-class Options$Query$GetChannelsByCustomerEmail
-    extends graphql.QueryOptions<Query$GetChannelsByCustomerEmail> {
-  Options$Query$GetChannelsByCustomerEmail({
-    String? operationName,
-    required Variables$Query$GetChannelsByCustomerEmail variables,
-    graphql.FetchPolicy? fetchPolicy,
-    graphql.ErrorPolicy? errorPolicy,
-    graphql.CacheRereadPolicy? cacheRereadPolicy,
-    Object? optimisticResult,
-    Query$GetChannelsByCustomerEmail? typedOptimisticResult,
-    Duration? pollInterval,
-    graphql.Context? context,
-    OnQueryComplete$Query$GetChannelsByCustomerEmail? onComplete,
-    graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$GetChannelsByCustomerEmail(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetChannelsByCustomerEmail,
-          parserFn: _parserFn$Query$GetChannelsByCustomerEmail,
-        );
-
-  final OnQueryComplete$Query$GetChannelsByCustomerEmail? onCompleteWithParsed;
-
-  @override
-  List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
-}
-
-class WatchOptions$Query$GetChannelsByCustomerEmail
-    extends graphql.WatchQueryOptions<Query$GetChannelsByCustomerEmail> {
-  WatchOptions$Query$GetChannelsByCustomerEmail({
-    String? operationName,
-    required Variables$Query$GetChannelsByCustomerEmail variables,
-    graphql.FetchPolicy? fetchPolicy,
-    graphql.ErrorPolicy? errorPolicy,
-    graphql.CacheRereadPolicy? cacheRereadPolicy,
-    Object? optimisticResult,
-    Query$GetChannelsByCustomerEmail? typedOptimisticResult,
-    graphql.Context? context,
-    Duration? pollInterval,
-    bool? eagerlyFetchResults,
-    bool carryForwardDataOnException = true,
-    bool fetchResults = false,
-  }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetChannelsByCustomerEmail,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetChannelsByCustomerEmail,
-        );
-}
-
-class FetchMoreOptions$Query$GetChannelsByCustomerEmail
-    extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetChannelsByCustomerEmail({
-    required graphql.UpdateQuery updateQuery,
-    required Variables$Query$GetChannelsByCustomerEmail variables,
-  }) : super(
-          updateQuery: updateQuery,
-          variables: variables.toJson(),
-          document: documentNodeQueryGetChannelsByCustomerEmail,
-        );
-}
-
-extension ClientExtension$Query$GetChannelsByCustomerEmail
-    on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Query$GetChannelsByCustomerEmail>>
-      query$GetChannelsByCustomerEmail(
-              Options$Query$GetChannelsByCustomerEmail options) async =>
-          await this.query(options);
-  graphql.ObservableQuery<Query$GetChannelsByCustomerEmail>
-      watchQuery$GetChannelsByCustomerEmail(
-              WatchOptions$Query$GetChannelsByCustomerEmail options) =>
-          this.watchQuery(options);
-  void writeQuery$GetChannelsByCustomerEmail({
-    required Query$GetChannelsByCustomerEmail data,
-    required Variables$Query$GetChannelsByCustomerEmail variables,
-    bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-          operation: graphql.Operation(
-              document: documentNodeQueryGetChannelsByCustomerEmail),
-          variables: variables.toJson(),
-        ),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
-  Query$GetChannelsByCustomerEmail? readQuery$GetChannelsByCustomerEmail({
-    required Variables$Query$GetChannelsByCustomerEmail variables,
-    bool optimistic = true,
-  }) {
-    final result = this.readQuery(
-      graphql.Request(
-        operation: graphql.Operation(
-            document: documentNodeQueryGetChannelsByCustomerEmail),
-        variables: variables.toJson(),
-      ),
-      optimistic: optimistic,
-    );
-    return result == null
-        ? null
-        : Query$GetChannelsByCustomerEmail.fromJson(result);
-  }
-}
-
-graphql_flutter.QueryHookResult<Query$GetChannelsByCustomerEmail>
-    useQuery$GetChannelsByCustomerEmail(
-            Options$Query$GetChannelsByCustomerEmail options) =>
-        graphql_flutter.useQuery(options);
-graphql.ObservableQuery<Query$GetChannelsByCustomerEmail>
-    useWatchQuery$GetChannelsByCustomerEmail(
-            WatchOptions$Query$GetChannelsByCustomerEmail options) =>
-        graphql_flutter.useWatchQuery(options);
-
-class Query$GetChannelsByCustomerEmail$Widget
-    extends graphql_flutter.Query<Query$GetChannelsByCustomerEmail> {
-  Query$GetChannelsByCustomerEmail$Widget({
-    widgets.Key? key,
-    required Options$Query$GetChannelsByCustomerEmail options,
-    required graphql_flutter.QueryBuilder<Query$GetChannelsByCustomerEmail>
-        builder,
-  }) : super(
-          key: key,
-          options: options,
-          builder: builder,
-        );
-}
-
-class Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
-  Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail({
-    required this.id,
-    required this.code,
-    required this.token,
-    required this.defaultCurrencyCode,
-    this.$__typename = 'Channel',
-  });
-
-  factory Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail.fromJson(
-      Map<String, dynamic> json) {
-    final l$id = json['id'];
-    final l$code = json['code'];
-    final l$token = json['token'];
-    final l$defaultCurrencyCode = json['defaultCurrencyCode'];
-    final l$$__typename = json['__typename'];
-    return Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-      id: (l$id as String),
-      code: (l$code as String),
-      token: (l$token as String),
-      defaultCurrencyCode:
-          fromJson$Enum$CurrencyCode((l$defaultCurrencyCode as String)),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String id;
-
-  final String code;
-
-  final String token;
-
-  final Enum$CurrencyCode defaultCurrencyCode;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$id = id;
-    _resultData['id'] = l$id;
-    final l$code = code;
-    _resultData['code'] = l$code;
-    final l$token = token;
-    _resultData['token'] = l$token;
-    final l$defaultCurrencyCode = defaultCurrencyCode;
-    _resultData['defaultCurrencyCode'] =
-        toJson$Enum$CurrencyCode(l$defaultCurrencyCode);
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$id = id;
-    final l$code = code;
-    final l$token = token;
-    final l$defaultCurrencyCode = defaultCurrencyCode;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$id,
-      l$code,
-      l$token,
-      l$defaultCurrencyCode,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$id = id;
-    final lOther$id = other.id;
-    if (l$id != lOther$id) {
-      return false;
-    }
-    final l$code = code;
-    final lOther$code = other.code;
-    if (l$code != lOther$code) {
-      return false;
-    }
-    final l$token = token;
-    final lOther$token = other.token;
-    if (l$token != lOther$token) {
-      return false;
-    }
-    final l$defaultCurrencyCode = defaultCurrencyCode;
-    final lOther$defaultCurrencyCode = other.defaultCurrencyCode;
-    if (l$defaultCurrencyCode != lOther$defaultCurrencyCode) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail
-    on Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail {
-  CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-          Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail>
-      get copyWith =>
-          CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-    TRes> {
-  factory CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-    Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail instance,
-    TRes Function(Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail)
-        then,
-  ) = _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail;
-
-  factory CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail;
-
-  TRes call({
-    String? id,
-    String? code,
-    String? token,
-    Enum$CurrencyCode? defaultCurrencyCode,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-        TRes>
-    implements
-        CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-            TRes> {
-  _CopyWithImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail _instance;
-
-  final TRes Function(
-      Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? id = _undefined,
-    Object? code = _undefined,
-    Object? token = _undefined,
-    Object? defaultCurrencyCode = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        token: token == _undefined || token == null
-            ? _instance.token
-            : (token as String),
-        defaultCurrencyCode:
-            defaultCurrencyCode == _undefined || defaultCurrencyCode == null
-                ? _instance.defaultCurrencyCode
-                : (defaultCurrencyCode as Enum$CurrencyCode),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-        TRes>
-    implements
-        CopyWith$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail<
-            TRes> {
-  _CopyWithStubImpl$Query$GetChannelsByCustomerEmail$getChannelsByCustomerEmail(
-      this._res);
-
-  TRes _res;
-
-  call({
-    String? id,
-    String? code,
-    String? token,
-    Enum$CurrencyCode? defaultCurrencyCode,
-    String? $__typename,
-  }) =>
-      _res;
-}
-
-class Variables$Query$GetChannelsByPhoneNumber {
-  factory Variables$Query$GetChannelsByPhoneNumber(
-          {required String phoneNumber}) =>
-      Variables$Query$GetChannelsByPhoneNumber._({
-        r'phoneNumber': phoneNumber,
-      });
-
-  Variables$Query$GetChannelsByPhoneNumber._(this._$data);
-
-  factory Variables$Query$GetChannelsByPhoneNumber.fromJson(
-      Map<String, dynamic> data) {
-    final result$data = <String, dynamic>{};
-    final l$phoneNumber = data['phoneNumber'];
-    result$data['phoneNumber'] = (l$phoneNumber as String);
-    return Variables$Query$GetChannelsByPhoneNumber._(result$data);
-  }
-
-  Map<String, dynamic> _$data;
-
-  String get phoneNumber => (_$data['phoneNumber'] as String);
-
-  Map<String, dynamic> toJson() {
-    final result$data = <String, dynamic>{};
-    final l$phoneNumber = phoneNumber;
-    result$data['phoneNumber'] = l$phoneNumber;
-    return result$data;
-  }
-
-  CopyWith$Variables$Query$GetChannelsByPhoneNumber<
-          Variables$Query$GetChannelsByPhoneNumber>
-      get copyWith => CopyWith$Variables$Query$GetChannelsByPhoneNumber(
-            this,
-            (i) => i,
-          );
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Variables$Query$GetChannelsByPhoneNumber ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$phoneNumber = phoneNumber;
-    final lOther$phoneNumber = other.phoneNumber;
-    if (l$phoneNumber != lOther$phoneNumber) {
-      return false;
-    }
-    return true;
-  }
-
-  @override
-  int get hashCode {
-    final l$phoneNumber = phoneNumber;
-    return Object.hashAll([l$phoneNumber]);
-  }
-}
-
-abstract class CopyWith$Variables$Query$GetChannelsByPhoneNumber<TRes> {
-  factory CopyWith$Variables$Query$GetChannelsByPhoneNumber(
-    Variables$Query$GetChannelsByPhoneNumber instance,
-    TRes Function(Variables$Query$GetChannelsByPhoneNumber) then,
-  ) = _CopyWithImpl$Variables$Query$GetChannelsByPhoneNumber;
-
-  factory CopyWith$Variables$Query$GetChannelsByPhoneNumber.stub(TRes res) =
-      _CopyWithStubImpl$Variables$Query$GetChannelsByPhoneNumber;
-
-  TRes call({String? phoneNumber});
-}
-
-class _CopyWithImpl$Variables$Query$GetChannelsByPhoneNumber<TRes>
-    implements CopyWith$Variables$Query$GetChannelsByPhoneNumber<TRes> {
-  _CopyWithImpl$Variables$Query$GetChannelsByPhoneNumber(
-    this._instance,
-    this._then,
-  );
-
-  final Variables$Query$GetChannelsByPhoneNumber _instance;
-
-  final TRes Function(Variables$Query$GetChannelsByPhoneNumber) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({Object? phoneNumber = _undefined}) =>
-      _then(Variables$Query$GetChannelsByPhoneNumber._({
-        ..._instance._$data,
-        if (phoneNumber != _undefined && phoneNumber != null)
-          'phoneNumber': (phoneNumber as String),
-      }));
-}
-
-class _CopyWithStubImpl$Variables$Query$GetChannelsByPhoneNumber<TRes>
-    implements CopyWith$Variables$Query$GetChannelsByPhoneNumber<TRes> {
-  _CopyWithStubImpl$Variables$Query$GetChannelsByPhoneNumber(this._res);
-
-  TRes _res;
-
-  call({String? phoneNumber}) => _res;
-}
-
-class Query$GetChannelsByPhoneNumber {
-  Query$GetChannelsByPhoneNumber({
-    required this.getChannelsByCustomerPhoneNumber,
-    this.$__typename = 'Query',
-  });
-
-  factory Query$GetChannelsByPhoneNumber.fromJson(Map<String, dynamic> json) {
-    final l$getChannelsByCustomerPhoneNumber =
-        json['getChannelsByCustomerPhoneNumber'];
-    final l$$__typename = json['__typename'];
-    return Query$GetChannelsByPhoneNumber(
-      getChannelsByCustomerPhoneNumber: (l$getChannelsByCustomerPhoneNumber
-              as List<dynamic>)
-          .map((e) =>
-              Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
-                  .fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final List<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>
-      getChannelsByCustomerPhoneNumber;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$getChannelsByCustomerPhoneNumber = getChannelsByCustomerPhoneNumber;
-    _resultData['getChannelsByCustomerPhoneNumber'] =
-        l$getChannelsByCustomerPhoneNumber.map((e) => e.toJson()).toList();
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$getChannelsByCustomerPhoneNumber = getChannelsByCustomerPhoneNumber;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      Object.hashAll(l$getChannelsByCustomerPhoneNumber.map((v) => v)),
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Query$GetChannelsByPhoneNumber ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$getChannelsByCustomerPhoneNumber = getChannelsByCustomerPhoneNumber;
-    final lOther$getChannelsByCustomerPhoneNumber =
-        other.getChannelsByCustomerPhoneNumber;
-    if (l$getChannelsByCustomerPhoneNumber.length !=
-        lOther$getChannelsByCustomerPhoneNumber.length) {
-      return false;
-    }
-    for (int i = 0; i < l$getChannelsByCustomerPhoneNumber.length; i++) {
-      final l$getChannelsByCustomerPhoneNumber$entry =
-          l$getChannelsByCustomerPhoneNumber[i];
-      final lOther$getChannelsByCustomerPhoneNumber$entry =
-          lOther$getChannelsByCustomerPhoneNumber[i];
-      if (l$getChannelsByCustomerPhoneNumber$entry !=
-          lOther$getChannelsByCustomerPhoneNumber$entry) {
-        return false;
-      }
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetChannelsByPhoneNumber
-    on Query$GetChannelsByPhoneNumber {
-  CopyWith$Query$GetChannelsByPhoneNumber<Query$GetChannelsByPhoneNumber>
-      get copyWith => CopyWith$Query$GetChannelsByPhoneNumber(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetChannelsByPhoneNumber<TRes> {
-  factory CopyWith$Query$GetChannelsByPhoneNumber(
-    Query$GetChannelsByPhoneNumber instance,
-    TRes Function(Query$GetChannelsByPhoneNumber) then,
-  ) = _CopyWithImpl$Query$GetChannelsByPhoneNumber;
-
-  factory CopyWith$Query$GetChannelsByPhoneNumber.stub(TRes res) =
-      _CopyWithStubImpl$Query$GetChannelsByPhoneNumber;
-
-  TRes call({
-    List<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>?
-        getChannelsByCustomerPhoneNumber,
-    String? $__typename,
-  });
-  TRes getChannelsByCustomerPhoneNumber(
-      Iterable<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber> Function(
-              Iterable<
-                  CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-                      Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>>)
-          _fn);
-}
-
-class _CopyWithImpl$Query$GetChannelsByPhoneNumber<TRes>
-    implements CopyWith$Query$GetChannelsByPhoneNumber<TRes> {
-  _CopyWithImpl$Query$GetChannelsByPhoneNumber(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetChannelsByPhoneNumber _instance;
-
-  final TRes Function(Query$GetChannelsByPhoneNumber) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? getChannelsByCustomerPhoneNumber = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByPhoneNumber(
-        getChannelsByCustomerPhoneNumber: getChannelsByCustomerPhoneNumber ==
-                    _undefined ||
-                getChannelsByCustomerPhoneNumber == null
-            ? _instance.getChannelsByCustomerPhoneNumber
-            : (getChannelsByCustomerPhoneNumber as List<
-                Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-
-  TRes getChannelsByCustomerPhoneNumber(
-          Iterable<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber> Function(
-                  Iterable<
-                      CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-                          Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>>)
-              _fn) =>
-      call(
-          getChannelsByCustomerPhoneNumber: _fn(
-              _instance.getChannelsByCustomerPhoneNumber.map((e) =>
-                  CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-                    e,
-                    (i) => i,
-                  ))).toList());
-}
-
-class _CopyWithStubImpl$Query$GetChannelsByPhoneNumber<TRes>
-    implements CopyWith$Query$GetChannelsByPhoneNumber<TRes> {
-  _CopyWithStubImpl$Query$GetChannelsByPhoneNumber(this._res);
-
-  TRes _res;
-
-  call({
-    List<Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>?
-        getChannelsByCustomerPhoneNumber,
-    String? $__typename,
-  }) =>
-      _res;
-
-  getChannelsByCustomerPhoneNumber(_fn) => _res;
-}
-
-const documentNodeQueryGetChannelsByPhoneNumber = DocumentNode(definitions: [
-  OperationDefinitionNode(
-    type: OperationType.query,
-    name: NameNode(value: 'GetChannelsByPhoneNumber'),
-    variableDefinitions: [
-      VariableDefinitionNode(
-        variable: VariableNode(name: NameNode(value: 'phoneNumber')),
-        type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: true,
-        ),
-        defaultValue: DefaultValueNode(value: null),
-        directives: [],
-      )
-    ],
-    directives: [],
-    selectionSet: SelectionSetNode(selections: [
-      FieldNode(
-        name: NameNode(value: 'getChannelsByCustomerPhoneNumber'),
-        alias: null,
-        arguments: [
-          ArgumentNode(
-            name: NameNode(value: 'phoneNumber'),
-            value: VariableNode(name: NameNode(value: 'phoneNumber')),
-          )
-        ],
-        directives: [],
-        selectionSet: SelectionSetNode(selections: [
-          FieldNode(
-            name: NameNode(value: 'id'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'code'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'token'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'defaultCurrencyCode'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: '__typename'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-        ]),
-      ),
-      FieldNode(
-        name: NameNode(value: '__typename'),
-        alias: null,
-        arguments: [],
-        directives: [],
-        selectionSet: null,
-      ),
-    ]),
-  ),
-]);
-Query$GetChannelsByPhoneNumber _parserFn$Query$GetChannelsByPhoneNumber(
-        Map<String, dynamic> data) =>
-    Query$GetChannelsByPhoneNumber.fromJson(data);
-typedef OnQueryComplete$Query$GetChannelsByPhoneNumber = FutureOr<void>
-    Function(
-  Map<String, dynamic>?,
-  Query$GetChannelsByPhoneNumber?,
-);
-
-class Options$Query$GetChannelsByPhoneNumber
-    extends graphql.QueryOptions<Query$GetChannelsByPhoneNumber> {
-  Options$Query$GetChannelsByPhoneNumber({
-    String? operationName,
-    required Variables$Query$GetChannelsByPhoneNumber variables,
-    graphql.FetchPolicy? fetchPolicy,
-    graphql.ErrorPolicy? errorPolicy,
-    graphql.CacheRereadPolicy? cacheRereadPolicy,
-    Object? optimisticResult,
-    Query$GetChannelsByPhoneNumber? typedOptimisticResult,
-    Duration? pollInterval,
-    graphql.Context? context,
-    OnQueryComplete$Query$GetChannelsByPhoneNumber? onComplete,
-    graphql.OnQueryError? onError,
-  })  : onCompleteWithParsed = onComplete,
-        super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          pollInterval: pollInterval,
-          context: context,
-          onComplete: onComplete == null
-              ? null
-              : (data) => onComplete(
-                    data,
-                    data == null
-                        ? null
-                        : _parserFn$Query$GetChannelsByPhoneNumber(data),
-                  ),
-          onError: onError,
-          document: documentNodeQueryGetChannelsByPhoneNumber,
-          parserFn: _parserFn$Query$GetChannelsByPhoneNumber,
-        );
-
-  final OnQueryComplete$Query$GetChannelsByPhoneNumber? onCompleteWithParsed;
-
-  @override
-  List<Object?> get properties => [
-        ...super.onComplete == null
-            ? super.properties
-            : super.properties.where((property) => property != onComplete),
-        onCompleteWithParsed,
-      ];
-}
-
-class WatchOptions$Query$GetChannelsByPhoneNumber
-    extends graphql.WatchQueryOptions<Query$GetChannelsByPhoneNumber> {
-  WatchOptions$Query$GetChannelsByPhoneNumber({
-    String? operationName,
-    required Variables$Query$GetChannelsByPhoneNumber variables,
-    graphql.FetchPolicy? fetchPolicy,
-    graphql.ErrorPolicy? errorPolicy,
-    graphql.CacheRereadPolicy? cacheRereadPolicy,
-    Object? optimisticResult,
-    Query$GetChannelsByPhoneNumber? typedOptimisticResult,
-    graphql.Context? context,
-    Duration? pollInterval,
-    bool? eagerlyFetchResults,
-    bool carryForwardDataOnException = true,
-    bool fetchResults = false,
-  }) : super(
-          variables: variables.toJson(),
-          operationName: operationName,
-          fetchPolicy: fetchPolicy,
-          errorPolicy: errorPolicy,
-          cacheRereadPolicy: cacheRereadPolicy,
-          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
-          context: context,
-          document: documentNodeQueryGetChannelsByPhoneNumber,
-          pollInterval: pollInterval,
-          eagerlyFetchResults: eagerlyFetchResults,
-          carryForwardDataOnException: carryForwardDataOnException,
-          fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetChannelsByPhoneNumber,
-        );
-}
-
-class FetchMoreOptions$Query$GetChannelsByPhoneNumber
-    extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetChannelsByPhoneNumber({
-    required graphql.UpdateQuery updateQuery,
-    required Variables$Query$GetChannelsByPhoneNumber variables,
-  }) : super(
-          updateQuery: updateQuery,
-          variables: variables.toJson(),
-          document: documentNodeQueryGetChannelsByPhoneNumber,
-        );
-}
-
-extension ClientExtension$Query$GetChannelsByPhoneNumber
-    on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Query$GetChannelsByPhoneNumber>>
-      query$GetChannelsByPhoneNumber(
-              Options$Query$GetChannelsByPhoneNumber options) async =>
-          await this.query(options);
-  graphql.ObservableQuery<Query$GetChannelsByPhoneNumber>
-      watchQuery$GetChannelsByPhoneNumber(
-              WatchOptions$Query$GetChannelsByPhoneNumber options) =>
-          this.watchQuery(options);
-  void writeQuery$GetChannelsByPhoneNumber({
-    required Query$GetChannelsByPhoneNumber data,
-    required Variables$Query$GetChannelsByPhoneNumber variables,
-    bool broadcast = true,
-  }) =>
-      this.writeQuery(
-        graphql.Request(
-          operation: graphql.Operation(
-              document: documentNodeQueryGetChannelsByPhoneNumber),
-          variables: variables.toJson(),
-        ),
-        data: data.toJson(),
-        broadcast: broadcast,
-      );
-  Query$GetChannelsByPhoneNumber? readQuery$GetChannelsByPhoneNumber({
-    required Variables$Query$GetChannelsByPhoneNumber variables,
-    bool optimistic = true,
-  }) {
-    final result = this.readQuery(
-      graphql.Request(
-        operation: graphql.Operation(
-            document: documentNodeQueryGetChannelsByPhoneNumber),
-        variables: variables.toJson(),
-      ),
-      optimistic: optimistic,
-    );
-    return result == null
-        ? null
-        : Query$GetChannelsByPhoneNumber.fromJson(result);
-  }
-}
-
-graphql_flutter.QueryHookResult<Query$GetChannelsByPhoneNumber>
-    useQuery$GetChannelsByPhoneNumber(
-            Options$Query$GetChannelsByPhoneNumber options) =>
-        graphql_flutter.useQuery(options);
-graphql.ObservableQuery<Query$GetChannelsByPhoneNumber>
-    useWatchQuery$GetChannelsByPhoneNumber(
-            WatchOptions$Query$GetChannelsByPhoneNumber options) =>
-        graphql_flutter.useWatchQuery(options);
-
-class Query$GetChannelsByPhoneNumber$Widget
-    extends graphql_flutter.Query<Query$GetChannelsByPhoneNumber> {
-  Query$GetChannelsByPhoneNumber$Widget({
-    widgets.Key? key,
-    required Options$Query$GetChannelsByPhoneNumber options,
-    required graphql_flutter.QueryBuilder<Query$GetChannelsByPhoneNumber>
-        builder,
-  }) : super(
-          key: key,
-          options: options,
-          builder: builder,
-        );
-}
-
-class Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
-  Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber({
-    required this.id,
-    required this.code,
-    required this.token,
-    required this.defaultCurrencyCode,
-    this.$__typename = 'Channel',
-  });
-
-  factory Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber.fromJson(
-      Map<String, dynamic> json) {
-    final l$id = json['id'];
-    final l$code = json['code'];
-    final l$token = json['token'];
-    final l$defaultCurrencyCode = json['defaultCurrencyCode'];
-    final l$$__typename = json['__typename'];
-    return Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-      id: (l$id as String),
-      code: (l$code as String),
-      token: (l$token as String),
-      defaultCurrencyCode:
-          fromJson$Enum$CurrencyCode((l$defaultCurrencyCode as String)),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String id;
-
-  final String code;
-
-  final String token;
-
-  final Enum$CurrencyCode defaultCurrencyCode;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$id = id;
-    _resultData['id'] = l$id;
-    final l$code = code;
-    _resultData['code'] = l$code;
-    final l$token = token;
-    _resultData['token'] = l$token;
-    final l$defaultCurrencyCode = defaultCurrencyCode;
-    _resultData['defaultCurrencyCode'] =
-        toJson$Enum$CurrencyCode(l$defaultCurrencyCode);
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$id = id;
-    final l$code = code;
-    final l$token = token;
-    final l$defaultCurrencyCode = defaultCurrencyCode;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$id,
-      l$code,
-      l$token,
-      l$defaultCurrencyCode,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other
-            is! Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$id = id;
-    final lOther$id = other.id;
-    if (l$id != lOther$id) {
-      return false;
-    }
-    final l$code = code;
-    final lOther$code = other.code;
-    if (l$code != lOther$code) {
-      return false;
-    }
-    final l$token = token;
-    final lOther$token = other.token;
-    if (l$token != lOther$token) {
-      return false;
-    }
-    final l$defaultCurrencyCode = defaultCurrencyCode;
-    final lOther$defaultCurrencyCode = other.defaultCurrencyCode;
-    if (l$defaultCurrencyCode != lOther$defaultCurrencyCode) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
-    on Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber {
-  CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-          Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber>
-      get copyWith =>
-          CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-    TRes> {
-  factory CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-    Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber instance,
-    TRes Function(
-            Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber)
-        then,
-  ) = _CopyWithImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber;
-
-  factory CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber;
-
-  TRes call({
-    String? id,
-    String? code,
-    String? token,
-    Enum$CurrencyCode? defaultCurrencyCode,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-        TRes>
-    implements
-        CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-            TRes> {
-  _CopyWithImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber
-      _instance;
-
-  final TRes Function(
-      Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? id = _undefined,
-    Object? code = _undefined,
-    Object? token = _undefined,
-    Object? defaultCurrencyCode = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        token: token == _undefined || token == null
-            ? _instance.token
-            : (token as String),
-        defaultCurrencyCode:
-            defaultCurrencyCode == _undefined || defaultCurrencyCode == null
-                ? _instance.defaultCurrencyCode
-                : (defaultCurrencyCode as Enum$CurrencyCode),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-        TRes>
-    implements
-        CopyWith$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber<
-            TRes> {
-  _CopyWithStubImpl$Query$GetChannelsByPhoneNumber$getChannelsByCustomerPhoneNumber(
-      this._res);
-
-  TRes _res;
-
-  call({
-    String? id,
-    String? code,
-    String? token,
-    Enum$CurrencyCode? defaultCurrencyCode,
-    String? $__typename,
-  }) =>
-      _res;
 }
 
 class Mutation$LogoutUser {

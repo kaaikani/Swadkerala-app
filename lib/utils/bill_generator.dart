@@ -3,11 +3,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
-import '../controllers/order/ordermodels.dart' as order_models;
+import '../graphql/order.graphql.dart';
 import '../utils/price_formatter.dart';
 
 class BillGenerator {
-  static Future<void> generateAndShare(order_models.OrderModel order) async {
+  static Future<void> generateAndShare(Fragment$Cart order) async {
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -44,7 +44,7 @@ class BillGenerator {
     );
   }
 
-  static pw.Widget _buildHeader(order_models.OrderModel order) {
+  static pw.Widget _buildHeader(Fragment$Cart order) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
@@ -72,21 +72,18 @@ class BillGenerator {
     );
   }
 
-  static pw.Widget _buildInfoSection(order_models.OrderModel order) {
+  static pw.Widget _buildInfoSection(Fragment$Cart order) {
     // Get customer name
-    final customerName = order.shippingAddress != null
-        ? order.shippingAddress!.fullName
-        : 'Customer';
+    // Note: Fragment$Cart doesn't include shippingAddress, so we'll use a default
+    final customerName = 'Customer';
     
     // Get order date
-    final orderDate = order.orderPlacedAt != null
-        ? order.orderPlacedAt.toString().split(' ')[0]
-        : DateTime.now().toString().split(' ')[0];
+    // Note: Fragment$Cart doesn't include orderPlacedAt, so we'll use current date
+    final orderDate = DateTime.now().toString().split(' ')[0];
     
     // Get payment method
-    final paymentMethod = order.payments.isNotEmpty
-        ? order.payments.first.method
-        : 'N/A';
+    // Note: Fragment$Cart doesn't include payments, so we'll use N/A
+    final paymentMethod = 'N/A';
     final isOnlinePayment = paymentMethod.toLowerCase().contains('razorpay') ||
         paymentMethod.toLowerCase().contains('online') ||
         paymentMethod.toLowerCase().contains('card');
@@ -107,14 +104,6 @@ class BillGenerator {
                         fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 4),
                 pw.Text(customerName),
-                if (order.shippingAddress != null) ...[
-                  if (order.shippingAddress!.streetLine1.isNotEmpty)
-                    pw.Text(order.shippingAddress!.streetLine1),
-                  if (order.shippingAddress!.city.isNotEmpty)
-                    pw.Text(order.shippingAddress!.city),
-                  if (order.shippingAddress!.postalCode.isNotEmpty)
-                    pw.Text(order.shippingAddress!.postalCode),
-                ],
               ],
             ),
             pw.Column(
@@ -137,7 +126,7 @@ class BillGenerator {
     );
   }
 
-  static pw.Widget _buildItemsTable(order_models.OrderModel order) {
+  static pw.Widget _buildItemsTable(Fragment$Cart order) {
     final headers = ['Item', 'Qty', 'Price', 'Total'];
     final data = order.lines.map((line) {
       return [
@@ -165,27 +154,29 @@ class BillGenerator {
     );
   }
 
-  static pw.Widget _buildTotalsSection(order_models.OrderModel order) {
+  static pw.Widget _buildTotalsSection(Fragment$Cart order) {
     // Calculate discount from coupon codes
     double couponDiscount = 0.0;
     if (order.discounts.isNotEmpty) {
       couponDiscount = order.discounts.fold<double>(
         0.0,
-        (sum, discount) => sum + discount.amountWithTax.toDouble(),
+        (sum, discount) => sum + discount.amountWithTax,
       );
     }
     
     // Get loyalty points info
-    final loyaltyPointsUsed = order.customFields?.loyaltyPointsUsed ?? 0;
-    final loyaltyPointsEarned = order.customFields?.loyaltyPointsEarned ?? 0;
+    // Note: Fragment$Cart$customFields doesn't include loyalty points, so we'll use 0
+    // If you need loyalty points, use Query$ActiveOrder$activeOrder instead of Fragment$Cart
+    final loyaltyPointsUsed = 0;
+    final loyaltyPointsEarned = 0;
     // Assuming 1 point = 1 rupee (adjust as needed)
     final loyaltyDiscount = loyaltyPointsUsed.toDouble();
     
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.end,
       children: [
-        _buildTotalRow('Subtotal', order.subTotalWithTax.toDouble()),
-        _buildTotalRow('Shipping', order.shippingWithTax.toDouble()),
+        _buildTotalRow('Subtotal', order.subTotalWithTax),
+        _buildTotalRow('Shipping', order.shippingWithTax),
         // Show coupon discount if applied
         if (order.couponCodes.isNotEmpty && couponDiscount > 0) ...[
           pw.SizedBox(height: 4),
@@ -224,7 +215,7 @@ class BillGenerator {
         ],
         pw.SizedBox(height: 4),
         pw.Divider(),
-        _buildTotalRow('Total', order.totalWithTax.toDouble(),
+        _buildTotalRow('Total', order.totalWithTax,
             isBold: true, fontSize: 16),
         // Show loyalty points earned if any
         if (loyaltyPointsEarned > 0) ...[

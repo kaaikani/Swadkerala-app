@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/colors.dart';
 import '../../../utils/responsive.dart';
+import '../../../services/analytics_service.dart';
 
 /// Secondary button widget with outlined style
 class SecondaryButton extends StatelessWidget {
@@ -31,10 +32,20 @@ class SecondaryButton extends StatelessWidget {
     this.borderRadius,
   }) : super(key: key);
 
+  void _handleButtonClick() {
+    // Track button click with analytics
+    AnalyticsService().logButtonClick(
+      buttonName: text,
+      screenName: null, // Will be set by the screen if needed
+    );
+    // Execute the original callback
+    onPressed?.call();
+  }
+
   @override
   Widget build(BuildContext context) {
     final button = OutlinedButton(
-      onPressed: isLoading ? null : onPressed,
+      onPressed: isLoading ? null : (onPressed != null ? _handleButtonClick : null),
       style: OutlinedButton.styleFrom(
         foregroundColor: textColor ?? AppColors.button,
         side: BorderSide(
@@ -95,6 +106,8 @@ class SecondaryButton extends StatelessWidget {
     return button;
   }
 }
+
+
 
 
 

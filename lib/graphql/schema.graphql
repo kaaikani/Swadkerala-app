@@ -160,7 +160,32 @@ type Channel implements Node {
   outOfStockThreshold: Int
   pricesIncludeTax: Boolean!
   seller: Seller
-  customFields: JSON
+  customFields: ChannelCustomFields
+}
+
+type ChannelAvailability {
+  id: ID!
+  code: String!
+  token: String
+  name: String!
+  isAvailable: Boolean!
+  message: String
+  type: ChannelType!
+}
+
+type ChannelCustomFields {
+  type: String
+}
+
+enum ChannelType {
+  CITY
+  BRAND
+}
+
+"""Channel type enumeration"""
+enum ChannelTypeEnum {
+  CITY
+  BRAND
 }
 
 type Collection implements Node {
@@ -911,6 +936,15 @@ type Customer implements Node {
   customFields: CustomerCustomFields
 }
 
+"""Customer channel information with custom fields"""
+type CustomerChannel {
+  id: ID!
+  code: String!
+  token: String!
+  name: String!
+  type: ChannelTypeEnum!
+}
+
 type CustomerCustomFields {
   loyaltyPointsAvailable: Int
 }
@@ -1379,7 +1413,14 @@ type FulfillmentLine {
   fulfillmentId: ID!
 }
 
-union generateRazorpayOrderIdResult = RazorpayOrderIdSuccess | RazorpayOrderIdGenerationError
+type GenerateRazorpayOrderIdResult {
+  success: Boolean!
+  razorpayOrderId: String
+  amount: Int
+  currency: String
+  keyId: String
+  errorMessage: String
+}
 
 enum GlobalFlag {
   TRUE
@@ -2340,13 +2381,18 @@ type Mutation {
   sendPhoneOtp(phoneNumber: String!): String
   resendPhoneOtp(phoneNumber: String!): String
   togglePromotionState(promotionId: ID!, value: Boolean!): Promotion!
-  cancelOrderOnClientRequest(orderId: ID!, reason: String!): Order!
+
+  """
+  Allows a customer to request cancellation for their order.
+  The reason string can be any text or JSON sent from the client.
+  """
   requestOrderCancellation(orderId: ID!, reason: String!): Order!
+
+  """Add other instructions to the order custom fields"""
   otherInstructions(orderId: ID!, value: String!): Order!
-  generateRazorpayOrderId(orderId: ID!): RazorpayOrderIdSuccess!
+  generateRazorpayOrderId(orderId: ID!): GenerateRazorpayOrderIdResult!
   applyLoyaltyPointsToActiveOrder(amount: Int!): Order!
   removeLoyaltyPointsFromActiveOrder: Order
-  updateOrderPlacedAtIST(orderId: ID!): DateTime!
   toggleFavorite(productId: ID!, options: FavoriteListOptions = null): FavoriteList!
 }
 
@@ -2504,11 +2550,7 @@ type OrderAddress {
 }
 
 type OrderCustomFields {
-  placedAtISTFormatted: DateTime
   deviceMedium: String
-  razorpayStatus: String
-  razorpay_order_id: String
-  clientRequestToCancel: Int
   otherInstructions: String
   loyaltyPointsUsed: Int
   loyaltyPointsEarned: Int
@@ -2533,11 +2575,7 @@ input OrderFilterParameter {
   totalWithTax: NumberOperators
   _and: [OrderFilterParameter!]
   _or: [OrderFilterParameter!]
-  placedAtISTFormatted: DateOperators
   deviceMedium: StringOperators
-  razorpayStatus: StringOperators
-  razorpay_order_id: StringOperators
-  clientRequestToCancel: NumberOperators
   otherInstructions: StringOperators
   loyaltyPointsUsed: NumberOperators
   loyaltyPointsEarned: NumberOperators
@@ -2700,11 +2738,7 @@ input OrderSortParameter {
   shippingWithTax: SortOrder
   total: SortOrder
   totalWithTax: SortOrder
-  placedAtISTFormatted: SortOrder
   deviceMedium: SortOrder
-  razorpayStatus: SortOrder
-  razorpay_order_id: SortOrder
-  clientRequestToCancel: SortOrder
   otherInstructions: SortOrder
   loyaltyPointsUsed: SortOrder
   loyaltyPointsEarned: SortOrder
@@ -3204,6 +3238,18 @@ enum Permission {
 
   """Allows viewing and managing loyalty points configurations"""
   LoyaltyPoints
+
+  """Grants permission to create PostalCode"""
+  CreatePostalCode
+
+  """Grants permission to read PostalCode"""
+  ReadPostalCode
+
+  """Grants permission to update PostalCode"""
+  UpdatePostalCode
+
+  """Grants permission to delete PostalCode"""
+  DeletePostalCode
 }
 
 input PhoneOtpInput {
@@ -3211,6 +3257,13 @@ input PhoneOtpInput {
   code: String!
   firstName: String
   lastName: String
+  emailAddress: String
+}
+
+type PostalCode {
+  id: ID!
+  code: String!
+  isAnywhere: Boolean!
 }
 
 """The price range where the result has more than one price"""
@@ -3566,30 +3619,53 @@ type Query {
 
   """Search Products based on the criteria set by the `SearchInput`"""
   search(input: SearchInput!): SearchResponse!
-  getChannelsByCustomerEmail(email: String!): [Channel!]!
-  getChannelsByCustomerPhoneNumber(phoneNumber: String!): [Channel!]!
+
+  """
+  Get all available channels for a given postal code.
+  Returns channels that either:
+  1. Have this specific postal code assigned
+  2. Are set to "Anywhere" mode (serve all postal codes)
+  
+  Filters out the default channel automatically.
+  Useful for showing available channels/brands when customers
+  enter a postal code or order for friends in different locations.
+  """
+  getChannelsByPostalCode(postalCode: String!): [CustomerChannel!]!
   getChannelList: [Channel!]!
   checkUniquePhone(phone: String!): Boolean!
   getCouponCodeList: CoupcodesList!
   getPasswordResetToken: String!
   checkCollectionIsPrivate(collectionId: ID!): Boolean!
   customBanners: [CustomBanner!]!
+  getRazorpayOrderStatus(orderId: ID!): RazorpayOrderStatus
   loyaltyPointsConfig: LoyaltyPointsConfig
   frequentlyOrderedProducts: [FrequentlyOrderedProduct!]!
+  postalCodes: [PostalCode!]!
+
+  """
+  Get all channels with availability based on postal code.
+  Auto-fetches from shipping address if no postal code provided.
+  Includes channel type (CITY or BRAND) for frontend routing.
+  """
+  getAvailableChannels(postalCode: String): [ChannelAvailability!]!
 }
 
-type RazorpayOrderIdGenerationError {
-  errorCode: String
-  message: String
-}
-
-type RazorpayOrderIdSuccess {
-  amount: Int
-  currency: String
-  errorMessage: String
-  keyId: String
+type RazorpayOrderStatus {
+  status: String
+  attempts: Int
+  amountPaid: Int
+  amountDue: Int
   razorpayOrderId: String
-  success: Boolean
+  history: [RazorpayPaymentAttempt]
+}
+
+type RazorpayPaymentAttempt {
+  id: String!
+  status: String!
+  amount: Int
+  method: String
+  createdAt: String
+  errorReason: String
 }
 
 union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError
@@ -4055,9 +4131,6 @@ union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | Passwor
 
 input UpdateOrderCustomFieldsInput {
   deviceMedium: String
-  razorpay_order_id: String
-  clientRequestToCancel: Int
-  otherInstructions: String
   loyaltyPointsUsed: Int
   loyaltyPointsEarned: Int
 }
@@ -4111,8 +4184,4 @@ type Zone implements Node {
   members: [Region!]!
   customFields: JSON
 }
-
-  customFields: JSON
-}
-
 

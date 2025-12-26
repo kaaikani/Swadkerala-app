@@ -5151,6 +5151,13 @@ const documentNodeQueryProducts = DocumentNode(definitions: [
                         selectionSet: null,
                       ),
                       FieldNode(
+                        name: NameNode(value: 'slug'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
                         name: NameNode(value: 'enabled'),
                         alias: null,
                         arguments: [],
@@ -6184,6 +6191,7 @@ class Query$Products$collection$productVariants$items$product {
   Query$Products$collection$productVariants$items$product({
     required this.id,
     required this.name,
+    required this.slug,
     required this.enabled,
     this.featuredAsset,
     required this.optionGroups,
@@ -6194,6 +6202,7 @@ class Query$Products$collection$productVariants$items$product {
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
+    final l$slug = json['slug'];
     final l$enabled = json['enabled'];
     final l$featuredAsset = json['featuredAsset'];
     final l$optionGroups = json['optionGroups'];
@@ -6201,6 +6210,7 @@ class Query$Products$collection$productVariants$items$product {
     return Query$Products$collection$productVariants$items$product(
       id: (l$id as String),
       name: (l$name as String),
+      slug: (l$slug as String),
       enabled: (l$enabled as bool),
       featuredAsset: l$featuredAsset == null
           ? null
@@ -6218,6 +6228,8 @@ class Query$Products$collection$productVariants$items$product {
 
   final String name;
 
+  final String slug;
+
   final bool enabled;
 
   final Fragment$Asset? featuredAsset;
@@ -6234,6 +6246,8 @@ class Query$Products$collection$productVariants$items$product {
     _resultData['id'] = l$id;
     final l$name = name;
     _resultData['name'] = l$name;
+    final l$slug = slug;
+    _resultData['slug'] = l$slug;
     final l$enabled = enabled;
     _resultData['enabled'] = l$enabled;
     final l$featuredAsset = featuredAsset;
@@ -6250,6 +6264,7 @@ class Query$Products$collection$productVariants$items$product {
   int get hashCode {
     final l$id = id;
     final l$name = name;
+    final l$slug = slug;
     final l$enabled = enabled;
     final l$featuredAsset = featuredAsset;
     final l$optionGroups = optionGroups;
@@ -6257,6 +6272,7 @@ class Query$Products$collection$productVariants$items$product {
     return Object.hashAll([
       l$id,
       l$name,
+      l$slug,
       l$enabled,
       l$featuredAsset,
       Object.hashAll(l$optionGroups.map((v) => v)),
@@ -6281,6 +6297,11 @@ class Query$Products$collection$productVariants$items$product {
     final l$name = name;
     final lOther$name = other.name;
     if (l$name != lOther$name) {
+      return false;
+    }
+    final l$slug = slug;
+    final lOther$slug = other.slug;
+    if (l$slug != lOther$slug) {
       return false;
     }
     final l$enabled = enabled;
@@ -6339,6 +6360,7 @@ abstract class CopyWith$Query$Products$collection$productVariants$items$product<
   TRes call({
     String? id,
     String? name,
+    String? slug,
     bool? enabled,
     Fragment$Asset? featuredAsset,
     List<Query$Products$collection$productVariants$items$product$optionGroups>?
@@ -6373,6 +6395,7 @@ class _CopyWithImpl$Query$Products$collection$productVariants$items$product<
   TRes call({
     Object? id = _undefined,
     Object? name = _undefined,
+    Object? slug = _undefined,
     Object? enabled = _undefined,
     Object? featuredAsset = _undefined,
     Object? optionGroups = _undefined,
@@ -6383,6 +6406,9 @@ class _CopyWithImpl$Query$Products$collection$productVariants$items$product<
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
+        slug: slug == _undefined || slug == null
+            ? _instance.slug
+            : (slug as String),
         enabled: enabled == _undefined || enabled == null
             ? _instance.enabled
             : (enabled as bool),
@@ -6432,6 +6458,7 @@ class _CopyWithStubImpl$Query$Products$collection$productVariants$items$product<
   call({
     String? id,
     String? name,
+    String? slug,
     bool? enabled,
     Fragment$Asset? featuredAsset,
     List<Query$Products$collection$productVariants$items$product$optionGroups>?

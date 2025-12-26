@@ -7,6 +7,7 @@ import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../theme/colors.dart';
+import '../utils/app_strings.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../utils/responsive.dart';
 import '../utils/bill_generator.dart';
@@ -53,7 +54,7 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
         // Pass OrderModel directly to BillGenerator
         await BillGenerator.generateAndShare(orderModel);
       } catch (e) {
-        SnackBarWidget.showError('Failed to generate bill: $e');
+        SnackBarWidget.showError('${AppStrings.failedToGenerateBill}: $e');
       } finally {
         LoadingDialog.hide();
       }
@@ -72,8 +73,8 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
           icon: Icon(Icons.close, color: AppColors.textPrimary),
           onPressed: () => Get.offAllNamed('/home'),
         ),
-        title: Text(
-          'Order Confirmation',
+          title: Text(
+          AppStrings.orderConfirmation,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
@@ -94,7 +95,7 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
               children: [
                 Icon(Icons.error_outline, size: 64, color: Colors.red),
                 SizedBox(height: 16),
-                Text('Order not found'),
+                Text(AppStrings.orderNotFound),
               ],
             ),
           );

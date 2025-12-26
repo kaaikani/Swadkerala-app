@@ -6,17 +6,21 @@ import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/customer/customer_controller.dart';
-import '../controllers/customer/customer_models.dart';
 import '../controllers/banner/bannercontroller.dart';
-import '../controllers/banner/bannermodels.dart';
 import '../controllers/theme_controller.dart';
 import '../services/razorpay_service.dart';
 import '../services/analytics_service.dart';
 import '../widgets/snackbar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
+import '../graphql/order.graphql.dart';
+import '../graphql/Customer.graphql.dart';
+import '../graphql/banner.graphql.dart';
 import '../theme/colors.dart';
 import '../utils/html_utils.dart';
 import '../utils/responsive.dart';
+import '../utils/app_config.dart';
+import '../utils/app_strings.dart';
+import '../utils/price_formatter.dart';
 // import '../widgets/checkout/checkout_address_section.dart'; // Unused import
 import '../widgets/checkout/checkout_payment_section.dart';
 // import '../widgets/checkout/checkout_summary_section.dart'; // Unused import
@@ -44,7 +48,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   int _currentStep = 0; // 0: Delivery, 1: Review & Offers, 2: Payment
 
   // Address selection
-  AddressModel? _selectedAddress;
+  Query$GetActiveCustomer$activeCustomer$addresses? _selectedAddress;
   
   // Blink animation for address card
   final RxBool _shouldBlinkAddress = false.obs;
@@ -95,6 +99,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
     
     // Load data without showing loading state to prevent flicker
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Reset loyalty points state after the current frame to avoid build-time state updates
+      // This ensures clean state for new orders. The actual order state will be loaded and synced later.
+      debugPrint('[CheckoutPage] Resetting loyalty points state on page entry');
+      bannerController.resetLoyaltyPoints();
+      if (_loyaltyPointsController.text.isNotEmpty) {
+        _loyaltyPointsController.clear();
+      }
       debugPrint('[CheckoutPage] PostFrameCallback executing...');
       // Load shipping address first (at the top)
       await _loadCustomerAddresses();
@@ -149,20 +160,70 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Future<void> _loadCustomerAddresses() async {
     await customerController.getActiveCustomer();
-    AddressModel? defaultShipping;
+    Query$GetActiveCustomer$activeCustomer$addresses? defaultShipping;
+    
+    // Find default shipping address
     for (final address in customerController.addresses) {
-      if (address.defaultShippingAddress) {
+      if (address.defaultShippingAddress ?? false) {
         defaultShipping = address;
         break;
       }
     }
+    
+    // If no default shipping address, use the first available address
+    if (defaultShipping == null && customerController.addresses.isNotEmpty) {
+      defaultShipping = customerController.addresses.first;
+    }
+    
     if (!mounted) return;
+    
+    final previousAddress = _selectedAddress;
     setState(() {
       _selectedAddress = defaultShipping;
     });
     
+    // If address was set (either default or first available), automatically set it as shipping address
+    if (_selectedAddress != null) {
+      // Check if this is a new address (was null before) or if address changed
+      final isNewAddress = previousAddress == null || previousAddress.id != _selectedAddress!.id;
+      
+      if (isNewAddress) {
+        // Automatically set shipping address when address is loaded or changed
+        await _setShippingAddressFromSelected();
+      }
+    }
+    
     // Load shipping methods after address selection
     _loadShippingMethods();
+  }
+  
+  /// Set shipping address from currently selected address
+  Future<void> _setShippingAddressFromSelected() async {
+    if (_selectedAddress == null) return;
+    
+    try {
+      final addressSet = await orderController.setShippingAddress(
+        fullName: _selectedAddress!.fullName ?? '',
+        phoneNumber: _selectedAddress!.phoneNumber ?? '',
+        streetLine1: _selectedAddress!.streetLine1,
+        streetLine2: _selectedAddress!.streetLine2 ?? '',
+        city: _selectedAddress!.city ?? '',
+        province: null, // Province not available in GraphQL query
+        postalCode: _selectedAddress!.postalCode ?? '',
+        countryCode: _selectedAddress!.country.code,
+        skipLoading: true,
+      );
+      
+      if (addressSet) {
+        debugPrint('[CheckoutPage] ✅ Shipping address automatically set: ${_selectedAddress!.fullName}');
+        // Refresh shipping methods after address is set
+        await _loadShippingMethods();
+      } else {
+        debugPrint('[CheckoutPage] ⚠️ Failed to set shipping address automatically');
+      }
+    } catch (e) {
+      debugPrint('[CheckoutPage] ❌ Error setting shipping address: $e');
+    }
   }
 
   Future<void> _loadShippingMethods() async {
@@ -263,7 +324,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     if (success) {
       _lastAppliedShippingMethodId = selected.id;
       if (showFeedback) {
-        showSuccessSnackbar('Shipping method selected');
+        showSuccessSnackbar(AppStrings.shippingMethodSelected);
       }
       // Only refresh cart if method was actually changed
       // Note: getActiveOrder() in cart controller doesn't show loading, so it's fine to call it
@@ -272,7 +333,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       }
       await _refreshPaymentMethods();
     } else {
-      showErrorSnackbar('Failed to set shipping method');
+      showErrorSnackbar(AppStrings.failedToSetShippingMethod);
     }
   }
 
@@ -337,9 +398,11 @@ debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====
     try {
       // Skip loading state when loading existing instructions
       await orderController.getActiveOrder(skipLoading: true);
-      if (orderController.currentOrder.value?.customFields?.otherInstructions != null) {
-        final instructions = orderController.currentOrder.value!.customFields!.otherInstructions!;
-        if (instructions.isNotEmpty && mounted) {
+      final order = orderController.currentOrder.value;
+      if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
+        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
+        final instructions = customFields.otherInstructions;
+        if (instructions != null && instructions.isNotEmpty && mounted) {
           _otherInstructionsController.text = instructions;
           
           // Check if it matches a default instruction
@@ -409,8 +472,9 @@ debugPrint('[CheckoutPage] Loading existing loyalty points from order...');
       await orderController.getActiveOrder(skipLoading: true);
       
       final order = orderController.currentOrder.value;
-      if (order != null && order.customFields != null) {
-        final loyaltyPointsUsed = order.customFields!.loyaltyPointsUsed;
+      if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
+        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
+        final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
         
         if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
 debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
@@ -425,17 +489,28 @@ debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUse
 debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
           }
         } else {
-debugPrint('[CheckoutPage] No loyalty points found in order');
-          // Reset if no points are applied
-          bannerController.loyaltyPointsApplied.value = false;
-          bannerController.loyaltyPointsUsed.value = 0;
+debugPrint('[CheckoutPage] No loyalty points found in order - resetting state');
+          // Reset if no points are applied (important for new orders)
+          bannerController.resetLoyaltyPoints();
           if (mounted) {
             _loyaltyPointsController.clear();
           }
         }
+      } else {
+        // Order doesn't have custom fields or is null - reset loyalty points state
+debugPrint('[CheckoutPage] Order has no custom fields or is null - resetting loyalty points state');
+        bannerController.resetLoyaltyPoints();
+        if (mounted) {
+          _loyaltyPointsController.clear();
+        }
       }
     } catch (e) {
 debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
+      // On error, reset to be safe
+      bannerController.resetLoyaltyPoints();
+      if (mounted) {
+        _loyaltyPointsController.clear();
+      }
     }
   }
 
@@ -443,7 +518,7 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
   // ignore: unused_element
   Future<void> _handleShippingMethodSubmit() async {
     if (orderController.selectedShippingMethod.value == null) {
-      showErrorSnackbar('Please select a shipping method');
+      showErrorSnackbar(AppStrings.pleaseSelectShippingMethod);
       return;
     }
 
@@ -452,7 +527,7 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
 
   Future<void> _handlePayment() async {
     if (orderController.selectedPaymentMethod.value == null) {
-      showErrorSnackbar('Please select a payment method');
+      showErrorSnackbar(AppStrings.pleaseSelectPaymentMethod);
       return;
     }
 
@@ -493,7 +568,7 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
     
     // Validate payment method
     if (orderController.selectedPaymentMethod.value == null) {
-      showErrorSnackbar('Please select a payment method');
+      showErrorSnackbar(AppStrings.pleaseSelectPaymentMethod);
       // Reset slider on error
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -505,20 +580,20 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
     // Set shipping address when placing order
     if (_selectedAddress != null) {
       final addressSet = await orderController.setShippingAddress(
-        fullName: _selectedAddress!.fullName,
-        phoneNumber: _selectedAddress!.phoneNumber,
+        fullName: _selectedAddress!.fullName ?? '',
+        phoneNumber: _selectedAddress!.phoneNumber ?? '',
         streetLine1: _selectedAddress!.streetLine1,
-        streetLine2: _selectedAddress!.streetLine2,
-        city: _selectedAddress!.city,
-        province: _selectedAddress!.province,
-        postalCode: _selectedAddress!.postalCode,
+        streetLine2: _selectedAddress!.streetLine2 ?? '',
+        city: _selectedAddress!.city ?? '',
+        province: null, // Province not available in GraphQL query
+        postalCode: _selectedAddress!.postalCode ?? '',
         countryCode: _selectedAddress!.country.code,
         skipLoading: true,
       );
       
       // If shipping address failed to set, don't proceed to payment
       if (!addressSet) {
-        showErrorSnackbar('Failed to set shipping address. Please try again.');
+        showErrorSnackbar(AppStrings.failedToSetShippingAddress);
         // Reset slider on error
         Future.delayed(
           const Duration(milliseconds: 500),
@@ -669,20 +744,20 @@ debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
     
     // Priority 1: Selected address phone number
     if (_selectedAddress?.phoneNumber != null && 
-        _selectedAddress!.phoneNumber.isNotEmpty) {
-      customerPhone = _selectedAddress!.phoneNumber.trim();
+        (_selectedAddress!.phoneNumber?.isNotEmpty ?? false)) {
+      customerPhone = _selectedAddress!.phoneNumber!.trim();
     } 
     // Priority 2: Customer profile phone number
     else if (customer?.phoneNumber != null && 
-             customer!.phoneNumber!.isNotEmpty) {
+             (customer!.phoneNumber?.isNotEmpty ?? false)) {
       customerPhone = customer.phoneNumber!.trim();
     }
     // Priority 3: Try to get from customer addresses
-    else if (customer != null && customer.addresses.isNotEmpty) {
+    else if (customer != null && (customer.addresses?.isNotEmpty ?? false)) {
       // Try to find phone number from any address
-      for (var address in customer.addresses) {
-        if (address.phoneNumber.isNotEmpty) {
-          customerPhone = address.phoneNumber.trim();
+      for (var address in customer.addresses!) {
+        if ((address.phoneNumber?.isNotEmpty ?? false)) {
+          customerPhone = address.phoneNumber!.trim();
           break;
         }
       }
@@ -706,7 +781,7 @@ debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
     debugPrint('[Checkout] Customer Phone Length: ${customerPhone.length}');
 
     // Use amount from response if available, otherwise use calculated amount
-    final paymentAmount = razorpayOrder.amount ?? amount;
+    final paymentAmount = razorpayOrder.amount ?? amount.toInt();
 
     // Open Razorpay payment gateway with backend-generated order ID
     _razorpayService.openPaymentGateway(
@@ -715,7 +790,7 @@ debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
       amountInPaise: paymentAmount, // Use amount from response or calculated amount
       customerName: _selectedAddress?.fullName ?? 
           (customer != null ? '${customer.firstName} ${customer.lastName}'.trim() : 'Customer'),
-      customerEmail: customer?.emailAddress ?? 'customer@example.com',
+      customerEmail: customer?.emailAddress ?? (AppConfig.emailId.isNotEmpty ? AppConfig.emailId : 'customer@example.com'),
       customerPhone: customerPhone,
       description: 'Order #${orderCode ?? orderId}',
       onPaymentSuccess: (response) async {
@@ -810,6 +885,9 @@ debugPrint('[Checkout] Payment successful, transitioning order...');
         final finalOrderCode = latestOrderCode ?? orderId;
         // Mark order as placed successfully - don't reset slider
         _orderPlacedSuccessfully = true;
+        
+        // Reset loyalty points state after order placement (for next order)
+        bannerController.resetLoyaltyPoints();
         
         if (transitioned) {
           // Clear cart after successful order placement
@@ -944,6 +1022,9 @@ debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${
       
       // Mark order as placed successfully - don't reset slider
       _orderPlacedSuccessfully = true;
+      
+      // Reset loyalty points state after order placement (for next order)
+      bannerController.resetLoyaltyPoints();
       
       // Clear cart after successful order placement
       cartController.clearCart();
@@ -1135,7 +1216,7 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                   itemBuilder: (context, index) {
                     final coupon = enabledCoupons[index];
                     final isApplied =
-                        bannerController.isCouponCodeApplied(coupon.couponCode);
+                        bannerController.isCouponCodeApplied(coupon.couponCode ?? '');
                     final descriptionText =
                         HtmlUtils.stripHtmlTags(coupon.description);
 
@@ -1175,7 +1256,7 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                                         ResponsiveUtils.rp(6)),
                                   ),
                                   child: Text(
-                                    coupon.couponCode,
+                                    coupon.couponCode ?? '',
                                     style: TextStyle(
                                       color: AppColors.textLight,
                                       fontWeight: FontWeight.bold,
@@ -1232,6 +1313,59 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
 
                             SizedBox(height: ResponsiveUtils.rp(8)),
 
+                            // Minimum order amount display with comparison to cart total
+                            Obx(() {
+                              final requiredAmount = bannerController.getRequiredAmount(coupon);
+                              if (requiredAmount > 0) {
+                                final currentCartTotal = (cartController.cart.value?.totalWithTax ?? 0).toInt();
+                                final meetsMinimum = currentCartTotal >= requiredAmount;
+                                final difference = requiredAmount - currentCartTotal;
+                                
+                                return Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: ResponsiveUtils.rp(8),
+                                    vertical: ResponsiveUtils.rp(6),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: meetsMinimum 
+                                        ? AppColors.success.withValues(alpha: 0.1)
+                                        : AppColors.warning.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                    border: Border.all(
+                                      color: meetsMinimum
+                                          ? AppColors.success.withValues(alpha: 0.3)
+                                          : AppColors.warning.withValues(alpha: 0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        meetsMinimum ? Icons.check_circle_outline : Icons.info_outline,
+                                        size: ResponsiveUtils.rp(14),
+                                        color: meetsMinimum ? AppColors.success : AppColors.warning,
+                                      ),
+                                      SizedBox(width: ResponsiveUtils.rp(6)),
+                                      Text(
+                                        meetsMinimum
+                                            ? 'Minimum order: ${PriceFormatter.formatPrice(requiredAmount)} ✓'
+                                            : 'Add ${PriceFormatter.formatPrice(difference)} more to reach minimum of ${PriceFormatter.formatPrice(requiredAmount)}',
+                                        style: TextStyle(
+                                          fontSize: ResponsiveUtils.sp(11),
+                                          fontWeight: FontWeight.w600,
+                                          color: meetsMinimum ? AppColors.success : AppColors.warning,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return SizedBox.shrink();
+                            }),
+
+                            SizedBox(height: ResponsiveUtils.rp(8)),
+
                             // Description
                             if (descriptionText.isNotEmpty) ...[
                               Text(
@@ -1255,7 +1389,7 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                                   ),
                                   SizedBox(width: ResponsiveUtils.rp(4)),
                                   Text(
-                                    'Expires: ${DateTime.parse(coupon.endsAt!).toString().split(' ')[0]}',
+                                    'Expires: ${coupon.endsAt != null ? coupon.endsAt!.toString().split(' ')[0] : 'N/A'}',
                                     style: TextStyle(
                                       color: AppColors.error,
                                       fontSize: ResponsiveUtils.sp(12),
@@ -1272,7 +1406,7 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                               FutureBuilder<Map<String, dynamic>>(
                                 future:
                                     bannerController.getCouponValidationStatus(
-                                        coupon.couponCode),
+                                        coupon.couponCode ?? ''),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     final validation = snapshot.data!;
@@ -1334,7 +1468,7 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                               SizedBox(height: ResponsiveUtils.rp(12)),
                             ],
 
-                            // Apply/Remove button
+                            // Apply/Remove button or minimum amount warning
                             SizedBox(
                               width: double.infinity,
                               child: Obx(() {
@@ -1350,8 +1484,13 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                                 // Disable remove if 2 or more coupons are applied
                                 final canRemoveCoupon = appliedCouponCount < 2;
 
+                                // Check minimum order amount for this coupon
+                                final requiredAmount = bannerController.getRequiredAmount(coupon);
+                                final currentCartTotal = (cartController.cart.value?.totalWithTax ?? 0).toInt();
+                                final meetsMinimumAmount = requiredAmount == 0 || currentCartTotal >= requiredAmount;
+
                                 return ElevatedButton(
-                                  onPressed: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon))
+                                  onPressed: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon) || (!isApplied && !meetsMinimumAmount && requiredAmount > 0))
                                       ? null
                                       : () async {
                                           if (isApplied) {
@@ -1369,7 +1508,7 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                                             final success =
                                                 await bannerController
                                                     .removeCouponCode(
-                                                        couponCodeToRemove);
+                                                        couponCodeToRemove ?? '');
                                             if (success) {
                                               // Wait a bit for backend to process product removal
                                               await Future.delayed(Duration(milliseconds: 500));
@@ -1397,7 +1536,7 @@ debugPrint(  '[CheckoutPage] Bottom sheet - No enabled coupons, showing empty st
                                             // Apply coupon
                                             final hasProducts = bannerController
                                                 .hasCouponProducts(
-                                                    coupon.couponCode);
+                                                    coupon.couponCode ?? '');
 debugPrint('[CheckoutPage] Coupon ${coupon.couponCode} has products: $hasProducts');
                                             
                                             if (hasProducts) {
@@ -1405,7 +1544,7 @@ debugPrint('[CheckoutPage] Coupon ${coupon.couponCode} has products: $hasProduct
 debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}');
                                               final result = await bannerController
                                                   .applyCouponCodeWithProducts(
-                                                      coupon.couponCode);
+                                                      coupon.couponCode ?? '');
                                               if (result['success']) {
                                                 // Cart is already updated by applyCouponCodeWithProducts
                                                 // No need for additional refresh - just update UI
@@ -1433,7 +1572,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                                               final result =
                                                   await bannerController
                                                       .applyCouponCode(
-                                                          coupon.couponCode);
+                                                      coupon.couponCode ?? '');
                                               if (result['success']) {
                                                 // Cart is already updated by applyCouponCode
                                                 // No need for additional refresh - just update UI
@@ -1452,7 +1591,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                                           }
                                         },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon))
+                                    backgroundColor: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon) || (!isApplied && !meetsMinimumAmount && requiredAmount > 0))
                                         ? AppColors.grey300
                                         : (isApplied
                                             ? AppColors.error
@@ -1470,6 +1609,8 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                                         ? 'Another Coupon Applied'
                                         : (isApplied && !canRemoveCoupon)
                                             ? 'Cannot Remove'
+                                            : (!isApplied && !meetsMinimumAmount && requiredAmount > 0)
+                                                ? 'Minimum ${PriceFormatter.formatPrice(requiredAmount)} Required'
                                             : (isApplied
                                                 ? 'Remove Coupon'
                                                 : 'Apply Coupon'),
@@ -1696,26 +1837,16 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
       
       if (appliedCouponCode != null) {
         // Find the coupon in available coupons to get its name
-        final coupon = bannerController.availableCouponCodes.firstWhere(
-          (c) => c.couponCode.toUpperCase() == appliedCouponCode.toUpperCase(),
-          orElse: () => CouponCodeModel(
-            id: '',
-            name: '',
-            couponCode: '',
-            enabled: false,
-            createdAt: '',
-            updatedAt: '',
-            description: '',
-            startsAt: '',
-            endsAt: '',
-            perCustomerUsageLimit: 0,
-            usageLimit: 0,
-            actions: [],
-            conditions: [],
-          ),
-        );
+        Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+        try {
+          coupon = bannerController.availableCouponCodes.firstWhere(
+            (c) => (c.couponCode ?? '').toUpperCase() == appliedCouponCode.toUpperCase(),
+          );
+        } catch (e) {
+          coupon = null;
+        }
         
-        if (coupon.id.isNotEmpty) {
+        if (coupon != null && coupon.id.isNotEmpty) {
           appliedCouponName = coupon.name;
           // Check if coupon has free_shipping action
           hasFreeShippingInCoupon = coupon.actions.any(
@@ -1767,7 +1898,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
               children: [
                 _buildSummaryRow(
                   'Items ($itemCount)',
-                  '₹${(subtotal / 100).toStringAsFixed(2)}',
+                  PriceFormatter.formatPrice(subtotal.toInt()),
                 ),
                 SizedBox(height: ResponsiveUtils.rp(12)),
                 // Delivery Charge - Show "FREE" with coupon code if applicable
@@ -1828,7 +1959,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                     'Delivery Charge',
                     hasFreeShipping 
                         ? 'FREE' 
-                        : '₹${(shipping / 100).toStringAsFixed(2)}',
+                        : PriceFormatter.formatPrice(shipping.toInt()),
                     valueColor: hasFreeShipping ? AppColors.success : null,
                   ),
                 ],
@@ -1838,7 +1969,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   _buildSummaryRow(
                     'Loyalty Points Discount',
-                    '-₹${(loyaltyDiscountAmount / 100).toStringAsFixed(2)}',
+                    '-${PriceFormatter.formatPrice(loyaltyDiscountAmount.toInt())}',
                     valueColor: AppColors.success,
                   ),
                 ],
@@ -1876,7 +2007,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                         ),
                       ),
                       Text(
-                        '-₹${(couponDiscount / 100).toStringAsFixed(2)}',
+                        '-${PriceFormatter.formatPrice(couponDiscount.toInt())}',
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(15),
                           fontWeight: FontWeight.w600,
@@ -1904,7 +2035,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                       ),
                     ),
                     Text(
-                      '₹${(total / 100).toStringAsFixed(2)}',
+                      PriceFormatter.formatPrice(total.toInt()),
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(20),
                         fontWeight: FontWeight.bold,
@@ -2090,7 +2221,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                               await _loadCustomerAddresses();
                             },
                             icon: Icon(Icons.add_location_alt_rounded, size: ResponsiveUtils.rp(20)),
-                            label: Text('Add Address'),
+                            label: Text(AppStrings.addAddress),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: shouldBlink ? AppColors.error : AppColors.button,
                               foregroundColor: AppColors.buttonText,
@@ -2151,7 +2282,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _selectedAddress!.fullName,
+                        _selectedAddress!.fullName ?? '',
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(16),
                           fontWeight: FontWeight.w600,
@@ -2160,7 +2291,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                       ),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       Text(
-                        '${_selectedAddress!.streetLine1}${_selectedAddress!.streetLine2.isNotEmpty ? ', ${_selectedAddress!.streetLine2}' : ''}, ${_selectedAddress!.city}${_selectedAddress!.province.isNotEmpty ? ', ${_selectedAddress!.province}' : ''}',
+                        '${_selectedAddress!.streetLine1}${(_selectedAddress!.streetLine2?.isNotEmpty ?? false) ? ', ${_selectedAddress!.streetLine2}' : ''}, ${_selectedAddress!.city ?? ''}',
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(14),
                           color: shouldBlink ? AppColors.error : AppColors.textSecondary,
@@ -2171,13 +2302,13 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                       Row(
                         children: [
                           Text(
-                            _selectedAddress!.phoneNumber,
+                            _selectedAddress!.phoneNumber ?? '',
                             style: TextStyle(
                               fontSize: ResponsiveUtils.sp(14),
                               color: shouldBlink ? AppColors.error : AppColors.textSecondary,
                             ),
                           ),
-                          if (_selectedAddress!.defaultShippingAddress) ...[
+                          if (_selectedAddress!.defaultShippingAddress ?? false) ...[
                             SizedBox(width: ResponsiveUtils.rp(12)),
                             Container(
                               padding: EdgeInsets.symmetric(
@@ -2309,7 +2440,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                           await _loadCustomerAddresses();
                         },
                         icon: Icon(Icons.add_location_alt_rounded, size: ResponsiveUtils.rp(20)),
-                        label: Text('Add Address'),
+                        label: Text(AppStrings.addAddress),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: shouldBlink ? AppColors.error : AppColors.button,
                           foregroundColor: Colors.white,
@@ -2391,7 +2522,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
           ),
           SizedBox(height: ResponsiveUtils.rp(12)),
           Text(
-            _selectedAddress!.fullName,
+            _selectedAddress!.fullName ?? '',
             style: TextStyle(
               fontSize: ResponsiveUtils.sp(15),
               fontWeight: FontWeight.w600,
@@ -2409,7 +2540,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
               SizedBox(width: ResponsiveUtils.rp(8)),
               Expanded(
                 child: Text(
-                  '${_selectedAddress!.streetLine1}${_selectedAddress!.streetLine2.isNotEmpty ? ', ${_selectedAddress!.streetLine2}' : ''}, ${_selectedAddress!.city}${_selectedAddress!.province.isNotEmpty ? ', ${_selectedAddress!.province}' : ''}',
+                  '${_selectedAddress!.streetLine1}${(_selectedAddress!.streetLine2?.isNotEmpty ?? false) ? ', ${_selectedAddress!.streetLine2}' : ''}, ${_selectedAddress!.city ?? ''}',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(14),
                     color: AppColors.textSecondary,
@@ -2428,13 +2559,13 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
               ),
               SizedBox(width: ResponsiveUtils.rp(8)),
               Text(
-                _selectedAddress!.phoneNumber,
+                _selectedAddress!.phoneNumber ?? '',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(14),
                   color: AppColors.textSecondary,
                 ),
               ),
-              if (_selectedAddress!.defaultShippingAddress) ...[
+              if (_selectedAddress!.defaultShippingAddress ?? false) ...[
                 Spacer(),
                 Container(
                   padding: EdgeInsets.symmetric(
@@ -2484,16 +2615,16 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
 
       // Check for out of stock items
       final hasOutOfStockItems = cart?.lines.any((line) {
-        final stockLevel = line.productVariant.stockLevel?.toUpperCase();
+        final stockLevel = line.productVariant.stockLevel.toUpperCase();
         final isLowStock = stockLevel == 'LOW_STOCK';
         final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-        final isProductDisabled = line.productVariant.productEnabled == false;
+        final isProductDisabled = line.productVariant.product.enabled == false;
         return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
       }) ?? false;
 
       // Get eligible coupons
       final subTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
-      final eligibleCoupons = bannerController.getEligibleCoupons(subTotal);
+      final eligibleCoupons = bannerController.getEligibleCoupons(subTotal.toInt());
 
       return Container(
         padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
@@ -2587,7 +2718,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                           ),
                           Expanded(
                             child: Text(
-                              'Add ₹${differenceInRupees.toStringAsFixed(2)} more to unlock coupon \'${coupon.couponCode}\'',
+                              'Add ${PriceFormatter.formatPrice((differenceInRupees * 100).toInt())} more to unlock coupon \'${coupon.couponCode}\'',
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
                                 fontWeight: FontWeight.bold,
@@ -2635,7 +2766,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                           ? AppColors.button
                           : AppColors.inputBorder,
                       text: isEnabled && total > 0
-                          ? 'Place Order - ₹${(total / 100).toStringAsFixed(2)}'
+                          ? 'Place Order - ${PriceFormatter.formatPrice(total.toInt())}'
                           : 'Place Order',
                       textStyle: TextStyle(
                         fontSize: ResponsiveUtils.sp(16),
@@ -2813,7 +2944,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
       return false;
     }
     if (orderController.selectedPaymentMethod.value == null) {
-      showErrorSnackbar('Please select a payment method');
+      showErrorSnackbar(AppStrings.pleaseSelectPaymentMethod);
       return false;
     }
     return true;
@@ -2965,7 +3096,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
             child: ElevatedButton.icon(
               onPressed: () => _showCouponCodesBottomSheet(),
               icon: Icon(Icons.local_offer, size: ResponsiveUtils.rp(20)),
-              label: Text('Browse Coupons'),
+              label: Text(AppStrings.browseCoupons),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.button,
                 foregroundColor: Colors.white,
@@ -3235,7 +3366,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                             color: AppColors.textPrimary,
                           ),
                           decoration: InputDecoration(
-                            hintText: 'Enter points manually',
+                            hintText: AppStrings.enterPointsManually,
                             hintStyle: TextStyle(
                               color: AppColors.textTertiary,
                               fontSize: ResponsiveUtils.sp(14),
@@ -3275,7 +3406,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                             vertical: ResponsiveUtils.rp(12),
                           ),
                         ),
-                        child: Text('Apply'),
+                        child: Text(AppStrings.apply),
                       ),
                     ],
                   ),

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/customer/customer_models.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
+import '../../utils/app_config.dart';
+import '../../utils/app_strings.dart';
 import '../../shared/widgets/buttons/primary_button.dart';
+import '../../graphql/Customer.graphql.dart';
 
 class CheckoutAddressSection extends StatelessWidget {
-  final AddressModel? selectedAddress;
-  final Function(AddressModel) onAddressSelected;
+  final Query$GetActiveCustomer$activeCustomer$addresses? selectedAddress;
+  final Function(Query$GetActiveCustomer$activeCustomer$addresses) onAddressSelected;
   final Function() onAddAddress;
   final bool shouldBlink;
 
@@ -31,7 +33,7 @@ class CheckoutAddressSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Delivery Address',
+                  AppStrings.deliveryAddress,
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(18),
                     fontWeight: FontWeight.bold,
@@ -49,7 +51,7 @@ class CheckoutAddressSection extends StatelessWidget {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'Change',
+                      AppStrings.change,
                       style: TextStyle(
                         color: AppColors.button,
                         fontSize: ResponsiveUtils.sp(14),
@@ -117,7 +119,7 @@ class CheckoutAddressSection extends StatelessWidget {
                     ),
                     SizedBox(height: ResponsiveUtils.rp(12)),
                     Text(
-                      'No delivery address selected',
+                      AppStrings.noDeliveryAddressSelected,
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(15),
                         color: shouldBlink
@@ -128,7 +130,7 @@ class CheckoutAddressSection extends StatelessWidget {
                     ),
                     SizedBox(height: ResponsiveUtils.rp(16)),
                     PrimaryButton(
-                      text: 'Add Address',
+                      text: AppStrings.addAddress,
                       icon: Icons.add_location_alt_rounded,
                       onPressed: onAddAddress,
                       backgroundColor: shouldBlink
@@ -183,7 +185,7 @@ class CheckoutAddressSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  selectedAddress!.fullName,
+                  selectedAddress!.fullName ?? '',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(16),
                     fontWeight: FontWeight.w600,
@@ -194,7 +196,7 @@ class CheckoutAddressSection extends StatelessWidget {
                 ),
                 SizedBox(height: ResponsiveUtils.rp(8)),
                 Text(
-                  '${selectedAddress!.streetLine1}${selectedAddress!.streetLine2.isNotEmpty ? ', ${selectedAddress!.streetLine2}' : ''}, ${selectedAddress!.city}${selectedAddress!.province.isNotEmpty ? ', ${selectedAddress!.province}' : ''}',
+                  '${selectedAddress!.streetLine1}${(selectedAddress!.streetLine2?.isNotEmpty ?? false) ? ', ${selectedAddress!.streetLine2}' : ''}, ${selectedAddress!.city ?? ''}',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(14),
                     color: shouldBlink
@@ -207,7 +209,9 @@ class CheckoutAddressSection extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      selectedAddress!.phoneNumber,
+                      selectedAddress!.phoneNumber != null 
+                          ? AppConfig.formatPhoneNumber(selectedAddress!.phoneNumber)
+                          : '',
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(14),
                         color: shouldBlink
@@ -215,7 +219,7 @@ class CheckoutAddressSection extends StatelessWidget {
                             : AppColors.textSecondary,
                       ),
                     ),
-                    if (selectedAddress!.defaultShippingAddress) ...[
+                    if (selectedAddress!.defaultShippingAddress ?? false) ...[
                       SizedBox(width: ResponsiveUtils.rp(12)),
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -230,7 +234,7 @@ class CheckoutAddressSection extends StatelessWidget {
                               BorderRadius.circular(ResponsiveUtils.rp(4)),
                         ),
                         child: Text(
-                          'Default',
+                          AppStrings.defaultLabel,
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(12),
                             color: shouldBlink

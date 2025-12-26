@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:recipe.app/controllers/collection%20controller/Collectionmodel.dart';
 
 import '../controllers/collection controller/collectioncontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../graphql/product.graphql.dart';
 import '../theme/sizes.dart';
 import '../widgets/card.dart';
 
 class CollectionCarousel extends StatefulWidget {
-  final Function(Collection) onCollectionTap;
+  final Function(Query$Collections$collections$items) onCollectionTap;
 
   const CollectionCarousel({Key? key, required this.onCollectionTap})
       : super(key: key);
@@ -166,7 +166,7 @@ class _CollectionCarouselState extends State<CollectionCarousel> {
 }
 
 class CollectionCard extends StatelessWidget {
-  final Collection collection;
+  final Query$Collections$collections$items collection;
 
   const CollectionCard({Key? key, required this.collection}) : super(key: key);
 

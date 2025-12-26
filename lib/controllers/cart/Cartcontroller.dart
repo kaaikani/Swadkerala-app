@@ -1,21 +1,23 @@
 import 'package:get/get.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:flutter/foundation.dart';
-import '../../graphql/cart.graphql.dart'; // Generated GraphQL queries/mutations
+import '../../graphql/cart.graphql.dart' as cart_graphql; // Generated GraphQL queries/mutations
 import '../../graphql/order.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../../utils/price_formatter.dart';
+import '../../services/app_icon_service.dart';
 import '../order/ordercontroller.dart';
-import '../order/ordermodels.dart' as order_models;
 import '../utilitycontroller/utilitycontroller.dart';
 import '../base_controller.dart';
-import 'cartmodels.dart';
-
+import '../banner/bannercontroller.dart';
 class CartController extends BaseController {
-  Rx<Order?> cart = Rx<Order?>(null);
-  Rx<ErrorResult?> error = Rx<ErrorResult?>(null);
+  Rx<cart_graphql.Fragment$Cart?> cart = Rx<cart_graphql.Fragment$Cart?>(null);
+  Rx<cart_graphql.Fragment$ErrorResult?> error = Rx<cart_graphql.Fragment$ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
   final OrderController orderController = Get.put(OrderController());
+  
+  // Track previous cart count to update badge only when it changes
+  int _previousCartCount = 0;
 
   // Flag to prevent concurrent transitions to AddingItems
   bool _isTransitioningToAddingItems = false;
@@ -32,10 +34,10 @@ class CartController extends BaseController {
         // Don't transition if order is in ArrangingPayment - user should complete payment first
         if (currentState == 'arrangingpayment') {
           debugPrint('[Cart] Order is in ArrangingPayment state. Cannot add items. Please complete or cancel payment first.');
-          error.value = ErrorResult(
-            errorCode: "ORDER_IN_PAYMENT",
-            message: 'Cannot add items while payment is being arranged. Please complete or cancel the payment first.',
-          );
+          // Error handled by handleException
+          error.value = null;
+          handleException(Exception('Cannot add items while payment is being arranged. Please complete or cancel the payment first.'), 
+            customErrorMessage: 'Cannot add items while payment is being arranged. Please complete or cancel the payment first.');
           return false;
         }
         
@@ -49,10 +51,10 @@ class CartController extends BaseController {
             final transitioned = await orderController.transitionToState('AddingItems', skipLoading: true);
             if (!transitioned) {
               debugPrint('[Cart] Failed to transition order to AddingItems state');
-              error.value = ErrorResult(
-                errorCode: "TRANSITION_FAILED",
-                message: 'Unable to modify order. Please try again.',
-              );
+              // Error handled by handleException
+              error.value = null;
+              handleException(Exception('Unable to modify order. Please try again.'), 
+                customErrorMessage: 'Unable to modify order. Please try again.');
               return false;
             }
             
@@ -69,18 +71,18 @@ class CartController extends BaseController {
           await getActiveOrder();
           final updatedState = cart.value?.state.toLowerCase();
           if (updatedState != 'addingitems') {
-            error.value = ErrorResult(
-              errorCode: "TRANSITION_IN_PROGRESS",
-              message: 'Please wait for the current operation to complete.',
-            );
+            // Error handled by handleException
+            error.value = null;
+            handleException(Exception('Please wait for the current operation to complete.'), 
+              customErrorMessage: 'Please wait for the current operation to complete.');
             return false;
           }
         }
       }
       
       final response = await GraphqlService.client.value.mutate$AddToCart(
-        Options$Mutation$AddToCart(
-          variables: Variables$Mutation$AddToCart(
+        cart_graphql.Options$Mutation$AddToCart(
+          variables: cart_graphql.Variables$Mutation$AddToCart(
             variantId:
                 productVariantId.toString(), // ✅ Ensure String conversion
             qty: quantity,
@@ -90,11 +92,8 @@ class CartController extends BaseController {
 
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to add item to cart')) {
-        error.value = ErrorResult(
-          errorCode: "GRAPHQL_ERROR",
-          message:
-              response.exception?.toString() ?? 'Failed to add item to cart',
-        );
+        // Error handled by checkResponseForErrors
+        error.value = null;
         return false;
       }
 
@@ -104,23 +103,34 @@ class CartController extends BaseController {
         return false;
       }
 
-      if (addItemResult is! Mutation$AddToCart$addItemToOrder$$Order) {
+      if (addItemResult is! cart_graphql.Mutation$AddToCart$addItemToOrder$$Order) {
         _handleAddToCartError(addItemResult);
         return false;
       }
 
-      cart.value = Order.fromJson(addItemResult.toJson());
+      cart.value = addItemResult;
 
       if (!await _ensureOrderConsistency()) {
         return false;
+      }
+
+      // Validate and remove coupons if cart total is below minimum
+      // Also validate loyalty points if discount exceeds subtotal
+      // Note: This is less critical when adding items (cart total increases)
+      // but we still check in case multiple items were removed elsewhere
+      try {
+        final bannerController = Get.find<BannerController>();
+        await bannerController.validateAndRemoveCouponsIfNeeded();
+      } catch (e) {
+        debugPrint('[Cart] Could not validate coupons/loyalty points after add: $e');
       }
 
       return true;
     } catch (e) {
 debugPrint('[Cart] Exception: $e');
       handleException(e, customErrorMessage: 'Failed to add item to cart');
-      error.value =
-          ErrorResult(errorCode: "NETWORK_ERROR", message: e.toString());
+      // Error handled by handleException
+      error.value = null;
       return false;
     } finally {
 debugPrint('[Cart] addToCart finished.');
@@ -133,7 +143,7 @@ debugPrint('[Cart] Fetching active order...');
 
     try {
       final response = await GraphqlService.client.value.query$GetCartTotals(
-        Options$Query$GetCartTotals(
+        cart_graphql.Options$Query$GetCartTotals(
           fetchPolicy: graphql.FetchPolicy.networkOnly,
           cacheRereadPolicy: graphql.CacheRereadPolicy.ignoreAll,
         ),
@@ -229,28 +239,48 @@ debugPrint('[Cart]     Method Name: ${methodData['name']}');
 debugPrint('[Cart] ===================================================');
 debugPrint('═══════════════════════════════════════════════════════════');
         
-        // Only update cart if order has lines or is a valid order
-        // This prevents clearing the cart when server returns empty/null order
+        // Check if order has lines or valid total
         final hasLines = orderJson['lines'] != null && 
                        (orderJson['lines'] as List).isNotEmpty;
         final hasValidTotal = (orderJson['totalQuantity'] ?? 0) > 0;
         
         if (hasLines || hasValidTotal) {
-          cart.value = Order.fromJson(orderJson);
+          // Parse order from JSON using generated type
+          cart.value = cart_graphql.Fragment$Cart.fromJson(orderJson);
 debugPrint(  '[Cart] Active order loaded with ${cart.value?.totalQuantity ?? 0} items');
+          
+          // Validate and remove coupons if cart total is below minimum
+          try {
+            final bannerController = Get.find<BannerController>();
+            await bannerController.validateAndRemoveCouponsIfNeeded();
+          } catch (e) {
+            debugPrint('[Cart] Could not validate coupons after loading: $e');
+          }
+          
           return true;
         } else {
-debugPrint('[Cart] Warning: Order data has no lines, preserving current cart');
-          // Don't update cart if order has no lines - preserve current cart state
-          // This prevents clearing the cart when server returns incomplete data
-          return cart.value != null; // Return true if we have existing cart, false otherwise
+          // Cart is empty - clear it so UI updates properly
+          cart.value = null;
+          _updateAppBadge(); // Update badge when cart is empty
+debugPrint('[Cart] Cart is empty - cleared cart value');
+          
+          // Remove any applied coupons when cart is empty
+          try {
+            final bannerController = Get.find<BannerController>();
+            await bannerController.validateAndRemoveCouponsIfNeeded();
+          } catch (e) {
+            debugPrint('[Cart] Could not validate coupons after clear: $e');
+          }
+          
+          return true;
         }
       }
 
-      // If orderData is null, don't clear the cart - preserve existing state
-      // This prevents clearing the cart when server temporarily returns null
-debugPrint('[Cart] No active order found, preserving current cart state');
-      return cart.value != null; // Return true if we have existing cart, false otherwise
+      // If orderData is null, clear the cart
+      cart.value = null;
+      _updateAppBadge(); // Update badge when no order found
+debugPrint('[Cart] No active order found - cleared cart');
+      return true;
     } catch (e) {
 debugPrint('[Cart] Exception: $e');
       handleException(e, customErrorMessage: 'Failed to load cart');
@@ -261,9 +291,11 @@ debugPrint('[Cart] Exception: $e');
   /// Adjust line quantity
   Future<bool> adjustOrderLine(
       {required String orderLineId, required int quantity}) async {
+    debugPrint('[Cart] adjustOrderLine called - orderLineId: $orderLineId, quantity: $quantity');
+    
     // Ensure minimum quantity is 1
     if (quantity < 1) {
-debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
+      debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
       quantity = 1;
     }
     
@@ -276,10 +308,10 @@ debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
         // Don't transition if order is in ArrangingPayment - user should complete payment first
         if (currentState == 'arrangingpayment') {
           debugPrint('[Cart] Order is in ArrangingPayment state. Cannot modify items. Please complete or cancel payment first.');
-          error.value = ErrorResult(
-            errorCode: "ORDER_IN_PAYMENT",
-            message: 'Cannot modify items while payment is being arranged. Please complete or cancel the payment first.',
-          );
+          // Error handled by handleException
+          error.value = null;
+          handleException(Exception('Cannot modify items while payment is being arranged. Please complete or cancel the payment first.'), 
+            customErrorMessage: 'Cannot modify items while payment is being arranged. Please complete or cancel the payment first.');
           return false;
         }
         
@@ -293,10 +325,10 @@ debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
             final transitioned = await orderController.transitionToState('AddingItems', skipLoading: true);
             if (!transitioned) {
               debugPrint('[Cart] Failed to transition order to AddingItems state');
-              error.value = ErrorResult(
-                errorCode: "TRANSITION_FAILED",
-                message: 'Unable to modify order. Please try again.',
-              );
+              // Error handled by handleException
+              error.value = null;
+              handleException(Exception('Unable to modify order. Please try again.'), 
+                customErrorMessage: 'Unable to modify order. Please try again.');
               return false;
             }
             
@@ -313,14 +345,16 @@ debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
           await getActiveOrder();
           final updatedState = cart.value?.state.toLowerCase();
           if (updatedState != 'addingitems') {
-            error.value = ErrorResult(
-              errorCode: "TRANSITION_IN_PROGRESS",
-              message: 'Please wait for the current operation to complete.',
-            );
+            // Error handled by handleException
+            error.value = null;
+            handleException(Exception('Please wait for the current operation to complete.'), 
+              customErrorMessage: 'Please wait for the current operation to complete.');
             return false;
           }
         }
       }
+      
+      debugPrint('[Cart] Calling GraphQL adjustOrderLine mutation - orderLineId: $orderLineId, quantity: $quantity');
       
       final response = await GraphqlService.client.value.mutate$AdjustOrderLine(
         Options$Mutation$AdjustOrderLine(
@@ -331,14 +365,17 @@ debugPrint('[Cart] Quantity cannot be less than 1. Setting to 1.');
         ),
       );
 
+      debugPrint('[Cart] GraphQL adjustOrderLine response received');
+
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to update cart item')) {
+        debugPrint('[Cart] GraphQL response has errors');
         return false;
       }
 
       final result = response.parsedData?.adjustOrderLine;
       if (result == null) {
-debugPrint('[Cart] No adjustOrderLine result');
+        debugPrint('[Cart] No adjustOrderLine result');
         return false;
       }
 
@@ -347,12 +384,14 @@ debugPrint('[Cart] No adjustOrderLine result');
         return false;
       }
 
-      cart.value = Order.fromJson(result.toJson());
+      // Convert result to JSON and parse as Fragment$Cart to avoid type mismatch
+      final orderJson = result.toJson();
+      cart.value = cart_graphql.Fragment$Cart.fromJson(orderJson);
 debugPrint(  '[Cart] Order line adjusted. State: ${cart.value?.state}, qty: ${cart.value?.totalQuantity}');
       
       // Also update OrderController to keep them in sync
       try {
-        orderController.currentOrder.value = order_models.OrderModel.fromJson(result.toJson());
+        orderController.currentOrder.value = result;
 debugPrint('[Cart] OrderController updated after adjusting line');
       } catch (e) {
 debugPrint('[Cart] Could not update OrderController: $e');
@@ -360,6 +399,14 @@ debugPrint('[Cart] Could not update OrderController: $e');
 
       if (!await _ensureOrderConsistency()) {
         return false;
+      }
+
+      // Validate and remove coupons if cart total is below minimum
+      try {
+        final bannerController = Get.find<BannerController>();
+        await bannerController.validateAndRemoveCouponsIfNeeded();
+      } catch (e) {
+        debugPrint('[Cart] Could not validate coupons after adjustment: $e');
       }
 
       return true;
@@ -371,7 +418,7 @@ debugPrint('[Cart] Adjust line error: $e');
   }
 
   /// Returns the [OrderLine] associated with the given variant ID if present in the cart
-  OrderLine? _findOrderLineByVariant(String variantId) {
+  cart_graphql.Fragment$Cart$lines? _findOrderLineByVariant(String variantId) {
     final currentCart = cart.value;
     if (currentCart == null) return null;
 
@@ -413,13 +460,13 @@ debugPrint('[Cart] Adjust line error: $e');
   bool get hasUnavailableItems {
     final order = cart.value;
     if (order == null) return false;
-    if (order.validationStatus?.hasUnavailableItems ?? false) {
+    if (order.validationStatus.hasUnavailableItems) {
       return true;
     }
     return order.lines.any((line) => !line.isAvailable);
   }
 
-  List<OrderLine> get unavailableLines {
+  List<cart_graphql.Fragment$Cart$lines> get unavailableLines {
     final order = cart.value;
     if (order == null) return [];
     return order.lines.where((line) => !line.isAvailable).toList();
@@ -430,8 +477,8 @@ debugPrint('[Cart] Adjust line error: $e');
     if (order == null) return null;
 
     final validationReason =
-        order.validationStatus?.unavailableItems.isNotEmpty == true
-            ? order.validationStatus!.unavailableItems.first.reason
+        order.validationStatus.unavailableItems.isNotEmpty
+            ? order.validationStatus.unavailableItems.first.reason
             : null;
     if (validationReason != null && validationReason.isNotEmpty) {
       return validationReason;
@@ -453,10 +500,19 @@ debugPrint('[Cart] Adjust line error: $e');
   }
 
   /// Clear cart
-  void clearCart() {
+  Future<void> clearCart() async {
     cart.value = null;
     error.value = null;
+    _updateAppBadge(); // Update badge when cart is cleared
 debugPrint('[Cart] Cart cleared');
+    
+    // Remove any applied coupons when cart is cleared
+    try {
+      final bannerController = Get.find<BannerController>();
+      await bannerController.validateAndRemoveCouponsIfNeeded();
+    } catch (e) {
+      debugPrint('[Cart] Could not validate coupons after clear: $e');
+    }
   }
 
   /// Check if any applied coupon has free_shipping action
@@ -501,7 +557,7 @@ debugPrint('[Cart] Returning Free for shipping display');
       return 'Free';
     }
 
-    if (cart.value == null) return 'Rs 0';
+    if (cart.value == null) return formatPrice(0);
 
     final shippingCost = cart.value!.shippingWithTax;
 debugPrint(  '[Cart] Returning shipping cost: ${formatPrice(shippingCost.toInt())}');
@@ -555,11 +611,12 @@ debugPrint(  '[Cart] Detected locked/inconsistent order (state: ${current.state}
 
   void _setCartError(String code, String message) {
 debugPrint('[Cart] Error [$code]: $message');
-    error.value = ErrorResult(errorCode: code, message: message);
+    // Error handled by handleException
+    error.value = null;
     handleException(Exception(message), customErrorMessage: message);
   }
 
-  void _handleAddToCartError(Mutation$AddToCart$addItemToOrder result) {
+  void _handleAddToCartError(cart_graphql.Mutation$AddToCart$addItemToOrder result) {
     final message = _mapAddToCartErrorMessage(result);
 debugPrint('[Cart] AddToCart error (${result.$__typename}): $message');
     _setCartError(result.$__typename, message);
@@ -572,26 +629,26 @@ debugPrint(  '[Cart] AdjustOrderLine error (${result.$__typename}): $message');
     _setCartError(result.$__typename, message);
   }
 
-  String _mapAddToCartErrorMessage(Mutation$AddToCart$addItemToOrder result) {
+  String _mapAddToCartErrorMessage(cart_graphql.Mutation$AddToCart$addItemToOrder result) {
     switch (result.$__typename) {
       case 'InsufficientStockError':
         return (result
-                as Mutation$AddToCart$addItemToOrder$$InsufficientStockError)
+                as cart_graphql.Mutation$AddToCart$addItemToOrder$$InsufficientStockError)
             .message;
       case 'OrderModificationError':
         return (result
-                as Mutation$AddToCart$addItemToOrder$$OrderModificationError)
+                as cart_graphql.Mutation$AddToCart$addItemToOrder$$OrderModificationError)
             .message;
       case 'OrderLimitError':
-        return (result as Mutation$AddToCart$addItemToOrder$$OrderLimitError)
+        return (result as cart_graphql.Mutation$AddToCart$addItemToOrder$$OrderLimitError)
             .message;
       case 'NegativeQuantityError':
         return (result
-                as Mutation$AddToCart$addItemToOrder$$NegativeQuantityError)
+                as cart_graphql.Mutation$AddToCart$addItemToOrder$$NegativeQuantityError)
             .message;
       case 'OrderInterceptorError':
         return (result
-                as Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
+                as cart_graphql.Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
             .message;
       default:
         return 'Unable to add this item to your cart right now.';
@@ -623,6 +680,16 @@ debugPrint(  '[Cart] AdjustOrderLine error (${result.$__typename}): $message');
             .message;
       default:
         return 'Unable to update this cart item right now.';
+    }
+  }
+
+  /// Update app icon badge with current cart count
+  Future<void> _updateAppBadge() async {
+    final currentCount = cartItemCount;
+    // Only update if count changed to avoid unnecessary calls
+    if (currentCount != _previousCartCount) {
+      _previousCartCount = currentCount;
+      await AppIconService.instance.updateBadgeCount(currentCount);
     }
   }
 

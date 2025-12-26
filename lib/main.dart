@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:ui';
+import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -14,13 +16,14 @@ import 'package:recipe.app/services/analytics_service.dart';
 import 'package:recipe.app/services/remote_config_service.dart';
 import 'controllers/customer/customer_controller.dart';
 import 'controllers/banner/bannercontroller.dart';
-import 'controllers/cart/Cartcontroller.dart';
+import '../controllers/cart/Cartcontroller.dart';
 import 'controllers/collection controller/collectioncontroller.dart';
 import 'routes.dart';
 import 'controllers/utilitycontroller/utilitycontroller.dart';
 import 'controllers/authentication/authenticationcontroller.dart';
 import 'controllers/theme_controller.dart';
 import 'theme/theme.dart';
+import 'pages/error_page.dart';
 
 /// Check for app updates on startup
 /// This function is called automatically in main() to check for updates
@@ -207,56 +210,197 @@ debugPrint('[Main] Firebase initialization error: $e');
 }
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // Set up global error handlers first (before any initialization)
+  _setupErrorHandlers();
 
-  // Initialize Firebase (Crashlytics + Messaging) only on mobile/desktop, not Web.
-  await _initializeFirebase();
+  // Run everything in a Zone to catch all errors
+  runZonedGuarded(
+    () async {
+      // Initialize Flutter bindings inside the zone
+      WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize GetStorage
-  await GetStorage.init();
-  await dotenv.load(fileName: ".env"); // <-- load dotenv first
-  
-  try {
-    await GraphqlService.initialize();
-  } catch (e, stackTrace) {
-    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'GraphQL initialization failed');
-  }
-  
-  // Initialize in-app update service
-  try {
-    await InAppUpdateService().initialize();
-  } catch (e, stackTrace) {
-    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'In-app update initialization failed');
-  }
+      // Initialize Firebase (Crashlytics + Messaging) only on mobile/desktop, not Web.
+      await _initializeFirebase();
 
-  // Initialize deep link service
-  try {
-    await DeepLinkService().initialize();
-  } catch (e, stackTrace) {
-    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Deep link initialization failed');
-  }
+      // Initialize GetStorage
+      await GetStorage.init();
+      await dotenv.load(fileName: ".env"); // <-- load dotenv first
+      
+      try {
+        await GraphqlService.initialize();
+      } catch (e, stackTrace) {
+        CrashlyticsService.instance.recordError(e, stackTrace, reason: 'GraphQL initialization failed');
+      }
+      
+      // Initialize in-app update service
+      try {
+        await InAppUpdateService().initialize();
+      } catch (e, stackTrace) {
+        CrashlyticsService.instance.recordError(e, stackTrace, reason: 'In-app update initialization failed');
+      }
 
-  // Initialize controllers
-  try {
-    Get.put(UtilityController());
-    Get.put(CustomerController());
-    Get.put<AuthController>(AuthController());
-    Get.put(CartController());
-    Get.put(CollectionsController());
-    
-    // Initialize theme controller early and ensure storage is ready
-    final themeController = Get.put(ThemeController());
-    // Ensure theme is loaded before app starts
-    // The constructor already loads it, but we ensure it's ready
-    
-    // Check for app updates
-    await checkAppUpdate();
+      // Initialize deep link service
+      try {
+        await DeepLinkService().initialize();
+      } catch (e, stackTrace) {
+        CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Deep link initialization failed');
+      }
 
-    runApp(MyApp(themeController: themeController));
-  } catch (e, stackTrace) {
-    CrashlyticsService.instance.recordError(e, stackTrace, reason: 'App initialization failed', fatal: true);
-    rethrow;
-  }
+      // Initialize controllers
+      try {
+        Get.put(UtilityController());
+        Get.put(CustomerController());
+        Get.put<AuthController>(AuthController());
+        Get.put(CartController());
+        Get.put(CollectionsController());
+        
+        // Initialize theme controller early and ensure storage is ready
+        final themeController = Get.put(ThemeController());
+        // Ensure theme is loaded before app starts
+        // The constructor already loads it, but we ensure it's ready
+        
+        // Check for app updates
+        await checkAppUpdate();
+
+        // Run the app
+        runApp(MyApp(themeController: themeController));
+      } catch (e, stackTrace) {
+        CrashlyticsService.instance.recordError(e, stackTrace, reason: 'App initialization failed', fatal: true);
+        rethrow;
+      }
+    },
+    (error, stackTrace) {
+      // Log to Crashlytics
+      CrashlyticsService.instance.recordError(
+        error,
+        stackTrace,
+        reason: 'Unhandled error in Zone',
+        fatal: true,
+      );
+
+      // In release mode, show error page
+      if (kReleaseMode) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            final context = Get.key.currentContext;
+            if (context != null) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (_) => ErrorPage(
+                    errorDetails: FlutterErrorDetails(
+                      exception: error,
+                      stack: stackTrace,
+                    ),
+                    isReleaseMode: true,
+                  ),
+                ),
+                (route) => false,
+              );
+            }
+          } catch (e) {
+            debugPrint('Error navigating to error page: $e');
+          }
+        });
+      } else {
+        // In debug mode, print error
+        debugPrint('Unhandled error: $error');
+        debugPrint('Stack trace: $stackTrace');
+      }
+    },
+  );
+}
+
+/// Set up global error handlers to catch unhandled exceptions
+/// In release mode, shows user-friendly error page instead of grey screen
+void _setupErrorHandlers() {
+  // Handle Flutter framework errors (widget build errors, etc.)
+  FlutterError.onError = (FlutterErrorDetails details) {
+    // Log to Crashlytics
+    CrashlyticsService.instance.recordError(
+      details.exception,
+      details.stack,
+      reason: 'Flutter framework error',
+      fatal: true,
+    );
+
+    // In release mode, show error page instead of grey screen
+    if (kReleaseMode) {
+      // Navigate to error page after frame is built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        try {
+          // Use Get.key.currentContext or navigate directly
+          final context = Get.key.currentContext;
+          if (context != null) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (_) => ErrorPage(
+                  errorDetails: details,
+                  isReleaseMode: true,
+                ),
+              ),
+              (route) => false,
+            );
+          }
+        } catch (e) {
+          debugPrint('Error navigating to error page: $e');
+        }
+      });
+    } else {
+      // In debug mode, show default error screen
+      FlutterError.presentError(details);
+    }
+  };
+
+  // Handle async errors (Future errors, Zone errors, etc.)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    // Log to Crashlytics
+    CrashlyticsService.instance.recordError(
+      error,
+      stack,
+      reason: 'Async error',
+      fatal: true,
+    );
+
+    // In release mode, show error page
+    if (kReleaseMode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        try {
+          final context = Get.key.currentContext;
+          if (context != null) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (_) => ErrorPage(
+                  errorDetails: FlutterErrorDetails(
+                    exception: error,
+                    stack: stack,
+                  ),
+                  isReleaseMode: true,
+                ),
+              ),
+              (route) => false,
+            );
+          }
+        } catch (e) {
+          debugPrint('Error navigating to error page: $e');
+        }
+      });
+    }
+
+    return true; // Return true to indicate error was handled
+  };
+
+  // Override ErrorWidget.builder to show custom error page in release mode
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    // In release mode, return error page
+    if (kReleaseMode) {
+      return ErrorPage(
+        errorDetails: details,
+        isReleaseMode: true,
+      );
+    }
+    // In debug mode, show default error widget
+    return ErrorWidget(details.exception);
+  };
 }
 
 class MyApp extends StatelessWidget {

@@ -6,7 +6,8 @@ import 'package:graphql_flutter/graphql_flutter.dart'
     show Context, HttpLinkHeaders, QueryResult, gql;
 import 'package:flutter/foundation.dart';
 import '../../graphql/banner.graphql.dart';
-import '../../graphql/cart.graphql.dart';
+import '../../graphql/cart.graphql.dart' as cart_graphql;
+import '../../graphql/order.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 // import '../../utils/html_utils.dart'; // Unused import
@@ -14,13 +15,10 @@ import '../../utils/price_formatter.dart';
 import '../../services/in_app_update_service.dart';
 import '../../services/analytics_service.dart';
 import '../../widgets/error_dialog.dart';
-import 'bannermodels.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../base_controller.dart';
 import '../cart/Cartcontroller.dart';
-import '../cart/cartmodels.dart';
 import '../order/ordercontroller.dart';
-import '../order/ordermodels.dart';
 import '../customer/customer_controller.dart';
 
 class BannerController extends BaseController {
@@ -33,19 +31,19 @@ class BannerController extends BaseController {
   // ============================================================================
   // BANNER FUNCTIONALITY
   // ============================================================================
-  final RxList<BannerModel> bannerList = <BannerModel>[].obs;
+  final RxList<Query$customBanners$customBanners> bannerList = <Query$customBanners$customBanners>[].obs;
 
   // ============================================================================
   // SEARCH FUNCTIONALITY
   // ============================================================================
-  final RxList<SearchItemModel> searchResults = <SearchItemModel>[].obs;
+  final RxList<Query$Search$search$items> searchResults = <Query$Search$search$items>[].obs;
   final RxInt totalItems = 0.obs;
 
 
   // ============================================================================
   // FAVORITES FUNCTIONALITY
   // ============================================================================
-  final RxList<FavoriteItemModel> favoritesList = <FavoriteItemModel>[].obs;
+  final RxList<Query$GetCustomerFavorites$activeCustomer$favorites$items> favoritesList = <Query$GetCustomerFavorites$activeCustomer$favorites$items>[].obs;
   final RxSet<String> favoriteProductIds = <String>{}.obs;
   final RxInt favoritesTotalItems = 0.obs;
 
@@ -62,14 +60,15 @@ class BannerController extends BaseController {
   final RxInt loyaltyPointsUsed = 0.obs;
   final RxInt loyaltyPointsEarned = 0.obs;
   final RxBool loyaltyPointsApplied = false.obs;
-  final Rx<LoyaltyPointsConfigModel?> loyaltyPointsConfig =
-      Rx<LoyaltyPointsConfigModel?>(null);
-  final Rx<AppUpdateModel?> appUpdateInfo = Rx<AppUpdateModel?>(null);
+  final Rx<Query$LoyaltyPointsConfig$loyaltyPointsConfig?> loyaltyPointsConfig =
+      Rx<Query$LoyaltyPointsConfig$loyaltyPointsConfig?>(null);
+  // AppUpdateModel - using InAppUpdateService directly, no model needed
+  final Rx<Map<String, dynamic>?> appUpdateInfo = Rx<Map<String, dynamic>?>(null);
 
   // ============================================================================
   // COUPON CODE FUNCTIONALITY
   // ============================================================================
-  final RxList<CouponCodeModel> availableCouponCodes = <CouponCodeModel>[].obs;
+  final RxList<Query$GetCouponCodeList$getCouponCodeList$items> availableCouponCodes = <Query$GetCouponCodeList$getCouponCodeList$items>[].obs;
   final RxList<String> appliedCouponCodes = <String>[].obs;
   final RxBool couponCodesLoaded = false.obs;
 
@@ -108,8 +107,8 @@ class BannerController extends BaseController {
 
       if (res.data != null) {
         List<dynamic> jsonList = res.data!["customBanners"];
-        List<BannerModel> fetchedBanners =
-            jsonList.map((json) => BannerModel.fromJson(json)).toList();
+        List<Query$customBanners$customBanners> fetchedBanners =
+            jsonList.map((json) => Query$customBanners$customBanners.fromJson(json as Map<String, dynamic>)).toList();
 
         bannerList.assignAll(fetchedBanners);
       } else {}
@@ -171,11 +170,11 @@ class BannerController extends BaseController {
 // print('🧾 [DEBUG] Raw items length: ${items.length}');
 
       final fetchedItems =
-          items.map((e) => SearchItemModel.fromJson(e)).toList();
+          items.map((e) => Query$Search$search$items.fromJson(e as Map<String, dynamic>)).toList();
 
       // Filter to show only unique products (not variants)
       // Group by productId and keep only the first variant for each product
-      final Map<String, SearchItemModel> uniqueProducts = {};
+      final Map<String, Query$Search$search$items> uniqueProducts = {};
       for (final item in fetchedItems) {
         if (!uniqueProducts.containsKey(item.productId)) {
           uniqueProducts[item.productId] = item;
@@ -227,28 +226,13 @@ class BannerController extends BaseController {
         return false;
       }
 
-      final toggleResult = res.data?['toggleFavorite'];
-
-      if (toggleResult != null) {
-        final result = ToggleFavoriteResult.fromJson(toggleResult);
-        favoritesList.assignAll(result.items);
-        favoritesTotalItems.value = result.totalItems;
-
-        // Update favorite product IDs set
-        favoriteProductIds.clear();
-        favoriteProductIds.addAll(result.items.map((item) => item.product.id));
-
-debugPrint(            '[BannerController] Toggle favorite success. Total favorites: ${result.totalItems}');
-        
-        // Refresh customer favorites to ensure UI is up to date
-        await getCustomerFavorites();
-        
-        utilityController.setLoadingState(false);
-        return true;
-      }
-
+      // Refresh customer favorites to ensure UI is up to date
+      // Don't try to convert mutation result to query result format because
+      // they have different fields (mutation doesn't include 'enabled' field)
+      await getCustomerFavorites();
+      
       utilityController.setLoadingState(false);
-      return false;
+      return true;
     } catch (e) {
 debugPrint('[BannerController] Toggle favorite error: $e');
       handleException(e, customErrorMessage: 'Failed to update favorite');
@@ -318,14 +302,14 @@ debugPrint(       '[BannerController] GetCustomerFavorites Exception: ${res.exce
         final favoritesData = activeCustomer['favorites'];
 
         if (favoritesData != null) {
-          final favorites = FavoritesModel.fromJson(favoritesData);
+          final favorites = Query$GetCustomerFavorites$activeCustomer$favorites.fromJson(favoritesData as Map<String, dynamic>);
           favoritesList.assignAll(favorites.items);
           favoritesTotalItems.value = favorites.totalItems;
 
           // Update favorite product IDs set
           favoriteProductIds.clear();
           favoriteProductIds
-              .addAll(favorites.items.map((item) => item.product.id));
+              .addAll(favorites.items.map((item) => item.product?.id ?? '').where((id) => id.isNotEmpty));
 
 debugPrint('[BannerController] Fetched ${favorites.totalItems} favorites');
 
@@ -519,7 +503,7 @@ debugPrint('[BannerController] Fetching loyalty points configuration...');
       final configData = res.data?['loyaltyPointsConfig'];
       if (configData != null) {
         loyaltyPointsConfig.value =
-            LoyaltyPointsConfigModel.fromJson(configData);
+            Query$LoyaltyPointsConfig$loyaltyPointsConfig.fromJson(configData as Map<String, dynamic>);
 debugPrint(  '[BannerController] Loyalty points config loaded successfully');
 debugPrint(  '[BannerController] Rupees per point: ${loyaltyPointsConfig.value?.rupeesPerPoint}');
 debugPrint(  '[BannerController] Points per rupee: ${loyaltyPointsConfig.value?.pointsPerRupee}');
@@ -548,32 +532,20 @@ debugPrint('[BannerController] Fetch loyalty points config error: $e');
     try {
 debugPrint('[BannerController] ===== getCouponProducts for: $couponCode =====');
       // Find the coupon in the available list
-      final coupon = availableCouponCodes.firstWhere(
-        (c) => c.couponCode.toUpperCase() == couponCode.toUpperCase(),
-        orElse: () => CouponCodeModel(
-          id: '',
-          name: '',
-          couponCode: '',
-          enabled: false,
-          createdAt: '',
-          updatedAt: '',
-          description: '',
-          startsAt: '',
-          endsAt: '',
-          perCustomerUsageLimit: 0,
-          usageLimit: 0,
-          actions: [],
-          conditions: [],
-        ),
-      );
-
-      if (coupon.id.isEmpty) {
-debugPrint('[BannerController] ❌ Coupon not found: $couponCode');
-debugPrint('[BannerController] Available coupons: ${availableCouponCodes.map((c) => c.couponCode).toList()}');
+      Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+      try {
+        coupon = availableCouponCodes.firstWhere(
+          (c) => (c.couponCode ?? '').toUpperCase() == couponCode.toUpperCase(),
+        );
+      } catch (e) {
+        debugPrint('[BannerController] ❌ Coupon not found: $couponCode');
+        debugPrint('[BannerController] Available coupons: ${availableCouponCodes.map((c) => c.couponCode ?? 'N/A').toList()}');
         return [];
       }
 
-debugPrint('[BannerController] ✅ Found coupon: ${coupon.name} (${coupon.couponCode})');
+      // Coupon found, continue processing
+
+debugPrint('[BannerController] ✅ Found coupon: ${coupon.name} (${coupon.couponCode ?? 'N/A'})');
 debugPrint('[BannerController] Actions count: ${coupon.actions.length}');
 debugPrint('[BannerController] Conditions count: ${coupon.conditions.length}');
 
@@ -624,8 +596,8 @@ debugPrint(  '[BannerController] Condition arg: ${arg.name} = ${arg.value} (type
               if (arg.value is List) {
                 variantIds = arg.value as List<dynamic>;
 debugPrint(  '[BannerController] Found product variant IDs as List: $variantIds');
-              } else if (arg.value is String) {
-                final stringValue = arg.value as String;
+              } else {
+                final stringValue = arg.value;
 debugPrint(  '[BannerController] Found product variant IDs as String: $stringValue');
 
                 // Try to parse string representation of list like "[542]" or "542,543"
@@ -848,7 +820,7 @@ debugPrint('[BannerController] ❌ No coupon items found in response');
 debugPrint(  '[BannerController] Converting item to CouponCodeModel: ${item.runtimeType}');
             final json = item.toJson();
 debugPrint('[BannerController] Item JSON: $json');
-            return CouponCodeModel.fromJson(json);
+            return Query$GetCouponCodeList$getCouponCodeList$items.fromJson(json);
           }).toList();
 
 debugPrint(  '[BannerController] ✅ Successfully converted ${fetchedCoupons.length} coupons');
@@ -862,29 +834,20 @@ debugPrint('[BannerController] ✅ Set couponCodesLoaded to true');
           // Debug print each coupon details
           for (int i = 0; i < fetchedCoupons.length; i++) {
             final coupon = fetchedCoupons[i];
-debugPrint(  '[BannerController] Coupon $i: ${coupon.name} (Code: ${coupon.couponCode})');
+debugPrint(  '[BannerController] Coupon $i: ${coupon.name} (Code: ${coupon.couponCode ?? 'N/A'})');
 debugPrint('[BannerController] - ID: ${coupon.id}');
 debugPrint('[BannerController] - Enabled: ${coupon.enabled}');
             // final sanitizedDescription = HtmlUtils.stripHtmlTags(coupon.description); // Unused variable
-debugPrint('[BannerController] - Starts At: ${coupon.startsAt}');
-debugPrint('[BannerController] - Ends At: ${coupon.endsAt}');
+debugPrint('[BannerController] - Starts At: ${coupon.startsAt?.toString() ?? 'N/A'}');
+debugPrint('[BannerController] - Ends At: ${coupon.endsAt?.toString() ?? 'N/A'}');
 debugPrint(  '[BannerController] - Actions count: ${coupon.actions.length}');
 debugPrint(  '[BannerController] - Conditions count: ${coupon.conditions.length}');
 
-            if (coupon.products != null) {
-debugPrint
-  (
-                  '[BannerController] - Products count: ${coupon.products!.length}');
-              for (int j = 0; j < coupon.products!.length; j++) {
-                // final product = coupon.products![j]; // Unused variable
-debugPrint(  '[BannerController] - Product $j: ${coupon.products![j].name} (Variant: ${coupon.products![j].productVariantId}, Qty: ${coupon.products![j].quantity})');
-              }
-            } else {
-debugPrint('[BannerController] - No products field found');
-            }
+            // Products are extracted from coupon actions/conditions, not directly from coupon
+            // This debug section removed as products field doesn't exist in generated type
           }
         } catch (conversionError) {
-debugPrint(  '[BannerController] ❌ Error converting items to CouponCodeModel: $conversionError');
+debugPrint(  '[BannerController] ❌ Error converting items to Query\$GetCouponCodeList\$getCouponCodeList\$items: $conversionError');
 debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
         }
       } else {
@@ -911,24 +874,15 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
       debugPrint('[BannerController] Available coupons count: ${availableCouponCodes.length}');
       
       // First check if coupon code exists in available list
-      final coupon = availableCouponCodes.firstWhere(
-        (c) => c.couponCode.toLowerCase() == couponCode.toLowerCase(),
-        orElse: () => CouponCodeModel(
-          id: '',
-          name: '',
-          couponCode: '',
-          enabled: false,
-          createdAt: '',
-          updatedAt: '',
-          actions: [],
-          conditions: [],
-        ),
-      );
-
-      if (coupon.id.isEmpty) {
+      Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+      try {
+        coupon = availableCouponCodes.firstWhere(
+          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+        );
+      } catch (e) {
         debugPrint('[BannerController] ❌ Validation Error: Coupon code not found');
         debugPrint('[BannerController] ❌ Error type: COUPON_NOT_FOUND');
-        debugPrint('[BannerController] ❌ Available coupon codes: ${availableCouponCodes.map((c) => c.couponCode).toList()}');
+        debugPrint('[BannerController] ❌ Available coupon codes: ${availableCouponCodes.map((c) => c.couponCode ?? 'N/A').toList()}');
         return {
           'valid': false,
           'message': 'Coupon code not found',
@@ -936,10 +890,11 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
         };
       }
 
-      debugPrint('[BannerController] ✅ Coupon found: ${coupon.name} (${coupon.couponCode})');
+
+      debugPrint('[BannerController] ✅ Coupon found: ${coupon.name} (${coupon.couponCode ?? 'N/A'})');
       debugPrint('[BannerController] Coupon enabled: ${coupon.enabled}');
-      debugPrint('[BannerController] Coupon starts at: ${coupon.startsAt}');
-      debugPrint('[BannerController] Coupon ends at: ${coupon.endsAt}');
+      debugPrint('[BannerController] Coupon starts at: ${coupon.startsAt?.toString() ?? 'N/A'}');
+      debugPrint('[BannerController] Coupon ends at: ${coupon.endsAt?.toString() ?? 'N/A'}');
 
       // Check if coupon is enabled
       if (!coupon.enabled) {
@@ -954,7 +909,7 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
 
       // Check if coupon has expired
       if (coupon.endsAt != null) {
-        final endDate = DateTime.parse(coupon.endsAt!);
+        final endDate = coupon.endsAt!;
         if (DateTime.now().isAfter(endDate)) {
           debugPrint('[BannerController] ❌ Validation Error: Coupon code has expired');
           debugPrint('[BannerController] ❌ Error type: COUPON_EXPIRED');
@@ -969,7 +924,7 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
 
       // Check if coupon has started
       if (coupon.startsAt != null) {
-        final startDate = DateTime.parse(coupon.startsAt!);
+        final startDate = coupon.startsAt!;
         if (DateTime.now().isBefore(startDate)) {
           debugPrint('[BannerController] ❌ Validation Error: Coupon code is not yet active');
           debugPrint('[BannerController] ❌ Error type: COUPON_NOT_ACTIVE');
@@ -1047,9 +1002,9 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
 
   /// Validate minimum order amount for coupon
   Future<Map<String, dynamic>> _validateMinimumOrderAmount(
-      CouponCodeModel coupon) async {
+      Query$GetCouponCodeList$getCouponCodeList$items coupon) async {
     try {
-debugPrint(  '[BannerController] Validating minimum order amount for coupon: ${coupon.couponCode}');
+      debugPrint(  '[BannerController] Validating minimum order amount for coupon: ${coupon.couponCode ?? 'N/A'}');
 
       // Get current cart total
       final cartTotal = await _getCurrentCartTotal();
@@ -1072,17 +1027,8 @@ debugPrint('[BannerController] Checking condition: ${condition.code}');
 debugPrint(  '[BannerController] Condition arg: ${arg.name} = ${arg.value}');
 
             if (arg.name == 'amount') {
-              // Handle both string and numeric values for amount
-              double requiredAmount;
-              if (arg.value is String) {
-                requiredAmount = double.tryParse(arg.value as String) ?? 0.0;
-              } else if (arg.value is num) {
-                requiredAmount = (arg.value as num).toDouble();
-              } else {
-debugPrint(  '[BannerController] Invalid amount type: ${arg.value.runtimeType}');
-                continue;
-              }
-
+              // arg.value is always String, so parse it directly
+              final requiredAmount = double.tryParse(arg.value) ?? 0.0;
 debugPrint(  '[BannerController] Required minimum amount: $requiredAmount');
 
               if (cartTotal < requiredAmount) {
@@ -1115,37 +1061,27 @@ debugPrint(  '[BannerController] Error validating minimum order amount: $e');
   /// Get current cart total
   Future<double?> _getCurrentCartTotal() async {
     try {
-      const query = '''
-        query GetActiveOrder {
-          activeOrder {
-            id
-            totalWithTax
-            subTotalWithTax
-          }
-        }
-      ''';
-
-      final res = await GraphqlService.client.value.query(
-        graphql.QueryOptions(
-          document: graphql.gql(query),
+      final response = await GraphqlService.client.value.query$GetCartTotals(
+        cart_graphql.Options$Query$GetCartTotals(
+          fetchPolicy: graphql.FetchPolicy.networkOnly,
         ),
       );
 
-      if (res.hasException) {
-debugPrint(  '[BannerController] Error getting cart total: ${res.exception}');
+      if (response.hasException) {
+        debugPrint('[BannerController] Error getting cart total: ${response.exception}');
         return null;
       }
 
-      final activeOrder = res.data?['activeOrder'];
+      final activeOrder = response.parsedData?.activeOrder;
       if (activeOrder != null) {
-        final totalWithTax = (activeOrder['totalWithTax'] as num?)?.toDouble();
-debugPrint('[BannerController] Cart total with tax: $totalWithTax');
+        final totalWithTax = activeOrder.totalWithTax;
+        debugPrint('[BannerController] Cart total with tax: $totalWithTax');
         return totalWithTax;
       }
 
       return null;
     } catch (e) {
-debugPrint('[BannerController] Exception getting cart total: $e');
+      debugPrint('[BannerController] Exception getting cart total: $e');
       return null;
     }
   }
@@ -1156,18 +1092,14 @@ debugPrint('[BannerController] Exception getting cart total: $e');
   }
 
   /// Get minimum order amount from coupon conditions
-  int? _getCouponMinimumAmount(CouponCodeModel coupon) {
+  int? _getCouponMinimumAmount(Query$GetCouponCodeList$getCouponCodeList$items coupon) {
     try {
       for (final condition in coupon.conditions) {
         if (condition.code == 'minimum_order_amount') {
           for (final arg in condition.args) {
             if (arg.name == 'amount') {
-              final value = arg.value;
-              if (value is num) {
-                return value.toInt();
-              } else if (value is String) {
-                return int.tryParse(value);
-              }
+              final value = arg.value; // value is always String in generated type
+              return int.tryParse(value);
             }
           }
         }
@@ -1180,8 +1112,8 @@ debugPrint('[BannerController] Exception getting cart total: $e');
 
   /// Get eligible coupons that are close to being applicable
   /// Returns coupons where (requiredAmount - subTotal) > 0 && < 40000
-  List<CouponCodeModel> getEligibleCoupons(int subTotalInPaise) {
-    final eligibleCoupons = <CouponCodeModel>[];
+  List<Query$GetCouponCodeList$getCouponCodeList$items> getEligibleCoupons(int subTotalInPaise) {
+    final eligibleCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[];
     
     for (final coupon in availableCouponCodes) {
       if (!coupon.enabled) continue;
@@ -1201,37 +1133,146 @@ debugPrint('[BannerController] Exception getting cart total: $e');
   }
 
   /// Get required amount for a coupon in paise
-  int getRequiredAmount(CouponCodeModel coupon) {
+  int getRequiredAmount(Query$GetCouponCodeList$getCouponCodeList$items coupon) {
     final minimumAmount = _getCouponMinimumAmount(coupon);
     return minimumAmount ?? 0;
   }
 
   /// Apply coupon code to active order with proper validation
+  /// This method checks minimum order amount FIRST, then applies coupon
   Future<Map<String, dynamic>> applyCouponCode(String couponCode) async {
     try {
       utilityController.setLoadingState(true);
 
-      // First validate the coupon code
-      debugPrint('[BannerController] 🔍 Validating coupon code: $couponCode');
-      final validation = await validateCouponCode(couponCode);
-      if (!validation['valid']) {
-        debugPrint('[BannerController] ❌ Coupon validation failed: ${validation['error']}');
-        debugPrint('[BannerController] ❌ Error message: ${validation['message']}');
-        utilityController.setLoadingState(false);
-        // Show warning dialog for validation errors
-        ErrorDialog.showWarning(
-          message: validation['message'] as String,
+      // Step 1: Find the coupon
+      Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+      try {
+        coupon = availableCouponCodes.firstWhere(
+          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
         );
-        // Refresh cart to ensure state is up to date
+      } catch (e) {
+        debugPrint('[BannerController] ❌ Coupon not found: $couponCode');
+        utilityController.setLoadingState(false);
+        ErrorDialog.showWarning(message: 'Coupon code not found');
         _refreshCartAfterCouponError();
         return {
           'success': false,
-          'message': validation['message'],
-          'error': validation['error']
+          'message': 'Coupon code not found',
+          'error': 'COUPON_NOT_FOUND'
         };
       }
-      debugPrint('[BannerController] ✅ Coupon validation passed: $couponCode');
 
+      // Step 2: Check minimum order amount FIRST (before other validations)
+      debugPrint('[BannerController] 🔍 Step 1: Checking minimum order amount FIRST...');
+      final minimumAmountValidation = await _validateMinimumOrderAmount(coupon);
+      
+      if (!minimumAmountValidation['valid']) {
+        debugPrint('[BannerController] ❌ Minimum order amount not met');
+        debugPrint('[BannerController] Required: ${minimumAmountValidation['requiredAmount']}, Current: ${minimumAmountValidation['currentAmount']}');
+        utilityController.setLoadingState(false);
+        ErrorDialog.showWarning(
+          message: minimumAmountValidation['message'] as String,
+        );
+        _refreshCartAfterCouponError();
+        return {
+          'success': false,
+          'message': minimumAmountValidation['message'],
+          'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
+          'requiredAmount': minimumAmountValidation['requiredAmount'],
+          'currentAmount': minimumAmountValidation['currentAmount']
+        };
+      }
+      debugPrint('[BannerController] ✅ Minimum order amount requirement met');
+
+      // Step 3: Now apply the coupon (minimum is already validated)
+      return await _applyCouponCodeWithoutMinimumCheck(couponCode);
+    } catch (e) {
+      debugPrint('[BannerController] ❌ Exception applying coupon code: $couponCode');
+      debugPrint('[BannerController] ❌ Error: $e');
+      utilityController.setLoadingState(false);
+      handleException(e, customErrorMessage: 'Failed to apply coupon code');
+      _refreshCartAfterCouponError();
+      return {
+        'success': false,
+        'message': 'Error applying coupon code',
+        'error': 'EXCEPTION'
+      };
+    }
+  }
+
+  /// Internal method to apply coupon code without minimum validation check
+  /// (used when minimum has already been validated in applyCouponCodeWithProducts)
+  Future<Map<String, dynamic>> _applyCouponCodeWithoutMinimumCheck(String couponCode) async {
+    try {
+      utilityController.setLoadingState(true);
+
+      // Validate other coupon conditions (enabled, expired, etc.) - but skip minimum check
+      debugPrint('[BannerController] 🔍 Validating coupon conditions (excluding minimum)...');
+      
+      // Find the coupon
+      Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+      try {
+        coupon = availableCouponCodes.firstWhere(
+          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+        );
+      } catch (e) {
+        debugPrint('[BannerController] ❌ Coupon not found: $couponCode');
+        utilityController.setLoadingState(false);
+        return {
+          'success': false,
+          'message': 'Coupon code not found',
+          'error': 'COUPON_NOT_FOUND'
+        };
+      }
+
+      // Check other validations except minimum
+      if (!coupon.enabled) {
+        utilityController.setLoadingState(false);
+        return {
+          'success': false,
+          'message': 'Coupon code is disabled',
+          'error': 'COUPON_DISABLED'
+        };
+      }
+
+      if (coupon.endsAt != null && DateTime.now().isAfter(coupon.endsAt!)) {
+        utilityController.setLoadingState(false);
+        return {
+          'success': false,
+          'message': 'Coupon code has expired',
+          'error': 'COUPON_EXPIRED'
+        };
+      }
+
+      if (coupon.startsAt != null && DateTime.now().isBefore(coupon.startsAt!)) {
+        utilityController.setLoadingState(false);
+        return {
+          'success': false,
+          'message': 'Coupon code is not yet active',
+          'error': 'COUPON_NOT_ACTIVE'
+        };
+      }
+
+      if (appliedCouponCodes.contains(couponCode)) {
+        utilityController.setLoadingState(false);
+        return {
+          'success': false,
+          'message': 'Coupon code already applied',
+          'error': 'COUPON_ALREADY_APPLIED'
+        };
+      }
+
+      if (appliedCouponCodes.isNotEmpty) {
+        utilityController.setLoadingState(false);
+        return {
+          'success': false,
+          'message': 'Only one coupon code can be applied per order. Please remove the current coupon first.',
+          'error': 'ANOTHER_COUPON_APPLIED'
+        };
+      }
+
+      // All validations passed (except minimum which was already checked), apply coupon
+      debugPrint('[BannerController] ✅ All validations passed, applying coupon...');
       final res = await GraphqlService.client.value.mutate$ApplyCouponCode(
         Options$Mutation$ApplyCouponCode(
           variables: Variables$Mutation$ApplyCouponCode(input: couponCode),
@@ -1240,10 +1281,7 @@ debugPrint('[BannerController] Exception getting cart total: $e');
 
       if (checkResponseForErrors(res,
           customErrorMessage: 'Failed to apply coupon code')) {
-        debugPrint('[BannerController] ❌ Network error applying coupon: $couponCode');
-        debugPrint('[BannerController] ❌ Response exception: ${res.exception}');
         utilityController.setLoadingState(false);
-        // Refresh cart to ensure state is up to date
         _refreshCartAfterCouponError();
         return {
           'success': false,
@@ -1254,180 +1292,63 @@ debugPrint('[BannerController] Exception getting cart total: $e');
 
       final result = res.parsedData?.applyCouponCode;
 
-      if (result != null) {
-        // Check for various error types using pattern matching
-        if (result
-            is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeInvalidError) {
-          debugPrint('[BannerController] ❌ Coupon code invalid: $couponCode');
-          debugPrint('[BannerController] ❌ Error type: INVALID_COUPON');
-          debugPrint('[BannerController] ❌ Error details: ${result.toString()}');
-          utilityController.setLoadingState(false);
-          // Show warning dialog
-          ErrorDialog.showWarning(
-            message: 'Invalid coupon code',
-          );
-          // Refresh cart to ensure state is up to date
-          _refreshCartAfterCouponError();
-          return {
-            'success': false,
-            'message': 'Invalid coupon code',
-            'error': 'INVALID_COUPON'
-          };
-        }
+      if (result != null && result is Mutation$ApplyCouponCode$applyCouponCode$$Order) {
+        appliedCouponCodes.clear();
+        appliedCouponCodes.add(couponCode);
 
-        if (result
-            is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError) {
-          debugPrint('[BannerController] ❌ Coupon code expired: $couponCode');
-          debugPrint('[BannerController] ❌ Error type: COUPON_EXPIRED');
-          debugPrint('[BannerController] ❌ Error details: ${result.toString()}');
-          utilityController.setLoadingState(false);
-          // Show warning dialog
-          ErrorDialog.showWarning(
-            message: 'Coupon code has expired',
-          );
-          // Refresh cart to ensure state is up to date
-          _refreshCartAfterCouponError();
-          return {
-            'success': false,
-            'message': 'Coupon code has expired',
-            'error': 'COUPON_EXPIRED'
-          };
-        }
-
-        if (result
-            is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError) {
-          debugPrint('[BannerController] ❌ Coupon usage limit reached: $couponCode');
-          debugPrint('[BannerController] ❌ Error type: COUPON_LIMIT');
-          debugPrint('[BannerController] ❌ Error details: ${result.toString()}');
-          utilityController.setLoadingState(false);
-          // Refresh cart to ensure state is up to date
-          _refreshCartAfterCouponError();
-          return {
-            'success': false,
-            'message': 'Coupon usage limit reached',
-            'error': 'COUPON_LIMIT'
-          };
-        }
-
-        // Success - coupon applied
-        if (result is Mutation$ApplyCouponCode$applyCouponCode$$Order) {
-          // Ensure only one coupon is applied (one coupon per order policy)
-          appliedCouponCodes.clear(); // Remove any existing coupons
-          appliedCouponCodes.add(couponCode); // Add the new coupon
-
-debugPrint(  '[BannerController] Coupon code applied successfully: $couponCode');
+        debugPrint('[BannerController] Coupon code applied successfully: $couponCode');
+        
+        // Update controllers
+        try {
+          final cartController = Get.find<CartController>();
+          final orderController = Get.find<OrderController>();
+          final resultJson = result.toJson();
           
-          // Update both cart and order controllers directly from the response
+          final hasLines = resultJson['lines'] != null && 
+                         (resultJson['lines'] as List).isNotEmpty;
+          
+          if (hasLines) {
+            cartController.cart.value = cart_graphql.Fragment$Cart.fromJson(resultJson);
+            await orderController.getActiveOrder(skipLoading: true);
+          }
+        } catch (e) {
+          debugPrint('[BannerController] Could not update controllers: $e');
           try {
             final cartController = Get.find<CartController>();
             final orderController = Get.find<OrderController>();
-            final resultJson = result.toJson();
-            
-            // Validate that the result has order lines before updating
-            final hasLines = resultJson['lines'] != null && 
-                           (resultJson['lines'] as List).isNotEmpty;
-            
-            if (hasLines) {
-              // Update CartController
-              cartController.cart.value = Order.fromJson(resultJson);
-debugPrint('[BannerController] CartController updated directly from coupon response');
-              
-              // Update OrderController
-              orderController.currentOrder.value = OrderModel.fromJson(resultJson);
-debugPrint('[BannerController] OrderController updated directly from coupon response');
-            } else {
-debugPrint('[BannerController] Warning: Coupon response has no order lines, preserving current cart');
-              // Don't update if response has no lines - preserve current cart
-              // This prevents clearing the cart when server returns incomplete data
-            }
-          } catch (e) {
-debugPrint('[BannerController] Could not update controllers directly: $e');
-            // Fallback: refresh both controllers while preserving cart state
-            try {
-              final cartController = Get.find<CartController>();
-              final orderController = Get.find<OrderController>();
-              
-              // Preserve previous cart state before refresh to prevent empty UI
-              final previousCart = cartController.cart.value;
-              
-              // Add a small delay to ensure server has processed the coupon
-              await Future.delayed(Duration(milliseconds: 300));
-              
-              // Refresh controllers
-              final refreshSuccess = await cartController.getActiveOrder();
-              await orderController.getActiveOrder(skipLoading: true);
-              
-              // If cart became null or empty after refresh and we had a previous cart, restore it
-              // This prevents showing empty cart during the brief moment of refresh
-              final currentCart = cartController.cart.value;
-              final cartIsEmpty = currentCart == null || 
-                                 currentCart.lines.isEmpty ||
-                                 currentCart.totalQuantity == 0;
-              
-              if ((!refreshSuccess || cartIsEmpty) && previousCart != null) {
-                // Only restore if previous cart had items
-                if (previousCart.lines.isNotEmpty && previousCart.totalQuantity > 0) {
-                  cartController.cart.value = previousCart;
-debugPrint('[BannerController] Restored previous cart to prevent empty UI');
-                  // Try one more time to get the updated cart after a delay
-                  await Future.delayed(Duration(milliseconds: 500));
-                  await cartController.getActiveOrder();
-                }
-              }
-              
-debugPrint('[BannerController] Controllers refreshed via getActiveOrder');
-            } catch (refreshError) {
-debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
-              // If refresh failed, try to restore cart state
-              try {
-                final cartController = Get.find<CartController>();
-                final previousCart = cartController.cart.value;
-                // Try to get the cart one more time
-                await cartController.getActiveOrder();
-                // If still empty, restore previous cart
-                if (cartController.cart.value == null && previousCart != null) {
-                  cartController.cart.value = previousCart;
-                }
-              } catch (e) {
-                // Ignore errors during recovery
-              }
-            }
+            await cartController.getActiveOrder();
+            await orderController.getActiveOrder(skipLoading: true);
+          } catch (refreshError) {
+            debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
           }
-          
-          utilityController.setLoadingState(false);
-          return {
-            'success': true,
-            'message': 'Coupon code applied successfully',
-            'couponCode': couponCode,
-            'orderTotal': result.total
-          };
         }
+        
+        utilityController.setLoadingState(false);
+        return {
+          'success': true,
+          'message': 'Coupon code applied successfully',
+          'couponCode': couponCode,
+          'orderTotal': result.total
+        };
       }
 
-      debugPrint('[BannerController] ❌ Unknown error applying coupon: $couponCode');
-      debugPrint('[BannerController] ❌ Result type: ${result.runtimeType}');
-      debugPrint('[BannerController] ❌ Result data: ${result.toString()}');
+      // Handle error results
       utilityController.setLoadingState(false);
-      // Refresh cart to ensure state is up to date
       _refreshCartAfterCouponError();
       return {
         'success': false,
-        'message': 'Unknown error occurred',
-        'error': 'UNKNOWN_ERROR'
+        'message': 'Failed to apply coupon code',
+        'error': 'APPLICATION_ERROR'
       };
     } catch (e) {
       debugPrint('[BannerController] ❌ Exception applying coupon code: $couponCode');
-      debugPrint('[BannerController] ❌ Error: $e');
-      debugPrint('[BannerController] ❌ Error type: ${e.runtimeType}');
-      debugPrint('[BannerController] ❌ Stack trace: ${StackTrace.current}');
-      handleException(e, customErrorMessage: 'Failed to apply coupon code');
       utilityController.setLoadingState(false);
-      // Refresh cart to ensure state is up to date
+      handleException(e, customErrorMessage: 'Failed to apply coupon code');
       _refreshCartAfterCouponError();
       return {
         'success': false,
-        'message': 'Error applying coupon code: $e',
-        'error': 'APPLICATION_ERROR'
+        'message': 'Error applying coupon code',
+        'error': 'EXCEPTION'
       };
     }
   }
@@ -1587,55 +1508,39 @@ debugPrint('[BannerController] ✗ Error removing coupon products: $e');
   /// Get current cart
   Future<dynamic> _getCurrentCart() async {
     try {
-debugPrint('[BannerController] Fetching current cart...');
+      debugPrint('[BannerController] Fetching current cart...');
 
-      const query = '''
-        query GetActiveOrder {
-          activeOrder {
-            id
-            lines {
-              id
-              productVariant {
-                id
-                name
-              }
-              quantity
-            }
-          }
-        }
-      ''';
-
-      final res = await GraphqlService.client.value.query(
-        graphql.QueryOptions(
-          document: graphql.gql(query),
+      final response = await GraphqlService.client.value.query$GetCartTotals(
+        cart_graphql.Options$Query$GetCartTotals(
+          fetchPolicy: graphql.FetchPolicy.networkOnly,
         ),
       );
 
-      if (res.hasException) {
-debugPrint(  '[BannerController] Error getting current cart: ${res.exception}');
+      if (response.hasException) {
+        debugPrint('[BannerController] Error getting current cart: ${response.exception}');
         return null;
       }
 
-      final activeOrder = res.data?['activeOrder'];
+      final activeOrder = response.parsedData?.activeOrder;
       if (activeOrder != null) {
-debugPrint(  '[BannerController] ✓ Found active order: ${activeOrder['id']}');
-debugPrint(  '[BannerController] Order has ${activeOrder['lines']?.length ?? 0} lines');
+        debugPrint('[BannerController] ✓ Found active order: ${activeOrder.id}');
+        debugPrint('[BannerController] Order has ${activeOrder.lines.length} lines');
 
         // Debug each line
-        if (activeOrder['lines'] != null) {
-          for (int i = 0; i < activeOrder['lines'].length; i++) {
-            // ignore: unused_local_variable
-            final lineData = activeOrder['lines'][i];
-debugPrint(  '[BannerController] Line $i: ID=${lineData['id']}, Variant=${lineData['productVariant']['id']}, Name=${lineData['productVariant']['name']}, Qty=${lineData['quantity']}');
-          }
+        for (int i = 0; i < activeOrder.lines.length; i++) {
+          final line = activeOrder.lines[i];
+          debugPrint('[BannerController] Line $i: ID=${line.id}, Variant=${line.productVariant.id}, Name=${line.productVariant.name}, Qty=${line.quantity}');
         }
+
+        // Convert to JSON format for backward compatibility with existing code
+        return activeOrder.toJson();
       } else {
-debugPrint('[BannerController] ⚠ No active order found');
+        debugPrint('[BannerController] ⚠ No active order found');
       }
 
-      return activeOrder;
+      return null;
     } catch (e) {
-debugPrint('[BannerController] Exception getting current cart: $e');
+      debugPrint('[BannerController] Exception getting current cart: $e');
       return null;
     }
   }
@@ -1643,52 +1548,41 @@ debugPrint('[BannerController] Exception getting current cart: $e');
   /// Remove order line by ID
   Future<bool> _removeOrderLineById(String orderLineId) async {
     try {
-debugPrint(  '[BannerController] Attempting to remove order line: $orderLineId');
+      debugPrint('[BannerController] Attempting to remove order line: $orderLineId');
 
-      const mutation = '''
-        mutation RemoveOrderLine(\$orderLineId: ID!) {
-          removeOrderLine(orderLineId: \$orderLineId) {
-            __typename
-            ... on Order {
-              id
-            }
-            ... on ErrorResult {
-              message
-            }
-          }
-        }
-      ''';
-
-      final res = await GraphqlService.client.value.mutate(
-        graphql.MutationOptions(
-          document: graphql.gql(mutation),
-          variables: {'orderLineId': orderLineId},
+      final response = await GraphqlService.client.value.mutate$RemoveOrderLine(
+        Options$Mutation$RemoveOrderLine(
+          variables: Variables$Mutation$RemoveOrderLine(
+            orderLineId: orderLineId,
+          ),
         ),
       );
 
-      if (checkResponseForErrors(res,
+      if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to remove item from cart')) {
         return false;
       }
 
-      final result = res.data?['removeOrderLine'];
+      final result = response.parsedData?.removeOrderLine;
       if (result != null) {
-        if (result['__typename'] == 'Order') {
-debugPrint(  '[BannerController] ✓ Successfully removed order line $orderLineId');
-debugPrint('[BannerController] Updated order ID: ${result['id']}');
+        if (result is Mutation$RemoveOrderLine$removeOrderLine$$Order) {
+          debugPrint('[BannerController] ✓ Successfully removed order line $orderLineId');
+          debugPrint('[BannerController] Updated order ID: ${result.id}');
           
           // Update both controllers after removal
           try {
             final cartController = Get.find<CartController>();
             final orderController = Get.find<OrderController>();
-            final resultJson = result as Map<String, dynamic>;
+            final resultJson = result.toJson();
             
             // Update CartController
-            cartController.cart.value = Order.fromJson(resultJson);
+            cartController.cart.value = cart_graphql.Fragment$Cart.fromJson(resultJson);
 debugPrint('[BannerController] CartController updated after removing line');
             
             // Update OrderController
-            orderController.currentOrder.value = OrderModel.fromJson(resultJson);
+            // Note: result is from data, need to parse it properly
+            // For now, refresh the order instead
+            await orderController.getActiveOrder(skipLoading: true);
 debugPrint('[BannerController] OrderController updated after removing line');
           } catch (e) {
 debugPrint('[BannerController] Could not update controllers after removal: $e');
@@ -1705,7 +1599,19 @@ debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
           
           return true;
         } else {
-debugPrint(  '[BannerController] ✗ Failed to remove order line $orderLineId: ${result['message']}');
+          // Handle error cases - this is not an Order, so it's likely an error
+          debugPrint('[BannerController] ✗ Failed to remove order line $orderLineId: Result type: ${result.runtimeType}');
+          // Try to extract message if available
+          try {
+            debugPrint('[BannerController] Error typename: ${result.$__typename}');
+            final resultJson = result.toJson();
+            final message = resultJson['message'] as String?;
+            if (message != null) {
+              debugPrint('[BannerController] Error message: $message');
+            }
+          } catch (e) {
+            debugPrint('[BannerController] Could not extract error details: $e');
+          }
           return false;
         }
       } else {
@@ -1777,11 +1683,11 @@ debugPrint(  '[BannerController] Coupon code removed successfully: $couponCode')
           final resultJson = result.toJson();
           if (resultJson.containsKey('id')) {
             // Update CartController
-            cartController.cart.value = Order.fromJson(resultJson);
+            cartController.cart.value = cart_graphql.Fragment$Cart.fromJson(resultJson);
 debugPrint('[BannerController] CartController updated directly from removeCouponCode response');
             
             // Update OrderController
-            orderController.currentOrder.value = OrderModel.fromJson(resultJson);
+            orderController.currentOrder.value = result;
 debugPrint('[BannerController] OrderController updated directly from removeCouponCode response');
           } else {
 debugPrint('[BannerController] No order data in removeCouponCode response, refreshing controllers');
@@ -1856,6 +1762,82 @@ debugPrint('[BannerController] Remove coupon code error: $e');
 debugPrint('[BannerController] Coupon codes and tracked products reset');
   }
 
+  /// Check and remove coupons if cart total is below their minimum requirement
+  /// Called automatically when cart is cleared or cart total decreases
+  Future<void> validateAndRemoveCouponsIfNeeded() async {
+    try {
+      // If no coupons applied, nothing to check
+      if (appliedCouponCodes.isEmpty) {
+        debugPrint('[BannerController] No coupons applied, skipping validation');
+        return;
+      }
+
+      debugPrint('[BannerController] ===== Validating applied coupons =====');
+      debugPrint('[BannerController] Applied coupons: ${appliedCouponCodes.toList()}');
+
+      // Get current cart total
+      final cartTotal = await _getCurrentCartTotal();
+      if (cartTotal == null) {
+        debugPrint('[BannerController] Could not get cart total, skipping coupon validation');
+        return;
+      }
+
+      debugPrint('[BannerController] Current cart total: $cartTotal');
+
+      // Check each applied coupon
+      final couponsToRemove = <String>[];
+      
+      for (final couponCode in appliedCouponCodes.toList()) {
+        // Find the coupon in available coupons
+        Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+        try {
+          coupon = availableCouponCodes.firstWhere(
+            (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+          );
+        } catch (e) {
+          debugPrint('[BannerController] Coupon $couponCode not found in available coupons');
+          // Remove it from applied list if not found
+          couponsToRemove.add(couponCode);
+          continue;
+        }
+
+        // Get minimum amount for this coupon
+        final minimumAmount = _getCouponMinimumAmount(coupon);
+        if (minimumAmount == null) {
+          // No minimum requirement, skip
+          debugPrint('[BannerController] Coupon $couponCode has no minimum requirement');
+          continue;
+        }
+
+        // Check if cart total is below minimum
+        if (cartTotal < minimumAmount) {
+          debugPrint('[BannerController] ❌ Coupon $couponCode minimum not met');
+          debugPrint('[BannerController] Required: $minimumAmount, Current: $cartTotal');
+          couponsToRemove.add(couponCode);
+        } else {
+          debugPrint('[BannerController] ✅ Coupon $couponCode minimum met');
+        }
+      }
+
+      // Remove coupons that don't meet minimum requirements
+      if (couponsToRemove.isNotEmpty) {
+        debugPrint('[BannerController] Removing ${couponsToRemove.length} coupons that don\'t meet minimum requirements');
+        
+        for (final couponCode in couponsToRemove) {
+          debugPrint('[BannerController] Removing coupon: $couponCode');
+          await removeCouponCode(couponCode);
+        }
+        
+        debugPrint('[BannerController] ✅ Coupon validation and removal complete');
+      } else {
+        debugPrint('[BannerController] ✅ All applied coupons meet minimum requirements');
+      }
+    } catch (e) {
+      debugPrint('[BannerController] Error validating and removing coupons: $e');
+      // Don't throw - this is a background validation
+    }
+  }
+
   /// Get coupon validation status for UI display
   Future<Map<String, dynamic>> getCouponValidationStatus(
       String couponCode) async {
@@ -1928,8 +1910,8 @@ debugPrint(  '[BannerController] Product $i: ${couponProducts[i]['name']} (Varia
 debugPrint(  '[BannerController] Adding product to cart: $productName (Variant ID: $productVariantId, Qty: $quantity)');
 
           final res = await GraphqlService.client.value.mutate$AddToCart(
-            Options$Mutation$AddToCart(
-              variables: Variables$Mutation$AddToCart(
+            cart_graphql.Options$Mutation$AddToCart(
+              variables: cart_graphql.Variables$Mutation$AddToCart(
                 variantId: productVariantId,
                 qty: quantity,
               ),
@@ -1960,7 +1942,7 @@ debugPrint(  '[BannerController] - Product from $productName: Network error: ${r
           final result = res.parsedData?.addItemToOrder;
           if (result != null) {
 debugPrint(  '[BannerController] Add to cart result for $productName: ${result.runtimeType}');
-            if (result is Mutation$AddToCart$addItemToOrder$$Order) {
+            if (result is cart_graphql.Mutation$AddToCart$addItemToOrder$$Order) {
 debugPrint(  '[BannerController] Successfully added $productName to cart');
               
               // Update both controllers immediately after each product is added
@@ -1971,11 +1953,11 @@ debugPrint(  '[BannerController] Successfully added $productName to cart');
                 final resultJson = result.toJson();
                 
                 // Update CartController
-                cartController.cart.value = Order.fromJson(resultJson);
+                cartController.cart.value = cart_graphql.Fragment$Cart.fromJson(resultJson);
 debugPrint('[BannerController] CartController updated after adding $productName');
                 
-                // Update OrderController
-                orderController.currentOrder.value = OrderModel.fromJson(resultJson);
+                // Update OrderController - refresh to get proper Fragment$Cart type
+                await orderController.getActiveOrder(skipLoading: true);
 debugPrint('[BannerController] OrderController updated after adding $productName');
               } catch (e) {
 debugPrint('[BannerController] Could not update controllers after adding $productName: $e');
@@ -1988,7 +1970,7 @@ debugPrint('[BannerController] Could not update controllers after adding $produc
                 'productVariantId': productVariantId,
               });
             } else if (result
-                is Mutation$AddToCart$addItemToOrder$$InsufficientStockError) {
+                is cart_graphql.Mutation$AddToCart$addItemToOrder$$InsufficientStockError) {
 debugPrint(  '[BannerController] Failed to add $productName: Insufficient stock');
               failedProducts
                   .add({'product': productName, 'error': 'Insufficient stock'});
@@ -2137,68 +2119,85 @@ debugPrint('[BannerController] Reset _isAddingItems flag');
     }
   }
 
-  /// Apply coupon code with products (add products first, then apply coupon)
+  /// Apply coupon code with products (check minimum first, add products if needed, then apply coupon)
   Future<Map<String, dynamic>> applyCouponCodeWithProducts(
       String couponCode) async {
     try {
-debugPrint(  '[BannerController] Starting applyCouponCodeWithProducts for: $couponCode');
+      debugPrint('[BannerController] Starting applyCouponCodeWithProducts for: $couponCode');
 
-      // Check if coupon has products
-      final hasProducts = hasCouponProducts(couponCode);
-debugPrint(  '[BannerController] Coupon $couponCode has products: $hasProducts');
-
-      Map<String, dynamic>? addResult;
-      
-      // If coupon has products, add them to cart first
-      if (hasProducts) {
-debugPrint(  '[BannerController] Step 1: Adding coupon products to cart...');
-        addResult = await addCouponProductsToCart(couponCode);
-
-        // If adding products fails OR if ANY product failed, don't apply coupon
-        // addResult['success'] will be false if any product failed (due to rollback)
-        if (!addResult['success']) {
-debugPrint(  '[BannerController] ❌ Failed to add products to cart: ${addResult['message']}');
-debugPrint(  '[BannerController] ❌ Not applying coupon code due to product addition failure');
-          
-          // Check if rollback was performed
-          final rollbackPerformed = addResult['rollbackPerformed'] == true;
-          final failedCount = addResult['totalFailed'] ?? 0;
-          final addedCount = addResult['totalAdded'] ?? 0;
-          
-          String errorMessage = 'Failed to add coupon products to cart. Coupon not applied.';
-          if (rollbackPerformed && addedCount > 0) {
-            errorMessage = 'Some coupon products could not be added. Added products have been removed. Coupon not applied.';
-          } else if (failedCount > 0) {
-            errorMessage = 'Failed to add all coupon products. Coupon not applied.';
-          }
-          
-          // Refresh cart to ensure state is up to date after product addition failure
-          _refreshCartAfterCouponError();
-          
-          return {
-            'success': false,
-            'message': errorMessage,
-            'error': 'PRODUCT_ADDITION_FAILED',
-            'addResult': addResult,
-            'rollbackPerformed': rollbackPerformed,
-          };
-        }
-debugPrint(  '[BannerController] ✅ Successfully added coupon products to cart');
-      } else {
-debugPrint(  '[BannerController] Coupon has no products, skipping product addition');
-        addResult = {
-          'success': true,
-          'addedProducts': [],
-          'message': 'No products to add',
+      // Step 1: Find the coupon
+      Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+      try {
+        coupon = availableCouponCodes.firstWhere(
+          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+        );
+      } catch (e) {
+        debugPrint('[BannerController] ❌ Coupon not found: $couponCode');
+        return {
+          'success': false,
+          'message': 'Coupon code not found',
+          'error': 'COUPON_NOT_FOUND'
         };
       }
 
-debugPrint('[BannerController] Step 2: Applying coupon code...');
-      // Then apply the coupon code
-      final couponResult = await applyCouponCode(couponCode);
+      // Step 2: Check minimum order amount FIRST
+      debugPrint('[BannerController] Step 1: Checking minimum order amount...');
+      final minimumAmountValidation = await _validateMinimumOrderAmount(coupon);
+      
+      Map<String, dynamic>? addResult;
+      
+      // Step 2: If minimum not met, show dialog and return (don't add products or apply coupon)
+      if (!minimumAmountValidation['valid']) {
+        debugPrint('[BannerController] ❌ Minimum order amount not met');
+        debugPrint('[BannerController] Required: ${minimumAmountValidation['requiredAmount']}, Current: ${minimumAmountValidation['currentAmount']}');
+        debugPrint('[BannerController] ❌ Stopping coupon application - minimum order amount must be met first');
+        
+        // Show dialog box and return error - don't add products or apply coupon
+        ErrorDialog.showWarning(
+          message: minimumAmountValidation['message'] as String,
+        );
+        
+        return {
+          'success': false,
+          'message': minimumAmountValidation['message'],
+          'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
+          'requiredAmount': minimumAmountValidation['requiredAmount'],
+          'currentAmount': minimumAmountValidation['currentAmount']
+        };
+      }
+      
+      debugPrint('[BannerController] ✅ Minimum order amount already met');
+      
+      // Step 3: Add coupon products to cart (if coupon has products)
+      final hasProducts = hasCouponProducts(couponCode);
+      if (hasProducts) {
+        debugPrint('[BannerController] Step 2: Adding coupon products to cart...');
+        addResult = await addCouponProductsToCart(couponCode);
+
+        // If adding products fails, don't apply coupon
+        if (!addResult['success']) {
+          debugPrint('[BannerController] ❌ Failed to add products to cart: ${addResult['message']}');
+          _refreshCartAfterCouponError();
+          return {
+            'success': false,
+            'message': 'Failed to add coupon products. ${addResult['message']}',
+            'error': 'PRODUCT_ADDITION_FAILED',
+            'addResult': addResult,
+          };
+        }
+        
+        debugPrint('[BannerController] ✅ Successfully added coupon products to cart');
+      }
+      
+      // Step 3: Apply coupon code
+      debugPrint('[BannerController] Step 3: Applying coupon code...');
+      // Call internal method to apply coupon without minimum validation (already validated)
+      final couponResult = await _applyCouponCodeWithoutMinimumCheck(couponCode);
 
       if (couponResult['success']) {
-debugPrint(  '[BannerController] Successfully applied coupon with products for: $couponCode');
+        debugPrint('[BannerController] ✅ Successfully applied coupon: $couponCode');
+        
+        final hasProducts = hasCouponProducts(couponCode);
         
         // Both controllers are already updated by applyCouponCode
         // No need to call getActiveOrder() which might fetch stale data
@@ -2209,18 +2208,18 @@ debugPrint(  '[BannerController] Successfully applied coupon with products for: 
           'message': hasProducts 
               ? 'Coupon products added and coupon applied successfully'
               : 'Coupon applied successfully',
-          'addedProducts': addResult['addedProducts'] ?? [],
+          'addedProducts': addResult?['addedProducts'] ?? [],
           'couponApplied': true,
-          'affectedProducts': couponResult['affectedProducts'],
           'orderTotal': couponResult['orderTotal'],
         };
       } else {
-        debugPrint('[BannerController] ❌ Products added but failed to apply coupon: $couponCode');
+        debugPrint('[BannerController] ❌ Failed to apply coupon: $couponCode');
         debugPrint('[BannerController] ❌ Coupon error: ${couponResult['message']}');
         debugPrint('[BannerController] ❌ Coupon error type: ${couponResult['error']}');
 
         // ROLLBACK: Remove the products that were added since coupon application failed
-        if (hasProducts) {
+        final hasProducts = hasCouponProducts(couponCode);
+        if (hasProducts && addResult != null && addResult['success'] == true) {
           debugPrint('[BannerController] 🔄 Rolling back: Removing added products due to coupon application failure...');
           final rollbackResult = await _rollbackAddedProducts(couponCode);
 
@@ -2231,22 +2230,23 @@ debugPrint(  '[BannerController] Successfully applied coupon with products for: 
           }
         }
 
-        // Show warning dialog for coupon application failure
-        final errorMessage = 'Failed to apply coupon: ${couponResult['message']}.${hasProducts ? ' Added products have been removed.' : ''}';
+        final errorMessage = hasProducts && addResult != null && addResult['success'] == true
+            ? 'Failed to apply coupon: ${couponResult['message']}. Added products have been removed.'
+            : couponResult['message'] as String? ?? 'Failed to apply coupon code';
+        
         ErrorDialog.showWarning(
           message: errorMessage,
         );
 
-        // Refresh cart to ensure state is up to date after rollback
         _refreshCartAfterCouponError();
 
         return {
           'success': false,
           'message': errorMessage,
-          'addedProducts': addResult['addedProducts'] ?? [],
+          'addedProducts': addResult?['addedProducts'] ?? [],
           'couponApplied': false,
-          'couponError': couponResult['message'],
-          'rollbackPerformed': hasProducts,
+          'couponError': couponResult['error'],
+          'rollbackPerformed': hasProducts && addResult != null && addResult['success'] == true,
         };
       }
     } catch (e) {
@@ -2260,18 +2260,15 @@ debugPrint(  '[BannerController] Successfully applied coupon with products for: 
       try {
         await _rollbackAddedProducts(couponCode);
         debugPrint('[BannerController] ✅ Rollback completed');
-        // Refresh cart after rollback
         _refreshCartAfterCouponError();
       } catch (rollbackError) {
-        debugPrint('[BannerController] Rollback failed with error: $rollbackError');
-        // Still refresh cart even if rollback failed
+        debugPrint('[BannerController] ❌ Rollback failed with error: $rollbackError');
         _refreshCartAfterCouponError();
       }
 
       return {
         'success': false,
-        'message':
-            'Error applying coupon with products: $e. Any added products have been removed.',
+        'message': 'Error applying coupon: $e. Any added products have been removed.',
         'error': 'APPLY_COUPON_WITH_PRODUCTS_ERROR',
         'rollbackPerformed': true,
       };

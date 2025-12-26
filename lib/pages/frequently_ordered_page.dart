@@ -40,17 +40,17 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
   }
 
   /// Handle adding variant to cart
-  Future<void> _handleAddToCart(
+  Future<bool> _handleAddToCart(
       String productName, String? variantId) async {
     if (variantId == null || variantId.isEmpty) {
       showErrorSnackbar('No variants available for this product');
-      return;
+      return false;
     }
 
     final parsedVariantId = int.tryParse(variantId);
     if (parsedVariantId == null) {
       showErrorSnackbar('Invalid variant ID');
-      return;
+      return false;
     }
 
     final success = await cartController.addToCart(
@@ -61,6 +61,8 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
     } else {
       showErrorSnackbar('Failed to add to cart');
     }
+    
+    return success;
   }
 
 
@@ -170,6 +172,20 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
     );
   }
 
+  /// Get variant label from selected variant (option name)
+  String _getVariantLabel(
+      Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants? variant) {
+    if (variant == null) return 'Default';
+    
+    // If variant has options, return the first option name
+    if (variant.options.isNotEmpty) {
+      return variant.options.first.name;
+    }
+    
+    // Fallback to variant name if no options
+    return variant.name;
+  }
+
   Widget _buildProductTile({
     required String name,
     required String? imageUrl,
@@ -199,7 +215,7 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
       discountPercent: null,
       variantSelector: null,
       showVariantSelector: false,
-      variantLabel: variant?.name ?? 'Default',
+      variantLabel: _getVariantLabel(variant),
       priceText: priceText,
       shadowPriceText: null,
       onAddToCart: () => _handleAddToCart(name, variantId),

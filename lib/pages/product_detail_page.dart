@@ -7,9 +7,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
-import '../controllers/product/product_models.dart';
+import '../graphql/product.graphql.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../utils/price_formatter.dart';
+import '../utils/app_strings.dart';
+import '../utils/app_config.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/responsive_spacing.dart';
@@ -39,8 +41,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   final CartController cartController = Get.find<CartController>();
   final UtilityController utilityController = Get.find<UtilityController>();
 
-  ProductDetailModel? productDetail;
-  ProductVariantDetailModel? selectedVariant;
+  Query$GetProductDetail$product? productDetail;
+  Query$GetProductDetail$product$variants? selectedVariant;
   Map<String, dynamic>? _rawProductData; // Store raw JSON data for shadow price
   PageController _imagePageController = PageController();
   int _currentImageIndex = 0;
@@ -111,32 +113,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       debugPrint('[ProductDetail] Shared product link: $shareLink');
     } catch (e) {
       debugPrint('[ProductDetail] Error sharing product: $e');
-      showErrorSnackbar('Failed to share product');
+      showErrorSnackbar(AppStrings.failedToShareProduct);
     }
   }
 
   /// Get display name from variant options, fallback to variant name
-  String _getVariantDisplayName(ProductVariantDetailModel variant) {
+  String _getVariantDisplayName(Query$GetProductDetail$product$variants variant) {
     // Always prefer showing option names over variant name
     if (variant.options.isNotEmpty) {
       // Join all option names with comma and space
       final optionNames = variant.options
-          .where((option) => option.name != null && option.name!.isNotEmpty)
-          .map((option) => option.name!)
+          .where((option) => option.name.isNotEmpty)
+          .map((option) => option.name)
           .join(', ');
       if (optionNames.isNotEmpty) {
-debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, Options: ${variant.options.length}, Option Names: $optionNames');
         return optionNames;
       }
     }
     // If no options, show variant name as fallback
-debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, No options found, using variant name: ${variant.name}');
     return variant.name;
   }
 
 
   /// Calculate discount percentage from shadow price - same logic as category product page
-  double? _calculateDiscountPercent(ProductVariantDetailModel variant) {
+  double? _calculateDiscountPercent(Query$GetProductDetail$product$variants variant) {
     final shadowPriceMinor = _getShadowPriceFromRawData(variant);
     if (shadowPriceMinor == null) {
       return null;
@@ -144,7 +144,7 @@ debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, No options found, u
 
     // priceWithTax is in minor units (paise) as double
     // e.g., 12000.0 = 120 rupees = 12000 paise
-    final currentPriceMinor = (variant.priceWithTax ?? 0).round();
+    final currentPriceMinor = variant.priceWithTax.round();
     if (shadowPriceMinor <= currentPriceMinor) {
       return null;
     }
@@ -165,8 +165,51 @@ debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, No options found, u
     return value;
   }
 
+  /// Clean product data to remove null values from options arrays and null groups
+  /// This fixes the issue where null options/groups cause parsing errors in generated code
+  Map<String, dynamic> _cleanProductData(Map<String, dynamic> data) {
+    try {
+      final cleaned = Map<String, dynamic>.from(data);
+      
+      // Clean variants -> options to filter out null values and null groups
+      if (cleaned['variants'] != null && cleaned['variants'] is List) {
+        final variants = (cleaned['variants'] as List).map((variant) {
+          if (variant is Map<String, dynamic>) {
+            final cleanedVariant = Map<String, dynamic>.from(variant);
+            
+            // Filter out null options and options with null groups
+            // The generated code expects group to be non-null, so we must filter these out
+            if (cleanedVariant['options'] != null && cleanedVariant['options'] is List) {
+              cleanedVariant['options'] = (cleanedVariant['options'] as List)
+                  .where((option) {
+                    // Filter out null options and options with null groups
+                    if (option == null || option is! Map<String, dynamic>) {
+                      return false;
+                    }
+                    final optionMap = option;
+                    // The generated code requires group to be non-null, so filter out options with null groups
+                    final group = optionMap['group'];
+                    return group != null && group is Map<String, dynamic>;
+                  })
+                  .toList();
+            }
+            
+            return cleanedVariant;
+          }
+          return variant;
+        }).toList();
+        cleaned['variants'] = variants;
+      }
+      
+      return cleaned;
+    } catch (e) {
+      debugPrint('[ProductDetailPage] Error cleaning product data: $e');
+      return data; // Return original data if cleaning fails
+    }
+  }
+
   /// Get shadow price from raw data - same logic as category product page
-  int? _getShadowPriceFromRawData(ProductVariantDetailModel variant) {
+  int? _getShadowPriceFromRawData(Query$GetProductDetail$product$variants variant) {
     try {
       if (_rawProductData == null) {
         return null;
@@ -195,7 +238,7 @@ debugPrint(  '[ProductDetailPage] Variant ID: ${variant.id}, No options found, u
 
           // priceWithTax is in minor units (paise) as double
           // e.g., 12000.0 = 120 rupees = 12000 paise
-          final currentPriceMinor = (variant.priceWithTax ?? 0).round();
+          final currentPriceMinor = variant.priceWithTax.round();
 
           // If the stored value already looks like minor units (>= current price), use it directly
           if (rawValue > currentPriceMinor) {
@@ -227,12 +270,14 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
         _hasFetchedData = true; // Mark that we've completed the fetch attempt
         if (data != null) {
           _rawProductData = data; // Store raw data for shadow price access
-          productDetail = ProductDetailModel.fromJson(data);
+          // Clean the data to filter out null options before parsing
+          final cleanedData = _cleanProductData(data);
+          productDetail = Query$GetProductDetail$product.fromJson(cleanedData);
           
           // Track product view
           if (productDetail!.variants.isNotEmpty) {
             final variant = productDetail!.variants.first;
-            final price = variant.priceWithTax != null ? variant.priceWithTax! / 100.0 : 0.0;
+            final price = variant.priceWithTax / 100.0;
             AnalyticsService().logViewItem(
               itemId: variant.id,
               itemName: widget.productName ?? productDetail!.name,
@@ -470,8 +515,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                   letterSpacing: 0.3,
                 ),
               if (selectedVariant != null) ResponsiveSpacing.vertical(16),
-              if (selectedVariant != null &&
-                  selectedVariant!.priceWithTax != null)
+              if (selectedVariant != null)
                 Builder(
                   builder: (context) {
                     final shadowPrice = _getShadowPriceFromRawData(selectedVariant!);
@@ -496,7 +540,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                                       // Current Price
                                       ResponsiveText(
                                         PriceFormatter.formatPriceFromDouble(
-                                            selectedVariant!.priceWithTax!),
+                                            selectedVariant!.priceWithTax),
                                         fontSize: 24,
                                         fontWeight: FontWeight.w800,
                                         color: AppColors.button,
@@ -532,7 +576,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                                     Row(
                                       children: [
                                         Text(
-                                          'M.R.P: ',
+                                          '${AppConfig.mrpLabel}: ',
                                           style: TextStyle(
                                             fontSize: ResponsiveUtils.sp(14),
                                             fontWeight: FontWeight.w500,
@@ -584,7 +628,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                                       ),
                                     ),
                                     Text(
-                                      selectedVariant!.sku!,
+                                      selectedVariant!.sku,
                                       style: TextStyle(
                                         fontSize: ResponsiveUtils.sp(11),
                                         fontWeight: FontWeight.w700,
@@ -603,9 +647,12 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
               // Stock status badge with Favorite Icon on Right
               if (selectedVariant != null) ...[
                 ResponsiveSpacing.vertical(12),
-                if (selectedVariant!.stockLevel > 0 ||
-                    selectedVariant!.stockLevel >= 999)
-                  Row(
+                Builder(
+                  builder: (context) {
+                    final stockLevel = selectedVariant!.stockLevel.toUpperCase();
+                    final isOutOfStock = stockLevel == 'OUT_OF_STOCK' || stockLevel == 'LOW_STOCK';
+                    if (!isOutOfStock) {
+                      return Row(
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -663,67 +710,70 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                         );
                       }),
                     ],
-                  )
-                else
-                  Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(10),
-                          vertical: ResponsiveUtils.rp(6),
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.cancel,
-                                color: AppColors.error,
-                                size: ResponsiveUtils.rp(14)),
-                            SizedBox(width: ResponsiveUtils.rp(4)),
-                            ResponsiveText(
-                              'Out of Stock',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.error,
+                  );
+                    } else {
+                      return Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ResponsiveUtils.rp(10),
+                              vertical: ResponsiveUtils.rp(6),
                             ),
-                          ],
-                        ),
-                      ),
-                      Spacer(),
-                      // Favorite Button at right end
-                      Obx(() {
-                        final isFavorite =
-                            bannerController.isFavorite(productDetail?.id ?? '');
-                        return GestureDetector(
-                          onTap: () async {
-                            if (productDetail != null) {
-                              await bannerController.toggleFavorite(
-                                  productId: productDetail!.id);
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
                             decoration: BoxDecoration(
-                              color: isFavorite
-                                  ? AppColors.error.withValues(alpha: 0.1)
-                                  : AppColors.inputFill,
-                              shape: BoxShape.circle,
+                              color: AppColors.error.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
                             ),
-                            child: Icon(
-                              isFavorite
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
-                              color: isFavorite ? AppColors.error : AppColors.textSecondary,
-                              size: ResponsiveUtils.rp(28),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.cancel,
+                                    color: AppColors.error,
+                                    size: ResponsiveUtils.rp(14)),
+                                SizedBox(width: ResponsiveUtils.rp(4)),
+                                ResponsiveText(
+                                  'Out of Stock',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.error,
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      }),
-                    ],
-                  ),
+                          Spacer(),
+                          // Favorite Button at right end
+                          Obx(() {
+                            final isFavorite =
+                                bannerController.isFavorite(productDetail?.id ?? '');
+                            return GestureDetector(
+                              onTap: () async {
+                                if (productDetail != null) {
+                                  await bannerController.toggleFavorite(
+                                      productId: productDetail!.id);
+                                }
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                decoration: BoxDecoration(
+                                  color: isFavorite
+                                      ? AppColors.error.withValues(alpha: 0.1)
+                                      : AppColors.inputFill,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  isFavorite
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                  color: isFavorite ? AppColors.error : AppColors.textSecondary,
+                                  size: ResponsiveUtils.rp(28),
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      );
+                    }
+                  },
+                ),
               ],
             ],
           ),
@@ -831,8 +881,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
         ],
 
         // Description
-        if (productDetail!.description != null &&
-            productDetail!.description!.isNotEmpty) ...[
+        if (productDetail!.description.isNotEmpty) ...[
           Container(
             key: _descriptionKey,
             margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
@@ -878,7 +927,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                 ResponsiveSpacing.vertical(12),
                 _isDescriptionExpanded
                     ? Html(
-                        data: productDetail!.description ?? '',
+                        data: productDetail!.description,
                         style: {
                           "body": Style(
                             margin: Margins.zero,
@@ -950,7 +999,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                                   child: SingleChildScrollView(
                                     physics: NeverScrollableScrollPhysics(),
                                     child: Html(
-                                      data: productDetail!.description ?? '',
+                                      data: productDetail!.description,
                                       style: {
                                         "body": Style(
                                           margin: Margins.zero,
@@ -1037,7 +1086,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
     final variantId = int.tryParse(selectedVariant!.id);
     if (variantId == null) {
       if (mounted) {
-        showErrorSnackbar('Invalid variant ID');
+        showErrorSnackbar(AppStrings.invalidVariantId);
       }
       return;
     }
@@ -1053,7 +1102,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
         _selectedQuantity = 1;
       });
     } else {
-      showErrorSnackbar('Failed to add to cart');
+      showErrorSnackbar(AppStrings.failedToAddToCart);
     }
   }
 
@@ -1087,8 +1136,8 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
     if (selectedVariant == null) return SizedBox.shrink();
 
     final cartQuantity = _getCartQuantity();
-    final isOutOfStock =
-        selectedVariant!.stockLevel <= 0 && selectedVariant!.stockLevel < 999;
+    final stockLevel = selectedVariant!.stockLevel.toUpperCase();
+    final isOutOfStock = stockLevel == 'OUT_OF_STOCK' || stockLevel == 'LOW_STOCK';
 
     return Container(
       decoration: BoxDecoration(
@@ -1193,7 +1242,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                             ),
                             SizedBox(width: ResponsiveUtils.rp(8)),
                             Text(
-                              'Add to Cart',
+                              AppStrings.addToCart,
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
                                 fontWeight: FontWeight.w700,
@@ -1366,7 +1415,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                         horizontal: ResponsiveUtils.rp(24),
                         vertical: ResponsiveUtils.rp(12)),
                   ),
-                  child: Text('Go Back', style: TextStyle(color: Colors.white)),
+                  child: Text(AppStrings.goBack, style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -1744,7 +1793,7 @@ class _QuantityDialogWidgetState extends State<_QuantityDialogWidget> {
               controller: _controller,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                hintText: 'Quantity (Max: ${widget.maxQuantity})',
+                hintText: AppStrings.replace(AppStrings.quantityMaxPlaceholder, {'max': widget.maxQuantity.toString()}),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                 ),
@@ -1774,7 +1823,7 @@ class _QuantityDialogWidgetState extends State<_QuantityDialogWidget> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel',
+          child: Text(AppStrings.cancel,
               style: TextStyle(color: AppColors.textSecondary)),
         ),
         ElevatedButton(
@@ -1795,7 +1844,7 @@ class _QuantityDialogWidgetState extends State<_QuantityDialogWidget> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.button,
           ),
-          child: Text('Add', style: TextStyle(color: Colors.white)),
+          child: Text(AppStrings.add, style: TextStyle(color: Colors.white)),
         ),
       ],
     );

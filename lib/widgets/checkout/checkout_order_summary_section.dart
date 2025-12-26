@@ -3,10 +3,11 @@ import 'package:get/get.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../controllers/banner/bannercontroller.dart';
-import '../../controllers/banner/bannermodels.dart';
 import '../../controllers/utilitycontroller/utilitycontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
+import '../../utils/price_formatter.dart';
+import '../../graphql/banner.graphql.dart';
 
 class CheckoutOrderSummarySection extends StatelessWidget {
   const CheckoutOrderSummarySection({Key? key}) : super(key: key);
@@ -39,26 +40,16 @@ class CheckoutOrderSummarySection extends StatelessWidget {
       bool hasFreeShippingInCoupon = false;
 
       if (appliedCouponCode != null) {
-        final coupon = bannerController.availableCouponCodes.firstWhere(
-          (c) => c.couponCode.toUpperCase() == appliedCouponCode.toUpperCase(),
-          orElse: () => CouponCodeModel(
-            id: '',
-            name: '',
-            couponCode: '',
-            enabled: false,
-            createdAt: '',
-            updatedAt: '',
-            description: '',
-            startsAt: '',
-            endsAt: '',
-            perCustomerUsageLimit: 0,
-            usageLimit: 0,
-            actions: [],
-            conditions: [],
-          ),
-        );
-
-        if (coupon.id.isNotEmpty) {
+        Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+        try {
+          coupon = bannerController.availableCouponCodes.firstWhere(
+            (c) => (c.couponCode ?? '').toUpperCase() == appliedCouponCode.toUpperCase(),
+          );
+        } catch (e) {
+          coupon = null;
+        }
+        
+        if (coupon != null && coupon.id.isNotEmpty) {
           appliedCouponName = coupon.name;
           hasFreeShippingInCoupon = coupon.actions.any(
             (action) => action.code == 'free_shipping',
@@ -103,7 +94,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
               children: [
                 _buildSummaryRow(
                   'Items ($itemCount)',
-                  '₹${(subtotal / 100).toStringAsFixed(2)}',
+                  PriceFormatter.formatPrice(subtotal.toInt()),
                 ),
                 SizedBox(height: ResponsiveUtils.rp(12)),
                 if (hasFreeShipping &&
@@ -115,7 +106,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
                     'Delivery Charge',
                     hasFreeShipping
                         ? 'FREE'
-                        : '₹${(shipping / 100).toStringAsFixed(2)}',
+                        : PriceFormatter.formatPrice(shipping.toInt()),
                     valueColor: hasFreeShipping ? AppColors.success : null,
                   ),
                 if (loyaltyPointsApplied &&
@@ -124,7 +115,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   _buildSummaryRow(
                     'Loyalty Points Discount',
-                    '-₹${(loyaltyDiscountAmount / 100).toStringAsFixed(2)}',
+                    '-${PriceFormatter.formatPrice(loyaltyDiscountAmount.toInt())}',
                     valueColor: AppColors.success,
                   ),
                 ],
@@ -287,7 +278,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
           ),
         ),
         Text(
-          '-₹${(discountAmount / 100).toStringAsFixed(2)}',
+          '-${PriceFormatter.formatPrice(discountAmount.toInt())}',
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(15),
             fontWeight: FontWeight.w600,
@@ -311,7 +302,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
           ),
         ),
         Text(
-          '₹${(total / 100).toStringAsFixed(2)}',
+          PriceFormatter.formatPrice(total.toInt()),
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(20),
             fontWeight: FontWeight.bold,
@@ -322,4 +313,3 @@ class CheckoutOrderSummarySection extends StatelessWidget {
     );
   }
 }
-

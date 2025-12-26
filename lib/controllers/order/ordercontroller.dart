@@ -1,23 +1,25 @@
 import 'package:get/get.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../graphql/order.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
+import '../banner/bannercontroller.dart';
 import '../base_controller.dart';
 import '../../utils/price_formatter.dart';
 import '../../widgets/loading_dialog.dart';
-import 'ordermodels.dart';
+import '../../widgets/error_dialog.dart';
 import 'package:flutter/foundation.dart';
 
 class OrderController extends BaseController {
-  Rx<OrderModel?> currentOrder = Rx<OrderModel?>(null);
-  Rx<ErrorResult?> error = Rx<ErrorResult?>(null);
+  Rx<Fragment$Cart?> currentOrder = Rx<Fragment$Cart?>(null);
+  Rx<Fragment$ErrorResult?> error = Rx<Fragment$ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
 
-  RxList<ShippingMethod> shippingMethods = <ShippingMethod>[].obs;
-  RxList<PaymentMethod> paymentMethods = <PaymentMethod>[].obs;
-  Rx<ShippingMethod?> selectedShippingMethod = Rx<ShippingMethod?>(null);
-  Rx<PaymentMethod?> selectedPaymentMethod = Rx<PaymentMethod?>(null);
+  RxList<Query$GetEligibleShippingMethods$eligibleShippingMethods> shippingMethods = <Query$GetEligibleShippingMethods$eligibleShippingMethods>[].obs;
+  RxList<Query$GetEligiblePaymentMethods$eligiblePaymentMethods> paymentMethods = <Query$GetEligiblePaymentMethods$eligiblePaymentMethods>[].obs;
+  Rx<Query$GetEligibleShippingMethods$eligibleShippingMethods?> selectedShippingMethod = Rx<Query$GetEligibleShippingMethods$eligibleShippingMethods?>(null);
+  Rx<Query$GetEligiblePaymentMethods$eligiblePaymentMethods?> selectedPaymentMethod = Rx<Query$GetEligiblePaymentMethods$eligiblePaymentMethods?>(null);
 
   /// Get active order (cart)
   Future<bool> getActiveOrder({bool skipLoading = false}) async {
@@ -124,13 +126,21 @@ debugPrint('[Order]     Method Name: ${methodData['name']}');
 debugPrint('[Order] ===================================================');
 debugPrint('═══════════════════════════════════════════════════════════');
         
-        final newOrder = OrderModel.fromJson(orderJson);
+        final newOrder = orderData;
         final previousOrderId = currentOrder.value?.id;
         
         // If this is a new order (different ID) or order has no shipping lines, clear selected shipping method
         if (previousOrderId != null && previousOrderId != newOrder.id) {
 debugPrint('[Order] New order detected (ID changed from $previousOrderId to ${newOrder.id}), clearing selected shipping method');
           selectedShippingMethod.value = null;
+          // Also reset loyalty points state for new order
+          try {
+            final bannerController = Get.find<BannerController>();
+            bannerController.resetLoyaltyPoints();
+debugPrint('[Order] Reset loyalty points state for new order');
+          } catch (e) {
+            // BannerController might not be initialized yet, ignore
+          }
         } else if (newOrder.shippingLines.isEmpty && selectedShippingMethod.value != null) {
 debugPrint('[Order] Order has no shipping lines, clearing selected shipping method');
           selectedShippingMethod.value = null;
@@ -196,7 +206,7 @@ debugPrint('[Order] No removeOrderLine result');
         return false;
       }
 
-      currentOrder.value = OrderModel.fromJson(result.toJson());
+      currentOrder.value = result;
 debugPrint('[Order] Order line removed successfully');
       return true;
     } catch (e) {
@@ -234,7 +244,7 @@ debugPrint('[Order] No removeAllOrderLines result');
         return false;
       }
 
-      currentOrder.value = OrderModel.fromJson(result.toJson());
+      currentOrder.value = result;
 debugPrint('[Order] All order lines removed');
       return true;
     } catch (e) {
@@ -263,8 +273,7 @@ debugPrint('[Order] Remove all order lines error: $e');
       final methods = response.parsedData?.eligibleShippingMethods;
 
       if (methods != null) {
-        shippingMethods.value =
-            methods.map((m) => ShippingMethod.fromJson(m.toJson())).toList();
+        shippingMethods.value = methods;
         return true;
       }
 
@@ -306,8 +315,8 @@ debugPrint('[Order] Shipping method already set, skipping');
       }
 
       final result = response.parsedData?.setOrderShippingMethod;
-      if (result != null) {
-        currentOrder.value = OrderModel.fromJson(result.toJson());
+      if (result != null && result is Mutation$SetShippingMethod$setOrderShippingMethod$$Order) {
+        currentOrder.value = result;
 debugPrint('[Order] Shipping method set successfully');
         return true;
       }
@@ -348,10 +357,10 @@ debugPrint('[Order] Set shipping method error: $e');
       return 'Free';
     }
 
-    if (currentOrder.value == null) return 'Rs 0';
+    if (currentOrder.value == null) return PriceFormatter.formatPrice(0);
 
     final shippingCost = currentOrder.value!.shippingWithTax;
-    return PriceFormatter.formatPrice(shippingCost);
+    return PriceFormatter.formatPrice(shippingCost.toInt());
   }
 
   /// Set shipping address
@@ -412,6 +421,126 @@ debugPrint('[Order] Set shipping method error: $e');
       debugPrint('[Order] GraphQL response received: ${response.data != null ? "Data present" : "No data"}');
       debugPrint('[Order] Response has exception: ${response.hasException}');
 
+      // Detailed error logging before checking for errors
+      if (response.hasException) {
+        debugPrint('[Order] ⚠️ EXCEPTION DETECTED IN RESPONSE');
+        
+        // Log GraphQL errors
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          debugPrint('[Order] ──── GraphQL Errors ────');
+          for (int i = 0; i < response.exception!.graphqlErrors.length; i++) {
+            final error = response.exception!.graphqlErrors[i];
+            debugPrint('[Order] Error ${i + 1}:');
+            debugPrint('[Order]   Message: ${error.message}');
+            debugPrint('[Order]   Extensions: ${error.extensions}');
+            if (error.locations != null && error.locations!.isNotEmpty) {
+              debugPrint('[Order]   Locations: ${error.locations}');
+            }
+            if (error.path != null && error.path!.isNotEmpty) {
+              debugPrint('[Order]   Path: ${error.path}');
+            }
+          }
+        }
+        
+        // Log link exception
+        if (response.exception?.linkException != null) {
+          final linkException = response.exception!.linkException;
+          debugPrint('[Order] ──── Link Exception ────');
+          debugPrint('[Order] Type: ${linkException.runtimeType}');
+          debugPrint('[Order] Message: ${linkException.toString()}');
+          
+          if (linkException is NetworkException) {
+            debugPrint('[Order] Network Exception Details:');
+            debugPrint('[Order]   Original Exception: ${linkException.originalException}');
+          } else if (linkException is ServerException) {
+            debugPrint('[Order] Server Exception Details:');
+            debugPrint('[Order]   Original Exception: ${linkException.originalException}');
+            if (linkException.parsedResponse != null) {
+              debugPrint('[Order]   Parsed Response: ${linkException.parsedResponse}');
+            }
+          } else if (linkException is UnknownException) {
+            debugPrint('[Order] Unknown Exception Details:');
+            debugPrint('[Order]   Original Exception: ${linkException.originalException}');
+          }
+        }
+        
+        // Log general exception
+        if (response.exception != null) {
+          debugPrint('[Order] ──── General Exception ────');
+          debugPrint('[Order] Exception: ${response.exception}');
+        }
+      }
+      
+      // Log response data if available (for debugging)
+      if (response.data != null) {
+        debugPrint('[Order] Response data keys: ${response.data!.keys}');
+        if (response.data!.containsKey('setOrderShippingAddress')) {
+          final resultData = response.data!['setOrderShippingAddress'];
+          debugPrint('[Order] setOrderShippingAddress result type: ${resultData.runtimeType}');
+          if (resultData is Map) {
+            debugPrint('[Order] Result keys: ${resultData.keys}');
+            if (resultData.containsKey('__typename')) {
+              debugPrint('[Order] Result typename: ${resultData['__typename']}');
+            }
+            if (resultData.containsKey('errorCode')) {
+              debugPrint('[Order] ⚠️ Error in result: ${resultData['errorCode']} - ${resultData['message']}');
+            }
+          }
+        }
+      }
+
+      // Check for postal code errors specifically before general error check
+      bool isPostalCodeError = false;
+      if (response.hasException) {
+        // Check GraphQL errors for postal code related errors
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          for (final error in response.exception!.graphqlErrors) {
+            final errorMessage = error.message.toLowerCase();
+            if (errorMessage.contains('postal') || 
+                errorMessage.contains('postcode') ||
+                errorMessage.contains('zip code') ||
+                errorMessage.contains('invalid postal') ||
+                errorMessage.contains('postal code')) {
+              isPostalCodeError = true;
+              debugPrint('[Order] 🚫 Invalid postal code error detected');
+              break;
+            }
+          }
+        }
+        
+        // Also check response data for error codes related to postal code
+        if (!isPostalCodeError && response.data != null) {
+          if (response.data!.containsKey('setOrderShippingAddress')) {
+            final resultData = response.data!['setOrderShippingAddress'];
+            if (resultData is Map) {
+              final errorCode = resultData['errorCode']?.toString().toLowerCase() ?? '';
+              final errorMessage = resultData['message']?.toString().toLowerCase() ?? '';
+              if (errorCode.contains('postal') || 
+                  errorMessage.contains('postal') ||
+                  errorCode.contains('postcode') ||
+                  errorMessage.contains('postcode') ||
+                  errorMessage.contains('invalid postal')) {
+                isPostalCodeError = true;
+                debugPrint('[Order] 🚫 Invalid postal code error detected in result');
+              }
+            }
+          }
+        }
+      }
+
+      // Show custom dialog for postal code errors
+      if (isPostalCodeError) {
+        debugPrint('[Order] ❌ Invalid postal code - showing custom error dialog');
+        ErrorDialog.show(
+          title: 'Postal Code not ',
+          message: 'Kindly change address in home page',
+          buttonText: 'OK',
+        );
+        debugPrint('[Order] ========== SET SHIPPING ADDRESS FAILED (Invalid Postal Code) ==========');
+        debugPrint('═══════════════════════════════════════════════════════════');
+        return false;
+      }
+
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to set shipping address')) {
         debugPrint('[Order] ❌ Response contained errors - shipping address not set');
@@ -440,10 +569,12 @@ debugPrint('[Order] Set shipping method error: $e');
           debugPrint('[Order] ⚠️ Warning: Shipping address not found in order response');
         }
         
-        currentOrder.value = OrderModel.fromJson(orderJson);
-        debugPrint('[Order] ========== SET SHIPPING ADDRESS SUCCESS ==========');
-        debugPrint('═══════════════════════════════════════════════════════════');
-        return true;
+        if (result is Mutation$SetShippingAddress$setOrderShippingAddress$$Order) {
+          currentOrder.value = result;
+          debugPrint('[Order] ========== SET SHIPPING ADDRESS SUCCESS ==========');
+          debugPrint('═══════════════════════════════════════════════════════════');
+          return true;
+        }
       }
 
       debugPrint('[Order] ❌ No result in response - shipping address not set');
@@ -528,8 +659,7 @@ debugPrint('[Order] Set other instructions error: $e');
 
       final methods = response.parsedData?.eligiblePaymentMethods;
       if (methods != null) {
-        paymentMethods.value =
-            methods.map((m) => PaymentMethod.fromJson(m.toJson())).toList();
+        paymentMethods.value = methods;
 debugPrint('[Order] Loaded ${paymentMethods.length} payment methods');
         return true;
       }
@@ -575,8 +705,8 @@ debugPrint('[Order] Transition error: ${resultJson['message']} (${resultJson['er
         }
 
         // If it's an Order, update current order
-        if (resultJson.containsKey('id')) {
-          currentOrder.value = OrderModel.fromJson(resultJson);
+        if (result is Mutation$TransitionOrderToState$transitionOrderToState$$Order) {
+          currentOrder.value = result;
 debugPrint('[Order] Transitioned to $targetState');
           return true;
         }
@@ -647,8 +777,8 @@ debugPrint('[Order] Transition to ArrangingPayment error: ${resultJson['message'
         }
 
         // If it's an Order, update current order
-        if (resultJson.containsKey('id')) {
-          currentOrder.value = OrderModel.fromJson(resultJson);
+        if (result is Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order) {
+          currentOrder.value = result;
 debugPrint('[Order] Transitioned to ArrangingPayment');
           return true;
         }
@@ -707,8 +837,8 @@ debugPrint(  '[Order] Payment error: ${resultJson['message']} (${resultJson['err
         }
 
         // If it's an Order, update current order
-        if (resultJson.containsKey('id')) {
-          currentOrder.value = OrderModel.fromJson(resultJson);
+        if (result is Mutation$AddPayment$addPaymentToOrder$$Order) {
+          currentOrder.value = result;
 debugPrint('[Order] Payment added successfully, order updated');
           return true;
         }
@@ -726,7 +856,7 @@ debugPrint('[Order] Add payment error: $e');
   }
 
   /// Get order by code
-  Future<OrderModel?> getOrderByCode(String code) async {
+  Future<Fragment$Cart?> getOrderByCode(String code) async {
     try {
       utilityController.setLoadingState(true);
 
@@ -745,11 +875,9 @@ debugPrint('[Order] Add payment error: $e');
 
       final orderData = response.parsedData?.orderByCode;
       if (orderData != null) {
-        final order = OrderModel.fromJson(orderData.toJson());
-        currentOrder.value =
-            order; // Set the current order so UI can react to it
-debugPrint('[Order] Order retrieved: ${order.code}');
-        return order;
+        currentOrder.value = orderData; // Set the current order so UI can react to it
+debugPrint('[Order] Order retrieved: ${orderData.code}');
+        return orderData;
       }
 
       currentOrder.value = null; // Clear if order not found
@@ -765,7 +893,7 @@ debugPrint('[Order] Get order by code error: $e');
   }
 
   /// Generate Razorpay Order ID from backend
-  Future<RazorpayOrderResponse?> generateRazorpayOrderId(String orderId) async {
+  Future<Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId?> generateRazorpayOrderId(String orderId) async {
     try {
       utilityController.setLoadingState(true);
 
@@ -823,17 +951,13 @@ debugPrint('[Order] Razorpay Link Exception: ${exception.linkException}');
 
       final result = response.parsedData?.generateRazorpayOrderId;
       if (result != null) {
-        // Parse the new response format
-        final data = result.toJson();
-        final razorpayOrder = RazorpayOrderResponse.fromJson(data);
-        
         // Check if request was successful
-        if (razorpayOrder.success == true && razorpayOrder.razorpayOrderId != null) {
-debugPrint(  '[Order] ✅ Razorpay order created successfully: ${razorpayOrder.razorpayOrderId}');
-          return razorpayOrder;
+        if (result.success == true && result.razorpayOrderId != null) {
+debugPrint(  '[Order] ✅ Razorpay order created successfully: ${result.razorpayOrderId}');
+          return result;
         } else {
           // Handle error case
-          final errorMessage = razorpayOrder.errorMessage ?? 'Failed to create Razorpay order';
+          final errorMessage = result.errorMessage ?? 'Failed to create Razorpay order';
 debugPrint('[Order] ❌ Razorpay order error: $errorMessage');
           
           // Show user-friendly error
@@ -886,8 +1010,8 @@ debugPrint('[Order] Transition error: ${resultJson['message']}');
           return false;
         }
 
-        if (resultJson.containsKey('id')) {
-          currentOrder.value = OrderModel.fromJson(resultJson);
+        if (result is Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order) {
+          currentOrder.value = result;
 debugPrint('[Order] Order transitioned successfully');
           return true;
         }
@@ -916,7 +1040,9 @@ debugPrint('[Order] Order cleared');
     final code = result?.$__typename ?? 'UNKNOWN_ERROR';
     final message = _readOrderMutationMessage(result) ?? fallbackMessage;
 debugPrint('[Order] Mutation error ($code): $message');
-    error.value = ErrorResult(errorCode: code, message: message);
+    if (result is Fragment$ErrorResult) {
+      error.value = result;
+    }
     handleException(Exception(message), customErrorMessage: message);
   }
 

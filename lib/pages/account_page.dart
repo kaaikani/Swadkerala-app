@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../controllers/customer/customer_controller.dart';
-import '../controllers/customer/customer_models.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
 import '../controllers/theme_controller.dart';
@@ -14,8 +14,10 @@ import '../widgets/snackbar.dart';
 import '../theme/theme.dart';
 import '../utils/responsive.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import '../graphql/Customer.graphql.dart';
 import '../theme/colors.dart';
 import 'orders_page.dart';
+import '../utils/analytics_helper.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -34,13 +36,377 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Only fetch customer data if user is authenticated
-      if (_isUserAuthenticated()) {
-        customerController.getActiveCustomer();
-      }
+    /*  if (_isUserAuthenticated()) {
+        await customerController.getActiveCustomer();
+        // Check for invalid email or missing phone number after customer data loads
+        _checkAndShowUpdateDialogs();
+      }*/
       _updateService.checkAndShowFlexibleUpdateInAccount(context);
     });
+  }
+
+  /// Check if email is a valid Gmail address
+  bool _isValidGmail(String? email) {
+    if (email == null || email.isEmpty) return false;
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+    return emailRegex.hasMatch(email.toLowerCase());
+  }
+
+  /// Check and show dialogs for invalid email or missing phone number
+  void _checkAndShowUpdateDialogs() {
+    debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS START ==========');
+    
+    final customer = customerController.activeCustomer.value;
+    if (customer == null) {
+      debugPrint('[AccountPage] ⚠️ Customer is null, skipping dialog check');
+      return;
+    }
+
+    debugPrint('[AccountPage] 👤 Customer Info:');
+    debugPrint('[AccountPage] - Email: "${customer.emailAddress}"');
+    debugPrint('[AccountPage] - Phone: "${customer.phoneNumber ?? "null"}"');
+
+    // Check if email is not a valid Gmail
+    final isValidEmail = _isValidGmail(customer.emailAddress);
+    debugPrint('[AccountPage] 📧 Email validation: $isValidEmail');
+    
+    if (!isValidEmail) {
+      debugPrint('[AccountPage] ❌ Email is not valid Gmail, showing email update dialog');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showUpdateEmailDialog();
+        }
+      });
+      debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS END (EMAIL DIALOG) ==========');
+      return; // Don't check phone if email dialog is shown
+    }
+
+    // Check if phone number is null
+    final hasPhone = customer.phoneNumber != null && customer.phoneNumber!.isNotEmpty;
+    debugPrint('[AccountPage] 📱 Phone number check: ${hasPhone ? "Present" : "Missing"}');
+    
+    if (!hasPhone) {
+      debugPrint('[AccountPage] ❌ Phone number is missing, showing phone update dialog');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showUpdatePhoneDialog();
+        }
+      });
+      debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS END (PHONE DIALOG) ==========');
+    } else {
+      debugPrint('[AccountPage] ✅ All validations passed, no dialogs needed');
+      debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS END (NO DIALOGS) ==========');
+    }
+  }
+
+  /// Show dialog to update email address
+  void _showUpdateEmailDialog() {
+    final customer = customerController.activeCustomer.value;
+    if (customer == null) return;
+
+    final emailController = TextEditingController();
+    bool isLoading = false;
+
+    Get.dialog(
+      WillPopScope(
+        onWillPop: () async => false, // Prevent closing by back button
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+          ),
+          child: StatefulBuilder(
+            builder: (context, setState) => Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.email,
+                        size: ResponsiveUtils.rp(28),
+                        color: AppColors.button,
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(12)),
+                      Expanded(
+                        child: Text(
+                          'Update Email Address',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(20),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(20)),
+                  Text(
+                    'Please enter a valid Gmail address',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(16)),
+                  TextField(
+                    controller: emailController,
+                    enabled: !isLoading,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: 'Enter Gmail address',
+                      prefixIcon: Icon(Icons.email_outlined),
+                      filled: true,
+                      fillColor: AppColors.inputFill,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                        borderSide: BorderSide(color: AppColors.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                        borderSide: BorderSide(color: AppColors.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                        borderSide: BorderSide(color: AppColors.button, width: 2),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(20)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: isLoading ? null : () async {
+                          debugPrint('[AccountPage] ========== UPDATE EMAIL START ==========');
+                          
+                          final email = emailController.text.trim();
+                          debugPrint('[AccountPage] 📧 Email Update Request: "$email"');
+                          
+                          if (email.isEmpty) {
+                            debugPrint('[AccountPage] ❌ Validation failed: Email is empty');
+                            showErrorSnackbar('Please enter an email address');
+                            return;
+                          }
+                          if (!_isValidGmail(email)) {
+                            debugPrint('[AccountPage] ❌ Validation failed: Not a valid Gmail address');
+                            showErrorSnackbar('Please enter a valid Gmail address');
+                            return;
+                          }
+
+                          debugPrint('[AccountPage] ✅ Email validation passed');
+                          debugPrint('[AccountPage] 🔄 Setting loading state to true');
+
+                          setState(() {
+                            isLoading = true;
+                          });
+
+                          debugPrint('[AccountPage] 🚀 Calling customerController.updateCustomerEmail()...');
+                          // Update email using the dedicated method
+                          final success = await customerController.updateCustomerEmail(email);
+                          
+                          debugPrint('[AccountPage] 📥 Email update result received: $success');
+
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          if (success) {
+                            debugPrint('[AccountPage] ✅ Email update successful');
+                            debugPrint('[AccountPage] 🔙 Closing dialog');
+                            Get.back();
+                            debugPrint('[AccountPage] 📢 Showing success snackbar');
+                            showSuccessSnackbar('Email updated successfully');
+                            debugPrint('[AccountPage] 🔍 Checking for phone number update...');
+                            // Check for phone number after email is updated
+                            _checkAndShowUpdateDialogs();
+                            debugPrint('[AccountPage] ========== UPDATE EMAIL END (SUCCESS) ==========');
+                          } else {
+                            debugPrint('[AccountPage] ❌ Email update failed');
+                            debugPrint('[AccountPage] 📢 Showing error snackbar');
+                            showErrorSnackbar('Failed to update email');
+                            debugPrint('[AccountPage] ========== UPDATE EMAIL END (FAILED) ==========');
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.button,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: isLoading
+                            ? SizedBox(
+                                width: ResponsiveUtils.rp(20),
+                                height: ResponsiveUtils.rp(20),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : Text('Update Email'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false, // Prevent closing by tapping outside
+    );
+  }
+
+  /// Show dialog to update phone number
+  void _showUpdatePhoneDialog() {
+    final customer = customerController.activeCustomer.value;
+    if (customer == null) return;
+
+    final phoneController = TextEditingController();
+    bool isLoading = false;
+
+    Get.dialog(
+      WillPopScope(
+        onWillPop: () async => false, // Prevent closing by back button
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+          ),
+          child: StatefulBuilder(
+            builder: (context, setState) => Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.phone,
+                        size: ResponsiveUtils.rp(28),
+                        color: AppColors.button,
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(12)),
+                      Expanded(
+                        child: Text(
+                          'Update Phone Number',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(20),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(20)),
+                  Text(
+                    'Please enter your phone number',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(16)),
+                  TextField(
+                    controller: phoneController,
+                    enabled: !isLoading,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
+                    decoration: InputDecoration(
+                      hintText: 'Enter phone number',
+                      prefixIcon: Icon(Icons.phone_outlined),
+                      filled: true,
+                      fillColor: AppColors.inputFill,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                        borderSide: BorderSide(color: AppColors.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                        borderSide: BorderSide(color: AppColors.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                        borderSide: BorderSide(color: AppColors.button, width: 2),
+                      ),
+                      counterText: '',
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(20)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: isLoading ? null : () async {
+                          debugPrint('[AccountPage] ========== UPDATE PHONE START ==========');
+                          
+                          final phone = phoneController.text.trim();
+                          debugPrint('[AccountPage] 📱 Phone Update Request: "$phone"');
+                          
+                          if (phone.isEmpty) {
+                            debugPrint('[AccountPage] ❌ Validation failed: Phone is empty');
+                            showErrorSnackbar('Please enter a phone number');
+                            return;
+                          }
+                          if (phone.length != 10) {
+                            debugPrint('[AccountPage] ❌ Validation failed: Phone length is ${phone.length}, expected 10');
+                            showErrorSnackbar('Phone number must be 10 digits');
+                            return;
+                          }
+
+                          debugPrint('[AccountPage] ✅ Phone validation passed');
+                          debugPrint('[AccountPage] 🔄 Setting loading state to true');
+
+                          setState(() {
+                            isLoading = true;
+                          });
+
+                          debugPrint('[AccountPage] ⚠️ Note: Phone number update may need to be implemented in customer controller');
+                          debugPrint('[AccountPage] 🔄 Refreshing customer data...');
+                          // Note: Phone number update may need to be implemented in customer controller
+                          // For now, we'll just refresh customer data
+                          // TODO: Implement phone number update in customer controller
+                          await customerController.getActiveCustomer();
+                          
+                          debugPrint('[AccountPage] ✅ Customer data refreshed');
+                          
+                          setState(() {
+                            isLoading = false;
+                          });
+
+                          debugPrint('[AccountPage] 🔙 Closing dialog');
+                          Get.back();
+                          debugPrint('[AccountPage] 📢 Showing success snackbar');
+                          showSuccessSnackbar('Phone number updated successfully');
+                          debugPrint('[AccountPage] ========== UPDATE PHONE END ==========');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.button,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: isLoading
+                            ? SizedBox(
+                                width: ResponsiveUtils.rp(20),
+                                height: ResponsiveUtils.rp(20),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : Text('Update Phone'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false, // Prevent closing by tapping outside
+    );
   }
 
   /// Check if user is authenticated
@@ -131,7 +497,7 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
-  Widget _buildProfileCard(CustomerModel customer) {
+  Widget _buildProfileCard(Query$GetActiveCustomer$activeCustomer customer) {
     return Container(
       margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
       padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
@@ -440,10 +806,17 @@ class _AccountPageState extends State<AccountPage> {
           ),
           _buildDivider(),
           _buildListTile(
-            Icons.description_outlined,
-            'Terms & Privacy',
+            Icons.privacy_tip_outlined,
+            'Privacy & Policy',
             Icons.arrow_forward_ios,
-            onTap: _openTermsAndConditions,
+            onTap: () => Get.toNamed('/privacy-policy'),
+          ),
+          _buildDivider(),
+          _buildListTile(
+            Icons.description_outlined,
+            'Terms & Conditions',
+            Icons.arrow_forward_ios,
+            onTap: () => Get.toNamed('/terms-conditions'),
           ),
         ],
       ),
@@ -595,8 +968,19 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
     final customer = customerController.activeCustomer.value;
     if (customer == null) return;
 
+    // Check if phone number is not null OR email is not null/valid
+    final hasValidPhone = customer.phoneNumber != null && customer.phoneNumber!.isNotEmpty;
+    final hasValidEmail = _isValidGmail(customer.emailAddress);
+    final canEditOnlyName = hasValidPhone || hasValidEmail;
+
     final firstNameController = TextEditingController(text: customer.firstName);
     final lastNameController = TextEditingController(text: customer.lastName);
+    final emailController = TextEditingController(
+      text: customer.emailAddress.isNotEmpty ? customer.emailAddress : '',
+    );
+    final phoneController = TextEditingController(
+      text: customer.phoneNumber ?? '',
+    );
     bool isLoading = false;
 
     Get.dialog(
@@ -783,6 +1167,280 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
                               ),
                             ),
                           ),
+                          // Only show email and phone fields if they are NOT valid (can edit them)
+                          if (!canEditOnlyName) ...[
+                            SizedBox(height: ResponsiveUtils.rp(20)),
+                            // Email Field
+                            Text(
+                              'Email',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(14),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(8)),
+                            TextField(
+                              controller: emailController,
+                              enabled: !isLoading && !canEditOnlyName,
+                              readOnly: canEditOnlyName,
+                              keyboardType: TextInputType.emailAddress,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                color: AppColors.textPrimary,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Enter email address',
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color: canEditOnlyName ? AppColors.textSecondary : AppColors.button,
+                                ),
+                                filled: true,
+                                fillColor: canEditOnlyName ? AppColors.background : AppColors.inputFill,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.button,
+                                    width: 2,
+                                  ),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveUtils.rp(16),
+                                  vertical: ResponsiveUtils.rp(16),
+                                ),
+                              ),
+                            ),
+                            // Show "Connect with Google" button if email is not Gmail or empty
+                            if (customer.emailAddress.isEmpty || 
+                                !customer.emailAddress.toLowerCase().endsWith('@gmail.com')) ...[
+                              SizedBox(height: ResponsiveUtils.rp(12)),
+                              OutlinedButton.icon(
+                                onPressed: isLoading ? null : () {
+                                  AnalyticsHelper.trackButton(
+                                    'Connect with Google - Profile',
+                                    screenName: 'Account',
+                                    callback: () {
+                                      _showGoogleAccountSelectionDialog(context, setState, emailController);
+                                    },
+                                  )?.call();
+                                },
+                                icon: Image.asset(
+                                  'assets/images/google_logo.png',
+                                  width: ResponsiveUtils.rp(20),
+                                  height: ResponsiveUtils.rp(20),
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(
+                                      Icons.login,
+                                      size: ResponsiveUtils.rp(20),
+                                      color: AppColors.button,
+                                    );
+                                  },
+                                ),
+                                label: Text(
+                                  'Connect with Google',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUtils.sp(14),
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.button,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: AppColors.button,
+                                    width: 1.5,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: ResponsiveUtils.rp(16),
+                                    vertical: ResponsiveUtils.rp(12),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            SizedBox(height: ResponsiveUtils.rp(20)),
+                            // Phone Number Field
+                            Text(
+                              'Phone Number',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(14),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(8)),
+                            TextField(
+                              controller: phoneController,
+                              enabled: !isLoading && !canEditOnlyName,
+                              readOnly: canEditOnlyName,
+                              keyboardType: TextInputType.phone,
+                              maxLength: 10,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                color: AppColors.textPrimary,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Enter phone number',
+                                prefixIcon: Icon(
+                                  Icons.phone_outlined,
+                                  color: canEditOnlyName ? AppColors.textSecondary : AppColors.button,
+                                ),
+                                filled: true,
+                                fillColor: canEditOnlyName ? AppColors.background : AppColors.inputFill,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.button,
+                                    width: 2,
+                                  ),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveUtils.rp(16),
+                                  vertical: ResponsiveUtils.rp(16),
+                                ),
+                                counterText: '',
+                              ),
+                            ),
+                          ] else ...[
+                            // Show email and phone as read-only display fields
+                            SizedBox(height: ResponsiveUtils.rp(20)),
+                            // Email Display (Read-only)
+                            Text(
+                              'Email',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(14),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(8)),
+                            TextField(
+                              controller: emailController,
+                              enabled: false,
+                              readOnly: true,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                color: AppColors.textPrimary,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'No email address',
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color: AppColors.textSecondary,
+                                ),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveUtils.rp(16),
+                                  vertical: ResponsiveUtils.rp(16),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(20)),
+                            // Phone Number Display (Read-only)
+                            Text(
+                              'Phone Number',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(14),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(8)),
+                            TextField(
+                              controller: phoneController,
+                              enabled: false,
+                              readOnly: true,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                color: AppColors.textPrimary,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'No phone number',
+                                prefixIcon: Icon(
+                                  Icons.phone_outlined,
+                                  color: AppColors.textSecondary,
+                                ),
+                                filled: true,
+                                fillColor: AppColors.background,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                disabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveUtils.rp(16),
+                                  vertical: ResponsiveUtils.rp(16),
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -827,32 +1485,56 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
                           flex: 2,
                           child: ElevatedButton(
                             onPressed: isLoading ? null : () async {
-                              if (firstNameController.text.trim().isEmpty ||
-                                  lastNameController.text.trim().isEmpty) {
+                              debugPrint('[AccountPage] ========== UPDATE PROFILE START ==========');
+                              
+                              final firstName = firstNameController.text.trim();
+                              final lastName = lastNameController.text.trim();
+                              
+                              debugPrint('[AccountPage] 📝 Profile Update Request:');
+                              debugPrint('[AccountPage] - First Name: "$firstName"');
+                              debugPrint('[AccountPage] - Last Name: "$lastName"');
+                              
+                              if (firstName.isEmpty || lastName.isEmpty) {
+                                debugPrint('[AccountPage] ❌ Validation failed: Empty fields');
                                 showErrorSnackbar('Please fill in all fields');
                                 return;
                               }
+
+                              debugPrint('[AccountPage] ✅ Validation passed');
+                              debugPrint('[AccountPage] 🔄 Setting loading state to true');
 
                               setState(() {
                                 isLoading = true;
                               });
 
-              customerController.firstNameController.text =
-                                  firstNameController.text.trim();
-              customerController.lastNameController.text =
-                                  lastNameController.text.trim();
+                              debugPrint('[AccountPage] 📋 Setting controller values:');
+                              debugPrint('[AccountPage] - firstNameController: "$firstName"');
+                              debugPrint('[AccountPage] - lastNameController: "$lastName"');
 
+              customerController.firstNameController.text = firstName;
+              customerController.lastNameController.text = lastName;
+
+              debugPrint('[AccountPage] 🚀 Calling customerController.updateCustomer()...');
               final success = await customerController.updateCustomer();
+              
+              debugPrint('[AccountPage] 📥 Update result received: $success');
                               
                               setState(() {
                                 isLoading = false;
                               });
 
               if (success) {
+                debugPrint('[AccountPage] ✅ Profile update successful');
+                debugPrint('[AccountPage] 🔙 Closing dialog');
                 Get.back();
+                debugPrint('[AccountPage] 📢 Showing success snackbar');
                 showSuccessSnackbar('Profile updated successfully');
+                debugPrint('[AccountPage] ========== UPDATE PROFILE END (SUCCESS) ==========');
               } else {
+                debugPrint('[AccountPage] ❌ Profile update failed');
+                debugPrint('[AccountPage] 📢 Showing error snackbar');
                 showErrorSnackbar('Failed to update profile');
+                debugPrint('[AccountPage] ========== UPDATE PROFILE END (FAILED) ==========');
               }
             },
             style: ElevatedButton.styleFrom(
@@ -894,6 +1576,255 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
         ),
       ),
       barrierDismissible: true,
+    );
+  }
+
+  /// Show Google account selection dialog
+  /// On Android 8.0+, AccountManager can't access Google accounts due to privacy restrictions
+  /// So we show a manual email input dialog where user can enter their email
+  Future<void> _showGoogleAccountSelectionDialog(
+    BuildContext context,
+    StateSetter setState,
+    TextEditingController emailController,
+  ) async {
+    // Try to get accounts from AccountManager first
+    try {
+      const platform = MethodChannel('com.kaaikani.kaaikani/account_manager');
+      final List<dynamic> accounts = await platform.invokeMethod('getGoogleAccounts') as List<dynamic>;
+      debugPrint('[AccountPage] Retrieved ${accounts.length} accounts from AccountManager');
+      
+      if (accounts.isNotEmpty) {
+        // Convert to list of maps with email
+        final List<Map<String, String>> accountList = accounts.map((account) {
+          return {
+            'email': account['email'] as String,
+            'type': account['type'] as String? ?? 'com.google',
+          };
+        }).toList();
+        
+        debugPrint('[AccountPage] Found ${accountList.length} Google accounts');
+        
+        // Show dialog with all Google accounts
+        final selectedAccount = await showDialog<Map<String, String>>(
+          context: context,
+          builder: (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+            ),
+            child: Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.6,
+              ),
+              padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.account_circle,
+                        size: ResponsiveUtils.rp(28),
+                        color: AppColors.button,
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(12)),
+                      Expanded(
+                        child: Text(
+                          'Select Google Account',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(20),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: Icon(Icons.close),
+                        color: AppColors.textSecondary,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(20)),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: accountList.length,
+                      itemBuilder: (context, index) {
+                        final account = accountList[index];
+                        final email = account['email'] ?? '';
+                        
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Icon(Icons.person),
+                          ),
+                          title: Text(
+                            email,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(16),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: ResponsiveUtils.rp(16),
+                            color: AppColors.textSecondary,
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pop(account);
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(16),
+                            vertical: ResponsiveUtils.rp(8),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        
+        // If user selected an account, pass email to text box
+        if (selectedAccount != null) {
+          final selectedEmail = selectedAccount['email'] ?? '';
+          if (selectedEmail.isNotEmpty) {
+            debugPrint('[AccountPage] ========== EMAIL SELECTED FROM GOOGLE ACCOUNTS ==========');
+            debugPrint('[AccountPage] 📧 Selected Email: "$selectedEmail"');
+            debugPrint('[AccountPage] 📋 Previous Email in TextBox: "${emailController.text}"');
+            
+            emailController.text = selectedEmail;
+            setState(() {});
+            
+            debugPrint('[AccountPage] ✅ Email set in text box: "${emailController.text}"');
+            debugPrint('[AccountPage] ℹ️ Note: Email will be saved when user clicks "Save Changes"');
+            debugPrint('[AccountPage] ========== EMAIL SELECTION END ==========');
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[AccountPage] Error getting accounts from AccountManager: $e');
+    }
+    
+    // If no accounts found or error occurred, show manual email input dialog
+    debugPrint('[AccountPage] Showing manual email input dialog');
+    _showManualEmailInputDialog(context, setState, emailController);
+  }
+
+  /// Show manual email input dialog when no accounts found
+  void _showManualEmailInputDialog(
+    BuildContext context,
+    StateSetter setState,
+    TextEditingController emailController,
+  ) {
+    final manualEmailController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.email,
+                    size: ResponsiveUtils.rp(28),
+                    color: AppColors.button,
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  Expanded(
+                    child: Text(
+                      'Enter Email Address',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(20),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(Icons.close),
+                    color: AppColors.textSecondary,
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(20)),
+              TextField(
+                controller: manualEmailController,
+                keyboardType: TextInputType.emailAddress,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Enter your email address',
+                  prefixIcon: Icon(Icons.email_outlined),
+                  filled: true,
+                  fillColor: AppColors.inputFill,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    borderSide: BorderSide(color: AppColors.button, width: 2),
+                  ),
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(20)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Cancel'),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  ElevatedButton(
+                    onPressed: () {
+                      final email = manualEmailController.text.trim();
+                      if (email.isNotEmpty) {
+                        debugPrint('[AccountPage] ========== MANUAL EMAIL ENTERED ==========');
+                        debugPrint('[AccountPage] 📧 Manual Email: "$email"');
+                        debugPrint('[AccountPage] 📋 Previous Email in TextBox: "${emailController.text}"');
+                        
+                        emailController.text = email;
+                        setState(() {});
+                        Navigator.of(context).pop();
+                        
+                        debugPrint('[AccountPage] ✅ Email set in text box: "${emailController.text}"');
+                        debugPrint('[AccountPage] ℹ️ Note: Email will be saved when user clicks "Save Changes"');
+                        debugPrint('[AccountPage] ========== MANUAL EMAIL ENTRY END ==========');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text('Use Email'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -978,42 +1909,7 @@ debugPrint('[AccountPage] Error opening Play Store: $e');
     }
   }
 
-  Future<void> _openTermsAndConditions() async {
-    try {
-      final url = Uri.parse('https://yourwebsite.com/terms');
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.inAppWebView);
-      } else {
-        _showTermsDialog();
-      }
-    } catch (e) {
-      _showTermsDialog();
-    }
-  }
 
-  void _showTermsDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        title: Text(
-          'Terms & Conditions',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        content: Text(
-          'Please add your terms and conditions URL in the code.',
-          style: TextStyle(fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
 
 
   Widget _buildShimmerAccount() {

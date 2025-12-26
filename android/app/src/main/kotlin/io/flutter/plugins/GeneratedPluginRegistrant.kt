@@ -106,5 +106,30 @@ object GeneratedPluginRegistrant {
         } catch (e: Exception) {
             Log.e(TAG, "Error registering plugin url_launcher_android, io.flutter.plugins.urllauncher.UrlLauncherPlugin", e)
         }
+        try {
+            flutterEngine.plugins.add(com.baseflow.geolocator.GeolocatorPlugin())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering plugin geolocator_android, com.baseflow.geolocator.GeolocatorPlugin", e)
+        }
+        try {
+            flutterEngine.plugins.add(com.baseflow.geocoding.GeocodingPlugin())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering plugin geocoding_android, com.baseflow.geocoding.GeocodingPlugin", e)
+        }
+        try {
+            flutterEngine.plugins.add(io.flutter.plugins.googlesignin.GoogleSignInPlugin())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering plugin google_sign_in_android, io.flutter.plugins.googlesignin.GoogleSignInPlugin", e)
+        }
+        try {
+            flutterEngine.plugins.add(fr.g123k.flutterappbadger.FlutterAppBadgerPlugin())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering plugin flutter_app_badger, fr.g123k.flutterappbadger.FlutterAppBadgerPlugin", e)
+        }
+        try {
+            flutterEngine.plugins.add(io.github.tastelessjolt.flutterdynamicicon.FlutterDynamicIconPlugin())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering plugin flutter_dynamic_icon, io.github.tastelessjolt.flutterdynamicicon.FlutterDynamicIconPlugin", e)
+        }
     }
 }

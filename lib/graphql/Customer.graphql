@@ -3,10 +3,12 @@ mutation UpdateCustomer($input: UpdateCustomerInput!){
         ... on Customer{
             firstName
             lastName
-
+            phoneNumber
+            emailAddress
         }
     }
 }
+
 
 mutation CreateCustomerAddress($input: CreateAddressInput!) {
     createCustomerAddress(input: $input) {
@@ -289,5 +291,13 @@ query GetCustomerOrders($skip: Int!, $take: Int!) {
                 }
             }
         }
+    }
+}
+
+query GetChannelsByPostalCode($postalCode: String!) {
+    getChannelsByPostalCode(postalCode: $postalCode) {
+        id
+        code
+        token
     }
 }

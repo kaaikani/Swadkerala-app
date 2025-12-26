@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../services/graphql_client.dart';
 import '../../theme/colors.dart';
@@ -16,7 +17,6 @@ import '../banner/bannercontroller.dart';
 import '../order/ordercontroller.dart';
 import '../base_controller.dart';
 import '../../services/analytics_service.dart';
-import 'authenticationmodels.dart';
 import '../../graphql/authenticate.graphql.dart';
 
 class AuthController extends BaseController {
@@ -102,10 +102,8 @@ debugPrint('[AuthController] Error checking login status: $e');
   Future<bool> _verifyTokensAreValid() async {
     try {
       // Make a simple GraphQL request to verify tokens
-      final response = await GraphqlService.client.value.query$GetChannelsByCustomerEmail(
-        Options$Query$GetChannelsByCustomerEmail(
-          variables: Variables$Query$GetChannelsByCustomerEmail(email: 'test@test.com'),
-        ),
+      final response = await GraphqlService.client.value.query$GetChannelList(
+        Options$Query$GetChannelList(),
       );
       
       // If we get a response without authentication errors, tokens are valid
@@ -168,26 +166,25 @@ debugPrint('[AuthController] Error clearing invalid tokens: $e');
 debugPrint('[AuthController] Using email: $email');
 
     try {
-      final response = await GraphqlService.client.value.query$GetChannelsByCustomerEmail(
-        Options$Query$GetChannelsByCustomerEmail(
-          variables: Variables$Query$GetChannelsByCustomerEmail(email: email),
-        ),
+      final response = await GraphqlService.client.value.query$GetChannelList(
+        Options$Query$GetChannelList(),
       );
 
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to check phone number')) {
         return false;
       }
 
-      final modelResponse = ChannelsByEmailResponse.fromJson(response.parsedData?.toJson() ?? {});
-      final channels = modelResponse.getChannelsByCustomerEmail;
+      final modelResponse = response.parsedData;
+      final channels = modelResponse?.getChannelList ?? [];
 
 debugPrint('[AuthController] Channels found: ${channels.length}');
 
       if (channels.isEmpty) {
-        ErrorDialog.showError('Phone number not registered. Please sign up first.');
+        ErrorDialog.showError('No channels available.');
         return false;
       }
 
+      // Use the first available channel
       final channel = channels.first;
       await _storage.write('channel_code', channel.code);
       await _storage.write('channel_token', channel.token);
@@ -220,30 +217,17 @@ debugPrint('[AuthController] Exception in checkEmailAndGetChannel: $e');
 debugPrint('[AuthController] Checking if user exists with email: $email');
 
     try {
-      // First, clear any channel token to search across ALL channels
-      final originalChannelToken = GraphqlService.channelToken;
-      await GraphqlService.setToken(key: 'channel', token: originalChannelToken);
-debugPrint('[AuthController] Cleared channel token for global search');
-
-      final response = await GraphqlService.client.value.query$GetChannelsByCustomerEmail(
-        Options$Query$GetChannelsByCustomerEmail(
-          variables: Variables$Query$GetChannelsByCustomerEmail(email: email),
-        ),
+      final response = await GraphqlService.client.value.query$GetChannelList(
+        Options$Query$GetChannelList(),
       );
-
-      // Restore original channel token
-      if (originalChannelToken.isNotEmpty) {
-        await GraphqlService.setToken(key: 'channel', token: originalChannelToken);
-debugPrint('[AuthController] Restored channel token: $originalChannelToken');
-      }
 
       if (response.hasException) {
 debugPrint('[AuthController] Error checking user existence: ${response.exception}');
         return false; // Assume user doesn't exist on error
       }
 
-      final modelResponse = ChannelsByEmailResponse.fromJson(response.parsedData?.toJson() ?? {});
-      final channels = modelResponse.getChannelsByCustomerEmail;
+      final modelResponse = response.parsedData;
+      final channels = modelResponse?.getChannelList ?? [];
 
 debugPrint('[AuthController] User exists check - Channels found: ${channels.length}');
       if (channels.isNotEmpty) {
@@ -314,7 +298,9 @@ debugPrint('[AuthController] Exception in sendOtp: $e');
     }
   }
 
-  /// Step 3: Verify OTP and complete login
+  /// Step 3: Verify OTP and complete login/registration
+  /// Uses Authenticate mutation with phoneOtp input
+  /// Works for both login and registration
   Future<bool> verifyOtp(BuildContext context) async {
     // Validate OTP length
     if (otpController.text.length != 4) {
@@ -327,24 +313,34 @@ debugPrint('[AuthController] Exception in sendOtp: $e');
     }
 
     setLoading(true);
-debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
+    debugPrint('🔵 [PhoneAuth] ========== VERIFY OTP STARTED ==========');
+    debugPrint('🔵 [PhoneAuth] Phone number: ${phoneNumber.text}');
+    debugPrint('🔵 [PhoneAuth] OTP code: ${otpController.text}');
 
     try {
-      // Trim first and last name
+      // Trim first and last name (can be empty strings for login)
       final firstName = firstname.text.trim();
       final lastName = lastname.text.trim();
+      
+      debugPrint('🔵 [PhoneAuth] First name: ${firstName.isEmpty ? "(empty)" : firstName}');
+      debugPrint('🔵 [PhoneAuth] Last name: ${lastName.isEmpty ? "(empty)" : lastName}');
+      debugPrint('🔵 [PhoneAuth] Using Authenticate mutation with phoneOtp input');
 
       // Perform OTP verification mutation
+      // This mutation works for both login and registration
       final response = await GraphqlService.client.value.mutate$Authenticate(
         Options$Mutation$Authenticate(
           variables: Variables$Mutation$Authenticate(
             phoneNumber: phoneNumber.text,
             code: otpController.text,
-            firstName: firstName,
-            lastName: lastName,
+            firstName: firstName.isEmpty ? null : firstName, // Send null if empty
+            lastName: lastName.isEmpty ? null : lastName,     // Send null if empty
           ),
         ),
       );
+      
+      debugPrint('🔵 [PhoneAuth] Mutation response received');
+      debugPrint('🔵 [PhoneAuth] Response has exception: ${response.hasException}');
 
       // Handle GraphQL errors
       if (checkResponseForErrors(response, customErrorMessage: 'OTP verification failed')) {
@@ -355,19 +351,30 @@ debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
 
       // OTP verified successfully
       if (data is Mutation$Authenticate$authenticate$$CurrentUser) {
+        debugPrint('✅ [PhoneAuth] Authentication successful - CurrentUser received');
+        debugPrint('🔵 [PhoneAuth] User ID: ${data.id}');
+        debugPrint('🔵 [PhoneAuth] User identifier: ${data.identifier}');
+        
         // Extract auth token from response headers
+        debugPrint('🔵 [PhoneAuth] Extracting auth token from response headers...');
         final authToken = response.context.entry<HttpLinkResponseContext>()
             ?.headers?['vendure-auth-token'];
 
         if (authToken != null && authToken.isNotEmpty) {
+          debugPrint('✅ [PhoneAuth] Auth token extracted (length: ${authToken.length})');
+          
           // 1️⃣ Save auth token
+          debugPrint('🔵 [PhoneAuth] Saving auth token...');
           await GraphqlService.setToken(key: 'auth', token: authToken);
+          debugPrint('✅ [PhoneAuth] Auth token saved');
 
           // 2️⃣ Fetch channels for this user using email
           // For new registrations, channels might not be immediately available
           // Retry a few times with delay
+          debugPrint('🔵 [PhoneAuth] Fetching channel information...');
           bool channelFetched = false;
           for (int i = 0; i < 3; i++) {
+            debugPrint('🔵 [PhoneAuth] Channel fetch attempt ${i + 1}/3...');
             channelFetched = await checkEmailAndGetChannel(context);
             if (channelFetched) break;
             if (i < 2) {
@@ -377,6 +384,7 @@ debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
           }
 
           if (!channelFetched) {
+            debugPrint('❌ [PhoneAuth] Channel fetch failed after 3 attempts');
             // Channel fetch failed - show appropriate message
             ErrorDialog.showError(
               'Registration successful, but there was an issue setting up your account. Please try logging in.',
@@ -385,31 +393,45 @@ debugPrint('[AuthController] Verifying OTP: ${otpController.text}');
           }
 
           // 3️⃣ Mark user as logged in and reset form
+          debugPrint('🔵 [PhoneAuth] Finalizing login...');
           setLoggedIn(true);
           resetFormField();
 
-debugPrint('[AuthController] Login successful');
+          debugPrint('✅ [PhoneAuth] ========== LOGIN/REGISTRATION SUCCESSFUL ==========');
+          debugPrint('✅ [PhoneAuth] User logged in: ${isLoggedIn}');
+          debugPrint('✅ [PhoneAuth] Auth token saved: ${GraphqlService.authToken.isNotEmpty}');
+          debugPrint('✅ [PhoneAuth] Channel token saved: ${GraphqlService.channelToken.isNotEmpty}');
 
           return true;
+        } else {
+          debugPrint('❌ [PhoneAuth] Auth token not found in response headers');
         }
       }
 
       // Handle invalid credentials
       if (data is Mutation$Authenticate$authenticate$$InvalidCredentialsError) {
+        debugPrint('❌ [PhoneAuth] Invalid credentials error');
+        debugPrint('❌ [PhoneAuth] Error message: ${data.message}');
         ErrorDialog.showError(data.message);
         return false;
       }
 
       // Fallback error
+      debugPrint('❌ [PhoneAuth] Unknown response type: ${data.runtimeType}');
+      debugPrint('❌ [PhoneAuth] Response data: $data');
       ErrorDialog.showError('OTP verification failed');
       return false;
 
-    } catch (e) {
-debugPrint('[AuthController] Exception in verifyOtp: $e');
+    } catch (e, stackTrace) {
+      debugPrint('❌ [PhoneAuth] ========== EXCEPTION IN VERIFY OTP ==========');
+      debugPrint('❌ [PhoneAuth] Exception: $e');
+      debugPrint('❌ [PhoneAuth] Stack trace: $stackTrace');
       handleException(e, customErrorMessage: 'OTP verification failed');
       return false;
     } finally {
       setLoading(false);
+      debugPrint('🔵 [PhoneAuth] Loading state set to false');
+      debugPrint('🔵 [PhoneAuth] ========== VERIFY OTP PROCESS ENDED ==========');
     }
   }
 
@@ -753,6 +775,368 @@ debugPrint('❌ [AuthController] Stack trace: $stackTrace');
     
     // Then send OTP
     return await sendOtp(context);
+  }
+
+  /// Google Sign In and authenticate
+  Future<bool> signInWithGoogle(BuildContext context) async {
+    setLoading(true);
+debugPrint('🔵 [GoogleLogin] ========== GOOGLE SIGN IN STARTED ==========');
+debugPrint('🔵 [GoogleLogin] Step 1: Initializing Google Sign In...');
+
+    try {
+      // Get Google Client ID from .env
+      debugPrint('🔵 [GoogleLogin] Step 2: Reading GOOGLE_CLIENT_ID from .env...');
+      final googleClientId = dotenv.env['GOOGLE_CLIENT_ID'];
+      if (googleClientId == null || googleClientId.isEmpty) {
+        debugPrint('❌ [GoogleLogin] GOOGLE_CLIENT_ID not found in .env file');
+        ErrorDialog.showError('Google Client ID not configured');
+        return false;
+      }
+      debugPrint('✅ [GoogleLogin] GOOGLE_CLIENT_ID found: ${googleClientId.substring(0, 20)}...');
+
+      // Initialize Google Sign In
+      // serverClientId is required to get ID token for backend verification
+      // This should be a Web OAuth client ID from the same Google Cloud project
+      debugPrint('🔵 [GoogleLogin] Step 3: Creating GoogleSignIn instance...');
+      debugPrint('🔵 [GoogleLogin] Using serverClientId to get ID token for backend verification');
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        serverClientId: googleClientId, // Web OAuth client ID for ID token
+        // Android OAuth client (with SHA-1) is used automatically from google-services.json
+      );
+      debugPrint('✅ [GoogleLogin] GoogleSignIn instance created');
+      debugPrint('🔵 [GoogleLogin] Note: Requires both Android OAuth client (with SHA-1) and Web OAuth client (for serverClientId)');
+
+      // Sign in with Google
+      debugPrint('🔵 [GoogleLogin] Step 4: Requesting user sign in...');
+      GoogleSignInAccount? googleUser;
+      try {
+        googleUser = await googleSignIn.signIn();
+      } catch (e) {
+        // Handle cancellation or other sign-in errors
+        debugPrint('⚠️ [GoogleLogin] Google Sign In exception: $e');
+        debugPrint('⚠️ [GoogleLogin] Exception type: ${e.runtimeType}');
+        
+        final errorStr = e.toString().toLowerCase();
+        
+        // Check for cancellation
+        if (errorStr.contains('canceled') || 
+            errorStr.contains('cancelled') ||
+            errorStr.contains('sign_in_canceled') ||
+            errorStr.contains('sign_in_cancelled') ||
+            errorStr.contains('12501')) { // Error code 12501 = SIGN_IN_CANCELLED
+          debugPrint('⚠️ [GoogleLogin] User cancelled Google Sign In');
+          return false;
+        }
+        
+        // Check for developer error (error code 10)
+        // Error formats: "ApiException: 10:", "ApiException: 10", "error 10", etc.
+        final hasError10 = errorStr.contains('apiexception: 10') || 
+                          errorStr.contains('apiException: 10') ||
+                          errorStr.contains('apiexception:10') ||
+                          errorStr.contains('error 10') ||
+                          errorStr.contains('developer_error') ||
+                          errorStr.contains(': 10:') ||
+                          errorStr.contains(': 10 ') ||
+                          RegExp(r'apiexception.*10|error.*10').hasMatch(errorStr);
+        
+        debugPrint('🔵 [GoogleLogin] Inner catch - Checking for developer error (code 10)...');
+        debugPrint('🔵 [GoogleLogin] Error string (lowercase): $errorStr');
+        debugPrint('🔵 [GoogleLogin] Has error 10: $hasError10');
+        
+        if (hasError10) {
+          debugPrint('❌ [GoogleLogin] DEVELOPER_ERROR (Code 10) detected');
+          debugPrint('❌ [GoogleLogin] Full error: $e');
+          debugPrint('❌ [GoogleLogin] This usually means:');
+          debugPrint('❌ [GoogleLogin] 1. SHA-1 fingerprint not configured in Google Cloud Console');
+          debugPrint('❌ [GoogleLogin] 2. OAuth client ID mismatch');
+          debugPrint('❌ [GoogleLogin] 3. Package name mismatch');
+          debugPrint('❌ [GoogleLogin] 4. Google Services JSON not properly configured');
+          // Re-throw to show error dialog with helpful message
+          rethrow;
+        }
+        
+        // Re-throw if it's not a cancellation
+        rethrow;
+      }
+      
+      if (googleUser == null) {
+        // User cancelled the sign in
+        debugPrint('⚠️ [GoogleLogin] User cancelled Google Sign In (null returned)');
+        return false;
+      }
+      debugPrint('✅ [GoogleLogin] User signed in successfully');
+      debugPrint('🔵 [GoogleLogin] User email: ${googleUser.email}');
+      debugPrint('🔵 [GoogleLogin] User display name: ${googleUser.displayName}');
+      debugPrint('🔵 [GoogleLogin] User ID: ${googleUser.id}');
+      debugPrint('🔵 [GoogleLogin] Note: This will work for both login and registration');
+
+      // Step 2: Google returns idToken and accessToken
+      // We only need idToken for backend verification
+      // accessToken is for direct Google API calls (not needed here)
+      debugPrint('🔵 [GoogleLogin] Step 5: Getting authentication details from Google...');
+      debugPrint('🔵 [GoogleLogin] Flow: Google Sign-In → Returns idToken & accessToken');
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+      final String? accessToken = googleAuth.accessToken;
+
+      debugPrint('🔵 [GoogleLogin] ID Token present: ${idToken != null && idToken.isNotEmpty}');
+      debugPrint('🔵 [GoogleLogin] Access Token present: ${accessToken != null && accessToken.isNotEmpty}');
+      
+      if (idToken == null || idToken.isEmpty) {
+        debugPrint('❌ [GoogleLogin] ID Token is null or empty');
+        ErrorDialog.showError('Failed to get Google ID token');
+        return false;
+      }
+      debugPrint('✅ [GoogleLogin] ID Token obtained (length: ${idToken.length})');
+      debugPrint('🔵 [GoogleLogin] Note: accessToken received but not needed (only idToken required)');
+
+      // Step 3: Flutter sends idToken to backend
+      // Step 4: Backend verifies token using Google public keys (backend logic)
+      // Step 5: Backend creates its own session / JWT
+      debugPrint('🔵 [GoogleLogin] Step 6: Sending idToken to backend for verification...');
+      debugPrint('🔵 [GoogleLogin] Flow: Flutter → Backend (idToken) → Backend verifies → Backend creates JWT');
+
+      // Authenticate with backend using the ID token
+      final response = await GraphqlService.client.value.mutate$LoginWithGoogle(
+        Options$Mutation$LoginWithGoogle(
+          variables: Variables$Mutation$LoginWithGoogle(token: idToken),
+        ),
+      );
+
+      debugPrint('🔵 [GoogleLogin] Backend response received');
+      debugPrint('🔵 [GoogleLogin] Response has exception: ${response.hasException}');
+
+      // Handle GraphQL errors
+      if (response.hasException) {
+        debugPrint('❌ [GoogleLogin] GraphQL exception occurred');
+        debugPrint('❌ [GoogleLogin] Exception: ${response.exception}');
+        if (response.exception?.graphqlErrors != null) {
+          for (final error in response.exception!.graphqlErrors) {
+            debugPrint('❌ [GoogleLogin] GraphQL Error: ${error.message}');
+            debugPrint('❌ [GoogleLogin] Error path: ${error.path}');
+            debugPrint('❌ [GoogleLogin] Error extensions: ${error.extensions}');
+          }
+        }
+        if (response.exception?.linkException != null) {
+          debugPrint('❌ [GoogleLogin] Link Exception: ${response.exception!.linkException}');
+        }
+      }
+
+      if (checkResponseForErrors(response, customErrorMessage: 'Google authentication failed')) {
+        debugPrint('❌ [GoogleLogin] checkResponseForErrors returned true');
+        return false;
+      }
+
+      debugPrint('🔵 [GoogleLogin] Step 7: Processing authentication response...');
+      final data = response.parsedData?.authenticate;
+      debugPrint('🔵 [GoogleLogin] Response data type: ${data.runtimeType}');
+      debugPrint('🔵 [GoogleLogin] Response data: $data');
+
+      // Authentication successful
+      if (data is Mutation$LoginWithGoogle$authenticate$$CurrentUser) {
+        debugPrint('✅ [GoogleLogin] Authentication successful - CurrentUser received');
+        debugPrint('🔵 [GoogleLogin] User ID: ${data.id}');
+        debugPrint('🔵 [GoogleLogin] User identifier: ${data.identifier}');
+        debugPrint('🔵 [GoogleLogin] User authenticated/registered successfully via Google');
+
+        // Extract backend JWT session token from response headers
+        // Backend creates its own session/JWT after verifying Google idToken
+        debugPrint('🔵 [GoogleLogin] Step 8: Extracting backend JWT session token...');
+        debugPrint('🔵 [GoogleLogin] Flow: Backend verified idToken → Created JWT → Sending in response headers');
+        final responseContext = response.context.entry<HttpLinkResponseContext>();
+        debugPrint('🔵 [GoogleLogin] Response context present: ${responseContext != null}');
+        
+        if (responseContext != null) {
+          debugPrint('🔵 [GoogleLogin] Response headers: ${responseContext.headers}');
+        }
+        
+        final authToken = responseContext?.headers?['vendure-auth-token'];
+        debugPrint('🔵 [GoogleLogin] Backend JWT token present: ${authToken != null && authToken.isNotEmpty}');
+
+        if (authToken != null && authToken.isNotEmpty) {
+          debugPrint('✅ [GoogleLogin] Backend JWT token extracted (length: ${authToken.length})');
+          debugPrint('✅ [GoogleLogin] Backend session/JWT created and received successfully');
+          
+          // Save backend JWT session token
+          debugPrint('🔵 [GoogleLogin] Step 9: Saving backend JWT session token...');
+          await GraphqlService.setToken(key: 'auth', token: authToken);
+          debugPrint('✅ [GoogleLogin] Backend JWT session token saved to GraphqlService');
+
+          // 2️⃣ Fetch channels for this user
+          debugPrint('🔵 [GoogleLogin] Step 10: Fetching channel information...');
+          bool channelFetched = false;
+          for (int i = 0; i < 3; i++) {
+            debugPrint('🔵 [GoogleLogin] Channel fetch attempt ${i + 1}/3...');
+            try {
+              final channelResponse = await GraphqlService.client.value.query$GetChannelList(
+                Options$Query$GetChannelList(),
+              );
+
+              debugPrint('🔵 [GoogleLogin] Channel response received');
+              debugPrint('🔵 [GoogleLogin] Channel response has exception: ${channelResponse.hasException}');
+
+              if (checkResponseForErrors(channelResponse, customErrorMessage: 'Failed to get channels')) {
+                debugPrint('❌ [GoogleLogin] Channel fetch error on attempt ${i + 1}');
+                if (i < 2) {
+                  debugPrint('🔵 [GoogleLogin] Retrying in 500ms...');
+                  await Future.delayed(Duration(milliseconds: 500));
+                  continue;
+                }
+                break;
+              }
+
+              final modelResponse = channelResponse.parsedData;
+              final channels = modelResponse?.getChannelList ?? [];
+              debugPrint('🔵 [GoogleLogin] Channels found: ${channels.length}');
+
+              if (channels.isNotEmpty) {
+                final channel = channels.first;
+                debugPrint('✅ [GoogleLogin] Channel selected: ${channel.code}');
+                debugPrint('🔵 [GoogleLogin] Channel ID: ${channel.id}');
+                debugPrint('🔵 [GoogleLogin] Channel token length: ${channel.token.length}');
+                
+                await _storage.write('channel_code', channel.code);
+                await _storage.write('channel_token', channel.token);
+                await GraphqlService.setToken(key: 'channel', token: channel.token);
+                channelFetched = true;
+                debugPrint('✅ [GoogleLogin] Channel saved - Code: ${channel.code}, Token: ${channel.token.substring(0, 20)}...');
+                break;
+              } else {
+                debugPrint('⚠️ [GoogleLogin] No channels found on attempt ${i + 1}');
+                if (i < 2) {
+                  debugPrint('🔵 [GoogleLogin] Retrying in 500ms...');
+                  await Future.delayed(Duration(milliseconds: 500));
+                  continue;
+                }
+              }
+            } catch (e, stackTrace) {
+              debugPrint('❌ [GoogleLogin] Exception fetching channels on attempt ${i + 1}: $e');
+              debugPrint('❌ [GoogleLogin] Stack trace: $stackTrace');
+              if (i < 2) {
+                debugPrint('🔵 [GoogleLogin] Retrying in 500ms...');
+                await Future.delayed(Duration(milliseconds: 500));
+                continue;
+              }
+            }
+          }
+
+          if (!channelFetched) {
+            debugPrint('❌ [GoogleLogin] Failed to fetch channels after 3 attempts');
+            ErrorDialog.showError(
+              'Authentication successful, but there was an issue setting up your account. Please try again.',
+            );
+            return false;
+          }
+
+          // 3️⃣ Mark user as logged in
+          debugPrint('🔵 [GoogleLogin] Step 11: Finalizing login...');
+          setLoggedIn(true);
+          resetFormField();
+
+          debugPrint('✅ [GoogleLogin] ========== GOOGLE LOGIN SUCCESSFUL ==========');
+          debugPrint('✅ [GoogleLogin] User logged in: ${isLoggedIn}');
+          debugPrint('✅ [GoogleLogin] Auth token saved: ${GraphqlService.authToken.isNotEmpty}');
+          debugPrint('✅ [GoogleLogin] Channel token saved: ${GraphqlService.channelToken.isNotEmpty}');
+          return true;
+        } else {
+          debugPrint('❌ [GoogleLogin] Auth token not found in response headers');
+          debugPrint('❌ [GoogleLogin] Response context: $responseContext');
+          ErrorDialog.showError('Authentication token not received from server');
+          return false;
+        }
+      }
+
+      // Handle invalid credentials
+      if (data is Mutation$LoginWithGoogle$authenticate$$InvalidCredentialsError) {
+        debugPrint('❌ [GoogleLogin] Invalid credentials error');
+        debugPrint('❌ [GoogleLogin] Error message: ${data.message}');
+        ErrorDialog.showError(data.message);
+        return false;
+      }
+
+      // Handle not verified error
+      if (data is Mutation$LoginWithGoogle$authenticate$$NotVerifiedError) {
+        debugPrint('❌ [GoogleLogin] Not verified error');
+        debugPrint('❌ [GoogleLogin] Error message: ${data.message}');
+        ErrorDialog.showError(data.message);
+        return false;
+      }
+
+      // Fallback error
+      debugPrint('❌ [GoogleLogin] Unknown response type: ${data.runtimeType}');
+      debugPrint('❌ [GoogleLogin] Response data: $data');
+      ErrorDialog.showError('Google authentication failed');
+      return false;
+
+    } catch (e, stackTrace) {
+      debugPrint('❌ [GoogleLogin] ========== EXCEPTION IN GOOGLE SIGN IN ==========');
+      debugPrint('❌ [GoogleLogin] Exception: $e');
+      debugPrint('❌ [GoogleLogin] Exception type: ${e.runtimeType}');
+      debugPrint('❌ [GoogleLogin] Stack trace: $stackTrace');
+      
+      // Check if it's a cancellation - don't show error dialog for cancellations
+      final errorStr = e.toString().toLowerCase();
+      final isCancellation = errorStr.contains('canceled') || 
+                            errorStr.contains('cancelled') ||
+                            errorStr.contains('sign_in_canceled') ||
+                            errorStr.contains('sign_in_cancelled') ||
+                            errorStr.contains('12501'); // Error code 12501 = SIGN_IN_CANCELLED
+      
+      if (isCancellation) {
+        debugPrint('⚠️ [GoogleLogin] User cancelled - not showing error dialog');
+        return false;
+      }
+      
+      // Check for developer error (error code 10) and provide helpful message
+      // Error format: "ApiException: 10:", "ApiException: 10", etc.
+      final isDeveloperError = errorStr.contains('apiexception: 10') || 
+                               errorStr.contains('apiException: 10') ||
+                               errorStr.contains('apiexception:10') ||
+                               errorStr.contains('error 10') ||
+                               errorStr.contains('developer_error') ||
+                               errorStr.contains(': 10:') ||
+                               errorStr.contains(': 10 ') ||
+                               RegExp(r'apiexception.*10|error.*10').hasMatch(errorStr);
+      
+      debugPrint('🔵 [GoogleLogin] Checking for developer error (code 10)...');
+      debugPrint('🔵 [GoogleLogin] Error string (lowercase): $errorStr');
+      debugPrint('🔵 [GoogleLogin] Is developer error: $isDeveloperError');
+      
+      if (isDeveloperError) {
+        debugPrint('❌ [GoogleLogin] Showing developer error message to user');
+        debugPrint('❌ [GoogleLogin] Package name: com.kaaikani.kaaikani');
+        debugPrint('❌ [GoogleLogin] Debug SHA-1: 7B:87:2E:43:7B:68:07:28:A6:D2:7F:BE:28:C2:94:52:58:B7:E1:71');
+        debugPrint('❌ [GoogleLogin] To fix this error:');
+        debugPrint('❌ [GoogleLogin] 1. Go to https://console.cloud.google.com/');
+        debugPrint('❌ [GoogleLogin] 2. Select your project');
+        debugPrint('❌ [GoogleLogin] 3. Go to APIs & Services > Credentials');
+        debugPrint('❌ [GoogleLogin] 4. Find your OAuth 2.0 Client ID (Android)');
+        debugPrint('❌ [GoogleLogin] 5. Add SHA-1 fingerprint: 7B:87:2E:43:7B:68:07:28:A6:D2:7F:BE:28:C2:94:52:58:B7:E1:71');
+        debugPrint('❌ [GoogleLogin] 6. Ensure package name is: com.kaaikani.kaaikani');
+        debugPrint('❌ [GoogleLogin] 7. For release builds, also add release keystore SHA-1');
+        
+        ErrorDialog.showError(
+          'Google Sign-In Configuration Error (Code 10)\n\n'
+          'To fix this:\n\n'
+          '1. Go to Google Cloud Console\n'
+          '2. Navigate to: APIs & Services > Credentials\n'
+          '3. Find your Android OAuth 2.0 Client ID\n'
+          '4. Add SHA-1 fingerprint:\n'
+          '   7B:87:2E:43:7B:68:07:28:A6:D2:7F:BE:28:C2:94:52:58:B7:E1:71\n\n'
+          '5. Verify package name: com.kaaikani.kaaikani\n\n'
+          '6. For release builds, add your release keystore SHA-1 as well'
+        );
+        return false;
+      }
+      
+      // For other errors, show error dialog
+      handleException(e, customErrorMessage: 'Google sign in failed');
+      return false;
+    } finally {
+      setLoading(false);
+      debugPrint('🔵 [GoogleLogin] Loading state set to false');
+      debugPrint('🔵 [GoogleLogin] ========== GOOGLE SIGN IN PROCESS ENDED ==========');
+    }
   }
 
   @override

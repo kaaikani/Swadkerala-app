@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
-import '../controllers/customer/customer_models.dart';
 import '../widgets/snackbar.dart';
 import '../theme/theme.dart';
 import '../utils/responsive.dart';
+import '../utils/app_config.dart';
+import '../utils/app_strings.dart';
+import '../graphql/Customer.graphql.dart';
+import '../graphql/schema.graphql.dart';
 
 class AddressComponent extends StatelessWidget {
   final CustomerController customerController;
@@ -243,7 +246,7 @@ class AddressComponent extends StatelessWidget {
                           color: AppColors.textSecondary),
                       SizedBox(width: ResponsiveUtils.rp(8)),
                       Text(
-                        address.phoneNumber,
+                        AppConfig.formatPhoneNumber(address.phoneNumber),
                         style: TextStyle(
                             fontSize: ResponsiveUtils.sp(14),
                             color: AppColors.textPrimary),
@@ -280,19 +283,19 @@ class AddressComponent extends StatelessWidget {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12))),
-        title: Text('Delete Address?',
+        title: Text(AppStrings.deleteAddress,
             style: TextStyle(
                 fontSize: ResponsiveUtils.sp(18),
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary)),
-        content: Text('Are you sure you want to delete this address?',
+        content: Text(AppStrings.deleteAddressConfirm,
             style: TextStyle(
                 fontSize: ResponsiveUtils.sp(14),
                 color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
+            child: Text(AppStrings.cancel,
                 style: TextStyle(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
@@ -338,7 +341,7 @@ class AddressComponent extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.textLight),
                     ),
                   )
-                : Text('Delete', style: TextStyle(color: AppColors.textLight)),
+                : Text(AppStrings.delete, style: TextStyle(color: AppColors.textLight)),
           ),
         ],
       ),
@@ -626,25 +629,27 @@ class AddressComponent extends StatelessWidget {
                                 return;
                               }
 
-                              final addressData = AddressModel(
-                                id: existingAddress?.id ?? '',
-                                fullName: nameController.text,
+                              final existingAddressTyped = existingAddress as Query$GetActiveCustomer$activeCustomer$addresses?;
+                              final country = existingAddressTyped?.country ??
+                                  Query$GetActiveCustomer$activeCustomer$addresses$country(
+                                    id: 'IN',
+                                    name: 'India',
+                                    code: 'IN',
+                                    languageCode: Enum$LanguageCode.en,
+                                  );
+                              
+                              final addressData = Query$GetActiveCustomer$activeCustomer$addresses(
+                                id: existingAddressTyped?.id ?? '',
+                                fullName: nameController.text.isEmpty ? null : nameController.text,
                                 streetLine1: line1Controller.text,
-                                streetLine2: line2Controller.text,
-                                city: cityController.text,
-                                province: 'Tamil Nadu', // Default province
-                                postalCode: postalController.text,
-                                phoneNumber: phoneController.text,
-                                company: '',
+                                streetLine2: line2Controller.text.isEmpty ? null : line2Controller.text,
+                                city: cityController.text.isEmpty ? null : cityController.text,
+                                postalCode: postalController.text.isEmpty ? null : postalController.text,
+                                phoneNumber: phoneController.text.isEmpty ? null : phoneController.text,
+                                company: null,
                                 defaultShippingAddress: isDefault,
                                 defaultBillingAddress: isDefault,
-                                country: existingAddress?.country ??
-                                    CountryModel(
-                                      id: 'IN',
-                                      name: 'India',
-                                      code: 'IN',
-                                      languageCode: 'en',
-                                    ),
+                                country: country,
                               );
 
                               bool success;
@@ -761,7 +766,7 @@ class AddressComponent extends StatelessWidget {
             color: readOnly ? AppColors.textSecondary : AppColors.textPrimary,
           ),
           decoration: InputDecoration(
-            hintText: readOnly ? 'Auto-filled' : 'Enter $label',
+            hintText: readOnly ? AppStrings.autoFilled : 'Enter $label',
             hintStyle: TextStyle(
                 color: AppColors.textTertiary,
                 fontSize: ResponsiveUtils.sp(14)),

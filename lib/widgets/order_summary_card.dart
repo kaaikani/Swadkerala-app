@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../utils/price_formatter.dart';
-import '../controllers/banner/bannermodels.dart';
+import '../utils/app_strings.dart';
 import 'premium_card.dart';
 import 'responsive_text.dart';
 import 'responsive_spacing.dart';
 import 'responsive_button.dart';
+import '../graphql/banner.graphql.dart';
 
 /// Premium order summary card like Amazon/Flipkart
 class OrderSummaryCard extends StatelessWidget {
@@ -20,10 +21,10 @@ class OrderSummaryCard extends StatelessWidget {
   final bool isButtonEnabled;
   final bool isLoading;
   final String? warningMessage;
-  final List<CouponCodeModel>? applicableCoupons;
+  final List<Query$GetCouponCodeList$getCouponCodeList$items>? applicableCoupons;
   final Function(String)? onApplyCoupon;
   final List<String>? appliedCouponCodes;
-  final CouponCodeModel? suggestedCoupon;
+  final Query$GetCouponCodeList$getCouponCodeList$items? suggestedCoupon;
   final int? amountShort;
   final bool? loyaltyPointsApplied;
   final int? loyaltyPointsUsed;
@@ -75,7 +76,7 @@ class OrderSummaryCard extends StatelessWidget {
           // Suggested Coupon Banner - Show if user is close to qualifying
           if (suggestedCoupon != null && amountShort != null && amountShort! > 0) ...[
             _CouponSuggestionBanner(
-              couponCode: suggestedCoupon!.couponCode,
+              couponCode: suggestedCoupon!.couponCode ?? '',
               amountShort: amountShort!,
             ),
             SizedBox(height: ResponsiveUtils.rp(6)),
@@ -83,7 +84,7 @@ class OrderSummaryCard extends StatelessWidget {
           // Applicable Coupon Codes - Small stripe above total
           if (applicableCoupons != null && applicableCoupons!.isNotEmpty) ...[
             ...applicableCoupons!.map((coupon) {
-              final couponCode = coupon.couponCode;
+              final couponCode = coupon.couponCode ?? '';
               final couponName = coupon.name.isNotEmpty ? coupon.name : couponCode;
               final isApplied = appliedCouponCodes?.contains(couponCode) ?? false;
               
@@ -93,12 +94,8 @@ class OrderSummaryCard extends StatelessWidget {
                 if (condition.code == 'minimum_order_amount') {
                   for (final arg in condition.args) {
                     if (arg.name == 'amount') {
-                      final value = arg.value;
-                      if (value is num) {
-                        minimumAmount = value.toInt();
-                      } else if (value is String) {
-                        minimumAmount = int.tryParse(value);
-                      }
+                      // arg.value is always String, so parse it directly
+                      minimumAmount = int.tryParse(arg.value);
                       break;
                     }
                   }
@@ -187,7 +184,7 @@ class OrderSummaryCard extends StatelessWidget {
                     if (minimumAmount != null && !isApplied) ...[
                       SizedBox(height: ResponsiveUtils.rp(4)),
                       ResponsiveText(
-                        'Min order ₹${minimumAmount.toString()}',
+                        'Min order ${PriceFormatter.formatPrice(minimumAmount)}',
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textSecondary,
@@ -230,7 +227,7 @@ class OrderSummaryCard extends StatelessWidget {
                       ),
                       SizedBox(width: ResponsiveUtils.rp(6)),
                       ResponsiveText(
-                        'Loyalty Points (₹${loyaltyPointsUsed})',
+                        'Loyalty Points (${PriceFormatter.formatPrice(loyaltyPointsUsed ?? 0)})',
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: (loyaltyPointsApplied ?? false) ? AppColors.success : AppColors.button,
@@ -491,7 +488,7 @@ class OrderSummaryCard extends StatelessWidget {
               ),
             ],
             ResponsiveElevatedButton(
-              label: buttonLabel ?? 'Proceed to Checkout',
+              label: buttonLabel ?? AppStrings.proceedToCheckout,
               onPressed:
                   isButtonEnabled && !isLoading ? onProceedToCheckout : null,
               isFullWidth: true,
@@ -554,7 +551,7 @@ class _CouponSuggestionBanner extends StatelessWidget {
           Flexible(
             child: Text.rich(
               TextSpan(
-                text: 'Spend ₹${amountInRupees.toStringAsFixed(2)} more to Apply ',
+                text: 'Spend ${PriceFormatter.formatPrice((amountInRupees * 100).toInt())} more to Apply ',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(13),
                   color: Colors.white,

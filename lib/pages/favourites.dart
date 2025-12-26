@@ -3,17 +3,19 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/banner/bannercontroller.dart';
-import '../controllers/banner/bannermodels.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../graphql/banner.graphql.dart';
 import '../widgets/appbar.dart';
 import '../widgets/cart_button_with_badge.dart';
 import '../widgets/snackbar.dart';
 import '../theme/colors.dart';
 import '../utils/price_formatter.dart';
 import '../utils/responsive.dart';
+import '../utils/app_strings.dart';
 import '../widgets/product_card.dart';
 import '../utils/navigation_helper.dart';
+import '../routes.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -42,8 +44,9 @@ debugPrint('[Favorites] Fetching customer favorites...');
     super.didChangeDependencies();
     // Pre-cache images for better performance (only for enabled products)
     for (var favorite in bannerController.favoritesList) {
-      if (favorite.product.enabled) {
-        final imageUrl = favorite.product.featuredAsset?.preview;
+      final product = favorite.product;
+      if (product != null && product.enabled) {
+        final imageUrl = product.featuredAsset?.preview;
         if (imageUrl != null && imageUrl.isNotEmpty) {
           precacheImage(NetworkImage(imageUrl), context);
         }
@@ -69,17 +72,17 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
   }
 
   /// Handle adding first variant to cart
-  Future<void> _handleAddToCart(
+  Future<bool> _handleAddToCart(
       String productName, String? firstVariantId) async {
     if (firstVariantId == null) {
       showErrorSnackbar('No variants available for this product');
-      return;
+      return false;
     }
 
     final variantId = int.tryParse(firstVariantId);
     if (variantId == null) {
       showErrorSnackbar('Invalid variant ID');
-      return;
+      return false;
     }
 
     final success = await cartController.addToCart(
@@ -90,13 +93,15 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
     } else {
       showErrorSnackbar('Failed to add to cart');
     }
+    
+    return success;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
-        title: 'My Favorites',
+        title: AppStrings.myFavorites,
         actions: [
           CartButtonWithBadge(
             cartController: cartController,
@@ -111,7 +116,8 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
 
         // Filter out disabled products
         final enabledFavorites = bannerController.favoritesList
-            .where((item) => item.product.enabled == true)
+            .where((item) => item.product?.enabled == true)
+            .where((item) => item.product != null)
             .toList();
 
         // Wrap both empty state and grid with RefreshIndicator
@@ -139,6 +145,7 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
             itemBuilder: (context, index) {
               final favoriteItem = enabledFavorites[index];
               final product = favoriteItem.product;
+              if (product == null) return SizedBox.shrink();
 
               final name = product.name;
               final imageUrl = product.featuredAsset?.preview;
@@ -252,7 +259,7 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.back();
+                    Get.toNamed(AppRoutes.home);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,
@@ -307,12 +314,26 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
     );
   }
 
+  /// Get variant label from selected variant (option name)
+  String _getVariantLabel(
+      Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants? variant) {
+    if (variant == null) return 'Default';
+    
+    // If variant has options, return the first option name
+    if (variant.options.isNotEmpty) {
+      return variant.options.first.name;
+    }
+    
+    // Fallback to variant name if no options
+    return variant.name;
+  }
+
   Widget _buildFavoriteTile({
     required String name,
     required String? imageUrl,
     required String productId,
-    required FavoriteProductModel product, // <-- correct type
-    required FavoriteVariantModel? variant,
+    required Query$GetCustomerFavorites$activeCustomer$favorites$items$product product, // <-- correct type
+    required Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants? variant,
   }) {
     final priceText = variant != null
         ? PriceFormatter.formatPrice(variant.priceWithTax.round())
@@ -338,7 +359,7 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
               currentVariantId: variant.id,
             ),
       showVariantSelector: variant != null && product.variants.length > 1,
-      variantLabel: variant?.name ?? 'Default',
+      variantLabel: _getVariantLabel(variant),
       priceText: priceText,
       shadowPriceText: null,
       onAddToCart: () => _handleAddToCart(name, variant?.id),
@@ -415,9 +436,10 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
     required String productId,
     required String currentVariantId,
   }) {
-    final product = bannerController.favoritesList
-        .firstWhere((item) => item.product.id == productId)
-        .product;
+    final favorite = bannerController.favoritesList
+        .firstWhere((item) => item.product?.id == productId);
+    final product = favorite.product;
+    if (product == null) return SizedBox.shrink();
 
     final variantOptions = product.variants;
 
@@ -455,11 +477,12 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
             if (newVariantId == null) return;
             setState(() {
               final favIndex = bannerController.favoritesList
-                  .indexWhere((item) => item.product.id == productId);
+                  .indexWhere((item) => item.product?.id == productId);
               if (favIndex != -1) {
-                final productVariants =
-                    bannerController.favoritesList[favIndex].product.variants;
-                FavoriteVariantModel? newVariant;
+                final product = bannerController.favoritesList[favIndex].product;
+                if (product == null) return;
+                final productVariants = product.variants;
+                Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants? newVariant;
                 for (final v in productVariants) {
                   if (v.id == newVariantId) {
                     newVariant = v;
@@ -467,7 +490,7 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
                   }
                 }
                 if (newVariant != null) {
-                  bannerController.favoritesList[favIndex].product.variants
+                  product.variants
                     ..remove(newVariant)
                     ..insert(0, newVariant);
                 }

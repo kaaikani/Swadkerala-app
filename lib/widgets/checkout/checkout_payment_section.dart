@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/order/ordercontroller.dart';
-import '../../controllers/order/ordermodels.dart';
+import '../../graphql/order.graphql.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 
@@ -56,7 +56,7 @@ class CheckoutPaymentSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentOption(PaymentMethod method) {
+  Widget _buildPaymentOption(Query$GetEligiblePaymentMethods$eligiblePaymentMethods method) {
     return Obx(() {
       final isSelected =
           orderController.selectedPaymentMethod.value?.id == method.id;

@@ -335,5 +335,30 @@ debugPrint('[Analytics] 📊 Analytics data reset');
 debugPrint('[Analytics] ❌ Error resetting analytics: $e');
     }
   }
-}
 
+  /// Log button click event
+  /// This should be called for every button interaction in the app
+  Future<void> logButtonClick({
+    required String buttonName,
+    String? screenName,
+    Map<String, Object>? additionalParameters,
+  }) async {
+    try {
+      if (_analytics == null) return;
+
+      final parameters = <String, Object>{
+        'button_name': buttonName,
+        if (screenName != null) 'screen_name': screenName,
+        if (additionalParameters != null) ...additionalParameters,
+      };
+
+      await _analytics!.logEvent(
+        name: 'button_click',
+        parameters: parameters,
+      );
+debugPrint('[Analytics] 📊 Button click: $buttonName${screenName != null ? ' on $screenName' : ''}');
+    } catch (e) {
+debugPrint('[Analytics] ❌ Error logging button click: $e');
+    }
+  }
+}

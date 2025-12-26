@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/colors.dart';
 import '../../../utils/responsive.dart';
+import '../../../services/analytics_service.dart';
 
 /// Primary button widget with consistent styling
 class PrimaryButton extends StatelessWidget {
@@ -31,10 +32,20 @@ class PrimaryButton extends StatelessWidget {
     this.borderRadius,
   }) : super(key: key);
 
+  void _handleButtonClick() {
+    // Track button click with analytics
+    AnalyticsService().logButtonClick(
+      buttonName: text,
+      screenName: null, // Will be set by the screen if needed
+    );
+    // Execute the original callback
+    onPressed?.call();
+  }
+
   @override
   Widget build(BuildContext context) {
     final button = ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
+      onPressed: isLoading ? null : (onPressed != null ? _handleButtonClick : null),
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor ?? AppColors.button,
         foregroundColor: textColor ?? AppColors.buttonText,
@@ -93,6 +104,3 @@ class PrimaryButton extends StatelessWidget {
     return button;
   }
 }
-
-
-

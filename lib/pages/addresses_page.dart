@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
-import '../controllers/customer/customer_models.dart';
 import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
+import '../graphql/Customer.graphql.dart';
+import '../graphql/schema.graphql.dart';
 
 class AddressesPage extends StatefulWidget {
   const AddressesPage({super.key});
@@ -213,16 +214,18 @@ class _AddressesPageState extends State<AddressesPage> {
     // Build compact address text
     List<String> addressParts = [];
     if (address.streetLine1.isNotEmpty) addressParts.add(address.streetLine1);
-    if (address.streetLine2 != null && address.streetLine2.isNotEmpty) {
-      addressParts.add(address.streetLine2);
+    if (address.streetLine2 != null && address.streetLine2!.isNotEmpty) {
+      addressParts.add(address.streetLine2!);
     }
     String addressLine = addressParts.join(', ');
-    String cityLine = '${address.city}${address.postalCode.isNotEmpty ? ', ${address.postalCode}' : ''}, ${address.country.name}';
+    final cityText = address.city ?? '';
+    final postalCodeText = address.postalCode ?? '';
+    String cityLine = '$cityText${postalCodeText.isNotEmpty ? ', $postalCodeText' : ''}, ${address.country.name}';
 
     return Obx(() {
       // Get current default address reactively
       final currentDefaultAddress = customerController.addresses.firstWhereOrNull(
-        (addr) => addr.defaultShippingAddress,
+        (addr) => addr.defaultShippingAddress ?? false,
       );
       final isCurrentlyDefault = address.id == currentDefaultAddress?.id;
 
@@ -267,10 +270,18 @@ class _AddressesPageState extends State<AddressesPage> {
                     groupValue: currentDefaultAddress,
                     onChanged: (dynamic selectedAddress) async {
                       if (selectedAddress != null) {
+                        debugPrint('═══════════════════════════════════════════════════════════');
+                        debugPrint('[AddressesPage] 📻 Radio button selected - Changing default address');
+                        debugPrint('[AddressesPage] Selected Address ID: ${selectedAddress.id}');
+                        debugPrint('[AddressesPage] Selected Address: ${selectedAddress.fullName ?? "N/A"}');
+                        debugPrint('[AddressesPage] Address Location: ${selectedAddress.city ?? "N/A"}, ${selectedAddress.postalCode ?? "N/A"}');
+                        debugPrint('[AddressesPage] Current Default Address ID: ${currentDefaultAddress?.id ?? "N/A"}');
+                        debugPrint('[AddressesPage] Setting as both Shipping and Billing address...');
                         await _setAsDefaultAndShipping(
                           context, 
                           selectedAddress, 
                           customerController,
+                          previousDefaultAddress: currentDefaultAddress,
                         );
                       }
                     },
@@ -417,32 +428,69 @@ class _AddressesPageState extends State<AddressesPage> {
   }
 
   /// Set address as both default shipping and default billing address
+  /// If update fails, reverts to previous default address
   Future<void> _setAsDefaultAndShipping(
     BuildContext context,
     dynamic address,
-    CustomerController customerController,
-  ) async {
+    CustomerController customerController, {
+    dynamic previousDefaultAddress,
+  }) async {
+    debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS START ==========');
+    debugPrint('[AddressesPage] Target Address ID: ${address.id}');
+    debugPrint('[AddressesPage] Target Address: ${address.fullName ?? "N/A"}');
+    debugPrint('[AddressesPage] Target Location: ${address.city ?? "N/A"}, ${address.postalCode ?? "N/A"}');
+    if (previousDefaultAddress != null) {
+      debugPrint('[AddressesPage] Previous Default Address ID: ${previousDefaultAddress.id}');
+      debugPrint('[AddressesPage] Previous Default Address: ${previousDefaultAddress.fullName ?? "N/A"}');
+    }
+    debugPrint('[AddressesPage] Total Addresses: ${customerController.addresses.length}');
+    
     // Show loading indicator
     setState(() {
       _isUpdatingAddress = true;
     });
 
     try {
-      // Optimize: Update local state first for immediate UI feedback
+      // Store the previous default address state for rollback
+      dynamic previousDefaultForRollback = previousDefaultAddress;
+      
+      // If previous default not provided, find it from current addresses
+      if (previousDefaultForRollback == null) {
+        previousDefaultForRollback = customerController.addresses.firstWhereOrNull(
+          (addr) => addr.defaultShippingAddress == true,
+        );
+      }
+      
       // Create updated address models
-      final addressesToUpdate = <AddressModel>[];
+      final addressesToUpdate = <Query$GetActiveCustomer$activeCustomer$addresses>[];
+      
+      // First, log all addresses status
+      debugPrint('[AddressesPage] ──── Current Address Status ────');
+      for (int i = 0; i < customerController.addresses.length; i++) {
+        final addr = customerController.addresses[i];
+        debugPrint('[AddressesPage] Address ${i + 1}:');
+        debugPrint('[AddressesPage]   - ID: ${addr.id}');
+        debugPrint('[AddressesPage]   - Name: ${addr.fullName ?? "N/A"}');
+        debugPrint('[AddressesPage]   - Location: ${addr.city ?? "N/A"}, ${addr.postalCode ?? "N/A"}');
+        debugPrint('[AddressesPage]   - Default Shipping: ${addr.defaultShippingAddress ?? false}');
+        debugPrint('[AddressesPage]   - Default Billing: ${addr.defaultBillingAddress ?? false}');
+        debugPrint('[AddressesPage]   - Is Target: ${addr.id == address.id}');
+      }
       
       // First, unset all other addresses as default
+      int unsetCount = 0;
       for (final addr in customerController.addresses) {
         if (addr.id != address.id && 
-            (addr.defaultShippingAddress || addr.defaultBillingAddress)) {
-          final updatedAddress = AddressModel(
+            ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false))) {
+          debugPrint('[AddressesPage] Unsetting default from Address ID: ${addr.id} (${addr.fullName ?? "N/A"})');
+          debugPrint('[AddressesPage]   - Was Shipping: ${addr.defaultShippingAddress ?? false}');
+          debugPrint('[AddressesPage]   - Was Billing: ${addr.defaultBillingAddress ?? false}');
+          final updatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
             id: addr.id,
             fullName: addr.fullName,
             streetLine1: addr.streetLine1,
             streetLine2: addr.streetLine2,
             city: addr.city,
-            province: addr.province,
             postalCode: addr.postalCode,
             phoneNumber: addr.phoneNumber,
             company: addr.company,
@@ -451,17 +499,21 @@ class _AddressesPageState extends State<AddressesPage> {
             country: addr.country,
           );
           addressesToUpdate.add(updatedAddress);
+          unsetCount++;
         }
       }
+      debugPrint('[AddressesPage] Addresses to unset: $unsetCount');
 
       // Then set the selected address as default (both shipping and billing)
-      final selectedUpdatedAddress = AddressModel(
+      debugPrint('[AddressesPage] Setting Address ID: ${address.id} as default');
+      debugPrint('[AddressesPage]   - Setting as Shipping Address: true');
+      debugPrint('[AddressesPage]   - Setting as Billing Address: true');
+      final selectedUpdatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
         id: address.id,
         fullName: address.fullName,
         streetLine1: address.streetLine1,
         streetLine2: address.streetLine2,
         city: address.city,
-        province: address.province,
         postalCode: address.postalCode,
         phoneNumber: address.phoneNumber,
         company: address.company,
@@ -470,35 +522,154 @@ class _AddressesPageState extends State<AddressesPage> {
         country: address.country,
       );
       addressesToUpdate.add(selectedUpdatedAddress);
+      debugPrint('[AddressesPage] Total addresses to update: ${addressesToUpdate.length}');
 
       // Update all addresses in parallel for better performance
+      debugPrint('[AddressesPage] Starting parallel address updates...');
+      debugPrint('[AddressesPage] Updating ${addressesToUpdate.length} address(es)...');
+      
+      // Update addresses without showing loading dialog (only show on error)
       final updateResults = await Future.wait(
-        addressesToUpdate.map((addr) => customerController.updateAddress(addr)),
+        addressesToUpdate.asMap().entries.map((entry) async {
+          final index = entry.key;
+          final addr = entry.value;
+          debugPrint('[AddressesPage] Calling updateAddress ${index + 1}/${addressesToUpdate.length} for ID: ${addr.id}');
+          final result = await customerController.updateAddress(addr);
+          debugPrint('[AddressesPage] Update result for ID ${addr.id}: $result');
+          return result;
+        }),
         eagerError: false,
       );
 
       // Check if all updates succeeded
       final allSuccess = updateResults.every((result) => result == true);
+      debugPrint('[AddressesPage] Update results: ${updateResults.length} addresses updated');
+      debugPrint('[AddressesPage] Individual results: $updateResults');
+      debugPrint('[AddressesPage] All updates successful: $allSuccess');
+      
+      // Log which updates failed
+      for (int i = 0; i < updateResults.length; i++) {
+        if (!updateResults[i]) {
+          debugPrint('[AddressesPage] ❌ Update ${i + 1} failed for address ID: ${addressesToUpdate[i].id}');
+        } else {
+          debugPrint('[AddressesPage] ✅ Update ${i + 1} succeeded for address ID: ${addressesToUpdate[i].id}');
+        }
+      }
       
       if (allSuccess) {
+        debugPrint('[AddressesPage] ✅ Successfully set Address ID: ${address.id} as default shipping and billing');
+        debugPrint('[AddressesPage]   - Shipping Address: ${address.fullName ?? "N/A"} (${address.city ?? "N/A"})');
+        debugPrint('[AddressesPage]   - Billing Address: ${address.fullName ?? "N/A"} (${address.city ?? "N/A"})');
         // Refresh addresses to ensure UI is in sync
         customerController.refreshAddresses();
         if (mounted) {
+          debugPrint('[AddressesPage] Addresses refreshed, UI updated');
         }
       } else {
-        // If update failed, refresh to get correct state from server
+        debugPrint('[AddressesPage] ❌ Some address updates failed - Attempting rollback');
+        
+        // Rollback: Restore previous default address if it existed
+        if (previousDefaultForRollback != null) {
+          debugPrint('[AddressesPage] 🔄 Rolling back to previous default address ID: ${previousDefaultForRollback.id}');
+          try {
+            // First, unset all addresses as default
+            final rollbackAddresses = <Query$GetActiveCustomer$activeCustomer$addresses>[];
+            for (final addr in customerController.addresses) {
+              if (addr.id != previousDefaultForRollback.id &&
+                  ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false))) {
+                rollbackAddresses.add(Query$GetActiveCustomer$activeCustomer$addresses(
+                  id: addr.id,
+                  fullName: addr.fullName,
+                  streetLine1: addr.streetLine1,
+                  streetLine2: addr.streetLine2,
+                  city: addr.city,
+                  postalCode: addr.postalCode,
+                  phoneNumber: addr.phoneNumber,
+                  company: addr.company,
+                  defaultShippingAddress: false,
+                  defaultBillingAddress: false,
+                  country: addr.country,
+                ));
+              }
+            }
+            
+            // Restore previous default
+            rollbackAddresses.add(Query$GetActiveCustomer$activeCustomer$addresses(
+              id: previousDefaultForRollback.id,
+              fullName: previousDefaultForRollback.fullName,
+              streetLine1: previousDefaultForRollback.streetLine1,
+              streetLine2: previousDefaultForRollback.streetLine2,
+              city: previousDefaultForRollback.city,
+              postalCode: previousDefaultForRollback.postalCode,
+              phoneNumber: previousDefaultForRollback.phoneNumber,
+              company: previousDefaultForRollback.company,
+              defaultShippingAddress: true,
+              defaultBillingAddress: true,
+              country: previousDefaultForRollback.country,
+            ));
+            
+            // Execute rollback
+            final rollbackResults = await Future.wait(
+              rollbackAddresses.map((addr) => customerController.updateAddress(addr)),
+              eagerError: false,
+            );
+            
+            final rollbackSuccess = rollbackResults.every((result) => result == true);
+            if (rollbackSuccess) {
+              debugPrint('[AddressesPage] ✅ Rollback successful - Previous default address restored');
+            } else {
+              debugPrint('[AddressesPage] ⚠️ Rollback partially failed - Some addresses may not be restored');
+            }
+          } catch (rollbackError) {
+            debugPrint('[AddressesPage] ❌ Rollback error: $rollbackError');
+          }
+        } else {
+          debugPrint('[AddressesPage] ⚠️ No previous default address to rollback to');
+        }
+        
+        // Refresh to get correct state from server
         customerController.refreshAddresses();
         if (mounted) {
-          showErrorSnackbar('Failed to set default address');
+          showErrorSnackbar('Failed to set default address. Previous selection restored.');
         }
       }
-    } catch (e) {
-      debugPrint('Error setting default address: $e');
+      debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS END ==========');
+      debugPrint('═══════════════════════════════════════════════════════════');
+    } catch (e, stackTrace) {
+      debugPrint('[AddressesPage] ❌ Error setting default address: $e');
+      debugPrint('[AddressesPage] Stack trace: $stackTrace');
+      
+      // Rollback on exception
+      if (previousDefaultAddress != null) {
+        debugPrint('[AddressesPage] 🔄 Exception occurred - Attempting rollback to previous default');
+        try {
+          final rollbackAddress = Query$GetActiveCustomer$activeCustomer$addresses(
+            id: previousDefaultAddress.id,
+            fullName: previousDefaultAddress.fullName,
+            streetLine1: previousDefaultAddress.streetLine1,
+            streetLine2: previousDefaultAddress.streetLine2,
+            city: previousDefaultAddress.city,
+            postalCode: previousDefaultAddress.postalCode,
+            phoneNumber: previousDefaultAddress.phoneNumber,
+            company: previousDefaultAddress.company,
+            defaultShippingAddress: true,
+            defaultBillingAddress: true,
+            country: previousDefaultAddress.country,
+          );
+          await customerController.updateAddress(rollbackAddress);
+          debugPrint('[AddressesPage] ✅ Rollback successful after exception');
+        } catch (rollbackError) {
+          debugPrint('[AddressesPage] ❌ Rollback error after exception: $rollbackError');
+        }
+      }
+      
       // Refresh to get correct state from server
       customerController.refreshAddresses();
       if (mounted) {
-        showErrorSnackbar('Failed to set default address');
+        showErrorSnackbar('Failed to set default address. Previous selection restored.');
       }
+      debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS ERROR ==========');
+      debugPrint('═══════════════════════════════════════════════════════════');
     } finally {
       // Hide loading indicator
       if (mounted) {
@@ -603,6 +774,28 @@ class _AddressesPageState extends State<AddressesPage> {
                   backgroundColor: AppColors.error,
                 );
                 return;
+              }
+              
+              // Check if the address being deleted is a default address
+              final addressToDelete = customerController.addresses.firstWhere(
+                (addr) => addr.id == addressId,
+                orElse: () => customerController.addresses.first,
+              );
+              
+              final isDefaultAddress = (addressToDelete.defaultShippingAddress ?? false) || 
+                                      (addressToDelete.defaultBillingAddress ?? false);
+              
+              // If this is a default address, set another address as default before deletion
+              if (isDefaultAddress) {
+                final otherAddresses = customerController.addresses
+                    .where((addr) => addr.id != addressId)
+                    .toList();
+                
+                if (otherAddresses.isNotEmpty) {
+                  // Set the first other address as both shipping and billing
+                  final newDefaultAddress = otherAddresses.first;
+                  await _setAsDefaultAndShipping(context, newDefaultAddress, customerController);
+                }
               }
               
               // Close dialog first
@@ -782,6 +975,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                     }
                   }),
               SizedBox(height: 16),
+              // Address Line 1
               _buildTextField(
                   streetLine1Controller, 'Address Line 1', Icons.home,
                   required: true,
@@ -936,25 +1130,61 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                           return;
                         }
 
-                        final addressData = AddressModel(
-                          id: '',
-                          fullName: fullNameController.text.trim(),
-                          streetLine1: streetLine1Controller.text.trim(),
-                          streetLine2: streetLine2Controller.text.trim(),
-                          city: cityController.text.trim(),
-                          province: 'Tamil Nadu', // Default province
-                          postalCode: postalCodeController.text.trim(),
-                          phoneNumber: phoneController.text.trim(),
-                          company: '',
-                          defaultShippingAddress: defaultShipping,
-                          defaultBillingAddress: defaultShipping,
-                          country: CountryModel(
-                            id: 'IN',
-                            name: 'India',
-                            code: 'IN',
-                            languageCode: 'en',
-                          ),
+                        final country = Query$GetActiveCustomer$activeCustomer$addresses$country(
+                          id: 'IN',
+                          name: 'India',
+                          code: 'IN',
+                          languageCode: Enum$LanguageCode.en,
                         );
+                        
+                        // If this is the first address, it must be set as both shipping and billing
+                        final isFirstAddress = widget.customerController.addresses.isEmpty;
+                        final shouldBeDefault = isFirstAddress || defaultShipping;
+                        
+                        final addressData = Query$GetActiveCustomer$activeCustomer$addresses(
+                          id: '',
+                          fullName: fullNameController.text.trim().isEmpty ? null : fullNameController.text.trim(),
+                          streetLine1: streetLine1Controller.text.trim(),
+                          streetLine2: streetLine2Controller.text.trim().isEmpty ? null : streetLine2Controller.text.trim(),
+                          city: cityController.text.trim().isEmpty ? null : cityController.text.trim(),
+                          postalCode: postalCodeController.text.trim().isEmpty ? null : postalCodeController.text.trim(),
+                          phoneNumber: phoneController.text.trim().isEmpty ? null : phoneController.text.trim(),
+                          company: null,
+                          defaultShippingAddress: shouldBeDefault,
+                          defaultBillingAddress: shouldBeDefault,
+                          country: country,
+                        );
+                        
+                        // If setting as default, unset other addresses first
+                        if (shouldBeDefault && !isFirstAddress) {
+                          // Unset all other addresses as default
+                          final addressesToUpdate = <Query$GetActiveCustomer$activeCustomer$addresses>[];
+                          for (final addr in widget.customerController.addresses) {
+                            if ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false)) {
+                              final updatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
+                                id: addr.id,
+                                fullName: addr.fullName,
+                                streetLine1: addr.streetLine1,
+                                streetLine2: addr.streetLine2,
+                                city: addr.city,
+                                postalCode: addr.postalCode,
+                                phoneNumber: addr.phoneNumber,
+                                company: addr.company,
+                                defaultShippingAddress: false,
+                                defaultBillingAddress: false,
+                                country: addr.country,
+                              );
+                              addressesToUpdate.add(updatedAddress);
+                            }
+                          }
+                          // Update all other addresses first
+                          if (addressesToUpdate.isNotEmpty) {
+                            await Future.wait(
+                              addressesToUpdate.map((addr) => widget.customerController.updateAddress(addr)),
+                              eagerError: false,
+                            );
+                          }
+                        }
 
                         final success = await widget.customerController
                             .createAddress(addressData);
@@ -1087,6 +1317,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
       ],
     );
   }
+
 }
 class _EditAddressFormWidget extends StatefulWidget {
   final dynamic existingAddress;
@@ -1147,17 +1378,22 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     // Controllers are already initialized in initState for better performance
     // Get address count and determine if this is the only address
     final addressCount = widget.customerController.addresses.length;
     final isOnlyAddress = addressCount <= 1; // Only one address
-    final isOnlyDefault = widget.existingAddress?.defaultShippingAddress == true && 
+    final isOnlyDefault = ((widget.existingAddress?.defaultShippingAddress ?? false) || 
+                          (widget.existingAddress?.defaultBillingAddress ?? false)) &&
         addressCount == 1;
     
-    // If editing only address, it must remain default
+    // If editing only default address, it must remain default (both shipping and billing)
     bool defaultShipping = widget.existingAddress?.defaultShippingAddress ?? false;
+    if (isOnlyDefault) {
+      defaultShipping = true; // Force to remain default
+    }
     final Map<String, String?> errors = {};
 
     return StatefulBuilder(
@@ -1232,6 +1468,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                     }
                   }),
               SizedBox(height: 16),
+              // Address Line 1
               _buildTextField(
                   streetLine1Controller, 'Address Line 1', Icons.home,
                   required: true,
@@ -1386,25 +1623,62 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                           return;
                         }
 
-                        final addressData = AddressModel(
+                        final country = widget.existingAddress?.country ??
+                            Query$GetActiveCustomer$activeCustomer$addresses$country(
+                              id: 'IN',
+                              name: 'India',
+                              code: 'IN',
+                              languageCode: Enum$LanguageCode.en,
+                            );
+                        
+                        // Ensure at least one address remains as both shipping and billing
+                        // If this is the only default address, it must remain default
+                        final shouldBeDefault = isOnlyDefault || defaultShipping;
+                        
+                        // If setting as default and not the only address, unset other addresses first
+                        if (shouldBeDefault && !isOnlyDefault && addressCount > 1) {
+                          // Unset all other addresses as default
+                          final addressesToUpdate = <Query$GetActiveCustomer$activeCustomer$addresses>[];
+                          for (final addr in widget.customerController.addresses) {
+                            if (addr.id != widget.existingAddress?.id && 
+                                ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false))) {
+                              final updatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
+                                id: addr.id,
+                                fullName: addr.fullName,
+                                streetLine1: addr.streetLine1,
+                                streetLine2: addr.streetLine2,
+                                city: addr.city,
+                                postalCode: addr.postalCode,
+                                phoneNumber: addr.phoneNumber,
+                                company: addr.company,
+                                defaultShippingAddress: false,
+                                defaultBillingAddress: false,
+                                country: addr.country,
+                              );
+                              addressesToUpdate.add(updatedAddress);
+                            }
+                          }
+                          // Update all other addresses first
+                          if (addressesToUpdate.isNotEmpty) {
+                            await Future.wait(
+                              addressesToUpdate.map((addr) => widget.customerController.updateAddress(addr)),
+                              eagerError: false,
+                            );
+                          }
+                        }
+                        
+                        final addressData = Query$GetActiveCustomer$activeCustomer$addresses(
                           id: widget.existingAddress?.id ?? '',
-                          fullName: fullNameController.text.trim(),
+                          fullName: fullNameController.text.trim().isEmpty ? null : fullNameController.text.trim(),
                           streetLine1: streetLine1Controller.text.trim(),
-                          streetLine2: streetLine2Controller.text.trim(),
-                          city: cityController.text.trim(),
-                          province: 'Tamil Nadu', // Default province
-                          postalCode: postalCodeController.text.trim(),
-                          phoneNumber: phoneController.text.trim(),
-                          company: '',
-                          defaultShippingAddress: defaultShipping,
-                          defaultBillingAddress: defaultShipping,
-                          country: widget.existingAddress?.country ??
-                              CountryModel(
-                                id: 'IN',
-                                name: 'India',
-                                code: 'IN',
-                                languageCode: 'en',
-                              ),
+                          streetLine2: streetLine2Controller.text.trim().isEmpty ? null : streetLine2Controller.text.trim(),
+                          city: cityController.text.trim().isEmpty ? null : cityController.text.trim(),
+                          postalCode: postalCodeController.text.trim().isEmpty ? null : postalCodeController.text.trim(),
+                          phoneNumber: phoneController.text.trim().isEmpty ? null : phoneController.text.trim(),
+                          company: null,
+                          defaultShippingAddress: shouldBeDefault,
+                          defaultBillingAddress: shouldBeDefault,
+                          country: country,
                         );
 
                         final success = await widget.customerController
@@ -1538,4 +1812,3 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     );
   }
 }
-

@@ -38,7 +38,7 @@ mutation RemoveAllOrderLines{
         ...Cart
         ...on ErrorResult{
             errorCode
-            message
+
         }
     }
 }
@@ -46,11 +46,7 @@ mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!){
     adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity){
         __typename
         ...Cart
-        ...on ErrorResult{
-            message
-            errorCode
-            __typename
-        }
+        ...ErrorResult
     }
 }
 
@@ -61,7 +57,7 @@ mutation SetShippingAddress($input: CreateAddressInput!) {
         ... on Order {
             shippingAddress {
                 ...OrderAddress
-                customFields
+
                 __typename
             }
             __typename
@@ -273,7 +269,7 @@ fragment Cart on Order {
         quantity
         isAvailable
         unavailableReason
-        customFields
+
         featuredAsset {
             ...Asset
             __typename
@@ -330,8 +326,7 @@ fragment Cart on Order {
         type
         __typename
     }
-    customFields {
-    }
+
     __typename
 }
 

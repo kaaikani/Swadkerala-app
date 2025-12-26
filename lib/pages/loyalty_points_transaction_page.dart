@@ -84,7 +84,7 @@ class _LoyaltyPointsTransactionPageState
           transactions.add(LoyaltyTransaction(
             type: TransactionType.earned,
             points: loyaltyPointsEarned,
-            date: orderPlacedAt,
+            date: orderPlacedAt ?? DateTime.now(),
             description: 'Earned from Order',
             orderCode: orderCode,
             orderState: orderState,
@@ -95,7 +95,7 @@ class _LoyaltyPointsTransactionPageState
           transactions.add(LoyaltyTransaction(
             type: TransactionType.used,
             points: loyaltyPointsUsed,
-            date: orderPlacedAt,
+            date: orderPlacedAt ?? DateTime.now(),
             description: 'Redeemed for Order',
             orderCode: orderCode,
             orderState: orderState,
@@ -625,6 +625,17 @@ class _LoyaltyPointsTransactionPageState
   }
 }
 
+enum TransactionType {
+  earned,
+  used,
+}
+
+enum TransactionFilter {
+  all,
+  earned,
+  used,
+}
+
 class LoyaltyTransaction {
   final TransactionType type;
   final int points;
@@ -641,15 +652,4 @@ class LoyaltyTransaction {
     this.orderCode,
     this.orderState,
   });
-}
-
-enum TransactionType {
-  earned,
-  used,
-}
-
-enum TransactionFilter {
-  all,
-  earned,
-  used,
 }

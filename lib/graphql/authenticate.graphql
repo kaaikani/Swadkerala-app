@@ -18,29 +18,54 @@ mutation Authenticate($phoneNumber: String!, $code: String!, $firstName: String,
     }
 }
 
+mutation LoginWithPhoneOtp($phoneNumber: String!, $code: String!) {
+    authenticate(input: {
+        phoneOtp: {
+            phoneNumber: $phoneNumber
+            code: $code
+        }
+    }) {
+        __typename
+        ... on CurrentUser {
+            id
+            identifier
+        }
+        ... on InvalidCredentialsError {
+            message
+        }
+        ... on NotVerifiedError {
+            message
+        }
+    }
+}
+
+mutation LoginWithGoogle($token: String!) {
+    authenticate(input: {
+        google: {
+            token: $token
+        }
+    }) {
+        __typename
+        ... on CurrentUser {
+            id
+            identifier
+        }
+        ... on InvalidCredentialsError {
+            message
+        }
+        ... on NotVerifiedError {
+            message
+        }
+    }
+}
+
 mutation SendPhoneOtp($phoneNumber: String!) {
     sendPhoneOtp(phoneNumber: $phoneNumber)
 }
 mutation ResendPhoneOtp($phoneNumber: String!) {
     resendPhoneOtp(phoneNumber: $phoneNumber)
 }
-query GetChannelsByCustomerEmail($email: String!) {
-    getChannelsByCustomerEmail(email: $email) {
-        id
-        code
-        token
-        defaultCurrencyCode
-    }
-}
 
-query GetChannelsByPhoneNumber($phoneNumber: String!) {
-    getChannelsByCustomerPhoneNumber(phoneNumber: $phoneNumber) {
-        id
-        code
-        token
-        defaultCurrencyCode
-    }
-}
 mutation LogoutUser{
     logout {
         success

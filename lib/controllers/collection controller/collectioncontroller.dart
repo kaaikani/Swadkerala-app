@@ -2,14 +2,13 @@ import 'package:get/get.dart';
 import '../../graphql/product.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
-import 'Collectionmodel.dart';
 import 'package:flutter/foundation.dart';
+
 class CollectionsController extends GetxController {
-  RxList<Collection> allCollections = <Collection>[].obs;
-  RxList<Product> allProducts = <Product>[].obs;
+  RxList<Query$Collections$collections$items> allCollections = <Query$Collections$collections$items>[].obs;
   final UtilityController utilityController = Get.find();
 
-  Rx<Collection?> currentCollection = Rx<Collection?>(null);
+  Rx<Query$Products$collection?> currentCollection = Rx<Query$Products$collection?>(null);
 
   RxList<Query$Products$collection$productVariants$items> uniqueProductVariants = <Query$Products$collection$productVariants$items>[].obs;
   
@@ -57,44 +56,52 @@ debugPrint(  '[Collection] GraphQL Exception: ${response.exception.toString()}')
         return false;
       }
 
-      final itemsJson = response.parsedData?.collections.items;
-      if (itemsJson != null) {
-        final collections = itemsJson
-            .map((e) => Collection.fromJson(e.toJson()))
-            .toList();
+      final items = response.parsedData?.collections.items;
+      if (items != null) {
+        // Sort collections: slugs ending with numbers positioned by number (1=first, 2=second, etc.), then others at last
+        // Collections ending with same number are grouped together at that position
+        final collections = List<Query$Collections$collections$items>.from(items);
         
-        // Sort collections: slugs ending with numbers first (by number), then others
-        collections.sort((a, b) {
-          final aSlug = a.slug ?? '';
-          final bSlug = b.slug ?? '';
-          
-          // Extract number from end of slug if present
+        // Separate collections into those with numbers and those without
+        final collectionsWithNumbers = <Query$Collections$collections$items>[];
+        final collectionsWithoutNumbers = <Query$Collections$collections$items>[];
+        
+        for (final collection in collections) {
+          final slug = collection.slug;
+          final match = RegExp(r'(\d+)$').firstMatch(slug);
+          if (match != null) {
+            collectionsWithNumbers.add(collection);
+          } else {
+            collectionsWithoutNumbers.add(collection);
+          }
+        }
+        
+        // Sort collections with numbers by the number at the end (1, 2, 11, etc.)
+        // Collections with same number will be grouped together
+        collectionsWithNumbers.sort((a, b) {
+          final aSlug = a.slug;
+          final bSlug = b.slug;
           final aMatch = RegExp(r'(\d+)$').firstMatch(aSlug);
           final bMatch = RegExp(r'(\d+)$').firstMatch(bSlug);
           
           final aNumber = aMatch != null ? int.tryParse(aMatch.group(1) ?? '') : null;
           final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
           
-          // Both have numbers - sort by number
           if (aNumber != null && bNumber != null) {
+            // Sort by number: 1 comes first, 2 comes second, 11 comes 11th, etc.
             return aNumber.compareTo(bNumber);
           }
           
-          // Only a has number - a comes first
-          if (aNumber != null && bNumber == null) {
-            return -1;
-          }
-          
-          // Only b has number - b comes first
-          if (aNumber == null && bNumber != null) {
-            return 1;
-          }
-          
-          // Neither has number - maintain original order (or sort alphabetically)
+          // Fallback to slug comparison if parsing fails
           return aSlug.compareTo(bSlug);
         });
         
-        allCollections.value = collections;
+        // Combine: collections with numbers (sorted by number) first, then collections without numbers
+        final arrangedCollections = <Query$Collections$collections$items>[];
+        arrangedCollections.addAll(collectionsWithNumbers);
+        arrangedCollections.addAll(collectionsWithoutNumbers);
+
+        allCollections.value = arrangedCollections;
 debugPrint('[Collection] Loaded ${allCollections.length} collections');
       } else {
 debugPrint('[Collection] No collections found');
@@ -141,7 +148,7 @@ debugPrint('[Collection] fetchAllCollections finished.');
       final collectionData = response.parsedData?.collection;
 
       if (collectionData != null) {
-        currentCollection.value = Collection.fromJson(collectionData.toJson());
+        currentCollection.value = collectionData;
         debugPrint('✅ [Collection] Loaded Collection: ${currentCollection.value?.name}');
 
         final productItems = collectionData.productVariants.items;
@@ -168,6 +175,9 @@ debugPrint('[Collection] fetchAllCollections finished.');
             debugPrint('• Product: ${product.name} | ID: $productId | Variants: ${variantsByProductId[productId]!.length}');
           }
         }
+        
+        // Sort products based on slug ending numbers
+        _allUniqueVariants = _sortProductsBySlugNumber(_allUniqueVariants);
         
         // Initially display first batch
         _displayedItemsCount = _allUniqueVariants.length < _itemsPerPage 
@@ -287,5 +297,52 @@ debugPrint('[Collection] fetchAllCollections finished.');
       }
     }
     return uniqueValues.toList();
+  }
+
+  /// Sort products by the number at the end of their slug
+  /// Products ending with 1 appear first, 2 second, etc.
+  /// Products without numbers appear last
+  List<Query$Products$collection$productVariants$items> _sortProductsBySlugNumber(
+    List<Query$Products$collection$productVariants$items> variants,
+  ) {
+    final variantsWithNumbers = <Query$Products$collection$productVariants$items>[];
+    final variantsWithoutNumbers = <Query$Products$collection$productVariants$items>[];
+
+    // Separate variants with and without numbers
+    for (final variant in variants) {
+      final slug = variant.product.slug;
+      final match = RegExp(r'(\d+)$').firstMatch(slug);
+      if (match != null) {
+        variantsWithNumbers.add(variant);
+      } else {
+        variantsWithoutNumbers.add(variant);
+      }
+    }
+
+    // Sort variants with numbers by the number at the end
+    variantsWithNumbers.sort((a, b) {
+      final aSlug = a.product.slug;
+      final bSlug = b.product.slug;
+      final aMatch = RegExp(r'(\d+)$').firstMatch(aSlug);
+      final bMatch = RegExp(r'(\d+)$').firstMatch(bSlug);
+
+      final aNumber = aMatch != null ? int.tryParse(aMatch.group(1) ?? '') : null;
+      final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
+
+      if (aNumber != null && bNumber != null) {
+        // Sort by number: 1 comes first, 2 comes second, 11 comes 11th, etc.
+        return aNumber.compareTo(bNumber);
+      }
+
+      // Fallback to slug comparison if parsing fails
+      return aSlug.compareTo(bSlug);
+    });
+
+    // Combine: variants with numbers (sorted by number) first, then variants without numbers
+    final sortedVariants = <Query$Products$collection$productVariants$items>[];
+    sortedVariants.addAll(variantsWithNumbers);
+    sortedVariants.addAll(variantsWithoutNumbers);
+
+    return sortedVariants;
   }
 }

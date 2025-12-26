@@ -114,6 +114,7 @@ query Products ($slug: String, $id: ID){
                 product{
                     id
                     name
+                    slug
                     enabled
                     featuredAsset {
                         ...Asset

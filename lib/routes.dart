@@ -14,6 +14,8 @@ import 'package:recipe.app/pages/product_detail_page.dart';
 import 'package:recipe.app/pages/loyalty_points_transaction_page.dart';
 import 'package:recipe.app/pages/connect_with_us_page.dart';
 import 'package:recipe.app/pages/help_support_page.dart';
+import 'package:recipe.app/pages/privacy_policy_page.dart';
+import 'package:recipe.app/pages/terms_conditions_page.dart';
 
 import 'components/searchbarcomponent.dart';
 import 'controllers/banner/bannercontroller.dart';
@@ -47,6 +49,8 @@ class AppRoutes {
   static const String frequentlyOrdered = '/frequently-ordered';
   static const String connectWithUs = '/connect-with-us';
   static const String helpSupport = '/help-support';
+  static const String privacyPolicy = '/privacy-policy';
+  static const String termsConditions = '/terms-conditions';
 
   static List<GetPage> routes = [
     GetPage(
@@ -198,6 +202,16 @@ debugPrint('[Routes] ProductDetailPage: Missing productId, redirecting to home')
     GetPage(
       name: helpSupport,
       page: () => const HelpSupportPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: privacyPolicy,
+      page: () => const PrivacyPolicyPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: termsConditions,
+      page: () => const TermsConditionsPage(),
       transition: Transition.rightToLeft,
     ),
   ];

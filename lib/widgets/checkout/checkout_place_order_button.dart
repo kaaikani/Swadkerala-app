@@ -4,14 +4,14 @@ import 'package:slide_to_act/slide_to_act.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../controllers/banner/bannercontroller.dart';
-import '../../controllers/banner/bannermodels.dart';
-import '../../controllers/customer/customer_models.dart';
 import '../../controllers/utilitycontroller/utilitycontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
+import '../../graphql/Customer.graphql.dart';
+import '../../graphql/banner.graphql.dart';
 
 class CheckoutPlaceOrderButton extends StatelessWidget {
-  final AddressModel? selectedAddress;
+  final Query$GetActiveCustomer$activeCustomer$addresses? selectedAddress;
   final Function() onPlaceOrder;
   final GlobalKey<SlideActionState> slideActionKey;
   final bool orderPlacedSuccessfully;
@@ -41,10 +41,10 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
 
       // Check for out of stock items
       final hasOutOfStockItems = cart?.lines.any((line) {
-        final stockLevel = line.productVariant.stockLevel?.toUpperCase();
+        final stockLevel = line.productVariant.stockLevel.toUpperCase();
         final isLowStock = stockLevel == 'LOW_STOCK';
         final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-        final isProductDisabled = line.productVariant.productEnabled == false;
+        final isProductDisabled = line.productVariant.product.enabled == false;
         return !line.isAvailable ||
             isLowStock ||
             isOutOfStock ||
@@ -118,7 +118,7 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
     );
   }
 
-  Widget _buildCouponUnlockBanner(CouponCodeModel coupon, int currentSubTotal) {
+  Widget _buildCouponUnlockBanner(Query$GetCouponCodeList$getCouponCodeList$items coupon, int currentSubTotal) {
     final bannerController = Get.find<BannerController>();
     return Obx(() {
       final requiredAmount = bannerController.getRequiredAmount(coupon);
@@ -234,4 +234,3 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
     );
   }
 }
-

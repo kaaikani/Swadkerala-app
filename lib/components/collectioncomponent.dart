@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../controllers/collection controller/Collectionmodel.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../graphql/product.graphql.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/premium_card.dart';
@@ -14,7 +14,7 @@ import '../widgets/responsive_icon.dart';
 import '../widgets/responsive_container.dart';
 
 class CollectionGrid extends StatefulWidget {
-  final Function(Collection) onCollectionTap;
+  final Function(Query$Collections$collections$items) onCollectionTap;
 
   const CollectionGrid({Key? key, required this.onCollectionTap})
       : super(key: key);
@@ -45,11 +45,11 @@ class _CollectionGridState extends State<CollectionGrid> {
       final displayItems = isLoading
           ? List.filled(
               4,
-              Collection(
+              Query$Collections$collections$items(
                 id: '',
                 name: 'Loading...',
                 slug: '',
-                productVariants: ProductVariants(totalItems: 0),
+                productVariants: Query$Collections$collections$items$productVariants(totalItems: 0),
               ))
           : items;
 
@@ -73,11 +73,11 @@ class _CollectionGridState extends State<CollectionGrid> {
           itemBuilder: (context, index) {
             if (isLoading) {
               return CollectionCard(
-                collection: Collection(
+                collection: Query$Collections$collections$items(
                   id: '',
                   name: 'Loading...',
                   slug: '',
-                  productVariants: ProductVariants(totalItems: 0),
+                  productVariants: Query$Collections$collections$items$productVariants(totalItems: 0),
                 ),
               );
             }
@@ -94,7 +94,7 @@ class _CollectionGridState extends State<CollectionGrid> {
 }
 
 class CollectionCard extends StatelessWidget {
-  final Collection collection;
+  final Query$Collections$collections$items collection;
 
   const CollectionCard({Key? key, required this.collection}) : super(key: key);
 
