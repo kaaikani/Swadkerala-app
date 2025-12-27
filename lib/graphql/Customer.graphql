@@ -299,5 +299,27 @@ query GetChannelsByPostalCode($postalCode: String!) {
         id
         code
         token
+        name
+        type
+    }
+}
+
+query GetAvailableChannels($postalCode: String!) {
+    getAvailableChannels(postalCode: $postalCode) {
+        id
+        code
+        token
+        name
+        isAvailable
+        message
+        type
+    }
+}
+
+query PostalCodes {
+    postalCodes {
+        id
+        code
+        isAnywhere
     }
 }

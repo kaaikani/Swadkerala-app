@@ -16,6 +16,7 @@ import '../components/vertical_list_component.dart';
 import '../components/searchbarcomponent.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../services/postal_code_service.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../utils/app_strings.dart';
@@ -55,20 +56,83 @@ class _MyHomePageState extends State<MyHomePage> {
   
   // Track if dialog is showing to prevent multiple dialogs
   bool _isAddressDialogShowing = false;
+  bool _isPostalCodeDialogShowing = false;
+  
+  // Track if data refresh is in progress to prevent duplicate calls
+  bool _isRefreshingData = false;
+  
+  // Reactive variables for channel and postal code to trigger UI updates
+  final RxString _channelName = ''.obs;
+  final RxString _postalCode = ''.obs;
 
   @override
   void initState() {
     super.initState();
+    // Initialize reactive variables
+    _updateChannelDisplay();
     _refreshData();
+  }
+  
+  /// Update reactive channel display variables
+  void _updateChannelDisplay() {
+    final newChannelName = box.read('channel_name') ?? box.read('channel_code') ?? 'Select Location';
+    final newPostalCode = box.read('postal_code') ?? '';
+    
+    // Only update if values changed to trigger Obx rebuild
+    if (_channelName.value != newChannelName) {
+      _channelName.value = newChannelName;
+      debugPrint('[HomePage] Channel name updated: $newChannelName');
+    }
+    if (_postalCode.value != newPostalCode) {
+      _postalCode.value = newPostalCode;
+      debugPrint('[HomePage] Postal code updated: $newPostalCode');
+    }
   }
 
   /// Refresh data - called from initState and when returning to page
   void _refreshData() {
+    // Prevent duplicate refresh calls
+    if (_isRefreshingData) {
+      debugPrint('[HomePage] Data refresh already in progress, skipping duplicate call...');
+      return;
+    }
+    
+    _isRefreshingData = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Only fetch authenticated data if user is logged in
+      debugPrint('[HomePage] ========== STARTING DATA REFRESH ==========');
+      
+      // STEP 1: Get customer data if authenticated
+      if (_isUserAuthenticated()) {
+        debugPrint('[HomePage] User is authenticated, fetching customer data...');
+        await customerController.getActiveCustomer();
+        debugPrint('[HomePage] Customer data fetched');
+      }
+      
+      // STEP 2: Get postal code from shipping address and set channel FIRST
+      debugPrint('[HomePage] Checking postal code and setting channel...');
+      final channelChanged = await _ensurePostalCodeAndChannelSet();
+      debugPrint('[HomePage] Postal code and channel check completed. Channel changed: $channelChanged');
+      
+      // Always update UI display after checking postal code/channel (ensures UI is in sync)
+      // Add small delay to ensure storage is written before reading
+      await Future.delayed(Duration(milliseconds: 100));
+      _updateChannelDisplay();
+      debugPrint('[HomePage] UI display updated with latest channel and postal code');
+      
+      // STEP 3: Only after channel is set, fetch all other data
+      // If channel changed, data is already being refreshed by switchChannelByPostalCode
+      // So we can skip duplicate fetches or wait a bit for refresh to complete
+      if (channelChanged) {
+        debugPrint('[HomePage] Channel changed, waiting for data refresh to complete...');
+        // Wait a bit for the refresh to complete (it's async in the background)
+        await Future.delayed(Duration(milliseconds: 500));
+        debugPrint('[HomePage] Data refresh should be complete, continuing...');
+      }
+      
+      debugPrint('[HomePage] Fetching channel-specific data...');
+      
       if (_isUserAuthenticated()) {
         cartController.getActiveOrder();
-        await customerController.getActiveCustomer();
         bannerController.getCustomerFavorites();
         
         // Check for default shipping address after customer data is loaded
@@ -81,12 +145,28 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       
       // These can be fetched regardless of authentication status
+      // Only fetch if channel didn't change (to avoid duplicate fetches)
+      if (!channelChanged) {
       collectionController.fetchAllCollections();
+        bannerController.getBannersForChannel(); // Refresh banners with current channel token
       bannerController.getFrequentlyOrderedProducts();
+      } else {
+        debugPrint('[HomePage] Skipping duplicate data fetch - already refreshed after channel change');
+      }
+      
+      // Check for postal code dialog if still needed (for non-authenticated users)
+      // Only check if dialog is not already showing
+      if (mounted && !_isPostalCodeDialogShowing) {
+        _checkAndShowPostalCodeDialog();
+      }
      
+      debugPrint('[HomePage] ========== DATA REFRESH COMPLETED ==========');
       
       // Track screen view
       AnalyticsService().logScreenView(screenName: 'Home');
+      
+      // Reset refresh flag
+      _isRefreshingData = false;
     });
   }
 
@@ -396,23 +476,125 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  /// Check if default shipping address exists and show dialog if not
+  /// Ensure postal code and channel are set before fetching data
+  /// Returns true if channel was changed, false otherwise
+  Future<bool> _ensurePostalCodeAndChannelSet() async {
+    try {
+      debugPrint('[HomePage] ========== ENSURING POSTAL CODE AND CHANNEL SET ==========');
+      
+      // Store current channel token to detect changes
+      final currentChannelToken = box.read('channel_token');
+      debugPrint('[HomePage] Current channel token: ${currentChannelToken ?? "NOT FOUND"}');
+      
+      // Check if postal code exists in local storage
+      final storedPostalCode = box.read('postal_code');
+      debugPrint('[HomePage] Postal code in local storage: ${storedPostalCode ?? "NOT FOUND"}');
+      
+      // If authenticated, try to get postal code from shipping address first
+      if (_isUserAuthenticated()) {
+        debugPrint('[HomePage] User is authenticated, checking shipping address for postal code...');
+        await customerController.checkAndSetPostalCodeFromShippingAddress();
+        
+        // Re-check postal code after trying to get from shipping address
+        final updatedPostalCode = box.read('postal_code');
+        if (updatedPostalCode != null && updatedPostalCode.toString().isNotEmpty) {
+          debugPrint('[HomePage] Postal code set from shipping address: $updatedPostalCode');
+          
+          // Check if channel changed
+          final newChannelToken = box.read('channel_token');
+          final channelChanged = currentChannelToken != newChannelToken;
+          if (channelChanged) {
+            debugPrint('[HomePage] Channel changed from $currentChannelToken to $newChannelToken');
+            // Data is already being refreshed by checkAndSetPostalCodeFromShippingAddress
+            return true;
+          }
+          return false; // Channel should already be set by checkAndSetPostalCodeFromShippingAddress
+        }
+      }
+      
+      // If postal code is in local storage, verify channel is set
+      if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {
+        final channelToken = box.read('channel_token');
+        if (channelToken != null && channelToken.toString().isNotEmpty) {
+          debugPrint('[HomePage] Postal code and channel already set');
+          return false;
+        } else {
+          // Postal code exists but channel not set, fetch channel
+          debugPrint('[HomePage] Postal code exists but channel not set, fetching channel...');
+          final success = await customerController.switchChannelByPostalCode(
+            storedPostalCode.toString(),
+            showLoading: false, // Don't show loading dialog during initialization
+          );
+          if (success) {
+            debugPrint('[HomePage] Channel successfully set for postal code: $storedPostalCode');
+            // Check if channel changed
+            final newChannelToken = box.read('channel_token');
+            final channelChanged = currentChannelToken != newChannelToken;
+            if (channelChanged) {
+              debugPrint('[HomePage] Channel changed from $currentChannelToken to $newChannelToken');
+              // Data is already being refreshed by switchChannelByPostalCode
+              return true;
+            }
+            return false;
+          } else {
+            debugPrint('[HomePage] Failed to set channel for postal code: $storedPostalCode');
+            return false;
+          }
+        }
+      } else {
+        debugPrint('[HomePage] No postal code found in local storage');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('[HomePage] Error ensuring postal code and channel: $e');
+      // Don't throw - continue with data fetch even if channel setup fails
+      return false;
+    }
+  }
+
+  /// Check if postal code is saved, if not show postal code bottom sheet
+  void _checkAndShowPostalCodeDialog() {
+    if (!mounted) return;
+    if (_isPostalCodeDialogShowing) {
+      debugPrint('[HomePage] Postal code dialog already showing, skipping...');
+      return; // Prevent multiple dialogs
+    }
+    
+    final storedPostalCode = box.read('postal_code');
+    debugPrint('[HomePage] Checking postal code in local storage: ${storedPostalCode ?? "NOT FOUND"}');
+    
+    // If no postal code is saved, show the postal code bottom sheet
+    if (storedPostalCode == null || storedPostalCode.toString().isEmpty) {
+      debugPrint('[HomePage] No postal code found, showing postal code bottom sheet');
+      _isPostalCodeDialogShowing = true; // Mark as showing
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _isPostalCodeDialogShowing) {
+          _showPostalCodeBottomSheet();
+        }
+      });
+    }
+  }
+
   void _checkAndShowShippingAddressDialog() {
     if (!mounted) return; // Don't show dialog if widget is unmounted
     if (_isAddressDialogShowing) return; // Prevent multiple dialogs
     
     final addresses = customerController.addresses;
     
+    // Don't show dialog if there are no addresses
+    if (addresses.isEmpty) {
+      debugPrint('[HomePage] No addresses found, skipping default address dialog');
+      return;
+    }
+    
     // Check if there's a default shipping address
     final hasDefaultShipping = addresses.any(
       (addr) => addr.defaultShippingAddress == true,
     );
     
+    // Only show dialog if there are addresses but no default shipping address
     if (!hasDefaultShipping && addresses.isNotEmpty) {
       // Show non-dismissible dialog
-      _showSetDefaultAddressDialog();
-    } else if (addresses.isEmpty) {
-      // No addresses at all - show dialog to add address
       _showSetDefaultAddressDialog();
     }
   }
@@ -518,8 +700,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Refresh data when returning to this page
-    _refreshData();
+    // Only refresh data when returning to this page (not on initial build)
+    // initState already calls _refreshData(), so we skip it here to avoid duplicate calls
+    // This will only refresh when dependencies actually change (e.g., theme changes)
+    // For navigation back to page, we rely on the PopScope callback
   }
 
   @override
@@ -617,12 +801,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                       ),
                     ),
-                    SizedBox(width: ResponsiveUtils.rp(12)),
+                    SizedBox(width: ResponsiveUtils.rp(2)),
                     // Location with Channel Code (only show when authenticated)
-                    if (_isUserAuthenticated()) ...[
-                      _buildLocationInfo(cityName),
-                      SizedBox(width: ResponsiveUtils.rp(12)),
-                    ],
+
                     // Account Icon
                     InkWell(
                       onTap: () => Get.toNamed('/account'),
@@ -646,7 +827,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Build location info widget with channel code
   Widget _buildLocationInfo(String cityName) {
-    return Container(
+    return InkWell(
+      onTap: () => _showPostalCodeBottomSheet(),
+      child: Container(
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveUtils.rp(8),
         vertical: ResponsiveUtils.rp(4),
@@ -677,60 +860,329 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
 
+  /// Show postal code search bottom sheet
+  void _showPostalCodeBottomSheet() {
+    final pincodeController = TextEditingController();
+    List<PostalCodeData> searchResults = [];
+    bool isSearching = false;
+    bool isGettingLocation = false;
+    bool isServiceUnavailable = false;
+    
+    // Check if postal code is already saved - if not, hide close button
+    final storedPostalCode = box.read('postal_code');
+    final bool hasPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false, // Prevent closing by tapping outside or back button - user must select postal code or click close
+      enableDrag: false, // Prevent closing by dragging down
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext bottomSheetContext) {
+        return StatefulBuilder(
+          builder: (context, setState) => Container(
+            height: MediaQuery.of(context).size.height * 0.8,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(ResponsiveUtils.rp(20)),
+              ),
+            ),
+            child: Column(
+              children: [
+                // Handle bar
+                Container(
+                  margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
+                  width: ResponsiveUtils.rp(40),
+                  height: ResponsiveUtils.rp(4),
+                  decoration: BoxDecoration(
+                    color: AppColors.textSecondary.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(2)),
+                  ),
+                ),
+                // Header
+                Padding(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                  child: Row(
+                    children: [
+                      Icon(Icons.location_on, color: AppColors.button, size: ResponsiveUtils.rp(24)),
+                      SizedBox(width: ResponsiveUtils.rp(12)),
+                      Expanded(
+                        child: Text(
+                          'Select Location',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(20),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      // Only show close button if postal code is already saved
+                      if (hasPostalCode)
+                        IconButton(
+                          icon: Icon(Icons.close, color: AppColors.textSecondary),
+                          onPressed: () {
+                            Navigator.pop(bottomSheetContext);
+                            _isPostalCodeDialogShowing = false;
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+                Divider(height: 1),
+                // Search section
+                Padding(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                  child: Column(
+                    children: [
+                      // Location button
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: isGettingLocation ? null : () async {
+                            setState(() {
+                              isGettingLocation = true;
+                              searchResults = [];
+                            });
+                            
+                            final postalCodeService = PostalCodeService();
+                            final locationData = await postalCodeService.getPostalCodeFromLocation();
+                            
+                            setState(() {
+                              isGettingLocation = false;
+                            });
+                            
+                            if (locationData != null) {
+                              setState(() {
+                                pincodeController.text = locationData.pincode;
+                                searchResults = [locationData];
+                              });
+      } else {
+                              SnackBarWidget.showError('Could not get location. Please enter postal code manually.');
+                            }
+                          },
+                          icon: isGettingLocation
+                              ? SizedBox(
+                                  width: ResponsiveUtils.rp(20),
+                                  height: ResponsiveUtils.rp(20),
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : Icon(Icons.my_location, color: AppColors.button),
+                          label: Text(
+                            isGettingLocation ? 'Getting location...' : 'Use Current Location',
+                            style: TextStyle(color: AppColors.button),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: AppColors.button),
+                            padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.rp(16)),
+                      // Search field
+                      TextField(
+                        controller: pincodeController,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
+                        decoration: InputDecoration(
+                          labelText: 'Enter 6-digit postal code',
+                          hintText: '628008',
+                          prefixIcon: Icon(Icons.pin),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          if (value.length == 6) {
+                            // Close keyboard when 6 digits are entered
+                            FocusScope.of(context).unfocus();
+                            
+                            // Auto-search when 6 digits are entered
+                            setState(() {
+                              isSearching = true;
+                              searchResults = [];
+                            });
+                            customerController.searchPostalCodes(value).then((results) async {
+                              if (bottomSheetContext.mounted) {
+                                // Check channel availability for the postal code
+                                if (results.isNotEmpty) {
+                                  // Try to get available channels for this postal code
+                                  final testSuccess = await customerController.switchChannelByPostalCode(
+                                    value,
+                                    city: results.first.city,
+                                    showLoading: false, // Don't show loading dialog
+                                  );
+                                  
+                                  if (!testSuccess) {
+                                    // Service not available - show message in UI instead of dialog
+                                    setState(() {
+                                      searchResults = results; // Keep results but mark as unavailable
+                                      isSearching = false;
+                                      isServiceUnavailable = true;
+                                    });
+      } else {
+                                    // Service available - show results
+                                    setState(() {
+                                      searchResults = results;
+                                      isSearching = false;
+                                      isServiceUnavailable = false;
+                                    });
+                                  }
+                                } else {
+                                  setState(() {
+                                    searchResults = [];
+                                    isSearching = false;
+                                  });
+                                }
+                              }
+                            }).catchError((error) {
+                              if (bottomSheetContext.mounted) {
+                                setState(() {
+                                  searchResults = [];
+                                  isSearching = false;
+                                  isServiceUnavailable = false;
+                                });
+                              }
+                            });
+                          } else {
+                            setState(() {
+                              searchResults = [];
+                              isServiceUnavailable = false;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(height: 1),
+                // Results section
+                Expanded(
+                  child: isSearching
+                      ? Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : isServiceUnavailable && searchResults.isNotEmpty
+                          ? Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(ResponsiveUtils.rp(40)),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.cancel,
+                                      size: ResponsiveUtils.rp(80),
+                                      color: AppColors.error,
+                                    ),
+                                    SizedBox(height: ResponsiveUtils.rp(20)),
+                                    Text(
+                                      'Service Not Available',
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: ResponsiveUtils.sp(24),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: ResponsiveUtils.rp(12)),
+                                    Text(
+                                      'Service is not available for this location.\nPlease try another postal code.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: ResponsiveUtils.sp(16),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                      : searchResults.isEmpty
+                          ? Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                                child: Text(
+                                  pincodeController.text.length == 6
+                                      ? 'Enter valid postal code'
+                                      : 'Enter 6-digit postal code or use current location',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: ResponsiveUtils.sp(14),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+                              itemCount: searchResults.length,
+                              itemBuilder: (context, index) {
+                                final result = searchResults[index];
+                                return ListTile(
+                                  leading: Icon(Icons.location_city, color: AppColors.button),
+                                  title: Text(
+                                    '${result.city}, ${result.district}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    '${result.state} - ${result.pincode}',
+                                    style: TextStyle(color: AppColors.textSecondary),
+                                  ),
+                                  onTap: isServiceUnavailable ? null : () async {
+                                    // Close the bottom sheet first
+                                    Navigator.pop(bottomSheetContext);
+                                    // Reset the flag so dialog can be shown again if needed
+                                    _isPostalCodeDialogShowing = false;
+                                    
+                                    final success = await customerController.switchChannelByPostalCode(
+                                      result.pincode,
+                                      city: result.city,
+                                    );
+                                    if (success && mounted) {
+                                      // Update UI display immediately
+                                      _updateChannelDisplay();
+                                      // Don't call _refreshData() here as it might trigger the dialog again
+                                      // The data will be refreshed automatically by the channel switch
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).whenComplete(() {
+      // Reset the flag when bottom sheet is closed (by any means)
+      _isPostalCodeDialogShowing = false;
+      debugPrint('[HomePage] Postal code bottom sheet closed, flag reset');
+    });
+  }
+
   /// Build delivery address header (above search bar)
   Widget _buildDeliveryAddressHeader() {
+    // Wrap in Obx to make it reactive to channel changes
     return Obx(() {
-      // Get default shipping address only
-      final addresses = customerController.addresses;
-      if (addresses.isEmpty) {
-        return const SizedBox.shrink();
-      }
-
-      // Find default shipping address (must have defaultShippingAddress = true)
-      var deliveryAddress = addresses.firstWhereOrNull(
-        (addr) => addr.defaultShippingAddress == true,
-      );
-      
-      // If no default shipping address found, don't show anything
-      if (deliveryAddress == null) {
-        return const SizedBox.shrink();
-      }
-
-      // Build address display text with city and postal code
-      String cityText = '';
-      String postalCodeText = '';
-      
-      final city = deliveryAddress.city;
-      final postalCode = deliveryAddress.postalCode;
-      
-      if (city != null && city.isNotEmpty) {
-        cityText = city;
-      } else if (deliveryAddress.streetLine1.isNotEmpty) {
-        // Truncate if too long
-        cityText = deliveryAddress.streetLine1.length > 25 
-            ? '${deliveryAddress.streetLine1.substring(0, 25)}...' 
-            : deliveryAddress.streetLine1;
-      } else {
-        cityText = 'Address';
-      }
-      
-      if (postalCode != null && postalCode.isNotEmpty) {
-        postalCodeText = postalCode;
-      }
+      // Use reactive variables that update when channel changes
+      final channelName = _channelName.value.isEmpty 
+          ? (box.read('channel_name') ?? box.read('channel_code') ?? 'Select Location')
+          : _channelName.value;
+      final postalCode = _postalCode.value;
 
       return InkWell(
         onTap: () {
-          AnalyticsHelper.trackButton(
-            'Delivery Address - Home',
-            screenName: 'Home',
-            callback: () {
-              Get.toNamed('/addresses');
-            },
-          )?.call();
+        _showPostalCodeBottomSheet();
         },
         child: Container(
           width: double.infinity,
@@ -787,7 +1239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Flexible(
                           child: Text(
-                            cityText,
+                            channelName,
                             style: TextStyle(
                               fontSize: ResponsiveUtils.sp(15),
                               fontWeight: FontWeight.w600,
@@ -797,7 +1249,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (postalCodeText.isNotEmpty) ...[
+                        if (postalCode.isNotEmpty) ...[
                           Text(
                             " - ",
                             style: TextStyle(
@@ -807,7 +1259,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                           Text(
-                            postalCodeText,
+                            postalCode,
                             style: TextStyle(
                               fontSize: ResponsiveUtils.sp(15),
                               fontWeight: FontWeight.w600,

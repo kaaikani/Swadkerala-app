@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' show FetchPolicy;
 import 'package:recipe.app/graphql/Customer.graphql.dart';
 import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
+import '../../services/postal_code_service.dart';
 import '../../utils/app_strings.dart';
 import '../../widgets/error_dialog.dart';
 import '../../widgets/loading_dialog.dart';
+import '../../widgets/snackbar.dart';
 import '../../services/analytics_service.dart';
 import '../base_controller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
+import '../banner/bannercontroller.dart';
+import '../collection controller/collectioncontroller.dart';
+import '../cart/Cartcontroller.dart';
 
 class CustomerController extends BaseController {
   // Observable variables
@@ -132,6 +138,9 @@ debugPrint('[Customer] Raw customer data: $customerJson');
 debugPrint(  '[Customer] Customer loaded: ${activeCustomer.value?.firstName} ${activeCustomer.value?.lastName}');
 debugPrint('[Customer] Addresses: ${addresses.length}');
 debugPrint('[Customer] Orders: ${orders.length}');
+
+        // Check if postal code is in local storage, if not get from shipping address
+        await checkAndSetPostalCodeFromShippingAddress();
       } else {
         orders.value = [];
         totalOrdersCount.value = 0;
@@ -609,6 +618,10 @@ debugPrint('[Customer] Creating address...');
         ),
       );
 
+      // Hide loading dialog first before checking for errors
+      // This ensures error dialog can be displayed properly
+      LoadingDialog.hide();
+
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to create address')) {
         return false;
@@ -627,10 +640,9 @@ debugPrint('[Customer] Address created successfully');
       return false;
     } catch (e) {
 debugPrint('[Customer] Create address error: $e');
+      LoadingDialog.hide(); // Hide loading dialog before showing error
       handleException(e, customErrorMessage: 'Failed to create address');
       return false;
-    } finally {
-      LoadingDialog.hide();
     }
   }
 
@@ -913,5 +925,508 @@ debugPrint('[Customer] Logout error: $e');
   Query$GetActiveCustomer$activeCustomer$addresses? get defaultAddress {
     return addresses
         .firstWhereOrNull((address) => address.defaultShippingAddress ?? false);
+  }
+
+  final GetStorage _storage = GetStorage();
+  final PostalCodeService _postalCodeService = PostalCodeService();
+
+  /// Search postal codes by pincode
+  Future<List<PostalCodeData>> searchPostalCodes(String pincode) async {
+    return await _postalCodeService.searchPostalCode(pincode);
+  }
+
+  /// Switch channel based on postal code
+  /// If city is found in the channel and is available, use that channel
+  /// If not available, show dialog
+  Future<bool> switchChannelByPostalCode(String postalCode, {String? city, bool showLoading = true}) async {
+    try {
+      if (showLoading) {
+        LoadingDialog.show(message: 'Checking availability...');
+      }
+      debugPrint('[Customer] Checking channel availability for postal code: $postalCode');
+
+      final response = await GraphqlService.client.value.query$GetAvailableChannels(
+        Options$Query$GetAvailableChannels(
+          variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
+        ),
+      );
+
+      if (showLoading) {
+        LoadingDialog.hide();
+      }
+
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
+        return false;
+      }
+
+      final channels = response.parsedData?.getAvailableChannels ?? [];
+      debugPrint('[Customer] ========== CHANNEL AVAILABILITY CHECK ==========');
+      debugPrint('[Customer] Found ${channels.length} channels for postal code: $postalCode');
+
+      if (channels.isEmpty) {
+        debugPrint('[Customer] No channels returned from API');
+        ErrorDialog.show(
+          title: 'Service Not Available',
+          message: 'Service is not available for this location.',
+        );
+        return false;
+      }
+
+      // Debug: Print all channels received
+      debugPrint('[Customer] All channels received:');
+      for (int i = 0; i < channels.length; i++) {
+        final channel = channels[i];
+        debugPrint('[Customer]   Channel ${i + 1}:');
+        debugPrint('[Customer]     - ID: ${channel.id}');
+        debugPrint('[Customer]     - Code: ${channel.code}');
+        debugPrint('[Customer]     - Name: ${channel.name}');
+        debugPrint('[Customer]     - Type: ${channel.type}');
+        debugPrint('[Customer]     - isAvailable: ${channel.isAvailable}');
+        debugPrint('[Customer]     - Message: ${channel.message ?? "null"}');
+        debugPrint('[Customer]     - Token: ${channel.token ?? "null"}');
+      }
+
+      // Debug: Check enum comparison
+      debugPrint('[Customer] Checking enum types:');
+      final cityEnum = Enum$ChannelType.CITY;
+      debugPrint('[Customer]   Enum\$ChannelType.CITY value: $cityEnum');
+      debugPrint('[Customer]   Enum\$ChannelType.CITY toString: ${cityEnum.toString()}');
+      
+      // Filter for CITY type channels
+      final cityChannels = <Query$GetAvailableChannels$getAvailableChannels>[];
+      for (final channel in channels) {
+        debugPrint('[Customer]   Comparing channel ${channel.code}:');
+        debugPrint('[Customer]     - channel.type: ${channel.type}');
+        debugPrint('[Customer]     - channel.type.toString(): ${channel.type.toString()}');
+        debugPrint('[Customer]     - channel.type == Enum\$ChannelType.CITY: ${channel.type == cityEnum}');
+        debugPrint('[Customer]     - channel.type.runtimeType: ${channel.type.runtimeType}');
+        debugPrint('[Customer]     - cityEnum.runtimeType: ${cityEnum.runtimeType}');
+        
+        if (channel.type == Enum$ChannelType.CITY) {
+          cityChannels.add(channel);
+          debugPrint('[Customer]     - ✓ MATCH: Added to cityChannels');
+        } else {
+          debugPrint('[Customer]     - ✗ NO MATCH: Not a CITY channel');
+        }
+      }
+      debugPrint('[Customer] Found ${cityChannels.length} CITY type channel(s)');
+
+      // Debug: Print CITY channels
+      if (cityChannels.isNotEmpty) {
+        debugPrint('[Customer] CITY channels:');
+        for (int i = 0; i < cityChannels.length; i++) {
+          final channel = cityChannels[i];
+          debugPrint('[Customer]   CITY ${i + 1}: ${channel.code} (${channel.name}) - isAvailable: ${channel.isAvailable}');
+        }
+      }
+
+      // Filter for CITY type channels with isAvailable == true
+      final availableCityChannels = channels.where(
+        (channel) => channel.type == Enum$ChannelType.CITY && 
+                     channel.isAvailable == true,
+      ).toList();
+
+      debugPrint('[Customer] Found ${availableCityChannels.length} available CITY channel(s) (type == CITY && isAvailable == true)');
+      
+      // Debug: Print available CITY channels
+      if (availableCityChannels.isNotEmpty) {
+        debugPrint('[Customer] Available CITY channels:');
+        for (int i = 0; i < availableCityChannels.length; i++) {
+          final channel = availableCityChannels[i];
+          debugPrint('[Customer]   Available CITY ${i + 1}: ${channel.code} (${channel.name})');
+        }
+      } else {
+        debugPrint('[Customer] No available CITY channels found - checking why:');
+        if (cityChannels.isEmpty) {
+          debugPrint('[Customer]   - Reason: No CITY type channels found at all');
+        } else {
+          debugPrint('[Customer]   - Reason: CITY channels exist but none have isAvailable == true');
+          for (final cityChannel in cityChannels) {
+            debugPrint('[Customer]     - ${cityChannel.code}: isAvailable = ${cityChannel.isAvailable}');
+          }
+        }
+      }
+
+      // Check if there are any available CITY channels at all
+      if (availableCityChannels.isEmpty) {
+        debugPrint('[Customer] No available CITY channels found');
+        if (showLoading) {
+          ErrorDialog.show(
+            title: 'Service Not Available',
+            message: 'Service is not available for this location.',
+          );
+        }
+        return false;
+      }
+
+      // If city is provided, try to find matching CITY channel
+      Query$GetAvailableChannels$getAvailableChannels? selectedChannel;
+      
+      if (city != null && city.isNotEmpty) {
+        debugPrint('[Customer] Looking for CITY channel matching city: $city');
+        
+        // Find CITY channel matching the city name
+        selectedChannel = availableCityChannels.firstWhereOrNull(
+          (channel) => channel.code.toLowerCase().contains(city.toLowerCase()) ||
+                       channel.name.toLowerCase().contains(city.toLowerCase()) ||
+                       channel.name.toLowerCase() == city.toLowerCase(),
+        );
+        
+        if (selectedChannel != null) {
+          debugPrint('[Customer] Found matching available CITY channel: ${selectedChannel.code}');
+        } else {
+          // No city match found, but we have available CITY channels, use the first one
+          debugPrint('[Customer] No CITY channel found matching city: $city, using first available CITY channel');
+          selectedChannel = availableCityChannels.first;
+          debugPrint('[Customer] Using first available CITY channel: ${selectedChannel.code}');
+        }
+      } else {
+        // If no city provided, use first available CITY channel
+        selectedChannel = availableCityChannels.first;
+        debugPrint('[Customer] Using first available CITY channel: ${selectedChannel.code}');
+      }
+
+      debugPrint('[Customer] Selected channel: ${selectedChannel.code} (${selectedChannel.name})');
+      debugPrint('[Customer] Channel type: ${selectedChannel.type}');
+      debugPrint('[Customer] Channel is available: ${selectedChannel.isAvailable}');
+
+      // Save channel token and postal code
+      await _storage.write('channel_code', selectedChannel.code);
+      await _storage.write('channel_token', selectedChannel.token ?? '');
+      await _storage.write('channel_name', selectedChannel.name);
+      await _storage.write('postal_code', postalCode);
+      
+      if (selectedChannel.token != null && selectedChannel.token!.isNotEmpty) {
+        await GraphqlService.setToken(key: 'channel', token: selectedChannel.token!);
+      }
+
+      debugPrint('[Customer] Channel switched successfully');
+      debugPrint('[Customer] Saved postal code: $postalCode');
+      
+      // Refresh all data after channel change
+      debugPrint('[Customer] Refreshing all data after channel change...');
+      await _refreshAllDataAfterChannelChange();
+      
+
+      
+      return true;
+    } catch (e) {
+      if (showLoading) {
+        LoadingDialog.hide();
+      }
+      debugPrint('[Customer] Error switching channel: $e');
+      handleException(e, customErrorMessage: 'Failed to switch channel');
+      return false;
+    }
+  }
+
+  /// Refresh all data after channel change
+  Future<void> _refreshAllDataAfterChannelChange() async {
+    try {
+      debugPrint('[Customer] ========== REFRESHING DATA AFTER CHANNEL CHANGE ==========');
+      
+      // Get controllers
+      final BannerController? bannerController = Get.isRegistered<BannerController>() 
+          ? Get.find<BannerController>() 
+          : null;
+      final CollectionsController? collectionController = Get.isRegistered<CollectionsController>() 
+          ? Get.find<CollectionsController>() 
+          : null;
+      final CartController? cartController = Get.isRegistered<CartController>() 
+          ? Get.find<CartController>() 
+          : null;
+      
+      // Refresh banners (channel-specific)
+      if (bannerController != null) {
+        debugPrint('[Customer] Refreshing banners...');
+        bannerController.bannerList.clear(); // Clear old banners
+        await bannerController.getBannersForChannel();
+        debugPrint('[Customer] Banners refreshed');
+      }
+      
+      // Refresh collections (channel-specific)
+      if (collectionController != null) {
+        debugPrint('[Customer] Refreshing collections...');
+        collectionController.allCollections.clear(); // Clear old collections
+        await collectionController.fetchAllCollections(force: true);
+        debugPrint('[Customer] Collections refreshed');
+      }
+      
+      // Refresh frequently ordered products
+      if (bannerController != null) {
+        debugPrint('[Customer] Refreshing frequently ordered products...');
+        await bannerController.getFrequentlyOrderedProducts();
+        debugPrint('[Customer] Frequently ordered products refreshed');
+      }
+      
+      // Refresh cart (if user is logged in)
+      if (cartController != null && _isUserAuthenticated()) {
+        debugPrint('[Customer] Refreshing cart...');
+        await cartController.getActiveOrder();
+        debugPrint('[Customer] Cart refreshed');
+      }
+      
+      // Refresh customer favorites (if user is logged in)
+      if (bannerController != null && _isUserAuthenticated()) {
+        debugPrint('[Customer] Refreshing customer favorites...');
+        await bannerController.getCustomerFavorites();
+        debugPrint('[Customer] Customer favorites refreshed');
+      }
+      
+      debugPrint('[Customer] ========== DATA REFRESH COMPLETED ==========');
+    } catch (e) {
+      debugPrint('[Customer] Error refreshing data after channel change: $e');
+      // Don't throw - channel change was successful, data refresh is secondary
+    }
+  }
+
+  /// Check if user is authenticated
+  bool _isUserAuthenticated() {
+    final authToken = GraphqlService.authToken;
+    return authToken.isNotEmpty;
+  }
+
+  /// Fetch postal codes
+  Future<List<Query$PostalCodes$postalCodes>> fetchPostalCodes() async {
+    try {
+      debugPrint('═══════════════════════════════════════════════════════════');
+      debugPrint('[Customer] ========== FETCHING POSTAL CODES ==========');
+      debugPrint('[Customer] Function called at: ${DateTime.now()}');
+      debugPrint('[Customer] Starting postal codes query...');
+      
+      // Check channel token before making query
+      final channelToken = GraphqlService.channelToken;
+      final storedChannelToken = _storage.read('channel_token');
+      final channelCode = _storage.read('channel_code');
+      
+      debugPrint('[Customer] ──── CHANNEL TOKEN CHECK ────');
+      debugPrint('[Customer] Current channel token from GraphQLService: ${channelToken.isNotEmpty ? "$channelToken (length: ${channelToken.length})" : "NOT SET"}');
+      debugPrint('[Customer] Current channel token from storage: ${storedChannelToken != null ? "$storedChannelToken (length: ${storedChannelToken.toString().length})" : "NOT SET"}');
+      debugPrint('[Customer] Channel code from storage: ${channelCode ?? "NOT SET"}');
+      
+      // Ensure channel token is set in GraphQLService
+      if (channelToken.isEmpty && storedChannelToken != null && storedChannelToken.toString().isNotEmpty) {
+        debugPrint('[Customer] ⚠️ Channel token not set in GraphQLService, setting it now...');
+        await GraphqlService.setToken(key: 'channel', token: storedChannelToken.toString());
+        debugPrint('[Customer] ✅ Channel token set in GraphQLService: ${GraphqlService.channelToken}');
+      }
+      
+      if (GraphqlService.channelToken.isEmpty) {
+        debugPrint('[Customer] ⚠️⚠️⚠️ WARNING: Channel token is empty! Postal codes query may fail or return wrong results.');
+      } else {
+        debugPrint('[Customer] ✅ Channel token is set: ${GraphqlService.channelToken}');
+      }
+      
+      debugPrint('[Customer] ──── EXECUTING GRAPHQL QUERY ────');
+      debugPrint('[Customer] Query: postalCodes { id code isAnywhere }');
+      debugPrint('[Customer] Making GraphQL request...');
+      
+      final response = await GraphqlService.client.value.query$PostalCodes(
+        Options$Query$PostalCodes(),
+      );
+      
+      debugPrint('[Customer] ──── GRAPHQL RESPONSE RECEIVED ────');
+      debugPrint('[Customer] Response received at: ${DateTime.now()}');
+      debugPrint('[Customer] Response has exception: ${response.hasException}');
+      debugPrint('[Customer] Response data is null: ${response.data == null}');
+      
+      // Print raw response data for debugging
+      if (response.data != null) {
+        debugPrint('[Customer] ──── RAW RESPONSE DATA ────');
+        debugPrint('[Customer] Raw response data keys: ${response.data!.keys.toList()}');
+        if (response.data!['postalCodes'] != null) {
+          final postalCodesData = response.data!['postalCodes'];
+          debugPrint('[Customer] Raw postalCodes type: ${postalCodesData.runtimeType}');
+          debugPrint('[Customer] Raw postalCodes length: ${postalCodesData is List ? postalCodesData.length : "N/A"}');
+          debugPrint('[Customer] Raw postalCodes from data: $postalCodesData');
+        } else {
+          debugPrint('[Customer] ⚠️ postalCodes key not found in response data');
+        }
+      } else {
+        debugPrint('[Customer] ⚠️ Response data is null');
+      }
+      
+      if (response.hasException) {
+        debugPrint('[Customer] ═══════════════════════════════════════════════════════════');
+        debugPrint('[Customer] ========== GRAPHQL EXCEPTION ==========');
+        debugPrint('[Customer] Exception type: ${response.exception.runtimeType}');
+        debugPrint('[Customer] GraphQL exception: ${response.exception}');
+        debugPrint('[Customer] Exception link: ${response.exception?.linkException}');
+        debugPrint('[Customer] Exception graphql errors: ${response.exception?.graphqlErrors}');
+        if (response.exception?.graphqlErrors != null) {
+          debugPrint('[Customer] GraphQL Errors count: ${response.exception!.graphqlErrors.length}');
+          for (var error in response.exception!.graphqlErrors) {
+            debugPrint('[Customer]   ──── GraphQL Error ────');
+            debugPrint('[Customer]   Message: ${error.message}');
+            debugPrint('[Customer]   Locations: ${error.locations}');
+            debugPrint('[Customer]   Path: ${error.path}');
+            debugPrint('[Customer]   Extensions: ${error.extensions}');
+          }
+        }
+        debugPrint('[Customer] ═══════════════════════════════════════════════════════════');
+      }
+
+      // Check for errors in response
+      if (checkResponseForErrors(response,
+          customErrorMessage: 'Failed to fetch postal codes')) {
+        debugPrint('═══════════════════════════════════════════════════════════');
+        debugPrint('[Customer] ========== POSTAL CODES QUERY ERROR ==========');
+        debugPrint('[Customer] Response contains errors - checkResponseForErrors returned true');
+        debugPrint('[Customer] Response has exception: ${response.hasException}');
+        debugPrint('[Customer] Response data is null: ${response.data == null}');
+        
+        if (response.hasException) {
+          debugPrint('[Customer] ──── EXCEPTION DETAILS ────');
+          debugPrint('[Customer] Exception type: ${response.exception.runtimeType}');
+          debugPrint('[Customer] Exception: ${response.exception}');
+          
+          if (response.exception?.graphqlErrors != null) {
+            debugPrint('[Customer] GraphQL Errors count: ${response.exception!.graphqlErrors.length}');
+            for (var error in response.exception!.graphqlErrors) {
+              debugPrint('[Customer]   ──── GraphQL Error Details ────');
+              debugPrint('[Customer]   Message: ${error.message}');
+              debugPrint('[Customer]   Path: ${error.path}');
+              debugPrint('[Customer]   Locations: ${error.locations}');
+              debugPrint('[Customer]   Extensions: ${error.extensions}');
+            }
+          }
+          
+          if (response.exception?.linkException != null) {
+            debugPrint('[Customer] ──── LINK EXCEPTION ────');
+            debugPrint('[Customer] Link Exception: ${response.exception!.linkException}');
+            debugPrint('[Customer] Link Exception type: ${response.exception!.linkException.runtimeType}');
+          }
+        }
+        
+        debugPrint('[Customer] Returning empty list due to errors');
+        debugPrint('═══════════════════════════════════════════════════════════');
+        return [];
+      }
+
+      debugPrint('[Customer] ──── PARSING RESPONSE ────');
+      debugPrint('[Customer] parsedData is null: ${response.parsedData == null}');
+      final postalCodes = response.parsedData?.postalCodes ?? [];
+      debugPrint('[Customer] Parsed postalCodes count: ${postalCodes.length}');
+      
+      debugPrint('[Customer] ═══════════════════════════════════════════════════════════');
+      debugPrint('[Customer] ========== POSTAL CODES RESULT ==========');
+      debugPrint('[Customer] Found ${postalCodes.length} postal codes');
+      debugPrint('[Customer] Channel used: ${GraphqlService.channelToken}');
+      
+      if (postalCodes.isNotEmpty) {
+        debugPrint('[Customer] ──── POSTAL CODES LIST ────');
+        for (int i = 0; i < postalCodes.length; i++) {
+          final code = postalCodes[i];
+          debugPrint('[Customer]   Postal Code ${i + 1}:');
+          debugPrint('[Customer]     - ID: ${code.id}');
+          debugPrint('[Customer]     - Code: ${code.code}');
+          debugPrint('[Customer]     - isAnywhere: ${code.isAnywhere}');
+        }
+      } else {
+        debugPrint('[Customer] ⚠️ No postal codes found in response');
+        debugPrint('[Customer] This could mean:');
+        debugPrint('[Customer]   1. No postal codes available for this channel');
+        debugPrint('[Customer]   2. Channel token is incorrect');
+        debugPrint('[Customer]   3. Backend returned empty array');
+      }
+      
+      debugPrint('[Customer] ========== POSTAL CODES FETCH COMPLETED ==========');
+      debugPrint('[Customer] Completed at: ${DateTime.now()}');
+      debugPrint('═══════════════════════════════════════════════════════════');
+      return postalCodes;
+    } catch (e, stackTrace) {
+      debugPrint('═══════════════════════════════════════════════════════════');
+      debugPrint('[Customer] ========== POSTAL CODES FETCH ERROR ==========');
+      debugPrint('[Customer] Error occurred at: ${DateTime.now()}');
+      debugPrint('[Customer] ──── ERROR DETAILS ────');
+      debugPrint('[Customer] Exception type: ${e.runtimeType}');
+      debugPrint('[Customer] Error message: $e');
+      debugPrint('[Customer] Error toString: ${e.toString()}');
+      
+      // Print stack trace
+      debugPrint('[Customer] ──── STACK TRACE ────');
+      debugPrint('[Customer] $stackTrace');
+      
+      // Additional error context
+      debugPrint('[Customer] ──── ERROR CONTEXT ────');
+      debugPrint('[Customer] Channel token at error: ${GraphqlService.channelToken.isNotEmpty ? GraphqlService.channelToken : "NOT SET"}');
+      debugPrint('[Customer] Storage channel token: ${_storage.read('channel_token') ?? "NOT SET"}');
+      debugPrint('[Customer] Storage channel code: ${_storage.read('channel_code') ?? "NOT SET"}');
+      
+      // Check if it's a GraphQL specific error
+      if (e.toString().contains('GraphQL') || e.toString().contains('graphql')) {
+        debugPrint('[Customer] ⚠️ This appears to be a GraphQL-related error');
+      }
+      
+      // Check if it's a network error
+      if (e.toString().contains('SocketException') || 
+          e.toString().contains('TimeoutException') ||
+          e.toString().contains('Connection') ||
+          e.toString().contains('Network')) {
+        debugPrint('[Customer] ⚠️ This appears to be a network-related error');
+      }
+      
+      debugPrint('[Customer] ================================================');
+      debugPrint('═══════════════════════════════════════════════════════════');
+      
+      // Still call handleException for user-facing error dialog
+      handleException(e, customErrorMessage: 'Failed to fetch postal codes');
+      return [];
+    }
+  }
+
+  /// Check if postal code is in local storage, if not get from shipping address and fetch channel
+  Future<void> checkAndSetPostalCodeFromShippingAddress() async {
+    try {
+      debugPrint('[Customer] ========== CHECKING POSTAL CODE FROM SHIPPING ADDRESS ==========');
+      
+      // Check if postal code exists in local storage
+      final storedPostalCode = _storage.read('postal_code');
+      debugPrint('[Customer] Postal code in local storage: ${storedPostalCode ?? "NOT FOUND"}');
+      
+      if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {
+        debugPrint('[Customer] Postal code already exists in local storage, skipping...');
+        return;
+      }
+
+      // Get default shipping address
+      final defaultShippingAddress = addresses.firstWhereOrNull(
+        (address) => address.defaultShippingAddress == true,
+      );
+
+      if (defaultShippingAddress == null) {
+        debugPrint('[Customer] No default shipping address found');
+        return;
+      }
+
+      final postalCode = defaultShippingAddress.postalCode;
+      if (postalCode == null || postalCode.isEmpty) {
+        debugPrint('[Customer] Default shipping address has no postal code');
+        return;
+      }
+
+      debugPrint('[Customer] Found postal code from shipping address: $postalCode');
+      debugPrint('[Customer] Shipping address city: ${defaultShippingAddress.city}');
+      
+      // Save postal code to local storage
+      await _storage.write('postal_code', postalCode);
+      debugPrint('[Customer] Postal code saved to local storage: $postalCode');
+
+      // Fetch channel by postal code
+      debugPrint('[Customer] Fetching channel for postal code: $postalCode');
+      final success = await switchChannelByPostalCode(
+        postalCode,
+        city: defaultShippingAddress.city,
+      );
+
+      if (success) {
+        debugPrint('[Customer] Channel successfully fetched and set for postal code: $postalCode');
+      } else {
+        debugPrint('[Customer] Failed to fetch channel for postal code: $postalCode');
+      }
+    } catch (e) {
+      debugPrint('[Customer] Error checking postal code from shipping address: $e');
+      // Don't throw - this is a background operation
+    }
   }
 }

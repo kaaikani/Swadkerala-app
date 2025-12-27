@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
@@ -857,10 +858,17 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   late final TextEditingController cityController;
   late final TextEditingController postalCodeController;
   late final TextEditingController phoneController;
+  
+  // Postal codes state
+  List<Query$PostalCodes$postalCodes> _postalCodesList = [];
+  bool _isLoadingPostalCodes = true;
 
   @override
   void initState() {
     super.initState();
+    debugPrint('[AddressesPage] ========== ADD ADDRESS FORM INIT ==========');
+    debugPrint('[AddressesPage] Fetching postal codes for add address form...');
+    
     // Pre-initialize controllers for better performance
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
@@ -876,9 +884,52 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     streetLine2Controller = TextEditingController();
     cityController = TextEditingController(
         text: channelCode.isNotEmpty ? channelCode : '');
-    postalCodeController = TextEditingController();
+    
+    // Get postal code from local storage if available
+    final storedPostalCode = box.read('postal_code');
+    postalCodeController = TextEditingController(
+        text: storedPostalCode != null && storedPostalCode.toString().isNotEmpty
+            ? storedPostalCode.toString()
+            : '');
+    
     phoneController = TextEditingController(
         text: autoPhone.isNotEmpty ? autoPhone : '');
+    
+    // Fetch postal codes when form is initialized
+    _fetchPostalCodes();
+  }
+  
+  /// Fetch postal codes for the current channel
+  void _fetchPostalCodes() {
+    debugPrint('[AddressesPage] Calling customerController.fetchPostalCodes()...');
+    widget.customerController.fetchPostalCodes().then((codes) {
+      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH COMPLETED ==========');
+      debugPrint('[AddressesPage] Received ${codes.length} postal codes');
+      if (codes.isNotEmpty) {
+        debugPrint('[AddressesPage] Postal codes list:');
+        for (var code in codes) {
+          debugPrint('[AddressesPage]   - ${code.code} (ID: ${code.id}, isAnywhere: ${code.isAnywhere})');
+        }
+      } else {
+        debugPrint('[AddressesPage] No postal codes returned');
+      }
+      if (mounted) {
+        setState(() {
+          _postalCodesList = codes;
+          _isLoadingPostalCodes = false;
+        });
+        debugPrint('[AddressesPage] State updated - postalCodesList.length: ${_postalCodesList.length}, isLoadingPostalCodes: $_isLoadingPostalCodes');
+      }
+    }).catchError((error) {
+      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH ERROR ==========');
+      debugPrint('[AddressesPage] Error type: ${error.runtimeType}');
+      debugPrint('[AddressesPage] Error message: $error');
+      if (mounted) {
+        setState(() {
+          _isLoadingPostalCodes = false;
+        });
+      }
+    });
   }
 
   @override
@@ -996,18 +1047,19 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                   keyboardType: TextInputType.text,
                   readOnly: true),
               SizedBox(height: 16),
-              _buildTextField(postalCodeController, 'Postal Code',
-                  Icons.markunread_mailbox,
-                  required: true,
-                  errorText: errors['postalCode'],
-                  keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  onChanged: () {
-                    if (errors.containsKey('postalCode')) {
-                      errors.remove('postalCode');
-                      setState(() {});
-                    }
-                  }),
+              _buildPostalCodeField(
+                postalCodeController,
+                _postalCodesList,
+                _isLoadingPostalCodes,
+                errors['postalCode'],
+                setState,
+                () {
+                  if (errors.containsKey('postalCode')) {
+                    errors.remove('postalCode');
+                    setState(() {});
+                  }
+                },
+              ),
               SizedBox(height: 16),
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   keyboardType: TextInputType.phone,
@@ -1318,6 +1370,233 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     );
   }
 
+  Widget _buildPostalCodeField(
+    TextEditingController controller,
+    List<Query$PostalCodes$postalCodes> postalCodesList,
+    bool isLoadingPostalCodes,
+    String? errorText,
+    StateSetter setState,
+    VoidCallback onChanged,
+  ) {
+    final hasPostalCodes = postalCodesList.isNotEmpty;
+    final hasError = errorText != null && errorText.isNotEmpty;
+    
+    debugPrint('[AddressesPage] _buildPostalCodeField called:');
+    debugPrint('[AddressesPage]   - isLoadingPostalCodes: $isLoadingPostalCodes');
+    debugPrint('[AddressesPage]   - postalCodesList.length: ${postalCodesList.length}');
+    debugPrint('[AddressesPage]   - hasPostalCodes: $hasPostalCodes');
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Postal Code',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Text(
+              ' *',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.error,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        if (isLoadingPostalCodes)
+          // Show loading state
+          Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.inputFill,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                ),
+              ),
+            ),
+          )
+        else if (hasPostalCodes)
+          // Show dropdown when postal codes are available
+          Builder(
+            builder: (context) {
+              // Get unique postal codes
+              final uniqueCodes = postalCodesList
+                  .map((postalCode) => postalCode.code)
+                  .toSet()
+                  .toList();
+              
+              // Only set value if it exists in the unique codes list
+              final selectedValue = controller.text.isNotEmpty && 
+                  uniqueCodes.contains(controller.text)
+                  ? controller.text
+                  : null;
+              
+              return SizedBox(
+                height: 56,
+                child: DropdownButtonFormField<String>(
+                value: selectedValue,
+            decoration: InputDecoration(
+              hintText: 'Select Postal Code',
+              hintStyle: TextStyle(
+                color: AppColors.textTertiary,
+                fontSize: 15,
+              ),
+              prefixIcon: Icon(
+                Icons.markunread_mailbox,
+                color: hasError ? AppColors.error : AppColors.textSecondary,
+                size: 20,
+              ),
+              filled: true,
+              fillColor: AppColors.inputFill,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: hasError ? AppColors.error : AppColors.border,
+                  width: hasError ? 1.5 : 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: hasError ? AppColors.error : AppColors.border,
+                  width: hasError ? 1.5 : 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: hasError ? AppColors.error : AppColors.button,
+                  width: hasError ? 1.5 : 2,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.error,
+                  width: 1.5,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.error,
+                  width: 2,
+                ),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              errorText: hasError ? errorText : null,
+              errorStyle: TextStyle(
+                color: AppColors.error,
+                fontSize: 12,
+              ),
+            ),
+            items: postalCodesList
+                .map((postalCode) => postalCode.code)
+                .toSet()
+                .toList()
+                .map((code) {
+                  final postalCode = postalCodesList.firstWhere(
+                    (pc) => pc.code == code,
+                    orElse: () => postalCodesList.first,
+                  );
+                  return DropdownMenuItem<String>(
+                    value: code,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            code,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: AppColors.textPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (postalCode.isAnywhere == true)
+                          Container(
+                            margin: EdgeInsets.only(left: 8),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.button.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Anywhere',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.button,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              onChanged: (String? value) {
+                if (value != null) {
+                  setState(() {
+                    controller.text = value;
+                  });
+                  onChanged();
+                }
+              },
+              dropdownColor: AppColors.surface,
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.textPrimary,
+              ),
+                ),
+              );
+            },
+          )
+        else
+          // Show text field when no postal codes available
+          _buildTextField(
+            controller,
+            'Postal Code',
+            Icons.markunread_mailbox,
+            required: true,
+            errorText: errorText,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            onChanged: onChanged,
+          ),
+        if (hasError && hasPostalCodes)
+          Padding(
+            padding: EdgeInsets.only(top: 4, left: 12),
+            child: Text(
+              errorText,
+              style: TextStyle(
+                color: AppColors.error,
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
 }
 class _EditAddressFormWidget extends StatefulWidget {
   final dynamic existingAddress;
@@ -1343,10 +1622,17 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   late final TextEditingController cityController;
   late final TextEditingController postalCodeController;
   late final TextEditingController phoneController;
+  
+  // Postal codes state
+  List<Query$PostalCodes$postalCodes> _postalCodesList = [];
+  bool _isLoadingPostalCodes = true;
 
   @override
   void initState() {
     super.initState();
+    debugPrint('[AddressesPage] ========== EDIT ADDRESS FORM INIT ==========');
+    debugPrint('[AddressesPage] Fetching postal codes for edit address form...');
+    
     // Pre-initialize controllers for better performance
     final existingAddress = widget.existingAddress;
     fullNameController = TextEditingController(
@@ -1365,6 +1651,42 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
         text: existingAddress?.postalCode ?? '');
     phoneController = TextEditingController(
         text: existingAddress?.phoneNumber ?? '');
+    
+    // Fetch postal codes when form is initialized
+    _fetchPostalCodes();
+  }
+  
+  /// Fetch postal codes for the current channel
+  void _fetchPostalCodes() {
+    debugPrint('[AddressesPage] Calling customerController.fetchPostalCodes()...');
+    widget.customerController.fetchPostalCodes().then((codes) {
+      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH COMPLETED ==========');
+      debugPrint('[AddressesPage] Received ${codes.length} postal codes');
+      if (codes.isNotEmpty) {
+        debugPrint('[AddressesPage] Postal codes list:');
+        for (var code in codes) {
+          debugPrint('[AddressesPage]   - ${code.code} (ID: ${code.id}, isAnywhere: ${code.isAnywhere})');
+        }
+      } else {
+        debugPrint('[AddressesPage] No postal codes returned');
+      }
+      if (mounted) {
+        setState(() {
+          _postalCodesList = codes;
+          _isLoadingPostalCodes = false;
+        });
+        debugPrint('[AddressesPage] State updated - postalCodesList.length: ${_postalCodesList.length}, isLoadingPostalCodes: $_isLoadingPostalCodes');
+      }
+    }).catchError((error) {
+      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH ERROR ==========');
+      debugPrint('[AddressesPage] Error type: ${error.runtimeType}');
+      debugPrint('[AddressesPage] Error message: $error');
+      if (mounted) {
+        setState(() {
+          _isLoadingPostalCodes = false;
+        });
+      }
+    });
   }
 
   @override
@@ -1489,18 +1811,19 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                   keyboardType: TextInputType.text,
                   readOnly: true),
               SizedBox(height: 16),
-              _buildTextField(postalCodeController, 'Postal Code',
-                  Icons.markunread_mailbox,
-                  required: true,
-                  errorText: errors['postalCode'],
-                  keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  onChanged: () {
-                    if (errors.containsKey('postalCode')) {
-                      errors.remove('postalCode');
-                      setState(() {});
-                    }
-                  }),
+              _buildPostalCodeField(
+                postalCodeController,
+                _postalCodesList,
+                _isLoadingPostalCodes,
+                errors['postalCode'],
+                setState,
+                () {
+                  if (errors.containsKey('postalCode')) {
+                    errors.remove('postalCode');
+                    setState(() {});
+                  }
+                },
+              ),
               SizedBox(height: 16),
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   keyboardType: TextInputType.phone,
@@ -1808,6 +2131,233 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildPostalCodeField(
+    TextEditingController controller,
+    List<Query$PostalCodes$postalCodes> postalCodesList,
+    bool isLoadingPostalCodes,
+    String? errorText,
+    StateSetter setState,
+    VoidCallback onChanged,
+  ) {
+    final hasPostalCodes = postalCodesList.isNotEmpty;
+    final hasError = errorText != null && errorText.isNotEmpty;
+    
+    debugPrint('[AddressesPage] _buildPostalCodeField called:');
+    debugPrint('[AddressesPage]   - isLoadingPostalCodes: $isLoadingPostalCodes');
+    debugPrint('[AddressesPage]   - postalCodesList.length: ${postalCodesList.length}');
+    debugPrint('[AddressesPage]   - hasPostalCodes: $hasPostalCodes');
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Postal Code',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Text(
+              ' *',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.error,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        if (isLoadingPostalCodes)
+          // Show loading state
+          Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.inputFill,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                ),
+              ),
+            ),
+          )
+        else if (hasPostalCodes)
+          // Show dropdown when postal codes are available
+          Builder(
+            builder: (context) {
+              // Get unique postal codes
+              final uniqueCodes = postalCodesList
+                  .map((postalCode) => postalCode.code)
+                  .toSet()
+                  .toList();
+              
+              // Only set value if it exists in the unique codes list
+              final selectedValue = controller.text.isNotEmpty && 
+                  uniqueCodes.contains(controller.text)
+                  ? controller.text
+                  : null;
+              
+              return SizedBox(
+                height: 56,
+                child: DropdownButtonFormField<String>(
+                value: selectedValue,
+            decoration: InputDecoration(
+              hintText: 'Select Postal Code',
+              hintStyle: TextStyle(
+                color: AppColors.textTertiary,
+                fontSize: 15,
+              ),
+              prefixIcon: Icon(
+                Icons.markunread_mailbox,
+                color: hasError ? AppColors.error : AppColors.textSecondary,
+                size: 20,
+              ),
+              filled: true,
+              fillColor: AppColors.inputFill,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: hasError ? AppColors.error : AppColors.border,
+                  width: hasError ? 1.5 : 1,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: hasError ? AppColors.error : AppColors.border,
+                  width: hasError ? 1.5 : 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: hasError ? AppColors.error : AppColors.button,
+                  width: hasError ? 1.5 : 2,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.error,
+                  width: 1.5,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.error,
+                  width: 2,
+                ),
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              errorText: hasError ? errorText : null,
+              errorStyle: TextStyle(
+                color: AppColors.error,
+                fontSize: 12,
+              ),
+            ),
+            items: postalCodesList
+                .map((postalCode) => postalCode.code)
+                .toSet()
+                .toList()
+                .map((code) {
+                  final postalCode = postalCodesList.firstWhere(
+                    (pc) => pc.code == code,
+                    orElse: () => postalCodesList.first,
+                  );
+                  return DropdownMenuItem<String>(
+                    value: code,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            code,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: AppColors.textPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (postalCode.isAnywhere == true)
+                          Container(
+                            margin: EdgeInsets.only(left: 8),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.button.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Anywhere',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.button,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              onChanged: (String? value) {
+                if (value != null) {
+                  setState(() {
+                    controller.text = value;
+                  });
+                  onChanged();
+                }
+              },
+              dropdownColor: AppColors.surface,
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.textPrimary,
+              ),
+                ),
+              );
+            },
+          )
+        else
+          // Show text field when no postal codes available
+          _buildTextField(
+            controller,
+            'Postal Code',
+            Icons.markunread_mailbox,
+            required: true,
+            errorText: errorText,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            onChanged: onChanged,
+          ),
+        if (hasError && hasPostalCodes)
+          Padding(
+            padding: EdgeInsets.only(top: 4, left: 12),
+            child: Text(
+              errorText,
+              style: TextStyle(
+                color: AppColors.error,
+                fontSize: 12,
+              ),
+            ),
+          ),
       ],
     );
   }

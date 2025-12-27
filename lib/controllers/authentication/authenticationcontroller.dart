@@ -792,7 +792,10 @@ debugPrint('🔵 [GoogleLogin] Step 1: Initializing Google Sign In...');
         ErrorDialog.showError('Google Client ID not configured');
         return false;
       }
-      debugPrint('✅ [GoogleLogin] GOOGLE_CLIENT_ID found: ${googleClientId.substring(0, 20)}...');
+      final clientIdPreview = googleClientId.length > 20 
+          ? '${googleClientId.substring(0, 20)}...' 
+          : googleClientId;
+      debugPrint('✅ [GoogleLogin] GOOGLE_CLIENT_ID found: $clientIdPreview');
 
       // Initialize Google Sign In
       // serverClientId is required to get ID token for backend verification
@@ -806,8 +809,32 @@ debugPrint('🔵 [GoogleLogin] Step 1: Initializing Google Sign In...');
       debugPrint('✅ [GoogleLogin] GoogleSignIn instance created');
       debugPrint('🔵 [GoogleLogin] Note: Requires both Android OAuth client (with SHA-1) and Web OAuth client (for serverClientId)');
 
-      // Sign in with Google
-      debugPrint('🔵 [GoogleLogin] Step 4: Requesting user sign in...');
+      // Sign out any existing Google account to force account selection
+      debugPrint('🔵 [GoogleLogin] Step 4: Checking for existing Google account...');
+      try {
+        // Check if user is already signed in
+        final currentUser = await googleSignIn.signInSilently();
+        if (currentUser != null) {
+          debugPrint('🔵 [GoogleLogin] Found existing signed-in account: ${currentUser.email}');
+          debugPrint('🔵 [GoogleLogin] Signing out to force account selection...');
+          await googleSignIn.signOut();
+          debugPrint('✅ [GoogleLogin] Signed out from existing Google account');
+        } else {
+          debugPrint('✅ [GoogleLogin] No existing Google account found');
+        }
+      } catch (e) {
+        debugPrint('⚠️ [GoogleLogin] Error checking/signing out (may not be signed in): $e');
+        // Try to sign out anyway
+        try {
+          await googleSignIn.signOut();
+          debugPrint('✅ [GoogleLogin] Signed out successfully');
+        } catch (signOutError) {
+          debugPrint('⚠️ [GoogleLogin] Sign out error (ignoring): $signOutError');
+        }
+      }
+
+      // Sign in with Google - this will show account picker
+      debugPrint('🔵 [GoogleLogin] Step 5: Requesting user sign in (will show account picker)...');
       GoogleSignInAccount? googleUser;
       try {
         googleUser = await googleSignIn.signIn();
@@ -999,7 +1026,10 @@ debugPrint('🔵 [GoogleLogin] Step 1: Initializing Google Sign In...');
                 await _storage.write('channel_token', channel.token);
                 await GraphqlService.setToken(key: 'channel', token: channel.token);
                 channelFetched = true;
-                debugPrint('✅ [GoogleLogin] Channel saved - Code: ${channel.code}, Token: ${channel.token.substring(0, 20)}...');
+                final tokenPreview = channel.token.length > 20 
+                    ? '${channel.token.substring(0, 20)}...' 
+                    : channel.token;
+                debugPrint('✅ [GoogleLogin] Channel saved - Code: ${channel.code}, Token: $tokenPreview');
                 break;
               } else {
                 debugPrint('⚠️ [GoogleLogin] No channels found on attempt ${i + 1}');

@@ -14954,3 +14954,1997 @@ class _CopyWithStubImpl$Query$GetCustomerOrders$activeCustomer$orders$items$cust
   }) =>
       _res;
 }
+
+class Variables$Query$GetChannelsByPostalCode {
+  factory Variables$Query$GetChannelsByPostalCode(
+          {required String postalCode}) =>
+      Variables$Query$GetChannelsByPostalCode._({
+        r'postalCode': postalCode,
+      });
+
+  Variables$Query$GetChannelsByPostalCode._(this._$data);
+
+  factory Variables$Query$GetChannelsByPostalCode.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$postalCode = data['postalCode'];
+    result$data['postalCode'] = (l$postalCode as String);
+    return Variables$Query$GetChannelsByPostalCode._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get postalCode => (_$data['postalCode'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$postalCode = postalCode;
+    result$data['postalCode'] = l$postalCode;
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$GetChannelsByPostalCode<
+          Variables$Query$GetChannelsByPostalCode>
+      get copyWith => CopyWith$Variables$Query$GetChannelsByPostalCode(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$GetChannelsByPostalCode ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$postalCode = postalCode;
+    final lOther$postalCode = other.postalCode;
+    if (l$postalCode != lOther$postalCode) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$postalCode = postalCode;
+    return Object.hashAll([l$postalCode]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$GetChannelsByPostalCode<TRes> {
+  factory CopyWith$Variables$Query$GetChannelsByPostalCode(
+    Variables$Query$GetChannelsByPostalCode instance,
+    TRes Function(Variables$Query$GetChannelsByPostalCode) then,
+  ) = _CopyWithImpl$Variables$Query$GetChannelsByPostalCode;
+
+  factory CopyWith$Variables$Query$GetChannelsByPostalCode.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$GetChannelsByPostalCode;
+
+  TRes call({String? postalCode});
+}
+
+class _CopyWithImpl$Variables$Query$GetChannelsByPostalCode<TRes>
+    implements CopyWith$Variables$Query$GetChannelsByPostalCode<TRes> {
+  _CopyWithImpl$Variables$Query$GetChannelsByPostalCode(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Query$GetChannelsByPostalCode _instance;
+
+  final TRes Function(Variables$Query$GetChannelsByPostalCode) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? postalCode = _undefined}) =>
+      _then(Variables$Query$GetChannelsByPostalCode._({
+        ..._instance._$data,
+        if (postalCode != _undefined && postalCode != null)
+          'postalCode': (postalCode as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Query$GetChannelsByPostalCode<TRes>
+    implements CopyWith$Variables$Query$GetChannelsByPostalCode<TRes> {
+  _CopyWithStubImpl$Variables$Query$GetChannelsByPostalCode(this._res);
+
+  TRes _res;
+
+  call({String? postalCode}) => _res;
+}
+
+class Query$GetChannelsByPostalCode {
+  Query$GetChannelsByPostalCode({
+    required this.getChannelsByPostalCode,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$GetChannelsByPostalCode.fromJson(Map<String, dynamic> json) {
+    final l$getChannelsByPostalCode = json['getChannelsByPostalCode'];
+    final l$$__typename = json['__typename'];
+    return Query$GetChannelsByPostalCode(
+      getChannelsByPostalCode: (l$getChannelsByPostalCode as List<dynamic>)
+          .map((e) =>
+              Query$GetChannelsByPostalCode$getChannelsByPostalCode.fromJson(
+                  (e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Query$GetChannelsByPostalCode$getChannelsByPostalCode>
+      getChannelsByPostalCode;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$getChannelsByPostalCode = getChannelsByPostalCode;
+    _resultData['getChannelsByPostalCode'] =
+        l$getChannelsByPostalCode.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$getChannelsByPostalCode = getChannelsByPostalCode;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$getChannelsByPostalCode.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetChannelsByPostalCode ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$getChannelsByPostalCode = getChannelsByPostalCode;
+    final lOther$getChannelsByPostalCode = other.getChannelsByPostalCode;
+    if (l$getChannelsByPostalCode.length !=
+        lOther$getChannelsByPostalCode.length) {
+      return false;
+    }
+    for (int i = 0; i < l$getChannelsByPostalCode.length; i++) {
+      final l$getChannelsByPostalCode$entry = l$getChannelsByPostalCode[i];
+      final lOther$getChannelsByPostalCode$entry =
+          lOther$getChannelsByPostalCode[i];
+      if (l$getChannelsByPostalCode$entry !=
+          lOther$getChannelsByPostalCode$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetChannelsByPostalCode
+    on Query$GetChannelsByPostalCode {
+  CopyWith$Query$GetChannelsByPostalCode<Query$GetChannelsByPostalCode>
+      get copyWith => CopyWith$Query$GetChannelsByPostalCode(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetChannelsByPostalCode<TRes> {
+  factory CopyWith$Query$GetChannelsByPostalCode(
+    Query$GetChannelsByPostalCode instance,
+    TRes Function(Query$GetChannelsByPostalCode) then,
+  ) = _CopyWithImpl$Query$GetChannelsByPostalCode;
+
+  factory CopyWith$Query$GetChannelsByPostalCode.stub(TRes res) =
+      _CopyWithStubImpl$Query$GetChannelsByPostalCode;
+
+  TRes call({
+    List<Query$GetChannelsByPostalCode$getChannelsByPostalCode>?
+        getChannelsByPostalCode,
+    String? $__typename,
+  });
+  TRes getChannelsByPostalCode(
+      Iterable<Query$GetChannelsByPostalCode$getChannelsByPostalCode> Function(
+              Iterable<
+                  CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode<
+                      Query$GetChannelsByPostalCode$getChannelsByPostalCode>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$GetChannelsByPostalCode<TRes>
+    implements CopyWith$Query$GetChannelsByPostalCode<TRes> {
+  _CopyWithImpl$Query$GetChannelsByPostalCode(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetChannelsByPostalCode _instance;
+
+  final TRes Function(Query$GetChannelsByPostalCode) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? getChannelsByPostalCode = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetChannelsByPostalCode(
+        getChannelsByPostalCode: getChannelsByPostalCode == _undefined ||
+                getChannelsByPostalCode == null
+            ? _instance.getChannelsByPostalCode
+            : (getChannelsByPostalCode
+                as List<Query$GetChannelsByPostalCode$getChannelsByPostalCode>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes getChannelsByPostalCode(
+          Iterable<Query$GetChannelsByPostalCode$getChannelsByPostalCode> Function(
+                  Iterable<
+                      CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode<
+                          Query$GetChannelsByPostalCode$getChannelsByPostalCode>>)
+              _fn) =>
+      call(
+          getChannelsByPostalCode: _fn(_instance.getChannelsByPostalCode.map(
+              (e) =>
+                  CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Query$GetChannelsByPostalCode<TRes>
+    implements CopyWith$Query$GetChannelsByPostalCode<TRes> {
+  _CopyWithStubImpl$Query$GetChannelsByPostalCode(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$GetChannelsByPostalCode$getChannelsByPostalCode>?
+        getChannelsByPostalCode,
+    String? $__typename,
+  }) =>
+      _res;
+
+  getChannelsByPostalCode(_fn) => _res;
+}
+
+const documentNodeQueryGetChannelsByPostalCode = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'GetChannelsByPostalCode'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'postalCode')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'getChannelsByPostalCode'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'postalCode'),
+            value: VariableNode(name: NameNode(value: 'postalCode')),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'code'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'token'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'name'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'type'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Query$GetChannelsByPostalCode _parserFn$Query$GetChannelsByPostalCode(
+        Map<String, dynamic> data) =>
+    Query$GetChannelsByPostalCode.fromJson(data);
+typedef OnQueryComplete$Query$GetChannelsByPostalCode = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Query$GetChannelsByPostalCode?,
+);
+
+class Options$Query$GetChannelsByPostalCode
+    extends graphql.QueryOptions<Query$GetChannelsByPostalCode> {
+  Options$Query$GetChannelsByPostalCode({
+    String? operationName,
+    required Variables$Query$GetChannelsByPostalCode variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetChannelsByPostalCode? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$GetChannelsByPostalCode? onComplete,
+    graphql.OnQueryError? onError,
+  })  : onCompleteWithParsed = onComplete,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          pollInterval: pollInterval,
+          context: context,
+          onComplete: onComplete == null
+              ? null
+              : (data) => onComplete(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Query$GetChannelsByPostalCode(data),
+                  ),
+          onError: onError,
+          document: documentNodeQueryGetChannelsByPostalCode,
+          parserFn: _parserFn$Query$GetChannelsByPostalCode,
+        );
+
+  final OnQueryComplete$Query$GetChannelsByPostalCode? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onComplete == null
+            ? super.properties
+            : super.properties.where((property) => property != onComplete),
+        onCompleteWithParsed,
+      ];
+}
+
+class WatchOptions$Query$GetChannelsByPostalCode
+    extends graphql.WatchQueryOptions<Query$GetChannelsByPostalCode> {
+  WatchOptions$Query$GetChannelsByPostalCode({
+    String? operationName,
+    required Variables$Query$GetChannelsByPostalCode variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetChannelsByPostalCode? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeQueryGetChannelsByPostalCode,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Query$GetChannelsByPostalCode,
+        );
+}
+
+class FetchMoreOptions$Query$GetChannelsByPostalCode
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$GetChannelsByPostalCode({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$GetChannelsByPostalCode variables,
+  }) : super(
+          updateQuery: updateQuery,
+          variables: variables.toJson(),
+          document: documentNodeQueryGetChannelsByPostalCode,
+        );
+}
+
+extension ClientExtension$Query$GetChannelsByPostalCode
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$GetChannelsByPostalCode>>
+      query$GetChannelsByPostalCode(
+              Options$Query$GetChannelsByPostalCode options) async =>
+          await this.query(options);
+  graphql.ObservableQuery<Query$GetChannelsByPostalCode>
+      watchQuery$GetChannelsByPostalCode(
+              WatchOptions$Query$GetChannelsByPostalCode options) =>
+          this.watchQuery(options);
+  void writeQuery$GetChannelsByPostalCode({
+    required Query$GetChannelsByPostalCode data,
+    required Variables$Query$GetChannelsByPostalCode variables,
+    bool broadcast = true,
+  }) =>
+      this.writeQuery(
+        graphql.Request(
+          operation: graphql.Operation(
+              document: documentNodeQueryGetChannelsByPostalCode),
+          variables: variables.toJson(),
+        ),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Query$GetChannelsByPostalCode? readQuery$GetChannelsByPostalCode({
+    required Variables$Query$GetChannelsByPostalCode variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(
+            document: documentNodeQueryGetChannelsByPostalCode),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null
+        ? null
+        : Query$GetChannelsByPostalCode.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$GetChannelsByPostalCode>
+    useQuery$GetChannelsByPostalCode(
+            Options$Query$GetChannelsByPostalCode options) =>
+        graphql_flutter.useQuery(options);
+graphql.ObservableQuery<Query$GetChannelsByPostalCode>
+    useWatchQuery$GetChannelsByPostalCode(
+            WatchOptions$Query$GetChannelsByPostalCode options) =>
+        graphql_flutter.useWatchQuery(options);
+
+class Query$GetChannelsByPostalCode$Widget
+    extends graphql_flutter.Query<Query$GetChannelsByPostalCode> {
+  Query$GetChannelsByPostalCode$Widget({
+    widgets.Key? key,
+    required Options$Query$GetChannelsByPostalCode options,
+    required graphql_flutter.QueryBuilder<Query$GetChannelsByPostalCode>
+        builder,
+  }) : super(
+          key: key,
+          options: options,
+          builder: builder,
+        );
+}
+
+class Query$GetChannelsByPostalCode$getChannelsByPostalCode {
+  Query$GetChannelsByPostalCode$getChannelsByPostalCode({
+    required this.id,
+    required this.code,
+    required this.token,
+    required this.name,
+    required this.type,
+    this.$__typename = 'CustomerChannel',
+  });
+
+  factory Query$GetChannelsByPostalCode$getChannelsByPostalCode.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$code = json['code'];
+    final l$token = json['token'];
+    final l$name = json['name'];
+    final l$type = json['type'];
+    final l$$__typename = json['__typename'];
+    return Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+      id: (l$id as String),
+      code: (l$code as String),
+      token: (l$token as String),
+      name: (l$name as String),
+      type: fromJson$Enum$ChannelTypeEnum((l$type as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String code;
+
+  final String token;
+
+  final String name;
+
+  final Enum$ChannelTypeEnum type;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$token = token;
+    _resultData['token'] = l$token;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$type = type;
+    _resultData['type'] = toJson$Enum$ChannelTypeEnum(l$type);
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$code = code;
+    final l$token = token;
+    final l$name = name;
+    final l$type = type;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$code,
+      l$token,
+      l$name,
+      l$type,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetChannelsByPostalCode$getChannelsByPostalCode ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetChannelsByPostalCode$getChannelsByPostalCode
+    on Query$GetChannelsByPostalCode$getChannelsByPostalCode {
+  CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode<
+          Query$GetChannelsByPostalCode$getChannelsByPostalCode>
+      get copyWith =>
+          CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode<
+    TRes> {
+  factory CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+    Query$GetChannelsByPostalCode$getChannelsByPostalCode instance,
+    TRes Function(Query$GetChannelsByPostalCode$getChannelsByPostalCode) then,
+  ) = _CopyWithImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode;
+
+  factory CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode;
+
+  TRes call({
+    String? id,
+    String? code,
+    String? token,
+    String? name,
+    Enum$ChannelTypeEnum? type,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode<TRes>
+    implements
+        CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode<TRes> {
+  _CopyWithImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetChannelsByPostalCode$getChannelsByPostalCode _instance;
+
+  final TRes Function(Query$GetChannelsByPostalCode$getChannelsByPostalCode)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? code = _undefined,
+    Object? token = _undefined,
+    Object? name = _undefined,
+    Object? type = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        token: token == _undefined || token == null
+            ? _instance.token
+            : (token as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        type: type == _undefined || type == null
+            ? _instance.type
+            : (type as Enum$ChannelTypeEnum),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode<
+        TRes>
+    implements
+        CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode<TRes> {
+  _CopyWithStubImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? code,
+    String? token,
+    String? name,
+    Enum$ChannelTypeEnum? type,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Variables$Query$GetAvailableChannels {
+  factory Variables$Query$GetAvailableChannels({required String postalCode}) =>
+      Variables$Query$GetAvailableChannels._({
+        r'postalCode': postalCode,
+      });
+
+  Variables$Query$GetAvailableChannels._(this._$data);
+
+  factory Variables$Query$GetAvailableChannels.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$postalCode = data['postalCode'];
+    result$data['postalCode'] = (l$postalCode as String);
+    return Variables$Query$GetAvailableChannels._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get postalCode => (_$data['postalCode'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$postalCode = postalCode;
+    result$data['postalCode'] = l$postalCode;
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$GetAvailableChannels<
+          Variables$Query$GetAvailableChannels>
+      get copyWith => CopyWith$Variables$Query$GetAvailableChannels(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$GetAvailableChannels ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$postalCode = postalCode;
+    final lOther$postalCode = other.postalCode;
+    if (l$postalCode != lOther$postalCode) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$postalCode = postalCode;
+    return Object.hashAll([l$postalCode]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$GetAvailableChannels<TRes> {
+  factory CopyWith$Variables$Query$GetAvailableChannels(
+    Variables$Query$GetAvailableChannels instance,
+    TRes Function(Variables$Query$GetAvailableChannels) then,
+  ) = _CopyWithImpl$Variables$Query$GetAvailableChannels;
+
+  factory CopyWith$Variables$Query$GetAvailableChannels.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$GetAvailableChannels;
+
+  TRes call({String? postalCode});
+}
+
+class _CopyWithImpl$Variables$Query$GetAvailableChannels<TRes>
+    implements CopyWith$Variables$Query$GetAvailableChannels<TRes> {
+  _CopyWithImpl$Variables$Query$GetAvailableChannels(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Query$GetAvailableChannels _instance;
+
+  final TRes Function(Variables$Query$GetAvailableChannels) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? postalCode = _undefined}) =>
+      _then(Variables$Query$GetAvailableChannels._({
+        ..._instance._$data,
+        if (postalCode != _undefined && postalCode != null)
+          'postalCode': (postalCode as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Query$GetAvailableChannels<TRes>
+    implements CopyWith$Variables$Query$GetAvailableChannels<TRes> {
+  _CopyWithStubImpl$Variables$Query$GetAvailableChannels(this._res);
+
+  TRes _res;
+
+  call({String? postalCode}) => _res;
+}
+
+class Query$GetAvailableChannels {
+  Query$GetAvailableChannels({
+    required this.getAvailableChannels,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$GetAvailableChannels.fromJson(Map<String, dynamic> json) {
+    final l$getAvailableChannels = json['getAvailableChannels'];
+    final l$$__typename = json['__typename'];
+    return Query$GetAvailableChannels(
+      getAvailableChannels: (l$getAvailableChannels as List<dynamic>)
+          .map((e) => Query$GetAvailableChannels$getAvailableChannels.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Query$GetAvailableChannels$getAvailableChannels>
+      getAvailableChannels;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$getAvailableChannels = getAvailableChannels;
+    _resultData['getAvailableChannels'] =
+        l$getAvailableChannels.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$getAvailableChannels = getAvailableChannels;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$getAvailableChannels.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetAvailableChannels ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$getAvailableChannels = getAvailableChannels;
+    final lOther$getAvailableChannels = other.getAvailableChannels;
+    if (l$getAvailableChannels.length != lOther$getAvailableChannels.length) {
+      return false;
+    }
+    for (int i = 0; i < l$getAvailableChannels.length; i++) {
+      final l$getAvailableChannels$entry = l$getAvailableChannels[i];
+      final lOther$getAvailableChannels$entry = lOther$getAvailableChannels[i];
+      if (l$getAvailableChannels$entry != lOther$getAvailableChannels$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetAvailableChannels
+    on Query$GetAvailableChannels {
+  CopyWith$Query$GetAvailableChannels<Query$GetAvailableChannels>
+      get copyWith => CopyWith$Query$GetAvailableChannels(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetAvailableChannels<TRes> {
+  factory CopyWith$Query$GetAvailableChannels(
+    Query$GetAvailableChannels instance,
+    TRes Function(Query$GetAvailableChannels) then,
+  ) = _CopyWithImpl$Query$GetAvailableChannels;
+
+  factory CopyWith$Query$GetAvailableChannels.stub(TRes res) =
+      _CopyWithStubImpl$Query$GetAvailableChannels;
+
+  TRes call({
+    List<Query$GetAvailableChannels$getAvailableChannels>? getAvailableChannels,
+    String? $__typename,
+  });
+  TRes getAvailableChannels(
+      Iterable<Query$GetAvailableChannels$getAvailableChannels> Function(
+              Iterable<
+                  CopyWith$Query$GetAvailableChannels$getAvailableChannels<
+                      Query$GetAvailableChannels$getAvailableChannels>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$GetAvailableChannels<TRes>
+    implements CopyWith$Query$GetAvailableChannels<TRes> {
+  _CopyWithImpl$Query$GetAvailableChannels(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetAvailableChannels _instance;
+
+  final TRes Function(Query$GetAvailableChannels) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? getAvailableChannels = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetAvailableChannels(
+        getAvailableChannels:
+            getAvailableChannels == _undefined || getAvailableChannels == null
+                ? _instance.getAvailableChannels
+                : (getAvailableChannels
+                    as List<Query$GetAvailableChannels$getAvailableChannels>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes getAvailableChannels(
+          Iterable<Query$GetAvailableChannels$getAvailableChannels> Function(
+                  Iterable<
+                      CopyWith$Query$GetAvailableChannels$getAvailableChannels<
+                          Query$GetAvailableChannels$getAvailableChannels>>)
+              _fn) =>
+      call(
+          getAvailableChannels: _fn(_instance.getAvailableChannels.map(
+              (e) => CopyWith$Query$GetAvailableChannels$getAvailableChannels(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Query$GetAvailableChannels<TRes>
+    implements CopyWith$Query$GetAvailableChannels<TRes> {
+  _CopyWithStubImpl$Query$GetAvailableChannels(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$GetAvailableChannels$getAvailableChannels>? getAvailableChannels,
+    String? $__typename,
+  }) =>
+      _res;
+
+  getAvailableChannels(_fn) => _res;
+}
+
+const documentNodeQueryGetAvailableChannels = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'GetAvailableChannels'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'postalCode')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'getAvailableChannels'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'postalCode'),
+            value: VariableNode(name: NameNode(value: 'postalCode')),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'code'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'token'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'name'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'isAvailable'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'message'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'type'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Query$GetAvailableChannels _parserFn$Query$GetAvailableChannels(
+        Map<String, dynamic> data) =>
+    Query$GetAvailableChannels.fromJson(data);
+typedef OnQueryComplete$Query$GetAvailableChannels = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Query$GetAvailableChannels?,
+);
+
+class Options$Query$GetAvailableChannels
+    extends graphql.QueryOptions<Query$GetAvailableChannels> {
+  Options$Query$GetAvailableChannels({
+    String? operationName,
+    required Variables$Query$GetAvailableChannels variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetAvailableChannels? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$GetAvailableChannels? onComplete,
+    graphql.OnQueryError? onError,
+  })  : onCompleteWithParsed = onComplete,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          pollInterval: pollInterval,
+          context: context,
+          onComplete: onComplete == null
+              ? null
+              : (data) => onComplete(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Query$GetAvailableChannels(data),
+                  ),
+          onError: onError,
+          document: documentNodeQueryGetAvailableChannels,
+          parserFn: _parserFn$Query$GetAvailableChannels,
+        );
+
+  final OnQueryComplete$Query$GetAvailableChannels? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onComplete == null
+            ? super.properties
+            : super.properties.where((property) => property != onComplete),
+        onCompleteWithParsed,
+      ];
+}
+
+class WatchOptions$Query$GetAvailableChannels
+    extends graphql.WatchQueryOptions<Query$GetAvailableChannels> {
+  WatchOptions$Query$GetAvailableChannels({
+    String? operationName,
+    required Variables$Query$GetAvailableChannels variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetAvailableChannels? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeQueryGetAvailableChannels,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Query$GetAvailableChannels,
+        );
+}
+
+class FetchMoreOptions$Query$GetAvailableChannels
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$GetAvailableChannels({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$GetAvailableChannels variables,
+  }) : super(
+          updateQuery: updateQuery,
+          variables: variables.toJson(),
+          document: documentNodeQueryGetAvailableChannels,
+        );
+}
+
+extension ClientExtension$Query$GetAvailableChannels on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$GetAvailableChannels>>
+      query$GetAvailableChannels(
+              Options$Query$GetAvailableChannels options) async =>
+          await this.query(options);
+  graphql.ObservableQuery<Query$GetAvailableChannels>
+      watchQuery$GetAvailableChannels(
+              WatchOptions$Query$GetAvailableChannels options) =>
+          this.watchQuery(options);
+  void writeQuery$GetAvailableChannels({
+    required Query$GetAvailableChannels data,
+    required Variables$Query$GetAvailableChannels variables,
+    bool broadcast = true,
+  }) =>
+      this.writeQuery(
+        graphql.Request(
+          operation: graphql.Operation(
+              document: documentNodeQueryGetAvailableChannels),
+          variables: variables.toJson(),
+        ),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Query$GetAvailableChannels? readQuery$GetAvailableChannels({
+    required Variables$Query$GetAvailableChannels variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation:
+            graphql.Operation(document: documentNodeQueryGetAvailableChannels),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$GetAvailableChannels.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$GetAvailableChannels>
+    useQuery$GetAvailableChannels(Options$Query$GetAvailableChannels options) =>
+        graphql_flutter.useQuery(options);
+graphql.ObservableQuery<Query$GetAvailableChannels>
+    useWatchQuery$GetAvailableChannels(
+            WatchOptions$Query$GetAvailableChannels options) =>
+        graphql_flutter.useWatchQuery(options);
+
+class Query$GetAvailableChannels$Widget
+    extends graphql_flutter.Query<Query$GetAvailableChannels> {
+  Query$GetAvailableChannels$Widget({
+    widgets.Key? key,
+    required Options$Query$GetAvailableChannels options,
+    required graphql_flutter.QueryBuilder<Query$GetAvailableChannels> builder,
+  }) : super(
+          key: key,
+          options: options,
+          builder: builder,
+        );
+}
+
+class Query$GetAvailableChannels$getAvailableChannels {
+  Query$GetAvailableChannels$getAvailableChannels({
+    required this.id,
+    required this.code,
+    this.token,
+    required this.name,
+    required this.isAvailable,
+    this.message,
+    required this.type,
+    this.$__typename = 'ChannelAvailability',
+  });
+
+  factory Query$GetAvailableChannels$getAvailableChannels.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$code = json['code'];
+    final l$token = json['token'];
+    final l$name = json['name'];
+    final l$isAvailable = json['isAvailable'];
+    final l$message = json['message'];
+    final l$type = json['type'];
+    final l$$__typename = json['__typename'];
+    return Query$GetAvailableChannels$getAvailableChannels(
+      id: (l$id as String),
+      code: (l$code as String),
+      token: (l$token as String?),
+      name: (l$name as String),
+      isAvailable: (l$isAvailable as bool),
+      message: (l$message as String?),
+      type: fromJson$Enum$ChannelType((l$type as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String code;
+
+  final String? token;
+
+  final String name;
+
+  final bool isAvailable;
+
+  final String? message;
+
+  final Enum$ChannelType type;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$token = token;
+    _resultData['token'] = l$token;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$isAvailable = isAvailable;
+    _resultData['isAvailable'] = l$isAvailable;
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$type = type;
+    _resultData['type'] = toJson$Enum$ChannelType(l$type);
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$code = code;
+    final l$token = token;
+    final l$name = name;
+    final l$isAvailable = isAvailable;
+    final l$message = message;
+    final l$type = type;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$code,
+      l$token,
+      l$name,
+      l$isAvailable,
+      l$message,
+      l$type,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetAvailableChannels$getAvailableChannels ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetAvailableChannels$getAvailableChannels
+    on Query$GetAvailableChannels$getAvailableChannels {
+  CopyWith$Query$GetAvailableChannels$getAvailableChannels<
+          Query$GetAvailableChannels$getAvailableChannels>
+      get copyWith => CopyWith$Query$GetAvailableChannels$getAvailableChannels(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetAvailableChannels$getAvailableChannels<TRes> {
+  factory CopyWith$Query$GetAvailableChannels$getAvailableChannels(
+    Query$GetAvailableChannels$getAvailableChannels instance,
+    TRes Function(Query$GetAvailableChannels$getAvailableChannels) then,
+  ) = _CopyWithImpl$Query$GetAvailableChannels$getAvailableChannels;
+
+  factory CopyWith$Query$GetAvailableChannels$getAvailableChannels.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetAvailableChannels$getAvailableChannels;
+
+  TRes call({
+    String? id,
+    String? code,
+    String? token,
+    String? name,
+    bool? isAvailable,
+    String? message,
+    Enum$ChannelType? type,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetAvailableChannels$getAvailableChannels<TRes>
+    implements CopyWith$Query$GetAvailableChannels$getAvailableChannels<TRes> {
+  _CopyWithImpl$Query$GetAvailableChannels$getAvailableChannels(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetAvailableChannels$getAvailableChannels _instance;
+
+  final TRes Function(Query$GetAvailableChannels$getAvailableChannels) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? code = _undefined,
+    Object? token = _undefined,
+    Object? name = _undefined,
+    Object? isAvailable = _undefined,
+    Object? message = _undefined,
+    Object? type = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetAvailableChannels$getAvailableChannels(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        token: token == _undefined ? _instance.token : (token as String?),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        isAvailable: isAvailable == _undefined || isAvailable == null
+            ? _instance.isAvailable
+            : (isAvailable as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
+        type: type == _undefined || type == null
+            ? _instance.type
+            : (type as Enum$ChannelType),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetAvailableChannels$getAvailableChannels<TRes>
+    implements CopyWith$Query$GetAvailableChannels$getAvailableChannels<TRes> {
+  _CopyWithStubImpl$Query$GetAvailableChannels$getAvailableChannels(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? code,
+    String? token,
+    String? name,
+    bool? isAvailable,
+    String? message,
+    Enum$ChannelType? type,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$PostalCodes {
+  Query$PostalCodes({
+    required this.postalCodes,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$PostalCodes.fromJson(Map<String, dynamic> json) {
+    final l$postalCodes = json['postalCodes'];
+    final l$$__typename = json['__typename'];
+    return Query$PostalCodes(
+      postalCodes: (l$postalCodes as List<dynamic>)
+          .map((e) => Query$PostalCodes$postalCodes.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Query$PostalCodes$postalCodes> postalCodes;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$postalCodes = postalCodes;
+    _resultData['postalCodes'] = l$postalCodes.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$postalCodes = postalCodes;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$postalCodes.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$PostalCodes || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$postalCodes = postalCodes;
+    final lOther$postalCodes = other.postalCodes;
+    if (l$postalCodes.length != lOther$postalCodes.length) {
+      return false;
+    }
+    for (int i = 0; i < l$postalCodes.length; i++) {
+      final l$postalCodes$entry = l$postalCodes[i];
+      final lOther$postalCodes$entry = lOther$postalCodes[i];
+      if (l$postalCodes$entry != lOther$postalCodes$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$PostalCodes on Query$PostalCodes {
+  CopyWith$Query$PostalCodes<Query$PostalCodes> get copyWith =>
+      CopyWith$Query$PostalCodes(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$PostalCodes<TRes> {
+  factory CopyWith$Query$PostalCodes(
+    Query$PostalCodes instance,
+    TRes Function(Query$PostalCodes) then,
+  ) = _CopyWithImpl$Query$PostalCodes;
+
+  factory CopyWith$Query$PostalCodes.stub(TRes res) =
+      _CopyWithStubImpl$Query$PostalCodes;
+
+  TRes call({
+    List<Query$PostalCodes$postalCodes>? postalCodes,
+    String? $__typename,
+  });
+  TRes postalCodes(
+      Iterable<Query$PostalCodes$postalCodes> Function(
+              Iterable<
+                  CopyWith$Query$PostalCodes$postalCodes<
+                      Query$PostalCodes$postalCodes>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$PostalCodes<TRes>
+    implements CopyWith$Query$PostalCodes<TRes> {
+  _CopyWithImpl$Query$PostalCodes(
+    this._instance,
+    this._then,
+  );
+
+  final Query$PostalCodes _instance;
+
+  final TRes Function(Query$PostalCodes) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? postalCodes = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$PostalCodes(
+        postalCodes: postalCodes == _undefined || postalCodes == null
+            ? _instance.postalCodes
+            : (postalCodes as List<Query$PostalCodes$postalCodes>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes postalCodes(
+          Iterable<Query$PostalCodes$postalCodes> Function(
+                  Iterable<
+                      CopyWith$Query$PostalCodes$postalCodes<
+                          Query$PostalCodes$postalCodes>>)
+              _fn) =>
+      call(
+          postalCodes: _fn(_instance.postalCodes
+              .map((e) => CopyWith$Query$PostalCodes$postalCodes(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Query$PostalCodes<TRes>
+    implements CopyWith$Query$PostalCodes<TRes> {
+  _CopyWithStubImpl$Query$PostalCodes(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$PostalCodes$postalCodes>? postalCodes,
+    String? $__typename,
+  }) =>
+      _res;
+
+  postalCodes(_fn) => _res;
+}
+
+const documentNodeQueryPostalCodes = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'PostalCodes'),
+    variableDefinitions: [],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'postalCodes'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'code'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'isAnywhere'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Query$PostalCodes _parserFn$Query$PostalCodes(Map<String, dynamic> data) =>
+    Query$PostalCodes.fromJson(data);
+typedef OnQueryComplete$Query$PostalCodes = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Query$PostalCodes?,
+);
+
+class Options$Query$PostalCodes
+    extends graphql.QueryOptions<Query$PostalCodes> {
+  Options$Query$PostalCodes({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$PostalCodes? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$PostalCodes? onComplete,
+    graphql.OnQueryError? onError,
+  })  : onCompleteWithParsed = onComplete,
+        super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          pollInterval: pollInterval,
+          context: context,
+          onComplete: onComplete == null
+              ? null
+              : (data) => onComplete(
+                    data,
+                    data == null ? null : _parserFn$Query$PostalCodes(data),
+                  ),
+          onError: onError,
+          document: documentNodeQueryPostalCodes,
+          parserFn: _parserFn$Query$PostalCodes,
+        );
+
+  final OnQueryComplete$Query$PostalCodes? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onComplete == null
+            ? super.properties
+            : super.properties.where((property) => property != onComplete),
+        onCompleteWithParsed,
+      ];
+}
+
+class WatchOptions$Query$PostalCodes
+    extends graphql.WatchQueryOptions<Query$PostalCodes> {
+  WatchOptions$Query$PostalCodes({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$PostalCodes? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeQueryPostalCodes,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Query$PostalCodes,
+        );
+}
+
+class FetchMoreOptions$Query$PostalCodes extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$PostalCodes({required graphql.UpdateQuery updateQuery})
+      : super(
+          updateQuery: updateQuery,
+          document: documentNodeQueryPostalCodes,
+        );
+}
+
+extension ClientExtension$Query$PostalCodes on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$PostalCodes>> query$PostalCodes(
+          [Options$Query$PostalCodes? options]) async =>
+      await this.query(options ?? Options$Query$PostalCodes());
+  graphql.ObservableQuery<Query$PostalCodes> watchQuery$PostalCodes(
+          [WatchOptions$Query$PostalCodes? options]) =>
+      this.watchQuery(options ?? WatchOptions$Query$PostalCodes());
+  void writeQuery$PostalCodes({
+    required Query$PostalCodes data,
+    bool broadcast = true,
+  }) =>
+      this.writeQuery(
+        graphql.Request(
+            operation:
+                graphql.Operation(document: documentNodeQueryPostalCodes)),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Query$PostalCodes? readQuery$PostalCodes({bool optimistic = true}) {
+    final result = this.readQuery(
+      graphql.Request(
+          operation: graphql.Operation(document: documentNodeQueryPostalCodes)),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$PostalCodes.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$PostalCodes> useQuery$PostalCodes(
+        [Options$Query$PostalCodes? options]) =>
+    graphql_flutter.useQuery(options ?? Options$Query$PostalCodes());
+graphql.ObservableQuery<Query$PostalCodes> useWatchQuery$PostalCodes(
+        [WatchOptions$Query$PostalCodes? options]) =>
+    graphql_flutter.useWatchQuery(options ?? WatchOptions$Query$PostalCodes());
+
+class Query$PostalCodes$Widget
+    extends graphql_flutter.Query<Query$PostalCodes> {
+  Query$PostalCodes$Widget({
+    widgets.Key? key,
+    Options$Query$PostalCodes? options,
+    required graphql_flutter.QueryBuilder<Query$PostalCodes> builder,
+  }) : super(
+          key: key,
+          options: options ?? Options$Query$PostalCodes(),
+          builder: builder,
+        );
+}
+
+class Query$PostalCodes$postalCodes {
+  Query$PostalCodes$postalCodes({
+    required this.id,
+    required this.code,
+    required this.isAnywhere,
+    this.$__typename = 'PostalCode',
+  });
+
+  factory Query$PostalCodes$postalCodes.fromJson(Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$code = json['code'];
+    final l$isAnywhere = json['isAnywhere'];
+    final l$$__typename = json['__typename'];
+    return Query$PostalCodes$postalCodes(
+      id: (l$id as String),
+      code: (l$code as String),
+      isAnywhere: (l$isAnywhere as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String code;
+
+  final bool isAnywhere;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$isAnywhere = isAnywhere;
+    _resultData['isAnywhere'] = l$isAnywhere;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$code = code;
+    final l$isAnywhere = isAnywhere;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$code,
+      l$isAnywhere,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$PostalCodes$postalCodes ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$isAnywhere = isAnywhere;
+    final lOther$isAnywhere = other.isAnywhere;
+    if (l$isAnywhere != lOther$isAnywhere) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$PostalCodes$postalCodes
+    on Query$PostalCodes$postalCodes {
+  CopyWith$Query$PostalCodes$postalCodes<Query$PostalCodes$postalCodes>
+      get copyWith => CopyWith$Query$PostalCodes$postalCodes(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$PostalCodes$postalCodes<TRes> {
+  factory CopyWith$Query$PostalCodes$postalCodes(
+    Query$PostalCodes$postalCodes instance,
+    TRes Function(Query$PostalCodes$postalCodes) then,
+  ) = _CopyWithImpl$Query$PostalCodes$postalCodes;
+
+  factory CopyWith$Query$PostalCodes$postalCodes.stub(TRes res) =
+      _CopyWithStubImpl$Query$PostalCodes$postalCodes;
+
+  TRes call({
+    String? id,
+    String? code,
+    bool? isAnywhere,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$PostalCodes$postalCodes<TRes>
+    implements CopyWith$Query$PostalCodes$postalCodes<TRes> {
+  _CopyWithImpl$Query$PostalCodes$postalCodes(
+    this._instance,
+    this._then,
+  );
+
+  final Query$PostalCodes$postalCodes _instance;
+
+  final TRes Function(Query$PostalCodes$postalCodes) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? code = _undefined,
+    Object? isAnywhere = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$PostalCodes$postalCodes(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        isAnywhere: isAnywhere == _undefined || isAnywhere == null
+            ? _instance.isAnywhere
+            : (isAnywhere as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$PostalCodes$postalCodes<TRes>
+    implements CopyWith$Query$PostalCodes$postalCodes<TRes> {
+  _CopyWithStubImpl$Query$PostalCodes$postalCodes(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? code,
+    bool? isAnywhere,
+    String? $__typename,
+  }) =>
+      _res;
+}

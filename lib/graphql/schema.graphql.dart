@@ -10230,11 +10230,7 @@ class Input$OrderFilterParameter {
     Input$NumberOperators? totalWithTax,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
-    Input$DateOperators? placedAtISTFormatted,
     Input$StringOperators? deviceMedium,
-    Input$StringOperators? razorpayStatus,
-    Input$StringOperators? razorpay_order_id,
-    Input$NumberOperators? clientRequestToCancel,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
@@ -10258,13 +10254,7 @@ class Input$OrderFilterParameter {
         if (totalWithTax != null) r'totalWithTax': totalWithTax,
         if ($_and != null) r'_and': $_and,
         if ($_or != null) r'_or': $_or,
-        if (placedAtISTFormatted != null)
-          r'placedAtISTFormatted': placedAtISTFormatted,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
-        if (razorpayStatus != null) r'razorpayStatus': razorpayStatus,
-        if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
-        if (clientRequestToCancel != null)
-          r'clientRequestToCancel': clientRequestToCancel,
         if (otherInstructions != null) r'otherInstructions': otherInstructions,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
         if (loyaltyPointsEarned != null)
@@ -10393,40 +10383,12 @@ class Input$OrderFilterParameter {
               Input$OrderFilterParameter.fromJson((e as Map<String, dynamic>)))
           .toList();
     }
-    if (data.containsKey('placedAtISTFormatted')) {
-      final l$placedAtISTFormatted = data['placedAtISTFormatted'];
-      result$data['placedAtISTFormatted'] = l$placedAtISTFormatted == null
-          ? null
-          : Input$DateOperators.fromJson(
-              (l$placedAtISTFormatted as Map<String, dynamic>));
-    }
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
       result$data['deviceMedium'] = l$deviceMedium == null
           ? null
           : Input$StringOperators.fromJson(
               (l$deviceMedium as Map<String, dynamic>));
-    }
-    if (data.containsKey('razorpayStatus')) {
-      final l$razorpayStatus = data['razorpayStatus'];
-      result$data['razorpayStatus'] = l$razorpayStatus == null
-          ? null
-          : Input$StringOperators.fromJson(
-              (l$razorpayStatus as Map<String, dynamic>));
-    }
-    if (data.containsKey('razorpay_order_id')) {
-      final l$razorpay_order_id = data['razorpay_order_id'];
-      result$data['razorpay_order_id'] = l$razorpay_order_id == null
-          ? null
-          : Input$StringOperators.fromJson(
-              (l$razorpay_order_id as Map<String, dynamic>));
-    }
-    if (data.containsKey('clientRequestToCancel')) {
-      final l$clientRequestToCancel = data['clientRequestToCancel'];
-      result$data['clientRequestToCancel'] = l$clientRequestToCancel == null
-          ? null
-          : Input$NumberOperators.fromJson(
-              (l$clientRequestToCancel as Map<String, dynamic>));
     }
     if (data.containsKey('otherInstructions')) {
       final l$otherInstructions = data['otherInstructions'];
@@ -10505,20 +10467,8 @@ class Input$OrderFilterParameter {
   List<Input$OrderFilterParameter>? get $_or =>
       (_$data['_or'] as List<Input$OrderFilterParameter>?);
 
-  Input$DateOperators? get placedAtISTFormatted =>
-      (_$data['placedAtISTFormatted'] as Input$DateOperators?);
-
   Input$StringOperators? get deviceMedium =>
       (_$data['deviceMedium'] as Input$StringOperators?);
-
-  Input$StringOperators? get razorpayStatus =>
-      (_$data['razorpayStatus'] as Input$StringOperators?);
-
-  Input$StringOperators? get razorpay_order_id =>
-      (_$data['razorpay_order_id'] as Input$StringOperators?);
-
-  Input$NumberOperators? get clientRequestToCancel =>
-      (_$data['clientRequestToCancel'] as Input$NumberOperators?);
 
   Input$StringOperators? get otherInstructions =>
       (_$data['otherInstructions'] as Input$StringOperators?);
@@ -10603,25 +10553,9 @@ class Input$OrderFilterParameter {
       final l$$_or = $_or;
       result$data['_or'] = l$$_or?.map((e) => e.toJson()).toList();
     }
-    if (_$data.containsKey('placedAtISTFormatted')) {
-      final l$placedAtISTFormatted = placedAtISTFormatted;
-      result$data['placedAtISTFormatted'] = l$placedAtISTFormatted?.toJson();
-    }
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
       result$data['deviceMedium'] = l$deviceMedium?.toJson();
-    }
-    if (_$data.containsKey('razorpayStatus')) {
-      final l$razorpayStatus = razorpayStatus;
-      result$data['razorpayStatus'] = l$razorpayStatus?.toJson();
-    }
-    if (_$data.containsKey('razorpay_order_id')) {
-      final l$razorpay_order_id = razorpay_order_id;
-      result$data['razorpay_order_id'] = l$razorpay_order_id?.toJson();
-    }
-    if (_$data.containsKey('clientRequestToCancel')) {
-      final l$clientRequestToCancel = clientRequestToCancel;
-      result$data['clientRequestToCancel'] = l$clientRequestToCancel?.toJson();
     }
     if (_$data.containsKey('otherInstructions')) {
       final l$otherInstructions = otherInstructions;
@@ -10829,15 +10763,6 @@ class Input$OrderFilterParameter {
     } else if (l$$_or != lOther$$_or) {
       return false;
     }
-    final l$placedAtISTFormatted = placedAtISTFormatted;
-    final lOther$placedAtISTFormatted = other.placedAtISTFormatted;
-    if (_$data.containsKey('placedAtISTFormatted') !=
-        other._$data.containsKey('placedAtISTFormatted')) {
-      return false;
-    }
-    if (l$placedAtISTFormatted != lOther$placedAtISTFormatted) {
-      return false;
-    }
     final l$deviceMedium = deviceMedium;
     final lOther$deviceMedium = other.deviceMedium;
     if (_$data.containsKey('deviceMedium') !=
@@ -10845,33 +10770,6 @@ class Input$OrderFilterParameter {
       return false;
     }
     if (l$deviceMedium != lOther$deviceMedium) {
-      return false;
-    }
-    final l$razorpayStatus = razorpayStatus;
-    final lOther$razorpayStatus = other.razorpayStatus;
-    if (_$data.containsKey('razorpayStatus') !=
-        other._$data.containsKey('razorpayStatus')) {
-      return false;
-    }
-    if (l$razorpayStatus != lOther$razorpayStatus) {
-      return false;
-    }
-    final l$razorpay_order_id = razorpay_order_id;
-    final lOther$razorpay_order_id = other.razorpay_order_id;
-    if (_$data.containsKey('razorpay_order_id') !=
-        other._$data.containsKey('razorpay_order_id')) {
-      return false;
-    }
-    if (l$razorpay_order_id != lOther$razorpay_order_id) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (_$data.containsKey('clientRequestToCancel') !=
-        other._$data.containsKey('clientRequestToCancel')) {
-      return false;
-    }
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$otherInstructions = otherInstructions;
@@ -10924,11 +10822,7 @@ class Input$OrderFilterParameter {
     final l$totalWithTax = totalWithTax;
     final l$$_and = $_and;
     final l$$_or = $_or;
-    final l$placedAtISTFormatted = placedAtISTFormatted;
     final l$deviceMedium = deviceMedium;
-    final l$razorpayStatus = razorpayStatus;
-    final l$razorpay_order_id = razorpay_order_id;
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$otherInstructions = otherInstructions;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -10959,15 +10853,7 @@ class Input$OrderFilterParameter {
               ? null
               : Object.hashAll(l$$_or.map((v) => v))
           : const {},
-      _$data.containsKey('placedAtISTFormatted')
-          ? l$placedAtISTFormatted
-          : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
-      _$data.containsKey('razorpayStatus') ? l$razorpayStatus : const {},
-      _$data.containsKey('razorpay_order_id') ? l$razorpay_order_id : const {},
-      _$data.containsKey('clientRequestToCancel')
-          ? l$clientRequestToCancel
-          : const {},
       _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
       _$data.containsKey('loyaltyPointsEarned')
@@ -11005,11 +10891,7 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
     Input$NumberOperators? totalWithTax,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
-    Input$DateOperators? placedAtISTFormatted,
     Input$StringOperators? deviceMedium,
-    Input$StringOperators? razorpayStatus,
-    Input$StringOperators? razorpay_order_id,
-    Input$NumberOperators? clientRequestToCancel,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
@@ -11042,11 +10924,7 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
                   CopyWith$Input$OrderFilterParameter<
                       Input$OrderFilterParameter>>?)
           _fn);
-  CopyWith$Input$DateOperators<TRes> get placedAtISTFormatted;
   CopyWith$Input$StringOperators<TRes> get deviceMedium;
-  CopyWith$Input$StringOperators<TRes> get razorpayStatus;
-  CopyWith$Input$StringOperators<TRes> get razorpay_order_id;
-  CopyWith$Input$NumberOperators<TRes> get clientRequestToCancel;
   CopyWith$Input$StringOperators<TRes> get otherInstructions;
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsUsed;
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsEarned;
@@ -11084,11 +10962,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     Object? totalWithTax = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
-    Object? placedAtISTFormatted = _undefined,
     Object? deviceMedium = _undefined,
-    Object? razorpayStatus = _undefined,
-    Object? razorpay_order_id = _undefined,
-    Object? clientRequestToCancel = _undefined,
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
@@ -11125,18 +10999,8 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
           '_and': ($_and as List<Input$OrderFilterParameter>?),
         if ($_or != _undefined)
           '_or': ($_or as List<Input$OrderFilterParameter>?),
-        if (placedAtISTFormatted != _undefined)
-          'placedAtISTFormatted':
-              (placedAtISTFormatted as Input$DateOperators?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as Input$StringOperators?),
-        if (razorpayStatus != _undefined)
-          'razorpayStatus': (razorpayStatus as Input$StringOperators?),
-        if (razorpay_order_id != _undefined)
-          'razorpay_order_id': (razorpay_order_id as Input$StringOperators?),
-        if (clientRequestToCancel != _undefined)
-          'clientRequestToCancel':
-              (clientRequestToCancel as Input$NumberOperators?),
         if (otherInstructions != _undefined)
           'otherInstructions': (otherInstructions as Input$StringOperators?),
         if (loyaltyPointsUsed != _undefined)
@@ -11294,44 +11158,12 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
                     (i) => i,
                   )))?.toList());
 
-  CopyWith$Input$DateOperators<TRes> get placedAtISTFormatted {
-    final local$placedAtISTFormatted = _instance.placedAtISTFormatted;
-    return local$placedAtISTFormatted == null
-        ? CopyWith$Input$DateOperators.stub(_then(_instance))
-        : CopyWith$Input$DateOperators(
-            local$placedAtISTFormatted, (e) => call(placedAtISTFormatted: e));
-  }
-
   CopyWith$Input$StringOperators<TRes> get deviceMedium {
     final local$deviceMedium = _instance.deviceMedium;
     return local$deviceMedium == null
         ? CopyWith$Input$StringOperators.stub(_then(_instance))
         : CopyWith$Input$StringOperators(
             local$deviceMedium, (e) => call(deviceMedium: e));
-  }
-
-  CopyWith$Input$StringOperators<TRes> get razorpayStatus {
-    final local$razorpayStatus = _instance.razorpayStatus;
-    return local$razorpayStatus == null
-        ? CopyWith$Input$StringOperators.stub(_then(_instance))
-        : CopyWith$Input$StringOperators(
-            local$razorpayStatus, (e) => call(razorpayStatus: e));
-  }
-
-  CopyWith$Input$StringOperators<TRes> get razorpay_order_id {
-    final local$razorpay_order_id = _instance.razorpay_order_id;
-    return local$razorpay_order_id == null
-        ? CopyWith$Input$StringOperators.stub(_then(_instance))
-        : CopyWith$Input$StringOperators(
-            local$razorpay_order_id, (e) => call(razorpay_order_id: e));
-  }
-
-  CopyWith$Input$NumberOperators<TRes> get clientRequestToCancel {
-    final local$clientRequestToCancel = _instance.clientRequestToCancel;
-    return local$clientRequestToCancel == null
-        ? CopyWith$Input$NumberOperators.stub(_then(_instance))
-        : CopyWith$Input$NumberOperators(
-            local$clientRequestToCancel, (e) => call(clientRequestToCancel: e));
   }
 
   CopyWith$Input$StringOperators<TRes> get otherInstructions {
@@ -11384,11 +11216,7 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
     Input$NumberOperators? totalWithTax,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
-    Input$DateOperators? placedAtISTFormatted,
     Input$StringOperators? deviceMedium,
-    Input$StringOperators? razorpayStatus,
-    Input$StringOperators? razorpay_order_id,
-    Input$NumberOperators? clientRequestToCancel,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
@@ -11447,20 +11275,8 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
 
   $_or(_fn) => _res;
 
-  CopyWith$Input$DateOperators<TRes> get placedAtISTFormatted =>
-      CopyWith$Input$DateOperators.stub(_res);
-
   CopyWith$Input$StringOperators<TRes> get deviceMedium =>
       CopyWith$Input$StringOperators.stub(_res);
-
-  CopyWith$Input$StringOperators<TRes> get razorpayStatus =>
-      CopyWith$Input$StringOperators.stub(_res);
-
-  CopyWith$Input$StringOperators<TRes> get razorpay_order_id =>
-      CopyWith$Input$StringOperators.stub(_res);
-
-  CopyWith$Input$NumberOperators<TRes> get clientRequestToCancel =>
-      CopyWith$Input$NumberOperators.stub(_res);
 
   CopyWith$Input$StringOperators<TRes> get otherInstructions =>
       CopyWith$Input$StringOperators.stub(_res);
@@ -11743,11 +11559,7 @@ class Input$OrderSortParameter {
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
-    Enum$SortOrder? placedAtISTFormatted,
     Enum$SortOrder? deviceMedium,
-    Enum$SortOrder? razorpayStatus,
-    Enum$SortOrder? razorpay_order_id,
-    Enum$SortOrder? clientRequestToCancel,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,
@@ -11766,13 +11578,7 @@ class Input$OrderSortParameter {
         if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
         if (total != null) r'total': total,
         if (totalWithTax != null) r'totalWithTax': totalWithTax,
-        if (placedAtISTFormatted != null)
-          r'placedAtISTFormatted': placedAtISTFormatted,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
-        if (razorpayStatus != null) r'razorpayStatus': razorpayStatus,
-        if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
-        if (clientRequestToCancel != null)
-          r'clientRequestToCancel': clientRequestToCancel,
         if (otherInstructions != null) r'otherInstructions': otherInstructions,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
         if (loyaltyPointsEarned != null)
@@ -11857,35 +11663,11 @@ class Input$OrderSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$totalWithTax as String));
     }
-    if (data.containsKey('placedAtISTFormatted')) {
-      final l$placedAtISTFormatted = data['placedAtISTFormatted'];
-      result$data['placedAtISTFormatted'] = l$placedAtISTFormatted == null
-          ? null
-          : fromJson$Enum$SortOrder((l$placedAtISTFormatted as String));
-    }
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
       result$data['deviceMedium'] = l$deviceMedium == null
           ? null
           : fromJson$Enum$SortOrder((l$deviceMedium as String));
-    }
-    if (data.containsKey('razorpayStatus')) {
-      final l$razorpayStatus = data['razorpayStatus'];
-      result$data['razorpayStatus'] = l$razorpayStatus == null
-          ? null
-          : fromJson$Enum$SortOrder((l$razorpayStatus as String));
-    }
-    if (data.containsKey('razorpay_order_id')) {
-      final l$razorpay_order_id = data['razorpay_order_id'];
-      result$data['razorpay_order_id'] = l$razorpay_order_id == null
-          ? null
-          : fromJson$Enum$SortOrder((l$razorpay_order_id as String));
-    }
-    if (data.containsKey('clientRequestToCancel')) {
-      final l$clientRequestToCancel = data['clientRequestToCancel'];
-      result$data['clientRequestToCancel'] = l$clientRequestToCancel == null
-          ? null
-          : fromJson$Enum$SortOrder((l$clientRequestToCancel as String));
     }
     if (data.containsKey('otherInstructions')) {
       final l$otherInstructions = data['otherInstructions'];
@@ -11941,20 +11723,8 @@ class Input$OrderSortParameter {
   Enum$SortOrder? get totalWithTax =>
       (_$data['totalWithTax'] as Enum$SortOrder?);
 
-  Enum$SortOrder? get placedAtISTFormatted =>
-      (_$data['placedAtISTFormatted'] as Enum$SortOrder?);
-
   Enum$SortOrder? get deviceMedium =>
       (_$data['deviceMedium'] as Enum$SortOrder?);
-
-  Enum$SortOrder? get razorpayStatus =>
-      (_$data['razorpayStatus'] as Enum$SortOrder?);
-
-  Enum$SortOrder? get razorpay_order_id =>
-      (_$data['razorpay_order_id'] as Enum$SortOrder?);
-
-  Enum$SortOrder? get clientRequestToCancel =>
-      (_$data['clientRequestToCancel'] as Enum$SortOrder?);
 
   Enum$SortOrder? get otherInstructions =>
       (_$data['otherInstructions'] as Enum$SortOrder?);
@@ -12035,34 +11805,10 @@ class Input$OrderSortParameter {
       result$data['totalWithTax'] =
           l$totalWithTax == null ? null : toJson$Enum$SortOrder(l$totalWithTax);
     }
-    if (_$data.containsKey('placedAtISTFormatted')) {
-      final l$placedAtISTFormatted = placedAtISTFormatted;
-      result$data['placedAtISTFormatted'] = l$placedAtISTFormatted == null
-          ? null
-          : toJson$Enum$SortOrder(l$placedAtISTFormatted);
-    }
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
       result$data['deviceMedium'] =
           l$deviceMedium == null ? null : toJson$Enum$SortOrder(l$deviceMedium);
-    }
-    if (_$data.containsKey('razorpayStatus')) {
-      final l$razorpayStatus = razorpayStatus;
-      result$data['razorpayStatus'] = l$razorpayStatus == null
-          ? null
-          : toJson$Enum$SortOrder(l$razorpayStatus);
-    }
-    if (_$data.containsKey('razorpay_order_id')) {
-      final l$razorpay_order_id = razorpay_order_id;
-      result$data['razorpay_order_id'] = l$razorpay_order_id == null
-          ? null
-          : toJson$Enum$SortOrder(l$razorpay_order_id);
-    }
-    if (_$data.containsKey('clientRequestToCancel')) {
-      final l$clientRequestToCancel = clientRequestToCancel;
-      result$data['clientRequestToCancel'] = l$clientRequestToCancel == null
-          ? null
-          : toJson$Enum$SortOrder(l$clientRequestToCancel);
     }
     if (_$data.containsKey('otherInstructions')) {
       final l$otherInstructions = otherInstructions;
@@ -12213,15 +11959,6 @@ class Input$OrderSortParameter {
     if (l$totalWithTax != lOther$totalWithTax) {
       return false;
     }
-    final l$placedAtISTFormatted = placedAtISTFormatted;
-    final lOther$placedAtISTFormatted = other.placedAtISTFormatted;
-    if (_$data.containsKey('placedAtISTFormatted') !=
-        other._$data.containsKey('placedAtISTFormatted')) {
-      return false;
-    }
-    if (l$placedAtISTFormatted != lOther$placedAtISTFormatted) {
-      return false;
-    }
     final l$deviceMedium = deviceMedium;
     final lOther$deviceMedium = other.deviceMedium;
     if (_$data.containsKey('deviceMedium') !=
@@ -12229,33 +11966,6 @@ class Input$OrderSortParameter {
       return false;
     }
     if (l$deviceMedium != lOther$deviceMedium) {
-      return false;
-    }
-    final l$razorpayStatus = razorpayStatus;
-    final lOther$razorpayStatus = other.razorpayStatus;
-    if (_$data.containsKey('razorpayStatus') !=
-        other._$data.containsKey('razorpayStatus')) {
-      return false;
-    }
-    if (l$razorpayStatus != lOther$razorpayStatus) {
-      return false;
-    }
-    final l$razorpay_order_id = razorpay_order_id;
-    final lOther$razorpay_order_id = other.razorpay_order_id;
-    if (_$data.containsKey('razorpay_order_id') !=
-        other._$data.containsKey('razorpay_order_id')) {
-      return false;
-    }
-    if (l$razorpay_order_id != lOther$razorpay_order_id) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (_$data.containsKey('clientRequestToCancel') !=
-        other._$data.containsKey('clientRequestToCancel')) {
-      return false;
-    }
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
       return false;
     }
     final l$otherInstructions = otherInstructions;
@@ -12303,11 +12013,7 @@ class Input$OrderSortParameter {
     final l$shippingWithTax = shippingWithTax;
     final l$total = total;
     final l$totalWithTax = totalWithTax;
-    final l$placedAtISTFormatted = placedAtISTFormatted;
     final l$deviceMedium = deviceMedium;
-    final l$razorpayStatus = razorpayStatus;
-    final l$razorpay_order_id = razorpay_order_id;
-    final l$clientRequestToCancel = clientRequestToCancel;
     final l$otherInstructions = otherInstructions;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -12325,15 +12031,7 @@ class Input$OrderSortParameter {
       _$data.containsKey('shippingWithTax') ? l$shippingWithTax : const {},
       _$data.containsKey('total') ? l$total : const {},
       _$data.containsKey('totalWithTax') ? l$totalWithTax : const {},
-      _$data.containsKey('placedAtISTFormatted')
-          ? l$placedAtISTFormatted
-          : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
-      _$data.containsKey('razorpayStatus') ? l$razorpayStatus : const {},
-      _$data.containsKey('razorpay_order_id') ? l$razorpay_order_id : const {},
-      _$data.containsKey('clientRequestToCancel')
-          ? l$clientRequestToCancel
-          : const {},
       _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
       _$data.containsKey('loyaltyPointsEarned')
@@ -12366,11 +12064,7 @@ abstract class CopyWith$Input$OrderSortParameter<TRes> {
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
-    Enum$SortOrder? placedAtISTFormatted,
     Enum$SortOrder? deviceMedium,
-    Enum$SortOrder? razorpayStatus,
-    Enum$SortOrder? razorpay_order_id,
-    Enum$SortOrder? clientRequestToCancel,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,
@@ -12404,11 +12098,7 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
     Object? shippingWithTax = _undefined,
     Object? total = _undefined,
     Object? totalWithTax = _undefined,
-    Object? placedAtISTFormatted = _undefined,
     Object? deviceMedium = _undefined,
-    Object? razorpayStatus = _undefined,
-    Object? razorpay_order_id = _undefined,
-    Object? clientRequestToCancel = _undefined,
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
@@ -12435,16 +12125,8 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
         if (total != _undefined) 'total': (total as Enum$SortOrder?),
         if (totalWithTax != _undefined)
           'totalWithTax': (totalWithTax as Enum$SortOrder?),
-        if (placedAtISTFormatted != _undefined)
-          'placedAtISTFormatted': (placedAtISTFormatted as Enum$SortOrder?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as Enum$SortOrder?),
-        if (razorpayStatus != _undefined)
-          'razorpayStatus': (razorpayStatus as Enum$SortOrder?),
-        if (razorpay_order_id != _undefined)
-          'razorpay_order_id': (razorpay_order_id as Enum$SortOrder?),
-        if (clientRequestToCancel != _undefined)
-          'clientRequestToCancel': (clientRequestToCancel as Enum$SortOrder?),
         if (otherInstructions != _undefined)
           'otherInstructions': (otherInstructions as Enum$SortOrder?),
         if (loyaltyPointsUsed != _undefined)
@@ -12474,11 +12156,7 @@ class _CopyWithStubImpl$Input$OrderSortParameter<TRes>
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
-    Enum$SortOrder? placedAtISTFormatted,
     Enum$SortOrder? deviceMedium,
-    Enum$SortOrder? razorpayStatus,
-    Enum$SortOrder? razorpay_order_id,
-    Enum$SortOrder? clientRequestToCancel,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,
@@ -12621,12 +12299,14 @@ class Input$PhoneOtpInput {
     required String code,
     String? firstName,
     String? lastName,
+    String? emailAddress,
   }) =>
       Input$PhoneOtpInput._({
         r'phoneNumber': phoneNumber,
         r'code': code,
         if (firstName != null) r'firstName': firstName,
         if (lastName != null) r'lastName': lastName,
+        if (emailAddress != null) r'emailAddress': emailAddress,
       });
 
   Input$PhoneOtpInput._(this._$data);
@@ -12645,6 +12325,10 @@ class Input$PhoneOtpInput {
       final l$lastName = data['lastName'];
       result$data['lastName'] = (l$lastName as String?);
     }
+    if (data.containsKey('emailAddress')) {
+      final l$emailAddress = data['emailAddress'];
+      result$data['emailAddress'] = (l$emailAddress as String?);
+    }
     return Input$PhoneOtpInput._(result$data);
   }
 
@@ -12657,6 +12341,8 @@ class Input$PhoneOtpInput {
   String? get firstName => (_$data['firstName'] as String?);
 
   String? get lastName => (_$data['lastName'] as String?);
+
+  String? get emailAddress => (_$data['emailAddress'] as String?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -12671,6 +12357,10 @@ class Input$PhoneOtpInput {
     if (_$data.containsKey('lastName')) {
       final l$lastName = lastName;
       result$data['lastName'] = l$lastName;
+    }
+    if (_$data.containsKey('emailAddress')) {
+      final l$emailAddress = emailAddress;
+      result$data['emailAddress'] = l$emailAddress;
     }
     return result$data;
   }
@@ -12717,6 +12407,15 @@ class Input$PhoneOtpInput {
     if (l$lastName != lOther$lastName) {
       return false;
     }
+    final l$emailAddress = emailAddress;
+    final lOther$emailAddress = other.emailAddress;
+    if (_$data.containsKey('emailAddress') !=
+        other._$data.containsKey('emailAddress')) {
+      return false;
+    }
+    if (l$emailAddress != lOther$emailAddress) {
+      return false;
+    }
     return true;
   }
 
@@ -12726,11 +12425,13 @@ class Input$PhoneOtpInput {
     final l$code = code;
     final l$firstName = firstName;
     final l$lastName = lastName;
+    final l$emailAddress = emailAddress;
     return Object.hashAll([
       l$phoneNumber,
       l$code,
       _$data.containsKey('firstName') ? l$firstName : const {},
       _$data.containsKey('lastName') ? l$lastName : const {},
+      _$data.containsKey('emailAddress') ? l$emailAddress : const {},
     ]);
   }
 }
@@ -12749,6 +12450,7 @@ abstract class CopyWith$Input$PhoneOtpInput<TRes> {
     String? code,
     String? firstName,
     String? lastName,
+    String? emailAddress,
   });
 }
 
@@ -12770,6 +12472,7 @@ class _CopyWithImpl$Input$PhoneOtpInput<TRes>
     Object? code = _undefined,
     Object? firstName = _undefined,
     Object? lastName = _undefined,
+    Object? emailAddress = _undefined,
   }) =>
       _then(Input$PhoneOtpInput._({
         ..._instance._$data,
@@ -12778,6 +12481,8 @@ class _CopyWithImpl$Input$PhoneOtpInput<TRes>
         if (code != _undefined && code != null) 'code': (code as String),
         if (firstName != _undefined) 'firstName': (firstName as String?),
         if (lastName != _undefined) 'lastName': (lastName as String?),
+        if (emailAddress != _undefined)
+          'emailAddress': (emailAddress as String?),
       }));
 }
 
@@ -12792,6 +12497,7 @@ class _CopyWithStubImpl$Input$PhoneOtpInput<TRes>
     String? code,
     String? firstName,
     String? lastName,
+    String? emailAddress,
   }) =>
       _res;
 }
@@ -17492,18 +17198,11 @@ class _CopyWithStubImpl$Input$UpdateCustomerInput<TRes>
 class Input$UpdateOrderCustomFieldsInput {
   factory Input$UpdateOrderCustomFieldsInput({
     String? deviceMedium,
-    String? razorpay_order_id,
-    int? clientRequestToCancel,
-    String? otherInstructions,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
   }) =>
       Input$UpdateOrderCustomFieldsInput._({
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
-        if (razorpay_order_id != null) r'razorpay_order_id': razorpay_order_id,
-        if (clientRequestToCancel != null)
-          r'clientRequestToCancel': clientRequestToCancel,
-        if (otherInstructions != null) r'otherInstructions': otherInstructions,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
         if (loyaltyPointsEarned != null)
           r'loyaltyPointsEarned': loyaltyPointsEarned,
@@ -17517,18 +17216,6 @@ class Input$UpdateOrderCustomFieldsInput {
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
       result$data['deviceMedium'] = (l$deviceMedium as String?);
-    }
-    if (data.containsKey('razorpay_order_id')) {
-      final l$razorpay_order_id = data['razorpay_order_id'];
-      result$data['razorpay_order_id'] = (l$razorpay_order_id as String?);
-    }
-    if (data.containsKey('clientRequestToCancel')) {
-      final l$clientRequestToCancel = data['clientRequestToCancel'];
-      result$data['clientRequestToCancel'] = (l$clientRequestToCancel as int?);
-    }
-    if (data.containsKey('otherInstructions')) {
-      final l$otherInstructions = data['otherInstructions'];
-      result$data['otherInstructions'] = (l$otherInstructions as String?);
     }
     if (data.containsKey('loyaltyPointsUsed')) {
       final l$loyaltyPointsUsed = data['loyaltyPointsUsed'];
@@ -17545,12 +17232,6 @@ class Input$UpdateOrderCustomFieldsInput {
 
   String? get deviceMedium => (_$data['deviceMedium'] as String?);
 
-  String? get razorpay_order_id => (_$data['razorpay_order_id'] as String?);
-
-  int? get clientRequestToCancel => (_$data['clientRequestToCancel'] as int?);
-
-  String? get otherInstructions => (_$data['otherInstructions'] as String?);
-
   int? get loyaltyPointsUsed => (_$data['loyaltyPointsUsed'] as int?);
 
   int? get loyaltyPointsEarned => (_$data['loyaltyPointsEarned'] as int?);
@@ -17560,18 +17241,6 @@ class Input$UpdateOrderCustomFieldsInput {
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
       result$data['deviceMedium'] = l$deviceMedium;
-    }
-    if (_$data.containsKey('razorpay_order_id')) {
-      final l$razorpay_order_id = razorpay_order_id;
-      result$data['razorpay_order_id'] = l$razorpay_order_id;
-    }
-    if (_$data.containsKey('clientRequestToCancel')) {
-      final l$clientRequestToCancel = clientRequestToCancel;
-      result$data['clientRequestToCancel'] = l$clientRequestToCancel;
-    }
-    if (_$data.containsKey('otherInstructions')) {
-      final l$otherInstructions = otherInstructions;
-      result$data['otherInstructions'] = l$otherInstructions;
     }
     if (_$data.containsKey('loyaltyPointsUsed')) {
       final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -17609,33 +17278,6 @@ class Input$UpdateOrderCustomFieldsInput {
     if (l$deviceMedium != lOther$deviceMedium) {
       return false;
     }
-    final l$razorpay_order_id = razorpay_order_id;
-    final lOther$razorpay_order_id = other.razorpay_order_id;
-    if (_$data.containsKey('razorpay_order_id') !=
-        other._$data.containsKey('razorpay_order_id')) {
-      return false;
-    }
-    if (l$razorpay_order_id != lOther$razorpay_order_id) {
-      return false;
-    }
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final lOther$clientRequestToCancel = other.clientRequestToCancel;
-    if (_$data.containsKey('clientRequestToCancel') !=
-        other._$data.containsKey('clientRequestToCancel')) {
-      return false;
-    }
-    if (l$clientRequestToCancel != lOther$clientRequestToCancel) {
-      return false;
-    }
-    final l$otherInstructions = otherInstructions;
-    final lOther$otherInstructions = other.otherInstructions;
-    if (_$data.containsKey('otherInstructions') !=
-        other._$data.containsKey('otherInstructions')) {
-      return false;
-    }
-    if (l$otherInstructions != lOther$otherInstructions) {
-      return false;
-    }
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
     if (_$data.containsKey('loyaltyPointsUsed') !=
@@ -17660,18 +17302,10 @@ class Input$UpdateOrderCustomFieldsInput {
   @override
   int get hashCode {
     final l$deviceMedium = deviceMedium;
-    final l$razorpay_order_id = razorpay_order_id;
-    final l$clientRequestToCancel = clientRequestToCancel;
-    final l$otherInstructions = otherInstructions;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     return Object.hashAll([
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
-      _$data.containsKey('razorpay_order_id') ? l$razorpay_order_id : const {},
-      _$data.containsKey('clientRequestToCancel')
-          ? l$clientRequestToCancel
-          : const {},
-      _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
       _$data.containsKey('loyaltyPointsEarned')
           ? l$loyaltyPointsEarned
@@ -17691,9 +17325,6 @@ abstract class CopyWith$Input$UpdateOrderCustomFieldsInput<TRes> {
 
   TRes call({
     String? deviceMedium,
-    String? razorpay_order_id,
-    int? clientRequestToCancel,
-    String? otherInstructions,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
   });
@@ -17714,9 +17345,6 @@ class _CopyWithImpl$Input$UpdateOrderCustomFieldsInput<TRes>
 
   TRes call({
     Object? deviceMedium = _undefined,
-    Object? razorpay_order_id = _undefined,
-    Object? clientRequestToCancel = _undefined,
-    Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
   }) =>
@@ -17724,12 +17352,6 @@ class _CopyWithImpl$Input$UpdateOrderCustomFieldsInput<TRes>
         ..._instance._$data,
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as String?),
-        if (razorpay_order_id != _undefined)
-          'razorpay_order_id': (razorpay_order_id as String?),
-        if (clientRequestToCancel != _undefined)
-          'clientRequestToCancel': (clientRequestToCancel as int?),
-        if (otherInstructions != _undefined)
-          'otherInstructions': (otherInstructions as String?),
         if (loyaltyPointsUsed != _undefined)
           'loyaltyPointsUsed': (loyaltyPointsUsed as int?),
         if (loyaltyPointsEarned != _undefined)
@@ -17745,9 +17367,6 @@ class _CopyWithStubImpl$Input$UpdateOrderCustomFieldsInput<TRes>
 
   call({
     String? deviceMedium,
-    String? razorpay_order_id,
-    int? clientRequestToCancel,
-    String? otherInstructions,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
   }) =>
@@ -17950,6 +17569,72 @@ Enum$AssetType fromJson$Enum$AssetType(String value) {
       return Enum$AssetType.BINARY;
     default:
       return Enum$AssetType.$unknown;
+  }
+}
+
+enum Enum$ChannelType {
+  CITY,
+  BRAND,
+  $unknown;
+
+  factory Enum$ChannelType.fromJson(String value) =>
+      fromJson$Enum$ChannelType(value);
+
+  String toJson() => toJson$Enum$ChannelType(this);
+}
+
+String toJson$Enum$ChannelType(Enum$ChannelType e) {
+  switch (e) {
+    case Enum$ChannelType.CITY:
+      return r'CITY';
+    case Enum$ChannelType.BRAND:
+      return r'BRAND';
+    case Enum$ChannelType.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$ChannelType fromJson$Enum$ChannelType(String value) {
+  switch (value) {
+    case r'CITY':
+      return Enum$ChannelType.CITY;
+    case r'BRAND':
+      return Enum$ChannelType.BRAND;
+    default:
+      return Enum$ChannelType.$unknown;
+  }
+}
+
+enum Enum$ChannelTypeEnum {
+  CITY,
+  BRAND,
+  $unknown;
+
+  factory Enum$ChannelTypeEnum.fromJson(String value) =>
+      fromJson$Enum$ChannelTypeEnum(value);
+
+  String toJson() => toJson$Enum$ChannelTypeEnum(this);
+}
+
+String toJson$Enum$ChannelTypeEnum(Enum$ChannelTypeEnum e) {
+  switch (e) {
+    case Enum$ChannelTypeEnum.CITY:
+      return r'CITY';
+    case Enum$ChannelTypeEnum.BRAND:
+      return r'BRAND';
+    case Enum$ChannelTypeEnum.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$ChannelTypeEnum fromJson$Enum$ChannelTypeEnum(String value) {
+  switch (value) {
+    case r'CITY':
+      return Enum$ChannelTypeEnum.CITY;
+    case r'BRAND':
+      return Enum$ChannelTypeEnum.BRAND;
+    default:
+      return Enum$ChannelTypeEnum.$unknown;
   }
 }
 
@@ -20195,6 +19880,10 @@ enum Enum$Permission {
   UpdateBanner,
   DeleteBanner,
   LoyaltyPoints,
+  CreatePostalCode,
+  ReadPostalCode,
+  UpdatePostalCode,
+  DeletePostalCode,
   $unknown;
 
   factory Enum$Permission.fromJson(String value) =>
@@ -20403,6 +20092,14 @@ String toJson$Enum$Permission(Enum$Permission e) {
       return r'DeleteBanner';
     case Enum$Permission.LoyaltyPoints:
       return r'LoyaltyPoints';
+    case Enum$Permission.CreatePostalCode:
+      return r'CreatePostalCode';
+    case Enum$Permission.ReadPostalCode:
+      return r'ReadPostalCode';
+    case Enum$Permission.UpdatePostalCode:
+      return r'UpdatePostalCode';
+    case Enum$Permission.DeletePostalCode:
+      return r'DeletePostalCode';
     case Enum$Permission.$unknown:
       return r'$unknown';
   }
@@ -20608,6 +20305,14 @@ Enum$Permission fromJson$Enum$Permission(String value) {
       return Enum$Permission.DeleteBanner;
     case r'LoyaltyPoints':
       return Enum$Permission.LoyaltyPoints;
+    case r'CreatePostalCode':
+      return Enum$Permission.CreatePostalCode;
+    case r'ReadPostalCode':
+      return Enum$Permission.ReadPostalCode;
+    case r'UpdatePostalCode':
+      return Enum$Permission.UpdatePostalCode;
+    case r'DeletePostalCode':
+      return Enum$Permission.DeletePostalCode;
     default:
       return Enum$Permission.$unknown;
   }
@@ -20645,3 +20350,435 @@ Enum$SortOrder fromJson$Enum$SortOrder(String value) {
       return Enum$SortOrder.$unknown;
   }
 }
+
+enum Enum$__TypeKind {
+  SCALAR,
+  OBJECT,
+  INTERFACE,
+  UNION,
+  ENUM,
+  INPUT_OBJECT,
+  LIST,
+  NON_NULL,
+  $unknown;
+
+  factory Enum$__TypeKind.fromJson(String value) =>
+      fromJson$Enum$__TypeKind(value);
+
+  String toJson() => toJson$Enum$__TypeKind(this);
+}
+
+String toJson$Enum$__TypeKind(Enum$__TypeKind e) {
+  switch (e) {
+    case Enum$__TypeKind.SCALAR:
+      return r'SCALAR';
+    case Enum$__TypeKind.OBJECT:
+      return r'OBJECT';
+    case Enum$__TypeKind.INTERFACE:
+      return r'INTERFACE';
+    case Enum$__TypeKind.UNION:
+      return r'UNION';
+    case Enum$__TypeKind.ENUM:
+      return r'ENUM';
+    case Enum$__TypeKind.INPUT_OBJECT:
+      return r'INPUT_OBJECT';
+    case Enum$__TypeKind.LIST:
+      return r'LIST';
+    case Enum$__TypeKind.NON_NULL:
+      return r'NON_NULL';
+    case Enum$__TypeKind.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$__TypeKind fromJson$Enum$__TypeKind(String value) {
+  switch (value) {
+    case r'SCALAR':
+      return Enum$__TypeKind.SCALAR;
+    case r'OBJECT':
+      return Enum$__TypeKind.OBJECT;
+    case r'INTERFACE':
+      return Enum$__TypeKind.INTERFACE;
+    case r'UNION':
+      return Enum$__TypeKind.UNION;
+    case r'ENUM':
+      return Enum$__TypeKind.ENUM;
+    case r'INPUT_OBJECT':
+      return Enum$__TypeKind.INPUT_OBJECT;
+    case r'LIST':
+      return Enum$__TypeKind.LIST;
+    case r'NON_NULL':
+      return Enum$__TypeKind.NON_NULL;
+    default:
+      return Enum$__TypeKind.$unknown;
+  }
+}
+
+enum Enum$__DirectiveLocation {
+  QUERY,
+  MUTATION,
+  SUBSCRIPTION,
+  FIELD,
+  FRAGMENT_DEFINITION,
+  FRAGMENT_SPREAD,
+  INLINE_FRAGMENT,
+  VARIABLE_DEFINITION,
+  SCHEMA,
+  SCALAR,
+  OBJECT,
+  FIELD_DEFINITION,
+  ARGUMENT_DEFINITION,
+  INTERFACE,
+  UNION,
+  ENUM,
+  ENUM_VALUE,
+  INPUT_OBJECT,
+  INPUT_FIELD_DEFINITION,
+  $unknown;
+
+  factory Enum$__DirectiveLocation.fromJson(String value) =>
+      fromJson$Enum$__DirectiveLocation(value);
+
+  String toJson() => toJson$Enum$__DirectiveLocation(this);
+}
+
+String toJson$Enum$__DirectiveLocation(Enum$__DirectiveLocation e) {
+  switch (e) {
+    case Enum$__DirectiveLocation.QUERY:
+      return r'QUERY';
+    case Enum$__DirectiveLocation.MUTATION:
+      return r'MUTATION';
+    case Enum$__DirectiveLocation.SUBSCRIPTION:
+      return r'SUBSCRIPTION';
+    case Enum$__DirectiveLocation.FIELD:
+      return r'FIELD';
+    case Enum$__DirectiveLocation.FRAGMENT_DEFINITION:
+      return r'FRAGMENT_DEFINITION';
+    case Enum$__DirectiveLocation.FRAGMENT_SPREAD:
+      return r'FRAGMENT_SPREAD';
+    case Enum$__DirectiveLocation.INLINE_FRAGMENT:
+      return r'INLINE_FRAGMENT';
+    case Enum$__DirectiveLocation.VARIABLE_DEFINITION:
+      return r'VARIABLE_DEFINITION';
+    case Enum$__DirectiveLocation.SCHEMA:
+      return r'SCHEMA';
+    case Enum$__DirectiveLocation.SCALAR:
+      return r'SCALAR';
+    case Enum$__DirectiveLocation.OBJECT:
+      return r'OBJECT';
+    case Enum$__DirectiveLocation.FIELD_DEFINITION:
+      return r'FIELD_DEFINITION';
+    case Enum$__DirectiveLocation.ARGUMENT_DEFINITION:
+      return r'ARGUMENT_DEFINITION';
+    case Enum$__DirectiveLocation.INTERFACE:
+      return r'INTERFACE';
+    case Enum$__DirectiveLocation.UNION:
+      return r'UNION';
+    case Enum$__DirectiveLocation.ENUM:
+      return r'ENUM';
+    case Enum$__DirectiveLocation.ENUM_VALUE:
+      return r'ENUM_VALUE';
+    case Enum$__DirectiveLocation.INPUT_OBJECT:
+      return r'INPUT_OBJECT';
+    case Enum$__DirectiveLocation.INPUT_FIELD_DEFINITION:
+      return r'INPUT_FIELD_DEFINITION';
+    case Enum$__DirectiveLocation.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$__DirectiveLocation fromJson$Enum$__DirectiveLocation(String value) {
+  switch (value) {
+    case r'QUERY':
+      return Enum$__DirectiveLocation.QUERY;
+    case r'MUTATION':
+      return Enum$__DirectiveLocation.MUTATION;
+    case r'SUBSCRIPTION':
+      return Enum$__DirectiveLocation.SUBSCRIPTION;
+    case r'FIELD':
+      return Enum$__DirectiveLocation.FIELD;
+    case r'FRAGMENT_DEFINITION':
+      return Enum$__DirectiveLocation.FRAGMENT_DEFINITION;
+    case r'FRAGMENT_SPREAD':
+      return Enum$__DirectiveLocation.FRAGMENT_SPREAD;
+    case r'INLINE_FRAGMENT':
+      return Enum$__DirectiveLocation.INLINE_FRAGMENT;
+    case r'VARIABLE_DEFINITION':
+      return Enum$__DirectiveLocation.VARIABLE_DEFINITION;
+    case r'SCHEMA':
+      return Enum$__DirectiveLocation.SCHEMA;
+    case r'SCALAR':
+      return Enum$__DirectiveLocation.SCALAR;
+    case r'OBJECT':
+      return Enum$__DirectiveLocation.OBJECT;
+    case r'FIELD_DEFINITION':
+      return Enum$__DirectiveLocation.FIELD_DEFINITION;
+    case r'ARGUMENT_DEFINITION':
+      return Enum$__DirectiveLocation.ARGUMENT_DEFINITION;
+    case r'INTERFACE':
+      return Enum$__DirectiveLocation.INTERFACE;
+    case r'UNION':
+      return Enum$__DirectiveLocation.UNION;
+    case r'ENUM':
+      return Enum$__DirectiveLocation.ENUM;
+    case r'ENUM_VALUE':
+      return Enum$__DirectiveLocation.ENUM_VALUE;
+    case r'INPUT_OBJECT':
+      return Enum$__DirectiveLocation.INPUT_OBJECT;
+    case r'INPUT_FIELD_DEFINITION':
+      return Enum$__DirectiveLocation.INPUT_FIELD_DEFINITION;
+    default:
+      return Enum$__DirectiveLocation.$unknown;
+  }
+}
+
+const possibleTypesMap = <String, Set<String>>{
+  'ActiveOrderResult': {
+    'Order',
+    'NoActiveOrderError',
+  },
+  'AddPaymentToOrderResult': {
+    'Order',
+    'OrderPaymentStateError',
+    'IneligiblePaymentMethodError',
+    'PaymentFailedError',
+    'PaymentDeclinedError',
+    'OrderStateTransitionError',
+    'NoActiveOrderError',
+  },
+  'Node': {
+    'Address',
+    'Asset',
+    'AuthenticationMethod',
+    'Channel',
+    'Collection',
+    'Country',
+    'Customer',
+    'CustomerGroup',
+    'Facet',
+    'FacetValue',
+    'Favorite',
+    'Fulfillment',
+    'HistoryEntry',
+    'LoyaltyPointsTransaction',
+    'Order',
+    'OrderLine',
+    'Payment',
+    'PaymentMethod',
+    'Product',
+    'ProductOption',
+    'ProductOptionGroup',
+    'ProductVariant',
+    'Promotion',
+    'Province',
+    'Refund',
+    'Role',
+    'Seller',
+    'ShippingMethod',
+    'Surcharge',
+    'Tag',
+    'TaxCategory',
+    'TaxRate',
+    'User',
+    'Zone',
+  },
+  'ErrorResult': {
+    'AlreadyLoggedInError',
+    'CartContainsUnavailableItemsError',
+    'CouponCodeExpiredError',
+    'CouponCodeInvalidError',
+    'CouponCodeLimitError',
+    'EmailAddressConflictError',
+    'GuestCheckoutError',
+    'IdentifierChangeTokenExpiredError',
+    'IdentifierChangeTokenInvalidError',
+    'IneligiblePaymentMethodError',
+    'IneligibleShippingMethodError',
+    'InsufficientStockError',
+    'InvalidCredentialsError',
+    'MissingPasswordError',
+    'NativeAuthStrategyError',
+    'NegativeQuantityError',
+    'NoActiveOrderError',
+    'NotVerifiedError',
+    'OrderInterceptorError',
+    'OrderLimitError',
+    'OrderModificationError',
+    'OrderPaymentStateError',
+    'OrderStateTransitionError',
+    'PasswordAlreadySetError',
+    'PasswordResetTokenExpiredError',
+    'PasswordResetTokenInvalidError',
+    'PasswordValidationError',
+    'PaymentDeclinedError',
+    'PaymentFailedError',
+    'VerificationTokenExpiredError',
+    'VerificationTokenInvalidError',
+  },
+  'ApplyCouponCodeResult': {
+    'Order',
+    'CouponCodeExpiredError',
+    'CouponCodeInvalidError',
+    'CouponCodeLimitError',
+  },
+  'PaginatedList': {
+    'AssetList',
+    'CollectionList',
+    'CountryList',
+    'CoupcodesList',
+    'CustomerList',
+    'FacetList',
+    'FacetValueList',
+    'FavoriteList',
+    'HistoryEntryList',
+    'LoyaltyPointsTransactionList',
+    'OrderList',
+    'ProductList',
+    'ProductVariantList',
+    'PromotionList',
+    'ProvinceList',
+    'RoleList',
+    'ShippingMethodList',
+    'TagList',
+    'TaxRateList',
+  },
+  'AuthenticationResult': {
+    'CurrentUser',
+    'InvalidCredentialsError',
+    'NotVerifiedError',
+  },
+  'CustomField': {
+    'BooleanCustomFieldConfig',
+    'DateTimeCustomFieldConfig',
+    'FloatCustomFieldConfig',
+    'IntCustomFieldConfig',
+    'LocaleStringCustomFieldConfig',
+    'LocaleTextCustomFieldConfig',
+    'RelationCustomFieldConfig',
+    'StringCustomFieldConfig',
+    'StructCustomFieldConfig',
+    'TextCustomFieldConfig',
+  },
+  'StructField': {
+    'BooleanStructFieldConfig',
+    'DateTimeStructFieldConfig',
+    'FloatStructFieldConfig',
+    'IntStructFieldConfig',
+    'StringStructFieldConfig',
+    'TextStructFieldConfig',
+  },
+  'Region': {
+    'Country',
+    'Province',
+  },
+  'CustomFieldConfig': {
+    'StringCustomFieldConfig',
+    'LocaleStringCustomFieldConfig',
+    'IntCustomFieldConfig',
+    'FloatCustomFieldConfig',
+    'BooleanCustomFieldConfig',
+    'DateTimeCustomFieldConfig',
+    'RelationCustomFieldConfig',
+    'TextCustomFieldConfig',
+    'LocaleTextCustomFieldConfig',
+    'StructCustomFieldConfig',
+  },
+  'NativeAuthenticationResult': {
+    'CurrentUser',
+    'InvalidCredentialsError',
+    'NotVerifiedError',
+    'NativeAuthStrategyError',
+  },
+  'RefreshCustomerVerificationResult': {
+    'Success',
+    'NativeAuthStrategyError',
+  },
+  'RegisterCustomerAccountResult': {
+    'Success',
+    'MissingPasswordError',
+    'PasswordValidationError',
+    'NativeAuthStrategyError',
+  },
+  'RemoveOrderItemsResult': {
+    'Order',
+    'OrderModificationError',
+    'OrderInterceptorError',
+  },
+  'RequestPasswordResetResult': {
+    'Success',
+    'NativeAuthStrategyError',
+  },
+  'RequestUpdateCustomerEmailAddressResult': {
+    'Success',
+    'InvalidCredentialsError',
+    'EmailAddressConflictError',
+    'NativeAuthStrategyError',
+  },
+  'ResetPasswordResult': {
+    'CurrentUser',
+    'PasswordResetTokenInvalidError',
+    'PasswordResetTokenExpiredError',
+    'PasswordValidationError',
+    'NativeAuthStrategyError',
+    'NotVerifiedError',
+  },
+  'SearchResultPrice': {
+    'PriceRange',
+    'SinglePrice',
+  },
+  'SetCustomerForOrderResult': {
+    'Order',
+    'AlreadyLoggedInError',
+    'EmailAddressConflictError',
+    'NoActiveOrderError',
+    'GuestCheckoutError',
+  },
+  'SetOrderShippingMethodResult': {
+    'Order',
+    'OrderModificationError',
+    'IneligibleShippingMethodError',
+    'NoActiveOrderError',
+  },
+  'StructFieldConfig': {
+    'StringStructFieldConfig',
+    'IntStructFieldConfig',
+    'FloatStructFieldConfig',
+    'BooleanStructFieldConfig',
+    'DateTimeStructFieldConfig',
+    'TextStructFieldConfig',
+  },
+  'TransitionOrderToStateResult': {
+    'Order',
+    'OrderStateTransitionError',
+    'CartContainsUnavailableItemsError',
+  },
+  'UpdateCustomerEmailAddressResult': {
+    'Success',
+    'IdentifierChangeTokenInvalidError',
+    'IdentifierChangeTokenExpiredError',
+    'NativeAuthStrategyError',
+  },
+  'UpdateCustomerPasswordResult': {
+    'Success',
+    'InvalidCredentialsError',
+    'PasswordValidationError',
+    'NativeAuthStrategyError',
+  },
+  'UpdateOrderItemsResult': {
+    'Order',
+    'OrderModificationError',
+    'OrderLimitError',
+    'NegativeQuantityError',
+    'InsufficientStockError',
+    'OrderInterceptorError',
+  },
+  'VerifyCustomerAccountResult': {
+    'CurrentUser',
+    'VerificationTokenInvalidError',
+    'VerificationTokenExpiredError',
+    'MissingPasswordError',
+    'PasswordValidationError',
+    'PasswordAlreadySetError',
+    'NativeAuthStrategyError',
+  },
+};

@@ -10,6 +10,14 @@ import '../utils/app_strings.dart';
 import '../graphql/Customer.graphql.dart';
 import '../graphql/schema.graphql.dart';
 
+// Helper class to persist postal codes state
+class _PostalCodesState {
+  List<Query$PostalCodes$postalCodes> postalCodesList = [];
+  bool isLoadingPostalCodes = true;
+  bool hasFetched = false;
+  Function(VoidCallback)? setStateCallback;
+}
+
 class AddressComponent extends StatelessWidget {
   final CustomerController customerController;
 
@@ -263,6 +271,8 @@ class AddressComponent extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context, dynamic address) {
+    debugPrint('[AddressComponent] ========== EDIT ADDRESS DIALOG OPENED ==========');
+    debugPrint('[AddressComponent] Opening edit address form...');
     _showAddressForm(context, existingAddress: address);
   }
 
@@ -351,6 +361,9 @@ class AddressComponent extends StatelessWidget {
 
   void _showAddressForm(BuildContext context, {dynamic existingAddress}) {
     final isEdit = existingAddress != null;
+    debugPrint('[AddressComponent] ========== ADDRESS FORM DIALOG OPENED ==========');
+    debugPrint('[AddressComponent] Mode: ${isEdit ? "EDIT" : "ADD"}');
+    debugPrint('[AddressComponent] Dialog will open and fetch postal codes...');
     final box = GetStorage();
 
     // Get channel code from storage and use it as city
@@ -397,8 +410,87 @@ class AddressComponent extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
+      builder: (context) {
+        debugPrint('[AddressComponent] ========== DIALOG BUILDER CALLED ==========');
+        debugPrint('[AddressComponent] Dialog builder executed');
+        
+        // State variables for postal codes - use closure to persist
+        final postalCodesState = _PostalCodesState();
+        
+        // Store setState reference - will be set in StatefulBuilder
+        StateSetter? dialogSetState;
+        
+        // Function to trigger UI update
+        void triggerUpdate() {
+          if (dialogSetState != null && context.mounted) {
+            dialogSetState!(() {});
+            debugPrint('[AddressComponent] Triggered setState to update UI');
+          } else {
+            debugPrint('[AddressComponent] setState not ready yet, will update when StatefulBuilder is called');
+          }
+        }
+        
+        // Trigger fetch immediately when dialog builder is called (synchronously)
+        debugPrint('[AddressComponent] ========== FETCHING POSTAL CODES ==========');
+        debugPrint('[AddressComponent] Starting postal codes fetch IMMEDIATELY...');
+        debugPrint('[AddressComponent] Calling customerController.fetchPostalCodes()...');
+        
+        // Always fetch postal codes when dialog opens (don't check hasFetched)
+        // This ensures fresh data every time the dialog is opened
+        customerController.fetchPostalCodes().then((codes) {
+          debugPrint('[AddressComponent] ========== POSTAL CODES FETCH COMPLETED ==========');
+          debugPrint('[AddressComponent] Received ${codes.length} postal codes');
+          if (codes.isNotEmpty) {
+            debugPrint('[AddressComponent] Postal codes list:');
+            for (var code in codes) {
+              debugPrint('[AddressComponent]   - ${code.code} (ID: ${code.id}, isAnywhere: ${code.isAnywhere})');
+            }
+          } else {
+            debugPrint('[AddressComponent] No postal codes returned');
+          }
+          postalCodesState.postalCodesList = codes;
+          postalCodesState.isLoadingPostalCodes = false;
+          debugPrint('[AddressComponent] State updated - postalCodesList.length: ${postalCodesState.postalCodesList.length}, isLoadingPostalCodes: ${postalCodesState.isLoadingPostalCodes}');
+          // Trigger rebuild after state update
+          triggerUpdate();
+        }).catchError((error) {
+          debugPrint('[AddressComponent] ========== POSTAL CODES FETCH ERROR ==========');
+          debugPrint('[AddressComponent] Error type: ${error.runtimeType}');
+          debugPrint('[AddressComponent] Error message: $error');
+          postalCodesState.isLoadingPostalCodes = false;
+          debugPrint('[AddressComponent] State updated (error) - isLoadingPostalCodes: false');
+          triggerUpdate();
+        });
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            debugPrint('[AddressComponent] StatefulBuilder builder called');
+            debugPrint('[AddressComponent] Current state - postalCodesList.length: ${postalCodesState.postalCodesList.length}, isLoadingPostalCodes: ${postalCodesState.isLoadingPostalCodes}');
+            
+            // Store setState reference for postal codes state updates
+            dialogSetState = setState;
+            postalCodesState.setStateCallback = setState;
+            
+            // If fetch completed before StatefulBuilder was called, trigger update now
+            if (!postalCodesState.isLoadingPostalCodes) {
+              debugPrint('[AddressComponent] Fetch completed (or failed), postalCodesList.length: ${postalCodesState.postalCodesList.length}');
+              // Trigger a rebuild to ensure UI shows the postal codes
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  setState(() {});
+                }
+              });
+            }
+            
+            // Trigger rebuild periodically to check for postal codes updates
+            if (postalCodesState.isLoadingPostalCodes) {
+              Future.delayed(Duration(milliseconds: 500), () {
+                if (context.mounted && postalCodesState.isLoadingPostalCodes) {
+                  setState(() {});
+                }
+              });
+            }
+
           return Dialog(
             backgroundColor: Colors.transparent, // Faster rendering
             insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -410,8 +502,8 @@ class AddressComponent extends StatelessWidget {
                 constraints: BoxConstraints(
                     maxHeight: MediaQuery.of(context).size.height * 0.8),
                 child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
                   // Header
                   Container(
                     padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
@@ -481,9 +573,13 @@ class AddressComponent extends StatelessWidget {
                               cityController, 'City', Icons.location_city,
                               required: true, readOnly: true),
                           SizedBox(height: ResponsiveUtils.rp(16)),
-                          _buildFormField(postalController, 'ZIP Code',
-                              Icons.markunread_mailbox,
-                              required: true),
+                          _buildPostalCodeField(
+                            context,
+                            postalController,
+                            postalCodesState.postalCodesList,
+                            postalCodesState.isLoadingPostalCodes,
+                            setState,
+                          ),
                           SizedBox(height: ResponsiveUtils.rp(16)),
                           _buildFormField(phoneController, 'Phone', Icons.phone,
                               keyboardType: TextInputType.phone),
@@ -701,7 +797,8 @@ class AddressComponent extends StatelessWidget {
           ),
           );
         },
-      ),
+      );
+    },
     );
   }
 
@@ -803,6 +900,156 @@ class AddressComponent extends StatelessWidget {
             fillColor: readOnly ? AppColors.grey100 : AppColors.inputFill,
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildPostalCodeField(
+    BuildContext context,
+    TextEditingController controller,
+    List<Query$PostalCodes$postalCodes> postalCodesList,
+    bool isLoadingPostalCodes,
+    StateSetter setState,
+  ) {
+    final hasPostalCodes = postalCodesList.isNotEmpty;
+    
+    debugPrint('[AddressComponent] _buildPostalCodeField called:');
+    debugPrint('[AddressComponent]   - isLoadingPostalCodes: $isLoadingPostalCodes');
+    debugPrint('[AddressComponent]   - postalCodesList.length: ${postalCodesList.length}');
+    debugPrint('[AddressComponent]   - hasPostalCodes: $hasPostalCodes');
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'ZIP Code',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Text(
+              ' *',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.w600,
+                color: AppColors.error,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        if (isLoadingPostalCodes)
+          // Show loading state
+          Container(
+            height: ResponsiveUtils.rp(50),
+            decoration: BoxDecoration(
+              color: AppColors.inputFill,
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Center(
+              child: SizedBox(
+                width: ResponsiveUtils.rp(20),
+                height: ResponsiveUtils.rp(20),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                ),
+              ),
+            ),
+          )
+        else if (hasPostalCodes)
+          // Show dropdown when postal codes are available
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.inputFill,
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: DropdownButtonFormField<String>(
+              value: controller.text.isNotEmpty ? controller.text : null,
+              initialValue: controller.text.isNotEmpty ? controller.text : null,
+              decoration: InputDecoration(
+                hintText: 'Select ZIP Code',
+                hintStyle: TextStyle(
+                  color: AppColors.textTertiary,
+                  fontSize: ResponsiveUtils.sp(14),
+                ),
+                prefixIcon: Icon(
+                  Icons.markunread_mailbox,
+                  color: AppColors.textSecondary,
+                  size: ResponsiveUtils.rp(20),
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(16),
+                  vertical: ResponsiveUtils.rp(14),
+                ),
+              ),
+              items: postalCodesList.map((postalCode) {
+                return DropdownMenuItem<String>(
+                  value: postalCode.code,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          postalCode.code,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(15),
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      if (postalCode.isAnywhere == true)
+                        Container(
+                          margin: EdgeInsets.only(left: ResponsiveUtils.rp(8)),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(6),
+                            vertical: ResponsiveUtils.rp(2),
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.button.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
+                          ),
+                          child: Text(
+                            'Anywhere',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(10),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.button,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                if (value != null) {
+                  setState(() {
+                    controller.text = value;
+                  });
+                }
+              },
+              dropdownColor: AppColors.surface,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(15),
+                color: AppColors.textPrimary,
+              ),
+            ),
+          )
+        else
+          // Show text field when no postal codes available
+          _buildFormField(
+            controller,
+            'ZIP Code',
+            Icons.markunread_mailbox,
+            required: true,
+          ),
       ],
     );
   }

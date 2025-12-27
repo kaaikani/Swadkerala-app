@@ -205,7 +205,7 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
                 // Product Image with shimmer
                 ClipRRect(
                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                  child: _buildProductImage(item.previewImage),
+                  child: _buildProductImage(item.productAsset?.preview),
                 ),
                 ResponsiveSpacing.horizontal(12),
                 // Product Name
