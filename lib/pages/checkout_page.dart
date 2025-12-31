@@ -112,6 +112,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       // Then load other data in parallel
       await Future.wait([
         _loadShippingMethods(),
+        _refreshPaymentMethods(), // Always fetch payment methods when entering checkout page
         _loadCouponCodes(),
         _loadLoyaltyPointsConfig(),
       ], eagerError: false);
@@ -1642,6 +1643,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
       return Scaffold(
         backgroundColor: AppColors.background,
         body: Container(
+          color: AppColors.background,
         child: SafeArea(
           child: Column(
             children: [
@@ -1662,6 +1664,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                       await Future.wait([
                         _loadCustomerAddresses(),
                         _loadShippingMethods(),
+                        _refreshPaymentMethods(), // Always refresh payment methods on pull-to-refresh
                         _loadCouponCodes(),
                         _loadLoyaltyPointsConfig(),
                       ]);
@@ -1735,19 +1738,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
       ),
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.card,
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowLight,
-                  blurRadius: ResponsiveUtils.rp(8),
-                  offset: Offset(0, ResponsiveUtils.rp(2)),
-                ),
-              ],
-            ),
-            child: IconButton(
+         IconButton(
               icon: Icon(
                 Icons.arrow_back_ios_rounded,
                 color: AppColors.textPrimary,
@@ -1757,7 +1748,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                 Get.back();
               },
             ),
-          ),
+
           SizedBox(width: ResponsiveUtils.rp(16)),
           Expanded(
             child: Column(

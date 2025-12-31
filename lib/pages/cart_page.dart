@@ -106,9 +106,9 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       await cartController.getActiveOrder();
       
       // Load other data in parallel without blocking
+      // Always fetch coupon codes when entering cart page
       Future.wait([
-        if (!bannerController.couponCodesLoaded.value)
-          bannerController.getCouponCodeList(),
+        bannerController.getCouponCodeList(),
         orderController.getEligibleShippingMethods(),
         bannerController.fetchLoyaltyPointsConfig(),
       ], eagerError: false).then((_) async {
@@ -913,15 +913,18 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        // Refresh data when page is about to be popped (user navigating back)
-        if (!didPop) {
-          _refreshData();
-        }
-      },
-      child: Scaffold(
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        return PopScope(
+          canPop: true,
+          onPopInvoked: (didPop) {
+            // Refresh data when page is about to be popped (user navigating back)
+            if (!didPop) {
+              _refreshData();
+            }
+          },
+          child: Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBarWidget(
         title: 'Shopping Cart',
         actions: [  IconButton(
@@ -1053,6 +1056,11 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
               final cart = cartController.cart.value;
               if (cart == null) return SizedBox.shrink();
 
+              // Hide banner if coupon is already applied
+              if (bannerController.appliedCouponCodes.isNotEmpty) {
+                return SizedBox.shrink();
+              }
+
               // Check for out of stock items
               final hasOutOfStockItems = cart.lines.any((line) {
                 final stockLevel = line.productVariant.stockLevel.toUpperCase();
@@ -1082,50 +1090,61 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                 margin: EdgeInsets.only(
                   left: ResponsiveUtils.rp(16),
                   right: ResponsiveUtils.rp(16),
-                  bottom: ResponsiveUtils.rp(8),
+                  bottom: ResponsiveUtils.rp(12),
                 ),
                 padding: EdgeInsets.symmetric(
                   horizontal: ResponsiveUtils.rp(16),
-                  vertical: ResponsiveUtils.rp(16),
+                  vertical: ResponsiveUtils.rp(14),
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF1a1a2e), // Dark blue-gray
-                      const Color(0xFF16213e), // Darker blue
-                      const Color(0xFF0f3460), // Deep blue
+                      const Color(0xFFFF6B35),
+                      const Color(0xFFFF8C42),
+                      const Color(0xFFFFA500),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(14)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: ResponsiveUtils.rp(8),
+                      color: const Color(0xFFFF6B35).withValues(alpha: 0.35),
+                      blurRadius: ResponsiveUtils.rp(10),
                       offset: Offset(0, ResponsiveUtils.rp(4)),
+                      spreadRadius: ResponsiveUtils.rp(1),
                     ),
                   ],
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.local_offer_rounded,
                       color: Colors.white,
-                      size: ResponsiveUtils.rp(24),
+                      size: ResponsiveUtils.rp(22),
                     ),
                     SizedBox(width: ResponsiveUtils.rp(12)),
                     Expanded(
-                      child: Text(
-                        'Add ₹${differenceInRupees.toStringAsFixed(2)} more to unlock coupon \'${coupon.couponCode}\'',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(16),
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
+                      child: RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Add ₹${differenceInRupees.toStringAsFixed(2)} more to unlock ',
+                            ),
+                            TextSpan(
+                              text: coupon.couponCode ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1158,10 +1177,12 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             ),
           ],
         );
-      });
-    },
-    ),
-    ),
+          });
+        },
+      ),
+        ),
+      );
+      },
     );
   }
 
@@ -1222,17 +1243,23 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
   }
 
   Widget _buildCouponSection() {
-    return Container(
-      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1,
+    // Hide coupon section if no coupons are available
+    return Obx(() {
+      if (bannerController.availableCouponCodes.isEmpty) {
+        return SizedBox.shrink();
+      }
+      
+      return Container(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+          border: Border.all(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
-      ),
-      child: Column(
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -1273,63 +1300,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
             ],
           ),
           SizedBox(height: ResponsiveUtils.rp(12)),
-          Obx(() {
-            if (bannerController.appliedCouponCodes.isNotEmpty) {
-              return Container(
-                padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-                margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                  border: Border.all(
-                      color: AppColors.success.withValues(alpha: 0.3)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.check_circle,
-                            color: AppColors.success,
-                            size: ResponsiveUtils.rp(16)),
-                        SizedBox(width: ResponsiveUtils.rp(8)),
-                        Text(
-                          'Applied Coupons:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.success,
-                            fontSize: ResponsiveUtils.sp(14),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: ResponsiveUtils.rp(8)),
-                    ...bannerController.appliedCouponCodes.map(
-                      (code) => Padding(
-                        padding: EdgeInsets.only(
-                            left: ResponsiveUtils.rp(24),
-                            bottom: ResponsiveUtils.rp(4)),
-                        child: Row(
-                          children: [
-                            Icon(Icons.local_offer,
-                                color: AppColors.success,
-                                size: ResponsiveUtils.rp(14)),
-                            SizedBox(width: ResponsiveUtils.rp(8)),
-                            Text(code,
-                                style: TextStyle(
-                                    color: AppColors.success,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: ResponsiveUtils.sp(13))),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return SizedBox.shrink();
-          }),
+        
           // Show applied coupon with remove button OR browse coupons button
           Obx(() {
             final isAnyCouponApplied = bannerController.isAnyCouponApplied();
@@ -1461,9 +1432,9 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
           }),
         ],
       ),
-    );
+      );
+    });
   }
-
 
   Widget _buildLoyaltyPointsSection() {
     return Obx(() {

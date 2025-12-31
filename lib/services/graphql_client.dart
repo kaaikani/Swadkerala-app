@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/io_client.dart' as http_io;
 import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 
 class GraphqlService {
   // Tokens
@@ -18,6 +19,9 @@ class GraphqlService {
 
   // GraphQL client
   static ValueNotifier<GraphQLClient>? _client;
+  
+  // Reactive channel token observable for UI updates
+  static final RxString channelTokenRx = ''.obs;
 
   static ValueNotifier<GraphQLClient> get client {
     _client ??= ValueNotifier(_createClient());
@@ -102,6 +106,7 @@ class GraphqlService {
     await GetStorage.init();
     _authToken = _storage.read('auth_token') ?? "";
     _channelToken = _storage.read('channel_token') ?? "";
+    channelTokenRx.value = _channelToken; // Initialize reactive observable
     debugPrint("✅ [GraphQL Client] Tokens loaded from storage:");
     debugPrint("   - Vendure Token (auth_token): ${_authToken.isNotEmpty ? '${_authToken.substring(0, _authToken.length > 20 ? 20 : _authToken.length)}...' : 'NOT SET'}");
     debugPrint("   - Channel Token (channel_token): ${_channelToken.isNotEmpty ? '${_channelToken.substring(0, _channelToken.length > 20 ? 20 : _channelToken.length)}...' : 'NOT SET'}");
@@ -115,7 +120,12 @@ class GraphqlService {
     if (key == 'auth') {
       if (_authToken != token) _authToken = token;
     } else if (key == 'channel') {
-      if (_channelToken != token) _channelToken = token;
+      if (_channelToken != token) {
+        _channelToken = token;
+        // Update reactive observable to trigger UI updates
+        channelTokenRx.value = token;
+        debugPrint("🔄 [GraphQL Client] Channel token reactive observable updated: $token");
+      }
     }
     await _storage.write('${key}_token', token);
     _client?.value = _createClient();
@@ -126,7 +136,10 @@ class GraphqlService {
   static Future<void> clearToken(String key) async {
 // print("🗑️ clearToken called for $key");
     if (key == 'auth') _authToken = "";
-    if (key == 'channel') _channelToken = "";
+    if (key == 'channel') {
+      _channelToken = "";
+      channelTokenRx.value = ""; // Update reactive observable
+    }
     await _storage.remove('${key}_token');
     _client?.value = _createClient();
 // print("✅ $key token cleared and client recreated");

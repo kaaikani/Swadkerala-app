@@ -1,6 +1,4 @@
-import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -13,24 +11,23 @@ import '../graphql/product.graphql.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
 import '../components/bannercomponent.dart';
 import '../components/vertical_list_component.dart';
-import '../components/searchbarcomponent.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
-import '../services/postal_code_service.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
-import '../utils/app_strings.dart';
 import '../widgets/responsive_spacing.dart';
-import '../widgets/product_card.dart';
-import '../utils/price_formatter.dart';
-import '../utils/navigation_helper.dart';
 import '../components/bottomnavigationbar.dart';
+import '../components/home_components/home_delivery_address_header.dart';
+import '../components/home_components/home_shipping_ticker.dart';
+import '../components/home_components/home_switch_store_sheet.dart';
+import '../components/home_components/home_header.dart';
+import '../components/home_components/home_postal_code_sheet.dart';
+import '../components/home_components/home_frequently_ordered_section.dart';
+import '../components/home_components/home_favorites_section.dart';
 import '../services/analytics_service.dart';
 import '../utils/analytics_helper.dart';
 import '../widgets/snackbar.dart';
 import '../services/graphql_client.dart';
-import '../services/remote_config_service.dart';
-import '../graphql/banner.graphql.dart';
 import '../controllers/theme_controller.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -51,8 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final UtilityController utilityController = Get.put(UtilityController());
   final ThemeController themeController = Get.find<ThemeController>();
   
-  // Track selected variant for each product in favorites
-  final Map<String, String> _selectedVariantIds = {};
+  // Track selected variant for each product in favorites (moved to component state)
   
   // Track if dialog is showing to prevent multiple dialogs
   bool _isAddressDialogShowing = false;
@@ -64,6 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // Reactive variables for channel and postal code to trigger UI updates
   final RxString _channelName = ''.obs;
   final RxString _postalCode = ''.obs;
+  final RxString _channelType = ''.obs;
+  final RxString _channelToken = ''.obs; // Track channel token changes
 
   @override
   void initState() {
@@ -71,21 +69,97 @@ class _MyHomePageState extends State<MyHomePage> {
     // Initialize reactive variables
     _updateChannelDisplay();
     _refreshData();
+    
+    // Listen to channel token changes and update UI immediately
+    ever(GraphqlService.channelTokenRx, (String newToken) {
+      debugPrint('[HomePage] 🔄 Channel token changed reactively: $newToken');
+      if (mounted) {
+        _updateChannelDisplay();
+        // Force UI refresh when channel changes
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {});
+            // Refresh data with new channel
+            _refreshData();
+          }
+        });
+      }
+    });
   }
-  
+
+  /// Check if user is authenticated
+  bool _isUserAuthenticated() {
+    final authController = Get.find<AuthController>();
+    final authToken = GraphqlService.authToken;
+    final channelToken = GraphqlService.channelToken;
+    
+    return authController.isLoggedIn && 
+           authToken.isNotEmpty && 
+           channelToken.isNotEmpty;
+  }
+
   /// Update reactive channel display variables
   void _updateChannelDisplay() {
     final newChannelName = box.read('channel_name') ?? box.read('channel_code') ?? 'Select Location';
-    final newPostalCode = box.read('postal_code') ?? '';
+    // Ensure postal code is always converted to string for proper comparison
+    final postalCodeValue = box.read('postal_code');
+    final newPostalCode = postalCodeValue != null ? postalCodeValue.toString() : '';
+    final newChannelType = box.read('channel_type')?.toString() ?? '';
+    final newChannelToken = box.read('channel_token')?.toString() ?? GraphqlService.channelToken;
     
-    // Only update if values changed to trigger Obx rebuild
+    // Track channel token changes to force UI refresh
+    bool channelTokenChanged = false;
+    bool postalCodeChanged = false;
+    bool channelNameChanged = false;
+    
+    if (_channelToken.value != newChannelToken) {
+      _channelToken.value = newChannelToken;
+      channelTokenChanged = true;
+      debugPrint('[HomePage] ⚠️ Channel token changed - forcing UI refresh');
+    }
+    
+    // Always update reactive variables to trigger Obx rebuild, even if value appears same
+    // This ensures UI updates when postal code changes
     if (_channelName.value != newChannelName) {
       _channelName.value = newChannelName;
+      channelNameChanged = true;
       debugPrint('[HomePage] Channel name updated: $newChannelName');
+    } else {
+      // Force update even if same to ensure Obx rebuilds
+      _channelName.value = newChannelName;
     }
-    if (_postalCode.value != newPostalCode) {
+    
+    // Always update postal code reactive variable to ensure UI reflects latest value
+    // Convert to string to ensure consistent comparison
+    final currentPostalCodeStr = _postalCode.value;
+    if (currentPostalCodeStr != newPostalCode) {
       _postalCode.value = newPostalCode;
-      debugPrint('[HomePage] Postal code updated: $newPostalCode');
+      postalCodeChanged = true;
+      debugPrint('[HomePage] Postal code updated: $newPostalCode (was: $currentPostalCodeStr)');
+    } else if (newPostalCode.isNotEmpty) {
+      // Even if value appears same, ensure reactive variable is set (handles type mismatches)
+      _postalCode.value = newPostalCode;
+      debugPrint('[HomePage] Postal code refreshed: $newPostalCode');
+    }
+    
+    if (_channelType.value != newChannelType) {
+      _channelType.value = newChannelType;
+      debugPrint('[HomePage] Channel type updated: $newChannelType');
+    } else {
+      // Force update even if same
+      _channelType.value = newChannelType;
+    }
+    
+    // If any value changed, force a UI refresh
+    if ((channelTokenChanged || postalCodeChanged || channelNameChanged) && mounted) {
+      debugPrint('[HomePage] ⚠️ Channel/postal code changed - triggering UI refresh');
+      // Force rebuild by updating a reactive variable that the UI observes
+      // This ensures all Obx widgets rebuild
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {}); // Force StatefulWidget rebuild
+        }
+      });
     }
   }
 
@@ -127,6 +201,18 @@ class _MyHomePageState extends State<MyHomePage> {
         // Wait a bit for the refresh to complete (it's async in the background)
         await Future.delayed(Duration(milliseconds: 500));
         debugPrint('[HomePage] Data refresh should be complete, continuing...');
+        
+        // Force UI refresh after channel change to ensure UI updates
+        if (mounted) {
+          debugPrint('[HomePage] Forcing UI refresh after channel change...');
+          _updateChannelDisplay(); // Update again to ensure UI reflects changes
+          // Trigger a rebuild
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {});
+            }
+          });
+        }
       }
       
       debugPrint('[HomePage] Fetching channel-specific data...');
@@ -140,10 +226,11 @@ class _MyHomePageState extends State<MyHomePage> {
         if (mounted) {
           _checkAndShowShippingAddressDialog();
           // Check for invalid email or missing phone number
-       //   _checkAndShowUpdateDialogs();
+          //   _checkAndShowUpdateDialogs();
         }
       }
-      
+
+
       // These can be fetched regardless of authentication status
       // Only fetch if channel didn't change (to avoid duplicate fetches)
       if (!channelChanged) {
@@ -159,7 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (mounted && !_isPostalCodeDialogShowing) {
         _checkAndShowPostalCodeDialog();
       }
-     
+      
       debugPrint('[HomePage] ========== DATA REFRESH COMPLETED ==========');
       
       // Track screen view
@@ -203,6 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
   }
+
 
   /// Show dialog to update email address
   void _showUpdateEmailDialog() {
@@ -289,11 +377,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             showErrorSnackbar('Please enter an email address');
                             return;
                           }
+                          
                           if (!_isValidGmail(email)) {
                             showErrorSnackbar('Please enter a valid Gmail address');
                             return;
                           }
-
+                          
                           setState(() {
                             isLoading = true;
                           });
@@ -432,7 +521,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             showErrorSnackbar('Phone number must be 10 digits');
                             return;
                           }
-
                           setState(() {
                             isLoading = true;
                           });
@@ -504,7 +592,16 @@ class _MyHomePageState extends State<MyHomePage> {
           final newChannelToken = box.read('channel_token');
           final channelChanged = currentChannelToken != newChannelToken;
           if (channelChanged) {
-            debugPrint('[HomePage] Channel changed from $currentChannelToken to $newChannelToken');
+            debugPrint('[HomePage] ⚠️ Channel changed from $currentChannelToken to $newChannelToken');
+            // Force UI refresh when channel changes
+            if (mounted) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  _updateChannelDisplay();
+                  setState(() {});
+                }
+              });
+            }
             // Data is already being refreshed by checkAndSetPostalCodeFromShippingAddress
             return true;
           }
@@ -531,7 +628,16 @@ class _MyHomePageState extends State<MyHomePage> {
             final newChannelToken = box.read('channel_token');
             final channelChanged = currentChannelToken != newChannelToken;
             if (channelChanged) {
-              debugPrint('[HomePage] Channel changed from $currentChannelToken to $newChannelToken');
+              debugPrint('[HomePage] ⚠️ Channel changed from $currentChannelToken to $newChannelToken');
+              // Force UI refresh when channel changes
+              if (mounted) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    _updateChannelDisplay();
+                    setState(() {});
+                  }
+                });
+              }
               // Data is already being refreshed by switchChannelByPostalCode
               return true;
             }
@@ -553,8 +659,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /// Check if postal code is saved, if not show postal code bottom sheet
-  void _checkAndShowPostalCodeDialog() {
-    if (!mounted) return;
+  void _checkAndShowPostalCodeDialog() async {
+    if (!mounted) {
+      debugPrint('[HomePage] Widget not mounted, skipping postal code dialog check');
+      return;
+    }
     if (_isPostalCodeDialogShowing) {
       debugPrint('[HomePage] Postal code dialog already showing, skipping...');
       return; // Prevent multiple dialogs
@@ -567,11 +676,50 @@ class _MyHomePageState extends State<MyHomePage> {
     if (storedPostalCode == null || storedPostalCode.toString().isEmpty) {
       debugPrint('[HomePage] No postal code found, showing postal code bottom sheet');
       _isPostalCodeDialogShowing = true; // Mark as showing
+      
+      // Use multiple callbacks to ensure the widget tree is ready
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _isPostalCodeDialogShowing) {
-          _showPostalCodeBottomSheet();
+          // Add a small delay to ensure context is fully available
+          Future.delayed(Duration(milliseconds: 300), () {
+            if (mounted && _isPostalCodeDialogShowing && context.mounted) {
+              debugPrint('[HomePage] Showing postal code bottom sheet now...');
+              _showPostalCodeBottomSheet(isMandatory: true);
+            } else {
+              debugPrint('[HomePage] Context not available, resetting flag');
+              _isPostalCodeDialogShowing = false;
+            }
+          });
         }
       });
+    } else {
+      // Postal code exists - check if it has valid channels
+      final postalCodeStr = storedPostalCode.toString();
+      debugPrint('[HomePage] Checking if postal code has valid channels: $postalCodeStr');
+      
+      final hasValidChannels = await customerController.hasValidPostalCode(postalCodeStr);
+      debugPrint('[HomePage] Postal code validity check result: $hasValidChannels');
+      
+      if (!hasValidChannels) {
+        debugPrint('[HomePage] Postal code has no valid channels, showing mandatory postal code bottom sheet');
+        _isPostalCodeDialogShowing = true; // Mark as showing
+        
+        // Use multiple callbacks to ensure the widget tree is ready
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _isPostalCodeDialogShowing) {
+            // Add a small delay to ensure context is fully available
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted && _isPostalCodeDialogShowing && context.mounted) {
+                debugPrint('[HomePage] Showing mandatory postal code bottom sheet now...');
+                _showPostalCodeBottomSheet(isMandatory: true);
+              } else {
+                debugPrint('[HomePage] Context not available, resetting flag');
+                _isPostalCodeDialogShowing = false;
+              }
+            });
+          }
+        });
+      }
     }
   }
 
@@ -708,9 +856,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final channelCode = box.read('channel_code') ?? '';
-    final cityName = _formatCityName(channelCode);
-
     // Observe theme changes to rebuild the entire page
     // Access the observable directly through a getter that GetX can track
     return PopScope(
@@ -722,574 +867,97 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       },
       child: Obx(() {
-      // Access the theme value - GetX will track this through the getter
-      final isDarkMode = themeController.isDarkMode;
-      
-      // Use the value in the widget tree so GetX can properly track it
-      return Scaffold(
-        key: ValueKey('home_${isDarkMode}'), // Use in key to ensure GetX tracks it
-        backgroundColor: AppColors.background,
-        body: RefreshIndicator(
-        onRefresh: () async {
-          // Create list of futures based on authentication status
-          List<Future> futures = [
-            collectionController.fetchAllCollections(),
-            bannerController.getFrequentlyOrderedProducts(),
-          ];
-          
-          // Only add authenticated requests if user is logged in
-          if (_isUserAuthenticated()) {
-            futures.addAll([
-              cartController.getActiveOrder(),
-              customerController.getActiveCustomer(),
-              bannerController.getCustomerFavorites(),
-            ]);
-          }
-          
-          await Future.wait(futures);
-        },
-        color: AppColors.refreshIndicator,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // ==================== HEADER ====================
-            _buildHeader(cityName),
+        // Access the theme value - GetX will track this through the getter
+        final isDarkMode = themeController.isDarkMode;
+        // Also observe channel token changes to trigger UI updates
+        final channelToken = GraphqlService.channelTokenRx.value;
+        
+        // Use the value in the widget tree so GetX can properly track it
+        return Scaffold(
+          key: ValueKey('home_${isDarkMode}_${channelToken}'), // Include channel token in key to force rebuild on channel change
+          backgroundColor: AppColors.background,
+          body: RefreshIndicator(
+            onRefresh: () async {
+              // Create list of futures based on authentication status
+              List<Future> futures = [
+                collectionController.fetchAllCollections(),
+                bannerController.getFrequentlyOrderedProducts(),
+              ];
+              
+              // Only add authenticated requests if user is logged in
+              if (_isUserAuthenticated()) {
+                futures.addAll([
+                  cartController.getActiveOrder(),
+                  customerController.getActiveCustomer(),
+                  bannerController.getCustomerFavorites(),
+                ]);
+              }
+              
+              await Future.wait(futures);
+            },
+            color: AppColors.refreshIndicator,
+            child: OrientationBuilder(
+              builder: (context, orientation) {
+                return CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    // ==================== HEADER ====================
+                    HomeHeader(
+                      isUserAuthenticated: _isUserAuthenticated(),
+                      isBrandChannel: _isBrandChannel(),
+                      deliveryAddressHeader: _buildDeliveryAddressHeader(),
+                      bannerController: bannerController,
+                      channelName: _channelName.value.isNotEmpty 
+                          ? _channelName.value 
+                          : (box.read('channel_name')?.toString() ?? box.read('channel_code')?.toString() ?? 'Kaaikani'),
+                      customerController: customerController,
+                    ),
 
-            // ==================== MAIN CONTENT ====================
-            SliverToBoxAdapter(
-              child: _buildMainContent(),
+                    // ==================== MAIN CONTENT ====================
+                    SliverToBoxAdapter(
+                      child: _buildMainContent(),
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Obx(() => BottomNavComponent(
+          ),
+          bottomNavigationBar: Obx(() => BottomNavComponent(
             cartCount: cartController.cartItemCount,
+            onSwitchStoreTap: _isUserAuthenticated() ? _showSwitchStoreBottomSheet : null,
           )),
-      );
-    }),
-    );
-  }
-
-  SliverToBoxAdapter _buildHeader(String cityName) {
-    return SliverToBoxAdapter(
-      child: Container(
-        color: AppColors.background,
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUtils.rp(16),
-              vertical: ResponsiveUtils.rp(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Delivery Address Section (above search, only when authenticated)
-                if (_isUserAuthenticated()) ...[
-                  _buildDeliveryAddressHeader(),
-                  SizedBox(height: ResponsiveUtils.rp(16)),
-                ],
-                // Search Bar and Icons Row
-                Row(
-                  children: [
-                    // Search Bar
-                    Expanded(
-                      child: SearchComponent(
-                        hintText: AppStrings.searchForFreshCuts,
-                        onSearch: (String query) {
-                          bannerController.searchProducts({'term': query});
-                        },
-                      ),
-                    ),
-                    SizedBox(width: ResponsiveUtils.rp(2)),
-                    // Location with Channel Code (only show when authenticated)
-
-                    // Account Icon
-                    InkWell(
-                      onTap: () => Get.toNamed('/account'),
-                      child: Icon(
-                        Icons.person,
-                        color: AppColors.textPrimary,
-                        size: ResponsiveUtils.rp(32),
-                      ),
-                    ),
-                    SizedBox(width: ResponsiveUtils.rp(12)),
-                    // Cart Icon with Badge
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Build location info widget with channel code
-  Widget _buildLocationInfo(String cityName) {
-    return InkWell(
-      onTap: () => _showPostalCodeBottomSheet(),
-      child: Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUtils.rp(8),
-        vertical: ResponsiveUtils.rp(4),
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.location_on,
-            color: AppColors.primary,
-            size: ResponsiveUtils.rp(16),
-          ),
-          SizedBox(width: ResponsiveUtils.rp(4)),
-          Text(
-            cityName,
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: ResponsiveUtils.rp(12),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-        ),
-      ),
-    );
-  }
-
-  /// Show postal code search bottom sheet
-  void _showPostalCodeBottomSheet() {
-    final pincodeController = TextEditingController();
-    List<PostalCodeData> searchResults = [];
-    bool isSearching = false;
-    bool isGettingLocation = false;
-    bool isServiceUnavailable = false;
-    
-    // Check if postal code is already saved - if not, hide close button
-    final storedPostalCode = box.read('postal_code');
-    final bool hasPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: false, // Prevent closing by tapping outside or back button - user must select postal code or click close
-      enableDrag: false, // Prevent closing by dragging down
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext bottomSheetContext) {
-        return StatefulBuilder(
-          builder: (context, setState) => Container(
-            height: MediaQuery.of(context).size.height * 0.8,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(ResponsiveUtils.rp(20)),
-              ),
-            ),
-            child: Column(
-              children: [
-                // Handle bar
-                Container(
-                  margin: EdgeInsets.only(top: ResponsiveUtils.rp(12)),
-                  width: ResponsiveUtils.rp(40),
-                  height: ResponsiveUtils.rp(4),
-                  decoration: BoxDecoration(
-                    color: AppColors.textSecondary.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(2)),
-                  ),
-                ),
-                // Header
-                Padding(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
-                  child: Row(
-                    children: [
-                      Icon(Icons.location_on, color: AppColors.button, size: ResponsiveUtils.rp(24)),
-                      SizedBox(width: ResponsiveUtils.rp(12)),
-                      Expanded(
-                        child: Text(
-                          'Select Location',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(20),
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      // Only show close button if postal code is already saved
-                      if (hasPostalCode)
-                        IconButton(
-                          icon: Icon(Icons.close, color: AppColors.textSecondary),
-                          onPressed: () {
-                            Navigator.pop(bottomSheetContext);
-                            _isPostalCodeDialogShowing = false;
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-                Divider(height: 1),
-                // Search section
-                Padding(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-                  child: Column(
-                    children: [
-                      // Location button
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: isGettingLocation ? null : () async {
-                            setState(() {
-                              isGettingLocation = true;
-                              searchResults = [];
-                            });
-                            
-                            final postalCodeService = PostalCodeService();
-                            final locationData = await postalCodeService.getPostalCodeFromLocation();
-                            
-                            setState(() {
-                              isGettingLocation = false;
-                            });
-                            
-                            if (locationData != null) {
-                              setState(() {
-                                pincodeController.text = locationData.pincode;
-                                searchResults = [locationData];
-                              });
-      } else {
-                              SnackBarWidget.showError('Could not get location. Please enter postal code manually.');
-                            }
-                          },
-                          icon: isGettingLocation
-                              ? SizedBox(
-                                  width: ResponsiveUtils.rp(20),
-                                  height: ResponsiveUtils.rp(20),
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : Icon(Icons.my_location, color: AppColors.button),
-                          label: Text(
-                            isGettingLocation ? 'Getting location...' : 'Use Current Location',
-                            style: TextStyle(color: AppColors.button),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: AppColors.button),
-                            padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUtils.rp(16)),
-                      // Search field
-                      TextField(
-                        controller: pincodeController,
-                        keyboardType: TextInputType.number,
-                        maxLength: 6,
-                        decoration: InputDecoration(
-                          labelText: 'Enter 6-digit postal code',
-                          hintText: '628008',
-                          prefixIcon: Icon(Icons.pin),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          if (value.length == 6) {
-                            // Close keyboard when 6 digits are entered
-                            FocusScope.of(context).unfocus();
-                            
-                            // Auto-search when 6 digits are entered
-                            setState(() {
-                              isSearching = true;
-                              searchResults = [];
-                            });
-                            customerController.searchPostalCodes(value).then((results) async {
-                              if (bottomSheetContext.mounted) {
-                                // Check channel availability for the postal code
-                                if (results.isNotEmpty) {
-                                  // Try to get available channels for this postal code
-                                  final testSuccess = await customerController.switchChannelByPostalCode(
-                                    value,
-                                    city: results.first.city,
-                                    showLoading: false, // Don't show loading dialog
-                                  );
-                                  
-                                  if (!testSuccess) {
-                                    // Service not available - show message in UI instead of dialog
-                                    setState(() {
-                                      searchResults = results; // Keep results but mark as unavailable
-                                      isSearching = false;
-                                      isServiceUnavailable = true;
-                                    });
-      } else {
-                                    // Service available - show results
-                                    setState(() {
-                                      searchResults = results;
-                                      isSearching = false;
-                                      isServiceUnavailable = false;
-                                    });
-                                  }
-                                } else {
-                                  setState(() {
-                                    searchResults = [];
-                                    isSearching = false;
-                                  });
-                                }
-                              }
-                            }).catchError((error) {
-                              if (bottomSheetContext.mounted) {
-                                setState(() {
-                                  searchResults = [];
-                                  isSearching = false;
-                                  isServiceUnavailable = false;
-                                });
-                              }
-                            });
-                          } else {
-                            setState(() {
-                              searchResults = [];
-                              isServiceUnavailable = false;
-                            });
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(height: 1),
-                // Results section
-                Expanded(
-                  child: isSearching
-                      ? Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                      : isServiceUnavailable && searchResults.isNotEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(ResponsiveUtils.rp(40)),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.cancel,
-                                      size: ResponsiveUtils.rp(80),
-                                      color: AppColors.error,
-                                    ),
-                                    SizedBox(height: ResponsiveUtils.rp(20)),
-                                    Text(
-                                      'Service Not Available',
-                                      style: TextStyle(
-                                        color: AppColors.textPrimary,
-                                        fontSize: ResponsiveUtils.sp(24),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: ResponsiveUtils.rp(12)),
-                                    Text(
-                                      'Service is not available for this location.\nPlease try another postal code.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: AppColors.textSecondary,
-                                        fontSize: ResponsiveUtils.sp(16),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                      : searchResults.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
-                                child: Text(
-                                  pincodeController.text.length == 6
-                                      ? 'Enter valid postal code'
-                                      : 'Enter 6-digit postal code or use current location',
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: ResponsiveUtils.sp(14),
-                                  ),
-                                ),
-                              ),
-                            )
-                          : ListView.builder(
-                              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                              itemCount: searchResults.length,
-                              itemBuilder: (context, index) {
-                                final result = searchResults[index];
-                                return ListTile(
-                                  leading: Icon(Icons.location_city, color: AppColors.button),
-                                  title: Text(
-                                    '${result.city}, ${result.district}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    '${result.state} - ${result.pincode}',
-                                    style: TextStyle(color: AppColors.textSecondary),
-                                  ),
-                                  onTap: isServiceUnavailable ? null : () async {
-                                    // Close the bottom sheet first
-                                    Navigator.pop(bottomSheetContext);
-                                    // Reset the flag so dialog can be shown again if needed
-                                    _isPostalCodeDialogShowing = false;
-                                    
-                                    final success = await customerController.switchChannelByPostalCode(
-                                      result.pincode,
-                                      city: result.city,
-                                    );
-                                    if (success && mounted) {
-                                      // Update UI display immediately
-                                      _updateChannelDisplay();
-                                      // Don't call _refreshData() here as it might trigger the dialog again
-                                      // The data will be refreshed automatically by the channel switch
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                ),
-              ],
-            ),
-          ),
         );
-      },
-    ).whenComplete(() {
-      // Reset the flag when bottom sheet is closed (by any means)
-      _isPostalCodeDialogShowing = false;
-      debugPrint('[HomePage] Postal code bottom sheet closed, flag reset');
-    });
+      }),
+    );
   }
 
-  /// Build delivery address header (above search bar)
-  Widget _buildDeliveryAddressHeader() {
-    // Wrap in Obx to make it reactive to channel changes
-    return Obx(() {
-      // Use reactive variables that update when channel changes
-      final channelName = _channelName.value.isEmpty 
-          ? (box.read('channel_name') ?? box.read('channel_code') ?? 'Select Location')
-          : _channelName.value;
-      final postalCode = _postalCode.value;
-
-      return InkWell(
-        onTap: () {
-        _showPostalCodeBottomSheet();
-        },
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveUtils.rp(16),
-            vertical: ResponsiveUtils.rp(12),
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-            border: Border.all(
-              color: AppColors.border.withOpacity(0.2),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 4,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
-                decoration: BoxDecoration(
-                  color: AppColors.button.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                ),
-                child: Icon(
-                  Icons.local_shipping,
-                  color: AppColors.button,
-                  size: ResponsiveUtils.rp(20),
-                ),
-              ),
-              SizedBox(width: ResponsiveUtils.rp(12)),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Delivery to',
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(11),
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveUtils.rp(2)),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            channelName,
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(15),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (postalCode.isNotEmpty) ...[
-                          Text(
-                            " - ",
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(15),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          Text(
-                            postalCode,
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(15),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: ResponsiveUtils.rp(8)),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: AppColors.textSecondary.withOpacity(0.6),
-                size: ResponsiveUtils.rp(16),
-              ),
-            ],
-          ),
-        ),
-      );
-    });
+  /// Check if current channel type is BRAND (reactive)
+  bool _isBrandChannel() {
+    try {
+      final channelType = _channelType.value.isEmpty 
+          ? (box.read('channel_type')?.toString() ?? '')
+          : _channelType.value;
+      if (channelType.isEmpty) return false;
+      // Check if it's BRAND type (could be "Enum$ChannelType.BRAND" or just "BRAND")
+      return channelType.contains('BRAND');
+    } catch (e) {
+      return false;
+    }
   }
 
   Widget _buildMainContent() {
     return Column(
       children: [
-        _buildShippingTicker(),
-        ResponsiveSpacing.vertical(16),
+        // Shipping ticker (only show if not BRAND channel)
+        Obx(() {
+          if (_isBrandChannel()) return SizedBox.shrink();
+          return Column(
+            children: [
+              _buildShippingTicker(),
+              ResponsiveSpacing.vertical(16),
+            ],
+          );
+        }),
         // Hero Banner Section - Clean without overlay
         _buildHeroBanner(),
         ResponsiveSpacing.vertical(16),
@@ -1301,12 +969,35 @@ class _MyHomePageState extends State<MyHomePage> {
         // Reward Points Section
 
         // Favorites Section (prioritized over frequently ordered)
-        _buildFavoritesSection(),
-        ResponsiveSpacing.vertical(18),
+        HomeFavoritesSection(
+          bannerController: bannerController,
+          cartController: cartController,
+          utilityController: utilityController,
+        ),
+        Obx(() {
+          final enabledProducts = bannerController.frequentlyOrderedProducts
+              .where((item) => item.product.enabled == true)
+              .toList();
+          if (enabledProducts.isEmpty) {
+            return SizedBox.shrink();
+          }
+          return ResponsiveSpacing.vertical(18);
+        }),
 
         // Frequently Ordered Section
-        _buildFrequentlyOrderedSection(),
-        ResponsiveSpacing.vertical(32),
+        HomeFrequentlyOrderedSection(
+          bannerController: bannerController,
+          cartController: cartController,
+        ),
+        Obx(() {
+          final enabledProducts = bannerController.frequentlyOrderedProducts
+              .where((item) => item.product.enabled == true)
+              .toList();
+          if (enabledProducts.isEmpty) {
+            return SizedBox.shrink();
+          }
+          return ResponsiveSpacing.vertical(32);
+        }),
 
         // All Products Section
         CollectionGrid(
@@ -1326,82 +1017,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildShippingTicker() {
-    // Check if service is registered before using Obx
-    if (!Get.isRegistered<RemoteConfigService>()) {
-      return const SizedBox.shrink();
-    }
-    
-    return Obx(() {
-      // Get Remote Config service - it's guaranteed to exist due to check above
-      final remoteConfigService = Get.find<RemoteConfigService>();
-      // Access observable directly - this must happen for GetX to track it
-      final tickerText = remoteConfigService.shippingTickerText.value;
-      
-      // Only show if text is fetched from Remote Config
-      if (tickerText.isEmpty) {
-        return const SizedBox.shrink();
-      }
-
-        return Container(
-          width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          padding: EdgeInsets.symmetric(
-            vertical: ResponsiveUtils.rp(10),
-            horizontal: ResponsiveUtils.rp(14),
-          ),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.button.withValues(alpha: 0.12),
-                AppColors.button.withValues(alpha: 0.06),
-              ],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-            border: Border.all(
-              color: AppColors.button.withValues(alpha: 0.15),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(ResponsiveUtils.rp(6)),
-                decoration: BoxDecoration(
-                  color: AppColors.button.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                ),
-                child: Icon(
-                  Icons.local_shipping_outlined,
-                  color: AppColors.button,
-                  size: ResponsiveUtils.rp(16),
-                ),
-              ),
-              SizedBox(width: ResponsiveUtils.rp(10)),
-              Expanded(
-                child: SizedBox(
-                  height: ResponsiveUtils.rp(20),
-                  child: Marquee(
-                    key: const ValueKey('shippingTicker'),
-                    text: tickerText,
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: ResponsiveUtils.sp(12),
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.2,
-                    ),
-                    blankSpace: 50,
-                    velocity: 25,
-                    pauseAfterRound: const Duration(seconds: 1),
-                    startPadding: 10,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-    });
+    return const HomeShippingTicker();
   }
 
   Widget _buildHeroBanner() {
@@ -1440,769 +1056,113 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget _buildFrequentlyOrderedSection() {
-    return Obx(() {
-      // Filter out disabled products
-      final enabledProducts = bannerController.frequentlyOrderedProducts
-          .where((item) => item.product.enabled == true)
-          .toList();
-      
-      if (enabledProducts.isEmpty) return SizedBox.shrink();
+  /// Show postal code search bottom sheet
+  void _showPostalCodeBottomSheet({bool isMandatory = false}) {
+    if (!mounted || !context.mounted) {
+      debugPrint('[HomePage] Context not mounted, cannot show postal code bottom sheet');
+      _isPostalCodeDialogShowing = false;
+      return;
+    }
+    
+    // Check if bottom sheet is already showing by checking Navigator
+    if (Navigator.of(context).canPop()) {
+      // There might be a route/dialog already showing, check more carefully
+      debugPrint('[HomePage] Navigator can pop - checking if postal code sheet is already showing');
+    }
+    
+    debugPrint('[HomePage] ========== SHOWING POSTAL CODE BOTTOM SHEET ==========');
+    debugPrint('[HomePage] Is mandatory: $isMandatory');
+    
+    final storedPostalCode = box.read('postal_code');
+    final bool hasValidPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty && !isMandatory;
 
-      return Container(
-        padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: ResponsiveSpacing.screenPadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Frequently Ordered',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: ResponsiveUtils.sp(18),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (enabledProducts.length > 3)
-                    TextButton(
-                      onPressed: AnalyticsHelper.trackButton(
-                        'See All - Frequently Ordered',
-                        screenName: 'Home',
-                        callback: () {
-                          Get.toNamed('/frequently-ordered');
-                        },
-                      ),
-                      child: Text(
-                        'See All',
-                        style: TextStyle(
-                          color: AppColors.button,
-                          fontSize: ResponsiveUtils.sp(14),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: ResponsiveUtils.rp(260),
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: ResponsiveSpacing.screenPadding,
-                physics: const BouncingScrollPhysics(),
-                itemCount: enabledProducts.length > 10 ? 10 : enabledProducts.length,
-                separatorBuilder: (_, __) => ResponsiveSpacing.horizontal(16),
-                itemBuilder: (context, index) {
-                  final item = enabledProducts[index];
-                  final product = item.product;
-                  final variants = product.variants;
-                  
-                  if (variants.isEmpty) {
-                    return const SizedBox.shrink();
+    try {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: hasValidPostalCode, // Only dismissible if postal code exists and is valid
+        enableDrag: hasValidPostalCode, // Only draggable if postal code exists and is valid
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext bottomSheetContext) {
+          debugPrint('[HomePage] Building postal code bottom sheet widget');
+          return HomePostalCodeSheet(
+            customerController: customerController,
+            isMandatory: isMandatory,
+            onPostalCodeSelected: () {
+              debugPrint('[HomePage] Postal code selected callback triggered');
+              // Add small delay to ensure storage is written before reading
+              Future.delayed(Duration(milliseconds: 150), () {
+                if (mounted) {
+                  // Read latest postal code from storage and update reactive variable immediately
+                  final latestPostalCode = box.read('postal_code');
+                  if (latestPostalCode != null) {
+                    final postalCodeStr = latestPostalCode.toString();
+                    if (_postalCode.value != postalCodeStr) {
+                      _postalCode.value = postalCodeStr;
+                      debugPrint('[HomePage] Postal code updated in callback: $postalCodeStr');
+                    }
                   }
-                  
-                  // Get selected variant ID or default to first variant
-                  final selectedVariantId = _selectedVariantIds[product.id] ?? 
-                      (variants.isNotEmpty ? variants.first.id : '');
-                  
-                  final selectedVariant = selectedVariantId.isNotEmpty
-                      ? variants.firstWhere(
-                          (v) => v.id == selectedVariantId,
-                          orElse: () => variants.first,
-                        )
-                      : variants.first;
-                  
-                  final priceText = PriceFormatter.formatPrice(
-                      selectedVariant.priceWithTax.round());
-                  final isFavorite = bannerController.isFavorite(product.id);
-                  final hasMultipleVariants = variants.length > 1;
-                  
-                  // Get option value from variant options (like category product page)
-                  final variantLabel = _getVariantLabelFromFrequentlyOrderedVariant(selectedVariant);
-
-                  return SizedBox(
-                    width: ResponsiveUtils.rp(170),
-                    child: ProductCard(
-                      name: product.name,
-                      imageUrl: product.featuredAsset?.preview,
-                      onTap: () {
-                        NavigationHelper.navigateToProductDetail(
-                          productId: product.id,
-                          productName: product.name,
-                        );
-                      },
-                      onDoubleTap: () => bannerController.toggleFavorite(
-                          productId: product.id),
-                      isFavorite: isFavorite,
-                      onFavoriteToggle: () => bannerController.toggleFavorite(
-                          productId: product.id),
-                      discountPercent: null,
-                      variantSelector: hasMultipleVariants
-                          ? _buildFrequentlyOrderedVariantDropdown(
-                              productId: product.id,
-                              variants: variants,
-                              currentVariantId: selectedVariantId,
-                            )
-                          : null,
-                      showVariantSelector: hasMultipleVariants,
-                      variantLabel: variantLabel,
-                      priceText: priceText,
-                      shadowPriceText: null,
-                      onAddToCart: () async {
-                        if (selectedVariantId.isEmpty) {
-                          SnackBarWidget.showWarning(
-                            'Unable to add this item right now.',
-                            title: 'Variant unavailable',
-                          );
-                          return false;
-                        } else {
-                          return await _addVariantToCartById(
-                            selectedVariantId,
-                            product.name,
-                          );
-                        }
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _buildFavoritesSection() {
-    return Obx(() {
-      // Filter out disabled products
-      final enabledFavorites = bannerController.favoritesList
-          .where((item) => item.product?.enabled == true)
-          .where((item) => item.product != null)
-          .toList();
-      
-      if (enabledFavorites.isEmpty) return SizedBox.shrink();
-
-      return Container(
-        padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: ResponsiveSpacing.screenPadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.favorite,
-                        color: AppColors.error,
-                        size: ResponsiveUtils.rp(20),
-                      ),
-                      SizedBox(width: ResponsiveUtils.rp(8)),
-                      Text(
-                        'Your Favorites',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: ResponsiveUtils.sp(18),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (enabledFavorites.length > 3)
-                    TextButton(
-                      onPressed: AnalyticsHelper.trackButton(
-                        'See All - Favorites',
-                        screenName: 'Home',
-                        callback: () {
-                          Get.toNamed('/favourite');
-                        },
-                      ),
-                      child: Text(
-                        'See All',
-                        style: TextStyle(
-                          color: AppColors.button,
-                          fontSize: ResponsiveUtils.sp(14),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: ResponsiveUtils.rp(260),
-              child: utilityController.isLoadingRx.value && enabledFavorites.isEmpty
-                  ? _buildFavoritesShimmerRow()
-                  : ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: ResponsiveSpacing.screenPadding,
-                      physics: const BouncingScrollPhysics(),
-                itemCount: enabledFavorites.length > 10 ? 10 : enabledFavorites.length,
-                      separatorBuilder: (_, __) =>
-                          ResponsiveSpacing.horizontal(16),
-                itemBuilder: (context, index) {
-                  final favorite = enabledFavorites[index];
-                  final product = favorite.product;
-                  if (product == null) return SizedBox.shrink();
-                  final imageUrl = product.featuredAsset?.preview;
-                  
-                  // Get selected variant or default to first variant
-                  final selectedVariantId = _selectedVariantIds[product.id] ?? 
-                      (product.variants.isNotEmpty ? product.variants.first.id : '');
-                  
-                  final selectedVariant = selectedVariantId.isNotEmpty
-                      ? product.variants.firstWhere(
-                          (v) => v.id == selectedVariantId,
-                          orElse: () => product.variants.first,
-                        )
-                      : (product.variants.isNotEmpty ? product.variants.first : null);
-                  
-                  final hasMultipleVariants = product.variants.length > 1;
-
-                  return SizedBox(
-                    width: ResponsiveUtils.rp(170),
-                    child: ProductCard(
-                      name: product.name,
-                      imageUrl: imageUrl,
-                      onTap: () {
-                        NavigationHelper.navigateToProductDetail(
-                          productId: product.id,
-                          productName: product.name,
-                        );
-                      },
-                      onDoubleTap: () => bannerController.toggleFavorite(
-                          productId: product.id),
-                      isFavorite: true,
-                      onFavoriteToggle: () => bannerController
-                          .toggleFavorite(productId: product.id),
-                      discountPercent: null,
-                      variantSelector: hasMultipleVariants
-                          ? _buildFavoritesVariantDropdown(
-                              productId: product.id,
-                              variants: product.variants,
-                              currentVariantId: selectedVariantId,
-                            )
-                          : null,
-                      showVariantSelector: hasMultipleVariants,
-                      variantLabel: selectedVariant != null
-                          ? _getVariantLabelFromFavoritesVariant(selectedVariant)
-                          : 'Default',
-                      priceText: selectedVariant != null
-                          ? PriceFormatter.formatPrice(
-                              selectedVariant.priceWithTax.round())
-                          : 'Rs --',
-                      shadowPriceText: null,
-                      onAddToCart: () async {
-                        if (selectedVariantId.isEmpty) {
-                          SnackBarWidget.showWarning(
-                            'Unable to add this item right now.',
-                            title: 'Variant unavailable',
-                          );
-                          return false;
-                        } else {
-                          return await _addVariantToCartById(
-                            selectedVariantId,
-                            product.name,
-                          );
-                        }
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-
-  /// Build variant dropdown for favorites (shows option group names and option names like category products)
-  Widget _buildFavoritesVariantDropdown({
-    required String productId,
-    required List<Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants> variants,
-    required String currentVariantId,
-  }) {
-    // Extract unique option values from variant options (same as category product page: opt.name)
-    final uniqueOptions = <String>{};
-    final optionToVariantMap = <String, String>{};
-    
-    for (final variant in variants) {
-      // Get option name from variant's options (same as category page: opt.name)
-      String optionValue;
-      if (variant.options.isNotEmpty) {
-        optionValue = variant.options.first.name;
-      } else {
-        // Fallback to variant name if no options
-        optionValue = variant.name;
-      }
-      uniqueOptions.add(optionValue);
-      optionToVariantMap[optionValue] = variant.id;
-    }
-    
-    final uniqueOptionsList = uniqueOptions.toList();
-    if (uniqueOptionsList.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    
-    // Get current option value for selected variant (same as category page: opt.name)
-    final currentVariant = variants.firstWhere(
-      (v) => v.id == currentVariantId,
-      orElse: () => variants.first,
-    );
-    // Get option name from variant's options (same as category page: opt.name)
-    String currentOptionValue;
-    if (currentVariant.options.isNotEmpty) {
-      currentOptionValue = currentVariant.options.first.name;
-    } else {
-      // Fallback to variant name if no options
-      currentOptionValue = currentVariant.name;
-    }
-    
-    // Get option group name from variant's options (like category product page)
-    String groupName = 'Size'; // Default
-    if (variants.isNotEmpty && variants.first.options.isNotEmpty) {
-      final firstOption = variants.first.options.first;
-      if (firstOption.group.name.isNotEmpty) {
-        groupName = firstOption.group.name;
-      }
-    }
-    
-    return Container(
-      height: ResponsiveUtils.rp(32),
-      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.6),
-          width: 1,
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: currentOptionValue,
-          isExpanded: true,
-          isDense: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: ResponsiveUtils.rp(20),
-            color: AppColors.icon.withValues(alpha: 0.7),
-          ),
-          iconSize: ResponsiveUtils.rp(20),
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(12),
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-            height: 1.2,
-          ),
-          hint: Text(
-            groupName,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(12),
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary.withValues(alpha: 0.7),
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-          items: uniqueOptionsList.map((optionName) {
-            final isSelected = optionName == currentOptionValue;
-            return DropdownMenuItem<String>(
-              value: optionName,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: ResponsiveUtils.rp(4),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        optionName,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(13),
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                          color: isSelected
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                    if (isSelected) ...[
-                      SizedBox(width: ResponsiveUtils.rp(6)),
-                      Icon(
-                        Icons.check_circle_rounded,
-                        size: ResponsiveUtils.rp(16),
-                        color: AppColors.button,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-          dropdownColor: AppColors.card,
-          menuMaxHeight: ResponsiveUtils.rp(200),
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-          onChanged: (String? newOptionName) {
-            if (newOptionName == null) return;
-            
-            // Find matching variant for the selected option (same as category product page)
-            Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants? matchingVariant;
-            for (final variant in variants) {
-              // Get option name from variant's options (same as category page: opt.name == newOptionName)
-              String? optionValue;
-              if (variant.options.isNotEmpty) {
-                optionValue = variant.options.first.name;
-              } else {
-                // Fallback to variant name if no options
-                optionValue = variant.name;
-              }
-              
-              if (optionValue == newOptionName) {
-                matchingVariant = variant;
-                break;
-              }
-            }
-            
-            if (matchingVariant != null) {
-              setState(() {
-                _selectedVariantIds[productId] = matchingVariant!.id;
+                  // Force immediate UI update
+                  _updateChannelDisplay();
+                  // Force UI rebuild to ensure channel changes are reflected
+                  setState(() {});
+                  // Refresh data to ensure all channel-specific data is updated
+                  _refreshData();
+                }
               });
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  /// Build variant dropdown for frequently ordered products (shows option group names and option names like category products)
-  Widget _buildFrequentlyOrderedVariantDropdown({
-    required String productId,
-    required List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants> variants,
-    required String currentVariantId,
-  }) {
-    // Extract unique option values from variant options (same as category product page: opt.name)
-    final uniqueOptions = <String>{};
-    final optionToVariantMap = <String, String>{};
-    
-    for (final variant in variants) {
-      // Get option name from variant's options (same as category page: opt.name)
-      String optionValue;
-      if (variant.options.isNotEmpty) {
-        optionValue = variant.options.first.name;
-      } else {
-        // Fallback to variant name if no options
-        optionValue = variant.name;
-      }
-      uniqueOptions.add(optionValue);
-      optionToVariantMap[optionValue] = variant.id;
-    }
-    
-    final uniqueOptionsList = uniqueOptions.toList();
-    if (uniqueOptionsList.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    
-    // Get current option value for selected variant (same as category page: opt.name)
-    final currentVariant = variants.firstWhere(
-      (v) => v.id == currentVariantId,
-      orElse: () => variants.first,
-    );
-    // Get option name from variant's options (same as category page: opt.name)
-    String currentOptionValue;
-    if (currentVariant.options.isNotEmpty) {
-      currentOptionValue = currentVariant.options.first.name;
-    } else {
-      // Fallback to variant name if no options
-      currentOptionValue = currentVariant.name;
-    }
-    
-    // Get option group name from variant's options (like category product page)
-    String groupName = 'Size'; // Default
-    if (variants.isNotEmpty && variants.first.options.isNotEmpty) {
-      final firstOption = variants.first.options.first;
-      if (firstOption.group.name.isNotEmpty) {
-        groupName = firstOption.group.name;
-      }
-    }
-    
-    return Container(
-      height: ResponsiveUtils.rp(32),
-      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.6),
-          width: 1,
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: currentOptionValue,
-          isExpanded: true,
-          isDense: true,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: ResponsiveUtils.rp(20),
-            color: AppColors.icon.withValues(alpha: 0.7),
-          ),
-          iconSize: ResponsiveUtils.rp(20),
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(12),
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-            height: 1.2,
-          ),
-          hint: Text(
-            groupName,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(12),
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary.withValues(alpha: 0.7),
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-          items: uniqueOptionsList.map((optionName) {
-            final isSelected = optionName == currentOptionValue;
-            return DropdownMenuItem<String>(
-              value: optionName,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: ResponsiveUtils.rp(4),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        optionName,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(13),
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                          color: isSelected
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                    if (isSelected) ...[
-                      SizedBox(width: ResponsiveUtils.rp(6)),
-                      Icon(
-                        Icons.check_circle_rounded,
-                        size: ResponsiveUtils.rp(16),
-                        color: AppColors.button,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-          dropdownColor: AppColors.card,
-          menuMaxHeight: ResponsiveUtils.rp(200),
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-          onChanged: (String? newOptionName) {
-            if (newOptionName == null) return;
-            
-            // Find matching variant for the selected option (like category product page)
-            Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants? matchingVariant;
-            for (final variant in variants) {
-              // Get option name from variant's options (same as category page: opt.name == newOptionName)
-              String optionValue;
-              if (variant.options.isNotEmpty) {
-                optionValue = variant.options.first.name;
-              } else {
-                // Fallback to variant name if no options
-                optionValue = variant.name;
-              }
-              
-              if (optionValue == newOptionName) {
-                matchingVariant = variant;
-                break;
-              }
-            }
-            
-            if (matchingVariant != null) {
-              setState(() {
-                _selectedVariantIds[productId] = matchingVariant!.id;
-              });
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-
-  /// Get variant label from selected variant (option name) for favorites
-  String _getVariantLabelFromFavoritesVariant(
-      Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants? variant) {
-    if (variant == null) return 'Default';
-    
-    // If variant has options, return the first option name
-    if (variant.options.isNotEmpty) {
-      return variant.options.first.name;
-    }
-    
-    // Fallback to variant name if no options
-    return variant.name;
-  }
-
-  /// Get variant label from selected variant (option name) for frequently ordered
-  String _getVariantLabelFromFrequentlyOrderedVariant(
-      Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants? variant) {
-    if (variant == null) return 'Default';
-    
-    // If variant has options, return the first option name
-    if (variant.options.isNotEmpty) {
-      return variant.options.first.name;
-    }
-    
-    // Fallback to variant name if no options
-    return variant.name;
-  }
-
-  Future<bool> _addVariantToCartById(
-      String variantId, String productName) async {
-    final parsedVariantId = int.tryParse(variantId);
-    if (parsedVariantId == null) {
-      SnackBarWidget.showWarning(
-        'Unable to add $productName right now.',
-        title: 'Variant unavailable',
-      );
-      return false;
-    }
-
-    final success =
-        await cartController.addToCart(productVariantId: parsedVariantId);
-    if (success && mounted) {
-      setState(() {});
-    }
-    
-    return success;
-  }
-
-
-  Widget _buildFavoritesShimmerRow() {
-    return Skeletonizer(
-      enabled: true,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: ResponsiveSpacing.screenPadding,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 4,
-        separatorBuilder: (_, __) => ResponsiveSpacing.horizontal(16),
-        itemBuilder: (context, index) {
-          return Container(
-            width: ResponsiveUtils.rp(170),
-        decoration: BoxDecoration(
-          color: AppColors.card,
-              borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-                Expanded(
-                  flex: 4,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.shimmerBase,
-              borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(12),
-                      ),
-              ),
-            ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                      Container(
-                        height: 14,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: AppColors.shimmerBase,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUtils.rp(6)),
-                    Container(
-                        height: 14,
-                        width: ResponsiveUtils.rp(80),
-                      decoration: BoxDecoration(
-                          color: AppColors.shimmerBase,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUtils.rp(12)),
-                      Container(
-                        height: ResponsiveUtils.rp(32),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: AppColors.shimmerBase,
-                          borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ],
-            ),
+            },
           );
         },
-      ),
+      ).then((_) {
+        debugPrint('[HomePage] Postal code bottom sheet closed');
+        _isPostalCodeDialogShowing = false;
+        debugPrint('[HomePage] Postal code bottom sheet closed, flag reset');
+      }).catchError((error) {
+        debugPrint('[HomePage] Error showing postal code bottom sheet: $error');
+        _isPostalCodeDialogShowing = false;
+      });
+    } catch (e) {
+      debugPrint('[HomePage] Exception showing postal code bottom sheet: $e');
+      _isPostalCodeDialogShowing = false;
+    }
+  }
+
+  /// Build delivery address header (above search bar)
+  Widget _buildDeliveryAddressHeader() {
+    return HomeDeliveryAddressHeader(
+      onTap: _showPostalCodeBottomSheet,
+      channelName: _channelName,
+      postalCode: _postalCode,
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  /// Check if user is authenticated
-  bool _isUserAuthenticated() {
-    final authController = Get.find<AuthController>();
-    final authToken = GraphqlService.authToken;
-    final channelToken = GraphqlService.channelToken;
-    
-    return authController.isLoggedIn && 
-           authToken.isNotEmpty && 
-           channelToken.isNotEmpty;
-  }
-
-  /// Format channel code to display name
-  String _formatCityName(String channelCode) {
-    if (channelCode.isEmpty) return 'Location';
-    
-    // Handle common channel code formats
-    if (channelCode.contains('-')) {
-      final parts = channelCode.split('-');
-      if (parts.length > 1) {
-        // Convert "ind-madurai" to "Madurai"
-        return parts.last.split(' ').map((word) => 
-          word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : ''
-        ).join(' ');
-      }
+  /// Show switch store bottom sheet
+  void _showSwitchStoreBottomSheet() {
+    final storedPostalCode = box.read('postal_code');
+    if (storedPostalCode == null || storedPostalCode.toString().isEmpty) {
+      showErrorSnackbar('Please select a postal code first');
+      return;
     }
-    
-    // Fallback: capitalize first letter
-    return channelCode.isNotEmpty 
-        ? channelCode[0].toUpperCase() + channelCode.substring(1).toLowerCase()
-        : 'Location';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext bottomSheetContext) {
+        return HomeSwitchStoreSheet(
+          postalCode: storedPostalCode.toString(),
+          customerController: customerController,
+          onChannelSwitched: () {
+            debugPrint('[HomePage] Channel switched callback triggered');
+            // Force immediate UI update
+            _updateChannelDisplay();
+            // Refresh data and force UI rebuild
+            if (mounted) {
+              setState(() {});
+              _refreshData();
+            }
+          },
+        );
+      },
+    );
   }
 }

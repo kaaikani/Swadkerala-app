@@ -370,6 +370,7 @@ debugPrint('[BannerController] Get favorites error: $e');
   /// Get frequently ordered products
   Future<void> getFrequentlyOrderedProducts() async {
     try {
+      debugPrint('[BannerController] ========== FETCHING FREQUENTLY ORDERED PRODUCTS ==========');
       utilityController.setLoadingState(false);
 
       final res =
@@ -377,19 +378,66 @@ debugPrint('[BannerController] Get favorites error: $e');
         Options$Query$GetFrequentlyOrderedProducts(),
       );
 
+      debugPrint('[BannerController] GraphQL response received');
+      debugPrint('[BannerController] Response has exception: ${res.hasException}');
+      debugPrint('[BannerController] Response has data: ${res.data != null}');
+      debugPrint('[BannerController] Parsed data is null: ${res.parsedData == null}');
+
+      if (res.hasException) {
+        debugPrint('[BannerController] ⚠️ GraphQL Exception: ${res.exception}');
+        if (res.exception?.linkException != null) {
+          debugPrint('[BannerController] Link Exception: ${res.exception?.linkException}');
+        }
+        if (res.exception?.graphqlErrors != null) {
+          debugPrint('[BannerController] GraphQL Errors: ${res.exception?.graphqlErrors}');
+        }
+      }
+
       if (checkResponseForErrors(res,
           customErrorMessage: 'Failed to load frequently ordered products')) {
+        debugPrint('[BannerController] ❌ Response contains errors, returning empty list');
         utilityController.setLoadingState(false);
         return;
       }
 
       final products = res.parsedData?.frequentlyOrderedProducts ?? [];
+      debugPrint('[BannerController] ========== FREQUENTLY ORDERED PRODUCTS FETCHED ==========');
+      debugPrint('[BannerController] Total products found: ${products.length}');
+      
+      if (products.isNotEmpty) {
+        debugPrint('[BannerController] ──── FREQUENTLY ORDERED PRODUCTS LIST ────');
+        for (int i = 0; i < products.length; i++) {
+          final item = products[i];
+          final product = item.product;
+          debugPrint('[BannerController] Product ${i + 1}:');
+          debugPrint('[BannerController]   - ID: ${product.id}');
+          debugPrint('[BannerController]   - Name: ${product.name}');
+          debugPrint('[BannerController]   - Enabled: ${product.enabled}');
+          debugPrint('[BannerController]   - Slug: ${product.slug}');
+          debugPrint('[BannerController]   - Variants count: ${product.variants.length}');
+          if (product.variants.isNotEmpty) {
+            final firstVariant = product.variants.first;
+            debugPrint('[BannerController]   - First variant ID: ${firstVariant.id}');
+            debugPrint('[BannerController]   - First variant price: ${firstVariant.priceWithTax}');
+            debugPrint('[BannerController]   - First variant priceWithTax: ${firstVariant.priceWithTax}');
+          }
+          if (product.featuredAsset != null) {
+            debugPrint('[BannerController]   - Featured image: ${product.featuredAsset?.preview ?? "null"}');
+          }
+        }
+        debugPrint('[BannerController] ──────────────────────────────────────────────');
+      } else {
+        debugPrint('[BannerController] ⚠️ No frequently ordered products found');
+      }
+      
       frequentlyOrderedProducts.assignAll(products);
-
-debugPrint( '[BannerController] Fetched ${products.length} frequently ordered products');
+      debugPrint('[BannerController] Frequently ordered products list updated: ${frequentlyOrderedProducts.length} items');
+      debugPrint('[BannerController] ========== FETCH COMPLETED ==========');
       utilityController.setLoadingState(false);
-    } catch (e) {
-debugPrint(  '[BannerController] Get frequently ordered products error: $e');
+    } catch (e, stackTrace) {
+      debugPrint('[BannerController] ========== ERROR FETCHING FREQUENTLY ORDERED PRODUCTS ==========');
+      debugPrint('[BannerController] ❌ Exception: $e');
+      debugPrint('[BannerController] Stack trace: $stackTrace');
       handleException(e,
           customErrorMessage: 'Failed to load frequently ordered products');
       utilityController.setLoadingState(false);

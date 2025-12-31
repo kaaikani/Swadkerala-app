@@ -114,6 +114,8 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
           decoration: InputDecoration(
             hintText: widget.hintText,
             border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear),
@@ -123,6 +125,9 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
                     },
                   )
                 : null,
+          ),
+          style: TextStyle(
+            color: AppColors.textPrimary,
           ),
         ),
       ),

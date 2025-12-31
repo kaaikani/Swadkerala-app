@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/shimmers.dart';
+import '../services/graphql_client.dart';
 
 /// Unified product card widget used across all pages
 /// (Collection products, Favourites, Frequently Ordered, Home page)
@@ -63,42 +65,45 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(ResponsiveUtils.rp(10)),
-                      topRight: Radius.circular(ResponsiveUtils.rp(10)),
+                  Container(
+                    color: Color(0xFFF6F6F6),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(ResponsiveUtils.rp(10)),
+                        topRight: Radius.circular(ResponsiveUtils.rp(10)),
+                      ),
+                      child: imageUrl != null && imageUrl!.isNotEmpty
+                          ? Image.network(
+                              imageUrl!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              cacheWidth: 500,
+                              cacheHeight: 500,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                // Show shimmer while loading
+                                return Skeletons.imageRect(
+                                  height: double.infinity,
+                                  width: double.infinity,
+                                  radius: 0,
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                // Show shimmer on error instead of empty container
+                                return Skeletons.imageRect(
+                                  height: double.infinity,
+                                  width: double.infinity,
+                                  radius: 0,
+                                );
+                              },
+                            )
+                          : Skeletons.imageRect(
+                              height: double.infinity,
+                              width: double.infinity,
+                              radius: 0,
+                            ),
                     ),
-                    child: imageUrl != null && imageUrl!.isNotEmpty
-                        ? Image.network(
-                            imageUrl!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            cacheWidth: 500,
-                            cacheHeight: 500,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              // Show shimmer while loading
-                              return Skeletons.imageRect(
-                                height: double.infinity,
-                                width: double.infinity,
-                                radius: 0,
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              // Show shimmer on error instead of empty container
-                              return Skeletons.imageRect(
-                                height: double.infinity,
-                                width: double.infinity,
-                                radius: 0,
-                              );
-                            },
-                          )
-                        : Skeletons.imageRect(
-                            height: double.infinity,
-                            width: double.infinity,
-                            radius: 0,
-                          ),
                   ),
                   Positioned(
                     top: ResponsiveUtils.rp(6),
@@ -347,6 +352,13 @@ class _AddToCartButtonState extends State<_AddToCartButton>
   Widget build(BuildContext context) {
     final resolvedSize = ResponsiveUtils.rp(42);
     
+    // Check if channel is Ind-Snacks - use reactive observable
+    return Obx(() {
+      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
+          ? GraphqlService.channelTokenRx.value 
+          : GraphqlService.channelToken;
+      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+    
     // Determine colors and icon based on state
     Color buttonColor1;
     Color buttonColor2;
@@ -366,8 +378,14 @@ class _AddToCartButtonState extends State<_AddToCartButton>
         );
         break;
       case _AddToCartState.success:
-        buttonColor1 = Colors.green.shade400;
-        buttonColor2 = Colors.green.shade600;
+        // Use AppColors for ind-snacks, green for other channels
+        if (isIndSnacksChannel) {
+          buttonColor1 = AppColors.buttonLight;
+          buttonColor2 = AppColors.button;
+        } else {
+          buttonColor1 = Colors.green.shade400;
+          buttonColor2 = Colors.green.shade600;
+        }
         iconWidget = AnimatedBuilder(
           animation: _iconController,
           builder: (context, child) {
@@ -417,57 +435,58 @@ class _AddToCartButtonState extends State<_AddToCartButton>
         break;
     }
     
-    return AnimatedBuilder(
-      animation: Listenable.merge([_scaleController, _iconController]),
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _scaleAnimation.value,
-          child: GestureDetector(
-            // Consume double tap to prevent it from bubbling to parent ProductCard
-            // This prevents favorites toggle when double-tapping add to cart button
-            onDoubleTap: () {
-              // Consume the double tap event - do nothing but prevent propagation
-            },
-            behavior: HitTestBehavior.opaque,
-            child: Material(
-              color: Colors.transparent,
-              shape: const CircleBorder(),
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: _handleTap,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  curve: Curves.easeOut,
-                  height: resolvedSize,
-                  width: resolvedSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [buttonColor1, buttonColor2],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: (_state == _AddToCartState.success 
-                            ? Colors.green 
-                            : _state == _AddToCartState.error 
-                            ? Colors.red 
-                            : Colors.black).withValues(alpha: 0.25),
-                        blurRadius: ResponsiveUtils.rp(12),
-                        offset: Offset(0, ResponsiveUtils.rp(4)),
-                        spreadRadius: _state == _AddToCartState.success || _state == _AddToCartState.error ? 2 : 0,
+      return AnimatedBuilder(
+        animation: Listenable.merge([_scaleController, _iconController]),
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: GestureDetector(
+              // Consume double tap to prevent it from bubbling to parent ProductCard
+              // This prevents favorites toggle when double-tapping add to cart button
+              onDoubleTap: () {
+                // Consume the double tap event - do nothing but prevent propagation
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: _handleTap,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeOut,
+                    height: resolvedSize,
+                    width: resolvedSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [buttonColor1, buttonColor2],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: (_state == _AddToCartState.success 
+                              ? (isIndSnacksChannel ? AppColors.button : Colors.green)
+                              : _state == _AddToCartState.error 
+                              ? Colors.red 
+                              : Colors.black).withValues(alpha: 0.25),
+                          blurRadius: ResponsiveUtils.rp(12),
+                          offset: Offset(0, ResponsiveUtils.rp(4)),
+                          spreadRadius: _state == _AddToCartState.success || _state == _AddToCartState.error ? 2 : 0,
+                        ),
+                      ],
+                    ),
+                    child: Center(child: iconWidget),
                   ),
-                  child: Center(child: iconWidget),
                 ),
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    });
   }
 }
 

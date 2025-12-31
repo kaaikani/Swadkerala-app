@@ -7,6 +7,7 @@ import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
 import '../graphql/Customer.graphql.dart';
 import '../graphql/schema.graphql.dart';
+import '../services/postal_code_service.dart';
 
 class AddressesPage extends StatefulWidget {
   const AddressesPage({super.key});
@@ -191,13 +192,21 @@ class _AddressesPageState extends State<AddressesPage> {
                 _showAddForm = true;
               });
             },
-            icon: Icon(Icons.add_rounded),
-            label: Text('Add First Address'),
+            icon: Icon(Icons.add_rounded, color: Colors.white),
+            label: Text(
+              'Add First Address',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.button,
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              elevation: 4,
+              shadowColor: AppColors.button.withValues(alpha: 0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -857,11 +866,13 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   late final TextEditingController streetLine2Controller;
   late final TextEditingController cityController;
   late final TextEditingController postalCodeController;
+  late final TextEditingController provinceController;
   late final TextEditingController phoneController;
   
   // Postal codes state
   List<Query$PostalCodes$postalCodes> _postalCodesList = [];
   bool _isLoadingPostalCodes = true;
+  bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
 
   @override
   void initState() {
@@ -872,6 +883,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     // Pre-initialize controllers for better performance
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
+    final channelToken = box.read('channel_token')?.toString() ?? '';
     final customer = widget.customerController.activeCustomer.value;
     final autoFullName = customer != null
         ? '${customer.firstName} ${customer.lastName}'.trim()
@@ -891,6 +903,10 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
         text: storedPostalCode != null && storedPostalCode.toString().isNotEmpty
             ? storedPostalCode.toString()
             : '');
+    
+    // Check if channel is Ind-Snacks
+    _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+    provinceController = TextEditingController();
     
     phoneController = TextEditingController(
         text: autoPhone.isNotEmpty ? autoPhone : '');
@@ -939,6 +955,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     streetLine2Controller.dispose();
     cityController.dispose();
     postalCodeController.dispose();
+    provinceController.dispose();
     phoneController.dispose();
     super.dispose();
   }
@@ -1059,8 +1076,18 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                     setState(() {});
                   }
                 },
+                provinceController, // Pass province controller to auto-populate state
               ),
               SizedBox(height: 16),
+              // Show State field only if channel is Ind-Snacks
+              if (_isIndSnacksChannel) ...[
+                _buildTextField(
+                  provinceController,
+                  'State',
+                  Icons.map,
+                ),
+                SizedBox(height: 16),
+              ],
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   keyboardType: TextInputType.phone,
                   maxLength: 10,
@@ -1238,8 +1265,13 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                           }
                         }
 
+                        // For Ind-Snacks channel, use province from field; for others, use 'Tamilnadu' as default
+                        final provinceValue = _isIndSnacksChannel 
+                            ? (provinceController.text.trim().isEmpty ? null : provinceController.text.trim())
+                            : 'Tamilnadu';
+                        
                         final success = await widget.customerController
-                            .createAddress(addressData);
+                            .createAddress(addressData, province: provinceValue);
 
                         if (success) {
                           widget.onSuccess();
@@ -1377,6 +1409,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     String? errorText,
     StateSetter setState,
     VoidCallback onChanged,
+    [TextEditingController? provinceController,]
   ) {
     final hasPostalCodes = postalCodesList.isNotEmpty;
     final hasError = errorText != null && errorText.isNotEmpty;
@@ -1621,11 +1654,13 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   late final TextEditingController streetLine2Controller;
   late final TextEditingController cityController;
   late final TextEditingController postalCodeController;
+  late final TextEditingController provinceController;
   late final TextEditingController phoneController;
   
   // Postal codes state
   List<Query$PostalCodes$postalCodes> _postalCodesList = [];
   bool _isLoadingPostalCodes = true;
+  bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
 
   @override
   void initState() {
@@ -1643,17 +1678,28 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
         text: existingAddress?.streetLine2 ?? '');
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
+    final channelToken = box.read('channel_token')?.toString() ?? '';
     cityController = TextEditingController(
         text: channelCode.isNotEmpty
             ? channelCode
             : (existingAddress?.city ?? ''));
     postalCodeController = TextEditingController(
         text: existingAddress?.postalCode ?? '');
+    
+    // Check if channel is Ind-Snacks
+    _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+    provinceController = TextEditingController();
+    
     phoneController = TextEditingController(
         text: existingAddress?.phoneNumber ?? '');
     
     // Fetch postal codes when form is initialized
     _fetchPostalCodes();
+    
+    // If postal code exists and channel is Ind-Snacks, fetch state for province
+    if (_isIndSnacksChannel && existingAddress?.postalCode != null && existingAddress!.postalCode.isNotEmpty) {
+      _fetchStateForPostalCode(existingAddress.postalCode);
+    }
   }
   
   /// Fetch postal codes for the current channel
@@ -1689,6 +1735,24 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     });
   }
 
+  /// Fetch state for a postal code and populate province field
+  void _fetchStateForPostalCode(String postalCode) async {
+    if (postalCode.length != 6) return;
+    try {
+      final postalCodeService = PostalCodeService();
+      final results = await postalCodeService.searchPostalCode(postalCode);
+      if (results.isNotEmpty && mounted) {
+        final postalData = results.first;
+        setState(() {
+          provinceController.text = postalData.state;
+        });
+        debugPrint('[AddressesPage] Auto-populated province for existing address: ${postalData.state}');
+      }
+    } catch (e) {
+      debugPrint('[AddressesPage] Error fetching state for postal code: $e');
+    }
+  }
+
   @override
   void dispose() {
     fullNameController.dispose();
@@ -1696,6 +1760,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     streetLine2Controller.dispose();
     cityController.dispose();
     postalCodeController.dispose();
+    provinceController.dispose();
     phoneController.dispose();
     super.dispose();
   }
@@ -1823,8 +1888,18 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                     setState(() {});
                   }
                 },
+                provinceController, // Pass province controller to auto-populate state
               ),
               SizedBox(height: 16),
+              // Show State field only if channel is Ind-Snacks
+              if (_isIndSnacksChannel) ...[
+                _buildTextField(
+                  provinceController,
+                  'State',
+                  Icons.map,
+                ),
+                SizedBox(height: 16),
+              ],
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   keyboardType: TextInputType.phone,
                   maxLength: 10,
@@ -2004,8 +2079,13 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                           country: country,
                         );
 
+                        // For Ind-Snacks channel, use province from field; for others, use 'Tamilnadu' as default
+                        final provinceValue = _isIndSnacksChannel 
+                            ? (provinceController.text.trim().isEmpty ? null : provinceController.text.trim())
+                            : 'Tamilnadu';
+                        
                         final success = await widget.customerController
-                            .updateAddress(addressData);
+                            .updateAddress(addressData, province: provinceValue);
 
                         if (success) {
                           widget.onSuccess();
@@ -2142,6 +2222,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     String? errorText,
     StateSetter setState,
     VoidCallback onChanged,
+    [TextEditingController? provinceController,]
   ) {
     final hasPostalCodes = postalCodesList.isNotEmpty;
     final hasError = errorText != null && errorText.isNotEmpty;

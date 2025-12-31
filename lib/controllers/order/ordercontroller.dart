@@ -532,9 +532,13 @@ debugPrint('[Order] Set shipping method error: $e');
       if (isPostalCodeError) {
         debugPrint('[Order] ❌ Invalid postal code - showing custom error dialog');
         ErrorDialog.show(
-          title: 'Postal Code not ',
-          message: 'Kindly change address in home page',
+          title: 'Postal Code Invalid',
+          message: 'Kindly change the address',
           buttonText: 'OK',
+          secondButtonText: 'Change Address',
+          onSecondButtonPressed: () {
+            Get.toNamed('/addresses');
+          },
         );
         debugPrint('[Order] ========== SET SHIPPING ADDRESS FAILED (Invalid Postal Code) ==========');
         debugPrint('═══════════════════════════════════════════════════════════');

@@ -50,21 +50,26 @@ class ProductCardPremium extends StatelessWidget {
           // Image Section with Badge
           Stack(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(ResponsiveUtils.rp(16)),
-                  topRight: Radius.circular(ResponsiveUtils.rp(16)),
+              Container(
+                height: imageHeight ?? ResponsiveUtils.rp(140),
+                width: double.infinity,
+                color: Color(0xFFF6F6F6),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(ResponsiveUtils.rp(16)),
+                    topRight: Radius.circular(ResponsiveUtils.rp(16)),
+                  ),
+                  child: imageUrl != null
+                      ? Image.network(
+                          imageUrl!,
+                          height: imageHeight ?? ResponsiveUtils.rp(140),
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _buildPlaceholder(),
+                        )
+                      : _buildPlaceholder(),
                 ),
-                child: imageUrl != null
-                    ? Image.network(
-                        imageUrl!,
-                        height: imageHeight ?? ResponsiveUtils.rp(140),
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            _buildPlaceholder(),
-                      )
-                    : _buildPlaceholder(),
               ),
               // Badge
               if (badge != null)

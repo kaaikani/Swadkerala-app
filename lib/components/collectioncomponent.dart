@@ -128,21 +128,7 @@ class CollectionCard extends StatelessWidget {
                   top: Radius.circular(ResponsiveUtils.rp(24))),
               child: ResponsiveContainer(
                 width: double.infinity,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: collection.featuredAsset != null
-                      ? [
-                          AppColors.grey100,
-                          AppColors.grey200,
-                          AppColors.grey300,
-                        ]
-                      : [
-                          AppColors.grey200,
-                          AppColors.grey300,
-                          AppColors.grey400,
-                        ],
-                ),
+                backgroundColor: Color(0xFFF6F6F6),
                 borderRadius: BorderRadius.zero,
                 boxShadow: [],
                 child: Stack(

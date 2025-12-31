@@ -38,11 +38,11 @@ class _AccountPageState extends State<AccountPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Only fetch customer data if user is authenticated
-    /*  if (_isUserAuthenticated()) {
+      if (_isUserAuthenticated()) {
         await customerController.getActiveCustomer();
         // Check for invalid email or missing phone number after customer data loads
         _checkAndShowUpdateDialogs();
-      }*/
+      }
       _updateService.checkAndShowFlexibleUpdateInAccount(context);
     });
   }
@@ -363,23 +363,24 @@ class _AccountPageState extends State<AccountPage> {
                             isLoading = true;
                           });
 
-                          debugPrint('[AccountPage] ⚠️ Note: Phone number update may need to be implemented in customer controller');
-                          debugPrint('[AccountPage] 🔄 Refreshing customer data...');
-                          // Note: Phone number update may need to be implemented in customer controller
-                          // For now, we'll just refresh customer data
-                          // TODO: Implement phone number update in customer controller
-                          await customerController.getActiveCustomer();
-                          
-                          debugPrint('[AccountPage] ✅ Customer data refreshed');
+                          debugPrint('[AccountPage] 🔄 Calling customerController.updateCustomerPhoneNumber()...');
+                          // Update phone number using customer controller
+                          final success = await customerController.updateCustomerPhoneNumber(phone);
                           
                           setState(() {
                             isLoading = false;
                           });
 
-                          debugPrint('[AccountPage] 🔙 Closing dialog');
-                          Get.back();
-                          debugPrint('[AccountPage] 📢 Showing success snackbar');
-                          showSuccessSnackbar('Phone number updated successfully');
+                          if (success) {
+                            debugPrint('[AccountPage] ✅ Phone number updated successfully');
+                            debugPrint('[AccountPage] 🔙 Closing dialog');
+                            Get.back();
+                            debugPrint('[AccountPage] 📢 Showing success snackbar');
+                            showSuccessSnackbar('Phone number updated successfully');
+                          } else {
+                            debugPrint('[AccountPage] ❌ Phone number update failed');
+                            showErrorSnackbar('Failed to update phone number. Please try again.');
+                          }
                           debugPrint('[AccountPage] ========== UPDATE PHONE END ==========');
                         },
                         style: ElevatedButton.styleFrom(

@@ -112,7 +112,10 @@ class PostalCodeService {
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        debugPrint('[PostalCodeService] Location services are disabled');
+        debugPrint('[PostalCodeService] Location services are disabled - opening location settings...');
+        // Open location settings for the user to enable location services
+        await Geolocator.openLocationSettings();
+        debugPrint('[PostalCodeService] Location settings opened');
         return null;
       }
 

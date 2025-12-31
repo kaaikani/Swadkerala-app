@@ -11,7 +11,6 @@ import '../../services/postal_code_service.dart';
 import '../../utils/app_strings.dart';
 import '../../widgets/error_dialog.dart';
 import '../../widgets/loading_dialog.dart';
-import '../../widgets/snackbar.dart';
 import '../../services/analytics_service.dart';
 import '../base_controller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
@@ -592,18 +591,19 @@ debugPrint('[Customer] Update error: $e');
   }
 
   /// Create new address
-  Future<bool> createAddress(Query$GetActiveCustomer$activeCustomer$addresses address) async {
+  Future<bool> createAddress(Query$GetActiveCustomer$activeCustomer$addresses address, {String? province}) async {
     try {
       LoadingDialog.show(message: 'Please wait');
 
 debugPrint('[Customer] Creating address...');
+      debugPrint('[Customer] Province: ${province ?? "null"}');
 
       final input = Input$CreateAddressInput(
         fullName: address.fullName,
         streetLine1: address.streetLine1,
         streetLine2: address.streetLine2,
         city: address.city,
-        province: null, // Province not available in query address type
+        province: province?.trim().isEmpty == true ? null : province,
         postalCode: address.postalCode,
         countryCode: address.country.code,
         phoneNumber: address.phoneNumber,
@@ -647,7 +647,7 @@ debugPrint('[Customer] Create address error: $e');
   }
 
   /// Update existing address
-  Future<bool> updateAddress(Query$GetActiveCustomer$activeCustomer$addresses address, {bool skipLoading = true}) async {
+  Future<bool> updateAddress(Query$GetActiveCustomer$activeCustomer$addresses address, {bool skipLoading = true, String? province}) async {
     try {
       // Don't show loading dialog by default - only show on error if needed
       debugPrint('[Customer] Updating address...');
@@ -658,7 +658,7 @@ debugPrint('[Customer] Create address error: $e');
         streetLine1: address.streetLine1,
         streetLine2: address.streetLine2,
         city: address.city,
-        province: null, // Province not available in query address type
+        province: province,
         postalCode: address.postalCode,
         countryCode: address.country.code,
         phoneNumber: address.phoneNumber,
@@ -965,10 +965,13 @@ debugPrint('[Customer] Logout error: $e');
 
       if (channels.isEmpty) {
         debugPrint('[Customer] No channels returned from API');
-        ErrorDialog.show(
-          title: 'Service Not Available',
-          message: 'Service is not available for this location.',
-        );
+        // Only show error dialog if showLoading is true (not called from sheet)
+        if (showLoading) {
+          ErrorDialog.show(
+            title: 'Service Not Available',
+            message: 'Service is not available for this location.',
+          );
+        }
         return false;
       }
 
@@ -1094,6 +1097,7 @@ debugPrint('[Customer] Logout error: $e');
       await _storage.write('channel_code', selectedChannel.code);
       await _storage.write('channel_token', selectedChannel.token ?? '');
       await _storage.write('channel_name', selectedChannel.name);
+      await _storage.write('channel_type', selectedChannel.type.toString());
       await _storage.write('postal_code', postalCode);
       
       if (selectedChannel.token != null && selectedChannel.token!.isNotEmpty) {
@@ -1105,9 +1109,12 @@ debugPrint('[Customer] Logout error: $e');
       
       // Refresh all data after channel change
       debugPrint('[Customer] Refreshing all data after channel change...');
-      await _refreshAllDataAfterChannelChange();
+      await refreshAllDataAfterChannelChange();
       
-
+      // Force UI refresh by updating reactive variables
+      // This ensures the UI rebuilds when channel token changes
+      debugPrint('[Customer] Forcing UI refresh after channel change...');
+      await Future.delayed(Duration(milliseconds: 100)); // Small delay to ensure storage is written
       
       return true;
     } catch (e) {
@@ -1120,8 +1127,106 @@ debugPrint('[Customer] Logout error: $e');
     }
   }
 
+  /// Check if postal code has valid available channels (without showing dialogs)
+  Future<bool> hasValidPostalCode(String postalCode) async {
+    try {
+      final channels = await getAvailableChannels(postalCode);
+      if (channels.isEmpty) {
+        return false;
+      }
+      
+      // Check if there are any available CITY type channels
+      final availableCityChannels = channels.where(
+        (channel) => channel.type == Enum$ChannelType.CITY && 
+                     channel.isAvailable == true,
+      ).toList();
+      
+      return availableCityChannels.isNotEmpty;
+    } catch (e) {
+      debugPrint('[Customer] Error checking postal code validity: $e');
+      return false;
+    }
+  }
+
+  /// Get available channels for a postal code
+  Future<List<Query$GetAvailableChannels$getAvailableChannels>> getAvailableChannels(String postalCode) async {
+    try {
+      debugPrint('[Customer] ========== FETCHING AVAILABLE CHANNELS ==========');
+      debugPrint('[Customer] Postal code: $postalCode');
+      debugPrint('[Customer] GraphQL client status: Available');
+      
+      // Check channel token before making query
+      final channelToken = GraphqlService.channelToken;
+      final storedChannelToken = _storage.read('channel_token');
+      debugPrint('[Customer] Current channel token in GraphQL service: $channelToken');
+      debugPrint('[Customer] Stored channel token: ${storedChannelToken ?? "null"}');
+      
+      debugPrint('[Customer] Executing GraphQL query: getAvailableChannels');
+      debugPrint('[Customer] Query variables: {postalCode: "$postalCode"}');
+
+      final response = await GraphqlService.client.value.query$GetAvailableChannels(
+        Options$Query$GetAvailableChannels(
+          variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
+        ),
+      );
+
+      debugPrint('[Customer] ========== GRAPHQL RESPONSE RECEIVED ==========');
+      debugPrint('[Customer] Response has exception: ${response.hasException}');
+      debugPrint('[Customer] Response has data: ${response.data != null}');
+      debugPrint('[Customer] Parsed data is null: ${response.parsedData == null}');
+      
+      if (response.hasException) {
+        debugPrint('[Customer] ⚠️ GraphQL Exception Details:');
+        debugPrint('[Customer] Exception: ${response.exception}');
+        if (response.exception?.linkException != null) {
+          debugPrint('[Customer] Link Exception: ${response.exception?.linkException}');
+        }
+        if (response.exception?.graphqlErrors != null) {
+          debugPrint('[Customer] GraphQL Errors: ${response.exception?.graphqlErrors}');
+        }
+      }
+
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
+        debugPrint('[Customer] ❌ Response contains errors, returning empty list');
+        return [];
+      }
+
+      final channels = response.parsedData?.getAvailableChannels ?? [];
+      debugPrint('[Customer] ========== CHANNELS FETCHED SUCCESSFULLY ==========');
+      debugPrint('[Customer] Total channels found: ${channels.length}');
+      
+      if (channels.isNotEmpty) {
+        debugPrint('[Customer] ──── CHANNELS LIST ────');
+        for (int i = 0; i < channels.length; i++) {
+          final channel = channels[i];
+          debugPrint('[Customer] Channel ${i + 1}:');
+          debugPrint('[Customer]   - ID: ${channel.id}');
+          debugPrint('[Customer]   - Code: ${channel.code}');
+          debugPrint('[Customer]   - Name: ${channel.name}');
+          debugPrint('[Customer]   - Token: ${channel.token ?? "null"}');
+          debugPrint('[Customer]   - Type: ${channel.type}');
+          debugPrint('[Customer]   - isAvailable: ${channel.isAvailable}');
+          debugPrint('[Customer]   - Message: ${channel.message ?? "null"}');
+        }
+        debugPrint('[Customer] ──────────────────────────────────────────────');
+      } else {
+        debugPrint('[Customer] ⚠️ No channels returned from API');
+      }
+      
+      debugPrint('[Customer] ========== FETCH COMPLETED ==========');
+      return channels;
+    } catch (e, stackTrace) {
+      debugPrint('[Customer] ========== ERROR FETCHING CHANNELS ==========');
+      debugPrint('[Customer] ❌ Exception: $e');
+      debugPrint('[Customer] Stack trace: $stackTrace');
+      debugPrint('[Customer] Error type: ${e.runtimeType}');
+      handleException(e, customErrorMessage: 'Failed to fetch available channels');
+      return [];
+    }
+  }
+
   /// Refresh all data after channel change
-  Future<void> _refreshAllDataAfterChannelChange() async {
+  Future<void> refreshAllDataAfterChannelChange() async {
     try {
       debugPrint('[Customer] ========== REFRESHING DATA AFTER CHANNEL CHANGE ==========');
       

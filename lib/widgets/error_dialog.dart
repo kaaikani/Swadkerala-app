@@ -11,6 +11,8 @@ class ErrorDialog {
     required String message,
     String? buttonText,
     VoidCallback? onClose,
+    String? secondButtonText,
+    VoidCallback? onSecondButtonPressed,
   }) {
     // Use Get.context or Get.dialog
     Get.dialog(
@@ -46,6 +48,22 @@ class ErrorDialog {
           ),
         ),
         actions: [
+          // Second button (if provided)
+          if (secondButtonText != null && onSecondButtonPressed != null)
+            TextButton(
+              onPressed: () {
+                Get.back();
+                onSecondButtonPressed();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.button,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(secondButtonText),
+            ),
+          // Primary button
           ElevatedButton(
             onPressed: () {
               Get.back();

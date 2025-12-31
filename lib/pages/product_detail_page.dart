@@ -1378,72 +1378,76 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Obx(() {
-        final isLoading = utilityController.isLoadingRx.value;
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: Obx(() {
+            final isLoading = utilityController.isLoadingRx.value;
 
-        // Show shimmer loading while fetching or when productDetail is null initially
-        // This ensures shimmer shows immediately on page load (like Instagram/YouTube)
-        // Only show "Product not found" after fetch completes AND productDetail is still null
-        if (!_hasFetchedData || isLoading) {
-          // Haven't fetched yet or currently loading - show shimmer
-          return _buildShimmerLoading();
-        }
+            // Show shimmer loading while fetching or when productDetail is null initially
+            // This ensures shimmer shows immediately on page load (like Instagram/YouTube)
+            // Only show "Product not found" after fetch completes AND productDetail is still null
+            if (!_hasFetchedData || isLoading) {
+              // Haven't fetched yet or currently loading - show shimmer
+              return _buildShimmerLoading();
+            }
 
-        // If fetch completed but no product data, show error
-        if (_hasFetchedData && productDetail == null && !isLoading) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ResponsiveIcon(Icons.error_outline,
-                    size: 64, color: AppColors.error),
-                ResponsiveSpacing.vertical(16),
-                ResponsiveText(
-                  'Product not found',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+            // If fetch completed but no product data, show error
+            if (_hasFetchedData && productDetail == null && !isLoading) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ResponsiveIcon(Icons.error_outline,
+                        size: 64, color: AppColors.error),
+                    ResponsiveSpacing.vertical(16),
+                    ResponsiveText(
+                      'Product not found',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                    ResponsiveSpacing.vertical(24),
+                    ElevatedButton(
+                      onPressed: () => Get.back(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.button,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(24),
+                            vertical: ResponsiveUtils.rp(12)),
+                      ),
+                      child: Text(AppStrings.goBack, style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
                 ),
-                ResponsiveSpacing.vertical(24),
-                ElevatedButton(
-                  onPressed: () => Get.back(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.button,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.rp(24),
-                        vertical: ResponsiveUtils.rp(12)),
+              );
+            }
+
+            // If productDetail is still null but we haven't checked properly, show shimmer as fallback
+            if (productDetail == null) {
+              return _buildShimmerLoading();
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                await _fetchProductDetail();
+              },
+              color: AppColors.refreshIndicator,
+              child: CustomScrollView(
+                physics: BouncingScrollPhysics(),
+                slivers: [
+                  _buildAppBar(),
+                  SliverToBoxAdapter(
+                    child: _buildContent(),
                   ),
-                  child: Text(AppStrings.goBack, style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-          );
-        }
-
-        // If productDetail is still null but we haven't checked properly, show shimmer as fallback
-        if (productDetail == null) {
-          return _buildShimmerLoading();
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async {
-            await _fetchProductDetail();
-          },
-          color: AppColors.refreshIndicator,
-          child: CustomScrollView(
-            physics: BouncingScrollPhysics(),
-            slivers: [
-              _buildAppBar(),
-              SliverToBoxAdapter(
-                child: _buildContent(),
+                ],
               ),
-            ],
-          ),
+            );
+          }),
+          bottomNavigationBar: _buildBottomBar(),
         );
-      }),
-      bottomNavigationBar: _buildBottomBar(),
+      },
     );
   }
 

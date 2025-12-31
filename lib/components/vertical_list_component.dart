@@ -86,14 +86,7 @@ class VerticalListComponent extends StatelessWidget {
                             height: imageSize,
                             borderRadius:
                                 BorderRadius.circular(ResponsiveUtils.rp(16)),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppColors.zomatoRed,
-                                AppColors.zomatoRedDark,
-                              ],
-                            ),
+                            backgroundColor: Color(0xFFF6F6F6),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withValues(alpha: 0.1),

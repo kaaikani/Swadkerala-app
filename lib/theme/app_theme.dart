@@ -120,7 +120,7 @@ class AppTheme {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.inputRadius),
           borderSide: BorderSide(
-            color: AppColors.zomatoRed,
+            color: AppColors.button,
             width: AppSizes.borderWidthMD,
           ),
         ),
@@ -242,14 +242,14 @@ class AppTheme {
       ),
       
       // Floating Action Button Theme
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.button,
         foregroundColor: AppColors.textLight,
         elevation: AppSizes.elevationMD,
       ),
       
       // Progress Indicator Theme
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
+      progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.button,
       ),
     );
@@ -492,14 +492,14 @@ class AppTheme {
       ),
       
       // Floating Action Button Theme
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.button,
         foregroundColor: Colors.white,
         elevation: AppSizes.elevationMD,
       ),
       
       // Progress Indicator Theme
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
+      progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.button,
       ),
     );

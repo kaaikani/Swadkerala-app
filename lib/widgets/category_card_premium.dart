@@ -43,8 +43,7 @@ class CategoryCardPremium extends StatelessWidget {
             width: ResponsiveUtils.rp(56),
             height: ResponsiveUtils.rp(56),
             decoration: BoxDecoration(
-              color: iconColor?.withValues(alpha: 0.1) ??
-                  AppColors.button.withValues(alpha: 0.1),
+              color: Color(0xFFF6F6F6),
               shape: BoxShape.circle,
             ),
             child: imageUrl != null

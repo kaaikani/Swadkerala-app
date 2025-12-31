@@ -8,6 +8,7 @@ import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
 import '../services/sim_detection_service.dart';
 import '../services/sms_autofill_service.dart';
+import 'package:mobile_number/mobile_number.dart';
 import '../theme/theme.dart';
 import '../utils/navigation_helper.dart';
 import '../utils/responsive.dart';
@@ -114,6 +115,8 @@ debugPrint('[LoginPage] Error clearing cache: $e');
       if (!hasPermission) {
         bool granted = await simService.requestPhonePermission();
         if (!granted) {
+          // If permission denied, try to get from Google/device
+          await _tryGetPhoneFromGoogle();
           if (mounted) setState(() => _isDetectingSim = false);
           return;
         }
@@ -135,13 +138,51 @@ debugPrint('[LoginPage] Error clearing cache: $e');
           if (selectedSim != null) {
             _authController.phoneNumber.text = selectedSim.last10Digits;
             _validatePhone(_authController.phoneNumber.text);
+          } else {
+            // If user cancelled SIM selection, try Google
+            await _tryGetPhoneFromGoogle();
           }
         }
+      } else {
+        // No SIM found, try to get from Google/device
+        await _tryGetPhoneFromGoogle();
       }
     } catch (e) {
-debugPrint('[LoginPage] SIM detection failed: $e');
+      debugPrint('[LoginPage] SIM detection failed: $e');
+      // If SIM detection fails, try Google as fallback
+      await _tryGetPhoneFromGoogle();
     } finally {
       if (mounted) setState(() => _isDetectingSim = false);
+    }
+  }
+
+  /// Try to get phone number from Google/device when SIM detection fails
+  Future<void> _tryGetPhoneFromGoogle() async {
+    if (!mounted) return;
+    try {
+      debugPrint('[LoginPage] Attempting to get phone number from Google/device...');
+      
+      // Import mobile_number package
+      final mobileNumber = await MobileNumber.mobileNumber;
+      
+      if (mobileNumber != null && mobileNumber.isNotEmpty) {
+        // Extract last 10 digits from the phone number
+        String phoneNumber = mobileNumber.replaceAll(RegExp(r'[^0-9]'), '');
+        
+        // Get last 10 digits
+        if (phoneNumber.length >= 10) {
+          phoneNumber = phoneNumber.substring(phoneNumber.length - 10);
+          _authController.phoneNumber.text = phoneNumber;
+          _validatePhone(phoneNumber);
+          debugPrint('[LoginPage] Phone number from Google/device: $phoneNumber');
+        } else {
+          debugPrint('[LoginPage] Phone number from Google/device is too short: $phoneNumber');
+        }
+      } else {
+        debugPrint('[LoginPage] No phone number available from Google/device');
+      }
+    } catch (e) {
+      debugPrint('[LoginPage] Failed to get phone number from Google/device: $e');
     }
   }
 
