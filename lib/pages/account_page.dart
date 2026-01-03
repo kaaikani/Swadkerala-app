@@ -106,6 +106,9 @@ class _AccountPageState extends State<AccountPage> {
     final customer = customerController.activeCustomer.value;
     if (customer == null) return;
 
+    // Clear any previous error
+    customerController.emailUpdateError.value = '';
+
     final emailController = TextEditingController();
     bool isLoading = false;
 
@@ -152,10 +155,56 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                   SizedBox(height: ResponsiveUtils.rp(16)),
+                  // Show error message if available
+                  Obx(() {
+                    final errorMsg = customerController.emailUpdateError.value;
+                    if (errorMsg.isNotEmpty) {
+                      return Container(
+                        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                          border: Border.all(
+                            color: AppColors.error.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              color: AppColors.error,
+                              size: ResponsiveUtils.rp(20),
+                            ),
+                            SizedBox(width: ResponsiveUtils.rp(8)),
+                            Expanded(
+                              child: Text(
+                                errorMsg,
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(13),
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return SizedBox.shrink();
+                  }),
+                  SizedBox(height: ResponsiveUtils.rp(16)),
                   TextField(
                     controller: emailController,
                     enabled: !isLoading,
                     keyboardType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      // Clear error when user starts typing
+                      if (customerController.emailUpdateError.value.isNotEmpty) {
+                        customerController.emailUpdateError.value = '';
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: 'Enter Gmail address',
                       prefixIcon: Icon(Icons.email_outlined),
@@ -205,6 +254,9 @@ class _AccountPageState extends State<AccountPage> {
                           });
 
                           debugPrint('[AccountPage] 🚀 Calling customerController.updateCustomerEmail()...');
+                          // Clear previous error
+                          customerController.emailUpdateError.value = '';
+                          
                           // Update email using the dedicated method
                           final success = await customerController.updateCustomerEmail(email);
                           
@@ -226,8 +278,8 @@ class _AccountPageState extends State<AccountPage> {
                             debugPrint('[AccountPage] ========== UPDATE EMAIL END (SUCCESS) ==========');
                           } else {
                             debugPrint('[AccountPage] ❌ Email update failed');
-                            debugPrint('[AccountPage] 📢 Showing error snackbar');
-                            showErrorSnackbar('Failed to update email');
+                            // Error message is already set in controller and will be shown in UI
+                            // Don't show snackbar as error is displayed in dialog
                             debugPrint('[AccountPage] ========== UPDATE EMAIL END (FAILED) ==========');
                           }
                         },
@@ -265,6 +317,7 @@ class _AccountPageState extends State<AccountPage> {
 
     final phoneController = TextEditingController();
     bool isLoading = false;
+    String? errorMessage;
 
     Get.dialog(
       WillPopScope(
@@ -309,6 +362,44 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                   SizedBox(height: ResponsiveUtils.rp(16)),
+                  // Error message display
+                  if (errorMessage != null) ...[
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveUtils.rp(12),
+                        vertical: ResponsiveUtils.rp(8),
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                        border: Border.all(
+                          color: AppColors.error.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: ResponsiveUtils.rp(18),
+                            color: AppColors.error,
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(8)),
+                          Expanded(
+                            child: Text(
+                              errorMessage!,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(13),
+                                color: AppColors.error,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                  ],
                   TextField(
                     controller: phoneController,
                     enabled: !isLoading,
@@ -321,18 +412,39 @@ class _AccountPageState extends State<AccountPage> {
                       fillColor: AppColors.inputFill,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                        borderSide: BorderSide(color: AppColors.border),
+                        borderSide: BorderSide(
+                          color: errorMessage != null 
+                              ? AppColors.error 
+                              : AppColors.border,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                        borderSide: BorderSide(color: AppColors.border),
+                        borderSide: BorderSide(
+                          color: errorMessage != null 
+                              ? AppColors.error 
+                              : AppColors.border,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                        borderSide: BorderSide(color: AppColors.button, width: 2),
+                        borderSide: BorderSide(
+                          color: errorMessage != null 
+                              ? AppColors.error 
+                              : AppColors.button, 
+                          width: 2,
+                        ),
                       ),
                       counterText: '',
                     ),
+                    onChanged: (value) {
+                      // Clear error when user starts typing
+                      if (errorMessage != null) {
+                        setState(() {
+                          errorMessage = null;
+                        });
+                      }
+                    },
                   ),
                   SizedBox(height: ResponsiveUtils.rp(20)),
                   Row(
@@ -365,21 +477,36 @@ class _AccountPageState extends State<AccountPage> {
 
                           debugPrint('[AccountPage] 🔄 Calling customerController.updateCustomerPhoneNumber()...');
                           // Update phone number using customer controller
+                          try {
                           final success = await customerController.updateCustomerPhoneNumber(phone);
-                          
-                          setState(() {
-                            isLoading = false;
-                          });
 
                           if (success) {
                             debugPrint('[AccountPage] ✅ Phone number updated successfully');
                             debugPrint('[AccountPage] 🔙 Closing dialog');
-                            Get.back();
+                              // Close dialog first
+                              Navigator.of(context).pop();
                             debugPrint('[AccountPage] 📢 Showing success snackbar');
                             showSuccessSnackbar('Phone number updated successfully');
                           } else {
                             debugPrint('[AccountPage] ❌ Phone number update failed');
-                            showErrorSnackbar('Failed to update phone number. Please try again.');
+                              setState(() {
+                                isLoading = false;
+                                errorMessage = 'Failed to update phone number. Please try again.';
+                              });
+                            }
+                          } catch (e) {
+                            debugPrint('[AccountPage] ❌ Exception during phone update: $e');
+                            setState(() {
+                              isLoading = false;
+                              // Check if error message contains "already registered"
+                              final errorStr = e.toString();
+                              if (errorStr.toLowerCase().contains('already registered') ||
+                                  errorStr.toLowerCase().contains('already exists')) {
+                                errorMessage = 'This phone number is already registered with another account.';
+                              } else {
+                                errorMessage = 'Failed to update phone number. Please try again.';
+                              }
+                            });
                           }
                           debugPrint('[AccountPage] ========== UPDATE PHONE END ==========');
                         },

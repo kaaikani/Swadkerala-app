@@ -9,6 +9,13 @@ mutation UpdateCustomer($input: UpdateCustomerInput!){
     }
 }
 
+mutation UpdateProfileEmail($email: String!) {
+    updateProfileEmail(email: $email) {
+        id
+        firstName
+        lastName
+    }
+}
 
 mutation CreateCustomerAddress($input: CreateAddressInput!) {
     createCustomerAddress(input: $input) {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
-import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../services/remote_config_service.dart';
 

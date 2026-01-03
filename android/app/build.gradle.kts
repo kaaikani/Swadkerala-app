@@ -57,25 +57,25 @@ android {
         // Note: resourceConfigurations is deprecated, using androidResources.localeFilters instead
         // resourceConfigurations += listOf("en", "hi") // Only include English and Hindi resources
         
-        // Universal APK: Include only ARM architectures (exclude x86_64 to reduce size)
+        // For split APKs: Don't set abiFilters here - let Flutter handle it
+        // For universal APK: Only ARM architectures (exclude x86_64 to reduce size)
         // This covers 99%+ of real devices while reducing APK size
-        // x86_64 is mainly for emulators, which can use split APKs if needed
-        ndk {
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        // Note: When using --split-per-abi, abiFilters should not be set
+        
+        // Remove debug validation layers to reduce size
+        packaging {
+            jniLibs {
+                excludes += listOf(
+                    "**/libVkLayer*.so",
+                    "**/libVkLayer_khronos_validation.so"
+                )
+            }
         }
     }
 
     // Split APKs by architecture to reduce size
-    // Note: Disabled due to conflict with Flutter's default ABI filters
-    // For split APKs, use: flutter build apk --split-per-abi --release
-    // splits {
-    //     abi {
-    //         isEnable = true
-    //         reset()
-    //         include("armeabi-v7a", "arm64-v8a", "x86_64")
-    //         isUniversalApk = false
-    //     }
-    // }
+    // Note: When using --split-per-abi, Flutter automatically configures splits
+    // Don't configure splits here to avoid conflicts
 
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
@@ -109,13 +109,23 @@ android {
 
             ndk {
                 debugSymbolLevel = "NONE"
+                // Don't include debug symbols to reduce size
+                // Strip native libraries
             }
+            
+            // Additional size optimizations
+            multiDexEnabled = true
             
             // Fix 16 KB Page Size Rejection - Ensure proper alignment
             // AGP 8.5.1+ automatically handles this, but we ensure it's configured
             packaging {
                 jniLibs {
                     useLegacyPackaging = false
+                    // Remove debug validation layers to reduce size
+                    excludes += listOf(
+                        "**/libVkLayer*.so",
+                        "**/libVkLayer_khronos_validation.so"
+                    )
                 }
                 // Remove unnecessary files to reduce APK size
                 resources {
@@ -133,7 +143,8 @@ android {
                         "**/attach_hotspot_windows.dll",
                         "META-INF/licenses/**",
                         "META-INF/AL2.0",
-                        "META-INF/LGPL2.1"
+                        "META-INF/LGPL2.1",
+                        "**/libc++_shared.so" // Remove if not needed
                     )
                 }
             }

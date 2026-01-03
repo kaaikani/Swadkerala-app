@@ -16,6 +16,7 @@ import '../utils/app_strings.dart';
 import '../widgets/product_card.dart';
 import '../utils/navigation_helper.dart';
 import '../routes.dart';
+import '../services/graphql_client.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -182,112 +183,131 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
           horizontal: ResponsiveUtils.rp(24),
           vertical: ResponsiveUtils.rp(40),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Large heart icon with gradient background
-              Container(
-                width: ResponsiveUtils.rp(140),
-                height: ResponsiveUtils.rp(140),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [
-                            Colors.grey[800]!.withOpacity(0.3),
-                            Colors.grey[700]!.withOpacity(0.2),
-                          ]
-                        : [
-                            AppColors.greenBackground,
-                            AppColors.primaryLight,
-                          ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.black.withOpacity(0.3)
-                          : AppColors.greenPrimary.withOpacity(0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
+        child: Obx(() {
+          final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
+              ? GraphqlService.channelTokenRx.value 
+              : GraphqlService.channelToken;
+          final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+          final iconColor = isIndSnacksChannel 
+              ? AppColors.indSnacksAccent 
+              : AppColors.greenPrimary;
+          final gradientColors = isDark
+              ? [
+                  Colors.grey[800]!.withOpacity(0.3),
+                  Colors.grey[700]!.withOpacity(0.2),
+                ]
+              : isIndSnacksChannel
+                  ? [
+                      AppColors.backgroundLight,
+                      AppColors.primaryLight,
+                    ]
+                  : [
+                      AppColors.greenBackground,
+                      AppColors.primaryLight,
+                    ];
+          final shadowColor = isDark
+              ? Colors.black.withOpacity(0.3)
+              : isIndSnacksChannel
+                  ? AppColors.indSnacksAccent.withOpacity(0.1)
+                  : AppColors.greenPrimary.withOpacity(0.1);
+          
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Large heart icon with gradient background
+                Container(
+                  width: ResponsiveUtils.rp(140),
+                  height: ResponsiveUtils.rp(140),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: gradientColors,
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.favorite_border_rounded,
-                    size: ResponsiveUtils.rp(70),
-                    color: isDark
-                        ? Colors.grey[400]
-                        : AppColors.greenPrimary.withOpacity(0.6),
+                    boxShadow: [
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.favorite_border_rounded,
+                      size: ResponsiveUtils.rp(70),
+                      color: isDark
+                          ? Colors.grey[400]
+                          : iconColor.withOpacity(0.6),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: ResponsiveUtils.rp(40)),
-              // Title with better styling
-              Text(
-                'No Favorites Yet',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(24),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                  letterSpacing: -0.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: ResponsiveUtils.rp(16)),
-              // Subtitle with better styling
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(20),
-                ),
-                child: Text(
-                  'Double tap on any product to add it to your favorites',
+                SizedBox(height: ResponsiveUtils.rp(40)),
+                // Title with better styling
+                Text(
+                  'No Favorites Yet',
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(15),
-                    color: AppColors.textSecondary,
-                    height: 1.5,
+                    fontSize: ResponsiveUtils.sp(24),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
-              ),
-              SizedBox(height: ResponsiveUtils.rp(48)),
-              // Browse Products button with better styling
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.home);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.button,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                      vertical: ResponsiveUtils.rp(16),
-                      horizontal: ResponsiveUtils.rp(24),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveUtils.rp(12),
-                      ),
-                    ),
-                    elevation: 2,
+                SizedBox(height: ResponsiveUtils.rp(16)),
+                // Subtitle with better styling
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.rp(20),
                   ),
                   child: Text(
-                    'Browse Products',
+                    'Double tap on any product to add it to your favorites',
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(16),
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
+                      fontSize: ResponsiveUtils.sp(15),
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(48)),
+                // Browse Products button with better styling
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.toNamed(AppRoutes.home);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        vertical: ResponsiveUtils.rp(16),
+                        horizontal: ResponsiveUtils.rp(24),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveUtils.rp(12),
+                        ),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: Text(
+                      'Browse Products',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(16),
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
@@ -443,14 +463,23 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
 
     final variantOptions = product.variants;
 
-    return Container(
-      height: ResponsiveUtils.rp(36),
-      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-        border: Border.all(color: AppColors.border),
-      ),
+    // Check if channel is Ind-Snacks
+    return Obx(() {
+      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
+          ? GraphqlService.channelTokenRx.value 
+          : GraphqlService.channelToken;
+      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+      
+      return Container(
+        height: ResponsiveUtils.rp(36),
+        padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
+        decoration: BoxDecoration(
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+          border: Border.all(
+            color: isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.border,
+          ),
+        ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: currentVariantId,
@@ -500,5 +529,6 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
         ),
       ),
     );
+    });
   }
 }

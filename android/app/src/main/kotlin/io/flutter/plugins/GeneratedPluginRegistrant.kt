@@ -131,5 +131,10 @@ object GeneratedPluginRegistrant {
         } catch (e: Exception) {
             Log.e(TAG, "Error registering plugin flutter_dynamic_icon, io.github.tastelessjolt.flutterdynamicicon.FlutterDynamicIconPlugin", e)
         }
+        try {
+            flutterEngine.plugins.add(com.csdcorp.speech_to_text.SpeechToTextPlugin())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering plugin speech_to_text, com.csdcorp.speech_to_text.SpeechToTextPlugin", e)
+        }
     }
 }

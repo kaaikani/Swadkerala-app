@@ -240,8 +240,8 @@ class _AddressesPageState extends State<AddressesPage> {
       final isCurrentlyDefault = address.id == currentDefaultAddress?.id;
 
       return InkWell(
-        onTap: hasMultipleAddresses ? () async {
-          // Only allow tap to select if there are multiple addresses
+        onTap: hasMultipleAddresses && !_isUpdatingAddress ? () async {
+          // Only allow tap to select if there are multiple addresses and not currently updating
           if (!isCurrentlyDefault) {
             await _setAsDefaultAndShipping(
               context,
@@ -278,8 +278,8 @@ class _AddressesPageState extends State<AddressesPage> {
                   Radio<dynamic>(
                     value: address,
                     groupValue: currentDefaultAddress,
-                    onChanged: (dynamic selectedAddress) async {
-                      if (selectedAddress != null) {
+                    onChanged: _isUpdatingAddress ? null : (dynamic selectedAddress) async {
+                      if (selectedAddress != null && !_isUpdatingAddress) {
                         debugPrint('═══════════════════════════════════════════════════════════');
                         debugPrint('[AddressesPage] 📻 Radio button selected - Changing default address');
                         debugPrint('[AddressesPage] Selected Address ID: ${selectedAddress.id}');
@@ -445,6 +445,12 @@ class _AddressesPageState extends State<AddressesPage> {
     CustomerController customerController, {
     dynamic previousDefaultAddress,
   }) async {
+    // Prevent duplicate calls
+    if (_isUpdatingAddress) {
+      debugPrint('[AddressesPage] ⚠️ Address update already in progress, ignoring duplicate call');
+      return;
+    }
+    
     debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS START ==========');
     debugPrint('[AddressesPage] Target Address ID: ${address.id}');
     debugPrint('[AddressesPage] Target Address: ${address.fullName ?? "N/A"}');
@@ -471,98 +477,81 @@ class _AddressesPageState extends State<AddressesPage> {
         );
       }
       
-      // Create updated address models
-      final addressesToUpdate = <Query$GetActiveCustomer$activeCustomer$addresses>[];
-      
-      // First, log all addresses status
-      debugPrint('[AddressesPage] ──── Current Address Status ────');
-      for (int i = 0; i < customerController.addresses.length; i++) {
-        final addr = customerController.addresses[i];
-        debugPrint('[AddressesPage] Address ${i + 1}:');
-        debugPrint('[AddressesPage]   - ID: ${addr.id}');
-        debugPrint('[AddressesPage]   - Name: ${addr.fullName ?? "N/A"}');
-        debugPrint('[AddressesPage]   - Location: ${addr.city ?? "N/A"}, ${addr.postalCode ?? "N/A"}');
-        debugPrint('[AddressesPage]   - Default Shipping: ${addr.defaultShippingAddress ?? false}');
-        debugPrint('[AddressesPage]   - Default Billing: ${addr.defaultBillingAddress ?? false}');
-        debugPrint('[AddressesPage]   - Is Target: ${addr.id == address.id}');
-      }
-      
-      // First, unset all other addresses as default
-      int unsetCount = 0;
-      for (final addr in customerController.addresses) {
-        if (addr.id != address.id && 
-            ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false))) {
-          debugPrint('[AddressesPage] Unsetting default from Address ID: ${addr.id} (${addr.fullName ?? "N/A"})');
-          debugPrint('[AddressesPage]   - Was Shipping: ${addr.defaultShippingAddress ?? false}');
-          debugPrint('[AddressesPage]   - Was Billing: ${addr.defaultBillingAddress ?? false}');
-          final updatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
-            id: addr.id,
-            fullName: addr.fullName,
-            streetLine1: addr.streetLine1,
-            streetLine2: addr.streetLine2,
-            city: addr.city,
-            postalCode: addr.postalCode,
-            phoneNumber: addr.phoneNumber,
-            company: addr.company,
-            defaultShippingAddress: false,
-            defaultBillingAddress: false,
-            country: addr.country,
-          );
-          addressesToUpdate.add(updatedAddress);
-          unsetCount++;
-        }
-      }
-      debugPrint('[AddressesPage] Addresses to unset: $unsetCount');
-
-      // Then set the selected address as default (both shipping and billing)
-      debugPrint('[AddressesPage] Setting Address ID: ${address.id} as default');
-      debugPrint('[AddressesPage]   - Setting as Shipping Address: true');
-      debugPrint('[AddressesPage]   - Setting as Billing Address: true');
-      final selectedUpdatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
-        id: address.id,
-        fullName: address.fullName,
-        streetLine1: address.streetLine1,
-        streetLine2: address.streetLine2,
-        city: address.city,
-        postalCode: address.postalCode,
-        phoneNumber: address.phoneNumber,
-        company: address.company,
-        defaultShippingAddress: true,
-        defaultBillingAddress: true,
-        country: address.country,
+      // Find the previous default address (if any) that needs to be unset
+      final previousDefault = customerController.addresses.firstWhereOrNull(
+        (addr) => addr.id != address.id && 
+                  ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false)),
       );
-      addressesToUpdate.add(selectedUpdatedAddress);
-      debugPrint('[AddressesPage] Total addresses to update: ${addressesToUpdate.length}');
-
-      // Update all addresses in parallel for better performance
-      debugPrint('[AddressesPage] Starting parallel address updates...');
-      debugPrint('[AddressesPage] Updating ${addressesToUpdate.length} address(es)...');
       
-      // Update addresses without showing loading dialog (only show on error)
-      final updateResults = await Future.wait(
-        addressesToUpdate.asMap().entries.map((entry) async {
-          final index = entry.key;
-          final addr = entry.value;
-          debugPrint('[AddressesPage] Calling updateAddress ${index + 1}/${addressesToUpdate.length} for ID: ${addr.id}');
-          final result = await customerController.updateAddress(addr);
-          debugPrint('[AddressesPage] Update result for ID ${addr.id}: $result');
-          return result;
-        }),
-        eagerError: false,
-      );
-
-      // Check if all updates succeeded
-      final allSuccess = updateResults.every((result) => result == true);
-      debugPrint('[AddressesPage] Update results: ${updateResults.length} addresses updated');
-      debugPrint('[AddressesPage] Individual results: $updateResults');
-      debugPrint('[AddressesPage] All updates successful: $allSuccess');
+      // Only update the necessary addresses:
+      // 1. Unset previous default (if exists and different from target)
+      // 2. Set target address as default
       
-      // Log which updates failed
-      for (int i = 0; i < updateResults.length; i++) {
-        if (!updateResults[i]) {
-          debugPrint('[AddressesPage] ❌ Update ${i + 1} failed for address ID: ${addressesToUpdate[i].id}');
+      bool allSuccess = true;
+      
+      // Step 1: Unset previous default address (if it exists and is different from target)
+      if (previousDefault != null) {
+        debugPrint('[AddressesPage] Unsetting default from Address ID: ${previousDefault.id} (${previousDefault.fullName ?? "N/A"})');
+        debugPrint('[AddressesPage]   - Was Shipping: ${previousDefault.defaultShippingAddress ?? false}');
+        debugPrint('[AddressesPage]   - Was Billing: ${previousDefault.defaultBillingAddress ?? false}');
+        
+        final unsetAddress = Query$GetActiveCustomer$activeCustomer$addresses(
+          id: previousDefault.id,
+          fullName: previousDefault.fullName,
+          streetLine1: previousDefault.streetLine1,
+          streetLine2: previousDefault.streetLine2,
+          city: previousDefault.city,
+          postalCode: previousDefault.postalCode,
+          phoneNumber: previousDefault.phoneNumber,
+          company: previousDefault.company,
+          defaultShippingAddress: false,
+          defaultBillingAddress: false,
+          country: previousDefault.country,
+        );
+        
+        debugPrint('[AddressesPage] Calling updateAddress to unset default for ID: ${previousDefault.id}');
+        final unsetResult = await customerController.updateAddress(unsetAddress, skipRefresh: true);
+        debugPrint('[AddressesPage] Unset result for ID ${previousDefault.id}: $unsetResult');
+        
+        if (!unsetResult) {
+          allSuccess = false;
+          debugPrint('[AddressesPage] ❌ Failed to unset default from address ID: ${previousDefault.id}');
         } else {
-          debugPrint('[AddressesPage] ✅ Update ${i + 1} succeeded for address ID: ${addressesToUpdate[i].id}');
+          debugPrint('[AddressesPage] ✅ Successfully unset default from address ID: ${previousDefault.id}');
+        }
+      } else {
+        debugPrint('[AddressesPage] No previous default address to unset');
+      }
+
+      // Step 2: Set the target address as default (only if unset succeeded or wasn't needed)
+      if (allSuccess || previousDefault == null) {
+        debugPrint('[AddressesPage] Setting Address ID: ${address.id} as default');
+        debugPrint('[AddressesPage]   - Setting as Shipping Address: true');
+        debugPrint('[AddressesPage]   - Setting as Billing Address: true');
+        
+        final selectedUpdatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
+          id: address.id,
+          fullName: address.fullName,
+          streetLine1: address.streetLine1,
+          streetLine2: address.streetLine2,
+          city: address.city,
+          postalCode: address.postalCode,
+          phoneNumber: address.phoneNumber,
+          company: address.company,
+          defaultShippingAddress: true,
+          defaultBillingAddress: true,
+          country: address.country,
+        );
+        
+        debugPrint('[AddressesPage] Calling updateAddress to set default for ID: ${address.id}');
+        final setResult = await customerController.updateAddress(selectedUpdatedAddress, skipRefresh: false);
+        debugPrint('[AddressesPage] Set result for ID ${address.id}: $setResult');
+        
+        if (!setResult) {
+          allSuccess = false;
+          debugPrint('[AddressesPage] ❌ Failed to set default for address ID: ${address.id}');
+        } else {
+          debugPrint('[AddressesPage] ✅ Successfully set default for address ID: ${address.id}');
         }
       }
       
@@ -570,41 +559,19 @@ class _AddressesPageState extends State<AddressesPage> {
         debugPrint('[AddressesPage] ✅ Successfully set Address ID: ${address.id} as default shipping and billing');
         debugPrint('[AddressesPage]   - Shipping Address: ${address.fullName ?? "N/A"} (${address.city ?? "N/A"})');
         debugPrint('[AddressesPage]   - Billing Address: ${address.fullName ?? "N/A"} (${address.city ?? "N/A"})');
-        // Refresh addresses to ensure UI is in sync
-        customerController.refreshAddresses();
+        // Refresh customer data once after both updates complete
+        // (First update skipped refresh, second one will refresh)
         if (mounted) {
-          debugPrint('[AddressesPage] Addresses refreshed, UI updated');
+          debugPrint('[AddressesPage] Addresses updated successfully');
         }
       } else {
-        debugPrint('[AddressesPage] ❌ Some address updates failed - Attempting rollback');
+        debugPrint('[AddressesPage] ❌ Address update failed - Attempting rollback');
         
         // Rollback: Restore previous default address if it existed
         if (previousDefaultForRollback != null) {
           debugPrint('[AddressesPage] 🔄 Rolling back to previous default address ID: ${previousDefaultForRollback.id}');
           try {
-            // First, unset all addresses as default
-            final rollbackAddresses = <Query$GetActiveCustomer$activeCustomer$addresses>[];
-            for (final addr in customerController.addresses) {
-              if (addr.id != previousDefaultForRollback.id &&
-                  ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false))) {
-                rollbackAddresses.add(Query$GetActiveCustomer$activeCustomer$addresses(
-                  id: addr.id,
-                  fullName: addr.fullName,
-                  streetLine1: addr.streetLine1,
-                  streetLine2: addr.streetLine2,
-                  city: addr.city,
-                  postalCode: addr.postalCode,
-                  phoneNumber: addr.phoneNumber,
-                  company: addr.company,
-                  defaultShippingAddress: false,
-                  defaultBillingAddress: false,
-                  country: addr.country,
-                ));
-              }
-            }
-            
-            // Restore previous default
-            rollbackAddresses.add(Query$GetActiveCustomer$activeCustomer$addresses(
+            final rollbackAddress = Query$GetActiveCustomer$activeCustomer$addresses(
               id: previousDefaultForRollback.id,
               fullName: previousDefaultForRollback.fullName,
               streetLine1: previousDefaultForRollback.streetLine1,
@@ -616,19 +583,13 @@ class _AddressesPageState extends State<AddressesPage> {
               defaultShippingAddress: true,
               defaultBillingAddress: true,
               country: previousDefaultForRollback.country,
-            ));
-            
-            // Execute rollback
-            final rollbackResults = await Future.wait(
-              rollbackAddresses.map((addr) => customerController.updateAddress(addr)),
-              eagerError: false,
             );
             
-            final rollbackSuccess = rollbackResults.every((result) => result == true);
-            if (rollbackSuccess) {
+            final rollbackResult = await customerController.updateAddress(rollbackAddress);
+            if (rollbackResult) {
               debugPrint('[AddressesPage] ✅ Rollback successful - Previous default address restored');
             } else {
-              debugPrint('[AddressesPage] ⚠️ Rollback partially failed - Some addresses may not be restored');
+              debugPrint('[AddressesPage] ⚠️ Rollback failed - Previous default address could not be restored');
             }
           } catch (rollbackError) {
             debugPrint('[AddressesPage] ❌ Rollback error: $rollbackError');
@@ -637,10 +598,11 @@ class _AddressesPageState extends State<AddressesPage> {
           debugPrint('[AddressesPage] ⚠️ No previous default address to rollback to');
         }
         
-        // Refresh to get correct state from server
+        // Note: getActiveCustomer() may have been called by updateAddress() already
+        // Refresh addresses list to reflect current state
         customerController.refreshAddresses();
         if (mounted) {
-          showErrorSnackbar('Failed to set default address. Previous selection restored.');
+          showErrorSnackbar('Failed to set default address. Please try again.');
         }
       }
       debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS END ==========');

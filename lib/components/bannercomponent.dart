@@ -25,6 +25,7 @@ class _BannerComponentState extends State<BannerComponent> {
   int _currentIndex = 0;
   Timer? _timer;
   final UtilityController utilityController = Get.find();
+  bool _isCarouselReady = false;
 
   @override
   void initState() {
@@ -41,12 +42,19 @@ class _BannerComponentState extends State<BannerComponent> {
   void _startAutoPlay() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!mounted || bannerController.bannerList.isEmpty) return;
+      if (!mounted || bannerController.bannerList.isEmpty || !_isCarouselReady) return;
       
+      // Check if controller is ready before calling nextPage
+      try {
       _carouselController.nextPage(
         duration: const Duration(milliseconds: 600),
         curve: Curves.easeInOut,
       );
+      } catch (e) {
+        // Controller not ready or disposed, stop autoplay
+        debugPrint('[BannerComponent] Error in autoplay: $e');
+        _stopAutoPlay();
+      }
     });
   }
 
@@ -55,6 +63,19 @@ class _BannerComponentState extends State<BannerComponent> {
   }
 
   void _onPageChanged(int index, CarouselPageChangedReason reason) {
+    // Mark carousel as ready after first page change
+    if (!_isCarouselReady) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _isCarouselReady = true;
+          });
+          // Start autoplay now that carousel is ready
+          _startAutoPlay();
+        }
+      });
+    }
+    
     setState(() {
       _currentIndex = index;
     });
@@ -162,10 +183,12 @@ class _BannerComponentState extends State<BannerComponent> {
         );
       }
 
-      // Start autoplay when banners are available
-      if (_timer == null || !_timer!.isActive) {
+      // Start autoplay when banners are available and carousel is ready
+      if ((_timer == null || !_timer!.isActive) && _isCarouselReady) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _isCarouselReady) {
           _startAutoPlay();
+          }
         });
       }
 
@@ -175,8 +198,16 @@ class _BannerComponentState extends State<BannerComponent> {
           // Carousel Slider
           GestureDetector(
             onTapDown: (_) => _stopAutoPlay(),
-            onTapUp: (_) => _startAutoPlay(),
-            onTapCancel: () => _startAutoPlay(),
+            onTapUp: (_) {
+              if (_isCarouselReady) {
+                _startAutoPlay();
+              }
+            },
+            onTapCancel: () {
+              if (_isCarouselReady) {
+                _startAutoPlay();
+              }
+            },
             child: CarouselSlider.builder(
               carouselController: _carouselController,
               itemCount: banners.length,
@@ -286,16 +317,11 @@ class _BannerComponentState extends State<BannerComponent> {
               options: CarouselOptions(
                 height: ResponsiveUtils.rp(200),
                 viewportFraction: 1.0,
-                autoPlay: true,
-                autoPlayInterval: const Duration(seconds: 4),
-                autoPlayAnimationDuration: const Duration(milliseconds: 600),
-                autoPlayCurve: Curves.easeInOut,
+                autoPlay: false, // Disable built-in autoplay, use custom timer
                 enlargeCenterPage: false,
                 enlargeStrategy: CenterPageEnlargeStrategy.scale,
                 onPageChanged: _onPageChanged,
                 scrollDirection: Axis.horizontal,
-                pauseAutoPlayOnTouch: true,
-                pauseAutoPlayOnManualNavigate: true,
               ),
             ),
           ),

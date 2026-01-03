@@ -15969,6 +15969,201 @@ class _CopyWithStubImpl$Input$SearchResultSortParameter<TRes>
       _res;
 }
 
+class Input$ShippingRateInput {
+  factory Input$ShippingRateInput({
+    required String pickupPostcode,
+    required String deliveryPostcode,
+    required double weight,
+    required double orderValue,
+    bool? enableCOD,
+  }) =>
+      Input$ShippingRateInput._({
+        r'pickupPostcode': pickupPostcode,
+        r'deliveryPostcode': deliveryPostcode,
+        r'weight': weight,
+        r'orderValue': orderValue,
+        if (enableCOD != null) r'enableCOD': enableCOD,
+      });
+
+  Input$ShippingRateInput._(this._$data);
+
+  factory Input$ShippingRateInput.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$pickupPostcode = data['pickupPostcode'];
+    result$data['pickupPostcode'] = (l$pickupPostcode as String);
+    final l$deliveryPostcode = data['deliveryPostcode'];
+    result$data['deliveryPostcode'] = (l$deliveryPostcode as String);
+    final l$weight = data['weight'];
+    result$data['weight'] = (l$weight as num).toDouble();
+    final l$orderValue = data['orderValue'];
+    result$data['orderValue'] = (l$orderValue as num).toDouble();
+    if (data.containsKey('enableCOD')) {
+      final l$enableCOD = data['enableCOD'];
+      result$data['enableCOD'] = (l$enableCOD as bool?);
+    }
+    return Input$ShippingRateInput._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get pickupPostcode => (_$data['pickupPostcode'] as String);
+
+  String get deliveryPostcode => (_$data['deliveryPostcode'] as String);
+
+  double get weight => (_$data['weight'] as double);
+
+  double get orderValue => (_$data['orderValue'] as double);
+
+  bool? get enableCOD => (_$data['enableCOD'] as bool?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$pickupPostcode = pickupPostcode;
+    result$data['pickupPostcode'] = l$pickupPostcode;
+    final l$deliveryPostcode = deliveryPostcode;
+    result$data['deliveryPostcode'] = l$deliveryPostcode;
+    final l$weight = weight;
+    result$data['weight'] = l$weight;
+    final l$orderValue = orderValue;
+    result$data['orderValue'] = l$orderValue;
+    if (_$data.containsKey('enableCOD')) {
+      final l$enableCOD = enableCOD;
+      result$data['enableCOD'] = l$enableCOD;
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$ShippingRateInput<Input$ShippingRateInput> get copyWith =>
+      CopyWith$Input$ShippingRateInput(
+        this,
+        (i) => i,
+      );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$ShippingRateInput || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$pickupPostcode = pickupPostcode;
+    final lOther$pickupPostcode = other.pickupPostcode;
+    if (l$pickupPostcode != lOther$pickupPostcode) {
+      return false;
+    }
+    final l$deliveryPostcode = deliveryPostcode;
+    final lOther$deliveryPostcode = other.deliveryPostcode;
+    if (l$deliveryPostcode != lOther$deliveryPostcode) {
+      return false;
+    }
+    final l$weight = weight;
+    final lOther$weight = other.weight;
+    if (l$weight != lOther$weight) {
+      return false;
+    }
+    final l$orderValue = orderValue;
+    final lOther$orderValue = other.orderValue;
+    if (l$orderValue != lOther$orderValue) {
+      return false;
+    }
+    final l$enableCOD = enableCOD;
+    final lOther$enableCOD = other.enableCOD;
+    if (_$data.containsKey('enableCOD') !=
+        other._$data.containsKey('enableCOD')) {
+      return false;
+    }
+    if (l$enableCOD != lOther$enableCOD) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$pickupPostcode = pickupPostcode;
+    final l$deliveryPostcode = deliveryPostcode;
+    final l$weight = weight;
+    final l$orderValue = orderValue;
+    final l$enableCOD = enableCOD;
+    return Object.hashAll([
+      l$pickupPostcode,
+      l$deliveryPostcode,
+      l$weight,
+      l$orderValue,
+      _$data.containsKey('enableCOD') ? l$enableCOD : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Input$ShippingRateInput<TRes> {
+  factory CopyWith$Input$ShippingRateInput(
+    Input$ShippingRateInput instance,
+    TRes Function(Input$ShippingRateInput) then,
+  ) = _CopyWithImpl$Input$ShippingRateInput;
+
+  factory CopyWith$Input$ShippingRateInput.stub(TRes res) =
+      _CopyWithStubImpl$Input$ShippingRateInput;
+
+  TRes call({
+    String? pickupPostcode,
+    String? deliveryPostcode,
+    double? weight,
+    double? orderValue,
+    bool? enableCOD,
+  });
+}
+
+class _CopyWithImpl$Input$ShippingRateInput<TRes>
+    implements CopyWith$Input$ShippingRateInput<TRes> {
+  _CopyWithImpl$Input$ShippingRateInput(
+    this._instance,
+    this._then,
+  );
+
+  final Input$ShippingRateInput _instance;
+
+  final TRes Function(Input$ShippingRateInput) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? pickupPostcode = _undefined,
+    Object? deliveryPostcode = _undefined,
+    Object? weight = _undefined,
+    Object? orderValue = _undefined,
+    Object? enableCOD = _undefined,
+  }) =>
+      _then(Input$ShippingRateInput._({
+        ..._instance._$data,
+        if (pickupPostcode != _undefined && pickupPostcode != null)
+          'pickupPostcode': (pickupPostcode as String),
+        if (deliveryPostcode != _undefined && deliveryPostcode != null)
+          'deliveryPostcode': (deliveryPostcode as String),
+        if (weight != _undefined && weight != null)
+          'weight': (weight as double),
+        if (orderValue != _undefined && orderValue != null)
+          'orderValue': (orderValue as double),
+        if (enableCOD != _undefined) 'enableCOD': (enableCOD as bool?),
+      }));
+}
+
+class _CopyWithStubImpl$Input$ShippingRateInput<TRes>
+    implements CopyWith$Input$ShippingRateInput<TRes> {
+  _CopyWithStubImpl$Input$ShippingRateInput(this._res);
+
+  TRes _res;
+
+  call({
+    String? pickupPostcode,
+    String? deliveryPostcode,
+    double? weight,
+    double? orderValue,
+    bool? enableCOD,
+  }) =>
+      _res;
+}
+
 class Input$StringListOperators {
   factory Input$StringListOperators({required String inList}) =>
       Input$StringListOperators._({

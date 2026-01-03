@@ -81,5 +81,8 @@
 	<!-- Location Permission (if used) -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need location access to provide location-based services</string>
+	<!-- Microphone Permission (for speech recognition) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need microphone access for voice search functionality</string>
 </dict>
 </plist>

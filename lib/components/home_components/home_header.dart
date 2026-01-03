@@ -6,6 +6,7 @@ import '../../utils/app_strings.dart';
 import '../../components/searchbarcomponent.dart';
 import '../../controllers/banner/bannercontroller.dart';
 import '../../controllers/customer/customer_controller.dart';
+import '../../services/graphql_client.dart';
 
 class HomeHeader extends StatelessWidget {
   final bool isUserAuthenticated;
@@ -27,6 +28,104 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Obx(() {
+      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
+          ? GraphqlService.channelTokenRx.value 
+          : GraphqlService.channelToken;
+      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+      
+      if (isIndSnacksChannel) {
+        // Special layout for Ind-Snacks channel matching the image exactly
+        return SliverToBoxAdapter(
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  offset: Offset(0, 2),
+                  blurRadius: 8,
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveUtils.rp(16),
+                  ResponsiveUtils.rp(12),
+                  ResponsiveUtils.rp(16),
+                  ResponsiveUtils.rp(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Row: Hamburger + Centered Title + Profile
+                    // Use Stack to truly center the title
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Left side: Hamburger Menu Icon
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Builder(
+                            builder: (context) => InkWell(
+                              onTap: () {
+                                // Open drawer if available, or show menu
+                                try {
+                                  Scaffold.of(context).openDrawer();
+                                } catch (e) {
+                                  // No drawer available, could navigate to menu page
+                                  // For now, just do nothing or add menu functionality later
+                                }
+                              },
+
+                            ),
+                          ),
+                        ),
+                        // Center: Welcome Section (truly centered)
+                        _buildWelcomeSectionIndSnacks(),
+                        // Right side: Profile Icon
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: InkWell(
+                            onTap: () => Get.toNamed('/account'),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                            child: Container(
+                              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                              decoration: BoxDecoration(
+                                color: AppColors.backgroundLight,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.border.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.person_outline_rounded,
+                                color: AppColors.textPrimary,
+                                size: ResponsiveUtils.rp(22),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    
+                    // Search Bar with Microphone Icon
+                    _buildSearchRowIndSnacks(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+      
+      // Default layout for other channels
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -85,20 +184,18 @@ class HomeHeader extends StatelessWidget {
         ),
       ),
     );
+    });
   }
 
-  Widget _buildWelcomeSection() {
-    // Check if channel is South Mithai
-    final isSouthMithai = channelName.toLowerCase().contains('south mithai') || 
-                          channelName.toLowerCase() == 'south mithai';
-    
-    if (isSouthMithai) {
-      // Single row layout for South Mithai
+  Widget _buildWelcomeSectionIndSnacks() {
+    // Centered layout for Ind-Snacks matching the image
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
         children: [
-          // Welcome to South Mithai in single row
+        // Welcome to South Mithai - centered
           Row(
+          mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "Welcome to ",
@@ -109,18 +206,18 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               Text(
-                channelName,
+              "South Mithai",
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(18),
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                color: AppColors.indSnacksBrown, // Reddish-brown color
                   letterSpacing: -0.3,
                 ),
               ),
             ],
           ),
           SizedBox(height: ResponsiveUtils.rp(4)),
-          // Tagline
+        // Tagline - centered
           Text(
             "Authentic Sweets & Snacks",
             style: TextStyle(
@@ -129,11 +226,13 @@ class HomeHeader extends StatelessWidget {
               fontWeight: FontWeight.w500,
               fontStyle: FontStyle.italic,
             ),
+          textAlign: TextAlign.center,
           ),
         ],
       );
     }
     
+  Widget _buildWelcomeSection() {
     // Default layout for other channels
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,7 +352,80 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
+  Widget _buildSearchRowIndSnacks() {
+    // Search bar with microphone icon for Ind-Snacks
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(14)),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: ResponsiveUtils.rp(8),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Get.toNamed('/search');
+        },
+        child: Container(
+          height: ResponsiveUtils.rp(44),
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(14)),
+          child: Row(
+            children: [
+              // Search icon (left)
+              Icon(
+                Icons.search,
+                color: AppColors.textSecondary,
+                size: ResponsiveUtils.rp(20),
+              ),
+              SizedBox(width: ResponsiveUtils.rp(10)),
+              // Placeholder text
+              Expanded(
+                child: Text(
+                  'Search sweets, snacks, laddu, murukku...',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(14),
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              // Microphone icon (right)
+              InkWell(
+                onTap: () async {
+                  // Navigate to search page and trigger speech recognition
+                  final result = await Get.toNamed('/search', arguments: {'startSpeechRecognition': true});
+                  if (result != null && result is String) {
+                    // Search was performed with speech result
+                    bannerController.searchProducts({'term': result});
+                  }
+                },
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                child: Padding(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                  child: Icon(
+                    Icons.mic,
+                    color: AppColors.textSecondary,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSearchRow() {
+    // Default search bar for other channels
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

@@ -25,6 +25,7 @@ class CustomerController extends BaseController {
   final RxList<Query$GetActiveCustomer$activeCustomer$orders$items> orders = <Query$GetActiveCustomer$activeCustomer$orders$items>[].obs;
   final RxBool isEditingProfile = false.obs;
   final RxString error = ''.obs;
+  final RxString emailUpdateError = ''.obs; // Store email update error message
   final UtilityController utilityController = Get.find();
   
   // Pagination state
@@ -397,7 +398,7 @@ debugPrint('[Customer] Update error: $e');
     }
   }
 
-  /// Update customer email address using UpdateCustomer mutation
+  /// Update customer email address using UpdateProfileEmail mutation
   Future<bool> updateCustomerEmail(String emailAddress) async {
     debugPrint('[CustomerController] ========== UPDATE EMAIL ID START ==========');
     debugPrint('[CustomerController] 📧 Email Update Request:');
@@ -416,48 +417,62 @@ debugPrint('[Customer] Update error: $e');
     try {
       utilityController.setLoadingState(true);
       debugPrint('[CustomerController] 🔄 Setting loading state to true');
-      debugPrint('[CustomerController] 📝 Using UpdateCustomer mutation');
+      debugPrint('[CustomerController] 📝 Using UpdateProfileEmail mutation');
 
-      debugPrint('[CustomerController] 📋 Preparing UpdateCustomerInput');
-      debugPrint('[CustomerController] - firstName: "${customer.firstName}"');
-      debugPrint('[CustomerController] - lastName: "${customer.lastName}"');
-      debugPrint('[CustomerController] - phoneNumber: "${customer.phoneNumber}"');
-      debugPrint('[CustomerController] - emailAddress: "$emailAddress" (attempting to include)');
+      debugPrint('[CustomerController] 📋 Preparing UpdateProfileEmail variables');
+      debugPrint('[CustomerController] - email: "$emailAddress"');
 
-      // Use raw variables to include emailAddress (even though it's not in the schema)
-      final variables = {
-        'input': {
-          'firstName': customer.firstName,
-          'lastName': customer.lastName,
-          'phoneNumber': customer.phoneNumber,
-          'emailAddress': emailAddress, // Attempting to include emailAddress
-        },
-      };
-
-      debugPrint('[CustomerController] 🚀 Executing UpdateCustomer mutation...');
-      debugPrint('[CustomerController] - Variables: $variables');
-      
-      final response = await GraphqlService.client.value.mutate(
-        graphql.MutationOptions(
-          document: documentNodeMutationUpdateCustomer,
-          variables: variables,
-          fetchPolicy: graphql.FetchPolicy.networkOnly,
+      // Execute UpdateProfileEmail mutation
+      final response = await GraphqlService.client.value.mutate$UpdateProfileEmail(
+        Options$Mutation$UpdateProfileEmail(
+          variables: Variables$Mutation$UpdateProfileEmail(email: emailAddress),
+          fetchPolicy: FetchPolicy.networkOnly,
         ),
       );
 
       debugPrint('[CustomerController] 📥 GraphQL response received');
       debugPrint('[CustomerController] - Has Exception: ${response.hasException}');
       
+      // Clear previous error
+      emailUpdateError.value = '';
+      
       if (response.hasException) {
         debugPrint('[CustomerController] ❌ GraphQL exception detected');
         debugPrint('[CustomerController] - Exception: ${response.exception}');
+        
+        // Extract error message from GraphQL errors
+        String? errorMessage;
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          errorMessage = response.exception!.graphqlErrors.first.message;
+          debugPrint('[CustomerController] - Error message: $errorMessage');
+          
+          // Store error message for UI display in dialog
+          emailUpdateError.value = errorMessage;
+        } else {
+          // Fallback error message if no GraphQL error found
+          emailUpdateError.value = 'Failed to update email. Please try again.';
+        }
+        
+        // Don't call checkResponseForErrors here as it shows a dialog
+        // We're handling error display in the dialog UI instead
         debugPrint('[CustomerController] ========== UPDATE EMAIL ID END (FAILED) ==========');
         return false;
       }
 
-      // Check for errors in response
-      if (checkResponseForErrors(response, customErrorMessage: 'Failed to update email')) {
+      // Check for errors in response (but don't show dialog - we handle it in UI)
+      // Only check if there are errors, but don't show dialog
+      if (response.hasException || response.data == null) {
         debugPrint('[CustomerController] ❌ Response has errors, update failed');
+        
+        // Extract error message from GraphQL errors if available
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          final errorMessage = response.exception!.graphqlErrors.first.message;
+          emailUpdateError.value = errorMessage;
+          debugPrint('[CustomerController] - Error message: $errorMessage');
+        } else {
+          emailUpdateError.value = 'Failed to update email. Please try again.';
+        }
+        
         debugPrint('[CustomerController] ========== UPDATE EMAIL ID END (FAILED) ==========');
         return false;
       }
@@ -488,6 +503,22 @@ debugPrint('[Customer] Update error: $e');
       debugPrint('[CustomerController] ❌ Exception occurred during email update');
       debugPrint('[CustomerController] - Error: $e');
       debugPrint('[CustomerController] - Stack Trace: $stackTrace');
+      
+      // Check if it's a GraphQL error with email-related message
+      String? errorMessage;
+      if (e is graphql.OperationException) {
+        if (e.graphqlErrors.isNotEmpty) {
+          errorMessage = e.graphqlErrors.first.message;
+          debugPrint('[CustomerController] - GraphQL Error message: $errorMessage');
+          // Store error message for UI display in dialog
+          emailUpdateError.value = errorMessage;
+          // Don't call handleException as we're showing error in dialog UI
+          debugPrint('[CustomerController] ========== UPDATE EMAIL ID END (ERROR - UI HANDLED) ==========');
+          return false;
+        }
+      }
+      
+      // For other exceptions, show dialog via handleException
       debugPrint('[CustomerController] ========== UPDATE EMAIL ID END (ERROR) ==========');
       handleException(e, customErrorMessage: 'Failed to update email');
       return false;
@@ -498,6 +529,8 @@ debugPrint('[Customer] Update error: $e');
   }
 
   /// Update customer phone number using UpdateCustomer mutation
+  /// Returns true on success, false on failure
+  /// Throws exception with error message if phone number is already registered
   Future<bool> updateCustomerPhoneNumber(String phoneNumber) async {
     debugPrint('[CustomerController] ========== UPDATE PHONE NUMBER START ==========');
     debugPrint('[CustomerController] 📱 Phone Number Update Request:');
@@ -544,6 +577,21 @@ debugPrint('[Customer] Update error: $e');
       if (response.hasException) {
         debugPrint('[CustomerController] ❌ GraphQL exception detected');
         debugPrint('[CustomerController] - Exception: ${response.exception}');
+        
+        // Extract error message from GraphQL errors
+        String? errorMessage;
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          errorMessage = response.exception!.graphqlErrors.first.message;
+          debugPrint('[CustomerController] - Error message: $errorMessage');
+          
+          // Check if it's the "already registered" error
+          if (errorMessage.toLowerCase().contains('already registered') ||
+              errorMessage.toLowerCase().contains('already exists')) {
+            debugPrint('[CustomerController] ========== UPDATE PHONE NUMBER END (ALREADY REGISTERED) ==========');
+            throw Exception(errorMessage); // Throw exception with the error message
+          }
+        }
+        
         debugPrint('[CustomerController] ========== UPDATE PHONE NUMBER END (FAILED) ==========');
         return false;
       }
@@ -551,6 +599,21 @@ debugPrint('[Customer] Update error: $e');
       // Check for errors in response
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to update phone number')) {
         debugPrint('[CustomerController] ❌ Response has errors, update failed');
+        
+        // Extract error message from GraphQL errors
+        String? errorMessage;
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          errorMessage = response.exception!.graphqlErrors.first.message;
+          debugPrint('[CustomerController] - Error message: $errorMessage');
+          
+          // Check if it's the "already registered" error
+          if (errorMessage.toLowerCase().contains('already registered') ||
+              errorMessage.toLowerCase().contains('already exists')) {
+            debugPrint('[CustomerController] ========== UPDATE PHONE NUMBER END (ALREADY REGISTERED) ==========');
+            throw Exception(errorMessage); // Throw exception with the error message
+          }
+        }
+        
         debugPrint('[CustomerController] ========== UPDATE PHONE NUMBER END (FAILED) ==========');
         return false;
       }
@@ -647,7 +710,7 @@ debugPrint('[Customer] Create address error: $e');
   }
 
   /// Update existing address
-  Future<bool> updateAddress(Query$GetActiveCustomer$activeCustomer$addresses address, {bool skipLoading = true, String? province}) async {
+  Future<bool> updateAddress(Query$GetActiveCustomer$activeCustomer$addresses address, {bool skipLoading = true, String? province, bool skipRefresh = false}) async {
     try {
       // Don't show loading dialog by default - only show on error if needed
       debugPrint('[Customer] Updating address...');
@@ -711,10 +774,12 @@ debugPrint('[Customer] Create address error: $e');
       
       if (result != null) {
         debugPrint('[Customer] Result type: ${result.runtimeType}');
-        // Refresh customer data to get updated addresses
+        // Refresh customer data to get updated addresses (unless skipRefresh is true)
+        if (!skipRefresh) {
         await getActiveCustomer();
         // Force UI refresh
         addresses.refresh();
+        }
         debugPrint('[Customer] ✅ Address updated successfully');
         return true;
       }

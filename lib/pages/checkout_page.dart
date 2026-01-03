@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
@@ -14,7 +13,6 @@ import '../widgets/snackbar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
 import '../graphql/order.graphql.dart';
 import '../graphql/Customer.graphql.dart';
-import '../graphql/banner.graphql.dart';
 import '../theme/colors.dart';
 import '../utils/html_utils.dart';
 import '../utils/responsive.dart';
@@ -23,7 +21,11 @@ import '../utils/app_strings.dart';
 import '../utils/price_formatter.dart';
 // import '../widgets/checkout/checkout_address_section.dart'; // Unused import
 import '../widgets/checkout/checkout_payment_section.dart';
-// import '../widgets/checkout/checkout_summary_section.dart'; // Unused import
+import '../widgets/checkout/checkout_app_bar.dart';
+import '../widgets/checkout/checkout_order_summary_section.dart';
+import '../widgets/checkout/checkout_delivery_address_section.dart';
+import '../widgets/checkout/checkout_place_order_button.dart';
+import '../widgets/checkout/checkout_shimmer_loading.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -1648,7 +1650,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
           child: Column(
             children: [
               // Custom App Bar
-              _buildCustomAppBar(),
+              CheckoutAppBar(),
               
               // Content Area
               Expanded(
@@ -1656,7 +1658,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                   builder: (utilityCtrl) {
                     // Only show shimmer on initial load, not on subsequent loading states
                     if (_isInitialLoading && utilityCtrl.isLoading) {
-                      return _buildShimmerCheckout();
+                      return CheckoutShimmerLoading();
                     }
 
                     return RefreshIndicator(
@@ -1697,7 +1699,32 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
                                   ),
                                 );
                               },
-                              child: _buildStepContent(),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  // Order Summary Section
+                                  CheckoutOrderSummarySection(
+                                    cartController: cartController,
+                                    orderController: orderController,
+                                    utilityController: utilityController,
+                                    bannerController: bannerController,
+                                  ),
+                                  
+                                  Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
+                                  
+                                  // Delivery Address Section
+                                  CheckoutDeliveryAddressSection(
+                                    selectedAddress: _selectedAddress,
+                                    shouldBlinkAddress: _shouldBlinkAddress,
+                                    onLoadAddresses: _loadCustomerAddresses,
+                                  ),
+                                  
+                                  Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
+                                  
+                                  // Payment Method Section
+                                  _buildPaymentMethodSection(),
+                                ],
+                              ),
                             ),
                           ),
                           
@@ -1711,7 +1738,16 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
               ),
 
               // Place Order Button
-              _buildPlaceOrderButton(),
+              CheckoutPlaceOrderButton(
+                cartController: cartController,
+                orderController: orderController,
+                utilityController: utilityController,
+                bannerController: bannerController,
+                selectedAddress: _selectedAddress,
+                slideActionKey: _slideActionKey,
+                orderPlacedSuccessfully: _orderPlacedSuccessfully,
+                onPlaceOrder: _onPlaceOrder,
+              ),
             ],
           ),
         ),
@@ -1720,619 +1756,9 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
     });
   }
 
-  Widget _buildCustomAppBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUtils.rp(16),
-        vertical: ResponsiveUtils.rp(12),
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            blurRadius: ResponsiveUtils.rp(10),
-            offset: Offset(0, ResponsiveUtils.rp(2)),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-         IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: AppColors.textPrimary,
-                size: ResponsiveUtils.rp(20),
-              ),
-              onPressed: () {
-                Get.back();
-              },
-            ),
-
-          SizedBox(width: ResponsiveUtils.rp(16)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Checkout',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: ResponsiveUtils.sp(20),
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(4)),
-                Text(
-                  'Complete your order details',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: ResponsiveUtils.sp(13),
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStepContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Order Summary Section
-        _buildOrderSummarySection(),
-        
-        Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
-        
-        // Delivery Address Section
-        _buildDeliveryAddressSection(),
-        
-        Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
-        
-        // Payment Method Section
-        _buildPaymentMethodSection(),
-      ],
-    );
-  }
-
-
-  Widget _buildOrderSummarySection() {
-    return Obx(() {
-      final cart = cartController.cart.value;
-      final isLoading = utilityController.isLoadingRx.value;
-      
-      // If cart is null but we're loading, show previous state or loading
-      // This prevents showing empty cart during coupon application
-      if (cart == null && isLoading) {
-        // Return a minimal loading state or previous cart data
-        // The cart should be restored soon, so we'll show a loading indicator
-        return _buildOrderSummaryLoading();
-      }
-      
-      final itemCount = cart?.lines.length ?? 0;
-      final subtotal = cart?.subTotalWithTax ?? 0;
-      final shipping = orderController.selectedShippingMethod.value?.priceWithTax ?? 0;
-      final total = cart?.totalWithTax ?? 0;
-      final hasFreeShipping = cartController.hasFreeShippingCoupon();
-      
-      // Get applied coupon details
-      final appliedCouponCode = bannerController.getCurrentlyAppliedCoupon();
-      String? appliedCouponName;
-      bool hasFreeShippingInCoupon = false;
-      
-      if (appliedCouponCode != null) {
-        // Find the coupon in available coupons to get its name
-        Query$GetCouponCodeList$getCouponCodeList$items? coupon;
-        try {
-          coupon = bannerController.availableCouponCodes.firstWhere(
-            (c) => (c.couponCode ?? '').toUpperCase() == appliedCouponCode.toUpperCase(),
-          );
-        } catch (e) {
-          coupon = null;
-        }
-        
-        if (coupon != null && coupon.id.isNotEmpty) {
-          appliedCouponName = coupon.name;
-          // Check if coupon has free_shipping action
-          hasFreeShippingInCoupon = coupon.actions.any(
-            (action) => action.code == 'free_shipping',
-          );
-        }
-      }
-      
-      // Loyalty Points
-      final loyaltyPointsUsed = bannerController.loyaltyPointsUsed.value;
-      final loyaltyPointsApplied = bannerController.loyaltyPointsApplied.value;
-      final config = bannerController.loyaltyPointsConfig.value;
-      final rupeesPerPoint = config?.rupeesPerPoint ?? 0;
-      
-      // Calculate loyalty discount: points used * rupees per point (in paise, so divide by 100)
-      final loyaltyDiscountAmount = loyaltyPointsApplied && loyaltyPointsUsed > 0 && rupeesPerPoint > 0
-          ? (loyaltyPointsUsed * rupeesPerPoint)
-          : 0;
-      
-      // Total discount from order
-      final totalDiscount = (subtotal + (hasFreeShipping ? 0 : shipping) - total);
-      
-      // Coupon Discount (total discount minus loyalty discount)
-      final couponDiscount = bannerController.appliedCouponCodes.isNotEmpty
-          ? (totalDiscount - loyaltyDiscountAmount)
-          : 0;
-      
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section Title
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-            child: Text(
-              'Order Summary',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(18),
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.rp(16)),
-          
-          // Summary Details
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-            child: Column(
-              children: [
-                _buildSummaryRow(
-                  'Items ($itemCount)',
-                  PriceFormatter.formatPrice(subtotal.toInt()),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(12)),
-                // Delivery Charge - Show "FREE" with coupon code if applicable
-                if (hasFreeShipping && hasFreeShippingInCoupon && appliedCouponCode != null) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Delivery Charge',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(15),
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            SizedBox(height: ResponsiveUtils.rp(4)),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.local_offer,
-                                  size: ResponsiveUtils.rp(14),
-                                  color: AppColors.success,
-                                ),
-                                SizedBox(width: ResponsiveUtils.rp(4)),
-                                Flexible(
-                                  child: Text(
-                                    'Applied: ${appliedCouponCode}',
-                                    style: TextStyle(
-                                      fontSize: ResponsiveUtils.sp(12),
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.success,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        'FREE',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(15),
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.success,
-                        ),
-                      ),
-                    ],
-                  ),
-                ] else ...[
-                  _buildSummaryRow(
-                    'Delivery Charge',
-                    hasFreeShipping 
-                        ? 'FREE' 
-                        : PriceFormatter.formatPrice(shipping.toInt()),
-                    valueColor: hasFreeShipping ? AppColors.success : null,
-                  ),
-                ],
-                
-                // Loyalty Points Discount
-                if (loyaltyPointsApplied && loyaltyPointsUsed > 0 && loyaltyDiscountAmount > 0) ...[
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  _buildSummaryRow(
-                    'Loyalty Points Discount',
-                    '-${PriceFormatter.formatPrice(loyaltyDiscountAmount.toInt())}',
-                    valueColor: AppColors.success,
-                  ),
-                ],
-                
-                // Coupon Discount - Show with coupon code name
-                if (bannerController.appliedCouponCodes.isNotEmpty && couponDiscount > 0) ...[
-                  SizedBox(height: ResponsiveUtils.rp(12)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.local_offer,
-                              size: ResponsiveUtils.rp(16),
-                              color: AppColors.success,
-                            ),
-                            SizedBox(width: ResponsiveUtils.rp(6)),
-                            Flexible(
-                              child: Text(
-                                appliedCouponName != null 
-                                    ? 'Coupon: $appliedCouponName'
-                                    : 'Coupon Discount',
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(15),
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textSecondary,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '-${PriceFormatter.formatPrice(couponDiscount.toInt())}',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(15),
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.success,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-                
-                SizedBox(height: ResponsiveUtils.rp(16)),
-                Divider(height: 1),
-                SizedBox(height: ResponsiveUtils.rp(16)),
-                
-                // Total
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total',
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(18),
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      PriceFormatter.formatPrice(total.toInt()),
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(20),
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.button,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    });
-  }
-
-  Widget _buildOrderSummaryLoading() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section Title
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          child: Text(
-            'Order Summary',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(18),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-        SizedBox(height: ResponsiveUtils.rp(16)),
-        
-        // Loading indicator
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(20)),
-              child: CircularProgressIndicator(
-                color: AppColors.button,
-                strokeWidth: 2,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSummaryRow(
-    String label,
-    String value, {
-    Color? valueColor,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(15),
-            fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(15),
-            fontWeight: FontWeight.w600,
-            color: valueColor ?? AppColors.textPrimary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDeliveryAddressSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Obx(() {
-          final shouldBlink = _shouldBlinkAddress.value;
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Delivery Address',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(18),
-                    fontWeight: FontWeight.bold,
-                    color: shouldBlink && _selectedAddress == null
-                        ? AppColors.error
-                        : AppColors.textPrimary,
-                  ),
-                ),
-                if (_selectedAddress != null)
-                  TextButton(
-                    onPressed: () async {
-                      await Get.toNamed('/addresses');
-                      await _loadCustomerAddresses();
-                    },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      'Change',
-                      style: TextStyle(
-                        color: AppColors.button,
-                        fontSize: ResponsiveUtils.sp(14),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          );
-        }),
-        SizedBox(height: ResponsiveUtils.rp(16)),
-        if (_selectedAddress == null)
-          Obx(() {
-            final shouldBlink = _shouldBlinkAddress.value;
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                padding: EdgeInsets.all(shouldBlink ? ResponsiveUtils.rp(4) : 0),
-                decoration: BoxDecoration(
-                  color: shouldBlink
-                      ? AppColors.error.withValues(alpha: 0.1)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                  border: shouldBlink
-                      ? Border.all(
-                          color: AppColors.error.withValues(alpha: 0.5),
-                          width: 2,
-                        )
-                      : null,
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-                      decoration: BoxDecoration(
-                        color: shouldBlink
-                            ? AppColors.error.withValues(alpha: 0.15)
-                            : AppColors.buttonLight.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                        border: Border.all(
-                          color: shouldBlink
-                              ? AppColors.error.withValues(alpha: 0.8)
-                              : AppColors.button.withValues(alpha: 0.2),
-                          width: shouldBlink ? 2.5 : 1.5,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.location_off_outlined,
-                            size: ResponsiveUtils.rp(48),
-                            color: shouldBlink ? AppColors.error : AppColors.textSecondary,
-                          ),
-                          SizedBox(height: ResponsiveUtils.rp(12)),
-                          Text(
-                            'No delivery address selected',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(15),
-                              color: shouldBlink ? AppColors.error : AppColors.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: ResponsiveUtils.rp(16)),
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              await Get.toNamed('/addresses');
-                              await _loadCustomerAddresses();
-                            },
-                            icon: Icon(Icons.add_location_alt_rounded, size: ResponsiveUtils.rp(20)),
-                            label: Text(AppStrings.addAddress),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: shouldBlink ? AppColors.error : AppColors.button,
-                              foregroundColor: AppColors.buttonText,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: ResponsiveUtils.rp(24),
-                                vertical: ResponsiveUtils.rp(14),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                              ),
-                              elevation: shouldBlink ? 4 : 2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          })
-        else
-          Obx(() {
-            final shouldBlink = _shouldBlinkAddress.value;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              padding: EdgeInsets.all(shouldBlink ? ResponsiveUtils.rp(4) : 0),
-              decoration: BoxDecoration(
-                color: shouldBlink
-                    ? AppColors.error.withValues(alpha: 0.1)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                border: shouldBlink
-                    ? Border.all(
-                        color: AppColors.error.withValues(alpha: 0.5),
-                        width: 2,
-                      )
-                    : null,
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                child: Container(
-                  padding: EdgeInsets.all(shouldBlink ? ResponsiveUtils.rp(16) : 0),
-                  decoration: BoxDecoration(
-                    color: shouldBlink
-                        ? AppColors.error.withValues(alpha: 0.15)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                    border: shouldBlink
-                        ? Border.all(
-                            color: AppColors.error.withValues(alpha: 0.8),
-                            width: 2.5,
-                          )
-                        : null,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _selectedAddress!.fullName ?? '',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(16),
-                          fontWeight: FontWeight.w600,
-                          color: shouldBlink ? AppColors.error : AppColors.textPrimary,
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-                      Text(
-                        '${_selectedAddress!.streetLine1}${(_selectedAddress!.streetLine2?.isNotEmpty ?? false) ? ', ${_selectedAddress!.streetLine2}' : ''}, ${_selectedAddress!.city ?? ''}',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(14),
-                          color: shouldBlink ? AppColors.error : AppColors.textSecondary,
-                          height: 1.4,
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-                      Row(
-                        children: [
-                          Text(
-                            _selectedAddress!.phoneNumber ?? '',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(14),
-                              color: shouldBlink ? AppColors.error : AppColors.textSecondary,
-                            ),
-                          ),
-                          if (_selectedAddress!.defaultShippingAddress ?? false) ...[
-                            SizedBox(width: ResponsiveUtils.rp(12)),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: ResponsiveUtils.rp(8),
-                                vertical: ResponsiveUtils.rp(4),
-                              ),
-                              decoration: BoxDecoration(
-                                color: shouldBlink
-                                    ? AppColors.error.withValues(alpha: 0.2)
-                                    : AppColors.button.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(4)),
-                              ),
-                              child: Text(
-                                'Default',
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(12),
-                                  color: shouldBlink ? AppColors.error : AppColors.button,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
-      ],
-    );
-  }
+  // Old methods removed - now using components
+  // _buildCustomAppBar, _buildOrderSummarySection, _buildDeliveryAddressSection, 
+  // _buildPlaceOrderButton, _buildShimmerCheckout have been moved to separate component files.
 
   Widget _buildPaymentMethodSection() {
     return Column(
@@ -2595,201 +2021,7 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
     );
   }
 
-  Widget _buildPlaceOrderButton() {
-    return Obx(() {
-      final isLoading = utilityController.isLoadingRx.value;
-      final isEnabled = _selectedAddress != null &&
-          orderController.selectedShippingMethod.value != null &&
-          orderController.selectedPaymentMethod.value != null;
-      final cart = cartController.cart.value;
-      final total = cart?.totalWithTax ?? 0;
-
-      // Check for out of stock items
-      final hasOutOfStockItems = cart?.lines.any((line) {
-        final stockLevel = line.productVariant.stockLevel.toUpperCase();
-        final isLowStock = stockLevel == 'LOW_STOCK';
-        final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-        final isProductDisabled = line.productVariant.product.enabled == false;
-        return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
-      }) ?? false;
-
-      // Get eligible coupons
-      final subTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
-      final eligibleCoupons = bannerController.getEligibleCoupons(subTotal.toInt());
-
-      return Container(
-        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-        decoration: BoxDecoration(
-          color: AppColors.card,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: ResponsiveUtils.rp(20),
-              offset: Offset(0, -ResponsiveUtils.rp(4)),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Out of stock banner (if applicable)
-              if (hasOutOfStockItems) ...[
-                Container(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-                  margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                    border: Border.all(
-                      color: AppColors.error.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.warning_rounded,
-                        color: AppColors.error,
-                        size: ResponsiveUtils.rp(20),
-                      ),
-                      SizedBox(width: ResponsiveUtils.rp(8)),
-                      Expanded(
-                        child: Text(
-                          'Some items are out of stock. Please remove them to proceed.',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(12),
-                            color: AppColors.error,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-
-              // Amount to apply coupon code section
-              if (!hasOutOfStockItems && eligibleCoupons.isNotEmpty) ...[
-                Obx(() {
-                  final coupon = eligibleCoupons.first;
-                  final requiredAmount = bannerController.getRequiredAmount(coupon);
-                  final currentSubTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
-                  final difference = requiredAmount - currentSubTotal;
-
-                  if (difference > 0) {
-                    final differenceInRupees = difference / 100;
-                    return Container(
-                    
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFF1a1a2e), // Dark blue-gray
-                            const Color(0xFF16213e), // Darker blue
-                            const Color(0xFF0f3460), // Deep blue
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.shadowMedium,
-                            blurRadius: ResponsiveUtils.rp(8),
-                            offset: Offset(0, ResponsiveUtils.rp(4)),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.local_offer_rounded,
-                            color: AppColors.buttonText,
-                            size: ResponsiveUtils.rp(18),
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Add ${PriceFormatter.formatPrice((differenceInRupees * 100).toInt())} more to unlock coupon \'${coupon.couponCode}\'',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(16),
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.buttonText,
-                                letterSpacing: 0.5,
-                              ),
-                              
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return SizedBox.shrink();
-                }),
-              ],
-
-              // Place Order Button
-              isLoading
-                  ? Container(
-                      height: ResponsiveUtils.rp(60),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-                        color: AppColors.inputBorder,
-                      ),
-                      child: Center(
-                          child: SizedBox(
-                            width: ResponsiveUtils.rp(24),
-                            height: ResponsiveUtils.rp(24),
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.buttonText),
-                            ),
-                          ),
-                      ),
-                    )
-                  : SlideAction(
-                      key: _slideActionKey,
-                      height: ResponsiveUtils.rp(60),
-                      borderRadius: ResponsiveUtils.rp(16),
-                      innerColor: AppColors.buttonText,
-                      outerColor: isEnabled
-                          ? AppColors.button
-                          : AppColors.inputBorder,
-                      text: isEnabled && total > 0
-                          ? 'Place Order - ${PriceFormatter.formatPrice(total.toInt())}'
-                          : 'Place Order',
-                      textStyle: TextStyle(
-                        fontSize: ResponsiveUtils.sp(16),
-                        fontWeight: FontWeight.bold,
-                        color: isEnabled ? AppColors.buttonText : AppColors.textSecondary,
-                      ),
-                      sliderButtonIcon: Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: isEnabled ? AppColors.button : AppColors.textSecondary,
-                        size: ResponsiveUtils.rp(20),
-                      ),
-                      sliderButtonIconPadding: ResponsiveUtils.rp(12),
-                      submittedIcon: Icon(
-                        Icons.check_circle_rounded,
-                        color: AppColors.buttonText,
-                        size: ResponsiveUtils.rp(20),
-                      ),
-                      onSubmit: () {
-                        if (!isLoading && isEnabled && !_orderPlacedSuccessfully) {
-                          _onPlaceOrder();
-                          // Don't reset on success - slider will show tick and stay
-                          // Only reset on error (handled in error callbacks)
-                        }
-                        return null;
-                      },
-                    ),
-            ],
-          ),
-        ),
-      );
-    });
-  }
+  // Old method removed - now using CheckoutPlaceOrderButton component
 
 
   // ignore: unused_element
@@ -3412,81 +2644,6 @@ debugPrint('[CheckoutPage] Applying coupon with products: ${coupon.couponCode}')
 
 
 
-  Widget _buildShimmerCheckout() {
-    return Obx(() {
-      final isDarkMode = themeController.isDarkMode;
-      return Skeletonizer(
-        enabled: true,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Address section shimmer
-              Container(
-                height: ResponsiveUtils.rp(120),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              SizedBox(height: ResponsiveUtils.rp(16)),
-              // Payment method shimmer
-              Container(
-                height: ResponsiveUtils.rp(20),
-                width: ResponsiveUtils.rp(150),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              SizedBox(height: ResponsiveUtils.rp(12)),
-              ...List.generate(
-                  2,
-                  (index) => Container(
-                        height: ResponsiveUtils.rp(60),
-                        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      )),
-              SizedBox(height: ResponsiveUtils.rp(24)),
-              // Order summary shimmer
-              Container(
-                height: ResponsiveUtils.rp(20),
-                width: ResponsiveUtils.rp(150),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              SizedBox(height: ResponsiveUtils.rp(12)),
-              ...List.generate(
-                  4,
-                  (index) => Container(
-                        height: ResponsiveUtils.rp(40),
-                        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      )),
-              SizedBox(height: ResponsiveUtils.rp(24)),
-              // Place order button shimmer
-              Container(
-                height: ResponsiveUtils.rp(48),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: isDarkMode ? AppColors.shimmerBaseDark : AppColors.shimmerBase,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    });
-  }
+  // Old method removed - now using CheckoutShimmerLoading component
 }
 

@@ -10,6 +10,7 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/responsive_spacing.dart';
 import '../utils/navigation_helper.dart';
 import '../widgets/shimmers.dart';
+import '../services/speech_recognition_service.dart';
 
 class SearchComponent extends StatelessWidget {
   const SearchComponent({
@@ -75,11 +76,24 @@ class FullScreenSearchPage extends StatefulWidget {
 class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
   final TextEditingController _controller = TextEditingController();
   Timer? _debounce;
+  final _speechService = SpeechRecognitionService();
+  bool _isListening = false;
 
   @override
   void initState() {
     super.initState();
     _controller.addListener(_onTextChanged);
+    
+    // Initialize speech recognition
+    _speechService.initialize();
+    
+    // Check if speech recognition should start automatically
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = Get.arguments;
+      if (args != null && args['startSpeechRecognition'] == true) {
+        _startSpeechRecognition();
+      }
+    });
   }
 
   void _onTextChanged() {
@@ -93,8 +107,57 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _speechService.stopListening();
     _controller.dispose();
     super.dispose();
+  }
+
+  /// Start speech recognition
+  Future<void> _startSpeechRecognition() async {
+    if (_isListening) {
+      await _speechService.stopListening();
+      setState(() {
+        _isListening = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isListening = true;
+    });
+
+    await _speechService.startListening(
+      onResult: (text) {
+        if (mounted) {
+          setState(() {
+            _controller.text = text;
+            _isListening = _speechService.isListening;
+          });
+          
+          // Trigger search when final result is received
+          if (!_speechService.isListening && text.isNotEmpty) {
+            widget.onSearch(text);
+            final bannerController = Get.find<BannerController>();
+            bannerController.searchProducts({'term': text});
+          }
+        }
+      },
+      onError: () {
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+          });
+          Get.snackbar(
+            'Error',
+            'Could not start speech recognition. Please check microphone permissions.',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 2),
+            backgroundColor: AppColors.card,
+            colorText: AppColors.textPrimary,
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -116,15 +179,29 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
-            suffixIcon: _controller.text.isNotEmpty
-                ? IconButton(
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Microphone icon
+                IconButton(
+                  icon: Icon(
+                    _isListening ? Icons.mic : Icons.mic_none,
+                    color: _isListening ? Colors.red : AppColors.textSecondary,
+                  ),
+                  onPressed: _startSpeechRecognition,
+                  tooltip: _isListening ? 'Stop listening' : 'Start voice search',
+                ),
+                // Clear icon (if text exists)
+                if (_controller.text.isNotEmpty)
+                  IconButton(
                     icon: const Icon(Icons.clear),
                     onPressed: () {
                       _controller.clear();
                       bannerController.searchResults.clear(); // reset results
                     },
-                  )
-                : null,
+                  ),
+              ],
+            ),
           ),
           style: TextStyle(
             color: AppColors.textPrimary,

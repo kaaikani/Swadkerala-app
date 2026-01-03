@@ -2380,6 +2380,7 @@ type Mutation {
   resetPassword(token: String!, password: String!): ResetPasswordResult!
   sendPhoneOtp(phoneNumber: String!): String
   resendPhoneOtp(phoneNumber: String!): String
+  updateProfileEmail(email: String!): Customer
   togglePromotionState(promotionId: ID!, value: Boolean!): Promotion!
 
   """
@@ -3621,6 +3622,20 @@ type Query {
   search(input: SearchInput!): SearchResponse!
 
   """
+  Get all channels assigned to a customer by email address.
+  Returns channels with their token for switching stores.
+  Filters out the default channel automatically.
+  """
+  getChannelsByCustomerEmail(email: String!): [CustomerChannel!]!
+
+  """
+  Get all channels assigned to a customer by phone number.
+  Returns channels with their token for switching stores.
+  Filters out the default channel automatically.
+  """
+  getChannelsByCustomerPhoneNumber(phoneNumber: String!): [CustomerChannel!]!
+
+  """
   Get all available channels for a given postal code.
   Returns channels that either:
   1. Have this specific postal code assigned
@@ -3648,6 +3663,7 @@ type Query {
   Includes channel type (CITY or BRAND) for frontend routing.
   """
   getAvailableChannels(postalCode: String): [ChannelAvailability!]!
+  getShippingOptions(input: ShippingRateInput!): [ShippingOption!]!
 }
 
 type RazorpayOrderStatus {
@@ -3909,6 +3925,26 @@ type ShippingMethodTranslation {
   languageCode: LanguageCode!
   name: String!
   description: String!
+}
+
+type ShippingOption {
+  id: String!
+  name: String!
+  description: String!
+  price: Money!
+  estimatedDeliveryDays: String!
+  courierName: String!
+  etd: String!
+  trackingAvailable: Boolean!
+  codAvailable: Boolean!
+}
+
+input ShippingRateInput {
+  pickupPostcode: String!
+  deliveryPostcode: String!
+  weight: Float!
+  orderValue: Money!
+  enableCOD: Boolean
 }
 
 """The price value where the result has a single price"""

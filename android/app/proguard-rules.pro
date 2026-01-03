@@ -108,3 +108,29 @@
 # More aggressive class merging
 -allowaccessmodification
 -repackageclasses ''
+
+# Remove speech_to_text debug symbols if not needed
+-keep class com.csdcorp.speech_to_text.** { *; }
+
+# Optimize DEX files - reduce method count
+-dontwarn kotlin.**
+-dontwarn kotlinx.**
+-dontwarn javax.annotation.**
+
+# More aggressive size reduction
+-optimizationpasses 5
+-dontpreverify
+-repackageclasses ''
+-allowaccessmodification
+-mergeinterfacesaggressively
+-overloadaggressively
+
+# Remove more unused code
+-assumenosideeffects class * {
+    public *** get*(...);
+    public void set*(...);
+}
+
+# Strip line numbers (saves space but makes debugging harder)
+-keepattributes SourceFile
+-renamesourcefileattribute SourceFile

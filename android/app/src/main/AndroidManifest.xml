@@ -16,6 +16,9 @@
     <!-- Permission to get Google accounts -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
+    <!-- Speech recognition permission -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:label="Kaaikani"
         android:name="${applicationName}"

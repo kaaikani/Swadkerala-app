@@ -34,7 +34,7 @@ class SimDetectionService {
   List<SimInfo>? _cachedSimInfo;
   DateTime? _lastDetectionTime;
   static const Duration _cacheValidDuration = Duration(minutes: 2);
-  
+
   /// Check if phone permission is granted
   Future<bool> hasPhonePermission() async {
     // Platform check: mobile_number has limited iOS support
@@ -61,7 +61,7 @@ debugPrint('[SimDetectionService] Error checking permission: $e');
 
     try {
 debugPrint('[SimDetectionService] Requesting phone permission...');
-      
+
       // Request permission with optimized timeout
       try {
         await MobileNumber.requestPhonePermission.timeout(
@@ -70,10 +70,10 @@ debugPrint('[SimDetectionService] Requesting phone permission...');
 debugPrint('[SimDetectionService] Permission request timeout');
           },
         );
-        
+
         // Wait briefly for permission to be processed
         await Future.delayed(const Duration(milliseconds: 500));
-        
+
         final permissionGranted = await hasPhonePermission();
 debugPrint('[SimDetectionService] Permission result: $permissionGranted');
         return permissionGranted;
@@ -96,9 +96,9 @@ debugPrint('[SimDetectionService] Error requesting permission: $e');
     }
 
     // Check cache first (but not if forcing permission request)
-    if (!forcePermissionRequest && 
-        _cachedSimInfo != null && 
-        _lastDetectionTime != null && 
+    if (!forcePermissionRequest &&
+        _cachedSimInfo != null &&
+        _lastDetectionTime != null &&
         DateTime.now().difference(_lastDetectionTime!) < _cacheValidDuration) {
 debugPrint('[SimDetectionService] Using cached SIM info');
       return _cachedSimInfo!;
@@ -112,7 +112,7 @@ debugPrint('[SimDetectionService] Using cached SIM info');
         const Duration(milliseconds: 500),
         onTimeout: () => false,
       );
-      
+
       if (!hasPermission) {
 debugPrint('[SimDetectionService] No phone permission - will return empty list');
         return simInfoList;
@@ -126,18 +126,18 @@ debugPrint('[SimDetectionService] SIM cards fetch timeout');
           return <SimCard>[];
         },
       );
-      
+
 debugPrint('[SimDetectionService] Found ${simCards?.length ?? 0} SIM cards');
-      
+
       if (simCards != null && simCards.isNotEmpty) {
         // Process all SIM cards
         for (int i = 0; i < simCards.length; i++) {
           SimCard card = simCards[i];
           String? phoneNumber = card.number;
-          
+
           if (phoneNumber != null && phoneNumber.isNotEmpty) {
             String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-            
+
             if (cleanNumber.length >= 10) {
               // Check for duplicates
               bool isDuplicate = false;
@@ -147,7 +147,7 @@ debugPrint('[SimDetectionService] Found ${simCards?.length ?? 0} SIM cards');
                   break;
                 }
               }
-              
+
               if (!isDuplicate) {
                 simInfoList.add(SimInfo(
                   phoneNumber: cleanNumber,
@@ -161,16 +161,16 @@ debugPrint('[SimDetectionService] Added SIM: $cleanNumber (${card.carrierName})'
           }
         }
       }
-      
+
       // If no SIMs found, try mobileNumber method
       if (simInfoList.isEmpty) {
 debugPrint('[SimDetectionService] No SIMs found, trying mobileNumber method');
-        
+
         String? mobileNumber = await MobileNumber.mobileNumber?.timeout(
           const Duration(seconds: 1),
           onTimeout: () => '',
         );
-        
+
         if (mobileNumber != null && mobileNumber.isNotEmpty) {
           String cleanNumber = mobileNumber.replaceAll(RegExp(r'[^\d]'), '');
           if (cleanNumber.length >= 10) {
@@ -237,7 +237,7 @@ debugPrint('[SimDetectionService] Error in getAllSimInfoWithRetry: $e');
   Future<String?> getPrimarySimNumber() async {
     try {
       List<SimInfo> simInfoList = await getAllSimInfo();
-      
+
       if (simInfoList.isEmpty) {
         return null;
       }
@@ -282,10 +282,10 @@ debugPrint('[SimDetectionService] Cache cleared');
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: simInfoList.map((simInfo) {
-              String displayNumber = simInfo.phoneNumber.isEmpty 
-                  ? 'No number detected' 
+              String displayNumber = simInfo.phoneNumber.isEmpty
+                  ? 'No number detected'
                   : '+91 ${simInfo.last10Digits}';
-              
+
               return ListTile(
                 title: Text(displayNumber),
                 subtitle: Text('${simInfo.carrierName} ${simInfo.isActive ? '(Active)' : '(No number)'}'),

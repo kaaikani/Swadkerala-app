@@ -240,7 +240,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
         color: AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
         border: Border.all(
-          color: isIndSnacksChannel ? AppColors.black : AppColors.border.withValues(alpha: 0.6),
+          color: isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.border.withValues(alpha: 0.6),
           width: 1,
         ),
       ),

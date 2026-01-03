@@ -33,6 +33,7 @@ class AppColors {
   static const Color indSnacksOrange = Color(0xFFFF6B35); // Orange accent (from image)
   static const Color indSnacksOrangeLight = Color(0xFFFF8C5A); // Lighter orange
   static const Color indSnacksOrangeDark = Color(0xFFE55A2B); // Darker orange
+  static const Color indSnacksAccent = Color(0xFFF2A23A); // Accent color for dropdowns and outlines
 
   // New Brand Green Colors (default)
   static const Color greenPrimary = Color(0xFF22A45D); // Fresh green

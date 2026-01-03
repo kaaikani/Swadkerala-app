@@ -733,6 +733,700 @@ class _CopyWithStubImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
       _res;
 }
 
+class Variables$Mutation$UpdateProfileEmail {
+  factory Variables$Mutation$UpdateProfileEmail({required String email}) =>
+      Variables$Mutation$UpdateProfileEmail._({
+        r'email': email,
+      });
+
+  Variables$Mutation$UpdateProfileEmail._(this._$data);
+
+  factory Variables$Mutation$UpdateProfileEmail.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$email = data['email'];
+    result$data['email'] = (l$email as String);
+    return Variables$Mutation$UpdateProfileEmail._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get email => (_$data['email'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$email = email;
+    result$data['email'] = l$email;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$UpdateProfileEmail<
+          Variables$Mutation$UpdateProfileEmail>
+      get copyWith => CopyWith$Variables$Mutation$UpdateProfileEmail(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$UpdateProfileEmail ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$email = email;
+    final lOther$email = other.email;
+    if (l$email != lOther$email) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$email = email;
+    return Object.hashAll([l$email]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$UpdateProfileEmail<TRes> {
+  factory CopyWith$Variables$Mutation$UpdateProfileEmail(
+    Variables$Mutation$UpdateProfileEmail instance,
+    TRes Function(Variables$Mutation$UpdateProfileEmail) then,
+  ) = _CopyWithImpl$Variables$Mutation$UpdateProfileEmail;
+
+  factory CopyWith$Variables$Mutation$UpdateProfileEmail.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$UpdateProfileEmail;
+
+  TRes call({String? email});
+}
+
+class _CopyWithImpl$Variables$Mutation$UpdateProfileEmail<TRes>
+    implements CopyWith$Variables$Mutation$UpdateProfileEmail<TRes> {
+  _CopyWithImpl$Variables$Mutation$UpdateProfileEmail(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$UpdateProfileEmail _instance;
+
+  final TRes Function(Variables$Mutation$UpdateProfileEmail) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? email = _undefined}) =>
+      _then(Variables$Mutation$UpdateProfileEmail._({
+        ..._instance._$data,
+        if (email != _undefined && email != null) 'email': (email as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Mutation$UpdateProfileEmail<TRes>
+    implements CopyWith$Variables$Mutation$UpdateProfileEmail<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$UpdateProfileEmail(this._res);
+
+  TRes _res;
+
+  call({String? email}) => _res;
+}
+
+class Mutation$UpdateProfileEmail {
+  Mutation$UpdateProfileEmail({
+    this.updateProfileEmail,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$UpdateProfileEmail.fromJson(Map<String, dynamic> json) {
+    final l$updateProfileEmail = json['updateProfileEmail'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateProfileEmail(
+      updateProfileEmail: l$updateProfileEmail == null
+          ? null
+          : Mutation$UpdateProfileEmail$updateProfileEmail.fromJson(
+              (l$updateProfileEmail as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Mutation$UpdateProfileEmail$updateProfileEmail? updateProfileEmail;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$updateProfileEmail = updateProfileEmail;
+    _resultData['updateProfileEmail'] = l$updateProfileEmail?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$updateProfileEmail = updateProfileEmail;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$updateProfileEmail,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateProfileEmail ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$updateProfileEmail = updateProfileEmail;
+    final lOther$updateProfileEmail = other.updateProfileEmail;
+    if (l$updateProfileEmail != lOther$updateProfileEmail) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateProfileEmail
+    on Mutation$UpdateProfileEmail {
+  CopyWith$Mutation$UpdateProfileEmail<Mutation$UpdateProfileEmail>
+      get copyWith => CopyWith$Mutation$UpdateProfileEmail(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$UpdateProfileEmail<TRes> {
+  factory CopyWith$Mutation$UpdateProfileEmail(
+    Mutation$UpdateProfileEmail instance,
+    TRes Function(Mutation$UpdateProfileEmail) then,
+  ) = _CopyWithImpl$Mutation$UpdateProfileEmail;
+
+  factory CopyWith$Mutation$UpdateProfileEmail.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateProfileEmail;
+
+  TRes call({
+    Mutation$UpdateProfileEmail$updateProfileEmail? updateProfileEmail,
+    String? $__typename,
+  });
+  CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail<TRes>
+      get updateProfileEmail;
+}
+
+class _CopyWithImpl$Mutation$UpdateProfileEmail<TRes>
+    implements CopyWith$Mutation$UpdateProfileEmail<TRes> {
+  _CopyWithImpl$Mutation$UpdateProfileEmail(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$UpdateProfileEmail _instance;
+
+  final TRes Function(Mutation$UpdateProfileEmail) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? updateProfileEmail = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$UpdateProfileEmail(
+        updateProfileEmail: updateProfileEmail == _undefined
+            ? _instance.updateProfileEmail
+            : (updateProfileEmail
+                as Mutation$UpdateProfileEmail$updateProfileEmail?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail<TRes>
+      get updateProfileEmail {
+    final local$updateProfileEmail = _instance.updateProfileEmail;
+    return local$updateProfileEmail == null
+        ? CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail.stub(
+            _then(_instance))
+        : CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail(
+            local$updateProfileEmail, (e) => call(updateProfileEmail: e));
+  }
+}
+
+class _CopyWithStubImpl$Mutation$UpdateProfileEmail<TRes>
+    implements CopyWith$Mutation$UpdateProfileEmail<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateProfileEmail(this._res);
+
+  TRes _res;
+
+  call({
+    Mutation$UpdateProfileEmail$updateProfileEmail? updateProfileEmail,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail<TRes>
+      get updateProfileEmail =>
+          CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail.stub(_res);
+}
+
+const documentNodeMutationUpdateProfileEmail = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.mutation,
+    name: NameNode(value: 'UpdateProfileEmail'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'email')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'updateProfileEmail'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'email'),
+            value: VariableNode(name: NameNode(value: 'email')),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'firstName'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'lastName'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Mutation$UpdateProfileEmail _parserFn$Mutation$UpdateProfileEmail(
+        Map<String, dynamic> data) =>
+    Mutation$UpdateProfileEmail.fromJson(data);
+typedef OnMutationCompleted$Mutation$UpdateProfileEmail = FutureOr<void>
+    Function(
+  Map<String, dynamic>?,
+  Mutation$UpdateProfileEmail?,
+);
+
+class Options$Mutation$UpdateProfileEmail
+    extends graphql.MutationOptions<Mutation$UpdateProfileEmail> {
+  Options$Mutation$UpdateProfileEmail({
+    String? operationName,
+    required Variables$Mutation$UpdateProfileEmail variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateProfileEmail? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$UpdateProfileEmail? onCompleted,
+    graphql.OnMutationUpdate<Mutation$UpdateProfileEmail>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$UpdateProfileEmail(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationUpdateProfileEmail,
+          parserFn: _parserFn$Mutation$UpdateProfileEmail,
+        );
+
+  final OnMutationCompleted$Mutation$UpdateProfileEmail? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+class WatchOptions$Mutation$UpdateProfileEmail
+    extends graphql.WatchQueryOptions<Mutation$UpdateProfileEmail> {
+  WatchOptions$Mutation$UpdateProfileEmail({
+    String? operationName,
+    required Variables$Mutation$UpdateProfileEmail variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateProfileEmail? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeMutationUpdateProfileEmail,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Mutation$UpdateProfileEmail,
+        );
+}
+
+extension ClientExtension$Mutation$UpdateProfileEmail on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$UpdateProfileEmail>>
+      mutate$UpdateProfileEmail(
+              Options$Mutation$UpdateProfileEmail options) async =>
+          await this.mutate(options);
+  graphql.ObservableQuery<Mutation$UpdateProfileEmail>
+      watchMutation$UpdateProfileEmail(
+              WatchOptions$Mutation$UpdateProfileEmail options) =>
+          this.watchMutation(options);
+}
+
+class Mutation$UpdateProfileEmail$HookResult {
+  Mutation$UpdateProfileEmail$HookResult(
+    this.runMutation,
+    this.result,
+  );
+
+  final RunMutation$Mutation$UpdateProfileEmail runMutation;
+
+  final graphql.QueryResult<Mutation$UpdateProfileEmail> result;
+}
+
+Mutation$UpdateProfileEmail$HookResult useMutation$UpdateProfileEmail(
+    [WidgetOptions$Mutation$UpdateProfileEmail? options]) {
+  final result = graphql_flutter
+      .useMutation(options ?? WidgetOptions$Mutation$UpdateProfileEmail());
+  return Mutation$UpdateProfileEmail$HookResult(
+    (variables, {optimisticResult, typedOptimisticResult}) =>
+        result.runMutation(
+      variables.toJson(),
+      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+    ),
+    result.result,
+  );
+}
+
+graphql.ObservableQuery<Mutation$UpdateProfileEmail>
+    useWatchMutation$UpdateProfileEmail(
+            WatchOptions$Mutation$UpdateProfileEmail options) =>
+        graphql_flutter.useWatchMutation(options);
+
+class WidgetOptions$Mutation$UpdateProfileEmail
+    extends graphql.MutationOptions<Mutation$UpdateProfileEmail> {
+  WidgetOptions$Mutation$UpdateProfileEmail({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$UpdateProfileEmail? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$UpdateProfileEmail? onCompleted,
+    graphql.OnMutationUpdate<Mutation$UpdateProfileEmail>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$UpdateProfileEmail(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationUpdateProfileEmail,
+          parserFn: _parserFn$Mutation$UpdateProfileEmail,
+        );
+
+  final OnMutationCompleted$Mutation$UpdateProfileEmail? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+typedef RunMutation$Mutation$UpdateProfileEmail
+    = graphql.MultiSourceResult<Mutation$UpdateProfileEmail> Function(
+  Variables$Mutation$UpdateProfileEmail, {
+  Object? optimisticResult,
+  Mutation$UpdateProfileEmail? typedOptimisticResult,
+});
+typedef Builder$Mutation$UpdateProfileEmail = widgets.Widget Function(
+  RunMutation$Mutation$UpdateProfileEmail,
+  graphql.QueryResult<Mutation$UpdateProfileEmail>?,
+);
+
+class Mutation$UpdateProfileEmail$Widget
+    extends graphql_flutter.Mutation<Mutation$UpdateProfileEmail> {
+  Mutation$UpdateProfileEmail$Widget({
+    widgets.Key? key,
+    WidgetOptions$Mutation$UpdateProfileEmail? options,
+    required Builder$Mutation$UpdateProfileEmail builder,
+  }) : super(
+          key: key,
+          options: options ?? WidgetOptions$Mutation$UpdateProfileEmail(),
+          builder: (
+            run,
+            result,
+          ) =>
+              builder(
+            (
+              variables, {
+              optimisticResult,
+              typedOptimisticResult,
+            }) =>
+                run(
+              variables.toJson(),
+              optimisticResult:
+                  optimisticResult ?? typedOptimisticResult?.toJson(),
+            ),
+            result,
+          ),
+        );
+}
+
+class Mutation$UpdateProfileEmail$updateProfileEmail {
+  Mutation$UpdateProfileEmail$updateProfileEmail({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    this.$__typename = 'Customer',
+  });
+
+  factory Mutation$UpdateProfileEmail$updateProfileEmail.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$firstName = json['firstName'];
+    final l$lastName = json['lastName'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateProfileEmail$updateProfileEmail(
+      id: (l$id as String),
+      firstName: (l$firstName as String),
+      lastName: (l$lastName as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String firstName;
+
+  final String lastName;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$firstName = firstName;
+    _resultData['firstName'] = l$firstName;
+    final l$lastName = lastName;
+    _resultData['lastName'] = l$lastName;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$firstName = firstName;
+    final l$lastName = lastName;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$firstName,
+      l$lastName,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$UpdateProfileEmail$updateProfileEmail ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$firstName = firstName;
+    final lOther$firstName = other.firstName;
+    if (l$firstName != lOther$firstName) {
+      return false;
+    }
+    final l$lastName = lastName;
+    final lOther$lastName = other.lastName;
+    if (l$lastName != lOther$lastName) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateProfileEmail$updateProfileEmail
+    on Mutation$UpdateProfileEmail$updateProfileEmail {
+  CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail<
+          Mutation$UpdateProfileEmail$updateProfileEmail>
+      get copyWith => CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail<TRes> {
+  factory CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail(
+    Mutation$UpdateProfileEmail$updateProfileEmail instance,
+    TRes Function(Mutation$UpdateProfileEmail$updateProfileEmail) then,
+  ) = _CopyWithImpl$Mutation$UpdateProfileEmail$updateProfileEmail;
+
+  factory CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateProfileEmail$updateProfileEmail;
+
+  TRes call({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$UpdateProfileEmail$updateProfileEmail<TRes>
+    implements CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail<TRes> {
+  _CopyWithImpl$Mutation$UpdateProfileEmail$updateProfileEmail(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$UpdateProfileEmail$updateProfileEmail _instance;
+
+  final TRes Function(Mutation$UpdateProfileEmail$updateProfileEmail) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? firstName = _undefined,
+    Object? lastName = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$UpdateProfileEmail$updateProfileEmail(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        firstName: firstName == _undefined || firstName == null
+            ? _instance.firstName
+            : (firstName as String),
+        lastName: lastName == _undefined || lastName == null
+            ? _instance.lastName
+            : (lastName as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$UpdateProfileEmail$updateProfileEmail<TRes>
+    implements CopyWith$Mutation$UpdateProfileEmail$updateProfileEmail<TRes> {
+  _CopyWithStubImpl$Mutation$UpdateProfileEmail$updateProfileEmail(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Variables$Mutation$CreateCustomerAddress {
   factory Variables$Mutation$CreateCustomerAddress(
           {required Input$CreateAddressInput input}) =>
