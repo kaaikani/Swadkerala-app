@@ -225,13 +225,82 @@ mutation ApplyCouponCode($input: String!) {
         __typename
         ... on Order {
             id
+            code
+            state
+            active
             couponCodes
             customFields {
                 otherInstructions
             }
+            lines {
+                id
+                unitPrice
+                unitPriceWithTax
+                quantity
+                linePriceWithTax
+                discountedLinePriceWithTax
+                productVariant {
+                    id
+                    name
+                    price
+                    __typename
+                }
+                discounts {
+                    amount
+                    amountWithTax
+                    description
+                    adjustmentSource
+                    type
+                    __typename
+                }
+                __typename
+            }
+            totalQuantity
+            subTotal
+            subTotalWithTax
             total
+            totalWithTax
+            shipping
+            shippingWithTax
+            shippingLines {
+                priceWithTax
+                shippingMethod {
+                    id
+                    code
+                    name
+                    __typename
+                }
+                __typename
+            }
+            discounts {
+                amount
+                amountWithTax
+                description
+                adjustmentSource
+                type
+                __typename
+            }
+            promotions {
+                couponCode
+                name
+                enabled
+                actions {
+                    args {
+                        value
+                        name
+                    }
+                    code
+                }
+                __typename
+            }
         }
         ... on CouponCodeInvalidError {
+            message
+        }
+        ... on CouponCodeExpiredError {
+            message
+        }
+        ... on CouponCodeLimitError {
             message
         }
     }

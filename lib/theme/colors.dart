@@ -5,35 +5,65 @@ import '../controllers/theme_controller.dart';
 import '../services/graphql_client.dart';
 
 /// Green-inspired Theme - Fresh green & lime palette
+/// With channel-based theming:
+/// - Default: Green theme
+/// - Ind-Snacks: Brown/Orange theme
+/// - ind (Non-Veg): Red theme
 class AppColors {
-  // Channel-based color scheme - use reactive observable
-  static bool get _isIndSnacksChannel {
+  // Get current channel token
+  static String get _currentChannelToken {
     try {
-      // Use reactive channel token if available, otherwise fallback to storage
       final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty
           ? GraphqlService.channelTokenRx.value
           : (GraphqlService.channelToken.isNotEmpty
               ? GraphqlService.channelToken
               : (GetStorage().read('channel_token')?.toString() ?? ''));
-      return channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+      return channelToken.toLowerCase();
     } catch (e) {
-      return false;
+      return '';
     }
+  }
+
+  // Channel-based color scheme - use reactive observable
+  static bool get _isIndSnacksChannel {
+    final token = _currentChannelToken;
+    return token == 'ind-snacks';
+  }
+
+  // Non-Veg channel (ind / ind-non veg) - Red theme
+  static bool get _isIndNonVegChannel {
+    final token = _currentChannelToken;
+    return token == 'ind' || token == 'ind-non veg';
   }
 
   // Ind-Snacks Brand Colors (Brown, Beige, Orange theme)
   static const Color indSnacksBrown = Color(0xFF5D4037); // Dark brown for headers
   static const Color indSnacksBrownDark = Color(0xFF3E2723); // Darker brown
   static const Color indSnacksBrownLight = Color(0xFF8D6E63); // Lighter brown
-  
+
   static const Color indSnacksBeige = Color(0xFFF5F1E8); // Light beige/cream background
   static const Color indSnacksBeigeLight = Color(0xFFFAF8F3); // Lighter beige
   static const Color indSnacksBeigeDark = Color(0xFFE8E0D3); // Darker beige
-  
+
   static const Color indSnacksOrange = Color(0xFFFF6B35); // Orange accent (from image)
   static const Color indSnacksOrangeLight = Color(0xFFFF8C5A); // Lighter orange
   static const Color indSnacksOrangeDark = Color(0xFFE55A2B); // Darker orange
   static const Color indSnacksAccent = Color(0xFFF2A23A); // Accent color for dropdowns and outlines
+
+  // Ind Non-Veg Brand Colors (Red theme for non-vegetarian)
+  static const Color indNonVegRed = Color(0xFFD32F2F); // Primary red
+  static const Color indNonVegRedDark = Color(0xFFB71C1C); // Darker red
+  static const Color indNonVegRedLight = Color(0xFFEF5350); // Lighter red
+
+  static const Color indNonVegBackground = Color(0xFFFFF5F5); // Light red-tinted background
+  static const Color indNonVegBackgroundLight = Color(0xFFFFFAFA); // Very light red tint
+  static const Color indNonVegBackgroundDark = Color(0xFFFFEBEE); // Slightly darker red tint
+
+  static const Color indNonVegAccent = Color(0xFFFF5252); // Accent red
+  static const Color indNonVegAccentLight = Color(0xFFFF8A80); // Light accent red
+
+  static const Color indNonVegMaroon = Color(0xFF880E4F); // Deep maroon for contrast
+  static const Color indNonVegCoral = Color(0xFFFF6B6B); // Coral accent
 
   // New Brand Green Colors (default)
   static const Color greenPrimary = Color(0xFF22A45D); // Fresh green
@@ -60,15 +90,21 @@ class AppColors {
   // Primary Colors
   static Color get primary {
     if (_isDarkMode) return Colors.grey[900]!;
-    return _isIndSnacksChannel ? Color(0xFFFFEDC7) : greenBackground;
+    if (_isIndNonVegChannel) return indNonVegBackground;
+    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
+    return greenBackground;
   }
   static Color get primaryLight {
     if (_isDarkMode) return Colors.grey[800]!;
-    return _isIndSnacksChannel ? Color(0xFFFFF4E0) : Color(0xFFF8FFF9);
+    if (_isIndNonVegChannel) return indNonVegBackgroundLight;
+    if (_isIndSnacksChannel) return Color(0xFFFFF4E0);
+    return Color(0xFFF8FFF9);
   }
   static Color get primaryDark {
     if (_isDarkMode) return Colors.grey[700]!;
-    return _isIndSnacksChannel ? Color(0xFFFFE5B4) : Color(0xFFE8FFF0);
+    if (_isIndNonVegChannel) return indNonVegBackgroundDark;
+    if (_isIndSnacksChannel) return Color(0xFFFFE5B4);
+    return Color(0xFFE8FFF0);
   }
 
   // CONSTANT TEXT COLORS
@@ -81,32 +117,52 @@ class AppColors {
   // Secondary Colors
   static Color get secondary {
     if (_isDarkMode) return Colors.grey[800]!;
-    return _isIndSnacksChannel ? indSnacksBrown : greenAccent;
+    if (_isIndNonVegChannel) return indNonVegRedDark;
+    if (_isIndSnacksChannel) return indSnacksBrown;
+    return greenAccent;
   }
   static Color get secondaryLight {
     if (_isDarkMode) return Colors.grey[700]!;
-    return _isIndSnacksChannel ? indSnacksBrownLight : greenAccentLight;
+    if (_isIndNonVegChannel) return indNonVegRedLight;
+    if (_isIndSnacksChannel) return indSnacksBrownLight;
+    return greenAccentLight;
   }
-  static Color get accent => _isIndSnacksChannel ? indSnacksOrange : greenPrimary;
-  static Color get promoCard => _isDarkMode ? Colors.grey[800]! : Color(0xFFEFFFF2);
+  static Color get accent {
+    if (_isIndNonVegChannel) return indNonVegAccent;
+    if (_isIndSnacksChannel) return indSnacksOrange;
+    return greenPrimary;
+  }
+  static Color get promoCard {
+    if (_isDarkMode) return Colors.grey[800]!;
+    if (_isIndNonVegChannel) return Color(0xFFFFE8E8);
+    return Color(0xFFEFFFF2);
+  }
 
   // Background Colors
   static Color get background {
     if (_isDarkMode) return Colors.black;
-    return _isIndSnacksChannel ? Color(0xFFFFEDC7) : Colors.white;
+    if (_isIndNonVegChannel) return indNonVegBackground;
+    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
+    return Colors.white;
   }
   static Color get backgroundLight {
     if (_isDarkMode) return Colors.grey[900]!;
-    return _isIndSnacksChannel ? Color(0xFFFFEDC7) : greenBackground;
+    if (_isIndNonVegChannel) return indNonVegBackgroundLight;
+    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
+    return greenBackground;
   }
   static Color get surface {
     if (_isDarkMode) return Colors.grey[900]!;
-    return _isIndSnacksChannel ? Color(0xFFFFEDC7) : Colors.white;
+    if (_isIndNonVegChannel) return indNonVegBackgroundLight;
+    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
+    return Colors.white;
   }
 
   static Color get card {
     if (_isDarkMode) return const Color(0xFF1A1A1A);
-    return _isIndSnacksChannel ? Color(0xFFFFEDC7) : Colors.white;
+    if (_isIndNonVegChannel) return Colors.white;
+    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
+    return Colors.white;
   }
 
   // Text Colors
@@ -136,23 +192,45 @@ class AppColors {
   static Color get divider => _isDarkMode ? Colors.grey[800]! : Color(0xFFE5E7EB);
 
   // Interactive
-  static Color get heartActive => _isIndSnacksChannel ? Color(0xFF92400E) : greenPrimary;
+  static Color get heartActive {
+    if (_isIndNonVegChannel) return indNonVegRed;
+    if (_isIndSnacksChannel) return Color(0xFF92400E);
+    return greenPrimary;
+  }
   static Color get heartInactive => _isDarkMode ? Colors.grey[400]! : Colors.black;
 
   static const Color buttonText = Colors.white;
-  static Color get button => _isIndSnacksChannel ? Color(0xFF92400E) : greenPrimary;
-  static Color get buttonLight => _isIndSnacksChannel ? Color(0xFFB85C1A) : greenPrimaryLight;
-  static Color get buttonDark => _isIndSnacksChannel ? Color(0xFF6B2F0A) : greenPrimaryDark;
+  static Color get button {
+    if (_isIndNonVegChannel) return indNonVegRed;
+    if (_isIndSnacksChannel) return Color(0xFF92400E);
+    return greenPrimary;
+  }
+  static Color get buttonLight {
+    if (_isIndNonVegChannel) return indNonVegRedLight;
+    if (_isIndSnacksChannel) return Color(0xFFB85C1A);
+    return greenPrimaryLight;
+  }
+  static Color get buttonDark {
+    if (_isIndNonVegChannel) return indNonVegRedDark;
+    if (_isIndSnacksChannel) return Color(0xFF6B2F0A);
+    return greenPrimaryDark;
+  }
 
   static const Color link = Color(0xFF3B82F6);
 
   // Refresh Indicator
-  static Color get refreshIndicator => _isIndSnacksChannel ? Color(0xFF92400E) : greenPrimary;
+  static Color get refreshIndicator {
+    if (_isIndNonVegChannel) return indNonVegRed;
+    if (_isIndSnacksChannel) return Color(0xFF92400E);
+    return greenPrimary;
+  }
 
   // Inputs & Shadows
   static Color get inputFill {
     if (_isDarkMode) return Colors.grey[900]!;
-    return _isIndSnacksChannel ? indSnacksBeige : Color(0xFFF9FAFB);
+    if (_isIndNonVegChannel) return Color(0xFFFFF8F8);
+    if (_isIndSnacksChannel) return indSnacksBeige;
+    return Color(0xFFF9FAFB);
   }
   static Color get inputBorder => _isDarkMode ? Colors.grey[700]! : Color(0xFFE5E7EB);
 
@@ -164,11 +242,15 @@ class AppColors {
   // Gradients
   static Color get gradientStart {
     if (_isDarkMode) return Colors.grey[900]!;
-    return _isIndSnacksChannel ? indSnacksBrown : greenPrimary;
+    if (_isIndNonVegChannel) return indNonVegRed;
+    if (_isIndSnacksChannel) return indSnacksBrown;
+    return greenPrimary;
   }
   static Color get gradientEnd {
     if (_isDarkMode) return Colors.grey[800]!;
-    return _isIndSnacksChannel ? indSnacksOrange : greenAccent;
+    if (_isIndNonVegChannel) return indNonVegCoral;
+    if (_isIndSnacksChannel) return indSnacksOrange;
+    return greenAccent;
   }
 
   // Special

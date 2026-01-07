@@ -23,7 +23,7 @@ import '../widgets/checkout/checkout_order_summary_section.dart';
 import '../widgets/checkout/checkout_delivery_address_section.dart';
 import '../widgets/checkout/checkout_place_order_button.dart';
 import '../widgets/checkout/checkout_shimmer_loading.dart';
-import 'package:slide_to_act/slide_to_act.dart';
+import '../widgets/checkout/slide_to_pay_button.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -59,7 +59,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   bool _isOrderSummaryExpanded = false;
   
   // SlideAction key for resetting
-  final GlobalKey<SlideActionState> _slideActionKey = GlobalKey<SlideActionState>();
+  final GlobalKey<SlideToPayButtonState> _slideActionKey = GlobalKey<SlideToPayButtonState>();
   
   // Track order placement state to prevent slider reset on success
   bool _orderPlacedSuccessfully = false;

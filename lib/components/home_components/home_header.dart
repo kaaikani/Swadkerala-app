@@ -32,7 +32,110 @@ class HomeHeader extends StatelessWidget {
       final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
           ? GraphqlService.channelTokenRx.value 
           : GraphqlService.channelToken;
-      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+      final channelTokenLower = channelToken.toLowerCase();
+      final isIndSnacksChannel = channelTokenLower == 'ind-snacks';
+      final isIndNonVegChannel = channelTokenLower == 'ind' || channelTokenLower == 'ind-non veg';
+      
+      if (isIndNonVegChannel) {
+        // Special layout for Ind-Non-Veg channel with non-veg themed icons
+        return SliverToBoxAdapter(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.indNonVegBackground,
+                  AppColors.indNonVegBackgroundLight,
+                ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.indNonVegRed.withValues(alpha: 0.1),
+                  offset: Offset(0, 2),
+                  blurRadius: 8,
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveUtils.rp(16),
+                  ResponsiveUtils.rp(12),
+                  ResponsiveUtils.rp(16),
+                  ResponsiveUtils.rp(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Row: Menu + Welcome Section with Non-Veg Icons + Profile
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Left side: Menu Icon
+                        Positioned(
+                          left: 0,
+                          child: Builder(
+                            builder: (context) => InkWell(
+                              onTap: () {
+                                try {
+                                  Scaffold.of(context).openDrawer();
+                                } catch (e) {
+                                  // No drawer available
+                                }
+                              },
+                              child: Icon(
+                                Icons.menu,
+                                color: AppColors.indNonVegRed,
+                                size: ResponsiveUtils.rp(24),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Center: Welcome Section with Non-Veg Icons
+                        Center(
+                          child: _buildWelcomeSectionIndNonVeg(),
+                        ),
+                        // Right side: Profile Icon
+                        Positioned(
+                          right: 0,
+                          child: InkWell(
+                            onTap: () => Get.toNamed('/account'),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                            child: Container(
+                              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                              decoration: BoxDecoration(
+                                color: AppColors.indNonVegBackgroundLight,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.indNonVegRed.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.person_outline_rounded,
+                                color: AppColors.indNonVegRed,
+                                size: ResponsiveUtils.rp(22),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    
+                    // Search Bar
+                    _buildSearchRowIndNonVeg(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
       
       if (isIndSnacksChannel) {
         // Special layout for Ind-Snacks channel matching the image exactly
@@ -66,29 +169,14 @@ class HomeHeader extends StatelessWidget {
                     Stack(
                       alignment: Alignment.center,
                       children: [
-                        // Left side: Hamburger Menu Icon
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Builder(
-                            builder: (context) => InkWell(
-                              onTap: () {
-                                // Open drawer if available, or show menu
-                                try {
-                                  Scaffold.of(context).openDrawer();
-                                } catch (e) {
-                                  // No drawer available, could navigate to menu page
-                                  // For now, just do nothing or add menu functionality later
-                                }
-                              },
 
-                            ),
-                          ),
-                        ),
                         // Center: Welcome Section (truly centered)
-                        _buildWelcomeSectionIndSnacks(),
+                        Center(
+                          child: _buildWelcomeSectionIndSnacks(),
+                        ),
                         // Right side: Profile Icon
-                        Align(
-                          alignment: Alignment.centerRight,
+                        Positioned(
+                          right: 0,
                           child: InkWell(
                             onTap: () => Get.toNamed('/account'),
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
@@ -189,13 +277,18 @@ class HomeHeader extends StatelessWidget {
 
   Widget _buildWelcomeSectionIndSnacks() {
     // Centered layout for Ind-Snacks matching the image
-      return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: double.infinity,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-        // Welcome to South Mithai - centered
+          // Welcome to South Mithai - centered
           Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "Welcome to ",
@@ -206,18 +299,18 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               Text(
-              "South Mithai",
+                "South Mithai",
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(18),
                   fontWeight: FontWeight.bold,
-                color: AppColors.indSnacksBrown, // Reddish-brown color
+                  color: AppColors.indSnacksBrown, // Reddish-brown color
                   letterSpacing: -0.3,
                 ),
               ),
             ],
           ),
           SizedBox(height: ResponsiveUtils.rp(4)),
-        // Tagline - centered
+          // Tagline - centered
           Text(
             "Authentic Sweets & Snacks",
             style: TextStyle(
@@ -226,11 +319,12 @@ class HomeHeader extends StatelessWidget {
               fontWeight: FontWeight.w500,
               fontStyle: FontStyle.italic,
             ),
-          textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
           ),
         ],
-      );
-    }
+      ),
+    );
+  }
     
   Widget _buildWelcomeSection() {
     // Default layout for other channels
@@ -445,6 +539,69 @@ class HomeHeader extends StatelessWidget {
       ),
       child: SearchComponent(
         hintText: AppStrings.searchForFreshCuts,
+        onSearch: (String query) {
+          bannerController.searchProducts({'term': query});
+        },
+      ),
+    );
+  }
+
+  Widget _buildWelcomeSectionIndNonVeg() {
+    // Welcome section for Ind-Non-Veg channel - clean and simple
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: double.infinity,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            channelName.isNotEmpty ? channelName : "Non-Veg",
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(20),
+              fontWeight: FontWeight.bold,
+              color: AppColors.indNonVegRed,
+              letterSpacing: -0.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: ResponsiveUtils.rp(2)),
+          Text(
+            "Fresh Meat & Seafood",
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(12),
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchRowIndNonVeg() {
+    // Search bar for Ind-Non-Veg channel
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(14)),
+        border: Border.all(
+          color: AppColors.indNonVegRed.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.indNonVegRed.withValues(alpha: 0.1),
+            blurRadius: ResponsiveUtils.rp(8),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: SearchComponent(
+        hintText: 'Search meat, fish, chicken...',
         onSearch: (String query) {
           bannerController.searchProducts({'term': query});
         },

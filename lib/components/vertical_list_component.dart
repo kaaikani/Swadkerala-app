@@ -42,6 +42,11 @@ class VerticalListComponent extends StatelessWidget {
               ))
           : items;
 
+      // Ensure we always have items or return a sized widget
+      if (displayItems.isEmpty && !isLoading) {
+        return const SizedBox.shrink();
+      }
+
       return Skeletonizer(
         enabled: isLoading,
         child: Column(
@@ -56,19 +61,23 @@ class VerticalListComponent extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ResponsiveContainer(
+            SizedBox(
               height: ResponsiveUtils.rp(140),
-              borderRadius: BorderRadius.zero,
-              boxShadow: [],
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                itemCount: displayItems.length,
-                separatorBuilder: (_, __) => ResponsiveSpacing.horizontal(12),
+              child: displayItems.isEmpty
+                  ? const SizedBox.shrink()
+                  : ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: displayItems.length,
+                      separatorBuilder: (_, __) => ResponsiveSpacing.horizontal(12),
                 itemBuilder: (_, index) {
                   final collection = displayItems[index];
                   final itemWidth = ResponsiveUtils.rp(80);
                   final imageSize = ResponsiveUtils.rp(60);
+                  final asset = collection.featuredAsset;
+                  final hasValidAsset = asset != null && 
+                                      collection.id.isNotEmpty && 
+                                      asset.preview.isNotEmpty;
 
                   return GestureDetector(
                     onTap: collection.id.isNotEmpty
@@ -97,10 +106,9 @@ class VerticalListComponent extends StatelessWidget {
                             child: ClipRRect(
                               borderRadius:
                                   BorderRadius.circular(ResponsiveUtils.rp(16)),
-                              child: collection.featuredAsset != null &&
-                                      collection.id.isNotEmpty
+                              child: hasValidAsset
                                   ? Image.network(
-                                      collection.featuredAsset!.preview,
+                                      asset.preview,
                                       fit: BoxFit.cover,
                                       errorBuilder: (_, __, ___) =>
                                           _buildCategoryPlaceholder(imageSize),

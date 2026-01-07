@@ -14,9 +14,11 @@ class CartEmptyState extends StatelessWidget {
       final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
           ? GraphqlService.channelTokenRx.value 
           : GraphqlService.channelToken;
-      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-      final iconColor = isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.zomatoRed;
-      final buttonColor = isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.zomatoRed;
+      final tokenLower = channelToken.toLowerCase();
+      final isIndSnacksChannel = tokenLower == 'ind-snacks';
+      // Use channel-aware button color for non-Ind-Snacks (maps to red for ind-non veg, green otherwise)
+      final iconColor = isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.button;
+      final buttonColor = isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.button;
       
       return Container(
         width: double.infinity,

@@ -1160,7 +1160,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final hasCollections = collectionController.allCollections.isNotEmpty;
 
       if (!isLoading && !hasCollections) {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       }
 
       return Container(
@@ -1169,6 +1169,7 @@ class _MyHomePageState extends State<MyHomePage> {
           bottom: ResponsiveUtils.rp(2),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             VerticalListComponent(

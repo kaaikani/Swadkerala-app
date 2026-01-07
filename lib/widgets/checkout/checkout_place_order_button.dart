@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:slide_to_act/slide_to_act.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../controllers/utilitycontroller/utilitycontroller.dart';
@@ -9,6 +8,7 @@ import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/price_formatter.dart';
 import '../../graphql/Customer.graphql.dart';
+import 'slide_to_pay_button.dart';
 
 class CheckoutPlaceOrderButton extends StatelessWidget {
   final CartController cartController;
@@ -16,7 +16,7 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
   final UtilityController utilityController;
   final BannerController bannerController;
   final Query$GetActiveCustomer$activeCustomer$addresses? selectedAddress;
-  final GlobalKey<SlideActionState> slideActionKey;
+  final GlobalKey<SlideToPayButtonState> slideActionKey;
   final bool orderPlacedSuccessfully;
   final Future<void> Function() onPlaceOrder;
 
@@ -103,118 +103,19 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
                   ),
                 ),
               ],
-              if (!hasOutOfStockItems && eligibleCoupons.isNotEmpty) ...[
-                Obx(() {
-                  final coupon = eligibleCoupons.first;
-                  final requiredAmount = bannerController.getRequiredAmount(coupon);
-                  final currentSubTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
-                  final difference = requiredAmount - currentSubTotal;
 
-                  if (difference > 0) {
-                    final differenceInRupees = difference / 100;
-                    return Container(
-                      padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-                      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFF1a1a2e),
-                            const Color(0xFF16213e),
-                            const Color(0xFF0f3460),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.shadowMedium,
-                            blurRadius: ResponsiveUtils.rp(8),
-                            offset: Offset(0, ResponsiveUtils.rp(4)),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.local_offer_rounded,
-                            color: AppColors.buttonText,
-                            size: ResponsiveUtils.rp(18),
-                          ),
-                          SizedBox(width: ResponsiveUtils.rp(8)),
-                          Expanded(
-                            child: Text(
-                              'Add ${PriceFormatter.formatPrice((differenceInRupees * 100).toInt())} more to unlock coupon \'${coupon.couponCode}\'',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(16),
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.buttonText,
-                                letterSpacing: 0.5,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+              SlideToPayButton(
+                key: slideActionKey,
+                text: 'Slide to Pay',
+                amount: total > 0 ? PriceFormatter.formatPrice(total.toInt()) : '',
+                isEnabled: isEnabled && !orderPlacedSuccessfully,
+                isLoading: isLoading,
+                onSubmit: () {
+                  if (!isLoading && isEnabled && !orderPlacedSuccessfully) {
+                    onPlaceOrder();
                   }
-                  return SizedBox.shrink();
-                }),
-              ],
-              isLoading
-                  ? Container(
-                      height: ResponsiveUtils.rp(60),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-                        color: AppColors.inputBorder,
-                      ),
-                      child: Center(
-                        child: SizedBox(
-                          width: ResponsiveUtils.rp(24),
-                          height: ResponsiveUtils.rp(24),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.buttonText),
-                          ),
-                        ),
-                      ),
-                    )
-                  : SlideAction(
-                      key: slideActionKey,
-                      height: ResponsiveUtils.rp(60),
-                      borderRadius: ResponsiveUtils.rp(16),
-                      innerColor: AppColors.buttonText,
-                      outerColor: isEnabled
-                          ? AppColors.button
-                          : AppColors.inputBorder,
-                      text: isEnabled && total > 0
-                          ? 'Place Order - ${PriceFormatter.formatPrice(total.toInt())}'
-                          : 'Place Order',
-                      textStyle: TextStyle(
-                        fontSize: ResponsiveUtils.sp(16),
-                        fontWeight: FontWeight.bold,
-                        color: isEnabled ? AppColors.buttonText : AppColors.textSecondary,
-                      ),
-                      sliderButtonIcon: Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: isEnabled ? AppColors.button : AppColors.textSecondary,
-                        size: ResponsiveUtils.rp(20),
-                      ),
-                      sliderButtonIconPadding: ResponsiveUtils.rp(12),
-                      submittedIcon: Icon(
-                        Icons.check_circle_rounded,
-                        color: AppColors.buttonText,
-                        size: ResponsiveUtils.rp(20),
-                      ),
-                      onSubmit: () {
-                        if (!isLoading && isEnabled && !orderPlacedSuccessfully) {
-                          onPlaceOrder();
-                        }
-                        return null;
-                      },
-                    ),
+                },
+              ),
             ],
           ),
         ),

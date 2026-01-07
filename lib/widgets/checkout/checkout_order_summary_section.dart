@@ -96,6 +96,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
       final itemCount = cart?.lines.length ?? 0;
       final subtotal = cart?.subTotalWithTax ?? 0;
       final shipping = orderController.getShippingPrice(orderController.selectedShippingMethod.value);
+      // Use cart's totalWithTax directly (updated after coupon application)
       final total = cart?.totalWithTax ?? 0;
       final hasFreeShipping = cartController.hasFreeShippingCoupon();
       
@@ -132,10 +133,18 @@ class CheckoutOrderSummarySection extends StatelessWidget {
           ? (loyaltyPointsUsed * rupeesPerPoint)
           : 0;
       
-      final totalDiscount = (subtotal + (hasFreeShipping ? 0 : shipping) - total);
-      final couponDiscount = bannerController.appliedCouponCodes.isNotEmpty
-          ? (totalDiscount - loyaltyDiscountAmount)
-          : 0;
+      // Get coupon discount from cart discounts (updated after coupon application)
+      int couponDiscount = 0;
+      if (cart != null && cart.discounts.isNotEmpty) {
+        couponDiscount = cart.discounts
+            .where((discount) => discount.adjustmentSource == 'PROMOTION' || 
+                                 discount.adjustmentSource == 'COUPON_CODE')
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+      } else if (bannerController.appliedCouponCodes.isNotEmpty) {
+        // Fallback: calculate from subtotal and total
+        final totalDiscount = (subtotal + (hasFreeShipping ? 0 : shipping) - total);
+        couponDiscount = (totalDiscount - loyaltyDiscountAmount).toInt();
+      }
       
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,

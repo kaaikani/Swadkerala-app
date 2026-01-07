@@ -366,8 +366,16 @@ class AddressComponent extends StatelessWidget {
     debugPrint('[AddressComponent] Dialog will open and fetch postal codes...');
     final box = GetStorage();
 
-    // Get channel code from storage and use it as city
+    // Get channel code and type from storage
     final channelCode = box.read('channel_code') ?? '';
+    final channelType = box.read('channel_type')?.toString() ?? '';
+    
+    // Check if channel type is BRAND (case-insensitive check)
+    final isBrandChannel = channelType.toUpperCase().contains('BRAND');
+    
+    debugPrint('[AddressComponent] Channel Type Check:');
+    debugPrint('[AddressComponent]   - channelType from storage: "$channelType"');
+    debugPrint('[AddressComponent]   - isBrandChannel: $isBrandChannel');
 
     // Get customer data for auto-fill (only when adding new address)
     final customer = customerController.activeCustomer.value;
@@ -384,8 +392,9 @@ class AddressComponent extends StatelessWidget {
         TextEditingController(text: existingAddress?.streetLine1 ?? '');
     final line2Controller =
         TextEditingController(text: existingAddress?.streetLine2 ?? '');
+    // Only auto-fill city with channel code if NOT a BRAND channel
     final cityController = TextEditingController(
-        text: channelCode.isNotEmpty
+        text: !isBrandChannel && channelCode.isNotEmpty
             ? channelCode
             : (existingAddress?.city ?? ''));
     final postalController =
@@ -466,6 +475,33 @@ class AddressComponent extends StatelessWidget {
           builder: (context, setState) {
             debugPrint('[AddressComponent] StatefulBuilder builder called');
             debugPrint('[AddressComponent] Current state - postalCodesList.length: ${postalCodesState.postalCodesList.length}, isLoadingPostalCodes: ${postalCodesState.isLoadingPostalCodes}');
+            
+            // Re-check channel type inside builder to ensure it's accessible
+            final boxInBuilder = GetStorage();
+            final channelTypeInBuilder = boxInBuilder.read('channel_type')?.toString() ?? '';
+            // More robust check: handle "Enum$ChannelType.BRAND", "BRAND", etc.
+            // Check if it contains BRAND but not CITY (to avoid false positives)
+            final channelTypeUpper = channelTypeInBuilder.toUpperCase();
+            final containsBrand = channelTypeUpper.contains('BRAND');
+            final containsCity = channelTypeUpper.contains('CITY');
+            final isBrandChannelInBuilder = containsBrand && !containsCity;
+            
+            debugPrint('[AddressComponent] ========== CHANNEL TYPE CHECK IN BUILDER ==========');
+            debugPrint('[AddressComponent] Channel Type Check in Builder:');
+            debugPrint('[AddressComponent]   - channelType from storage (raw): "$channelTypeInBuilder"');
+            debugPrint('[AddressComponent]   - channelType (upper): "$channelTypeUpper"');
+            debugPrint('[AddressComponent]   - contains BRAND: $containsBrand');
+            debugPrint('[AddressComponent]   - contains CITY: $containsCity');
+            debugPrint('[AddressComponent]   - isBrandChannel (final): $isBrandChannelInBuilder');
+            debugPrint('[AddressComponent]   - City field readOnly: ${!isBrandChannelInBuilder}');
+            debugPrint('[AddressComponent] ===================================================');
+            
+            // Force a rebuild if channel type changes (for debugging)
+            if (channelTypeInBuilder.isNotEmpty) {
+              debugPrint('[AddressComponent] ✅ Channel type detected, city field should be ${isBrandChannelInBuilder ? "EDITABLE" : "LOCKED"}');
+            } else {
+              debugPrint('[AddressComponent] ⚠️ Channel type is empty, defaulting to LOCKED');
+            }
             
             // Store setState reference for postal codes state updates
             dialogSetState = setState;
@@ -571,7 +607,7 @@ class AddressComponent extends StatelessWidget {
                           SizedBox(height: ResponsiveUtils.rp(16)),
                           _buildFormField(
                               cityController, 'City', Icons.location_city,
-                              required: true, readOnly: true),
+                              required: true, readOnly: !isBrandChannelInBuilder),
                           SizedBox(height: ResponsiveUtils.rp(16)),
                           _buildPostalCodeField(
                             context,
@@ -855,9 +891,11 @@ class AddressComponent extends StatelessWidget {
         ),
         SizedBox(height: ResponsiveUtils.rp(8)),
         TextField(
+          key: ValueKey('${label}_${readOnly}'), // Force rebuild when readOnly changes
           controller: controller,
           keyboardType: keyboardType,
           readOnly: readOnly,
+          enabled: true, // Always enable the field, readOnly controls editability
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(15),
             color: readOnly ? AppColors.textSecondary : AppColors.textPrimary,

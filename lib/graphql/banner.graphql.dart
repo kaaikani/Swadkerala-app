@@ -12235,6 +12235,27 @@ const documentNodeMutationApplyCouponCode = DocumentNode(definitions: [
                 selectionSet: null,
               ),
               FieldNode(
+                name: NameNode(value: 'code'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'state'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'active'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
                 name: NameNode(value: 'couponCodes'),
                 alias: null,
                 arguments: [],
@@ -12264,7 +12285,411 @@ const documentNodeMutationApplyCouponCode = DocumentNode(definitions: [
                 ]),
               ),
               FieldNode(
+                name: NameNode(value: 'lines'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'unitPrice'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'unitPriceWithTax'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'quantity'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'linePriceWithTax'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'discountedLinePriceWithTax'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'productVariant'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'price'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'discounts'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'amount'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'amountWithTax'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'description'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'adjustmentSource'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'type'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: 'totalQuantity'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'subTotal'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'subTotalWithTax'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
                 name: NameNode(value: 'total'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'totalWithTax'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'shipping'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'shippingWithTax'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'shippingLines'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'priceWithTax'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'shippingMethod'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'code'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: 'discounts'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'amount'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'amountWithTax'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'description'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'adjustmentSource'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'type'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: 'promotions'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'couponCode'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'enabled'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'actions'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'args'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(selections: [
+                          FieldNode(
+                            name: NameNode(value: 'value'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: 'name'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: '__typename'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                        ]),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'code'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'CouponCodeInvalidError'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'message'),
                 alias: null,
                 arguments: [],
                 directives: [],
@@ -12282,7 +12707,31 @@ const documentNodeMutationApplyCouponCode = DocumentNode(definitions: [
           InlineFragmentNode(
             typeCondition: TypeConditionNode(
                 on: NamedTypeNode(
-              name: NameNode(value: 'CouponCodeInvalidError'),
+              name: NameNode(value: 'CouponCodeExpiredError'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'message'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'CouponCodeLimitError'),
               isNonNull: false,
             )),
             directives: [],
@@ -12729,40 +13178,122 @@ class Mutation$ApplyCouponCode$applyCouponCode$$Order
     implements Mutation$ApplyCouponCode$applyCouponCode {
   Mutation$ApplyCouponCode$applyCouponCode$$Order({
     required this.id,
+    required this.code,
+    required this.state,
+    required this.active,
     required this.couponCodes,
     this.customFields,
+    required this.lines,
+    required this.totalQuantity,
+    required this.subTotal,
+    required this.subTotalWithTax,
     required this.total,
+    required this.totalWithTax,
+    required this.shipping,
+    required this.shippingWithTax,
+    required this.shippingLines,
+    required this.discounts,
+    required this.promotions,
     this.$__typename = 'Order',
   });
 
   factory Mutation$ApplyCouponCode$applyCouponCode$$Order.fromJson(
       Map<String, dynamic> json) {
     final l$id = json['id'];
+    final l$code = json['code'];
+    final l$state = json['state'];
+    final l$active = json['active'];
     final l$couponCodes = json['couponCodes'];
     final l$customFields = json['customFields'];
+    final l$lines = json['lines'];
+    final l$totalQuantity = json['totalQuantity'];
+    final l$subTotal = json['subTotal'];
+    final l$subTotalWithTax = json['subTotalWithTax'];
     final l$total = json['total'];
+    final l$totalWithTax = json['totalWithTax'];
+    final l$shipping = json['shipping'];
+    final l$shippingWithTax = json['shippingWithTax'];
+    final l$shippingLines = json['shippingLines'];
+    final l$discounts = json['discounts'];
+    final l$promotions = json['promotions'];
     final l$$__typename = json['__typename'];
     return Mutation$ApplyCouponCode$applyCouponCode$$Order(
       id: (l$id as String),
+      code: (l$code as String),
+      state: (l$state as String),
+      active: (l$active as bool),
       couponCodes:
           (l$couponCodes as List<dynamic>).map((e) => (e as String)).toList(),
       customFields: l$customFields == null
           ? null
           : Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields
               .fromJson((l$customFields as Map<String, dynamic>)),
+      lines: (l$lines as List<dynamic>)
+          .map((e) =>
+              Mutation$ApplyCouponCode$applyCouponCode$$Order$lines.fromJson(
+                  (e as Map<String, dynamic>)))
+          .toList(),
+      totalQuantity: (l$totalQuantity as int),
+      subTotal: (l$subTotal as num).toDouble(),
+      subTotalWithTax: (l$subTotalWithTax as num).toDouble(),
       total: (l$total as num).toDouble(),
+      totalWithTax: (l$totalWithTax as num).toDouble(),
+      shipping: (l$shipping as num).toDouble(),
+      shippingWithTax: (l$shippingWithTax as num).toDouble(),
+      shippingLines: (l$shippingLines as List<dynamic>)
+          .map((e) =>
+              Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      discounts: (l$discounts as List<dynamic>)
+          .map((e) => Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts
+              .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      promotions: (l$promotions as List<dynamic>)
+          .map((e) => Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions
+              .fromJson((e as Map<String, dynamic>)))
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
 
   final String id;
 
+  final String code;
+
+  final String state;
+
+  final bool active;
+
   final List<String> couponCodes;
 
   final Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields?
       customFields;
 
+  final List<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines> lines;
+
+  final int totalQuantity;
+
+  final double subTotal;
+
+  final double subTotalWithTax;
+
   final double total;
+
+  final double totalWithTax;
+
+  final double shipping;
+
+  final double shippingWithTax;
+
+  final List<Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines>
+      shippingLines;
+
+  final List<Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts>
+      discounts;
+
+  final List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions>
+      promotions;
 
   final String $__typename;
 
@@ -12770,12 +13301,39 @@ class Mutation$ApplyCouponCode$applyCouponCode$$Order
     final _resultData = <String, dynamic>{};
     final l$id = id;
     _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$state = state;
+    _resultData['state'] = l$state;
+    final l$active = active;
+    _resultData['active'] = l$active;
     final l$couponCodes = couponCodes;
     _resultData['couponCodes'] = l$couponCodes.map((e) => e).toList();
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields?.toJson();
+    final l$lines = lines;
+    _resultData['lines'] = l$lines.map((e) => e.toJson()).toList();
+    final l$totalQuantity = totalQuantity;
+    _resultData['totalQuantity'] = l$totalQuantity;
+    final l$subTotal = subTotal;
+    _resultData['subTotal'] = l$subTotal;
+    final l$subTotalWithTax = subTotalWithTax;
+    _resultData['subTotalWithTax'] = l$subTotalWithTax;
     final l$total = total;
     _resultData['total'] = l$total;
+    final l$totalWithTax = totalWithTax;
+    _resultData['totalWithTax'] = l$totalWithTax;
+    final l$shipping = shipping;
+    _resultData['shipping'] = l$shipping;
+    final l$shippingWithTax = shippingWithTax;
+    _resultData['shippingWithTax'] = l$shippingWithTax;
+    final l$shippingLines = shippingLines;
+    _resultData['shippingLines'] =
+        l$shippingLines.map((e) => e.toJson()).toList();
+    final l$discounts = discounts;
+    _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$promotions = promotions;
+    _resultData['promotions'] = l$promotions.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -12784,15 +13342,41 @@ class Mutation$ApplyCouponCode$applyCouponCode$$Order
   @override
   int get hashCode {
     final l$id = id;
+    final l$code = code;
+    final l$state = state;
+    final l$active = active;
     final l$couponCodes = couponCodes;
     final l$customFields = customFields;
+    final l$lines = lines;
+    final l$totalQuantity = totalQuantity;
+    final l$subTotal = subTotal;
+    final l$subTotalWithTax = subTotalWithTax;
     final l$total = total;
+    final l$totalWithTax = totalWithTax;
+    final l$shipping = shipping;
+    final l$shippingWithTax = shippingWithTax;
+    final l$shippingLines = shippingLines;
+    final l$discounts = discounts;
+    final l$promotions = promotions;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
+      l$code,
+      l$state,
+      l$active,
       Object.hashAll(l$couponCodes.map((v) => v)),
       l$customFields,
+      Object.hashAll(l$lines.map((v) => v)),
+      l$totalQuantity,
+      l$subTotal,
+      l$subTotalWithTax,
       l$total,
+      l$totalWithTax,
+      l$shipping,
+      l$shippingWithTax,
+      Object.hashAll(l$shippingLines.map((v) => v)),
+      Object.hashAll(l$discounts.map((v) => v)),
+      Object.hashAll(l$promotions.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -12809,6 +13393,21 @@ class Mutation$ApplyCouponCode$applyCouponCode$$Order
     final l$id = id;
     final lOther$id = other.id;
     if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$state = state;
+    final lOther$state = other.state;
+    if (l$state != lOther$state) {
+      return false;
+    }
+    final l$active = active;
+    final lOther$active = other.active;
+    if (l$active != lOther$active) {
       return false;
     }
     final l$couponCodes = couponCodes;
@@ -12828,10 +13427,88 @@ class Mutation$ApplyCouponCode$applyCouponCode$$Order
     if (l$customFields != lOther$customFields) {
       return false;
     }
+    final l$lines = lines;
+    final lOther$lines = other.lines;
+    if (l$lines.length != lOther$lines.length) {
+      return false;
+    }
+    for (int i = 0; i < l$lines.length; i++) {
+      final l$lines$entry = l$lines[i];
+      final lOther$lines$entry = lOther$lines[i];
+      if (l$lines$entry != lOther$lines$entry) {
+        return false;
+      }
+    }
+    final l$totalQuantity = totalQuantity;
+    final lOther$totalQuantity = other.totalQuantity;
+    if (l$totalQuantity != lOther$totalQuantity) {
+      return false;
+    }
+    final l$subTotal = subTotal;
+    final lOther$subTotal = other.subTotal;
+    if (l$subTotal != lOther$subTotal) {
+      return false;
+    }
+    final l$subTotalWithTax = subTotalWithTax;
+    final lOther$subTotalWithTax = other.subTotalWithTax;
+    if (l$subTotalWithTax != lOther$subTotalWithTax) {
+      return false;
+    }
     final l$total = total;
     final lOther$total = other.total;
     if (l$total != lOther$total) {
       return false;
+    }
+    final l$totalWithTax = totalWithTax;
+    final lOther$totalWithTax = other.totalWithTax;
+    if (l$totalWithTax != lOther$totalWithTax) {
+      return false;
+    }
+    final l$shipping = shipping;
+    final lOther$shipping = other.shipping;
+    if (l$shipping != lOther$shipping) {
+      return false;
+    }
+    final l$shippingWithTax = shippingWithTax;
+    final lOther$shippingWithTax = other.shippingWithTax;
+    if (l$shippingWithTax != lOther$shippingWithTax) {
+      return false;
+    }
+    final l$shippingLines = shippingLines;
+    final lOther$shippingLines = other.shippingLines;
+    if (l$shippingLines.length != lOther$shippingLines.length) {
+      return false;
+    }
+    for (int i = 0; i < l$shippingLines.length; i++) {
+      final l$shippingLines$entry = l$shippingLines[i];
+      final lOther$shippingLines$entry = lOther$shippingLines[i];
+      if (l$shippingLines$entry != lOther$shippingLines$entry) {
+        return false;
+      }
+    }
+    final l$discounts = discounts;
+    final lOther$discounts = other.discounts;
+    if (l$discounts.length != lOther$discounts.length) {
+      return false;
+    }
+    for (int i = 0; i < l$discounts.length; i++) {
+      final l$discounts$entry = l$discounts[i];
+      final lOther$discounts$entry = lOther$discounts[i];
+      if (l$discounts$entry != lOther$discounts$entry) {
+        return false;
+      }
+    }
+    final l$promotions = promotions;
+    final lOther$promotions = other.promotions;
+    if (l$promotions.length != lOther$promotions.length) {
+      return false;
+    }
+    for (int i = 0; i < l$promotions.length; i++) {
+      final l$promotions$entry = l$promotions[i];
+      final lOther$promotions$entry = lOther$promotions[i];
+      if (l$promotions$entry != lOther$promotions$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -12864,13 +13541,52 @@ abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes> {
 
   TRes call({
     String? id,
+    String? code,
+    String? state,
+    bool? active,
     List<String>? couponCodes,
     Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields? customFields,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines>? lines,
+    int? totalQuantity,
+    double? subTotal,
+    double? subTotalWithTax,
     double? total,
+    double? totalWithTax,
+    double? shipping,
+    double? shippingWithTax,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines>?
+        shippingLines,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts>? discounts,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions>?
+        promotions,
     String? $__typename,
   });
   CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields<TRes>
       get customFields;
+  TRes lines(
+      Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines> Function(
+              Iterable<
+                  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<
+                      Mutation$ApplyCouponCode$applyCouponCode$$Order$lines>>)
+          _fn);
+  TRes shippingLines(
+      Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines> Function(
+              Iterable<
+                  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+                      Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines>>)
+          _fn);
+  TRes discounts(
+      Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts> Function(
+              Iterable<
+                  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+                      Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts>>)
+          _fn);
+  TRes promotions(
+      Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions> Function(
+              Iterable<
+                  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+                      Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions>>)
+          _fn);
 }
 
 class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
@@ -12888,13 +13604,35 @@ class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
 
   TRes call({
     Object? id = _undefined,
+    Object? code = _undefined,
+    Object? state = _undefined,
+    Object? active = _undefined,
     Object? couponCodes = _undefined,
     Object? customFields = _undefined,
+    Object? lines = _undefined,
+    Object? totalQuantity = _undefined,
+    Object? subTotal = _undefined,
+    Object? subTotalWithTax = _undefined,
     Object? total = _undefined,
+    Object? totalWithTax = _undefined,
+    Object? shipping = _undefined,
+    Object? shippingWithTax = _undefined,
+    Object? shippingLines = _undefined,
+    Object? discounts = _undefined,
+    Object? promotions = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$ApplyCouponCode$applyCouponCode$$Order(
         id: id == _undefined || id == null ? _instance.id : (id as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        state: state == _undefined || state == null
+            ? _instance.state
+            : (state as String),
+        active: active == _undefined || active == null
+            ? _instance.active
+            : (active as bool),
         couponCodes: couponCodes == _undefined || couponCodes == null
             ? _instance.couponCodes
             : (couponCodes as List<String>),
@@ -12902,9 +13640,45 @@ class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
             ? _instance.customFields
             : (customFields
                 as Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields?),
+        lines: lines == _undefined || lines == null
+            ? _instance.lines
+            : (lines
+                as List<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines>),
+        totalQuantity: totalQuantity == _undefined || totalQuantity == null
+            ? _instance.totalQuantity
+            : (totalQuantity as int),
+        subTotal: subTotal == _undefined || subTotal == null
+            ? _instance.subTotal
+            : (subTotal as double),
+        subTotalWithTax:
+            subTotalWithTax == _undefined || subTotalWithTax == null
+                ? _instance.subTotalWithTax
+                : (subTotalWithTax as double),
         total: total == _undefined || total == null
             ? _instance.total
             : (total as double),
+        totalWithTax: totalWithTax == _undefined || totalWithTax == null
+            ? _instance.totalWithTax
+            : (totalWithTax as double),
+        shipping: shipping == _undefined || shipping == null
+            ? _instance.shipping
+            : (shipping as double),
+        shippingWithTax:
+            shippingWithTax == _undefined || shippingWithTax == null
+                ? _instance.shippingWithTax
+                : (shippingWithTax as double),
+        shippingLines: shippingLines == _undefined || shippingLines == null
+            ? _instance.shippingLines
+            : (shippingLines as List<
+                Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines>),
+        discounts: discounts == _undefined || discounts == null
+            ? _instance.discounts
+            : (discounts as List<
+                Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts>),
+        promotions: promotions == _undefined || promotions == null
+            ? _instance.promotions
+            : (promotions as List<
+                Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -12919,6 +13693,58 @@ class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
         : CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields(
             local$customFields, (e) => call(customFields: e));
   }
+
+  TRes lines(
+          Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines> Function(
+                  Iterable<
+                      CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<
+                          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines>>)
+              _fn) =>
+      call(
+          lines: _fn(_instance.lines.map((e) =>
+              CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines(
+                e,
+                (i) => i,
+              ))).toList());
+
+  TRes shippingLines(
+          Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines> Function(
+                  Iterable<
+                      CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+                          Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines>>)
+              _fn) =>
+      call(
+          shippingLines: _fn(_instance.shippingLines.map((e) =>
+              CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines(
+                e,
+                (i) => i,
+              ))).toList());
+
+  TRes discounts(
+          Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts> Function(
+                  Iterable<
+                      CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+                          Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts>>)
+              _fn) =>
+      call(
+          discounts: _fn(_instance.discounts.map((e) =>
+              CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts(
+                e,
+                (i) => i,
+              ))).toList());
+
+  TRes promotions(
+          Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions> Function(
+                  Iterable<
+                      CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+                          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions>>)
+              _fn) =>
+      call(
+          promotions: _fn(_instance.promotions.map((e) =>
+              CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions(
+                e,
+                (i) => i,
+              ))).toList());
 }
 
 class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
@@ -12929,9 +13755,24 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
 
   call({
     String? id,
+    String? code,
+    String? state,
+    bool? active,
     List<String>? couponCodes,
     Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields? customFields,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines>? lines,
+    int? totalQuantity,
+    double? subTotal,
+    double? subTotalWithTax,
     double? total,
+    double? totalWithTax,
+    double? shipping,
+    double? shippingWithTax,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines>?
+        shippingLines,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts>? discounts,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions>?
+        promotions,
     String? $__typename,
   }) =>
       _res;
@@ -12940,6 +13781,14 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order<TRes>
       get customFields =>
           CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields
               .stub(_res);
+
+  lines(_fn) => _res;
+
+  shippingLines(_fn) => _res;
+
+  discounts(_fn) => _res;
+
+  promotions(_fn) => _res;
 }
 
 class Mutation$ApplyCouponCode$applyCouponCode$$Order$customFields {
@@ -13077,6 +13926,1929 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$customFi
 
   call({
     String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$lines {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$lines({
+    required this.id,
+    required this.unitPrice,
+    required this.unitPriceWithTax,
+    required this.quantity,
+    required this.linePriceWithTax,
+    required this.discountedLinePriceWithTax,
+    required this.productVariant,
+    required this.discounts,
+    this.$__typename = 'OrderLine',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$lines.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$unitPrice = json['unitPrice'];
+    final l$unitPriceWithTax = json['unitPriceWithTax'];
+    final l$quantity = json['quantity'];
+    final l$linePriceWithTax = json['linePriceWithTax'];
+    final l$discountedLinePriceWithTax = json['discountedLinePriceWithTax'];
+    final l$productVariant = json['productVariant'];
+    final l$discounts = json['discounts'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$lines(
+      id: (l$id as String),
+      unitPrice: (l$unitPrice as num).toDouble(),
+      unitPriceWithTax: (l$unitPriceWithTax as num).toDouble(),
+      quantity: (l$quantity as int),
+      linePriceWithTax: (l$linePriceWithTax as num).toDouble(),
+      discountedLinePriceWithTax:
+          (l$discountedLinePriceWithTax as num).toDouble(),
+      productVariant:
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant
+              .fromJson((l$productVariant as Map<String, dynamic>)),
+      discounts: (l$discounts as List<dynamic>)
+          .map((e) =>
+              Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final double unitPrice;
+
+  final double unitPriceWithTax;
+
+  final int quantity;
+
+  final double linePriceWithTax;
+
+  final double discountedLinePriceWithTax;
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant
+      productVariant;
+
+  final List<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts>
+      discounts;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$unitPrice = unitPrice;
+    _resultData['unitPrice'] = l$unitPrice;
+    final l$unitPriceWithTax = unitPriceWithTax;
+    _resultData['unitPriceWithTax'] = l$unitPriceWithTax;
+    final l$quantity = quantity;
+    _resultData['quantity'] = l$quantity;
+    final l$linePriceWithTax = linePriceWithTax;
+    _resultData['linePriceWithTax'] = l$linePriceWithTax;
+    final l$discountedLinePriceWithTax = discountedLinePriceWithTax;
+    _resultData['discountedLinePriceWithTax'] = l$discountedLinePriceWithTax;
+    final l$productVariant = productVariant;
+    _resultData['productVariant'] = l$productVariant.toJson();
+    final l$discounts = discounts;
+    _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$unitPrice = unitPrice;
+    final l$unitPriceWithTax = unitPriceWithTax;
+    final l$quantity = quantity;
+    final l$linePriceWithTax = linePriceWithTax;
+    final l$discountedLinePriceWithTax = discountedLinePriceWithTax;
+    final l$productVariant = productVariant;
+    final l$discounts = discounts;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$unitPrice,
+      l$unitPriceWithTax,
+      l$quantity,
+      l$linePriceWithTax,
+      l$discountedLinePriceWithTax,
+      l$productVariant,
+      Object.hashAll(l$discounts.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$ApplyCouponCode$applyCouponCode$$Order$lines ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$unitPrice = unitPrice;
+    final lOther$unitPrice = other.unitPrice;
+    if (l$unitPrice != lOther$unitPrice) {
+      return false;
+    }
+    final l$unitPriceWithTax = unitPriceWithTax;
+    final lOther$unitPriceWithTax = other.unitPriceWithTax;
+    if (l$unitPriceWithTax != lOther$unitPriceWithTax) {
+      return false;
+    }
+    final l$quantity = quantity;
+    final lOther$quantity = other.quantity;
+    if (l$quantity != lOther$quantity) {
+      return false;
+    }
+    final l$linePriceWithTax = linePriceWithTax;
+    final lOther$linePriceWithTax = other.linePriceWithTax;
+    if (l$linePriceWithTax != lOther$linePriceWithTax) {
+      return false;
+    }
+    final l$discountedLinePriceWithTax = discountedLinePriceWithTax;
+    final lOther$discountedLinePriceWithTax = other.discountedLinePriceWithTax;
+    if (l$discountedLinePriceWithTax != lOther$discountedLinePriceWithTax) {
+      return false;
+    }
+    final l$productVariant = productVariant;
+    final lOther$productVariant = other.productVariant;
+    if (l$productVariant != lOther$productVariant) {
+      return false;
+    }
+    final l$discounts = discounts;
+    final lOther$discounts = other.discounts;
+    if (l$discounts.length != lOther$discounts.length) {
+      return false;
+    }
+    for (int i = 0; i < l$discounts.length; i++) {
+      final l$discounts$entry = l$discounts[i];
+      final lOther$discounts$entry = lOther$discounts[i];
+      if (l$discounts$entry != lOther$discounts$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$lines {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$lines instance,
+    TRes Function(Mutation$ApplyCouponCode$applyCouponCode$$Order$lines) then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines;
+
+  TRes call({
+    String? id,
+    double? unitPrice,
+    double? unitPriceWithTax,
+    int? quantity,
+    double? linePriceWithTax,
+    double? discountedLinePriceWithTax,
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant?
+        productVariant,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts>?
+        discounts,
+    String? $__typename,
+  });
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+      TRes> get productVariant;
+  TRes discounts(
+      Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts> Function(
+              Iterable<
+                  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+                      Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$lines _instance;
+
+  final TRes Function(Mutation$ApplyCouponCode$applyCouponCode$$Order$lines)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? unitPrice = _undefined,
+    Object? unitPriceWithTax = _undefined,
+    Object? quantity = _undefined,
+    Object? linePriceWithTax = _undefined,
+    Object? discountedLinePriceWithTax = _undefined,
+    Object? productVariant = _undefined,
+    Object? discounts = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$ApplyCouponCode$applyCouponCode$$Order$lines(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        unitPrice: unitPrice == _undefined || unitPrice == null
+            ? _instance.unitPrice
+            : (unitPrice as double),
+        unitPriceWithTax:
+            unitPriceWithTax == _undefined || unitPriceWithTax == null
+                ? _instance.unitPriceWithTax
+                : (unitPriceWithTax as double),
+        quantity: quantity == _undefined || quantity == null
+            ? _instance.quantity
+            : (quantity as int),
+        linePriceWithTax:
+            linePriceWithTax == _undefined || linePriceWithTax == null
+                ? _instance.linePriceWithTax
+                : (linePriceWithTax as double),
+        discountedLinePriceWithTax: discountedLinePriceWithTax == _undefined ||
+                discountedLinePriceWithTax == null
+            ? _instance.discountedLinePriceWithTax
+            : (discountedLinePriceWithTax as double),
+        productVariant: productVariant == _undefined || productVariant == null
+            ? _instance.productVariant
+            : (productVariant
+                as Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant),
+        discounts: discounts == _undefined || discounts == null
+            ? _instance.discounts
+            : (discounts as List<
+                Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+      TRes> get productVariant {
+    final local$productVariant = _instance.productVariant;
+    return CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant(
+        local$productVariant, (e) => call(productVariant: e));
+  }
+
+  TRes discounts(
+          Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts> Function(
+                  Iterable<
+                      CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+                          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts>>)
+              _fn) =>
+      call(
+          discounts: _fn(_instance.discounts.map((e) =>
+              CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines<TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    double? unitPrice,
+    double? unitPriceWithTax,
+    int? quantity,
+    double? linePriceWithTax,
+    double? discountedLinePriceWithTax,
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant?
+        productVariant,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts>?
+        discounts,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+          TRes>
+      get productVariant =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant
+              .stub(_res);
+
+  discounts(_fn) => _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant({
+    required this.id,
+    required this.name,
+    required this.price,
+    this.$__typename = 'ProductVariant',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$price = json['price'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant(
+      id: (l$id as String),
+      name: (l$name as String),
+      price: (l$price as num).toDouble(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final double price;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$price = price;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$price,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant
+        instance,
+    TRes Function(
+            Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant;
+
+  TRes call({
+    String? id,
+    String? name,
+    double? price,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant
+      _instance;
+
+  final TRes Function(
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? price = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$productVariant(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    double? price,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts({
+    required this.amount,
+    required this.amountWithTax,
+    required this.description,
+    required this.adjustmentSource,
+    required this.type,
+    this.$__typename = 'Discount',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts.fromJson(
+      Map<String, dynamic> json) {
+    final l$amount = json['amount'];
+    final l$amountWithTax = json['amountWithTax'];
+    final l$description = json['description'];
+    final l$adjustmentSource = json['adjustmentSource'];
+    final l$type = json['type'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts(
+      amount: (l$amount as num).toDouble(),
+      amountWithTax: (l$amountWithTax as num).toDouble(),
+      description: (l$description as String),
+      adjustmentSource: (l$adjustmentSource as String),
+      type: fromJson$Enum$AdjustmentType((l$type as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final double amount;
+
+  final double amountWithTax;
+
+  final String description;
+
+  final String adjustmentSource;
+
+  final Enum$AdjustmentType type;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$amount = amount;
+    _resultData['amount'] = l$amount;
+    final l$amountWithTax = amountWithTax;
+    _resultData['amountWithTax'] = l$amountWithTax;
+    final l$description = description;
+    _resultData['description'] = l$description;
+    final l$adjustmentSource = adjustmentSource;
+    _resultData['adjustmentSource'] = l$adjustmentSource;
+    final l$type = type;
+    _resultData['type'] = toJson$Enum$AdjustmentType(l$type);
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$amount = amount;
+    final l$amountWithTax = amountWithTax;
+    final l$description = description;
+    final l$adjustmentSource = adjustmentSource;
+    final l$type = type;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$amount,
+      l$amountWithTax,
+      l$description,
+      l$adjustmentSource,
+      l$type,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$amount = amount;
+    final lOther$amount = other.amount;
+    if (l$amount != lOther$amount) {
+      return false;
+    }
+    final l$amountWithTax = amountWithTax;
+    final lOther$amountWithTax = other.amountWithTax;
+    if (l$amountWithTax != lOther$amountWithTax) {
+      return false;
+    }
+    final l$description = description;
+    final lOther$description = other.description;
+    if (l$description != lOther$description) {
+      return false;
+    }
+    final l$adjustmentSource = adjustmentSource;
+    final lOther$adjustmentSource = other.adjustmentSource;
+    if (l$adjustmentSource != lOther$adjustmentSource) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts instance,
+    TRes Function(
+            Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts;
+
+  TRes call({
+    double? amount,
+    double? amountWithTax,
+    String? description,
+    String? adjustmentSource,
+    Enum$AdjustmentType? type,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts
+      _instance;
+
+  final TRes Function(
+      Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? amount = _undefined,
+    Object? amountWithTax = _undefined,
+    Object? description = _undefined,
+    Object? adjustmentSource = _undefined,
+    Object? type = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts(
+        amount: amount == _undefined || amount == null
+            ? _instance.amount
+            : (amount as double),
+        amountWithTax: amountWithTax == _undefined || amountWithTax == null
+            ? _instance.amountWithTax
+            : (amountWithTax as double),
+        description: description == _undefined || description == null
+            ? _instance.description
+            : (description as String),
+        adjustmentSource:
+            adjustmentSource == _undefined || adjustmentSource == null
+                ? _instance.adjustmentSource
+                : (adjustmentSource as String),
+        type: type == _undefined || type == null
+            ? _instance.type
+            : (type as Enum$AdjustmentType),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$lines$discounts(
+      this._res);
+
+  TRes _res;
+
+  call({
+    double? amount,
+    double? amountWithTax,
+    String? description,
+    String? adjustmentSource,
+    Enum$AdjustmentType? type,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines({
+    required this.priceWithTax,
+    required this.shippingMethod,
+    this.$__typename = 'ShippingLine',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines.fromJson(
+      Map<String, dynamic> json) {
+    final l$priceWithTax = json['priceWithTax'];
+    final l$shippingMethod = json['shippingMethod'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines(
+      priceWithTax: (l$priceWithTax as num).toDouble(),
+      shippingMethod:
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod
+              .fromJson((l$shippingMethod as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final double priceWithTax;
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod
+      shippingMethod;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$priceWithTax = priceWithTax;
+    _resultData['priceWithTax'] = l$priceWithTax;
+    final l$shippingMethod = shippingMethod;
+    _resultData['shippingMethod'] = l$shippingMethod.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$priceWithTax = priceWithTax;
+    final l$shippingMethod = shippingMethod;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$priceWithTax,
+      l$shippingMethod,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$priceWithTax = priceWithTax;
+    final lOther$priceWithTax = other.priceWithTax;
+    if (l$priceWithTax != lOther$priceWithTax) {
+      return false;
+    }
+    final l$shippingMethod = shippingMethod;
+    final lOther$shippingMethod = other.shippingMethod;
+    if (l$shippingMethod != lOther$shippingMethod) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines instance,
+    TRes Function(Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines;
+
+  TRes call({
+    double? priceWithTax,
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod?
+        shippingMethod,
+    String? $__typename,
+  });
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+      TRes> get shippingMethod;
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines _instance;
+
+  final TRes Function(
+      Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? priceWithTax = _undefined,
+    Object? shippingMethod = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines(
+        priceWithTax: priceWithTax == _undefined || priceWithTax == null
+            ? _instance.priceWithTax
+            : (priceWithTax as double),
+        shippingMethod: shippingMethod == _undefined || shippingMethod == null
+            ? _instance.shippingMethod
+            : (shippingMethod
+                as Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+      TRes> get shippingMethod {
+    final local$shippingMethod = _instance.shippingMethod;
+    return CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod(
+        local$shippingMethod, (e) => call(shippingMethod: e));
+  }
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines(
+      this._res);
+
+  TRes _res;
+
+  call({
+    double? priceWithTax,
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod?
+        shippingMethod,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+          TRes>
+      get shippingMethod =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod
+              .stub(_res);
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod({
+    required this.id,
+    required this.code,
+    required this.name,
+    this.$__typename = 'ShippingMethod',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$code = json['code'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod(
+      id: (l$id as String),
+      code: (l$code as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String code;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$code = code;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$code,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod
+        instance,
+    TRes Function(
+            Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod;
+
+  TRes call({
+    String? id,
+    String? code,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod
+      _instance;
+
+  final TRes Function(
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? code = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$shippingLines$shippingMethod(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? code,
+    String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts({
+    required this.amount,
+    required this.amountWithTax,
+    required this.description,
+    required this.adjustmentSource,
+    required this.type,
+    this.$__typename = 'Discount',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts.fromJson(
+      Map<String, dynamic> json) {
+    final l$amount = json['amount'];
+    final l$amountWithTax = json['amountWithTax'];
+    final l$description = json['description'];
+    final l$adjustmentSource = json['adjustmentSource'];
+    final l$type = json['type'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts(
+      amount: (l$amount as num).toDouble(),
+      amountWithTax: (l$amountWithTax as num).toDouble(),
+      description: (l$description as String),
+      adjustmentSource: (l$adjustmentSource as String),
+      type: fromJson$Enum$AdjustmentType((l$type as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final double amount;
+
+  final double amountWithTax;
+
+  final String description;
+
+  final String adjustmentSource;
+
+  final Enum$AdjustmentType type;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$amount = amount;
+    _resultData['amount'] = l$amount;
+    final l$amountWithTax = amountWithTax;
+    _resultData['amountWithTax'] = l$amountWithTax;
+    final l$description = description;
+    _resultData['description'] = l$description;
+    final l$adjustmentSource = adjustmentSource;
+    _resultData['adjustmentSource'] = l$adjustmentSource;
+    final l$type = type;
+    _resultData['type'] = toJson$Enum$AdjustmentType(l$type);
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$amount = amount;
+    final l$amountWithTax = amountWithTax;
+    final l$description = description;
+    final l$adjustmentSource = adjustmentSource;
+    final l$type = type;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$amount,
+      l$amountWithTax,
+      l$description,
+      l$adjustmentSource,
+      l$type,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$amount = amount;
+    final lOther$amount = other.amount;
+    if (l$amount != lOther$amount) {
+      return false;
+    }
+    final l$amountWithTax = amountWithTax;
+    final lOther$amountWithTax = other.amountWithTax;
+    if (l$amountWithTax != lOther$amountWithTax) {
+      return false;
+    }
+    final l$description = description;
+    final lOther$description = other.description;
+    if (l$description != lOther$description) {
+      return false;
+    }
+    final l$adjustmentSource = adjustmentSource;
+    final lOther$adjustmentSource = other.adjustmentSource;
+    if (l$adjustmentSource != lOther$adjustmentSource) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts instance,
+    TRes Function(Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts;
+
+  TRes call({
+    double? amount,
+    double? amountWithTax,
+    String? description,
+    String? adjustmentSource,
+    Enum$AdjustmentType? type,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts _instance;
+
+  final TRes Function(Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? amount = _undefined,
+    Object? amountWithTax = _undefined,
+    Object? description = _undefined,
+    Object? adjustmentSource = _undefined,
+    Object? type = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts(
+        amount: amount == _undefined || amount == null
+            ? _instance.amount
+            : (amount as double),
+        amountWithTax: amountWithTax == _undefined || amountWithTax == null
+            ? _instance.amountWithTax
+            : (amountWithTax as double),
+        description: description == _undefined || description == null
+            ? _instance.description
+            : (description as String),
+        adjustmentSource:
+            adjustmentSource == _undefined || adjustmentSource == null
+                ? _instance.adjustmentSource
+                : (adjustmentSource as String),
+        type: type == _undefined || type == null
+            ? _instance.type
+            : (type as Enum$AdjustmentType),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$discounts(
+      this._res);
+
+  TRes _res;
+
+  call({
+    double? amount,
+    double? amountWithTax,
+    String? description,
+    String? adjustmentSource,
+    Enum$AdjustmentType? type,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions({
+    this.couponCode,
+    required this.name,
+    required this.enabled,
+    required this.actions,
+    this.$__typename = 'Promotion',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions.fromJson(
+      Map<String, dynamic> json) {
+    final l$couponCode = json['couponCode'];
+    final l$name = json['name'];
+    final l$enabled = json['enabled'];
+    final l$actions = json['actions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions(
+      couponCode: (l$couponCode as String?),
+      name: (l$name as String),
+      enabled: (l$enabled as bool),
+      actions: (l$actions as List<dynamic>)
+          .map((e) =>
+              Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? couponCode;
+
+  final String name;
+
+  final bool enabled;
+
+  final List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions>
+      actions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$couponCode = couponCode;
+    _resultData['couponCode'] = l$couponCode;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$actions = actions;
+    _resultData['actions'] = l$actions.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$couponCode = couponCode;
+    final l$name = name;
+    final l$enabled = enabled;
+    final l$actions = actions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$couponCode,
+      l$name,
+      l$enabled,
+      Object.hashAll(l$actions.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$couponCode = couponCode;
+    final lOther$couponCode = other.couponCode;
+    if (l$couponCode != lOther$couponCode) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$actions = actions;
+    final lOther$actions = other.actions;
+    if (l$actions.length != lOther$actions.length) {
+      return false;
+    }
+    for (int i = 0; i < l$actions.length; i++) {
+      final l$actions$entry = l$actions[i];
+      final lOther$actions$entry = lOther$actions[i];
+      if (l$actions$entry != lOther$actions$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions instance,
+    TRes Function(Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions;
+
+  TRes call({
+    String? couponCode,
+    String? name,
+    bool? enabled,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions>?
+        actions,
+    String? $__typename,
+  });
+  TRes actions(
+      Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions> Function(
+              Iterable<
+                  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+                      Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions _instance;
+
+  final TRes Function(
+      Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? couponCode = _undefined,
+    Object? name = _undefined,
+    Object? enabled = _undefined,
+    Object? actions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions(
+        couponCode: couponCode == _undefined
+            ? _instance.couponCode
+            : (couponCode as String?),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        actions: actions == _undefined || actions == null
+            ? _instance.actions
+            : (actions as List<
+                Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes actions(
+          Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions> Function(
+                  Iterable<
+                      CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+                          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions>>)
+              _fn) =>
+      call(
+          actions: _fn(_instance.actions.map((e) =>
+              CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? couponCode,
+    String? name,
+    bool? enabled,
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions>?
+        actions,
+    String? $__typename,
+  }) =>
+      _res;
+
+  actions(_fn) => _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions({
+    required this.args,
+    required this.code,
+    this.$__typename = 'ConfigurableOperation',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions.fromJson(
+      Map<String, dynamic> json) {
+    final l$args = json['args'];
+    final l$code = json['code'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions(
+      args: (l$args as List<dynamic>)
+          .map((e) =>
+              Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      code: (l$code as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args>
+      args;
+
+  final String code;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$args = args;
+    _resultData['args'] = l$args.map((e) => e.toJson()).toList();
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$args = args;
+    final l$code = code;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$args.map((v) => v)),
+      l$code,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$args = args;
+    final lOther$args = other.args;
+    if (l$args.length != lOther$args.length) {
+      return false;
+    }
+    for (int i = 0; i < l$args.length; i++) {
+      final l$args$entry = l$args[i];
+      final lOther$args$entry = lOther$args[i];
+      if (l$args$entry != lOther$args$entry) {
+        return false;
+      }
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions instance,
+    TRes Function(
+            Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions;
+
+  TRes call({
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args>?
+        args,
+    String? code,
+    String? $__typename,
+  });
+  TRes args(
+      Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args> Function(
+              Iterable<
+                  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+                      Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions
+      _instance;
+
+  final TRes Function(
+      Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? args = _undefined,
+    Object? code = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions(
+        args: args == _undefined || args == null
+            ? _instance.args
+            : (args as List<
+                Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args>),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes args(
+          Iterable<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args> Function(
+                  Iterable<
+                      CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+                          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args>>)
+              _fn) =>
+      call(
+          args: _fn(_instance.args.map((e) =>
+              CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions(
+      this._res);
+
+  TRes _res;
+
+  call({
+    List<Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args>?
+        args,
+    String? code,
+    String? $__typename,
+  }) =>
+      _res;
+
+  args(_fn) => _res;
+}
+
+class Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args {
+  Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args({
+    required this.value,
+    required this.name,
+    this.$__typename = 'ConfigArg',
+  });
+
+  factory Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args.fromJson(
+      Map<String, dynamic> json) {
+    final l$value = json['value'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args(
+      value: (l$value as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String value;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$value = value;
+    _resultData['value'] = l$value;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$value = value;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$value,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$value = value;
+    final lOther$value = other.value;
+    if (l$value != lOther$value) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args
+    on Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args {
+  CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args>
+      get copyWith =>
+          CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+    TRes> {
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args(
+    Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args
+        instance,
+    TRes Function(
+            Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args)
+        then,
+  ) = _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args;
+
+  factory CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args;
+
+  TRes call({
+    String? value,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+            TRes> {
+  _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args
+      _instance;
+
+  final TRes Function(
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? value = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args(
+        value: value == _undefined || value == null
+            ? _instance.value
+            : (value as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+        TRes>
+    implements
+        CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args<
+            TRes> {
+  _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$Order$promotions$actions$args(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? value,
+    String? name,
     String? $__typename,
   }) =>
       _res;
@@ -13227,20 +15999,29 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeInva
 
 class Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError
     implements Mutation$ApplyCouponCode$applyCouponCode {
-  Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError(
-      {this.$__typename = 'CouponCodeExpiredError'});
+  Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError({
+    required this.message,
+    this.$__typename = 'CouponCodeExpiredError',
+  });
 
   factory Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError.fromJson(
       Map<String, dynamic> json) {
+    final l$message = json['message'];
     final l$$__typename = json['__typename'];
     return Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError(
-        $__typename: (l$$__typename as String));
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
   }
+
+  final String message;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -13248,8 +16029,12 @@ class Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError
 
   @override
   int get hashCode {
+    final l$message = message;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$$__typename]);
+    return Object.hashAll([
+      l$message,
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -13260,6 +16045,11 @@ class Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError
     if (other
             is! Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -13295,7 +16085,10 @@ abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpi
           TRes res) =
       _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError;
 
-  TRes call({String? $__typename});
+  TRes call({
+    String? message,
+    String? $__typename,
+  });
 }
 
 class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError<
@@ -13316,11 +16109,18 @@ class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredE
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? $__typename = _undefined}) =>
+  TRes call({
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
       _then(Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
 }
 
 class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError<
@@ -13333,25 +16133,38 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpi
 
   TRes _res;
 
-  call({String? $__typename}) => _res;
+  call({
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError
     implements Mutation$ApplyCouponCode$applyCouponCode {
-  Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError(
-      {this.$__typename = 'CouponCodeLimitError'});
+  Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError({
+    required this.message,
+    this.$__typename = 'CouponCodeLimitError',
+  });
 
   factory Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError.fromJson(
       Map<String, dynamic> json) {
+    final l$message = json['message'];
     final l$$__typename = json['__typename'];
     return Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError(
-        $__typename: (l$$__typename as String));
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
   }
+
+  final String message;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -13359,8 +16172,12 @@ class Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError
 
   @override
   int get hashCode {
+    final l$message = message;
     final l$$__typename = $__typename;
-    return Object.hashAll([l$$__typename]);
+    return Object.hashAll([
+      l$message,
+      l$$__typename,
+    ]);
   }
 
   @override
@@ -13371,6 +16188,11 @@ class Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError
     if (other
             is! Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -13406,7 +16228,10 @@ abstract class CopyWith$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimi
           TRes res) =
       _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError;
 
-  TRes call({String? $__typename});
+  TRes call({
+    String? message,
+    String? $__typename,
+  });
 }
 
 class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError<
@@ -13427,11 +16252,18 @@ class _CopyWithImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitErr
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? $__typename = _undefined}) =>
+  TRes call({
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
       _then(Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError(
-          $__typename: $__typename == _undefined || $__typename == null
-              ? _instance.$__typename
-              : ($__typename as String)));
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
 }
 
 class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError<
@@ -13444,7 +16276,11 @@ class _CopyWithStubImpl$Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimi
 
   TRes _res;
 
-  call({String? $__typename}) => _res;
+  call({
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Variables$Mutation$RemoveCouponCode {

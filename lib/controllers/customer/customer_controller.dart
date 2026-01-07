@@ -1436,11 +1436,14 @@ debugPrint('[Customer] Logout error: $e');
       final channelToken = GraphqlService.channelToken;
       final storedChannelToken = _storage.read('channel_token');
       final channelCode = _storage.read('channel_code');
+      final channelType = _storage.read('channel_type')?.toString() ?? '';
       
       debugPrint('[Customer] ──── CHANNEL TOKEN CHECK ────');
       debugPrint('[Customer] Current channel token from GraphQLService: ${channelToken.isNotEmpty ? "$channelToken (length: ${channelToken.length})" : "NOT SET"}');
       debugPrint('[Customer] Current channel token from storage: ${storedChannelToken != null ? "$storedChannelToken (length: ${storedChannelToken.toString().length})" : "NOT SET"}');
       debugPrint('[Customer] Channel code from storage: ${channelCode ?? "NOT SET"}');
+      debugPrint('[Customer] Channel type from storage: ${channelType.isNotEmpty ? channelType : "NOT SET"}');
+      debugPrint('[Customer] ✅ Postal codes will be fetched for ALL channel types (CITY, BRAND, etc.)');
       
       // Ensure channel token is set in GraphQLService
       if (channelToken.isEmpty && storedChannelToken != null && storedChannelToken.toString().isNotEmpty) {

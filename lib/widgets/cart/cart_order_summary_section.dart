@@ -24,16 +24,21 @@ class CartOrderSummarySection extends StatelessWidget {
       final cart = cartController.cart.value;
       final order = orderController.currentOrder.value;
       if (cart == null) return const SizedBox.shrink();
-      final shippingCost = order?.shippingWithTax ?? 0;
+      final shippingCost = order?.shippingWithTax ?? cart.shippingWithTax;
       
-      // Get total directly from query - use order.total if available, otherwise cart.totalWithTax
-      final finalTotal = order?.total != null 
-          ? order!.total.toInt() 
-          : cart.totalWithTax.toInt();
+      // Get total from cart (most up-to-date after coupon application)
+      // Cart is updated directly from coupon response, order may have stale data
+      final finalTotal = cart.totalWithTax.toInt();
       
-      // Get loyalty discount from order discounts array (not calculated)
+      // Get loyalty discount from cart discounts first (updated after coupon), fallback to order
       int loyaltyDiscount = 0;
-      if (order != null && order.discounts.isNotEmpty) {
+      if (cart.discounts.isNotEmpty) {
+        loyaltyDiscount = cart.discounts
+            .where((discount) => discount.adjustmentSource != 'PROMOTION' && 
+                                 discount.adjustmentSource != 'COUPON_CODE' &&
+                                 discount.adjustmentSource != 'DISTRIBUTED_ORDER_PROMOTION')
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+      } else if (order != null && order.discounts.isNotEmpty) {
         loyaltyDiscount = order.discounts
             .where((discount) => discount.adjustmentSource != 'PROMOTION' && 
                                  discount.adjustmentSource != 'COUPON_CODE' &&
@@ -41,27 +46,33 @@ class CartOrderSummarySection extends StatelessWidget {
             .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
       }
       
-      // Get coupon discount from order discounts array (not calculated)
+      // Get coupon discount from cart discounts first (updated after coupon), fallback to order
       int couponDiscountTotal = 0;
-      String? appliedCouponName;
-      if (order != null && order.discounts.isNotEmpty) {
+      if (cart.discounts.isNotEmpty) {
+        couponDiscountTotal = cart.discounts
+            .where((discount) => discount.adjustmentSource == 'PROMOTION' || 
+                                 discount.adjustmentSource == 'COUPON_CODE')
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+      } else if (order != null && order.discounts.isNotEmpty) {
         couponDiscountTotal = order.discounts
             .where((discount) => discount.adjustmentSource == 'PROMOTION' || 
                                  discount.adjustmentSource == 'COUPON_CODE')
             .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
-        
-        if (bannerController.appliedCouponCodes.isNotEmpty) {
-          if (bannerController.availableCouponCodes.isNotEmpty) {
-            final appliedCode = bannerController.appliedCouponCodes.first;
-            final coupon = bannerController.availableCouponCodes.firstWhereOrNull(
-              (c) => c.couponCode == appliedCode,
-            );
-            appliedCouponName = coupon?.name.isNotEmpty == true 
-                ? coupon!.name 
-                : appliedCode;
-          } else {
-            appliedCouponName = bannerController.appliedCouponCodes.first;
-          }
+      }
+      
+      // Get applied coupon name
+      String? appliedCouponName;
+      if (bannerController.appliedCouponCodes.isNotEmpty) {
+        if (bannerController.availableCouponCodes.isNotEmpty) {
+          final appliedCode = bannerController.appliedCouponCodes.first;
+          final coupon = bannerController.availableCouponCodes.firstWhereOrNull(
+            (c) => c.couponCode == appliedCode,
+          );
+          appliedCouponName = coupon?.name.isNotEmpty == true 
+              ? coupon!.name 
+              : appliedCode;
+        } else {
+          appliedCouponName = bannerController.appliedCouponCodes.first;
         }
       }
       

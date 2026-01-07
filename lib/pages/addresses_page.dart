@@ -835,6 +835,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   List<Query$PostalCodes$postalCodes> _postalCodesList = [];
   bool _isLoadingPostalCodes = true;
   bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
+  bool _isBrandChannel = false; // Track if channel type is BRAND
 
   @override
   void initState() {
@@ -856,8 +857,18 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
         text: autoFullName.isNotEmpty ? autoFullName : '');
     streetLine1Controller = TextEditingController();
     streetLine2Controller = TextEditingController();
+    
+    // Check if channel type is BRAND
+    final channelType = box.read('channel_type')?.toString() ?? '';
+    _isBrandChannel = channelType.toUpperCase().contains('BRAND');
+    
+    debugPrint('[AddressesPage] Channel Type Check (Add):');
+    debugPrint('[AddressesPage]   - channelType from storage: "$channelType"');
+    debugPrint('[AddressesPage]   - isBrandChannel: $_isBrandChannel');
+    
+    // Only auto-fill city with channel code if NOT a BRAND channel
     cityController = TextEditingController(
-        text: channelCode.isNotEmpty ? channelCode : '');
+        text: !_isBrandChannel && channelCode.isNotEmpty ? channelCode : '');
     
     // Get postal code from local storage if available
     final storedPostalCode = box.read('postal_code');
@@ -868,6 +879,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     
     // Check if channel is Ind-Snacks
     _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+    
     provinceController = TextEditingController();
     
     phoneController = TextEditingController(
@@ -1024,7 +1036,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                   cityController, 'City', Icons.location_city,
                   required: true,
                   keyboardType: TextInputType.text,
-                  readOnly: true),
+                  readOnly: !_isBrandChannel),
               SizedBox(height: 16),
               _buildPostalCodeField(
                 postalCodeController,
@@ -1623,6 +1635,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   List<Query$PostalCodes$postalCodes> _postalCodesList = [];
   bool _isLoadingPostalCodes = true;
   bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
+  bool _isBrandChannel = false; // Track if channel type is BRAND
 
   @override
   void initState() {
@@ -1641,8 +1654,18 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
     final channelToken = box.read('channel_token')?.toString() ?? '';
+    
+    // Check if channel type is BRAND
+    final channelType = box.read('channel_type')?.toString() ?? '';
+    _isBrandChannel = channelType.toUpperCase().contains('BRAND');
+    
+    debugPrint('[AddressesPage] Channel Type Check (Edit):');
+    debugPrint('[AddressesPage]   - channelType from storage: "$channelType"');
+    debugPrint('[AddressesPage]   - isBrandChannel: $_isBrandChannel');
+    
+    // Only auto-fill city with channel code if NOT a BRAND channel
     cityController = TextEditingController(
-        text: channelCode.isNotEmpty
+        text: !_isBrandChannel && channelCode.isNotEmpty
             ? channelCode
             : (existingAddress?.city ?? ''));
     postalCodeController = TextEditingController(
@@ -1650,6 +1673,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     
     // Check if channel is Ind-Snacks
     _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
+    
     provinceController = TextEditingController();
     
     phoneController = TextEditingController(
@@ -1836,7 +1860,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                   cityController, 'City', Icons.location_city,
                   required: true,
                   keyboardType: TextInputType.text,
-                  readOnly: true),
+                  readOnly: !_isBrandChannel),
               SizedBox(height: 16),
               _buildPostalCodeField(
                 postalCodeController,

@@ -1345,25 +1345,44 @@ debugPrint(  '[BannerController] Error validating minimum order amount: $e');
         appliedCouponCodes.add(couponCode);
 
         debugPrint('[BannerController] Coupon code applied successfully: $couponCode');
+        debugPrint('[BannerController] New total: ${result.total}');
+        debugPrint('[BannerController] New totalWithTax: ${result.totalWithTax}');
+        debugPrint('[BannerController] New subTotalWithTax: ${result.subTotalWithTax}');
+        debugPrint('[BannerController] Discounts count: ${result.discounts.length}');
         
-        // Update controllers
+        // Update controllers with full order data from response
         try {
           final cartController = Get.find<CartController>();
           final orderController = Get.find<OrderController>();
           final resultJson = result.toJson();
           
+          debugPrint('[BannerController] Updating cart controller with coupon response...');
+          
           final hasLines = resultJson['lines'] != null && 
                          (resultJson['lines'] as List).isNotEmpty;
           
           if (hasLines) {
+            // Update cart controller directly from response
             cartController.cart.value = cart_graphql.Fragment$Cart.fromJson(resultJson);
+            debugPrint('[BannerController] ✅ Cart controller updated with new totals');
+            debugPrint('[BannerController] Cart totalWithTax: ${cartController.cart.value?.totalWithTax}');
+            
+            // Refresh order controller to get updated data
+            await orderController.getActiveOrder(skipLoading: true);
+            debugPrint('[BannerController] ✅ Order controller refreshed');
+          } else {
+            // If no lines in response, refresh both controllers
+            debugPrint('[BannerController] No lines in response, refreshing controllers...');
+            await cartController.getActiveOrder();
             await orderController.getActiveOrder(skipLoading: true);
           }
         } catch (e) {
           debugPrint('[BannerController] Could not update controllers: $e');
+          // Fallback: refresh both controllers from server
           try {
             final cartController = Get.find<CartController>();
             final orderController = Get.find<OrderController>();
+            debugPrint('[BannerController] Fallback: refreshing controllers from server...');
             await cartController.getActiveOrder();
             await orderController.getActiveOrder(skipLoading: true);
           } catch (refreshError) {
@@ -1376,7 +1395,8 @@ debugPrint(  '[BannerController] Error validating minimum order amount: $e');
           'success': true,
           'message': 'Coupon code applied successfully',
           'couponCode': couponCode,
-          'orderTotal': result.total
+          'orderTotal': result.total,
+          'totalWithTax': result.totalWithTax,
         };
       }
 

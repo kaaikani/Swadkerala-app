@@ -221,12 +221,14 @@ debugPrint('[LoginPage] SMS autofill error: $e');
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
               AppColors.button.withValues(alpha: 0.08),
               AppColors.background,
+              AppColors.button.withValues(alpha: 0.03),
             ],
+            stops: [0.0, 0.4, 1.0],
           ),
         ),
         child: SafeArea(
@@ -234,35 +236,40 @@ debugPrint('[LoginPage] SMS autofill error: $e');
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: Column(
+              child: Stack(
                 children: [
-                  // Header Section
-                  _buildHeader(),
+                  // Decorative Background Elements
+                  _buildBackgroundDecorations(),
                   
-                  // Main Content
-                  Expanded(
+                  // Main Content - Centered Floating Card
+                  Center(
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(24)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: ResponsiveUtils.rp(8)),
-                          
-                          // Progress Indicator
-                          _buildProgressIndicator(),
-                          
-                          SizedBox(height: ResponsiveUtils.rp(40)),
-                          
-                          // Form Card
-                          _buildFormCard(),
-                          
-                          SizedBox(height: ResponsiveUtils.rp(24)),
-                          
-                          // Sign Up Link
-                          _buildSignUpLink(),
-                          
-                          SizedBox(height: ResponsiveUtils.rp(24)),
-                        ],
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveUtils.rp(20),
+                        vertical: ResponsiveUtils.rp(40),
+                      ),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: 420,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Compact Header
+                            _buildCompactHeader(),
+                            
+                            SizedBox(height: ResponsiveUtils.rp(40)),
+                            
+                            // Floating Form Card
+                            _buildFloatingFormCard(),
+                            
+                            SizedBox(height: ResponsiveUtils.rp(24)),
+                            
+                            // Sign Up Link
+                            _buildSignUpLink(),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -275,73 +282,110 @@ debugPrint('[LoginPage] SMS autofill error: $e');
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUtils.rp(24),
-        vertical: ResponsiveUtils.rp(32),
-      ),
-      child: Column(
-        children: [
-          // Logo
-          Container(
-            width: ResponsiveUtils.rp(80),
-            height: ResponsiveUtils.rp(80),
+  Widget _buildBackgroundDecorations() {
+    return Stack(
+      children: [
+        // Top Right Circle
+        Positioned(
+          top: -100,
+          right: -100,
+          child: Container(
+            width: 300,
+            height: 300,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.button, AppColors.buttonLight],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.button.withValues(alpha: 0.3),
-                  blurRadius: ResponsiveUtils.rp(20),
-                  offset: Offset(0, ResponsiveUtils.rp(10)),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-              child: Image.asset(
-                'assets/images/kklogo.png',
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.shopping_bag_rounded,
-                    size: ResponsiveUtils.rp(40),
-                    color: Colors.white,
-                  );
-                },
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.button.withValues(alpha: 0.1),
+                  AppColors.button.withValues(alpha: 0.0),
+                ],
               ),
             ),
           ),
-          SizedBox(height: ResponsiveUtils.rp(24)),
-          
-          // Title
-          Text(
-            'Welcome Back',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(28),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-              letterSpacing: -0.5,
+        ),
+        // Bottom Left Circle
+        Positioned(
+          bottom: -150,
+          left: -150,
+          child: Container(
+            width: 400,
+            height: 400,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.button.withValues(alpha: 0.08),
+                  AppColors.button.withValues(alpha: 0.0),
+                ],
+              ),
             ),
           ),
-          SizedBox(height: ResponsiveUtils.rp(8)),
-          
-          // Subtitle
-          Text(
-            'Sign in to continue shopping',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(15),
-              color: AppColors.textSecondary,
-              height: 1.4,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCompactHeader() {
+    return Column(
+      children: [
+        // Logo - Smaller and more elegant
+        Container(
+          width: ResponsiveUtils.rp(80),
+          height: ResponsiveUtils.rp(80),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.button, AppColors.buttonLight],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(22)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.button.withValues(alpha: 0.3),
+                blurRadius: ResponsiveUtils.rp(25),
+                offset: Offset(0, ResponsiveUtils.rp(10)),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(18)),
+            child: Image.asset(
+              'assets/images/kklogo.png',
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(
+                  Icons.shopping_bag_rounded,
+                  size: ResponsiveUtils.rp(40),
+                  color: Colors.white,
+                );
+              },
             ),
           ),
-        ],
-      ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(24)),
+        
+        // Title
+        Text(
+          'Welcome Back',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(28),
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.8,
+          ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        
+        // Subtitle
+        Text(
+          'Sign in to continue',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(15),
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
     );
   }
 
@@ -350,98 +394,177 @@ debugPrint('[LoginPage] SMS autofill error: $e');
       final currentStep = _authController.isOtpSent ? 1 : 0;
       
       return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildProgressDot(isActive: currentStep == 0, isCompleted: currentStep > 0),
-          Expanded(
-            child: Container(
-              height: 3,
-              margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(2),
-                color: currentStep > 0
-                    ? AppColors.button
-                    : AppColors.border.withValues(alpha: 0.3),
-              ),
+          _buildProgressStep(
+            step: 1,
+            label: 'Phone',
+            isActive: currentStep == 0,
+            isCompleted: currentStep > 0,
+          ),
+          Container(
+            width: ResponsiveUtils.rp(40),
+            height: 2,
+            margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(4)),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(1),
+              color: currentStep > 0
+                  ? AppColors.button
+                  : AppColors.border.withValues(alpha: 0.3),
             ),
           ),
-          _buildProgressDot(isActive: currentStep == 1, isCompleted: false),
+          _buildProgressStep(
+            step: 2,
+            label: 'Verify',
+            isActive: currentStep == 1,
+            isCompleted: false,
+          ),
         ],
       );
     });
   }
 
-  Widget _buildProgressDot({required bool isActive, required bool isCompleted}) {
-    return Container(
-      width: ResponsiveUtils.rp(10),
-      height: ResponsiveUtils.rp(10),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isCompleted
-            ? AppColors.button
-            : isActive
+  Widget _buildProgressStep({
+    required int step,
+    required String label,
+    required bool isActive,
+    required bool isCompleted,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: ResponsiveUtils.rp(32),
+          height: ResponsiveUtils.rp(32),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isCompleted
                 ? AppColors.button
-                : AppColors.border.withValues(alpha: 0.3),
-      ),
-      child: isCompleted
-          ? Icon(
-              Icons.check,
-              size: ResponsiveUtils.rp(7),
-              color: Colors.white,
-            )
-          : null,
+                : isActive
+                    ? AppColors.button
+                    : AppColors.border.withValues(alpha: 0.3),
+            boxShadow: isActive || isCompleted
+                ? [
+                    BoxShadow(
+                      color: AppColors.button.withValues(alpha: 0.3),
+                      blurRadius: ResponsiveUtils.rp(8),
+                      offset: Offset(0, ResponsiveUtils.rp(2)),
+                    ),
+                  ]
+                : null,
+          ),
+          child: isCompleted
+              ? Icon(
+                  Icons.check,
+                  size: ResponsiveUtils.rp(18),
+                  color: Colors.white,
+                )
+              : Center(
+                  child: Text(
+                    '$step',
+                    style: TextStyle(
+                      color: isActive ? Colors.white : AppColors.textSecondary,
+                      fontSize: ResponsiveUtils.sp(14),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(6)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(11),
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+            color: isActive || isCompleted
+                ? AppColors.button
+                : AppColors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildFormCard() {
+
+  Widget _buildFloatingFormCard() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(24)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(28)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: ResponsiveUtils.rp(20),
-            offset: Offset(0, ResponsiveUtils.rp(4)),
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: ResponsiveUtils.rp(40),
+            offset: Offset(0, ResponsiveUtils.rp(15)),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: AppColors.button.withValues(alpha: 0.08),
+            blurRadius: ResponsiveUtils.rp(30),
+            offset: Offset(0, ResponsiveUtils.rp(10)),
+            spreadRadius: 0,
           ),
         ],
       ),
-      child: Padding(
-        padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Form Content
-            Obx(() => _authController.isOtpSent
-                ? _buildOtpSection()
-                : _buildPhoneSection()),
-            
-            SizedBox(height: ResponsiveUtils.rp(24)),
-            
-            // Action Button
-            _buildActionButton(),
-            
-            SizedBox(height: ResponsiveUtils.rp(20)),
-            
-            // Divider
-            Obx(() => !_authController.isOtpSent
-                ? _buildDivider()
-                : const SizedBox.shrink()),
-            
-            SizedBox(height: ResponsiveUtils.rp(20)),
-            
-            // Google Sign In
-            Obx(() => !_authController.isOtpSent
-                ? _buildGoogleSignInButton()
-                : const SizedBox.shrink()),
-            
-            SizedBox(height: ResponsiveUtils.rp(16)),
-            
-            // Resend OTP
-            Obx(() => _authController.isOtpSent
-                ? _buildResendSection()
-                : const SizedBox.shrink()),
-          ],
-        ),
+      child: Column(
+        children: [
+          // Progress Indicator at top of card
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              ResponsiveUtils.rp(28),
+              ResponsiveUtils.rp(24),
+              ResponsiveUtils.rp(28),
+              ResponsiveUtils.rp(8),
+            ),
+            child: _buildProgressIndicator(),
+          ),
+          
+          // Divider
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: AppColors.border.withValues(alpha: 0.2),
+          ),
+          
+          Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(28)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Form Content
+                Obx(() => _authController.isOtpSent
+                    ? _buildOtpSection()
+                    : _buildPhoneSection()),
+                
+                SizedBox(height: ResponsiveUtils.rp(32)),
+                
+                // Action Button
+                _buildActionButton(),
+                
+                SizedBox(height: ResponsiveUtils.rp(24)),
+                
+                // Divider
+                Obx(() => !_authController.isOtpSent
+                    ? _buildDivider()
+                    : const SizedBox.shrink()),
+                
+                SizedBox(height: ResponsiveUtils.rp(24)),
+                
+                // Google Sign In
+                Obx(() => !_authController.isOtpSent
+                    ? _buildGoogleSignInButton()
+                    : const SizedBox.shrink()),
+                
+                SizedBox(height: ResponsiveUtils.rp(16)),
+                
+                // Resend OTP
+                Obx(() => _authController.isOtpSent
+                    ? _buildResendSection()
+                    : const SizedBox.shrink()),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -450,21 +573,46 @@ debugPrint('[LoginPage] SMS autofill error: $e');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Mobile Number',
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(18),
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        SizedBox(height: ResponsiveUtils.rp(6)),
-        Text(
-          'We\'ll send you a verification code',
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(13),
-            color: AppColors.textSecondary,
-          ),
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+              decoration: BoxDecoration(
+                color: AppColors.button.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              ),
+              child: Icon(
+                Icons.phone_android_rounded,
+                color: AppColors.button,
+                size: ResponsiveUtils.rp(20),
+              ),
+            ),
+            SizedBox(width: ResponsiveUtils.rp(12)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Mobile Number',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(20),
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  Text(
+                    'We\'ll send you a code',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(13),
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         SizedBox(height: ResponsiveUtils.rp(24)),
         _buildPhoneField(),
@@ -486,34 +634,45 @@ debugPrint('[LoginPage] SMS autofill error: $e');
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                    'Verification Code',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(18),
-                      fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                    decoration: BoxDecoration(
+                      color: AppColors.button.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                    ),
+                    child: Icon(
+                      Icons.lock_outline_rounded,
+                      color: AppColors.button,
+                      size: ResponsiveUtils.rp(20),
+                    ),
                   ),
-                ),
-                  SizedBox(height: ResponsiveUtils.rp(6)),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.phone_android,
-                        size: ResponsiveUtils.rp(14),
-                        color: AppColors.textSecondary,
-                      ),
-                      SizedBox(width: ResponsiveUtils.rp(6)),
-                Text(
-                        '+91 ${_authController.phoneNumber.text}',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(13),
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Verification Code',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(20),
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(4)),
+                        Text(
+                          '+91 ${_authController.phoneNumber.text}',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(13),
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -527,18 +686,27 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                   _otpError = null;
                 });
               },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(12),
+                  vertical: ResponsiveUtils.rp(8),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                ),
+              ),
               child: Text(
                 'Change',
                 style: TextStyle(
                   color: AppColors.button,
-                  fontSize: ResponsiveUtils.sp(14),
+                  fontSize: ResponsiveUtils.sp(13),
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ],
         ),
-        SizedBox(height: ResponsiveUtils.rp(24)),
+        SizedBox(height: ResponsiveUtils.rp(28)),
         _buildOtpField(),
         if (_otpFieldTouched && _otpError != null)
           Padding(
@@ -557,55 +725,78 @@ debugPrint('[LoginPage] SMS autofill error: $e');
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
         border: Border.all(
           color: hasError
               ? AppColors.error
               : isValid
                   ? AppColors.success
-                  : AppColors.inputBorder,
+                  : AppColors.border.withValues(alpha: 0.3),
           width: hasError || isValid ? 2 : 1.5,
         ),
-        boxShadow: hasError || isValid
-            ? [
-                BoxShadow(
-                  color: (hasError ? AppColors.error : AppColors.success)
-                      .withValues(alpha: 0.1),
-                  blurRadius: ResponsiveUtils.rp(8),
-                  offset: Offset(0, ResponsiveUtils.rp(2)),
-                ),
-              ]
-            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: ResponsiveUtils.rp(12),
+            offset: Offset(0, ResponsiveUtils.rp(4)),
+          ),
+          if (hasError || isValid)
+            BoxShadow(
+              color: (hasError ? AppColors.error : AppColors.success)
+                  .withValues(alpha: 0.15),
+              blurRadius: ResponsiveUtils.rp(12),
+              offset: Offset(0, ResponsiveUtils.rp(4)),
+            ),
+        ],
       ),
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUtils.rp(16),
-              vertical: ResponsiveUtils.rp(16),
+              horizontal: ResponsiveUtils.rp(18),
+              vertical: ResponsiveUtils.rp(18),
             ),
             decoration: BoxDecoration(
-              color: AppColors.button.withValues(alpha: 0.1),
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.button.withValues(alpha: 0.15),
+                  AppColors.button.withValues(alpha: 0.08),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(ResponsiveUtils.rp(16)),
-                bottomLeft: Radius.circular(ResponsiveUtils.rp(16)),
+                topLeft: Radius.circular(ResponsiveUtils.rp(18)),
+                bottomLeft: Radius.circular(ResponsiveUtils.rp(18)),
               ),
             ),
-            child: Text(
-              '+91',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(16),
-                fontWeight: FontWeight.bold,
-                color: AppColors.button,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.flag_rounded,
+                  size: ResponsiveUtils.rp(18),
+                  color: AppColors.button,
+                ),
+                SizedBox(width: ResponsiveUtils.rp(6)),
+                Text(
+                  '+91',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(16),
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.button,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
           ),
           Container(
             width: 1,
-            height: ResponsiveUtils.rp(24),
-            margin: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(8)),
-            color: AppColors.border.withValues(alpha: 0.5),
+            height: ResponsiveUtils.rp(28),
+            margin: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(10)),
+            color: AppColors.border.withValues(alpha: 0.3),
           ),
           Expanded(
             child: TextField(
@@ -613,10 +804,10 @@ debugPrint('[LoginPage] SMS autofill error: $e');
               keyboardType: TextInputType.phone,
               enabled: !_authController.isOtpSent && !_isDetectingSim,
               style: TextStyle(
-                fontSize: ResponsiveUtils.sp(16),
+                fontSize: ResponsiveUtils.sp(17),
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
-                letterSpacing: 0.5,
+                letterSpacing: 1.0,
               ),
               cursorColor: AppColors.button,
               inputFormatters: [
@@ -632,13 +823,14 @@ debugPrint('[LoginPage] SMS autofill error: $e');
               decoration: InputDecoration(
                 hintText: '1234567890',
                 hintStyle: TextStyle(
-                  color: AppColors.textSecondary.withValues(alpha: 0.4),
-                  fontSize: ResponsiveUtils.sp(16),
+                  color: AppColors.textSecondary.withValues(alpha: 0.35),
+                  fontSize: ResponsiveUtils.sp(17),
+                  letterSpacing: 1.0,
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(16),
-                  vertical: ResponsiveUtils.rp(16),
+                  horizontal: ResponsiveUtils.rp(18),
+                  vertical: ResponsiveUtils.rp(18),
                 ),
                 suffixIcon: _buildPhoneSuffixIcon(hasError, isValid),
               ),
@@ -687,40 +879,44 @@ debugPrint('[LoginPage] SMS autofill error: $e');
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
         border: Border.all(
           color: hasError
               ? AppColors.error
               : isValid
                   ? AppColors.success
-                  : AppColors.inputBorder,
+                  : AppColors.border.withValues(alpha: 0.3),
           width: hasError || isValid ? 2 : 1.5,
         ),
-        boxShadow: hasError || isValid
-            ? [
-                BoxShadow(
-                  color: (hasError ? AppColors.error : AppColors.success)
-                      .withValues(alpha: 0.1),
-                  blurRadius: ResponsiveUtils.rp(8),
-                  offset: Offset(0, ResponsiveUtils.rp(2)),
-                ),
-              ]
-            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: ResponsiveUtils.rp(12),
+            offset: Offset(0, ResponsiveUtils.rp(4)),
+          ),
+          if (hasError || isValid)
+            BoxShadow(
+              color: (hasError ? AppColors.error : AppColors.success)
+                  .withValues(alpha: 0.15),
+              blurRadius: ResponsiveUtils.rp(12),
+              offset: Offset(0, ResponsiveUtils.rp(4)),
+            ),
+        ],
       ),
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveUtils.rp(24),
-        vertical: ResponsiveUtils.rp(20),
+        vertical: ResponsiveUtils.rp(24),
       ),
       child: TextField(
         controller: _authController.otpController,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: ResponsiveUtils.sp(28),
-          fontWeight: FontWeight.bold,
+          fontSize: ResponsiveUtils.sp(32),
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
-          letterSpacing: ResponsiveUtils.rp(12),
+          letterSpacing: ResponsiveUtils.rp(16),
         ),
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
@@ -738,9 +934,9 @@ debugPrint('[LoginPage] SMS autofill error: $e');
         decoration: InputDecoration(
           hintText: '○ ○ ○ ○',
           hintStyle: TextStyle(
-            color: AppColors.textSecondary.withValues(alpha: 0.25),
-            fontSize: ResponsiveUtils.sp(28),
-            letterSpacing: ResponsiveUtils.rp(12),
+            color: AppColors.textSecondary.withValues(alpha: 0.2),
+            fontSize: ResponsiveUtils.sp(32),
+            letterSpacing: ResponsiveUtils.rp(16),
             fontWeight: FontWeight.w300,
           ),
           border: InputBorder.none,
@@ -760,9 +956,9 @@ debugPrint('[LoginPage] SMS autofill error: $e');
               _authController.phoneNumber.text.length == 10);
 
       return Container(
-        height: ResponsiveUtils.rp(56),
+        height: ResponsiveUtils.rp(58),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
           gradient: isEnabled
               ? LinearGradient(
                   colors: [AppColors.button, AppColors.buttonLight],
@@ -770,14 +966,20 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                   end: Alignment.bottomRight,
                 )
               : null,
-          color: isEnabled ? null : AppColors.inputBorder,
+          color: isEnabled ? null : AppColors.border.withValues(alpha: 0.3),
           boxShadow: isEnabled
               ? [
                   BoxShadow(
-                    color: AppColors.button.withValues(alpha: 0.3),
-                    blurRadius: ResponsiveUtils.rp(20),
+                    color: AppColors.button.withValues(alpha: 0.35),
+                    blurRadius: ResponsiveUtils.rp(24),
                     offset: Offset(0, ResponsiveUtils.rp(8)),
                     spreadRadius: ResponsiveUtils.rp(2),
+                  ),
+                  BoxShadow(
+                    color: AppColors.button.withValues(alpha: 0.15),
+                    blurRadius: ResponsiveUtils.rp(12),
+                    offset: Offset(0, ResponsiveUtils.rp(4)),
+                    spreadRadius: 0,
                   ),
                 ]
               : null,
@@ -786,12 +988,12 @@ debugPrint('[LoginPage] SMS autofill error: $e');
           color: Colors.transparent,
           child: InkWell(
             onTap: (isLoading || !isEnabled) ? null : _handleButtonPress,
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
             child: Center(
               child: isLoading
                   ? SizedBox(
-                      width: ResponsiveUtils.rp(24),
-                      height: ResponsiveUtils.rp(24),
+                      width: ResponsiveUtils.rp(26),
+                      height: ResponsiveUtils.rp(26),
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -804,16 +1006,23 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                           isOtpSent ? 'Verify & Login' : 'Continue',
                           style: TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: ResponsiveUtils.sp(16),
-                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.w700,
+                            fontSize: ResponsiveUtils.sp(17),
+                            letterSpacing: 0.8,
                           ),
                         ),
-                        SizedBox(width: ResponsiveUtils.rp(10)),
-                        Icon(
-                          isOtpSent ? Icons.verified : Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                          size: ResponsiveUtils.rp(20),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
+                        Container(
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                          ),
+                          child: Icon(
+                            isOtpSent ? Icons.verified_rounded : Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: ResponsiveUtils.rp(18),
+                          ),
                         ),
                       ],
                     ),
@@ -885,18 +1094,18 @@ debugPrint('[LoginPage] SMS autofill error: $e');
       final isLoading = _authController.isLoading;
       
       return Container(
-        height: ResponsiveUtils.rp(56),
+        height: ResponsiveUtils.rp(58),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
           border: Border.all(
-            color: AppColors.border.withValues(alpha: 0.4),
+            color: AppColors.border.withValues(alpha: 0.3),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: ResponsiveUtils.rp(15),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: ResponsiveUtils.rp(20),
               offset: Offset(0, ResponsiveUtils.rp(4)),
             ),
           ],
@@ -905,7 +1114,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
           color: Colors.transparent,
           child: InkWell(
             onTap: isLoading ? null : _handleGoogleSignIn,
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
             child: Center(
               child: isLoading
                   ? SizedBox(
@@ -920,10 +1129,10 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: ResponsiveUtils.rp(24),
-                          height: ResponsiveUtils.rp(24),
+                          width: ResponsiveUtils.rp(28),
+                          height: ResponsiveUtils.rp(28),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                             border: Border.all(
                               color: Colors.grey.shade300,
                               width: 1,
@@ -934,19 +1143,19 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                               'G',
                               style: TextStyle(
                                 color: Colors.blue.shade700,
-                                fontSize: ResponsiveUtils.sp(16),
+                                fontSize: ResponsiveUtils.sp(18),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(width: ResponsiveUtils.rp(12)),
-                              Text(
-                                'Continue with Google',
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
-                            fontSize: ResponsiveUtils.sp(15),
+                        SizedBox(width: ResponsiveUtils.rp(14)),
+                        Text(
+                          'Continue with Google',
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: ResponsiveUtils.sp(16),
                             letterSpacing: 0.3,
                           ),
                         ),
@@ -968,6 +1177,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: ResponsiveUtils.sp(14),
+            fontWeight: FontWeight.w400,
           ),
         ),
         GestureDetector(
@@ -977,7 +1187,8 @@ debugPrint('[LoginPage] SMS autofill error: $e');
             style: TextStyle(
               color: AppColors.button,
               fontSize: ResponsiveUtils.sp(14),
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
             ),
           ),
         ),
@@ -1076,3 +1287,5 @@ debugPrint('[LoginPage] SMS autofill error: $e');
     super.dispose();
   }
 }
+
+
