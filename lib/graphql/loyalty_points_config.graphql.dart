@@ -315,10 +315,12 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
       query$LoyaltyPointsConfig(
               [Options$Query$LoyaltyPointsConfig? options]) async =>
           await this.query(options ?? Options$Query$LoyaltyPointsConfig());
+
   graphql.ObservableQuery<Query$LoyaltyPointsConfig>
       watchQuery$LoyaltyPointsConfig(
               [WatchOptions$Query$LoyaltyPointsConfig? options]) =>
           this.watchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+
   void writeQuery$LoyaltyPointsConfig({
     required Query$LoyaltyPointsConfig data,
     bool broadcast = true,
@@ -330,6 +332,7 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$LoyaltyPointsConfig? readQuery$LoyaltyPointsConfig(
       {bool optimistic = true}) {
     final result = this.readQuery(

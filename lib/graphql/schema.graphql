@@ -3578,6 +3578,11 @@ type Query {
   eligibleShippingMethods: [ShippingMethodQuote!]!
 
   """
+  Returns a list of enabled eligible shipping methods with calculator information
+  """
+  eligibleShippingMethodsEnabled: [ShippingMethod!]!
+
+  """
   Returns a list of payment methods and their eligibility based on the current active Order
   """
   eligiblePaymentMethods: [PaymentMethodQuote!]!

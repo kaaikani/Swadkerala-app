@@ -504,10 +504,10 @@ class _AddressesPageState extends State<AddressesPage> {
           postalCode: previousDefault.postalCode,
           phoneNumber: previousDefault.phoneNumber,
           company: previousDefault.company,
-          defaultShippingAddress: false,
-          defaultBillingAddress: false,
+            defaultShippingAddress: false,
+            defaultBillingAddress: false,
           country: previousDefault.country,
-        );
+          );
         
         debugPrint('[AddressesPage] Calling updateAddress to unset default for ID: ${previousDefault.id}');
         final unsetResult = await customerController.updateAddress(unsetAddress, skipRefresh: true);
@@ -525,23 +525,23 @@ class _AddressesPageState extends State<AddressesPage> {
 
       // Step 2: Set the target address as default (only if unset succeeded or wasn't needed)
       if (allSuccess || previousDefault == null) {
-        debugPrint('[AddressesPage] Setting Address ID: ${address.id} as default');
-        debugPrint('[AddressesPage]   - Setting as Shipping Address: true');
-        debugPrint('[AddressesPage]   - Setting as Billing Address: true');
+      debugPrint('[AddressesPage] Setting Address ID: ${address.id} as default');
+      debugPrint('[AddressesPage]   - Setting as Shipping Address: true');
+      debugPrint('[AddressesPage]   - Setting as Billing Address: true');
         
-        final selectedUpdatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
-          id: address.id,
-          fullName: address.fullName,
-          streetLine1: address.streetLine1,
-          streetLine2: address.streetLine2,
-          city: address.city,
-          postalCode: address.postalCode,
-          phoneNumber: address.phoneNumber,
-          company: address.company,
-          defaultShippingAddress: true,
-          defaultBillingAddress: true,
-          country: address.country,
-        );
+      final selectedUpdatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
+        id: address.id,
+        fullName: address.fullName,
+        streetLine1: address.streetLine1,
+        streetLine2: address.streetLine2,
+        city: address.city,
+        postalCode: address.postalCode,
+        phoneNumber: address.phoneNumber,
+        company: address.company,
+        defaultShippingAddress: true,
+        defaultBillingAddress: true,
+        country: address.country,
+      );
         
         debugPrint('[AddressesPage] Calling updateAddress to set default for ID: ${address.id}');
         final setResult = await customerController.updateAddress(selectedUpdatedAddress, skipRefresh: false);

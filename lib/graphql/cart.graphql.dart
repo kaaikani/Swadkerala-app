@@ -1246,6 +1246,7 @@ extension ClientExtension$Fragment$Cart on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$Cart? readFragment$Cart({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -4403,6 +4404,7 @@ extension ClientExtension$Fragment$Asset on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$Asset? readFragment$Asset({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -4747,6 +4749,7 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         this,
         (i) => i,
       );
+
   _T when<_T>({
     required _T Function(Fragment$ErrorResult$$AlreadyLoggedInError)
         alreadyLoggedInError,
@@ -5370,6 +5373,7 @@ extension ClientExtension$Fragment$ErrorResult on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$ErrorResult? readFragment$ErrorResult({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -10319,9 +10323,11 @@ extension ClientExtension$Query$GetCartTotals on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetCartTotals>> query$GetCartTotals(
           [Options$Query$GetCartTotals? options]) async =>
       await this.query(options ?? Options$Query$GetCartTotals());
+
   graphql.ObservableQuery<Query$GetCartTotals> watchQuery$GetCartTotals(
           [WatchOptions$Query$GetCartTotals? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$GetCartTotals());
+
   void writeQuery$GetCartTotals({
     required Query$GetCartTotals data,
     bool broadcast = true,
@@ -10333,6 +10339,7 @@ extension ClientExtension$Query$GetCartTotals on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetCartTotals? readQuery$GetCartTotals({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
@@ -10701,9 +10708,11 @@ extension ClientExtension$Query$UpdatedPrice on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$UpdatedPrice>> query$UpdatedPrice(
           [Options$Query$UpdatedPrice? options]) async =>
       await this.query(options ?? Options$Query$UpdatedPrice());
+
   graphql.ObservableQuery<Query$UpdatedPrice> watchQuery$UpdatedPrice(
           [WatchOptions$Query$UpdatedPrice? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$UpdatedPrice());
+
   void writeQuery$UpdatedPrice({
     required Query$UpdatedPrice data,
     bool broadcast = true,
@@ -10715,6 +10724,7 @@ extension ClientExtension$Query$UpdatedPrice on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$UpdatedPrice? readQuery$UpdatedPrice({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
@@ -11733,6 +11743,7 @@ extension ClientExtension$Mutation$AddToCart on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$AddToCart>> mutate$AddToCart(
           Options$Mutation$AddToCart options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$AddToCart> watchMutation$AddToCart(
           WatchOptions$Mutation$AddToCart options) =>
       this.watchMutation(options);
@@ -11927,6 +11938,7 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$AddToCart$addItemToOrder$$InsufficientStockError)

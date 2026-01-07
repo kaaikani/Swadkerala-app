@@ -91,15 +91,19 @@ query GetEligiblePaymentMethods {
         __typename
     }
 }
-query GetEligibleShippingMethods {
-    eligibleShippingMethods {
+query GetEligibleShippingMethodsEnabled {
+    eligibleShippingMethodsEnabled {
         id
         name
         code
-        description
-        price
-        priceWithTax
-        metadata
+        calculator {
+            code
+            
+            args {
+                name
+                value
+            }
+        }
         __typename
     }
 }

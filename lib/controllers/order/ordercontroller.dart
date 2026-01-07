@@ -9,6 +9,7 @@ import '../base_controller.dart';
 import '../../utils/price_formatter.dart';
 import '../../widgets/loading_dialog.dart';
 import '../../widgets/error_dialog.dart';
+import '../customer/customer_controller.dart';
 import 'package:flutter/foundation.dart';
 
 class OrderController extends BaseController {
@@ -16,9 +17,9 @@ class OrderController extends BaseController {
   Rx<Fragment$ErrorResult?> error = Rx<Fragment$ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
 
-  RxList<Query$GetEligibleShippingMethods$eligibleShippingMethods> shippingMethods = <Query$GetEligibleShippingMethods$eligibleShippingMethods>[].obs;
+  RxList<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled> shippingMethods = <Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>[].obs;
   RxList<Query$GetEligiblePaymentMethods$eligiblePaymentMethods> paymentMethods = <Query$GetEligiblePaymentMethods$eligiblePaymentMethods>[].obs;
-  Rx<Query$GetEligibleShippingMethods$eligibleShippingMethods?> selectedShippingMethod = Rx<Query$GetEligibleShippingMethods$eligibleShippingMethods?>(null);
+  Rx<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled?> selectedShippingMethod = Rx<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled?>(null);
   Rx<Query$GetEligiblePaymentMethods$eligiblePaymentMethods?> selectedPaymentMethod = Rx<Query$GetEligiblePaymentMethods$eligiblePaymentMethods?>(null);
 
   /// Get active order (cart)
@@ -261,16 +262,16 @@ debugPrint('[Order] Remove all order lines error: $e');
     try {
       utilityController.setLoadingState(false);
 
-      final options = Options$Query$GetEligibleShippingMethods();
+      final options = Options$Query$GetEligibleShippingMethodsEnabled();
       final response = await GraphqlService.client.value
-          .query$GetEligibleShippingMethods(options);
+          .query$GetEligibleShippingMethodsEnabled(options);
 
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to load shipping methods')) {
         return false;
       }
 
-      final methods = response.parsedData?.eligibleShippingMethods;
+      final methods = response.parsedData?.eligibleShippingMethodsEnabled;
 
       if (methods != null) {
         shippingMethods.value = methods;
@@ -283,6 +284,23 @@ debugPrint('[Order] Remove all order lines error: $e');
       return false;
     } finally {
       utilityController.setLoadingState(false);
+    }
+  }
+
+  /// Get shipping price from calculator args
+  /// The price is stored in calculator.args where name == "rate"
+  int getShippingPrice(Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled? method) {
+    if (method == null) return 0;
+    
+    try {
+      final rateArg = method.calculator.args.firstWhere(
+        (arg) => arg.name == 'rate',
+        orElse: () => throw Exception('Rate not found'),
+      );
+      return int.tryParse(rateArg.value) ?? 0;
+    } catch (e) {
+      debugPrint('[Order] Error getting shipping price: $e');
+      return 0;
     }
   }
 
@@ -317,7 +335,39 @@ debugPrint('[Order] Shipping method already set, skipping');
       final result = response.parsedData?.setOrderShippingMethod;
       if (result != null && result is Mutation$SetShippingMethod$setOrderShippingMethod$$Order) {
         currentOrder.value = result;
+        selectedShippingMethod.value = shippingMethods.firstWhereOrNull((m) => m.id == methodId);
 debugPrint('[Order] Shipping method set successfully');
+        
+        // Check if order needs shipping address, if so, set default shipping address
+        // Note: Fragment$Cart doesn't include shippingAddress, so we check by trying to set it
+        // The setShippingAddress will only succeed if address is needed
+        try {
+          final customerController = Get.find<CustomerController>();
+          final defaultAddress = customerController.defaultAddress;
+          
+          if (defaultAddress != null) {
+            debugPrint('[Order] Shipping method changed/updated - checking if shipping address needs to be set');
+            // Try to set default shipping address (will only succeed if not already set)
+              await setShippingAddress(
+                fullName: defaultAddress.fullName ?? '',
+                streetLine1: defaultAddress.streetLine1,
+                streetLine2: defaultAddress.streetLine2,
+                city: defaultAddress.city ?? '',
+                postalCode: defaultAddress.postalCode ?? '',
+                countryCode: defaultAddress.country.code,
+                phoneNumber: defaultAddress.phoneNumber ?? '',
+                province: null,
+                skipLoading: true, // Don't show loading as shipping method already handled it
+              );
+            debugPrint('[Order] ✅ Default shipping address set/updated successfully');
+          } else {
+            debugPrint('[Order] No default shipping address available');
+          }
+        } catch (e) {
+          debugPrint('[Order] Error setting default shipping address: $e');
+          // Don't fail the shipping method setting if address setting fails
+        }
+        
         return true;
       }
 

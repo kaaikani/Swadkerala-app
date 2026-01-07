@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/sms_autofill_service.dart';
+import '../services/graphql_client.dart';
 import '../theme/theme.dart';
 import '../utils/navigation_helper.dart';
 import '../utils/responsive.dart';
@@ -82,11 +84,29 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-  void _prevStep() {
+  void _prevStep() async {
     if (_currentStep > 0) {
       _animateToPage(_currentStep - 1);
     } else {
+      // Clear cache when going back to login page
+      await _clearCache();
       Get.back();
+    }
+  }
+
+  Future<void> _clearCache() async {
+    try {
+      debugPrint('[SignupPage] Clearing cache before returning to login...');
+      await GraphqlService.clearToken('auth');
+      await GraphqlService.clearToken('channel');
+      final storage = GetStorage();
+      await storage.erase();
+      _authController.setLoggedIn(false);
+      _authController.setOtpSent(false);
+      _authController.resetFormField();
+      debugPrint('[SignupPage] ✅ Cache cleared successfully');
+    } catch (e) {
+      debugPrint('[SignupPage] Error clearing cache: $e');
     }
   }
 
@@ -100,16 +120,22 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _processSendOtp() async {
-    final success = await _authController.sendOtp(context);
+    final success = await _authController.sendOtp(context, isLogin: false);
 
     if (success) {
+      // Wait a moment to ensure success message is shown
+      await Future.delayed(Duration(milliseconds: 300));
+      
+      // Start SMS autofill
       await _startSmsAutofill();
+      
+      // Navigate to OTP page
       _animateToPage(1);
     }
   }
 
   Future<void> _handleFinalSubmit() async {
-    final success = await _authController.verifyOtp(context);
+    final success = await _authController.verifyOtpForRegistration(context);
     if (success) {
       await NavigationHelper.redirectToIntendedRoute();
     }
@@ -289,7 +315,8 @@ class _SignupPageState extends State<SignupPage> {
               prefixText: '+91 ',
               maxLength: 10,
               validator: (v) {
-                if (v == null || v.length != 10) return 'Enter valid 10-digit number';
+                if (v == null || v.trim().isEmpty) return 'Phone number is required';
+                if (v.length != 10) return 'Enter valid 10-digit number';
                 return null;
               },
             ),

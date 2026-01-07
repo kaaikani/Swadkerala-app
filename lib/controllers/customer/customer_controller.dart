@@ -17,6 +17,7 @@ import '../utilitycontroller/utilitycontroller.dart';
 import '../banner/bannercontroller.dart';
 import '../collection controller/collectioncontroller.dart';
 import '../cart/Cartcontroller.dart';
+import '../order/ordercontroller.dart';
 
 class CustomerController extends BaseController {
   // Observable variables
@@ -696,6 +697,37 @@ debugPrint('[Customer] Creating address...');
         await getActiveCustomer();
         // Force UI refresh
         addresses.refresh();
+        
+        // If this is the default shipping address, update the order's shipping address
+        if (address.defaultShippingAddress == true) {
+          try {
+            final orderController = Get.find<OrderController>();
+            final activeOrder = orderController.currentOrder.value;
+            
+            // Only set shipping address if there's an active order
+            if (activeOrder != null) {
+              debugPrint('[Customer] New default shipping address created - updating order shipping address');
+              await orderController.setShippingAddress(
+                fullName: address.fullName ?? '',
+                streetLine1: address.streetLine1,
+                streetLine2: address.streetLine2,
+                city: address.city ?? '',
+                postalCode: address.postalCode ?? '',
+                countryCode: address.country.code,
+                phoneNumber: address.phoneNumber ?? '',
+                province: province,
+                skipLoading: true, // Don't show loading dialog as address creation already handled it
+              );
+              debugPrint('[Customer] ✅ Order shipping address updated successfully');
+            } else {
+              debugPrint('[Customer] No active order - skipping shipping address update');
+            }
+          } catch (e) {
+            debugPrint('[Customer] Error updating order shipping address: $e');
+            // Don't fail the address creation if order update fails
+          }
+        }
+        
 debugPrint('[Customer] Address created successfully');
         return true;
       }
@@ -780,6 +812,37 @@ debugPrint('[Customer] Create address error: $e');
         // Force UI refresh
         addresses.refresh();
         }
+        
+        // If this is the default shipping address, update the order's shipping address
+        if (address.defaultShippingAddress == true) {
+          try {
+            final orderController = Get.find<OrderController>();
+            final activeOrder = orderController.currentOrder.value;
+            
+            // Only set shipping address if there's an active order
+            if (activeOrder != null) {
+              debugPrint('[Customer] Default shipping address changed - updating order shipping address');
+              await orderController.setShippingAddress(
+                fullName: address.fullName ?? '',
+                streetLine1: address.streetLine1,
+                streetLine2: address.streetLine2,
+                city: address.city ?? '',
+                postalCode: address.postalCode ?? '',
+                countryCode: address.country.code,
+                phoneNumber: address.phoneNumber ?? '',
+                province: province,
+                skipLoading: true, // Don't show loading dialog as address update already handled it
+              );
+              debugPrint('[Customer] ✅ Order shipping address updated successfully');
+            } else {
+              debugPrint('[Customer] No active order - skipping shipping address update');
+            }
+          } catch (e) {
+            debugPrint('[Customer] Error updating order shipping address: $e');
+            // Don't fail the address update if order update fails
+          }
+        }
+        
         debugPrint('[Customer] ✅ Address updated successfully');
         return true;
       }
@@ -1016,11 +1079,10 @@ debugPrint('[Customer] Logout error: $e');
         ),
       );
 
-      if (showLoading) {
-        LoadingDialog.hide();
-      }
-
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
+        if (showLoading) {
+          LoadingDialog.hide();
+        }
         return false;
       }
 
@@ -1030,8 +1092,8 @@ debugPrint('[Customer] Logout error: $e');
 
       if (channels.isEmpty) {
         debugPrint('[Customer] No channels returned from API');
-        // Only show error dialog if showLoading is true (not called from sheet)
         if (showLoading) {
+          LoadingDialog.hide();
           ErrorDialog.show(
             title: 'Service Not Available',
             message: 'Service is not available for this location.',
@@ -1119,6 +1181,7 @@ debugPrint('[Customer] Logout error: $e');
       if (availableCityChannels.isEmpty) {
         debugPrint('[Customer] No available CITY channels found');
         if (showLoading) {
+          LoadingDialog.hide();
           ErrorDialog.show(
             title: 'Service Not Available',
             message: 'Service is not available for this location.',
@@ -1180,6 +1243,11 @@ debugPrint('[Customer] Logout error: $e');
       // This ensures the UI rebuilds when channel token changes
       debugPrint('[Customer] Forcing UI refresh after channel change...');
       await Future.delayed(Duration(milliseconds: 100)); // Small delay to ensure storage is written
+      
+      // Hide loading dialog before returning success
+      if (showLoading) {
+        LoadingDialog.hide();
+      }
       
       return true;
     } catch (e) {
@@ -1587,6 +1655,7 @@ debugPrint('[Customer] Logout error: $e');
       final success = await switchChannelByPostalCode(
         postalCode,
         city: defaultShippingAddress.city,
+        showLoading: false, // Don't show loading dialog during background operation
       );
 
       if (success) {

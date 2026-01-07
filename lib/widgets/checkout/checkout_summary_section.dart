@@ -53,7 +53,7 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
           if (cart == null) return SizedBox.shrink();
 
           final shippingMethod = widget.orderController.selectedShippingMethod.value;
-          final shippingCost = (shippingMethod?.priceWithTax ?? 0).toDouble();
+          final shippingCost = widget.orderController.getShippingPrice(shippingMethod).toDouble();
           final isFreeShipping = widget.cartController.hasFreeShippingCoupon();
           final finalShippingCost = isFreeShipping ? 0.0 : shippingCost;
 

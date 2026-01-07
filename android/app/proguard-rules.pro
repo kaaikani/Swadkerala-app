@@ -112,25 +112,38 @@
 # Remove speech_to_text debug symbols if not needed
 -keep class com.csdcorp.speech_to_text.** { *; }
 
+# Exclude FlutterToastPlugin - not used in the app, remove completely
+-dontwarn io.github.ponnamkarthik.toast.fluttertoast.**
+-assumenosideeffects class io.github.ponnamkarthik.toast.fluttertoast.** { *; }
+# Don't keep - let ProGuard remove it completely
+# -keep class io.github.ponnamkarthik.toast.fluttertoast.** { *; }
+
 # Optimize DEX files - reduce method count
 -dontwarn kotlin.**
 -dontwarn kotlinx.**
 -dontwarn javax.annotation.**
 
 # More aggressive size reduction
--optimizationpasses 5
+-optimizationpasses 9
 -dontpreverify
 -repackageclasses ''
 -allowaccessmodification
 -mergeinterfacesaggressively
 -overloadaggressively
 
-# Remove more unused code
--assumenosideeffects class * {
-    public *** get*(...);
-    public void set*(...);
+# Remove unused code more aggressively
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    public static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
 }
 
 # Strip line numbers (saves space but makes debugging harder)
 -keepattributes SourceFile
 -renamesourcefileattribute SourceFile
+
+# Remove unused string constants
+-assumenosideeffects class java.lang.String {
+    public boolean equals(java.lang.Object);
+}
+
+# Optimize enum classes
+-optimizations !code/allocation/variable

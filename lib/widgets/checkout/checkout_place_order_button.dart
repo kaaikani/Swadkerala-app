@@ -8,7 +8,7 @@ import '../../controllers/banner/bannercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/price_formatter.dart';
-import '../../graphql/banner.graphql.dart';
+import '../../graphql/Customer.graphql.dart';
 
 class CheckoutPlaceOrderButton extends StatelessWidget {
   final CartController cartController;

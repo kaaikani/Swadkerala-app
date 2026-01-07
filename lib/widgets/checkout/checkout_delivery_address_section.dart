@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/customer/customer_controller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/app_strings.dart';

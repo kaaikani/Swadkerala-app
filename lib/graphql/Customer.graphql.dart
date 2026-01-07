@@ -425,6 +425,7 @@ extension ClientExtension$Mutation$UpdateCustomer on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$UpdateCustomer>> mutate$UpdateCustomer(
           Options$Mutation$UpdateCustomer options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$UpdateCustomer> watchMutation$UpdateCustomer(
           WatchOptions$Mutation$UpdateCustomer options) =>
       this.watchMutation(options);
@@ -1139,6 +1140,7 @@ extension ClientExtension$Mutation$UpdateProfileEmail on graphql.GraphQLClient {
       mutate$UpdateProfileEmail(
               Options$Mutation$UpdateProfileEmail options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$UpdateProfileEmail>
       watchMutation$UpdateProfileEmail(
               WatchOptions$Mutation$UpdateProfileEmail options) =>
@@ -1937,6 +1939,7 @@ extension ClientExtension$Mutation$CreateCustomerAddress
       mutate$CreateCustomerAddress(
               Options$Mutation$CreateCustomerAddress options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$CreateCustomerAddress>
       watchMutation$CreateCustomerAddress(
               WatchOptions$Mutation$CreateCustomerAddress options) =>
@@ -3126,6 +3129,7 @@ extension ClientExtension$Mutation$UpdateCustomerAddress
       mutate$UpdateCustomerAddress(
               Options$Mutation$UpdateCustomerAddress options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$UpdateCustomerAddress>
       watchMutation$UpdateCustomerAddress(
               WatchOptions$Mutation$UpdateCustomerAddress options) =>
@@ -4186,6 +4190,7 @@ extension ClientExtension$Mutation$DeleteCustomerAddress
       mutate$DeleteCustomerAddress(
               Options$Mutation$DeleteCustomerAddress options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$DeleteCustomerAddress>
       watchMutation$DeleteCustomerAddress(
               WatchOptions$Mutation$DeleteCustomerAddress options) =>
@@ -4789,9 +4794,11 @@ extension ClientExtension$Query$GetCurrentUser on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetCurrentUser>> query$GetCurrentUser(
           [Options$Query$GetCurrentUser? options]) async =>
       await this.query(options ?? Options$Query$GetCurrentUser());
+
   graphql.ObservableQuery<Query$GetCurrentUser> watchQuery$GetCurrentUser(
           [WatchOptions$Query$GetCurrentUser? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$GetCurrentUser());
+
   void writeQuery$GetCurrentUser({
     required Query$GetCurrentUser data,
     bool broadcast = true,
@@ -4803,6 +4810,7 @@ extension ClientExtension$Query$GetCurrentUser on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetCurrentUser? readQuery$GetCurrentUser({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
@@ -5511,10 +5519,12 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
       query$LoyaltyPointsConfig(
               [Options$Query$LoyaltyPointsConfig? options]) async =>
           await this.query(options ?? Options$Query$LoyaltyPointsConfig());
+
   graphql.ObservableQuery<Query$LoyaltyPointsConfig>
       watchQuery$LoyaltyPointsConfig(
               [WatchOptions$Query$LoyaltyPointsConfig? options]) =>
           this.watchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
+
   void writeQuery$LoyaltyPointsConfig({
     required Query$LoyaltyPointsConfig data,
     bool broadcast = true,
@@ -5526,6 +5536,7 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$LoyaltyPointsConfig? readQuery$LoyaltyPointsConfig(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -6747,9 +6758,11 @@ extension ClientExtension$Query$GetActiveCustomer on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetActiveCustomer>> query$GetActiveCustomer(
           [Options$Query$GetActiveCustomer? options]) async =>
       await this.query(options ?? Options$Query$GetActiveCustomer());
+
   graphql.ObservableQuery<Query$GetActiveCustomer> watchQuery$GetActiveCustomer(
           [WatchOptions$Query$GetActiveCustomer? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$GetActiveCustomer());
+
   void writeQuery$GetActiveCustomer({
     required Query$GetActiveCustomer data,
     bool broadcast = true,
@@ -6761,6 +6774,7 @@ extension ClientExtension$Query$GetActiveCustomer on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetActiveCustomer? readQuery$GetActiveCustomer(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -10977,11 +10991,13 @@ extension ClientExtension$Query$GetLoyaltyPointTransactions
               [Options$Query$GetLoyaltyPointTransactions? options]) async =>
           await this
               .query(options ?? Options$Query$GetLoyaltyPointTransactions());
+
   graphql.ObservableQuery<Query$GetLoyaltyPointTransactions>
       watchQuery$GetLoyaltyPointTransactions(
               [WatchOptions$Query$GetLoyaltyPointTransactions? options]) =>
           this.watchQuery(
               options ?? WatchOptions$Query$GetLoyaltyPointTransactions());
+
   void writeQuery$GetLoyaltyPointTransactions({
     required Query$GetLoyaltyPointTransactions data,
     bool broadcast = true,
@@ -10993,6 +11009,7 @@ extension ClientExtension$Query$GetLoyaltyPointTransactions
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetLoyaltyPointTransactions? readQuery$GetLoyaltyPointTransactions(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -12657,9 +12674,11 @@ extension ClientExtension$Query$GetCustomerOrders on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetCustomerOrders>> query$GetCustomerOrders(
           Options$Query$GetCustomerOrders options) async =>
       await this.query(options);
+
   graphql.ObservableQuery<Query$GetCustomerOrders> watchQuery$GetCustomerOrders(
           WatchOptions$Query$GetCustomerOrders options) =>
       this.watchQuery(options);
+
   void writeQuery$GetCustomerOrders({
     required Query$GetCustomerOrders data,
     required Variables$Query$GetCustomerOrders variables,
@@ -12674,6 +12693,7 @@ extension ClientExtension$Query$GetCustomerOrders on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetCustomerOrders? readQuery$GetCustomerOrders({
     required Variables$Query$GetCustomerOrders variables,
     bool optimistic = true,
@@ -16105,10 +16125,12 @@ extension ClientExtension$Query$GetChannelsByPostalCode
       query$GetChannelsByPostalCode(
               Options$Query$GetChannelsByPostalCode options) async =>
           await this.query(options);
+
   graphql.ObservableQuery<Query$GetChannelsByPostalCode>
       watchQuery$GetChannelsByPostalCode(
               WatchOptions$Query$GetChannelsByPostalCode options) =>
           this.watchQuery(options);
+
   void writeQuery$GetChannelsByPostalCode({
     required Query$GetChannelsByPostalCode data,
     required Variables$Query$GetChannelsByPostalCode variables,
@@ -16123,6 +16145,7 @@ extension ClientExtension$Query$GetChannelsByPostalCode
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetChannelsByPostalCode? readQuery$GetChannelsByPostalCode({
     required Variables$Query$GetChannelsByPostalCode variables,
     bool optimistic = true,
@@ -16362,6 +16385,763 @@ class _CopyWithStubImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode<
     implements
         CopyWith$Query$GetChannelsByPostalCode$getChannelsByPostalCode<TRes> {
   _CopyWithStubImpl$Query$GetChannelsByPostalCode$getChannelsByPostalCode(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? code,
+    String? token,
+    String? name,
+    Enum$ChannelTypeEnum? type,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Variables$Query$GetChannelsByCustomerPhoneNumber {
+  factory Variables$Query$GetChannelsByCustomerPhoneNumber(
+          {required String phoneNumber}) =>
+      Variables$Query$GetChannelsByCustomerPhoneNumber._({
+        r'phoneNumber': phoneNumber,
+      });
+
+  Variables$Query$GetChannelsByCustomerPhoneNumber._(this._$data);
+
+  factory Variables$Query$GetChannelsByCustomerPhoneNumber.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$phoneNumber = data['phoneNumber'];
+    result$data['phoneNumber'] = (l$phoneNumber as String);
+    return Variables$Query$GetChannelsByCustomerPhoneNumber._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get phoneNumber => (_$data['phoneNumber'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$phoneNumber = phoneNumber;
+    result$data['phoneNumber'] = l$phoneNumber;
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$GetChannelsByCustomerPhoneNumber<
+          Variables$Query$GetChannelsByCustomerPhoneNumber>
+      get copyWith => CopyWith$Variables$Query$GetChannelsByCustomerPhoneNumber(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$GetChannelsByCustomerPhoneNumber ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$phoneNumber = phoneNumber;
+    final lOther$phoneNumber = other.phoneNumber;
+    if (l$phoneNumber != lOther$phoneNumber) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$phoneNumber = phoneNumber;
+    return Object.hashAll([l$phoneNumber]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$GetChannelsByCustomerPhoneNumber<TRes> {
+  factory CopyWith$Variables$Query$GetChannelsByCustomerPhoneNumber(
+    Variables$Query$GetChannelsByCustomerPhoneNumber instance,
+    TRes Function(Variables$Query$GetChannelsByCustomerPhoneNumber) then,
+  ) = _CopyWithImpl$Variables$Query$GetChannelsByCustomerPhoneNumber;
+
+  factory CopyWith$Variables$Query$GetChannelsByCustomerPhoneNumber.stub(
+          TRes res) =
+      _CopyWithStubImpl$Variables$Query$GetChannelsByCustomerPhoneNumber;
+
+  TRes call({String? phoneNumber});
+}
+
+class _CopyWithImpl$Variables$Query$GetChannelsByCustomerPhoneNumber<TRes>
+    implements CopyWith$Variables$Query$GetChannelsByCustomerPhoneNumber<TRes> {
+  _CopyWithImpl$Variables$Query$GetChannelsByCustomerPhoneNumber(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Query$GetChannelsByCustomerPhoneNumber _instance;
+
+  final TRes Function(Variables$Query$GetChannelsByCustomerPhoneNumber) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? phoneNumber = _undefined}) =>
+      _then(Variables$Query$GetChannelsByCustomerPhoneNumber._({
+        ..._instance._$data,
+        if (phoneNumber != _undefined && phoneNumber != null)
+          'phoneNumber': (phoneNumber as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Query$GetChannelsByCustomerPhoneNumber<TRes>
+    implements CopyWith$Variables$Query$GetChannelsByCustomerPhoneNumber<TRes> {
+  _CopyWithStubImpl$Variables$Query$GetChannelsByCustomerPhoneNumber(this._res);
+
+  TRes _res;
+
+  call({String? phoneNumber}) => _res;
+}
+
+class Query$GetChannelsByCustomerPhoneNumber {
+  Query$GetChannelsByCustomerPhoneNumber({
+    required this.getChannelsByCustomerPhoneNumber,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$GetChannelsByCustomerPhoneNumber.fromJson(
+      Map<String, dynamic> json) {
+    final l$getChannelsByCustomerPhoneNumber =
+        json['getChannelsByCustomerPhoneNumber'];
+    final l$$__typename = json['__typename'];
+    return Query$GetChannelsByCustomerPhoneNumber(
+      getChannelsByCustomerPhoneNumber: (l$getChannelsByCustomerPhoneNumber
+              as List<dynamic>)
+          .map((e) =>
+              Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<
+          Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber>
+      getChannelsByCustomerPhoneNumber;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$getChannelsByCustomerPhoneNumber = getChannelsByCustomerPhoneNumber;
+    _resultData['getChannelsByCustomerPhoneNumber'] =
+        l$getChannelsByCustomerPhoneNumber.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$getChannelsByCustomerPhoneNumber = getChannelsByCustomerPhoneNumber;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$getChannelsByCustomerPhoneNumber.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetChannelsByCustomerPhoneNumber ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$getChannelsByCustomerPhoneNumber = getChannelsByCustomerPhoneNumber;
+    final lOther$getChannelsByCustomerPhoneNumber =
+        other.getChannelsByCustomerPhoneNumber;
+    if (l$getChannelsByCustomerPhoneNumber.length !=
+        lOther$getChannelsByCustomerPhoneNumber.length) {
+      return false;
+    }
+    for (int i = 0; i < l$getChannelsByCustomerPhoneNumber.length; i++) {
+      final l$getChannelsByCustomerPhoneNumber$entry =
+          l$getChannelsByCustomerPhoneNumber[i];
+      final lOther$getChannelsByCustomerPhoneNumber$entry =
+          lOther$getChannelsByCustomerPhoneNumber[i];
+      if (l$getChannelsByCustomerPhoneNumber$entry !=
+          lOther$getChannelsByCustomerPhoneNumber$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetChannelsByCustomerPhoneNumber
+    on Query$GetChannelsByCustomerPhoneNumber {
+  CopyWith$Query$GetChannelsByCustomerPhoneNumber<
+          Query$GetChannelsByCustomerPhoneNumber>
+      get copyWith => CopyWith$Query$GetChannelsByCustomerPhoneNumber(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetChannelsByCustomerPhoneNumber<TRes> {
+  factory CopyWith$Query$GetChannelsByCustomerPhoneNumber(
+    Query$GetChannelsByCustomerPhoneNumber instance,
+    TRes Function(Query$GetChannelsByCustomerPhoneNumber) then,
+  ) = _CopyWithImpl$Query$GetChannelsByCustomerPhoneNumber;
+
+  factory CopyWith$Query$GetChannelsByCustomerPhoneNumber.stub(TRes res) =
+      _CopyWithStubImpl$Query$GetChannelsByCustomerPhoneNumber;
+
+  TRes call({
+    List<Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber>?
+        getChannelsByCustomerPhoneNumber,
+    String? $__typename,
+  });
+  TRes getChannelsByCustomerPhoneNumber(
+      Iterable<Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber> Function(
+              Iterable<
+                  CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+                      Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$GetChannelsByCustomerPhoneNumber<TRes>
+    implements CopyWith$Query$GetChannelsByCustomerPhoneNumber<TRes> {
+  _CopyWithImpl$Query$GetChannelsByCustomerPhoneNumber(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetChannelsByCustomerPhoneNumber _instance;
+
+  final TRes Function(Query$GetChannelsByCustomerPhoneNumber) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? getChannelsByCustomerPhoneNumber = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetChannelsByCustomerPhoneNumber(
+        getChannelsByCustomerPhoneNumber: getChannelsByCustomerPhoneNumber ==
+                    _undefined ||
+                getChannelsByCustomerPhoneNumber == null
+            ? _instance.getChannelsByCustomerPhoneNumber
+            : (getChannelsByCustomerPhoneNumber as List<
+                Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes getChannelsByCustomerPhoneNumber(
+          Iterable<Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber> Function(
+                  Iterable<
+                      CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+                          Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber>>)
+              _fn) =>
+      call(
+          getChannelsByCustomerPhoneNumber: _fn(
+              _instance.getChannelsByCustomerPhoneNumber.map((e) =>
+                  CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Query$GetChannelsByCustomerPhoneNumber<TRes>
+    implements CopyWith$Query$GetChannelsByCustomerPhoneNumber<TRes> {
+  _CopyWithStubImpl$Query$GetChannelsByCustomerPhoneNumber(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber>?
+        getChannelsByCustomerPhoneNumber,
+    String? $__typename,
+  }) =>
+      _res;
+
+  getChannelsByCustomerPhoneNumber(_fn) => _res;
+}
+
+const documentNodeQueryGetChannelsByCustomerPhoneNumber =
+    DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'GetChannelsByCustomerPhoneNumber'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'phoneNumber')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'getChannelsByCustomerPhoneNumber'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'phoneNumber'),
+            value: VariableNode(name: NameNode(value: 'phoneNumber')),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'code'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'token'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'name'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'type'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Query$GetChannelsByCustomerPhoneNumber
+    _parserFn$Query$GetChannelsByCustomerPhoneNumber(
+            Map<String, dynamic> data) =>
+        Query$GetChannelsByCustomerPhoneNumber.fromJson(data);
+typedef OnQueryComplete$Query$GetChannelsByCustomerPhoneNumber = FutureOr<void>
+    Function(
+  Map<String, dynamic>?,
+  Query$GetChannelsByCustomerPhoneNumber?,
+);
+
+class Options$Query$GetChannelsByCustomerPhoneNumber
+    extends graphql.QueryOptions<Query$GetChannelsByCustomerPhoneNumber> {
+  Options$Query$GetChannelsByCustomerPhoneNumber({
+    String? operationName,
+    required Variables$Query$GetChannelsByCustomerPhoneNumber variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetChannelsByCustomerPhoneNumber? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$GetChannelsByCustomerPhoneNumber? onComplete,
+    graphql.OnQueryError? onError,
+  })  : onCompleteWithParsed = onComplete,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          pollInterval: pollInterval,
+          context: context,
+          onComplete: onComplete == null
+              ? null
+              : (data) => onComplete(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Query$GetChannelsByCustomerPhoneNumber(
+                            data),
+                  ),
+          onError: onError,
+          document: documentNodeQueryGetChannelsByCustomerPhoneNumber,
+          parserFn: _parserFn$Query$GetChannelsByCustomerPhoneNumber,
+        );
+
+  final OnQueryComplete$Query$GetChannelsByCustomerPhoneNumber?
+      onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onComplete == null
+            ? super.properties
+            : super.properties.where((property) => property != onComplete),
+        onCompleteWithParsed,
+      ];
+}
+
+class WatchOptions$Query$GetChannelsByCustomerPhoneNumber
+    extends graphql.WatchQueryOptions<Query$GetChannelsByCustomerPhoneNumber> {
+  WatchOptions$Query$GetChannelsByCustomerPhoneNumber({
+    String? operationName,
+    required Variables$Query$GetChannelsByCustomerPhoneNumber variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$GetChannelsByCustomerPhoneNumber? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeQueryGetChannelsByCustomerPhoneNumber,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Query$GetChannelsByCustomerPhoneNumber,
+        );
+}
+
+class FetchMoreOptions$Query$GetChannelsByCustomerPhoneNumber
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$GetChannelsByCustomerPhoneNumber({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$GetChannelsByCustomerPhoneNumber variables,
+  }) : super(
+          updateQuery: updateQuery,
+          variables: variables.toJson(),
+          document: documentNodeQueryGetChannelsByCustomerPhoneNumber,
+        );
+}
+
+extension ClientExtension$Query$GetChannelsByCustomerPhoneNumber
+    on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$GetChannelsByCustomerPhoneNumber>>
+      query$GetChannelsByCustomerPhoneNumber(
+              Options$Query$GetChannelsByCustomerPhoneNumber options) async =>
+          await this.query(options);
+
+  graphql.ObservableQuery<Query$GetChannelsByCustomerPhoneNumber>
+      watchQuery$GetChannelsByCustomerPhoneNumber(
+              WatchOptions$Query$GetChannelsByCustomerPhoneNumber options) =>
+          this.watchQuery(options);
+
+  void writeQuery$GetChannelsByCustomerPhoneNumber({
+    required Query$GetChannelsByCustomerPhoneNumber data,
+    required Variables$Query$GetChannelsByCustomerPhoneNumber variables,
+    bool broadcast = true,
+  }) =>
+      this.writeQuery(
+        graphql.Request(
+          operation: graphql.Operation(
+              document: documentNodeQueryGetChannelsByCustomerPhoneNumber),
+          variables: variables.toJson(),
+        ),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+
+  Query$GetChannelsByCustomerPhoneNumber?
+      readQuery$GetChannelsByCustomerPhoneNumber({
+    required Variables$Query$GetChannelsByCustomerPhoneNumber variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation: graphql.Operation(
+            document: documentNodeQueryGetChannelsByCustomerPhoneNumber),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null
+        ? null
+        : Query$GetChannelsByCustomerPhoneNumber.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$GetChannelsByCustomerPhoneNumber>
+    useQuery$GetChannelsByCustomerPhoneNumber(
+            Options$Query$GetChannelsByCustomerPhoneNumber options) =>
+        graphql_flutter.useQuery(options);
+graphql.ObservableQuery<Query$GetChannelsByCustomerPhoneNumber>
+    useWatchQuery$GetChannelsByCustomerPhoneNumber(
+            WatchOptions$Query$GetChannelsByCustomerPhoneNumber options) =>
+        graphql_flutter.useWatchQuery(options);
+
+class Query$GetChannelsByCustomerPhoneNumber$Widget
+    extends graphql_flutter.Query<Query$GetChannelsByCustomerPhoneNumber> {
+  Query$GetChannelsByCustomerPhoneNumber$Widget({
+    widgets.Key? key,
+    required Options$Query$GetChannelsByCustomerPhoneNumber options,
+    required graphql_flutter
+        .QueryBuilder<Query$GetChannelsByCustomerPhoneNumber>
+        builder,
+  }) : super(
+          key: key,
+          options: options,
+          builder: builder,
+        );
+}
+
+class Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber {
+  Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber({
+    required this.id,
+    required this.code,
+    required this.token,
+    required this.name,
+    required this.type,
+    this.$__typename = 'CustomerChannel',
+  });
+
+  factory Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$code = json['code'];
+    final l$token = json['token'];
+    final l$name = json['name'];
+    final l$type = json['type'];
+    final l$$__typename = json['__typename'];
+    return Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber(
+      id: (l$id as String),
+      code: (l$code as String),
+      token: (l$token as String),
+      name: (l$name as String),
+      type: fromJson$Enum$ChannelTypeEnum((l$type as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String code;
+
+  final String token;
+
+  final String name;
+
+  final Enum$ChannelTypeEnum type;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$token = token;
+    _resultData['token'] = l$token;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$type = type;
+    _resultData['type'] = toJson$Enum$ChannelTypeEnum(l$type);
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$code = code;
+    final l$token = token;
+    final l$name = name;
+    final l$type = type;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$code,
+      l$token,
+      l$name,
+      l$type,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$type = type;
+    final lOther$type = other.type;
+    if (l$type != lOther$type) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber
+    on Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber {
+  CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+          Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber>
+      get copyWith =>
+          CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+    TRes> {
+  factory CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber(
+    Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber
+        instance,
+    TRes Function(
+            Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber)
+        then,
+  ) = _CopyWithImpl$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber;
+
+  factory CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber;
+
+  TRes call({
+    String? id,
+    String? code,
+    String? token,
+    String? name,
+    Enum$ChannelTypeEnum? type,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+        TRes>
+    implements
+        CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+            TRes> {
+  _CopyWithImpl$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber
+      _instance;
+
+  final TRes Function(
+          Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? code = _undefined,
+    Object? token = _undefined,
+    Object? name = _undefined,
+    Object? type = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        token: token == _undefined || token == null
+            ? _instance.token
+            : (token as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        type: type == _undefined || type == null
+            ? _instance.type
+            : (type as Enum$ChannelTypeEnum),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+        TRes>
+    implements
+        CopyWith$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber<
+            TRes> {
+  _CopyWithStubImpl$Query$GetChannelsByCustomerPhoneNumber$getChannelsByCustomerPhoneNumber(
       this._res);
 
   TRes _res;
@@ -16838,10 +17618,12 @@ extension ClientExtension$Query$GetAvailableChannels on graphql.GraphQLClient {
       query$GetAvailableChannels(
               Options$Query$GetAvailableChannels options) async =>
           await this.query(options);
+
   graphql.ObservableQuery<Query$GetAvailableChannels>
       watchQuery$GetAvailableChannels(
               WatchOptions$Query$GetAvailableChannels options) =>
           this.watchQuery(options);
+
   void writeQuery$GetAvailableChannels({
     required Query$GetAvailableChannels data,
     required Variables$Query$GetAvailableChannels variables,
@@ -16856,6 +17638,7 @@ extension ClientExtension$Query$GetAvailableChannels on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetAvailableChannels? readQuery$GetAvailableChannels({
     required Variables$Query$GetAvailableChannels variables,
     bool optimistic = true,
@@ -17436,9 +18219,11 @@ extension ClientExtension$Query$PostalCodes on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$PostalCodes>> query$PostalCodes(
           [Options$Query$PostalCodes? options]) async =>
       await this.query(options ?? Options$Query$PostalCodes());
+
   graphql.ObservableQuery<Query$PostalCodes> watchQuery$PostalCodes(
           [WatchOptions$Query$PostalCodes? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$PostalCodes());
+
   void writeQuery$PostalCodes({
     required Query$PostalCodes data,
     bool broadcast = true,
@@ -17450,6 +18235,7 @@ extension ClientExtension$Query$PostalCodes on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$PostalCodes? readQuery$PostalCodes({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(

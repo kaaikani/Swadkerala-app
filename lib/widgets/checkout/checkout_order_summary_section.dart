@@ -7,7 +7,6 @@ import '../../controllers/banner/bannercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/price_formatter.dart';
-import '../../graphql/order.graphql.dart';
 import '../../graphql/banner.graphql.dart';
 
 class CheckoutOrderSummarySection extends StatelessWidget {
@@ -96,7 +95,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
       
       final itemCount = cart?.lines.length ?? 0;
       final subtotal = cart?.subTotalWithTax ?? 0;
-      final shipping = orderController.selectedShippingMethod.value?.priceWithTax ?? 0;
+      final shipping = orderController.getShippingPrice(orderController.selectedShippingMethod.value);
       final total = cart?.totalWithTax ?? 0;
       final hasFreeShipping = cartController.hasFreeShippingCoupon();
       

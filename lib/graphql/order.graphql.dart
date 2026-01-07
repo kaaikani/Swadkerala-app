@@ -411,6 +411,7 @@ extension ClientExtension$Fragment$OrderAddress on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$OrderAddress? readFragment$OrderAddress({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -614,6 +615,7 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         this,
         (i) => i,
       );
+
   _T when<_T>({
     required _T Function(Fragment$ErrorResult$$AlreadyLoggedInError)
         alreadyLoggedInError,
@@ -1237,6 +1239,7 @@ extension ClientExtension$Fragment$ErrorResult on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$ErrorResult? readFragment$ErrorResult({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -7164,6 +7167,7 @@ extension ClientExtension$Fragment$Cart on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$Cart? readFragment$Cart({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -10321,6 +10325,7 @@ extension ClientExtension$Fragment$Asset on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$Asset? readFragment$Asset({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -10844,9 +10849,11 @@ extension ClientExtension$Query$ActiveOrder on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$ActiveOrder>> query$ActiveOrder(
           [Options$Query$ActiveOrder? options]) async =>
       await this.query(options ?? Options$Query$ActiveOrder());
+
   graphql.ObservableQuery<Query$ActiveOrder> watchQuery$ActiveOrder(
           [WatchOptions$Query$ActiveOrder? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$ActiveOrder());
+
   void writeQuery$ActiveOrder({
     required Query$ActiveOrder data,
     bool broadcast = true,
@@ -10858,6 +10865,7 @@ extension ClientExtension$Query$ActiveOrder on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$ActiveOrder? readQuery$ActiveOrder({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
@@ -15055,6 +15063,7 @@ extension ClientExtension$Mutation$RemoveOrderLine on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$RemoveOrderLine>> mutate$RemoveOrderLine(
           Options$Mutation$RemoveOrderLine options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$RemoveOrderLine>
       watchMutation$RemoveOrderLine(
               WatchOptions$Mutation$RemoveOrderLine options) =>
@@ -15242,6 +15251,7 @@ extension UtilityExtension$Mutation$RemoveOrderLine$removeOrderLine
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$RemoveOrderLine$removeOrderLine$$OrderInterceptorError)
@@ -19697,6 +19707,7 @@ extension ClientExtension$Mutation$RemoveAllOrderLines
       mutate$RemoveAllOrderLines(
               [Options$Mutation$RemoveAllOrderLines? options]) async =>
           await this.mutate(options ?? Options$Mutation$RemoveAllOrderLines());
+
   graphql.ObservableQuery<Mutation$RemoveAllOrderLines>
       watchMutation$RemoveAllOrderLines(
               [WatchOptions$Mutation$RemoveAllOrderLines? options]) =>
@@ -19884,6 +19895,7 @@ extension UtilityExtension$Mutation$RemoveAllOrderLines$removeAllOrderLines
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$RemoveAllOrderLines$removeAllOrderLines$$OrderInterceptorError)
@@ -24487,6 +24499,7 @@ extension ClientExtension$Mutation$AdjustOrderLine on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$AdjustOrderLine>> mutate$AdjustOrderLine(
           Options$Mutation$AdjustOrderLine options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$AdjustOrderLine>
       watchMutation$AdjustOrderLine(
               WatchOptions$Mutation$AdjustOrderLine options) =>
@@ -24686,6 +24699,7 @@ extension UtilityExtension$Mutation$AdjustOrderLine$adjustOrderLine
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(Mutation$AdjustOrderLine$adjustOrderLine$$Order) order,
     required _T Function(
@@ -29833,6 +29847,7 @@ extension ClientExtension$Mutation$SetShippingAddress on graphql.GraphQLClient {
       mutate$SetShippingAddress(
               Options$Mutation$SetShippingAddress options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$SetShippingAddress>
       watchMutation$SetShippingAddress(
               WatchOptions$Mutation$SetShippingAddress options) =>
@@ -30019,6 +30034,7 @@ extension UtilityExtension$Mutation$SetShippingAddress$setOrderShippingAddress
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$SetShippingAddress$setOrderShippingAddress$$Order)
@@ -34557,6 +34573,7 @@ extension ClientExtension$Mutation$SetOtherInstruction
       mutate$SetOtherInstruction(
               Options$Mutation$SetOtherInstruction options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$SetOtherInstruction>
       watchMutation$SetOtherInstruction(
               WatchOptions$Mutation$SetOtherInstruction options) =>
@@ -35373,6 +35390,7 @@ extension ClientExtension$Mutation$SetShippingMethod on graphql.GraphQLClient {
       mutate$SetShippingMethod(
               Options$Mutation$SetShippingMethod options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$SetShippingMethod>
       watchMutation$SetShippingMethod(
               WatchOptions$Mutation$SetShippingMethod options) =>
@@ -35567,6 +35585,7 @@ extension UtilityExtension$Mutation$SetShippingMethod$setOrderShippingMethod
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$SetShippingMethod$setOrderShippingMethod$$Order)
@@ -40312,11 +40331,13 @@ extension ClientExtension$Query$GetEligiblePaymentMethods
               [Options$Query$GetEligiblePaymentMethods? options]) async =>
           await this
               .query(options ?? Options$Query$GetEligiblePaymentMethods());
+
   graphql.ObservableQuery<Query$GetEligiblePaymentMethods>
       watchQuery$GetEligiblePaymentMethods(
               [WatchOptions$Query$GetEligiblePaymentMethods? options]) =>
           this.watchQuery(
               options ?? WatchOptions$Query$GetEligiblePaymentMethods());
+
   void writeQuery$GetEligiblePaymentMethods({
     required Query$GetEligiblePaymentMethods data,
     bool broadcast = true,
@@ -40328,6 +40349,7 @@ extension ClientExtension$Query$GetEligiblePaymentMethods
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetEligiblePaymentMethods? readQuery$GetEligiblePaymentMethods(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -40560,35 +40582,39 @@ class _CopyWithStubImpl$Query$GetEligiblePaymentMethods$eligiblePaymentMethods<
       _res;
 }
 
-class Query$GetEligibleShippingMethods {
-  Query$GetEligibleShippingMethods({
-    required this.eligibleShippingMethods,
+class Query$GetEligibleShippingMethodsEnabled {
+  Query$GetEligibleShippingMethodsEnabled({
+    required this.eligibleShippingMethodsEnabled,
     this.$__typename = 'Query',
   });
 
-  factory Query$GetEligibleShippingMethods.fromJson(Map<String, dynamic> json) {
-    final l$eligibleShippingMethods = json['eligibleShippingMethods'];
+  factory Query$GetEligibleShippingMethodsEnabled.fromJson(
+      Map<String, dynamic> json) {
+    final l$eligibleShippingMethodsEnabled =
+        json['eligibleShippingMethodsEnabled'];
     final l$$__typename = json['__typename'];
-    return Query$GetEligibleShippingMethods(
-      eligibleShippingMethods: (l$eligibleShippingMethods as List<dynamic>)
+    return Query$GetEligibleShippingMethodsEnabled(
+      eligibleShippingMethodsEnabled: (l$eligibleShippingMethodsEnabled
+              as List<dynamic>)
           .map((e) =>
-              Query$GetEligibleShippingMethods$eligibleShippingMethods.fromJson(
-                  (e as Map<String, dynamic>)))
+              Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled
+                  .fromJson((e as Map<String, dynamic>)))
           .toList(),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final List<Query$GetEligibleShippingMethods$eligibleShippingMethods>
-      eligibleShippingMethods;
+  final List<
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>
+      eligibleShippingMethodsEnabled;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$eligibleShippingMethods = eligibleShippingMethods;
-    _resultData['eligibleShippingMethods'] =
-        l$eligibleShippingMethods.map((e) => e.toJson()).toList();
+    final l$eligibleShippingMethodsEnabled = eligibleShippingMethodsEnabled;
+    _resultData['eligibleShippingMethodsEnabled'] =
+        l$eligibleShippingMethodsEnabled.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -40596,10 +40622,10 @@ class Query$GetEligibleShippingMethods {
 
   @override
   int get hashCode {
-    final l$eligibleShippingMethods = eligibleShippingMethods;
+    final l$eligibleShippingMethodsEnabled = eligibleShippingMethodsEnabled;
     final l$$__typename = $__typename;
     return Object.hashAll([
-      Object.hashAll(l$eligibleShippingMethods.map((v) => v)),
+      Object.hashAll(l$eligibleShippingMethodsEnabled.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -40609,22 +40635,24 @@ class Query$GetEligibleShippingMethods {
     if (identical(this, other)) {
       return true;
     }
-    if (other is! Query$GetEligibleShippingMethods ||
+    if (other is! Query$GetEligibleShippingMethodsEnabled ||
         runtimeType != other.runtimeType) {
       return false;
     }
-    final l$eligibleShippingMethods = eligibleShippingMethods;
-    final lOther$eligibleShippingMethods = other.eligibleShippingMethods;
-    if (l$eligibleShippingMethods.length !=
-        lOther$eligibleShippingMethods.length) {
+    final l$eligibleShippingMethodsEnabled = eligibleShippingMethodsEnabled;
+    final lOther$eligibleShippingMethodsEnabled =
+        other.eligibleShippingMethodsEnabled;
+    if (l$eligibleShippingMethodsEnabled.length !=
+        lOther$eligibleShippingMethodsEnabled.length) {
       return false;
     }
-    for (int i = 0; i < l$eligibleShippingMethods.length; i++) {
-      final l$eligibleShippingMethods$entry = l$eligibleShippingMethods[i];
-      final lOther$eligibleShippingMethods$entry =
-          lOther$eligibleShippingMethods[i];
-      if (l$eligibleShippingMethods$entry !=
-          lOther$eligibleShippingMethods$entry) {
+    for (int i = 0; i < l$eligibleShippingMethodsEnabled.length; i++) {
+      final l$eligibleShippingMethodsEnabled$entry =
+          l$eligibleShippingMethodsEnabled[i];
+      final lOther$eligibleShippingMethodsEnabled$entry =
+          lOther$eligibleShippingMethodsEnabled[i];
+      if (l$eligibleShippingMethodsEnabled$entry !=
+          lOther$eligibleShippingMethodsEnabled$entry) {
         return false;
       }
     }
@@ -40637,104 +40665,108 @@ class Query$GetEligibleShippingMethods {
   }
 }
 
-extension UtilityExtension$Query$GetEligibleShippingMethods
-    on Query$GetEligibleShippingMethods {
-  CopyWith$Query$GetEligibleShippingMethods<Query$GetEligibleShippingMethods>
-      get copyWith => CopyWith$Query$GetEligibleShippingMethods(
+extension UtilityExtension$Query$GetEligibleShippingMethodsEnabled
+    on Query$GetEligibleShippingMethodsEnabled {
+  CopyWith$Query$GetEligibleShippingMethodsEnabled<
+          Query$GetEligibleShippingMethodsEnabled>
+      get copyWith => CopyWith$Query$GetEligibleShippingMethodsEnabled(
             this,
             (i) => i,
           );
 }
 
-abstract class CopyWith$Query$GetEligibleShippingMethods<TRes> {
-  factory CopyWith$Query$GetEligibleShippingMethods(
-    Query$GetEligibleShippingMethods instance,
-    TRes Function(Query$GetEligibleShippingMethods) then,
-  ) = _CopyWithImpl$Query$GetEligibleShippingMethods;
+abstract class CopyWith$Query$GetEligibleShippingMethodsEnabled<TRes> {
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled(
+    Query$GetEligibleShippingMethodsEnabled instance,
+    TRes Function(Query$GetEligibleShippingMethodsEnabled) then,
+  ) = _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled;
 
-  factory CopyWith$Query$GetEligibleShippingMethods.stub(TRes res) =
-      _CopyWithStubImpl$Query$GetEligibleShippingMethods;
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled.stub(TRes res) =
+      _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled;
 
   TRes call({
-    List<Query$GetEligibleShippingMethods$eligibleShippingMethods>?
-        eligibleShippingMethods,
+    List<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>?
+        eligibleShippingMethodsEnabled,
     String? $__typename,
   });
-  TRes eligibleShippingMethods(
-      Iterable<Query$GetEligibleShippingMethods$eligibleShippingMethods> Function(
+  TRes eligibleShippingMethodsEnabled(
+      Iterable<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled> Function(
               Iterable<
-                  CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods<
-                      Query$GetEligibleShippingMethods$eligibleShippingMethods>>)
+                  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
+                      Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>>)
           _fn);
 }
 
-class _CopyWithImpl$Query$GetEligibleShippingMethods<TRes>
-    implements CopyWith$Query$GetEligibleShippingMethods<TRes> {
-  _CopyWithImpl$Query$GetEligibleShippingMethods(
+class _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled<TRes>
+    implements CopyWith$Query$GetEligibleShippingMethodsEnabled<TRes> {
+  _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled(
     this._instance,
     this._then,
   );
 
-  final Query$GetEligibleShippingMethods _instance;
+  final Query$GetEligibleShippingMethodsEnabled _instance;
 
-  final TRes Function(Query$GetEligibleShippingMethods) _then;
+  final TRes Function(Query$GetEligibleShippingMethodsEnabled) _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
-    Object? eligibleShippingMethods = _undefined,
+    Object? eligibleShippingMethodsEnabled = _undefined,
     Object? $__typename = _undefined,
   }) =>
-      _then(Query$GetEligibleShippingMethods(
-        eligibleShippingMethods: eligibleShippingMethods == _undefined ||
-                eligibleShippingMethods == null
-            ? _instance.eligibleShippingMethods
-            : (eligibleShippingMethods as List<
-                Query$GetEligibleShippingMethods$eligibleShippingMethods>),
+      _then(Query$GetEligibleShippingMethodsEnabled(
+        eligibleShippingMethodsEnabled: eligibleShippingMethodsEnabled ==
+                    _undefined ||
+                eligibleShippingMethodsEnabled == null
+            ? _instance.eligibleShippingMethodsEnabled
+            : (eligibleShippingMethodsEnabled as List<
+                Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
 
-  TRes eligibleShippingMethods(
-          Iterable<Query$GetEligibleShippingMethods$eligibleShippingMethods> Function(
+  TRes eligibleShippingMethodsEnabled(
+          Iterable<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled> Function(
                   Iterable<
-                      CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods<
-                          Query$GetEligibleShippingMethods$eligibleShippingMethods>>)
+                      CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
+                          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>>)
               _fn) =>
       call(
-          eligibleShippingMethods: _fn(_instance.eligibleShippingMethods.map((e) =>
-              CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods(
-                e,
-                (i) => i,
-              ))).toList());
+          eligibleShippingMethodsEnabled: _fn(
+              _instance.eligibleShippingMethodsEnabled.map((e) =>
+                  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled(
+                    e,
+                    (i) => i,
+                  ))).toList());
 }
 
-class _CopyWithStubImpl$Query$GetEligibleShippingMethods<TRes>
-    implements CopyWith$Query$GetEligibleShippingMethods<TRes> {
-  _CopyWithStubImpl$Query$GetEligibleShippingMethods(this._res);
+class _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled<TRes>
+    implements CopyWith$Query$GetEligibleShippingMethodsEnabled<TRes> {
+  _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled(this._res);
 
   TRes _res;
 
   call({
-    List<Query$GetEligibleShippingMethods$eligibleShippingMethods>?
-        eligibleShippingMethods,
+    List<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>?
+        eligibleShippingMethodsEnabled,
     String? $__typename,
   }) =>
       _res;
 
-  eligibleShippingMethods(_fn) => _res;
+  eligibleShippingMethodsEnabled(_fn) => _res;
 }
 
-const documentNodeQueryGetEligibleShippingMethods = DocumentNode(definitions: [
+const documentNodeQueryGetEligibleShippingMethodsEnabled =
+    DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.query,
-    name: NameNode(value: 'GetEligibleShippingMethods'),
+    name: NameNode(value: 'GetEligibleShippingMethodsEnabled'),
     variableDefinitions: [],
     directives: [],
     selectionSet: SelectionSetNode(selections: [
       FieldNode(
-        name: NameNode(value: 'eligibleShippingMethods'),
+        name: NameNode(value: 'eligibleShippingMethodsEnabled'),
         alias: null,
         arguments: [],
         directives: [],
@@ -40761,32 +40793,55 @@ const documentNodeQueryGetEligibleShippingMethods = DocumentNode(definitions: [
             selectionSet: null,
           ),
           FieldNode(
-            name: NameNode(value: 'description'),
+            name: NameNode(value: 'calculator'),
             alias: null,
             arguments: [],
             directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'price'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'priceWithTax'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
-          FieldNode(
-            name: NameNode(value: 'metadata'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'code'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'args'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'value'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
           ),
           FieldNode(
             name: NameNode(value: '__typename'),
@@ -40807,27 +40862,28 @@ const documentNodeQueryGetEligibleShippingMethods = DocumentNode(definitions: [
     ]),
   ),
 ]);
-Query$GetEligibleShippingMethods _parserFn$Query$GetEligibleShippingMethods(
-        Map<String, dynamic> data) =>
-    Query$GetEligibleShippingMethods.fromJson(data);
-typedef OnQueryComplete$Query$GetEligibleShippingMethods = FutureOr<void>
+Query$GetEligibleShippingMethodsEnabled
+    _parserFn$Query$GetEligibleShippingMethodsEnabled(
+            Map<String, dynamic> data) =>
+        Query$GetEligibleShippingMethodsEnabled.fromJson(data);
+typedef OnQueryComplete$Query$GetEligibleShippingMethodsEnabled = FutureOr<void>
     Function(
   Map<String, dynamic>?,
-  Query$GetEligibleShippingMethods?,
+  Query$GetEligibleShippingMethodsEnabled?,
 );
 
-class Options$Query$GetEligibleShippingMethods
-    extends graphql.QueryOptions<Query$GetEligibleShippingMethods> {
-  Options$Query$GetEligibleShippingMethods({
+class Options$Query$GetEligibleShippingMethodsEnabled
+    extends graphql.QueryOptions<Query$GetEligibleShippingMethodsEnabled> {
+  Options$Query$GetEligibleShippingMethodsEnabled({
     String? operationName,
     graphql.FetchPolicy? fetchPolicy,
     graphql.ErrorPolicy? errorPolicy,
     graphql.CacheRereadPolicy? cacheRereadPolicy,
     Object? optimisticResult,
-    Query$GetEligibleShippingMethods? typedOptimisticResult,
+    Query$GetEligibleShippingMethodsEnabled? typedOptimisticResult,
     Duration? pollInterval,
     graphql.Context? context,
-    OnQueryComplete$Query$GetEligibleShippingMethods? onComplete,
+    OnQueryComplete$Query$GetEligibleShippingMethodsEnabled? onComplete,
     graphql.OnQueryError? onError,
   })  : onCompleteWithParsed = onComplete,
         super(
@@ -40844,14 +40900,16 @@ class Options$Query$GetEligibleShippingMethods
                     data,
                     data == null
                         ? null
-                        : _parserFn$Query$GetEligibleShippingMethods(data),
+                        : _parserFn$Query$GetEligibleShippingMethodsEnabled(
+                            data),
                   ),
           onError: onError,
-          document: documentNodeQueryGetEligibleShippingMethods,
-          parserFn: _parserFn$Query$GetEligibleShippingMethods,
+          document: documentNodeQueryGetEligibleShippingMethodsEnabled,
+          parserFn: _parserFn$Query$GetEligibleShippingMethodsEnabled,
         );
 
-  final OnQueryComplete$Query$GetEligibleShippingMethods? onCompleteWithParsed;
+  final OnQueryComplete$Query$GetEligibleShippingMethodsEnabled?
+      onCompleteWithParsed;
 
   @override
   List<Object?> get properties => [
@@ -40862,15 +40920,15 @@ class Options$Query$GetEligibleShippingMethods
       ];
 }
 
-class WatchOptions$Query$GetEligibleShippingMethods
-    extends graphql.WatchQueryOptions<Query$GetEligibleShippingMethods> {
-  WatchOptions$Query$GetEligibleShippingMethods({
+class WatchOptions$Query$GetEligibleShippingMethodsEnabled
+    extends graphql.WatchQueryOptions<Query$GetEligibleShippingMethodsEnabled> {
+  WatchOptions$Query$GetEligibleShippingMethodsEnabled({
     String? operationName,
     graphql.FetchPolicy? fetchPolicy,
     graphql.ErrorPolicy? errorPolicy,
     graphql.CacheRereadPolicy? cacheRereadPolicy,
     Object? optimisticResult,
-    Query$GetEligibleShippingMethods? typedOptimisticResult,
+    Query$GetEligibleShippingMethodsEnabled? typedOptimisticResult,
     graphql.Context? context,
     Duration? pollInterval,
     bool? eagerlyFetchResults,
@@ -40883,117 +40941,116 @@ class WatchOptions$Query$GetEligibleShippingMethods
           cacheRereadPolicy: cacheRereadPolicy,
           optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
           context: context,
-          document: documentNodeQueryGetEligibleShippingMethods,
+          document: documentNodeQueryGetEligibleShippingMethodsEnabled,
           pollInterval: pollInterval,
           eagerlyFetchResults: eagerlyFetchResults,
           carryForwardDataOnException: carryForwardDataOnException,
           fetchResults: fetchResults,
-          parserFn: _parserFn$Query$GetEligibleShippingMethods,
+          parserFn: _parserFn$Query$GetEligibleShippingMethodsEnabled,
         );
 }
 
-class FetchMoreOptions$Query$GetEligibleShippingMethods
+class FetchMoreOptions$Query$GetEligibleShippingMethodsEnabled
     extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetEligibleShippingMethods(
+  FetchMoreOptions$Query$GetEligibleShippingMethodsEnabled(
       {required graphql.UpdateQuery updateQuery})
       : super(
           updateQuery: updateQuery,
-          document: documentNodeQueryGetEligibleShippingMethods,
+          document: documentNodeQueryGetEligibleShippingMethodsEnabled,
         );
 }
 
-extension ClientExtension$Query$GetEligibleShippingMethods
+extension ClientExtension$Query$GetEligibleShippingMethodsEnabled
     on graphql.GraphQLClient {
-  Future<graphql.QueryResult<Query$GetEligibleShippingMethods>>
-      query$GetEligibleShippingMethods(
-              [Options$Query$GetEligibleShippingMethods? options]) async =>
-          await this
-              .query(options ?? Options$Query$GetEligibleShippingMethods());
-  graphql.ObservableQuery<Query$GetEligibleShippingMethods>
-      watchQuery$GetEligibleShippingMethods(
-              [WatchOptions$Query$GetEligibleShippingMethods? options]) =>
-          this.watchQuery(
-              options ?? WatchOptions$Query$GetEligibleShippingMethods());
-  void writeQuery$GetEligibleShippingMethods({
-    required Query$GetEligibleShippingMethods data,
+  Future<graphql.QueryResult<Query$GetEligibleShippingMethodsEnabled>>
+      query$GetEligibleShippingMethodsEnabled(
+              [Options$Query$GetEligibleShippingMethodsEnabled?
+                  options]) async =>
+          await this.query(
+              options ?? Options$Query$GetEligibleShippingMethodsEnabled());
+
+  graphql.ObservableQuery<Query$GetEligibleShippingMethodsEnabled>
+      watchQuery$GetEligibleShippingMethodsEnabled(
+              [WatchOptions$Query$GetEligibleShippingMethodsEnabled?
+                  options]) =>
+          this.watchQuery(options ??
+              WatchOptions$Query$GetEligibleShippingMethodsEnabled());
+
+  void writeQuery$GetEligibleShippingMethodsEnabled({
+    required Query$GetEligibleShippingMethodsEnabled data,
     bool broadcast = true,
   }) =>
       this.writeQuery(
         graphql.Request(
             operation: graphql.Operation(
-                document: documentNodeQueryGetEligibleShippingMethods)),
+                document: documentNodeQueryGetEligibleShippingMethodsEnabled)),
         data: data.toJson(),
         broadcast: broadcast,
       );
-  Query$GetEligibleShippingMethods? readQuery$GetEligibleShippingMethods(
-      {bool optimistic = true}) {
+
+  Query$GetEligibleShippingMethodsEnabled?
+      readQuery$GetEligibleShippingMethodsEnabled({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
           operation: graphql.Operation(
-              document: documentNodeQueryGetEligibleShippingMethods)),
+              document: documentNodeQueryGetEligibleShippingMethodsEnabled)),
       optimistic: optimistic,
     );
     return result == null
         ? null
-        : Query$GetEligibleShippingMethods.fromJson(result);
+        : Query$GetEligibleShippingMethodsEnabled.fromJson(result);
   }
 }
 
-graphql_flutter.QueryHookResult<Query$GetEligibleShippingMethods>
-    useQuery$GetEligibleShippingMethods(
-            [Options$Query$GetEligibleShippingMethods? options]) =>
-        graphql_flutter
-            .useQuery(options ?? Options$Query$GetEligibleShippingMethods());
-graphql.ObservableQuery<Query$GetEligibleShippingMethods>
-    useWatchQuery$GetEligibleShippingMethods(
-            [WatchOptions$Query$GetEligibleShippingMethods? options]) =>
+graphql_flutter.QueryHookResult<Query$GetEligibleShippingMethodsEnabled>
+    useQuery$GetEligibleShippingMethodsEnabled(
+            [Options$Query$GetEligibleShippingMethodsEnabled? options]) =>
+        graphql_flutter.useQuery(
+            options ?? Options$Query$GetEligibleShippingMethodsEnabled());
+graphql.ObservableQuery<Query$GetEligibleShippingMethodsEnabled>
+    useWatchQuery$GetEligibleShippingMethodsEnabled(
+            [WatchOptions$Query$GetEligibleShippingMethodsEnabled? options]) =>
         graphql_flutter.useWatchQuery(
-            options ?? WatchOptions$Query$GetEligibleShippingMethods());
+            options ?? WatchOptions$Query$GetEligibleShippingMethodsEnabled());
 
-class Query$GetEligibleShippingMethods$Widget
-    extends graphql_flutter.Query<Query$GetEligibleShippingMethods> {
-  Query$GetEligibleShippingMethods$Widget({
+class Query$GetEligibleShippingMethodsEnabled$Widget
+    extends graphql_flutter.Query<Query$GetEligibleShippingMethodsEnabled> {
+  Query$GetEligibleShippingMethodsEnabled$Widget({
     widgets.Key? key,
-    Options$Query$GetEligibleShippingMethods? options,
-    required graphql_flutter.QueryBuilder<Query$GetEligibleShippingMethods>
+    Options$Query$GetEligibleShippingMethodsEnabled? options,
+    required graphql_flutter
+        .QueryBuilder<Query$GetEligibleShippingMethodsEnabled>
         builder,
   }) : super(
           key: key,
-          options: options ?? Options$Query$GetEligibleShippingMethods(),
+          options: options ?? Options$Query$GetEligibleShippingMethodsEnabled(),
           builder: builder,
         );
 }
 
-class Query$GetEligibleShippingMethods$eligibleShippingMethods {
-  Query$GetEligibleShippingMethods$eligibleShippingMethods({
+class Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled {
+  Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled({
     required this.id,
     required this.name,
     required this.code,
-    required this.description,
-    required this.price,
-    required this.priceWithTax,
-    this.metadata,
-    this.$__typename = 'ShippingMethodQuote',
+    required this.calculator,
+    this.$__typename = 'ShippingMethod',
   });
 
-  factory Query$GetEligibleShippingMethods$eligibleShippingMethods.fromJson(
+  factory Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled.fromJson(
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
     final l$code = json['code'];
-    final l$description = json['description'];
-    final l$price = json['price'];
-    final l$priceWithTax = json['priceWithTax'];
-    final l$metadata = json['metadata'];
+    final l$calculator = json['calculator'];
     final l$$__typename = json['__typename'];
-    return Query$GetEligibleShippingMethods$eligibleShippingMethods(
+    return Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled(
       id: (l$id as String),
       name: (l$name as String),
       code: (l$code as String),
-      description: (l$description as String),
-      price: (l$price as num).toDouble(),
-      priceWithTax: (l$priceWithTax as num).toDouble(),
-      metadata: (l$metadata as Map<String, dynamic>?),
+      calculator:
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator
+              .fromJson((l$calculator as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -41004,13 +41061,8 @@ class Query$GetEligibleShippingMethods$eligibleShippingMethods {
 
   final String code;
 
-  final String description;
-
-  final double price;
-
-  final double priceWithTax;
-
-  final Map<String, dynamic>? metadata;
+  final Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator
+      calculator;
 
   final String $__typename;
 
@@ -41022,14 +41074,8 @@ class Query$GetEligibleShippingMethods$eligibleShippingMethods {
     _resultData['name'] = l$name;
     final l$code = code;
     _resultData['code'] = l$code;
-    final l$description = description;
-    _resultData['description'] = l$description;
-    final l$price = price;
-    _resultData['price'] = l$price;
-    final l$priceWithTax = priceWithTax;
-    _resultData['priceWithTax'] = l$priceWithTax;
-    final l$metadata = metadata;
-    _resultData['metadata'] = l$metadata;
+    final l$calculator = calculator;
+    _resultData['calculator'] = l$calculator.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -41040,19 +41086,13 @@ class Query$GetEligibleShippingMethods$eligibleShippingMethods {
     final l$id = id;
     final l$name = name;
     final l$code = code;
-    final l$description = description;
-    final l$price = price;
-    final l$priceWithTax = priceWithTax;
-    final l$metadata = metadata;
+    final l$calculator = calculator;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$name,
       l$code,
-      l$description,
-      l$price,
-      l$priceWithTax,
-      l$metadata,
+      l$calculator,
       l$$__typename,
     ]);
   }
@@ -41062,7 +41102,8 @@ class Query$GetEligibleShippingMethods$eligibleShippingMethods {
     if (identical(this, other)) {
       return true;
     }
-    if (other is! Query$GetEligibleShippingMethods$eligibleShippingMethods ||
+    if (other
+            is! Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled ||
         runtimeType != other.runtimeType) {
       return false;
     }
@@ -41081,24 +41122,9 @@ class Query$GetEligibleShippingMethods$eligibleShippingMethods {
     if (l$code != lOther$code) {
       return false;
     }
-    final l$description = description;
-    final lOther$description = other.description;
-    if (l$description != lOther$description) {
-      return false;
-    }
-    final l$price = price;
-    final lOther$price = other.price;
-    if (l$price != lOther$price) {
-      return false;
-    }
-    final l$priceWithTax = priceWithTax;
-    final lOther$priceWithTax = other.priceWithTax;
-    if (l$priceWithTax != lOther$priceWithTax) {
-      return false;
-    }
-    final l$metadata = metadata;
-    final lOther$metadata = other.metadata;
-    if (l$metadata != lOther$metadata) {
+    final l$calculator = calculator;
+    final lOther$calculator = other.calculator;
+    if (l$calculator != lOther$calculator) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -41110,54 +41136,58 @@ class Query$GetEligibleShippingMethods$eligibleShippingMethods {
   }
 }
 
-extension UtilityExtension$Query$GetEligibleShippingMethods$eligibleShippingMethods
-    on Query$GetEligibleShippingMethods$eligibleShippingMethods {
-  CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods<
-          Query$GetEligibleShippingMethods$eligibleShippingMethods>
+extension UtilityExtension$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled
+    on Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled {
+  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>
       get copyWith =>
-          CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods(
+          CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled(
             this,
             (i) => i,
           );
 }
 
-abstract class CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods<
+abstract class CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
     TRes> {
-  factory CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods(
-    Query$GetEligibleShippingMethods$eligibleShippingMethods instance,
-    TRes Function(Query$GetEligibleShippingMethods$eligibleShippingMethods)
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled(
+    Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled
+        instance,
+    TRes Function(
+            Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled)
         then,
-  ) = _CopyWithImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods;
+  ) = _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled;
 
-  factory CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods.stub(
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled.stub(
           TRes res) =
-      _CopyWithStubImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods;
+      _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled;
 
   TRes call({
     String? id,
     String? name,
     String? code,
-    String? description,
-    double? price,
-    double? priceWithTax,
-    Map<String, dynamic>? metadata,
+    Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator?
+        calculator,
     String? $__typename,
   });
+  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+      TRes> get calculator;
 }
 
-class _CopyWithImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods<
+class _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
         TRes>
     implements
-        CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods<
+        CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
             TRes> {
-  _CopyWithImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods(
+  _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled(
     this._instance,
     this._then,
   );
 
-  final Query$GetEligibleShippingMethods$eligibleShippingMethods _instance;
+  final Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled
+      _instance;
 
-  final TRes Function(Query$GetEligibleShippingMethods$eligibleShippingMethods)
+  final TRes Function(
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled)
       _then;
 
   static const _undefined = <dynamic, dynamic>{};
@@ -41166,13 +41196,11 @@ class _CopyWithImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods<
     Object? id = _undefined,
     Object? name = _undefined,
     Object? code = _undefined,
-    Object? description = _undefined,
-    Object? price = _undefined,
-    Object? priceWithTax = _undefined,
-    Object? metadata = _undefined,
+    Object? calculator = _undefined,
     Object? $__typename = _undefined,
   }) =>
-      _then(Query$GetEligibleShippingMethods$eligibleShippingMethods(
+      _then(
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled(
         id: id == _undefined || id == null ? _instance.id : (id as String),
         name: name == _undefined || name == null
             ? _instance.name
@@ -41180,30 +41208,29 @@ class _CopyWithImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods<
         code: code == _undefined || code == null
             ? _instance.code
             : (code as String),
-        description: description == _undefined || description == null
-            ? _instance.description
-            : (description as String),
-        price: price == _undefined || price == null
-            ? _instance.price
-            : (price as double),
-        priceWithTax: priceWithTax == _undefined || priceWithTax == null
-            ? _instance.priceWithTax
-            : (priceWithTax as double),
-        metadata: metadata == _undefined
-            ? _instance.metadata
-            : (metadata as Map<String, dynamic>?),
+        calculator: calculator == _undefined || calculator == null
+            ? _instance.calculator
+            : (calculator
+                as Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+      TRes> get calculator {
+    final local$calculator = _instance.calculator;
+    return CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator(
+        local$calculator, (e) => call(calculator: e));
+  }
 }
 
-class _CopyWithStubImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods<
+class _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
         TRes>
     implements
-        CopyWith$Query$GetEligibleShippingMethods$eligibleShippingMethods<
+        CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled<
             TRes> {
-  _CopyWithStubImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods(
+  _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled(
       this._res);
 
   TRes _res;
@@ -41212,10 +41239,381 @@ class _CopyWithStubImpl$Query$GetEligibleShippingMethods$eligibleShippingMethods
     String? id,
     String? name,
     String? code,
-    String? description,
-    double? price,
-    double? priceWithTax,
-    Map<String, dynamic>? metadata,
+    Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator?
+        calculator,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+          TRes>
+      get calculator =>
+          CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator
+              .stub(_res);
+}
+
+class Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator {
+  Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator({
+    required this.code,
+    required this.args,
+    this.$__typename = 'ConfigurableOperation',
+  });
+
+  factory Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator.fromJson(
+      Map<String, dynamic> json) {
+    final l$code = json['code'];
+    final l$args = json['args'];
+    final l$$__typename = json['__typename'];
+    return Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator(
+      code: (l$code as String),
+      args: (l$args as List<dynamic>)
+          .map((e) =>
+              Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String code;
+
+  final List<
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args>
+      args;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$args = args;
+    _resultData['args'] = l$args.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$code = code;
+    final l$args = args;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$code,
+      Object.hashAll(l$args.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$args = args;
+    final lOther$args = other.args;
+    if (l$args.length != lOther$args.length) {
+      return false;
+    }
+    for (int i = 0; i < l$args.length; i++) {
+      final l$args$entry = l$args[i];
+      final lOther$args$entry = lOther$args[i];
+      if (l$args$entry != lOther$args$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator
+    on Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator {
+  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator>
+      get copyWith =>
+          CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+    TRes> {
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator(
+    Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator
+        instance,
+    TRes Function(
+            Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator)
+        then,
+  ) = _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator;
+
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator;
+
+  TRes call({
+    String? code,
+    List<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args>?
+        args,
+    String? $__typename,
+  });
+  TRes args(
+      Iterable<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args> Function(
+              Iterable<
+                  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+                      Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+        TRes>
+    implements
+        CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+            TRes> {
+  _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator
+      _instance;
+
+  final TRes Function(
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? code = _undefined,
+    Object? args = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator(
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        args: args == _undefined || args == null
+            ? _instance.args
+            : (args as List<
+                Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes args(
+          Iterable<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args> Function(
+                  Iterable<
+                      CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+                          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args>>)
+              _fn) =>
+      call(
+          args: _fn(_instance.args.map((e) =>
+              CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+        TRes>
+    implements
+        CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator<
+            TRes> {
+  _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? code,
+    List<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args>?
+        args,
+    String? $__typename,
+  }) =>
+      _res;
+
+  args(_fn) => _res;
+}
+
+class Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args {
+  Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args({
+    required this.name,
+    required this.value,
+    this.$__typename = 'ConfigArg',
+  });
+
+  factory Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args.fromJson(
+      Map<String, dynamic> json) {
+    final l$name = json['name'];
+    final l$value = json['value'];
+    final l$$__typename = json['__typename'];
+    return Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args(
+      name: (l$name as String),
+      value: (l$value as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String name;
+
+  final String value;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$value = value;
+    _resultData['value'] = l$value;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$value = value;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$name,
+      l$value,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$value = value;
+    final lOther$value = other.value;
+    if (l$value != lOther$value) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args
+    on Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args {
+  CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args>
+      get copyWith =>
+          CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+    TRes> {
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args(
+    Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args
+        instance,
+    TRes Function(
+            Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args)
+        then,
+  ) = _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args;
+
+  factory CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args;
+
+  TRes call({
+    String? name,
+    String? value,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+        TRes>
+    implements
+        CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+            TRes> {
+  _CopyWithImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args
+      _instance;
+
+  final TRes Function(
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? value = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args(
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        value: value == _undefined || value == null
+            ? _instance.value
+            : (value as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+        TRes>
+    implements
+        CopyWith$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args<
+            TRes> {
+  _CopyWithStubImpl$Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled$calculator$args(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? name,
+    String? value,
     String? $__typename,
   }) =>
       _res;
@@ -41945,9 +42343,11 @@ extension ClientExtension$Query$GetOrderByCode on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetOrderByCode>> query$GetOrderByCode(
           Options$Query$GetOrderByCode options) async =>
       await this.query(options);
+
   graphql.ObservableQuery<Query$GetOrderByCode> watchQuery$GetOrderByCode(
           WatchOptions$Query$GetOrderByCode options) =>
       this.watchQuery(options);
+
   void writeQuery$GetOrderByCode({
     required Query$GetOrderByCode data,
     required Variables$Query$GetOrderByCode variables,
@@ -41962,6 +42362,7 @@ extension ClientExtension$Query$GetOrderByCode on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetOrderByCode? readQuery$GetOrderByCode({
     required Variables$Query$GetOrderByCode variables,
     bool optimistic = true,
@@ -47510,6 +47911,7 @@ extension ClientExtension$Mutation$AddPayment on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$AddPayment>> mutate$AddPayment(
           Options$Mutation$AddPayment options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$AddPayment> watchMutation$AddPayment(
           WatchOptions$Mutation$AddPayment options) =>
       this.watchMutation(options);
@@ -47709,6 +48111,7 @@ extension UtilityExtension$Mutation$AddPayment$addPaymentToOrder
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(Mutation$AddPayment$addPaymentToOrder$$Order) order,
     required _T Function(
@@ -52819,9 +53222,11 @@ extension ClientExtension$Query$NextOrderStates on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$NextOrderStates>> query$NextOrderStates(
           [Options$Query$NextOrderStates? options]) async =>
       await this.query(options ?? Options$Query$NextOrderStates());
+
   graphql.ObservableQuery<Query$NextOrderStates> watchQuery$NextOrderStates(
           [WatchOptions$Query$NextOrderStates? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$NextOrderStates());
+
   void writeQuery$NextOrderStates({
     required Query$NextOrderStates data,
     bool broadcast = true,
@@ -52833,6 +53238,7 @@ extension ClientExtension$Query$NextOrderStates on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$NextOrderStates? readQuery$NextOrderStates({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
@@ -53268,6 +53674,7 @@ extension ClientExtension$Mutation$TransitionOrderToState
       mutate$TransitionOrderToState(
               Options$Mutation$TransitionOrderToState options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$TransitionOrderToState>
       watchMutation$TransitionOrderToState(
               WatchOptions$Mutation$TransitionOrderToState options) =>
@@ -53459,6 +53866,7 @@ extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToStat
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$TransitionOrderToState$transitionOrderToState$$Order)
@@ -58001,6 +58409,7 @@ extension ClientExtension$Mutation$TransitionToArrangingPayment
               [Options$Mutation$TransitionToArrangingPayment? options]) async =>
           await this.mutate(
               options ?? Options$Mutation$TransitionToArrangingPayment());
+
   graphql.ObservableQuery<Mutation$TransitionToArrangingPayment>
       watchMutation$TransitionToArrangingPayment(
               [WatchOptions$Mutation$TransitionToArrangingPayment? options]) =>
@@ -58195,6 +58604,7 @@ extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrder
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order)
@@ -62743,6 +63153,7 @@ extension ClientExtension$Mutation$TransitionToAddingItems
               [Options$Mutation$TransitionToAddingItems? options]) async =>
           await this
               .mutate(options ?? Options$Mutation$TransitionToAddingItems());
+
   graphql.ObservableQuery<Mutation$TransitionToAddingItems>
       watchMutation$TransitionToAddingItems(
               [WatchOptions$Mutation$TransitionToAddingItems? options]) =>
@@ -62933,6 +63344,7 @@ extension UtilityExtension$Mutation$TransitionToAddingItems$transitionOrderToSta
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(
             Mutation$TransitionToAddingItems$transitionOrderToState$$Order)
@@ -67613,6 +68025,7 @@ extension ClientExtension$Mutation$GenerateRazorpayOrderId
       mutate$GenerateRazorpayOrderId(
               Options$Mutation$GenerateRazorpayOrderId options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$GenerateRazorpayOrderId>
       watchMutation$GenerateRazorpayOrderId(
               WatchOptions$Mutation$GenerateRazorpayOrderId options) =>

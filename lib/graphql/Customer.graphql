@@ -311,6 +311,16 @@ query GetChannelsByPostalCode($postalCode: String!) {
     }
 }
 
+query GetChannelsByCustomerPhoneNumber($phoneNumber: String!) {
+    getChannelsByCustomerPhoneNumber(phoneNumber: $phoneNumber) {
+        id
+        code
+        token
+        name
+        type
+    }
+}
+
 query GetAvailableChannels($postalCode: String!) {
     getAvailableChannels(postalCode: $postalCode) {
         id

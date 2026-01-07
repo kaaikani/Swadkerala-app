@@ -63,22 +63,30 @@ class GraphqlService {
       'Accept-Encoding': 'gzip, deflate', // Enable compression
     };
     
-    // Debug print channel token header
+    // Debug print channel token header prominently
+    debugPrint("═══════════════════════════════════════════════════════════");
+    debugPrint("📤 [GraphQL Client] ========== HTTP REQUEST HEADERS ==========");
     if (_channelToken.isNotEmpty) {
-      debugPrint("🔑 [GraphQL Client] Channel Token header: $_channelTokenKey: $_channelToken");
+      debugPrint("✅ [GraphQL Client] Channel Token in Header:");
+      debugPrint("   Header Key: $_channelTokenKey");
+      debugPrint("   Header Value: $_channelToken");
+      debugPrint("   Token Length: ${_channelToken.length} characters");
     } else {
-      debugPrint("🔑 [GraphQL Client] Channel Token header: NOT SET");
+      debugPrint("⚠️ [GraphQL Client] Channel Token in Header: NOT SET");
     }
+    debugPrint("───────────────────────────────────────────────────────────");
     
-    // Debug print headers
-    debugPrint("📋 [GraphQL Client] HTTP Headers:");
+    // Debug print all headers
+    debugPrint("📋 [GraphQL Client] All HTTP Headers:");
     headers.forEach((key, value) {
       if (key == _channelTokenKey) {
-        debugPrint("   - $key: $value");
+        // Highlight channel token header
+        debugPrint("   ✅ $key: $value (Channel Token)");
       } else {
         debugPrint("   - $key: $value");
       }
     });
+    debugPrint("═══════════════════════════════════════════════════════════");
     
     final httpLink = HttpLink(
       dotenv.env['SHOP_API_URL'] ?? '',
@@ -125,11 +133,15 @@ class GraphqlService {
         // Update reactive observable to trigger UI updates
         channelTokenRx.value = token;
         debugPrint("🔄 [GraphQL Client] Channel token reactive observable updated: $token");
+        debugPrint("📤 [GraphQL Client] Channel token will be included in HTTP headers as: $_channelTokenKey");
       }
     }
     await _storage.write('${key}_token', token);
     _client?.value = _createClient();
     debugPrint("✅ [GraphQL Client] $key token updated and client recreated");
+    if (key == 'channel' && token.isNotEmpty) {
+      debugPrint("📤 [GraphQL Client] Channel token is now set and will be sent in all GraphQL request headers");
+    }
   }
 
   // Generic clear token

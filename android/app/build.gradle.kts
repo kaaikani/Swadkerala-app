@@ -53,14 +53,16 @@ android {
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
-        // Limit resource configurations to reduce size
+        // Limit resource configurations to reduce size - only include needed languages
+        // This significantly reduces APK size by excluding unused language resources
         // Note: resourceConfigurations is deprecated, using androidResources.localeFilters instead
-        // resourceConfigurations += listOf("en", "hi") // Only include English and Hindi resources
+        // androidResources.localeFilters += listOf("en", "hi") // Only include English and Hindi resources
         
-        // For split APKs: Don't set abiFilters here - let Flutter handle it
-        // For universal APK: Only ARM architectures (exclude x86_64 to reduce size)
-        // This covers 99%+ of real devices while reducing APK size
-        // Note: When using --split-per-abi, abiFilters should not be set
+        // For universal APK: Only ARM architectures (exclude x86/x86_64 to reduce size)
+        // This covers 99%+ of real devices while reducing APK size by ~15-20MB
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
         
         // Remove debug validation layers to reduce size
         packaging {
@@ -143,8 +145,7 @@ android {
                         "**/attach_hotspot_windows.dll",
                         "META-INF/licenses/**",
                         "META-INF/AL2.0",
-                        "META-INF/LGPL2.1",
-                        "**/libc++_shared.so" // Remove if not needed
+                        "META-INF/LGPL2.1"
                     )
                 }
             }
@@ -170,6 +171,8 @@ configurations.all {
         force("androidx.core:core:1.15.0")
         force("androidx.core:core-ktx:1.15.0")
     }
+    // Exclude FlutterToastPlugin from transitive dependencies
+    exclude(group = "io.github.ponnamkarthik.toast", module = "fluttertoast")
 }
 
 dependencies {
@@ -244,4 +247,3 @@ tasks.register("realignApkFor16KB") {
         }
     }
 }
-

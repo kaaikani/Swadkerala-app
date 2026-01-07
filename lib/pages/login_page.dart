@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     try {
       await _smsAutofillService.initialize();
     } catch (e) {
-      debugPrint('[LoginPage] Error initializing SMS autofill: $e');
+debugPrint('[LoginPage] Error initializing SMS autofill: $e');
     }
   }
 
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       _authController.setLoggedIn(false);
       _authController.setOtpSent(false);
     } catch (e) {
-      debugPrint('[LoginPage] Error clearing cache: $e');
+debugPrint('[LoginPage] Error clearing cache: $e');
     }
   }
 
@@ -210,7 +210,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         if (otp.length == 4 && _otpError == null) _verifyOtp();
       });
     } catch (e) {
-      debugPrint('[LoginPage] SMS autofill error: $e');
+debugPrint('[LoginPage] SMS autofill error: $e');
     }
   }
 
@@ -487,16 +487,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                     'Verification Code',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(18),
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(18),
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                    color: AppColors.textPrimary,
                   ),
+                ),
                   SizedBox(height: ResponsiveUtils.rp(6)),
                   Row(
                     children: [
@@ -506,14 +506,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         color: AppColors.textSecondary,
                       ),
                       SizedBox(width: ResponsiveUtils.rp(6)),
-                      Text(
+                Text(
                         '+91 ${_authController.phoneNumber.text}',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(13),
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(13),
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
                   ),
                 ],
               ),
@@ -941,11 +941,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                         ),
                         SizedBox(width: ResponsiveUtils.rp(12)),
-                        Text(
-                          'Continue with Google',
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600,
+                              Text(
+                                'Continue with Google',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600,
                             fontSize: ResponsiveUtils.sp(15),
                             letterSpacing: 0.3,
                           ),
@@ -1048,7 +1048,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       return;
     }
 
-    final success = await _authController.verifyOtp(context);
+    final success = await _authController.verifyOtpForLogin(context);
     if (success) {
       await AnalyticsService().logLogin(loginMethod: 'OTP');
       await NavigationHelper.redirectToIntendedRoute();

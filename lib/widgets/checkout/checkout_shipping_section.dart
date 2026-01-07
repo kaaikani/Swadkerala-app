@@ -31,7 +31,7 @@ class CheckoutShippingSection extends StatelessWidget {
       
       // Find the matching method from the list to ensure object equality
       // DropdownButton requires the value to be the same instance as in items list
-      Query$GetEligibleShippingMethods$eligibleShippingMethods? matchingSelectedMethod;
+      Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled? matchingSelectedMethod;
       if (selectedMethod != null) {
         try {
           matchingSelectedMethod = orderController.shippingMethods.firstWhere(
@@ -95,28 +95,7 @@ class CheckoutShippingSection extends StatelessWidget {
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        if (singleMethod.description.isNotEmpty) ...[
-                          SizedBox(height: ResponsiveUtils.rp(4)),
-                          Text(
-                            singleMethod.description,
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(13),
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
                       ],
-                    ),
-                  ),
-                  SizedBox(width: ResponsiveUtils.rp(12)),
-                  Text(
-                    cartController.formatPrice(singleMethod.priceWithTax.toInt()),
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(16),
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.button,
                     ),
                   ),
                 ],
@@ -134,7 +113,7 @@ class CheckoutShippingSection extends StatelessWidget {
                 ),
               ),
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<Query$GetEligibleShippingMethods$eligibleShippingMethods>(
+                child: DropdownButton<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>(
                   value: matchingSelectedMethod,
                   isExpanded: true,
                   icon: Icon(
@@ -156,8 +135,7 @@ class CheckoutShippingSection extends StatelessWidget {
                     ),
                   ),
                   items: orderController.shippingMethods.map((method) {
-                    final priceText = cartController.formatPrice(method.priceWithTax.toInt());
-                    return DropdownMenuItem<Query$GetEligibleShippingMethods$eligibleShippingMethods>(
+                    return DropdownMenuItem<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>(
                       value: method,
                       child: Padding(
                         padding: EdgeInsets.symmetric(
@@ -168,9 +146,7 @@ class CheckoutShippingSection extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                method.description.isNotEmpty
-                                    ? '${method.name} - ${method.description} • $priceText'
-                                    : '${method.name} • $priceText',
+                                method.name,
                                 style: TextStyle(
                                   fontSize: ResponsiveUtils.sp(13),
                                   fontWeight: FontWeight.w500,
@@ -185,7 +161,7 @@ class CheckoutShippingSection extends StatelessWidget {
                       ),
                     );
                   }).toList(),
-                  onChanged: (Query$GetEligibleShippingMethods$eligibleShippingMethods? newMethod) async {
+                  onChanged: (Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled? newMethod) async {
                     if (newMethod == null) return;
                     if (orderController.selectedShippingMethod.value?.id == newMethod.id) {
                       return;
@@ -195,7 +171,6 @@ class CheckoutShippingSection extends StatelessWidget {
                   },
                   selectedItemBuilder: (BuildContext context) {
                     return orderController.shippingMethods.map((method) {
-                      final priceText = cartController.formatPrice(method.priceWithTax.toInt());
                       return Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: ResponsiveUtils.rp(16),
@@ -205,7 +180,7 @@ class CheckoutShippingSection extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                '${method.name} • $priceText',
+                                method.name,
                                 style: TextStyle(
                                   fontSize: ResponsiveUtils.sp(15),
                                   fontWeight: FontWeight.w600,

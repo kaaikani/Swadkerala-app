@@ -345,6 +345,7 @@ extension ClientExtension$Fragment$Asset on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$Asset? readFragment$Asset({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -725,6 +726,7 @@ extension ClientExtension$Fragment$Options on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Fragment$Options? readFragment$Options({
     required Map<String, dynamic> idFields,
     bool optimistic = true,
@@ -1458,9 +1460,11 @@ extension ClientExtension$Query$GetProductDetail on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetProductDetail>> query$GetProductDetail(
           Options$Query$GetProductDetail options) async =>
       await this.query(options);
+
   graphql.ObservableQuery<Query$GetProductDetail> watchQuery$GetProductDetail(
           WatchOptions$Query$GetProductDetail options) =>
       this.watchQuery(options);
+
   void writeQuery$GetProductDetail({
     required Query$GetProductDetail data,
     required Variables$Query$GetProductDetail variables,
@@ -1475,6 +1479,7 @@ extension ClientExtension$Query$GetProductDetail on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetProductDetail? readQuery$GetProductDetail({
     required Variables$Query$GetProductDetail variables,
     bool optimistic = true,
@@ -3815,9 +3820,11 @@ extension ClientExtension$Query$Collections on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$Collections>> query$Collections(
           [Options$Query$Collections? options]) async =>
       await this.query(options ?? Options$Query$Collections());
+
   graphql.ObservableQuery<Query$Collections> watchQuery$Collections(
           [WatchOptions$Query$Collections? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$Collections());
+
   void writeQuery$Collections({
     required Query$Collections data,
     Variables$Query$Collections? variables,
@@ -3831,6 +3838,7 @@ extension ClientExtension$Query$Collections on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$Collections? readQuery$Collections({
     Variables$Query$Collections? variables,
     bool optimistic = true,
@@ -5466,9 +5474,11 @@ extension ClientExtension$Query$Products on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$Products>> query$Products(
           [Options$Query$Products? options]) async =>
       await this.query(options ?? Options$Query$Products());
+
   graphql.ObservableQuery<Query$Products> watchQuery$Products(
           [WatchOptions$Query$Products? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$Products());
+
   void writeQuery$Products({
     required Query$Products data,
     Variables$Query$Products? variables,
@@ -5482,6 +5492,7 @@ extension ClientExtension$Query$Products on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$Products? readQuery$Products({
     Variables$Query$Products? variables,
     bool optimistic = true,

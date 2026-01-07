@@ -561,6 +561,7 @@ extension ClientExtension$Mutation$Authenticate on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$Authenticate>> mutate$Authenticate(
           Options$Mutation$Authenticate options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$Authenticate> watchMutation$Authenticate(
           WatchOptions$Mutation$Authenticate options) =>
       this.watchMutation(options);
@@ -744,6 +745,7 @@ extension UtilityExtension$Mutation$Authenticate$authenticate
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(Mutation$Authenticate$authenticate$$CurrentUser)
         currentUser,
@@ -1752,6 +1754,7 @@ extension ClientExtension$Mutation$LoginWithPhoneOtp on graphql.GraphQLClient {
       mutate$LoginWithPhoneOtp(
               Options$Mutation$LoginWithPhoneOtp options) async =>
           await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$LoginWithPhoneOtp>
       watchMutation$LoginWithPhoneOtp(
               WatchOptions$Mutation$LoginWithPhoneOtp options) =>
@@ -1940,6 +1943,7 @@ extension UtilityExtension$Mutation$LoginWithPhoneOtp$authenticate
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(Mutation$LoginWithPhoneOtp$authenticate$$CurrentUser)
         currentUser,
@@ -2951,6 +2955,7 @@ extension ClientExtension$Mutation$LoginWithGoogle on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$LoginWithGoogle>> mutate$LoginWithGoogle(
           Options$Mutation$LoginWithGoogle options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$LoginWithGoogle>
       watchMutation$LoginWithGoogle(
               WatchOptions$Mutation$LoginWithGoogle options) =>
@@ -3139,6 +3144,7 @@ extension UtilityExtension$Mutation$LoginWithGoogle$authenticate
             this,
             (i) => i,
           );
+
   _T when<_T>({
     required _T Function(Mutation$LoginWithGoogle$authenticate$$CurrentUser)
         currentUser,
@@ -4031,6 +4037,7 @@ extension ClientExtension$Mutation$SendPhoneOtp on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$SendPhoneOtp>> mutate$SendPhoneOtp(
           Options$Mutation$SendPhoneOtp options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$SendPhoneOtp> watchMutation$SendPhoneOtp(
           WatchOptions$Mutation$SendPhoneOtp options) =>
       this.watchMutation(options);
@@ -4502,6 +4509,7 @@ extension ClientExtension$Mutation$ResendPhoneOtp on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$ResendPhoneOtp>> mutate$ResendPhoneOtp(
           Options$Mutation$ResendPhoneOtp options) async =>
       await this.mutate(options);
+
   graphql.ObservableQuery<Mutation$ResendPhoneOtp> watchMutation$ResendPhoneOtp(
           WatchOptions$Mutation$ResendPhoneOtp options) =>
       this.watchMutation(options);
@@ -4881,6 +4889,7 @@ extension ClientExtension$Mutation$LogoutUser on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$LogoutUser>> mutate$LogoutUser(
           [Options$Mutation$LogoutUser? options]) async =>
       await this.mutate(options ?? Options$Mutation$LogoutUser());
+
   graphql.ObservableQuery<Mutation$LogoutUser> watchMutation$LogoutUser(
           [WatchOptions$Mutation$LogoutUser? options]) =>
       this.watchMutation(options ?? WatchOptions$Mutation$LogoutUser());
@@ -5425,9 +5434,11 @@ extension ClientExtension$Query$GetChannelList on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetChannelList>> query$GetChannelList(
           [Options$Query$GetChannelList? options]) async =>
       await this.query(options ?? Options$Query$GetChannelList());
+
   graphql.ObservableQuery<Query$GetChannelList> watchQuery$GetChannelList(
           [WatchOptions$Query$GetChannelList? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$GetChannelList());
+
   void writeQuery$GetChannelList({
     required Query$GetChannelList data,
     bool broadcast = true,
@@ -5439,6 +5450,7 @@ extension ClientExtension$Query$GetChannelList on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
+
   Query$GetChannelList? readQuery$GetChannelList({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(

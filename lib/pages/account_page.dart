@@ -41,7 +41,7 @@ class _AccountPageState extends State<AccountPage> {
       if (_isUserAuthenticated()) {
         await customerController.getActiveCustomer();
         // Check for invalid email or missing phone number after customer data loads
-        _checkAndShowUpdateDialogs();
+     _checkAndShowUpdateDialogs();
       }
       _updateService.checkAndShowFlexibleUpdateInAccount(context);
     });
@@ -143,6 +143,20 @@ class _AccountPageState extends State<AccountPage> {
                             color: AppColors.textPrimary,
                           ),
                         ),
+                      ),
+                      // Close button (X mark)
+                      IconButton(
+                        onPressed: isLoading ? null : () {
+                          Get.back();
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          size: ResponsiveUtils.rp(24),
+                          color: AppColors.textSecondary,
+                        ),
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        tooltip: 'Close',
                       ),
                     ],
                   ),
