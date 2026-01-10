@@ -252,6 +252,13 @@ class AppTheme {
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.button,
       ),
+      
+      // Text Selection Theme (Cursor Color)
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: Colors.black, // Black cursor in light mode
+        selectionColor: AppColors.button.withValues(alpha: 0.3),
+        selectionHandleColor: AppColors.button,
+      ),
     );
   }
   
@@ -501,6 +508,13 @@ class AppTheme {
       // Progress Indicator Theme
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.button,
+      ),
+      
+      // Text Selection Theme (Cursor Color)
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: Colors.white, // White cursor in dark mode
+        selectionColor: AppColors.button.withValues(alpha: 0.3),
+        selectionHandleColor: AppColors.button,
       ),
     );
   }

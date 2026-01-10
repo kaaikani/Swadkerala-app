@@ -214,7 +214,7 @@ class CheckoutCouponBottomSheet {
                             Obx(() {
                               final requiredAmount = bannerController.getRequiredAmount(coupon);
                               if (requiredAmount > 0) {
-                                final currentCartTotal = (cartController.cart.value?.totalWithTax ?? 0).toInt();
+                                final currentCartTotal = (orderController.currentOrder.value?.totalWithTax ?? 0).toInt();
                                 final meetsMinimum = currentCartTotal >= requiredAmount;
                                 final difference = requiredAmount - currentCartTotal;
                                 
@@ -271,6 +271,85 @@ class CheckoutCouponBottomSheet {
                                   color: AppColors.textSecondary,
                                   fontSize: ResponsiveUtils.sp(14),
                                 ),
+                              ),
+                              SizedBox(height: ResponsiveUtils.rp(8)),
+                            ],
+
+                            // Usage limits display
+                            if (coupon.usageLimit != null || coupon.perCustomerUsageLimit != null) ...[
+                              Wrap(
+                                spacing: ResponsiveUtils.rp(8),
+                                runSpacing: ResponsiveUtils.rp(8),
+                                children: [
+                                  if (coupon.usageLimit != null)
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: ResponsiveUtils.rp(8),
+                                        vertical: ResponsiveUtils.rp(4),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.info.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                        border: Border.all(
+                                          color: AppColors.info.withValues(alpha: 0.3),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.people_outline,
+                                            size: ResponsiveUtils.rp(14),
+                                            color: AppColors.info,
+                                          ),
+                                          SizedBox(width: ResponsiveUtils.rp(4)),
+                                          Text(
+                                            'Total uses: ${coupon.usageLimit}',
+                                            style: TextStyle(
+                                              fontSize: ResponsiveUtils.sp(11),
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.info,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  if (coupon.perCustomerUsageLimit != null)
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: ResponsiveUtils.rp(8),
+                                        vertical: ResponsiveUtils.rp(4),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.button.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                        border: Border.all(
+                                          color: AppColors.button.withValues(alpha: 0.3),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.person_outline,
+                                            size: ResponsiveUtils.rp(14),
+                                            color: AppColors.button,
+                                          ),
+                                          SizedBox(width: ResponsiveUtils.rp(4)),
+                                          Text(
+                                            'Per customer: ${coupon.perCustomerUsageLimit}',
+                                            style: TextStyle(
+                                              fontSize: ResponsiveUtils.sp(11),
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.button,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
                               ),
                               SizedBox(height: ResponsiveUtils.rp(8)),
                             ],
@@ -381,7 +460,7 @@ class CheckoutCouponBottomSheet {
                                 final canRemoveCoupon = appliedCouponCount < 2;
 
                                 final requiredAmount = bannerController.getRequiredAmount(coupon);
-                                final currentCartTotal = (cartController.cart.value?.totalWithTax ?? 0).toInt();
+                                final currentCartTotal = (orderController.currentOrder.value?.totalWithTax ?? 0).toInt();
                                 final meetsMinimumAmount = requiredAmount == 0 || currentCartTotal >= requiredAmount;
 
                                 return ElevatedButton(

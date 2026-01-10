@@ -112,52 +112,61 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
     super.dispose();
   }
 
-  /// Start speech recognition
-  Future<void> _startSpeechRecognition() async {
-    if (_isListening) {
-      await _speechService.stopListening();
-      setState(() {
-        _isListening = false;
-      });
-      return;
-    }
-
-    setState(() {
-      _isListening = true;
-    });
-
-    await _speechService.startListening(
-      onResult: (text) {
-        if (mounted) {
+  /// Show voice search dialog
+  void _showVoiceSearchDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => VoiceSearchDialog(
+        speechService: _speechService,
+        isListening: _isListening,
+        onListeningStateChanged: (listening) {
           setState(() {
-            _controller.text = text;
-            _isListening = _speechService.isListening;
+            _isListening = listening;
           });
-          
-          // Trigger search when final result is received
-          if (!_speechService.isListening && text.isNotEmpty) {
-            widget.onSearch(text);
-            final bannerController = Get.find<BannerController>();
-            bannerController.searchProducts({'term': text});
+        },
+        onResult: (text) {
+          if (mounted) {
+            setState(() {
+              _controller.text = text;
+              _isListening = _speechService.isListening;
+            });
+            
+            // Trigger search when final result is received
+            if (!_speechService.isListening && text.isNotEmpty) {
+              widget.onSearch(text);
+              final bannerController = Get.find<BannerController>();
+              bannerController.searchProducts({'term': text});
+            }
+            
+            // Close dialog when done listening
+            if (!_speechService.isListening) {
+              Navigator.of(dialogContext).pop();
+            }
           }
-        }
-      },
-      onError: () {
-        if (mounted) {
-          setState(() {
-            _isListening = false;
-          });
-          Get.snackbar(
-            'Error',
-            'Could not start speech recognition. Please check microphone permissions.',
-            snackPosition: SnackPosition.BOTTOM,
-            duration: Duration(seconds: 2),
-            backgroundColor: AppColors.card,
-            colorText: AppColors.textPrimary,
-          );
-        }
-      },
+        },
+        onError: () {
+          if (mounted) {
+            setState(() {
+              _isListening = false;
+            });
+            Get.snackbar(
+              'Error',
+              'Could not start speech recognition. Please check microphone permissions.',
+              snackPosition: SnackPosition.BOTTOM,
+              duration: Duration(seconds: 2),
+              backgroundColor: AppColors.card,
+              colorText: AppColors.textPrimary,
+            );
+          }
+        },
+      ),
     );
+  }
+
+  /// Start speech recognition - shows dialog
+  void _startSpeechRecognition() {
+    _showVoiceSearchDialog();
   }
 
   @override
@@ -407,6 +416,235 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
             radius: 8,
           );
         },
+      ),
+    );
+  }
+}
+
+/// Voice Search Dialog Widget
+class VoiceSearchDialog extends StatefulWidget {
+  final SpeechRecognitionService speechService;
+  final bool isListening;
+  final Function(bool) onListeningStateChanged;
+  final Function(String) onResult;
+  final Function() onError;
+
+  const VoiceSearchDialog({
+    Key? key,
+    required this.speechService,
+    required this.isListening,
+    required this.onListeningStateChanged,
+    required this.onResult,
+    required this.onError,
+  }) : super(key: key);
+
+  @override
+  State<VoiceSearchDialog> createState() => _VoiceSearchDialogState();
+}
+
+class _VoiceSearchDialogState extends State<VoiceSearchDialog>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  bool _isListening = false;
+  String _recognizedText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _isListening = widget.isListening;
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+
+    // Start listening if not already listening
+    if (!_isListening) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _toggleListening();
+      });
+    } else {
+      _animationController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleListening() async {
+    if (_isListening) {
+      // Stop listening
+      await widget.speechService.stopListening();
+      setState(() {
+        _isListening = false;
+      });
+      widget.onListeningStateChanged(false);
+      _animationController.stop();
+    } else {
+      // Start listening
+      setState(() {
+        _isListening = true;
+        _recognizedText = '';
+      });
+      widget.onListeningStateChanged(true);
+      _animationController.repeat(reverse: true);
+
+      await widget.speechService.startListening(
+        onResult: (text) {
+          if (mounted) {
+            setState(() {
+              _recognizedText = text;
+              _isListening = widget.speechService.isListening;
+            });
+
+            // If listening stopped, update state
+            if (!_isListening) {
+              widget.onListeningStateChanged(false);
+              _animationController.stop();
+              widget.onResult(text);
+              // Close dialog after a short delay
+              Future.delayed(Duration(milliseconds: 500), () {
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
+              });
+            } else {
+              // Update recognized text in real-time
+              widget.onResult(text);
+            }
+          }
+        },
+        onError: () {
+          if (mounted) {
+            setState(() {
+              _isListening = false;
+            });
+            widget.onListeningStateChanged(false);
+            _animationController.stop();
+            widget.onError();
+          }
+        },
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+      ),
+      child: Container(
+        padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+        constraints: BoxConstraints(
+          maxWidth: ResponsiveUtils.rp(320),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Title
+            Text(
+              'Voice Search',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(20),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            
+            // Listening indicator
+            Text(
+              _isListening ? 'Listening...' : 'Tap mic to start listening',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(16),
+                color: _isListening ? AppColors.success : AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(20)),
+            
+            // Recognized text display
+            if (_recognizedText.isNotEmpty) ...[
+              Container(
+                padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
+                ),
+                constraints: BoxConstraints(
+                  maxHeight: ResponsiveUtils.rp(100),
+                ),
+                child: SingleChildScrollView(
+                  child: Text(
+                    _recognizedText,
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textPrimary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(20)),
+            ],
+            
+            // Animated microphone button
+            GestureDetector(
+              onTap: _toggleListening,
+              child: AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) {
+                  return Container(
+                    width: ResponsiveUtils.rp(80),
+                    height: ResponsiveUtils.rp(80),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _isListening
+                          ? AppColors.error.withValues(alpha: 0.2 + (_animationController.value * 0.3))
+                          : AppColors.button.withValues(alpha: 0.1),
+                      border: Border.all(
+                        color: _isListening
+                            ? AppColors.error
+                            : AppColors.button,
+                        width: ResponsiveUtils.rp(3),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.mic,
+                      size: ResponsiveUtils.rp(40),
+                      color: _isListening ? AppColors.error : AppColors.button,
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(24)),
+            
+            // Close button
+            TextButton(
+              onPressed: () {
+                if (_isListening) {
+                  widget.speechService.stopListening();
+                }
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Close',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

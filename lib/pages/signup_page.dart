@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/sms_autofill_service.dart';
+import '../services/sim_detection_service.dart';
 import '../services/graphql_client.dart';
 import '../theme/theme.dart';
 import '../utils/navigation_helper.dart';
 import '../utils/responsive.dart';
+import '../widgets/snackbar.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -19,6 +21,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final _authController = Get.find<AuthController>();
   final _smsAutofillService = SmsAutofillService();
+  bool _isDetectingSim = false;
 
   // Use PageController for smooth sliding between steps
   final PageController _pageController = PageController();
@@ -138,6 +141,55 @@ class _SignupPageState extends State<SignupPage> {
     final success = await _authController.verifyOtpForRegistration(context);
     if (success) {
       await NavigationHelper.redirectToIntendedRoute();
+    }
+  }
+
+  Future<void> _showSimSelectionDialog() async {
+    if (!mounted) return;
+    
+    setState(() => _isDetectingSim = true);
+    try {
+      final simService = SimDetectionService();
+      bool hasPermission = await simService.hasPhonePermission();
+
+      if (!hasPermission) {
+        bool granted = await simService.requestPhonePermission();
+        if (!granted) {
+          if (mounted) {
+            showErrorSnackbar('Phone permission is required to access SIM numbers');
+          }
+          return;
+        }
+      }
+
+      List<SimInfo> simInfoList =
+          await simService.getAllSimInfoWithRetry().timeout(
+                const Duration(seconds: 3),
+                onTimeout: () => <SimInfo>[],
+              );
+
+      if (simInfoList.isEmpty) {
+        if (mounted) {
+          showErrorSnackbar('No SIM numbers found');
+        }
+        return;
+      }
+
+      final selectedSim = await simService.showSimSelectionDialog(context, simInfoList);
+      if (selectedSim != null && selectedSim.phoneNumber.isNotEmpty && mounted) {
+        _authController.phoneNumber.text = selectedSim.last10Digits;
+        // Trigger validation if form is already touched
+        if (_step1Key.currentState != null) {
+          _step1Key.currentState!.validate();
+        }
+      }
+    } catch (e) {
+      debugPrint('[SignupPage] SIM selection failed: $e');
+      if (mounted) {
+        showErrorSnackbar('Error loading SIM numbers: $e');
+      }
+    } finally {
+      if (mounted) setState(() => _isDetectingSim = false);
     }
   }
 
@@ -499,6 +551,7 @@ class _SignupPageState extends State<SignupPage> {
               inputType: TextInputType.phone,
               prefixText: '+91 ',
               maxLength: 10,
+              onSimTap: _showSimSelectionDialog,
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Phone number is required';
                 if (v.length != 10) return 'Enter valid 10-digit number';
@@ -823,6 +876,7 @@ class ModernTextField extends StatelessWidget {
   final String? prefixText;
   final int? maxLength;
   final String? Function(String?) validator;
+  final VoidCallback? onSimTap;
 
   const ModernTextField({
     super.key,
@@ -834,6 +888,7 @@ class ModernTextField extends StatelessWidget {
     this.inputType = TextInputType.text,
     this.prefixText,
     this.maxLength,
+    this.onSimTap,
   });
 
   @override
@@ -877,7 +932,7 @@ class ModernTextField extends StatelessWidget {
             color: AppColors.textPrimary,
             letterSpacing: 0.3,
           ),
-          cursorColor: AppColors.button,
+          cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
           validator: validator,
           maxLength: maxLength,
           textCapitalization: TextCapitalization.words,
@@ -899,6 +954,20 @@ class ModernTextField extends StatelessWidget {
               fontSize: ResponsiveUtils.sp(16),
               letterSpacing: 0.5,
             ),
+            suffixIcon: inputType == TextInputType.phone && onSimTap != null
+                ? Padding(
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.sim_card_rounded,
+                        color: AppColors.button,
+                        size: ResponsiveUtils.rp(22),
+                      ),
+                      onPressed: onSimTap,
+                      tooltip: 'Select from SIM',
+                    ),
+                  )
+                : null,
             filled: true,
             fillColor: Colors.white,
             contentPadding: EdgeInsets.symmetric(

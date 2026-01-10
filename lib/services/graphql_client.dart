@@ -39,6 +39,8 @@ class GraphqlService {
       if (token != null) {
         debugPrint("🔑 [GraphQL Client] Authorization header: $token");
       }
+      // Always print channel token when auth header is accessed
+      debugPrint("🔑 [GraphQL Client] Channel token: ${_channelToken.isNotEmpty ? _channelToken : 'NOT SET'}");
       return token;
     });
 

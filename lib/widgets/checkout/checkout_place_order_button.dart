@@ -51,7 +51,6 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
       }) ?? false;
 
       final subTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
-      final eligibleCoupons = bannerController.getEligibleCoupons(subTotal.toInt());
 
       return Container(
         padding: EdgeInsets.all(ResponsiveUtils.rp(16)),

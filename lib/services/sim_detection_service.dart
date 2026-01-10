@@ -3,6 +3,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_number/mobile_number.dart';
+import '../theme/colors.dart';
+import '../utils/responsive.dart';
 
 class SimInfo {
   final String phoneNumber;
@@ -278,7 +280,30 @@ debugPrint('[SimDetectionService] Cache cleared');
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select SIM Card'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+          ),
+          backgroundColor: AppColors.surface,
+          title: Row(
+            children: [
+              Icon(
+                Icons.sim_card_rounded,
+                color: AppColors.button,
+                size: ResponsiveUtils.rp(24),
+              ),
+              SizedBox(width: ResponsiveUtils.rp(12)),
+              Expanded(
+                child: Text(
+                  'Select SIM Card',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(20),
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: simInfoList.map((simInfo) {
@@ -286,16 +311,77 @@ debugPrint('[SimDetectionService] Cache cleared');
                   ? 'No number detected'
                   : '+91 ${simInfo.last10Digits}';
 
-              return ListTile(
-                title: Text(displayNumber),
-                subtitle: Text('${simInfo.carrierName} ${simInfo.isActive ? '(Active)' : '(No number)'}'),
-                leading: Icon(
-                  simInfo.phoneNumber.isEmpty ? Icons.sim_card_alert : Icons.sim_card,
-                  color: simInfo.phoneNumber.isEmpty ? Colors.orange : Colors.blue,
-                ),
-                onTap: () {
+              return InkWell(
+                onTap: simInfo.phoneNumber.isEmpty ? null : () {
                   Navigator.of(context).pop(simInfo);
                 },
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                child: Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                  margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
+                  decoration: BoxDecoration(
+                    color: simInfo.phoneNumber.isEmpty 
+                        ? AppColors.border.withValues(alpha: 0.1)
+                        : AppColors.inputFill,
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    border: Border.all(
+                      color: simInfo.phoneNumber.isEmpty
+                          ? AppColors.border
+                          : AppColors.button.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                        decoration: BoxDecoration(
+                          color: simInfo.phoneNumber.isEmpty
+                              ? Colors.orange.withValues(alpha: 0.2)
+                              : AppColors.button.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                        ),
+                        child: Icon(
+                          simInfo.phoneNumber.isEmpty ? Icons.sim_card_alert : Icons.sim_card_rounded,
+                          color: simInfo.phoneNumber.isEmpty ? Colors.orange : AppColors.button,
+                          size: ResponsiveUtils.rp(24),
+                        ),
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(12)),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              displayNumber,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(16),
+                                fontWeight: FontWeight.w600,
+                                color: simInfo.phoneNumber.isEmpty
+                                    ? AppColors.textSecondary
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(4)),
+                            Text(
+                              '${simInfo.carrierName}${simInfo.isActive ? ' (Active)' : ''}',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(13),
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!simInfo.phoneNumber.isEmpty)
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: AppColors.textSecondary,
+                          size: ResponsiveUtils.rp(20),
+                        ),
+                    ],
+                  ),
+                ),
               );
             }).toList(),
           ),
@@ -304,7 +390,20 @@ debugPrint('[SimDetectionService] Cache cleared');
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.textSecondary,
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(16),
+                  vertical: ResponsiveUtils.rp(12),
+                ),
+              ),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(15),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         );

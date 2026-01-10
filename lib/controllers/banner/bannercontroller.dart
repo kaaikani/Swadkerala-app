@@ -76,6 +76,11 @@ class BannerController extends BaseController {
   final RxMap<String, Map<String, int>> couponAddedProducts =
       <String, Map<String, int>>{}.obs;
 
+  // Track original cart quantities before adding coupon products
+  // Map<couponCode, Map<variantId, originalQuantity>>
+  final RxMap<String, Map<String, int>> originalCartQuantities =
+      <String, Map<String, int>>{}.obs;
+
   // Flag to prevent duplicate addToCart calls when order is complete
   bool _isAddingItems = false;
 
@@ -750,6 +755,36 @@ debugPrint('[BannerController] Product IDs: ${products.map((p) => p['productVari
     return products.isNotEmpty;
   }
 
+  /// Check if a product variant is from a coupon-added product
+  /// Returns the coupon code if it's a coupon product with quantity > 0, null otherwise
+  String? isCouponAddedProduct(String variantId) {
+    for (final entry in couponAddedProducts.entries) {
+      final couponCode = entry.key;
+      final products = entry.value;
+      // Only return coupon code if the variant exists AND has quantity > 0
+      final quantity = products[variantId];
+      if (quantity != null && quantity > 0) {
+        debugPrint('[BannerController] Variant $variantId is from coupon: $couponCode (qty: $quantity)');
+        return couponCode;
+      }
+    }
+    return null;
+  }
+
+  /// Get the coupon-added quantity for a variant
+  /// Returns the quantity that was added by coupon, or 0 if not added by coupon
+  int getCouponAddedQuantity(String variantId, String? couponCode) {
+    if (couponCode == null) return 0;
+    return couponAddedProducts[couponCode]?[variantId] ?? 0;
+  }
+
+  /// Get the original quantity (before coupon was applied) for a variant
+  /// Returns the original quantity, or 0 if not found
+  int getOriginalQuantity(String variantId, String? couponCode) {
+    if (couponCode == null) return 0;
+    return originalCartQuantities[couponCode]?[variantId] ?? 0;
+  }
+
   /// Get available coupon codes
   Future<void> getCouponCodeList() async {
     try {
@@ -1054,8 +1089,20 @@ debugPrint('[BannerController] Stack trace: ${StackTrace.current}');
     try {
       debugPrint(  '[BannerController] Validating minimum order amount for coupon: ${coupon.couponCode ?? 'N/A'}');
 
-      // Get current cart total
-      final cartTotal = await _getCurrentCartTotal();
+      // Get current cart total from active order
+      final orderController = Get.find<OrderController>();
+      
+      // Try to get from already-loaded order first
+      double? cartTotal = orderController.currentOrder.value?.totalWithTax;
+      
+      // If not available, load active order
+      if (cartTotal == null) {
+        final loaded = await orderController.getActiveOrder(skipLoading: true);
+        if (loaded) {
+          cartTotal = orderController.currentOrder.value?.totalWithTax;
+        }
+      }
+
       if (cartTotal == null) {
         return {
           'valid': false,
@@ -1106,33 +1153,9 @@ debugPrint(  '[BannerController] Error validating minimum order amount: $e');
     }
   }
 
-  /// Get current cart total
-  Future<double?> _getCurrentCartTotal() async {
-    try {
-      final response = await GraphqlService.client.value.query$GetCartTotals(
-        cart_graphql.Options$Query$GetCartTotals(
-          fetchPolicy: graphql.FetchPolicy.networkOnly,
-        ),
-      );
-
-      if (response.hasException) {
-        debugPrint('[BannerController] Error getting cart total: ${response.exception}');
-        return null;
-      }
-
-      final activeOrder = response.parsedData?.activeOrder;
-      if (activeOrder != null) {
-        final totalWithTax = activeOrder.totalWithTax;
-        debugPrint('[BannerController] Cart total with tax: $totalWithTax');
-        return totalWithTax;
-      }
-
-      return null;
-    } catch (e) {
-      debugPrint('[BannerController] Exception getting cart total: $e');
-      return null;
-    }
-  }
+  /// Get current cart total from active order
+  /// Uses orderController to get total from already-loaded active order
+  /// If not available, calls getActiveOrder to load it
 
   /// Format price for display
   String _formatPrice(int priceInCents) {
@@ -1740,8 +1763,12 @@ debugPrint('[BannerController] Step 2: Removing coupon code...');
 
       if (result != null) {
         appliedCouponCodes.remove(couponCode);
+        // Clear tracked products and original quantities for this coupon
+        couponAddedProducts.remove(couponCode);
+        originalCartQuantities.remove(couponCode);
 
 debugPrint(  '[BannerController] Coupon code removed successfully: $couponCode');
+debugPrint(  '[BannerController] Cleared tracked products and original quantities for coupon: $couponCode');
         
         // Update both cart and order controllers directly from the response
         try {
@@ -1830,10 +1857,142 @@ debugPrint('[BannerController] Remove coupon code error: $e');
 debugPrint('[BannerController] Coupon codes and tracked products reset');
   }
 
+  /// Restore coupon tracking state from cart
+  /// This is called when cart is loaded to reconstruct couponAddedProducts and originalCartQuantities
+  Future<void> restoreCouponTrackingFromCart() async {
+    try {
+      debugPrint('[BannerController] ===== Restoring coupon tracking from cart =====');
+      
+      // Get current cart
+      final cart = await _getCurrentCart();
+      if (cart == null) {
+        debugPrint('[BannerController] No cart found, cannot restore coupon tracking');
+        return;
+      }
+
+      // Get applied coupon codes from cart
+      final cartCouponCodes = (cart['couponCodes'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+      debugPrint('[BannerController] Coupon codes in cart: $cartCouponCodes');
+      
+      if (cartCouponCodes.isEmpty) {
+        debugPrint('[BannerController] No coupon codes in cart, clearing tracking');
+        appliedCouponCodes.clear();
+        couponAddedProducts.clear();
+        originalCartQuantities.clear();
+        return;
+      }
+
+      // Update appliedCouponCodes to match cart
+      appliedCouponCodes.value = cartCouponCodes;
+      debugPrint('[BannerController] Restored applied coupon codes: ${appliedCouponCodes.toList()}');
+
+      // Get current cart lines
+      final cartLines = cart['lines'] as List<dynamic>? ?? [];
+      final currentQuantities = <String, int>{};
+      for (final line in cartLines) {
+        final lineData = line as Map<String, dynamic>;
+        final productVariant = lineData['productVariant'] as Map<String, dynamic>;
+        final variantId = productVariant['id'] as String;
+        final quantity = lineData['quantity'] as int? ?? 0;
+        currentQuantities[variantId] = quantity;
+      }
+
+      // For each applied coupon, try to reconstruct tracking
+      // Load coupon codes list if not already loaded
+      if (!couponCodesLoaded.value) {
+        await getCouponCodeList();
+      }
+
+      couponAddedProducts.clear();
+      originalCartQuantities.clear();
+
+      for (final couponCode in cartCouponCodes) {
+        debugPrint('[BannerController] Reconstructing tracking for coupon: $couponCode');
+        
+        // Find the coupon in available coupons
+        Query$GetCouponCodeList$getCouponCodeList$items? coupon;
+        try {
+          coupon = availableCouponCodes.firstWhere(
+            (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+          );
+          debugPrint('[BannerController] Found coupon in available list: ${coupon.name}');
+        } catch (e) {
+          debugPrint('[BannerController] Coupon $couponCode not found in available coupons, skipping tracking reconstruction');
+          continue;
+        }
+
+        // Get products that should be added by this coupon
+        // Note: getCouponProducts will also find the coupon, but we already found it above for early validation
+        final couponProducts = getCouponProducts(couponCode);
+        if (couponProducts.isEmpty) {
+          debugPrint('[BannerController] Coupon $couponCode has no products, skipping tracking');
+          continue;
+        }
+
+        // Try to identify which products in cart match the coupon products
+        final addedQuantities = <String, int>{};
+        final originalQuantities = <String, int>{};
+
+        for (final couponProduct in couponProducts) {
+          final variantId = couponProduct['productVariantId']?.toString();
+          final expectedQuantity = couponProduct['quantity'] as int? ?? 1;
+          
+          if (variantId == null) continue;
+
+          final currentQty = currentQuantities[variantId] ?? 0;
+          
+          if (currentQty >= expectedQuantity) {
+            // Product exists in cart with at least the expected quantity
+            // We assume the coupon-added quantity is the expected quantity
+            // and the rest (if any) is original
+            addedQuantities[variantId] = expectedQuantity;
+            originalQuantities[variantId] = currentQty - expectedQuantity;
+            debugPrint('[BannerController] Reconstructed for variant $variantId: Current=$currentQty, CouponAdded=$expectedQuantity, Original=${currentQty - expectedQuantity}');
+          } else if (currentQty > 0) {
+            // Product exists but with less quantity than expected (maybe user removed some)
+            // Assume all current quantity is from coupon
+            addedQuantities[variantId] = currentQty;
+            originalQuantities[variantId] = 0;
+            debugPrint('[BannerController] Reconstructed for variant $variantId: Current=$currentQty (less than expected $expectedQuantity), assuming all coupon-added');
+          }
+        }
+
+        if (addedQuantities.isNotEmpty) {
+          couponAddedProducts[couponCode] = addedQuantities;
+          originalCartQuantities[couponCode] = originalQuantities;
+          debugPrint('[BannerController] Restored tracking for coupon $couponCode: ${addedQuantities.length} products');
+        } else {
+          debugPrint('[BannerController] No products found in cart for coupon $couponCode');
+        }
+      }
+
+      debugPrint('[BannerController] ✅ Coupon tracking restoration complete');
+      debugPrint('[BannerController] Applied coupons: ${appliedCouponCodes.toList()}');
+      debugPrint('[BannerController] Tracked products: ${couponAddedProducts.keys.toList()}');
+    } catch (e) {
+      debugPrint('[BannerController] Error restoring coupon tracking: $e');
+      // Don't throw - this is best-effort restoration
+    }
+  }
+
   /// Check and remove coupons if cart total is below their minimum requirement
   /// Called automatically when cart is cleared or cart total decreases
   Future<void> validateAndRemoveCouponsIfNeeded() async {
     try {
+      // First, restore coupon tracking from cart if appliedCouponCodes is empty but cart has coupons
+      final cart = await _getCurrentCart();
+      if (cart != null) {
+        final cartCouponCodes = (cart['couponCodes'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+        if (appliedCouponCodes.isEmpty && cartCouponCodes.isNotEmpty) {
+          debugPrint('[BannerController] Applied coupons list is empty but cart has coupons, restoring tracking first');
+          await restoreCouponTrackingFromCart();
+        } else if (appliedCouponCodes.isNotEmpty && cartCouponCodes.isEmpty) {
+          // Cart has no coupons but we have applied coupons - clear them
+          debugPrint('[BannerController] Cart has no coupons but appliedCouponCodes is not empty, clearing');
+          resetCouponCodes();
+        }
+      }
+
       // If no coupons applied, nothing to check
       if (appliedCouponCodes.isEmpty) {
         debugPrint('[BannerController] No coupons applied, skipping validation');
@@ -1843,8 +2002,20 @@ debugPrint('[BannerController] Coupon codes and tracked products reset');
       debugPrint('[BannerController] ===== Validating applied coupons =====');
       debugPrint('[BannerController] Applied coupons: ${appliedCouponCodes.toList()}');
 
-      // Get current cart total
-      final cartTotal = await _getCurrentCartTotal();
+      // Get current cart total from active order
+      final orderController = Get.find<OrderController>();
+      
+      // Try to get from already-loaded order first
+      double? cartTotal = orderController.currentOrder.value?.totalWithTax;
+      
+      // If not available, load active order
+      if (cartTotal == null) {
+        final loaded = await orderController.getActiveOrder(skipLoading: true);
+        if (loaded) {
+          cartTotal = orderController.currentOrder.value?.totalWithTax;
+        }
+      }
+      
       if (cartTotal == null) {
         debugPrint('[BannerController] Could not get cart total, skipping coupon validation');
         return;
@@ -1964,6 +2135,23 @@ debugPrint(  '[BannerController] Product $i: ${couponProducts[i]['name']} (Varia
 
       utilityController.setLoadingState(true);
 
+      // Step 1: Get current cart state BEFORE adding to track original quantities
+      final cartBefore = await _getCurrentCart();
+      final originalQuantities = <String, int>{};
+      if (cartBefore != null) {
+        final cartLines = cartBefore['lines'] as List<dynamic>? ?? [];
+        for (final line in cartLines) {
+          final lineData = line as Map<String, dynamic>;
+          final productVariant = lineData['productVariant'] as Map<String, dynamic>;
+          final variantId = productVariant['id'] as String;
+          final quantity = lineData['quantity'] as int? ?? 0;
+          originalQuantities[variantId] = quantity;
+        }
+        debugPrint('[BannerController] Original cart quantities before adding coupon products: $originalQuantities');
+      }
+      // Store original quantities for this coupon
+      originalCartQuantities[couponCode] = Map<String, int>.from(originalQuantities);
+
       // Add each product from the coupon to cart
       final addedProducts = <Map<String, dynamic>>[];
       final failedProducts = <Map<String, dynamic>>[];
@@ -2082,17 +2270,51 @@ debugPrint(  '[BannerController] - ${product['product']} (Qty: ${product['quanti
           }
         }
 
-        // Store the products added by this coupon with quantities
-        final productsMap = <String, int>{};
-        for (final product in addedProducts) {
-          final variantId = product['productVariantId']?.toString();
-          final quantity = product['quantity'] as int? ?? 1;
-          if (variantId != null) {
-            productsMap[variantId] = quantity;
+        // Step 2: Get cart state AFTER all products have been added to calculate what was actually added
+        // Refresh cart first to get the latest state
+        try {
+          final cartController = Get.find<CartController>();
+          final orderController = Get.find<OrderController>();
+          await Future.wait([
+            cartController.getActiveOrder(),
+            orderController.getActiveOrder(skipLoading: true),
+          ], eagerError: false);
+        } catch (e) {
+          debugPrint('[BannerController] Could not refresh cart after adding products: $e');
+        }
+
+        final cartAfter = await _getCurrentCart();
+        final actualAddedQuantities = <String, int>{};
+        if (cartAfter != null) {
+          final cartLines = cartAfter['lines'] as List<dynamic>? ?? [];
+          
+          // Only track products that were actually supposed to be added by this coupon
+          final couponProductVariantIds = addedProducts.map((p) => p['productVariantId']?.toString()).whereType<String>().toSet();
+          
+          for (final line in cartLines) {
+            final lineData = line as Map<String, dynamic>;
+            final productVariant = lineData['productVariant'] as Map<String, dynamic>;
+            final variantId = productVariant['id'] as String;
+            
+            // Only calculate difference for products that were intended to be added by this coupon
+            if (couponProductVariantIds.contains(variantId)) {
+              final quantityAfter = lineData['quantity'] as int? ?? 0;
+              final quantityBefore = originalQuantities[variantId] ?? 0;
+              final quantityAdded = quantityAfter - quantityBefore;
+              
+              if (quantityAdded > 0) {
+                actualAddedQuantities[variantId] = quantityAdded;
+                debugPrint('[BannerController] Variant $variantId: Before=$quantityBefore, After=$quantityAfter, Added=$quantityAdded');
+              } else {
+                debugPrint('[BannerController] Variant $variantId: Was in coupon list but quantity didn\'t increase (Before=$quantityBefore, After=$quantityAfter). Not tracking as coupon-added.');
+              }
+            }
           }
         }
-        couponAddedProducts[couponCode] = productsMap;
-debugPrint(  '[BannerController] Tracked ${productsMap.length} products for coupon $couponCode: $productsMap');
+
+        // Store the actual quantities added by this coupon (difference, not absolute)
+        couponAddedProducts[couponCode] = actualAddedQuantities;
+        debugPrint('[BannerController] Tracked actual added quantities for coupon $couponCode: $actualAddedQuantities');
       }
 
       if (failedProducts.isNotEmpty) {

@@ -809,7 +809,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                 color: AppColors.textPrimary,
                 letterSpacing: 1.0,
               ),
-              cursorColor: AppColors.button,
+              cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
@@ -859,16 +859,92 @@ debugPrint('[LoginPage] SMS autofill error: $e');
       );
     }
     if (hasError) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(
+              Icons.sim_card_rounded,
+              color: AppColors.button,
+              size: ResponsiveUtils.rp(22),
+            ),
+            onPressed: _isDetectingSim || _authController.isOtpSent ? null : _showSimSelectionDialog,
+            tooltip: 'Select from SIM',
+          ),
+          Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+            child: Icon(
+              Icons.error_outline,
+              color: AppColors.error,
+              size: ResponsiveUtils.rp(20),
+            ),
+          ),
+        ],
+      );
+    }
+    // Show SIM button when field is empty or no error
+    if (!_authController.isOtpSent) {
       return Padding(
-        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-        child: Icon(
-          Icons.error_outline,
-          color: AppColors.error,
-          size: ResponsiveUtils.rp(20),
+        padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+        child: IconButton(
+          icon: Icon(
+            Icons.sim_card_rounded,
+            color: AppColors.button,
+            size: ResponsiveUtils.rp(22),
+          ),
+          onPressed: _showSimSelectionDialog,
+          tooltip: 'Select from SIM',
         ),
       );
     }
     return null;
+  }
+
+  Future<void> _showSimSelectionDialog() async {
+    if (!mounted || _authController.isOtpSent) return;
+    
+    setState(() => _isDetectingSim = true);
+    try {
+      final simService = SimDetectionService();
+      bool hasPermission = await simService.hasPhonePermission();
+
+      if (!hasPermission) {
+        bool granted = await simService.requestPhonePermission();
+        if (!granted) {
+          if (mounted) {
+            showErrorSnackbar('Phone permission is required to access SIM numbers');
+          }
+          return;
+        }
+      }
+
+      List<SimInfo> simInfoList =
+          await simService.getAllSimInfoWithRetry().timeout(
+                const Duration(seconds: 3),
+                onTimeout: () => <SimInfo>[],
+              );
+
+      if (simInfoList.isEmpty) {
+        if (mounted) {
+          showErrorSnackbar('No SIM numbers found');
+        }
+        return;
+      }
+
+      final selectedSim = await simService.showSimSelectionDialog(context, simInfoList);
+      if (selectedSim != null && selectedSim.phoneNumber.isNotEmpty && mounted) {
+        _authController.phoneNumber.text = selectedSim.last10Digits;
+        _validatePhone(_authController.phoneNumber.text);
+        setState(() => _phoneFieldTouched = true);
+      }
+    } catch (e) {
+      debugPrint('[LoginPage] SIM selection failed: $e');
+      if (mounted) {
+        showErrorSnackbar('Error loading SIM numbers: $e');
+      }
+    } finally {
+      if (mounted) setState(() => _isDetectingSim = false);
+    }
   }
 
   Widget _buildOtpField() {

@@ -249,12 +249,14 @@ debugPrint('══════════════════════�
           cart.value = cart_graphql.Fragment$Cart.fromJson(orderJson);
 debugPrint(  '[Cart] Active order loaded with ${cart.value?.totalQuantity ?? 0} items');
           
-          // Validate and remove coupons if cart total is below minimum
+          // Restore coupon tracking from cart (before validation)
           try {
             final bannerController = Get.find<BannerController>();
+            await bannerController.restoreCouponTrackingFromCart();
+            // Then validate and remove coupons if cart total is below minimum
             await bannerController.validateAndRemoveCouponsIfNeeded();
           } catch (e) {
-            debugPrint('[Cart] Could not validate coupons after loading: $e');
+            debugPrint('[Cart] Could not restore/validate coupons after loading: $e');
           }
           
           return true;

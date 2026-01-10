@@ -1071,7 +1071,9 @@ debugPrint('[Customer] Logout error: $e');
       if (showLoading) {
         LoadingDialog.show(message: 'Checking availability...');
       }
+      final channelToken = GraphqlService.channelToken;
       debugPrint('[Customer] Checking channel availability for postal code: $postalCode');
+      debugPrint('[Customer] Channel token: ${channelToken.isNotEmpty ? channelToken : 'NOT SET'}');
 
       final response = await GraphqlService.client.value.query$GetAvailableChannels(
         Options$Query$GetAvailableChannels(

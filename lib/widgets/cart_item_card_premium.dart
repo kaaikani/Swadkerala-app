@@ -95,88 +95,113 @@ class CartItemCardPremium extends StatelessWidget {
                     ],
                     SizedBox(height: ResponsiveUtils.rp(4)),
                     ResponsiveText(
-                      'Unit: $unitPrice',
+                      unitPrice == 'FREE' ? 'Price: FREE' : 'Unit: $unitPrice',
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: unitPrice == 'FREE' ? AppColors.success : AppColors.textSecondary,
+                      fontWeight: unitPrice == 'FREE' ? FontWeight.w600 : FontWeight.normal,
                     ),
                     SizedBox(height: ResponsiveUtils.rp(8)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.border),
-                            borderRadius:
-                                BorderRadius.circular(ResponsiveUtils.rp(8)),
-                            color: isUnavailable
-                                ? AppColors.borderLight.withValues(alpha: 0.25)
-                                : null,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              InkWell(
-                                onTap: canAdjust && onDecreaseQuantity != null
-                                    ? () {
-                                        debugPrint('[CartItemCard] Decrease quantity tapped - current quantity: $quantity');
-                                        onDecreaseQuantity!();
-                                      }
-                                    : null,
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.all(ResponsiveUtils.rp(6)),
-                                  child: Icon(
-                                    Icons.remove,
-                                    size: ResponsiveUtils.rp(18),
-                                    color: !canAdjust || quantity <= 1
+                        // Show quantity controls only if at least one button is available
+                        if (onIncreaseQuantity != null || onDecreaseQuantity != null)
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.border),
+                              borderRadius:
+                                  BorderRadius.circular(ResponsiveUtils.rp(8)),
+                              color: isUnavailable
+                                  ? AppColors.borderLight.withValues(alpha: 0.25)
+                                  : null,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
+                                  onTap: canAdjust && onDecreaseQuantity != null && quantity > 1
+                                      ? () {
+                                          debugPrint('[CartItemCard] Decrease quantity tapped - current quantity: $quantity');
+                                          onDecreaseQuantity!();
+                                        }
+                                      : null,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.all(ResponsiveUtils.rp(6)),
+                                    child: Icon(
+                                      Icons.remove,
+                                      size: ResponsiveUtils.rp(18),
+                                      color: (!canAdjust || quantity <= 1 || onDecreaseQuantity == null)
+                                          ? AppColors.textTertiary
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: ResponsiveUtils.rp(12),
+                                    vertical: ResponsiveUtils.rp(6),
+                                  ),
+                                  child: ResponsiveText(
+                                    '$quantity',
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: isUnavailable
                                         ? AppColors.textTertiary
                                         : AppColors.textPrimary,
                                   ),
                                 ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: ResponsiveUtils.rp(12),
-                                  vertical: ResponsiveUtils.rp(6),
-                                ),
-                                child: ResponsiveText(
-                                  '$quantity',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: isUnavailable
-                                      ? AppColors.textTertiary
-                                      : AppColors.textPrimary,
-                                ),
-                              ),
-                              InkWell(
-                                onTap: canAdjust && onIncreaseQuantity != null
-                                    ? () {
-                                        debugPrint('[CartItemCard] Increase quantity tapped - current quantity: $quantity');
-                                        onIncreaseQuantity!();
-                                      }
-                                    : null,
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.all(ResponsiveUtils.rp(6)),
-                                  child: Icon(
-                                    Icons.add,
-                                    size: ResponsiveUtils.rp(18),
-                                    color: !canAdjust
-                                        ? AppColors.textTertiary
-                                        : AppColors.textPrimary,
+                                InkWell(
+                                  onTap: canAdjust && onIncreaseQuantity != null
+                                      ? () {
+                                          debugPrint('[CartItemCard] Increase quantity tapped - current quantity: $quantity');
+                                          onIncreaseQuantity!();
+                                        }
+                                      : null,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.all(ResponsiveUtils.rp(6)),
+                                    child: Icon(
+                                      Icons.add,
+                                      size: ResponsiveUtils.rp(18),
+                                      color: !canAdjust
+                                          ? AppColors.textTertiary
+                                          : AppColors.textPrimary,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          )
+                        else
+                          // Just show quantity text if no controls
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ResponsiveUtils.rp(12),
+                              vertical: ResponsiveUtils.rp(6),
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.border),
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                            ),
+                            child: ResponsiveText(
+                              'Qty: $quantity',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: isUnavailable
+                                  ? AppColors.textTertiary
+                                  : AppColors.textPrimary,
+                            ),
                           ),
-                        ),
                         ResponsiveText(
                           totalPrice,
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: isUnavailable
-                              ? AppColors.textSecondary
-                              : AppColors.button,
+                          color: totalPrice == 'FREE' 
+                              ? AppColors.success
+                              : (isUnavailable
+                                  ? AppColors.textSecondary
+                                  : AppColors.button),
                         ),
                       ],
                     ),
@@ -184,17 +209,18 @@ class CartItemCardPremium extends StatelessWidget {
                 ),
               ),
               SizedBox(width: ResponsiveUtils.rp(8)),
-              InkWell(
-                onTap: isLoading ? null : onRemove,
-                child: ResponsiveIcon(
-                  Icons.delete_outline,
-                  size: 22,
-                  color: AppColors.error,
+              if (onRemove != null)
+                InkWell(
+                  onTap: isLoading ? null : onRemove,
+                  child: ResponsiveIcon(
+                    Icons.delete_outline,
+                    size: 22,
+                    color: AppColors.error,
+                  ),
                 ),
-              ),
             ],
           ),
-          if (isUnavailable && (statusMessage?.isNotEmpty ?? false)) ...[
+          if (statusMessage?.isNotEmpty ?? false) ...[
             SizedBox(height: ResponsiveUtils.rp(12)),
             Container(
               padding: ResponsiveSpacing.padding(
@@ -202,23 +228,25 @@ class CartItemCardPremium extends StatelessWidget {
                 vertical: 10,
               ),
               decoration: BoxDecoration(
-                color: AppColors.warning.withValues(alpha: 0.12),
+                color: isUnavailable 
+                    ? AppColors.warning.withValues(alpha: 0.12)
+                    : AppColors.info.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.warning_amber_rounded,
+                    isUnavailable ? Icons.warning_amber_rounded : Icons.info_outline,
                     size: ResponsiveUtils.rp(18),
-                    color: AppColors.warning,
+                    color: isUnavailable ? AppColors.warning : AppColors.info,
                   ),
                   SizedBox(width: ResponsiveUtils.rp(8)),
                   Expanded(
                     child: ResponsiveText(
                       statusMessage!,
                       fontSize: 12,
-                      color: AppColors.warning,
+                      color: isUnavailable ? AppColors.warning : AppColors.info,
                       maxLines: 3,
                     ),
                   )
