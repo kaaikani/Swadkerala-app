@@ -359,11 +359,9 @@ extension ClientExtension$Query$customBanners on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$customBanners>> query$customBanners(
           [Options$Query$customBanners? options]) async =>
       await this.query(options ?? Options$Query$customBanners());
-
   graphql.ObservableQuery<Query$customBanners> watchQuery$customBanners(
           [WatchOptions$Query$customBanners? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$customBanners());
-
   void writeQuery$customBanners({
     required Query$customBanners data,
     bool broadcast = true,
@@ -375,7 +373,6 @@ extension ClientExtension$Query$customBanners on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$customBanners? readQuery$customBanners({bool optimistic = true}) {
     final result = this.readQuery(
       graphql.Request(
@@ -1491,11 +1488,9 @@ extension ClientExtension$Query$Search on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$Search>> query$Search(
           Options$Query$Search options) async =>
       await this.query(options);
-
   graphql.ObservableQuery<Query$Search> watchQuery$Search(
           WatchOptions$Query$Search options) =>
       this.watchQuery(options);
-
   void writeQuery$Search({
     required Query$Search data,
     required Variables$Query$Search variables,
@@ -1509,7 +1504,6 @@ extension ClientExtension$Query$Search on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$Search? readQuery$Search({
     required Variables$Query$Search variables,
     bool optimistic = true,
@@ -2101,7 +2095,6 @@ extension UtilityExtension$Query$Search$search$items$priceWithTax
             this,
             (i) => i,
           );
-
   _T when<_T>({
     required _T Function(Query$Search$search$items$priceWithTax$$PriceRange)
         priceRange,
@@ -3211,7 +3204,6 @@ extension ClientExtension$Mutation$ToggleFavorite on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$ToggleFavorite>> mutate$ToggleFavorite(
           Options$Mutation$ToggleFavorite options) async =>
       await this.mutate(options);
-
   graphql.ObservableQuery<Mutation$ToggleFavorite> watchMutation$ToggleFavorite(
           WatchOptions$Mutation$ToggleFavorite options) =>
       this.watchMutation(options);
@@ -4336,12 +4328,10 @@ extension ClientExtension$Query$GetCustomerFavorites on graphql.GraphQLClient {
       query$GetCustomerFavorites(
               [Options$Query$GetCustomerFavorites? options]) async =>
           await this.query(options ?? Options$Query$GetCustomerFavorites());
-
   graphql.ObservableQuery<Query$GetCustomerFavorites>
       watchQuery$GetCustomerFavorites(
               [WatchOptions$Query$GetCustomerFavorites? options]) =>
           this.watchQuery(options ?? WatchOptions$Query$GetCustomerFavorites());
-
   void writeQuery$GetCustomerFavorites({
     required Query$GetCustomerFavorites data,
     bool broadcast = true,
@@ -4353,7 +4343,6 @@ extension ClientExtension$Query$GetCustomerFavorites on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetCustomerFavorites? readQuery$GetCustomerFavorites(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -6479,13 +6468,11 @@ extension ClientExtension$Query$GetFrequentlyOrderedProducts
               [Options$Query$GetFrequentlyOrderedProducts? options]) async =>
           await this
               .query(options ?? Options$Query$GetFrequentlyOrderedProducts());
-
   graphql.ObservableQuery<Query$GetFrequentlyOrderedProducts>
       watchQuery$GetFrequentlyOrderedProducts(
               [WatchOptions$Query$GetFrequentlyOrderedProducts? options]) =>
           this.watchQuery(
               options ?? WatchOptions$Query$GetFrequentlyOrderedProducts());
-
   void writeQuery$GetFrequentlyOrderedProducts({
     required Query$GetFrequentlyOrderedProducts data,
     bool broadcast = true,
@@ -6497,7 +6484,6 @@ extension ClientExtension$Query$GetFrequentlyOrderedProducts
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetFrequentlyOrderedProducts? readQuery$GetFrequentlyOrderedProducts(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -8126,12 +8112,10 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
       query$LoyaltyPointsConfig(
               [Options$Query$LoyaltyPointsConfig? options]) async =>
           await this.query(options ?? Options$Query$LoyaltyPointsConfig());
-
   graphql.ObservableQuery<Query$LoyaltyPointsConfig>
       watchQuery$LoyaltyPointsConfig(
               [WatchOptions$Query$LoyaltyPointsConfig? options]) =>
           this.watchQuery(options ?? WatchOptions$Query$LoyaltyPointsConfig());
-
   void writeQuery$LoyaltyPointsConfig({
     required Query$LoyaltyPointsConfig data,
     bool broadcast = true,
@@ -8143,7 +8127,6 @@ extension ClientExtension$Query$LoyaltyPointsConfig on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$LoyaltyPointsConfig? readQuery$LoyaltyPointsConfig(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -8844,7 +8827,6 @@ extension ClientExtension$Mutation$ApplyLoyaltyPoints on graphql.GraphQLClient {
       mutate$ApplyLoyaltyPoints(
               Options$Mutation$ApplyLoyaltyPoints options) async =>
           await this.mutate(options);
-
   graphql.ObservableQuery<Mutation$ApplyLoyaltyPoints>
       watchMutation$ApplyLoyaltyPoints(
               WatchOptions$Mutation$ApplyLoyaltyPoints options) =>
@@ -9838,7 +9820,6 @@ extension ClientExtension$Mutation$RemoveLoyaltyPointsFromActiveOrder
                   options]) async =>
           await this.mutate(
               options ?? Options$Mutation$RemoveLoyaltyPointsFromActiveOrder());
-
   graphql.ObservableQuery<Mutation$RemoveLoyaltyPointsFromActiveOrder>
       watchMutation$RemoveLoyaltyPointsFromActiveOrder(
               [WatchOptions$Mutation$RemoveLoyaltyPointsFromActiveOrder?
@@ -10582,11 +10563,9 @@ extension ClientExtension$Query$GetCouponCodeList on graphql.GraphQLClient {
   Future<graphql.QueryResult<Query$GetCouponCodeList>> query$GetCouponCodeList(
           [Options$Query$GetCouponCodeList? options]) async =>
       await this.query(options ?? Options$Query$GetCouponCodeList());
-
   graphql.ObservableQuery<Query$GetCouponCodeList> watchQuery$GetCouponCodeList(
           [WatchOptions$Query$GetCouponCodeList? options]) =>
       this.watchQuery(options ?? WatchOptions$Query$GetCouponCodeList());
-
   void writeQuery$GetCouponCodeList({
     required Query$GetCouponCodeList data,
     bool broadcast = true,
@@ -10598,7 +10577,6 @@ extension ClientExtension$Query$GetCouponCodeList on graphql.GraphQLClient {
         data: data.toJson(),
         broadcast: broadcast,
       );
-
   Query$GetCouponCodeList? readQuery$GetCouponCodeList(
       {bool optimistic = true}) {
     final result = this.readQuery(
@@ -12856,7 +12834,6 @@ extension ClientExtension$Mutation$ApplyCouponCode on graphql.GraphQLClient {
   Future<graphql.QueryResult<Mutation$ApplyCouponCode>> mutate$ApplyCouponCode(
           Options$Mutation$ApplyCouponCode options) async =>
       await this.mutate(options);
-
   graphql.ObservableQuery<Mutation$ApplyCouponCode>
       watchMutation$ApplyCouponCode(
               WatchOptions$Mutation$ApplyCouponCode options) =>
@@ -13048,7 +13025,6 @@ extension UtilityExtension$Mutation$ApplyCouponCode$applyCouponCode
             this,
             (i) => i,
           );
-
   _T when<_T>({
     required _T Function(Mutation$ApplyCouponCode$applyCouponCode$$Order) order,
     required _T Function(
@@ -16669,7 +16645,6 @@ extension ClientExtension$Mutation$RemoveCouponCode on graphql.GraphQLClient {
       mutate$RemoveCouponCode(
               Options$Mutation$RemoveCouponCode options) async =>
           await this.mutate(options);
-
   graphql.ObservableQuery<Mutation$RemoveCouponCode>
       watchMutation$RemoveCouponCode(
               WatchOptions$Mutation$RemoveCouponCode options) =>
@@ -17249,7 +17224,6 @@ extension ClientExtension$Mutation$RequestOrderCancellation
       mutate$RequestOrderCancellation(
               Options$Mutation$RequestOrderCancellation options) async =>
           await this.mutate(options);
-
   graphql.ObservableQuery<Mutation$RequestOrderCancellation>
       watchMutation$RequestOrderCancellation(
               WatchOptions$Mutation$RequestOrderCancellation options) =>

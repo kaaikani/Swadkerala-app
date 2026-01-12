@@ -82,15 +82,6 @@ query GetCurrentUser{
         }
     }
 }
-query LoyaltyPointsConfig {
-    loyaltyPointsConfig {
-        id
-        createdAt
-        updatedAt
-        rupeesPerPoint
-        pointsPerRupee
-    }
-}
 
 query GetActiveCustomer {
     activeCustomer {
@@ -200,29 +191,6 @@ query GetActiveCustomer {
 
                     }
                 }
-            }
-        }
-    }
-}
-query GetLoyaltyPointTransactions {
-    activeCustomer {
-        __typename
-        ... on Customer {
-            orders {
-
-                items {
-                    code
-
-                    state
-                    orderPlacedAt
-                    customFields {
-
-                        loyaltyPointsEarned
-                        loyaltyPointsUsed
-                    }
-
-                }
-
             }
         }
     }

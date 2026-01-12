@@ -307,14 +307,12 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
 
       debugPrint('[CartPage] adjustOrderLine result: $success');
 
-      if (success) {
-        // Refresh cart to ensure UI updates
-        debugPrint('[CartPage] Quantity updated successfully, refreshing cart...');
-        await cartController.getActiveOrder();
-      } else {
+      if (!success) {
         debugPrint('[CartPage] Failed to update quantity');
         showErrorSnackbar('Failed to update quantity');
       }
+      // Note: No need to call getActiveOrder() here because adjustOrderLine already updates cart.value
+      // and calls validateAndRemoveCouponsIfNeeded(). The UI will update via reactive variables.
     } finally {
       // Clear loading state for this order line
       setState(() {

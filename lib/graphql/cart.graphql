@@ -1,24 +1,5 @@
-query GetCartTotals {
-    activeOrder {
-        ...Cart
-        __typename
-    }
-}
 
-query UpdatedPrice {
-    activeOrder {
-        id
-        lines {
-            id
-            productVariant {
-                id
-                price
-            }
-            unitPrice
-            quantity
-        }
-    }
-}
+
 
 mutation AddToCart($variantId: ID!, $qty: Int!) {
     addItemToOrder(productVariantId: $variantId, quantity: $qty) {

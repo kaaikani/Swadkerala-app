@@ -21,7 +21,6 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final _authController = Get.find<AuthController>();
   final _smsAutofillService = SmsAutofillService();
-  bool _isDetectingSim = false;
 
   // Use PageController for smooth sliding between steps
   final PageController _pageController = PageController();
@@ -147,7 +146,6 @@ class _SignupPageState extends State<SignupPage> {
   Future<void> _showSimSelectionDialog() async {
     if (!mounted) return;
     
-    setState(() => _isDetectingSim = true);
     try {
       final simService = SimDetectionService();
       bool hasPermission = await simService.hasPhonePermission();
@@ -188,8 +186,6 @@ class _SignupPageState extends State<SignupPage> {
       if (mounted) {
         showErrorSnackbar('Error loading SIM numbers: $e');
       }
-    } finally {
-      if (mounted) setState(() => _isDetectingSim = false);
     }
   }
 

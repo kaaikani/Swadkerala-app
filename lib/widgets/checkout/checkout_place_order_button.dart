@@ -50,8 +50,6 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
         return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
       }) ?? false;
 
-      final subTotal = orderController.currentOrder.value?.subTotalWithTax ?? 0;
-
       return Container(
         padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
         decoration: BoxDecoration(

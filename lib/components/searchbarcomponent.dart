@@ -121,45 +121,45 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
         speechService: _speechService,
         isListening: _isListening,
         onListeningStateChanged: (listening) {
-          setState(() {
+      setState(() {
             _isListening = listening;
-          });
+    });
         },
-        onResult: (text) {
-          if (mounted) {
-            setState(() {
-              _controller.text = text;
-              _isListening = _speechService.isListening;
-            });
-            
-            // Trigger search when final result is received
-            if (!_speechService.isListening && text.isNotEmpty) {
-              widget.onSearch(text);
-              final bannerController = Get.find<BannerController>();
-              bannerController.searchProducts({'term': text});
-            }
+      onResult: (text) {
+        if (mounted) {
+          setState(() {
+            _controller.text = text;
+            _isListening = _speechService.isListening;
+          });
+          
+          // Trigger search when final result is received
+          if (!_speechService.isListening && text.isNotEmpty) {
+            widget.onSearch(text);
+            final bannerController = Get.find<BannerController>();
+            bannerController.searchProducts({'term': text});
+          }
             
             // Close dialog when done listening
             if (!_speechService.isListening) {
               Navigator.of(dialogContext).pop();
             }
-          }
-        },
-        onError: () {
-          if (mounted) {
-            setState(() {
-              _isListening = false;
-            });
-            Get.snackbar(
-              'Error',
-              'Could not start speech recognition. Please check microphone permissions.',
-              snackPosition: SnackPosition.BOTTOM,
-              duration: Duration(seconds: 2),
-              backgroundColor: AppColors.card,
-              colorText: AppColors.textPrimary,
-            );
-          }
-        },
+        }
+      },
+      onError: () {
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+          });
+          Get.snackbar(
+            'Error',
+            'Could not start speech recognition. Please check microphone permissions.',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 2),
+            backgroundColor: AppColors.card,
+            colorText: AppColors.textPrimary,
+          );
+        }
+      },
       ),
     );
   }

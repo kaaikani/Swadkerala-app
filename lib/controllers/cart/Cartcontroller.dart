@@ -142,8 +142,8 @@ debugPrint('[Cart] addToCart finished.');
 debugPrint('[Cart] Fetching active order...');
 
     try {
-      final response = await GraphqlService.client.value.query$GetCartTotals(
-        cart_graphql.Options$Query$GetCartTotals(
+      final response = await GraphqlService.client.value.query$ActiveOrder(
+        Options$Query$ActiveOrder(
           fetchPolicy: graphql.FetchPolicy.networkOnly,
           cacheRereadPolicy: graphql.CacheRereadPolicy.ignoreAll,
         ),

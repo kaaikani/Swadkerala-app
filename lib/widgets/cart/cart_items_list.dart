@@ -149,87 +149,87 @@ class _CartItemsListState extends State<CartItemsList> {
               ),
             ),
             ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-              itemCount: itemsToShow.length + 
-                  (hasMoreItems && !_showAllItems ? 1 : 0) +
-                  (hasMoreItems && _showAllItems ? 1 : 0),
-              itemBuilder: (context, index) {
-                // Show "Show More" button after first 3 items
-                if (hasMoreItems && !_showAllItems && index == 3) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
-                    child: Center(
-                      child: TextButton.icon(
-                        onPressed: AnalyticsHelper.trackButton(
-                          'Show More Items',
-                          screenName: 'Cart',
-                          callback: () {
-                            setState(() {
-                              _showAllItems = true;
-                            });
-                          },
-                        ),
-                        icon: Icon(
-                          Icons.expand_more,
-                          color: AppColors.button,
-                          size: ResponsiveUtils.rp(20),
-                        ),
-                        label: Text(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+        itemCount: itemsToShow.length + 
+            (hasMoreItems && !_showAllItems ? 1 : 0) +
+            (hasMoreItems && _showAllItems ? 1 : 0),
+        itemBuilder: (context, index) {
+          // Show "Show More" button after first 3 items
+          if (hasMoreItems && !_showAllItems && index == 3) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+              child: Center(
+                child: TextButton.icon(
+                  onPressed: AnalyticsHelper.trackButton(
+                    'Show More Items',
+                    screenName: 'Cart',
+                    callback: () {
+                      setState(() {
+                        _showAllItems = true;
+                      });
+                    },
+                  ),
+                  icon: Icon(
+                    Icons.expand_more,
+                    color: AppColors.button,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                  label: Text(
                           'Show ${totalItems - 3} more items',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(15),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.button,
-                          ),
-                        ),
-                      ),
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(15),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.button,
                     ),
-                  );
-                }
+                  ),
+                ),
+              ),
+            );
+          }
 
-                // Show "Show Less" button if all items are shown
+          // Show "Show Less" button if all items are shown
                 if (_showAllItems && hasMoreItems && index == totalItems) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
-                    child: Center(
-                      child: TextButton.icon(
-                        onPressed: AnalyticsHelper.trackButton(
-                          'Show Less Items',
-                          screenName: 'Cart',
-                          callback: () {
-                            setState(() {
-                              _showAllItems = false;
-                            });
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (widget.scrollController.hasClients) {
-                                widget.scrollController.animateTo(
-                                  0,
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            });
-                          },
-                        ),
-                        icon: Icon(
-                          Icons.expand_less,
-                          color: AppColors.button,
-                          size: ResponsiveUtils.rp(20),
-                        ),
-                        label: Text(
-                          'Show less',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(15),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.button,
-                          ),
-                        ),
-                      ),
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+              child: Center(
+                child: TextButton.icon(
+                  onPressed: AnalyticsHelper.trackButton(
+                    'Show Less Items',
+                    screenName: 'Cart',
+                    callback: () {
+                      setState(() {
+                        _showAllItems = false;
+                      });
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (widget.scrollController.hasClients) {
+                          widget.scrollController.animateTo(
+                            0,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      });
+                    },
+                  ),
+                  icon: Icon(
+                    Icons.expand_less,
+                    color: AppColors.button,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                  label: Text(
+                    'Show less',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(15),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.button,
                     ),
-                  );
-                }
+                  ),
+                ),
+              ),
+            );
+          }
 
                 final itemData = itemsToShow[index];
                 
@@ -241,32 +241,32 @@ class _CartItemsListState extends State<CartItemsList> {
                 final displayQuantity = itemData['displayQuantity'] as int;
                 final isVirtual = itemData['isVirtual'] as bool? ?? false;
                 
-                final variant = line.productVariant;
-                final imageUrl = line.featuredAsset?.preview;
-                final isLoading = widget.adjustingOrderLineIds.contains(line.id);
-                
-                final stockLevel = variant.stockLevel.toUpperCase();
-                final isLowStock = stockLevel == 'LOW_STOCK';
-                final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-                final isStockUnavailable = isLowStock || isOutOfStock;
-                
-                final isProductDisabled = variant.product.enabled == false;
-                final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true;
-                final isProductDisabledAny = isProductDisabled || isDisabledByReason;
-                
-                final isUnavailable = !line.isAvailable || isStockUnavailable || isProductDisabledAny;
-                
-                String statusMessage;
-                if (isStockUnavailable || isProductDisabledAny) {
-                  statusMessage = 'OUT OF STOCK - Please remove from cart';
-                } else if (line.unavailableReason?.isNotEmpty == true) {
-                  statusMessage = 'OUT OF STOCK - Please remove from cart';
-                } else {
-                  statusMessage = 'OUT OF STOCK - Please remove from cart';
-                }
+          final variant = line.productVariant;
+          final imageUrl = line.featuredAsset?.preview;
+          final isLoading = widget.adjustingOrderLineIds.contains(line.id);
+          
+          final stockLevel = variant.stockLevel.toUpperCase();
+          final isLowStock = stockLevel == 'LOW_STOCK';
+          final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
+          final isStockUnavailable = isLowStock || isOutOfStock;
+          
+          final isProductDisabled = variant.product.enabled == false;
+          final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true;
+          final isProductDisabledAny = isProductDisabled || isDisabledByReason;
+          
+          final isUnavailable = !line.isAvailable || isStockUnavailable || isProductDisabledAny;
+          
+          String statusMessage;
+          if (isStockUnavailable || isProductDisabledAny) {
+            statusMessage = 'OUT OF STOCK - Please remove from cart';
+          } else if (line.unavailableReason?.isNotEmpty == true) {
+            statusMessage = 'OUT OF STOCK - Please remove from cart';
+          } else {
+            statusMessage = 'OUT OF STOCK - Please remove from cart';
+          }
 
-                final isRemoving = widget.removingItemId == line.id;
-                final isFadingOut = widget.isClearingCart;
+          final isRemoving = widget.removingItemId == line.id;
+          final isFadingOut = widget.isClearingCart;
 
                 // Handle coupon products differently (shown first at top)
                 if (isCouponProduct && couponCode != null) {
@@ -307,22 +307,22 @@ class _CartItemsListState extends State<CartItemsList> {
                     ? (unitPriceInt * displayQuantity)  // Proportional price for virtual split items
                     : line.linePriceWithTax.toInt();
 
-                return AnimatedOpacity(
-                  opacity: isRemoving || isFadingOut ? 0.0 : 1.0,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    transform: isRemoving
-                        ? Matrix4.translationValues(
-                            MediaQuery.of(context).size.width, 0, 0)
-                        : Matrix4.identity(),
-                    child: CartItemCardPremium(
-                      imageUrl: imageUrl,
-                      productName: variant.name,
+          return AnimatedOpacity(
+            opacity: isRemoving || isFadingOut ? 0.0 : 1.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              transform: isRemoving
+                  ? Matrix4.translationValues(
+                      MediaQuery.of(context).size.width, 0, 0)
+                  : Matrix4.identity(),
+              child: CartItemCardPremium(
+                imageUrl: imageUrl,
+                productName: variant.name,
                       variantName: isVirtual ? '(Regular quantity)' : null,
-                      unitPrice: widget.cartController.formatPrice(unitPriceInt),
+                unitPrice: widget.cartController.formatPrice(unitPriceInt),
                       totalPrice: widget.cartController.formatPrice(linePriceForDisplay),
                       quantity: displayQuantity,
                       // Allow quantity changes even for virtual (split) items
@@ -336,6 +336,12 @@ class _CartItemsListState extends State<CartItemsList> {
                           : null,
                       onDecreaseQuantity: !isUnavailable && displayQuantity > 1
                           ? () {
+                              // Double-check: prevent decreasing if displayQuantity is 1 or less
+                              if (displayQuantity <= 1) {
+                                debugPrint('[CartItemsList] Prevented decrease: displayQuantity is $displayQuantity (minimum is 1)');
+                                return;
+                              }
+                              
                               // For virtual items (split display), check if we can decrease without going below coupon quantity
                               if (isVirtual) {
                                 final couponCodeForProduct = bannerController.isCouponAddedProduct(variant.id);
@@ -346,29 +352,35 @@ class _CartItemsListState extends State<CartItemsList> {
                                   // newTotal > couponQty ensures regularQty = newTotal - couponQty > 0
                                   if (newTotal > couponQty) {
                                     widget.onQuantityChange(line.id, newTotal);
+                                  } else {
+                                    debugPrint('[CartItemsList] Prevented decrease: newTotal ($newTotal) would be <= couponQty ($couponQty)');
                                   }
                                 } else {
-                                  // Fallback: allow decrease
-                                  widget.onQuantityChange(line.id, line.quantity - 1);
+                                  // Fallback: allow decrease only if displayQuantity > 1
+                                  if (displayQuantity > 1) {
+                                    widget.onQuantityChange(line.id, line.quantity - 1);
+                                  }
                                 }
                               } else {
-                                // Regular non-virtual item: decrease normally
-                                widget.onQuantityChange(line.id, line.quantity - 1);
+                                // Regular non-virtual item: decrease normally only if displayQuantity > 1
+                                if (displayQuantity > 1) {
+                                  widget.onQuantityChange(line.id, line.quantity - 1);
+                                }
                               }
                             }
                           : null,
                       onRemove: !isVirtual
                           ? () => widget.onRemoveItem(line.id, variant.name)
                           : null,
-                      isLoading: isLoading,
-                      isUnavailable: isUnavailable,
+                isLoading: isLoading,
+                isUnavailable: isUnavailable,
                       statusMessage: isVirtual 
                           ? ''
                           : (isUnavailable ? statusMessage : null),
-                    ),
-                  ),
-                );
-              },
+              ),
+            ),
+          );
+        },
             ),
           ],
         ],

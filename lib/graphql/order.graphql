@@ -191,13 +191,6 @@ mutation TransitionToArrangingPayment {
         __typename
     }
 }
-mutation TransitionToAddingItems {
-    transitionOrderToState(state: "AddingItems") {
-        ...Cart
-        ...ErrorResult
-        __typename
-    }
-}
 
 mutation GenerateRazorpayOrderId($orderId: ID!) {
     generateRazorpayOrderId(orderId: $orderId) {

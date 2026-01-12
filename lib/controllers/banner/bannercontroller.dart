@@ -1482,17 +1482,17 @@ debugPrint(  '[BannerController] Found ${productsToRemove.length} products to re
 debugPrint(  '[BannerController] Products to remove: $productsToRemove');
 
       // Get current cart to find order line IDs for these products
-      final cart = await _getCurrentCart();
+      final cartController = Get.find<CartController>();
+      final cart = cartController.cart.value;
       if (cart == null) {
 debugPrint(  '[BannerController] No active cart found - cannot remove products');
         return false;
       }
 
-      final cartLines = cart['lines'] as List<dynamic>? ?? [];
+      final cartLines = cart.lines;
 debugPrint(  '[BannerController] Current cart has ${cartLines.length} order lines');
 
       int removedCount = 0;
-      final cartController = Get.find<CartController>();
       
       for (final entry in productsToRemove.entries) {
         final variantId = entry.key;
@@ -1502,12 +1502,9 @@ debugPrint(  '[BannerController] Processing variant $variantId, quantity to remo
 
         // Find order lines that match this variant ID
         for (final line in cartLines) {
-          final lineData = line as Map<String, dynamic>;
-          final lineId = lineData['id'] as String;
-          final currentQuantity = lineData['quantity'] as int? ?? 0;
-          final productVariant =
-              lineData['productVariant'] as Map<String, dynamic>;
-          final variantIdFromCart = productVariant['id'] as String;
+          final lineId = line.id;
+          final currentQuantity = line.quantity;
+          final variantIdFromCart = line.productVariant.id;
 
 debugPrint(  '[BannerController] Checking order line $lineId: variant=$variantIdFromCart, currentQty=$currentQuantity');
           if (variantIdFromCart == variantId) {
@@ -1527,13 +1524,14 @@ debugPrint(  '[BannerController] Removing entire order line $lineId (currentQty=
                 removedCount++;
 debugPrint(  '[BannerController] ✓ Successfully removed order line $lineId');
                 
-                // Update controllers after removal
+                // Refresh cart after removal to get updated state
                 try {
+                  await cartController.getActiveOrder();
                   final orderController = Get.find<OrderController>();
                   await orderController.getActiveOrder(skipLoading: true);
-debugPrint('[BannerController] OrderController updated after removing line');
+debugPrint('[BannerController] Cart and OrderController updated after removing line');
                 } catch (e) {
-debugPrint('[BannerController] Could not update OrderController: $e');
+debugPrint('[BannerController] Could not update controllers: $e');
                 }
               } else {
 debugPrint(  '[BannerController] ✗ Failed to remove order line $lineId');
@@ -1551,7 +1549,7 @@ debugPrint(  '[BannerController] Decreasing quantity from $currentQuantity to $n
                 removedCount++;
 debugPrint(  '[BannerController] ✓ Successfully decreased quantity for order line $lineId');
                 
-                // Update controllers after quantity adjustment
+                // Cart is already updated by adjustOrderLine, just update OrderController
                 try {
                   final orderController = Get.find<OrderController>();
                   await orderController.getActiveOrder(skipLoading: true);
@@ -1577,10 +1575,9 @@ debugPrint(  '[BannerController] Processed $removedCount out of ${productsToRemo
       // Verify removal by checking cart again
       if (removedCount > 0) {
 debugPrint('[BannerController] Verifying product removal...');
-        final updatedCart = await _getCurrentCart();
+        final updatedCart = cartController.cart.value;
         if (updatedCart != null) {
-          // final updatedLines = updatedCart['lines'] as List<dynamic>? ?? []; // Unused variable
-debugPrint(  '[BannerController] Cart after removal has ${(updatedCart['lines'] as List<dynamic>? ?? []).length} lines');
+debugPrint(  '[BannerController] Cart after removal has ${updatedCart.lines.length} lines');
         }
       }
 
@@ -1597,44 +1594,6 @@ debugPrint('[BannerController] ✗ Error removing coupon products: $e');
   }
 
   /// Get current cart
-  Future<dynamic> _getCurrentCart() async {
-    try {
-      debugPrint('[BannerController] Fetching current cart...');
-
-      final response = await GraphqlService.client.value.query$GetCartTotals(
-        cart_graphql.Options$Query$GetCartTotals(
-          fetchPolicy: graphql.FetchPolicy.networkOnly,
-        ),
-      );
-
-      if (response.hasException) {
-        debugPrint('[BannerController] Error getting current cart: ${response.exception}');
-        return null;
-      }
-
-      final activeOrder = response.parsedData?.activeOrder;
-      if (activeOrder != null) {
-        debugPrint('[BannerController] ✓ Found active order: ${activeOrder.id}');
-        debugPrint('[BannerController] Order has ${activeOrder.lines.length} lines');
-
-        // Debug each line
-        for (int i = 0; i < activeOrder.lines.length; i++) {
-          final line = activeOrder.lines[i];
-          debugPrint('[BannerController] Line $i: ID=${line.id}, Variant=${line.productVariant.id}, Name=${line.productVariant.name}, Qty=${line.quantity}');
-        }
-
-        // Convert to JSON format for backward compatibility with existing code
-        return activeOrder.toJson();
-      } else {
-        debugPrint('[BannerController] ⚠ No active order found');
-      }
-
-      return null;
-    } catch (e) {
-      debugPrint('[BannerController] Exception getting current cart: $e');
-      return null;
-    }
-  }
 
   /// Remove order line by ID
   Future<bool> _removeOrderLineById(String orderLineId) async {
@@ -1864,14 +1823,15 @@ debugPrint('[BannerController] Coupon codes and tracked products reset');
       debugPrint('[BannerController] ===== Restoring coupon tracking from cart =====');
       
       // Get current cart
-      final cart = await _getCurrentCart();
-      if (cart == null) {
+      final orderController = Get.find<OrderController>();
+      final currentOrder = orderController.currentOrder.value;
+      if (currentOrder == null) {
         debugPrint('[BannerController] No cart found, cannot restore coupon tracking');
         return;
       }
 
       // Get applied coupon codes from cart
-      final cartCouponCodes = (cart['couponCodes'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+      final cartCouponCodes = currentOrder.couponCodes.map((e) => e.toString()).toList();
       debugPrint('[BannerController] Coupon codes in cart: $cartCouponCodes');
       
       if (cartCouponCodes.isEmpty) {
@@ -1887,13 +1847,18 @@ debugPrint('[BannerController] Coupon codes and tracked products reset');
       debugPrint('[BannerController] Restored applied coupon codes: ${appliedCouponCodes.toList()}');
 
       // Get current cart lines
-      final cartLines = cart['lines'] as List<dynamic>? ?? [];
+      final cartController = Get.find<CartController>();
+      final cart = cartController.cart.value;
+      if (cart == null) {
+        debugPrint('[BannerController] No cart found, cannot restore tracking');
+        return;
+      }
+      
+      final cartLines = cart.lines;
       final currentQuantities = <String, int>{};
       for (final line in cartLines) {
-        final lineData = line as Map<String, dynamic>;
-        final productVariant = lineData['productVariant'] as Map<String, dynamic>;
-        final variantId = productVariant['id'] as String;
-        final quantity = lineData['quantity'] as int? ?? 0;
+        final variantId = line.productVariant.id;
+        final quantity = line.quantity;
         currentQuantities[variantId] = quantity;
       }
 
@@ -1980,9 +1945,10 @@ debugPrint('[BannerController] Coupon codes and tracked products reset');
   Future<void> validateAndRemoveCouponsIfNeeded() async {
     try {
       // First, restore coupon tracking from cart if appliedCouponCodes is empty but cart has coupons
-      final cart = await _getCurrentCart();
-      if (cart != null) {
-        final cartCouponCodes = (cart['couponCodes'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+      final orderController = Get.find<OrderController>();
+      final currentOrder = orderController.currentOrder.value;
+      if (currentOrder != null) {
+        final cartCouponCodes = currentOrder.couponCodes.map((e) => e.toString()).toList();
         if (appliedCouponCodes.isEmpty && cartCouponCodes.isNotEmpty) {
           debugPrint('[BannerController] Applied coupons list is empty but cart has coupons, restoring tracking first');
           await restoreCouponTrackingFromCart();
@@ -2002,9 +1968,7 @@ debugPrint('[BannerController] Coupon codes and tracked products reset');
       debugPrint('[BannerController] ===== Validating applied coupons =====');
       debugPrint('[BannerController] Applied coupons: ${appliedCouponCodes.toList()}');
 
-      // Get current cart total from active order
-      final orderController = Get.find<OrderController>();
-      
+      // Get current cart total from active order (orderController already defined above)
       // Try to get from already-loaded order first
       double? cartTotal = orderController.currentOrder.value?.totalWithTax;
       
@@ -2136,15 +2100,14 @@ debugPrint(  '[BannerController] Product $i: ${couponProducts[i]['name']} (Varia
       utilityController.setLoadingState(true);
 
       // Step 1: Get current cart state BEFORE adding to track original quantities
-      final cartBefore = await _getCurrentCart();
+      final cartController = Get.find<CartController>();
+      final cartBefore = cartController.cart.value;
       final originalQuantities = <String, int>{};
       if (cartBefore != null) {
-        final cartLines = cartBefore['lines'] as List<dynamic>? ?? [];
+        final cartLines = cartBefore.lines;
         for (final line in cartLines) {
-          final lineData = line as Map<String, dynamic>;
-          final productVariant = lineData['productVariant'] as Map<String, dynamic>;
-          final variantId = productVariant['id'] as String;
-          final quantity = lineData['quantity'] as int? ?? 0;
+          final variantId = line.productVariant.id;
+          final quantity = line.quantity;
           originalQuantities[variantId] = quantity;
         }
         debugPrint('[BannerController] Original cart quantities before adding coupon products: $originalQuantities');
@@ -2283,22 +2246,20 @@ debugPrint(  '[BannerController] - ${product['product']} (Qty: ${product['quanti
           debugPrint('[BannerController] Could not refresh cart after adding products: $e');
         }
 
-        final cartAfter = await _getCurrentCart();
+        final cartAfter = cartController.cart.value;
         final actualAddedQuantities = <String, int>{};
         if (cartAfter != null) {
-          final cartLines = cartAfter['lines'] as List<dynamic>? ?? [];
+          final cartLines = cartAfter.lines;
           
           // Only track products that were actually supposed to be added by this coupon
           final couponProductVariantIds = addedProducts.map((p) => p['productVariantId']?.toString()).whereType<String>().toSet();
           
           for (final line in cartLines) {
-            final lineData = line as Map<String, dynamic>;
-            final productVariant = lineData['productVariant'] as Map<String, dynamic>;
-            final variantId = productVariant['id'] as String;
+            final variantId = line.productVariant.id;
             
             // Only calculate difference for products that were intended to be added by this coupon
             if (couponProductVariantIds.contains(variantId)) {
-              final quantityAfter = lineData['quantity'] as int? ?? 0;
+              final quantityAfter = line.quantity;
               final quantityBefore = originalQuantities[variantId] ?? 0;
               final quantityAdded = quantityAfter - quantityBefore;
               
@@ -2307,8 +2268,8 @@ debugPrint(  '[BannerController] - ${product['product']} (Qty: ${product['quanti
                 debugPrint('[BannerController] Variant $variantId: Before=$quantityBefore, After=$quantityAfter, Added=$quantityAdded');
               } else {
                 debugPrint('[BannerController] Variant $variantId: Was in coupon list but quantity didn\'t increase (Before=$quantityBefore, After=$quantityAfter). Not tracking as coupon-added.');
-              }
-            }
+          }
+        }
           }
         }
 
@@ -2335,14 +2296,13 @@ debugPrint('[BannerController] ❌ Some products failed to add. Rolling back all
 debugPrint('[BannerController] Rolling back product: ${addedProduct['product']} (Variant ID: $productVariantId)');
             
             // Find the order line for this product variant
-            final cart = await _getCurrentCart();
+            final cartController = Get.find<CartController>();
+            final cart = cartController.cart.value;
             if (cart != null) {
-              final cartLines = cart['lines'] as List<dynamic>? ?? [];
+              final cartLines = cart.lines;
               for (final line in cartLines) {
-                final lineData = line as Map<String, dynamic>;
-                final lineId = lineData['id'] as String;
-                final productVariant = lineData['productVariant'] as Map<String, dynamic>;
-                final variantIdFromCart = productVariant['id'] as String;
+                final lineId = line.id;
+                final variantIdFromCart = line.productVariant.id;
                 
                 if (variantIdFromCart == productVariantId) {
 debugPrint('[BannerController] Removing order line $lineId for variant $productVariantId');
@@ -2586,7 +2546,8 @@ debugPrint(  '[BannerController] Rolling back ${productsToRemove.length} product
 debugPrint(  '[BannerController] Products to remove: $productsToRemove');
 
       // Get current cart to find order line IDs for these products
-      final cart = await _getCurrentCart();
+      final cartController = Get.find<CartController>();
+      final cart = cartController.cart.value;
       if (cart == null) {
 debugPrint(  '[BannerController] No active cart found - cannot rollback products');
         return {
@@ -2596,12 +2557,11 @@ debugPrint(  '[BannerController] No active cart found - cannot rollback products
         };
       }
 
-      final cartLines = cart['lines'] as List<dynamic>? ?? [];
+      final cartLines = cart.lines;
 debugPrint(  '[BannerController] Current cart has ${cartLines.length} order lines');
 
       int removedCount = 0;
       final failedRemovals = <String>[];
-      final cartController = Get.find<CartController>();
 
       for (final entry in productsToRemove.entries) {
         final variantId = entry.key;
@@ -2611,12 +2571,9 @@ debugPrint(  '[BannerController] Processing variant $variantId, quantity to remo
 
         // Find order lines that match this variant ID
         for (final line in cartLines) {
-          final lineData = line as Map<String, dynamic>;
-          final lineId = lineData['id'] as String;
-          final currentQuantity = lineData['quantity'] as int? ?? 0;
-          final productVariant =
-              lineData['productVariant'] as Map<String, dynamic>;
-          final variantIdFromCart = productVariant['id'] as String;
+          final lineId = line.id;
+          final currentQuantity = line.quantity;
+          final variantIdFromCart = line.productVariant.id;
 
 debugPrint(  '[BannerController] Checking order line $lineId: variant=$variantIdFromCart, currentQty=$currentQuantity for rollback');
           if (variantIdFromCart == variantId) {
