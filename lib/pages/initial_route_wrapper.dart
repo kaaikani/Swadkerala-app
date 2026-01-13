@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/shimmers.dart';
-import 'package:get/get.dart';
-import '../controllers/banner/bannercontroller.dart';
+// import 'package:get/get.dart'; // Commented out - GraphQL query disabled
+// import '../controllers/banner/bannercontroller.dart'; // Commented out - GraphQL query disabled
 import '../services/in_app_update_service.dart';
 import 'update_check_wrapper.dart';
 import 'auth_wrapper.dart';
@@ -25,29 +25,39 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
     _checkUpdateSettings();
   }
 
-  /// Check if immediate update is enabled and fetch update info from GraphQL
+  /// Check if immediate update is enabled - using Play Store version only (GraphQL disabled)
   Future<void> _checkUpdateSettings() async {
     try {
       final updateService = InAppUpdateService();
 
+      // COMMENTED OUT: GraphQL query for update info (now using Play Store only)
       // Try to fetch app update information from GraphQL
-debugPrint(  '[InitialRouteWrapper] Attempting to fetch app update information...');
+      // debugPrint('[InitialRouteWrapper] Attempting to fetch app update information...');
+      // try {
+      //   final bannerController = Get.put(BannerController());
+      //   // Wait for the update info to be fetched
+      //   await bannerController.getAppUpdateInfo();
+      //   debugPrint('[InitialRouteWrapper] Update info fetch completed');
+      // } catch (e) {
+      //   debugPrint('[InitialRouteWrapper] Update info fetch failed: $e');
+      // }
+
+      // Check Play Store for updates directly (GraphQL query disabled)
+debugPrint('[InitialRouteWrapper] Checking Play Store for updates...');
       try {
-        final bannerController = Get.put(BannerController());
-        // Wait for the update info to be fetched
-        await bannerController.getAppUpdateInfo();
-debugPrint('[InitialRouteWrapper] Update info fetch completed');
+        await updateService.checkForUpdatesAndDetermineType();
+debugPrint('[InitialRouteWrapper] Play Store update check completed');
       } catch (e) {
-debugPrint('[InitialRouteWrapper] Update info fetch failed: $e');
+debugPrint('[InitialRouteWrapper] Play Store update check failed: $e');
       }
 
-      // Check if immediate update is enabled (this is the main condition)
-      if (updateService.isImmediateUpdateEnabled) {
+      // Check if immediate update is enabled (based on Play Store only)
+      if (updateService.isImmediateUpdateEnabled && updateService.isUpdateAvailable) {
         _shouldCheckImmediateUpdate = true;
-debugPrint(  '[InitialRouteWrapper] IMMEDIATE UPDATE enabled - showing update page');
+debugPrint('[InitialRouteWrapper] IMMEDIATE UPDATE enabled - showing update page');
       } else {
         _shouldCheckImmediateUpdate = false;
-debugPrint(  '[InitialRouteWrapper] No immediate update needed - proceeding to login');
+debugPrint('[InitialRouteWrapper] No immediate update needed - proceeding to login');
       }
 
 debugPrint(  '[InitialRouteWrapper] Final decision - Should check immediate update: $_shouldCheckImmediateUpdate');

@@ -113,6 +113,11 @@ fragment Cart on Order {
         type
         __typename
     }
+    customFields {
+        loyaltyPointsEarned
+        loyaltyPointsUsed
+        otherInstructions
+    }
 
     __typename
 }

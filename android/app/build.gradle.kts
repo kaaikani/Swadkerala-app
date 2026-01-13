@@ -64,6 +64,10 @@ android {
             abiFilters += listOf("armeabi-v7a", "arm64-v8a")
         }
         
+        // Enable resource shrinking to remove unused resources
+        // This can reduce APK size by 10-30%
+        resConfigs("en", "hi") // Only include English and Hindi resources
+        
         // Remove debug validation layers to reduce size
         packaging {
             jniLibs {

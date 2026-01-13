@@ -6,7 +6,7 @@ import '../../controllers/banner/bannercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 
-class CartOrderSummarySection extends StatelessWidget {
+class CartOrderSummarySection extends StatefulWidget {
   final CartController cartController;
   final OrderController orderController;
   final BannerController bannerController;
@@ -19,10 +19,17 @@ class CartOrderSummarySection extends StatelessWidget {
   });
 
   @override
+  State<CartOrderSummarySection> createState() => _CartOrderSummarySectionState();
+}
+
+class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final cart = cartController.cart.value;
-      final order = orderController.currentOrder.value;
+      final cart = widget.cartController.cart.value;
+      final order = widget.orderController.currentOrder.value;
       if (cart == null) return const SizedBox.shrink();
       final shippingCost = order?.shippingWithTax ?? cart.shippingWithTax;
       
@@ -62,17 +69,17 @@ class CartOrderSummarySection extends StatelessWidget {
       
       // Get applied coupon name
       String? appliedCouponName;
-      if (bannerController.appliedCouponCodes.isNotEmpty) {
-        if (bannerController.availableCouponCodes.isNotEmpty) {
-          final appliedCode = bannerController.appliedCouponCodes.first;
-          final coupon = bannerController.availableCouponCodes.firstWhereOrNull(
+      if (widget.bannerController.appliedCouponCodes.isNotEmpty) {
+        if (widget.bannerController.availableCouponCodes.isNotEmpty) {
+          final appliedCode = widget.bannerController.appliedCouponCodes.first;
+          final coupon = widget.bannerController.availableCouponCodes.firstWhereOrNull(
             (c) => c.couponCode == appliedCode,
           );
           appliedCouponName = coupon?.name.isNotEmpty == true 
               ? coupon!.name 
               : appliedCode;
         } else {
-          appliedCouponName = bannerController.appliedCouponCodes.first;
+          appliedCouponName = widget.bannerController.appliedCouponCodes.first;
         }
       }
       
@@ -89,45 +96,51 @@ class CartOrderSummarySection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Order Summary',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(16),
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(12)),
-            // Subtotal
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Subtotal',
+                  'Order Summary',
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(14),
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                Text(
-                  cartController.formatPrice(cart.subTotalWithTax.toInt()),
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(14),
+                    fontSize: ResponsiveUtils.sp(16),
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _isExpanded = !_isExpanded;
+                    });
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(8),
+                      vertical: ResponsiveUtils.rp(4),
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    _isExpanded ? 'Show Less' : 'Show More',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(12),
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.button,
+                    ),
+                  ),
+                ),
               ],
             ),
-            // Loyalty Points Discount
-            if (loyaltyDiscount > 0) ...[
-              SizedBox(height: ResponsiveUtils.rp(8)),
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            // Show full breakdown only if expanded
+            if (_isExpanded) ...[
+              // Subtotal (without tax)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Loyalty Points',
+                    'Subtotal',
                     style: TextStyle(
                       fontSize: ResponsiveUtils.sp(14),
                       fontWeight: FontWeight.w500,
@@ -135,32 +148,7 @@ class CartOrderSummarySection extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '-${cartController.formatPrice(loyaltyDiscount)}',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.info,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            // Delivery Charge
-            if (order != null && order.shippingLines.isNotEmpty && shippingCost > 0) ...[
-              SizedBox(height: ResponsiveUtils.rp(8)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Delivery Charge',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  Text(
-                    cartController.formatPrice(shippingCost.toInt()),
+                    widget.cartController.formatPrice(cart.subTotal.toInt()),
                     style: TextStyle(
                       fontSize: ResponsiveUtils.sp(14),
                       fontWeight: FontWeight.w600,
@@ -169,54 +157,214 @@ class CartOrderSummarySection extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-            // Coupon Discount
-            if (couponDiscountTotal > 0 && appliedCouponName != null) ...[
-              SizedBox(height: ResponsiveUtils.rp(8)),
+              // Points Applied
+              if (widget.bannerController.loyaltyPointsApplied.value && widget.bannerController.loyaltyPointsUsed.value > 0) ...[
+                SizedBox(height: ResponsiveUtils.rp(8)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.stars,
+                          size: ResponsiveUtils.rp(16),
+                          color: AppColors.info,
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(6)),
+                        Text(
+                          'Points Applied',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '${widget.bannerController.loyaltyPointsUsed.value} pts',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.info,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              // Loyalty Points Discount
+              if (loyaltyDiscount > 0) ...[
+                SizedBox(height: ResponsiveUtils.rp(8)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Loyalty Points Discount',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      '-${widget.cartController.formatPrice(loyaltyDiscount)}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.info,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              // Shipping with Tax
+              if (order != null && order.shippingLines.isNotEmpty) ...[
+                SizedBox(height: ResponsiveUtils.rp(8)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Shipping with Tax',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      widget.orderController.hasFreeShippingCoupon() 
+                          ? 'Free' 
+                          : '+${widget.cartController.formatPrice(shippingCost.toInt())}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: widget.orderController.hasFreeShippingCoupon() 
+                            ? AppColors.success 
+                            : AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              // Coupon Code Used
+              if (widget.bannerController.appliedCouponCodes.isNotEmpty && appliedCouponName != null) ...[
+                SizedBox(height: ResponsiveUtils.rp(8)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.local_offer,
+                          size: ResponsiveUtils.rp(16),
+                          color: AppColors.success,
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(6)),
+                        Text(
+                          'Coupon Code Used',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      appliedCouponName,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              // Coupon Discount
+              if (couponDiscountTotal > 0) ...[
+                SizedBox(height: ResponsiveUtils.rp(8)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Coupon Discount',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      '-${widget.cartController.formatPrice(couponDiscountTotal)}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              Divider(
+                color: AppColors.border.withValues(alpha: 0.3),
+                height: 1,
+              ),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              // Total (without tax)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.local_offer,
-                        size: ResponsiveUtils.rp(16),
-                        color: AppColors.success,
-                      ),
-                      SizedBox(width: ResponsiveUtils.rp(6)),
-                      Text(
-                        appliedCouponName,
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(14),
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Total',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(16),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   Text(
-                    '-${cartController.formatPrice(couponDiscountTotal)}',
+                    widget.cartController.formatPrice(cart.total.toInt()),
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
+                      fontSize: ResponsiveUtils.sp(16),
                       fontWeight: FontWeight.w600,
-                      color: AppColors.success,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ],
               ),
+              // Tax on Total (always show, even if 0)
+              SizedBox(height: ResponsiveUtils.rp(8)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Tax on Total',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    '+${widget.cartController.formatPrice((cart.totalWithTax - cart.total).toInt())}',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(8)),
             ],
-            SizedBox(height: ResponsiveUtils.rp(12)),
-            Divider(
-              color: AppColors.border.withValues(alpha: 0.3),
-              height: 1,
-            ),
-            SizedBox(height: ResponsiveUtils.rp(12)),
-            // Total
+            // Total with Tax (always shown)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total',
+                  'Total with Tax',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(18),
                     fontWeight: FontWeight.bold,
@@ -224,7 +372,7 @@ class CartOrderSummarySection extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  cartController.formatPrice(finalTotal),
+                  widget.cartController.formatPrice(finalTotal),
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(18),
                     fontWeight: FontWeight.bold,

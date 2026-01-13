@@ -24,36 +24,160 @@ class OrderConfirmationPage extends StatefulWidget {
   State<OrderConfirmationPage> createState() => _OrderConfirmationPageState();
 }
 
-class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
+class _OrderConfirmationPageState extends State<OrderConfirmationPage> with SingleTickerProviderStateMixin {
   final OrderController orderController = Get.find<OrderController>();
   final CartController cartController = Get.find<CartController>();
   final CustomerController customerController = Get.find<CustomerController>();
   final UtilityController utilityController = Get.find<UtilityController>();
+  bool _hasShownPointsDialog = false;
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+    // Initialize animation controller
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1.0), // Start from bottom
+      end: Offset.zero, // End at top
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutCubic,
+    ));
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadOrderDetails();
     });
   }
 
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadOrderDetails() async {
     try {
       await orderController.getOrderByCode(widget.orderId);
+      // Check for points earned after order is loaded
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _checkAndShowPointsDialog();
+      });
     } catch (e) {
 debugPrint('[OrderConfirmation] Error loading order details: $e');
     }
+  }
+
+  void _checkAndShowPointsDialog() {
+    if (_hasShownPointsDialog) return;
+    
+    final order = orderController.currentOrder.value;
+    if (order != null) {
+      // Access customFields using dynamic cast since order is actually Query$GetOrderByCode$orderByCode
+      // which has customFields, but currentOrder is typed as Fragment$Cart?
+      final orderDynamic = order as dynamic;
+      final customFields = orderDynamic.customFields;
+      final pointsEarned = customFields?.loyaltyPointsEarned ?? 0;
+      
+      if (pointsEarned > 0 && mounted) {
+        _hasShownPointsDialog = true;
+        // Show dialog after a short delay to ensure page is fully loaded
+        Future.delayed(Duration(milliseconds: 500), () {
+          if (mounted) {
+            _showPointsEarnedDialog(pointsEarned);
+          }
+        });
+      }
+    }
+  }
+
+  void _showPointsEarnedDialog(int points) {
+    // Reset animation
+    _animationController.reset();
+    
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: EdgeInsets.only(
+          left: ResponsiveUtils.rp(20),
+          right: ResponsiveUtils.rp(20),
+          bottom: ResponsiveUtils.rp(40),
+        ),
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Center(
+              child: ShaderMask(
+                shaderCallback: (bounds) => LinearGradient(
+                  colors: [
+                    Color(0xFFFFD700), // Gold
+                    Color(0xFFFFA500), // Darker gold
+                  ],
+                ).createShader(bounds),
+                child: Text(
+                  'You earned $points points',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(32),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white, // Will be masked with gold gradient
+                    letterSpacing: 0.5,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: ResponsiveUtils.rp(8),
+                        offset: Offset(0, ResponsiveUtils.rp(4)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false, // Don't allow dismiss by tapping outside
+      barrierColor: Colors.transparent, // No background overlay
+    );
+    
+    // Start animation
+    _animationController.forward();
+    
+    // Auto-dismiss after 5 seconds with reverse animation
+    Future.delayed(Duration(seconds: 5), () {
+      if (mounted && Get.isDialogOpen == true) {
+        _animationController.reverse().then((_) {
+          if (Get.isDialogOpen == true) {
+            Get.back();
+          }
+        });
+      }
+    });
   }
 
   Future<void> _shareBill() async {
     final orderModel = orderController.currentOrder.value;
     if (orderModel != null) {
       try {
-        LoadingDialog.show(message: 'Please wait');
-        // Pass OrderModel directly to BillGenerator
+        LoadingDialog.show(message: 'Generating bill...');
+        // Generate bill in background to avoid blocking UI
         await BillGenerator.generateAndShare(orderModel);
       } catch (e) {
+        debugPrint('[OrderConfirmation] Error generating bill: $e');
         SnackBarWidget.showError('${AppStrings.failedToGenerateBill}: $e');
       } finally {
         LoadingDialog.hide();

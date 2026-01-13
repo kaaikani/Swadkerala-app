@@ -29,6 +29,8 @@ import '../utils/analytics_helper.dart';
 import '../widgets/snackbar.dart';
 import '../services/graphql_client.dart';
 import '../controllers/theme_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../widgets/notification_permission_dialog.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -57,30 +59,55 @@ class _MyHomePageState extends State<MyHomePage> {
   // Track if data refresh is in progress to prevent duplicate calls
   bool _isRefreshingData = false;
   
+  // Track if this is initial load to prevent false positive change detection
+  bool _isInitialLoad = true;
+  
   // Reactive variables for channel and postal code to trigger UI updates
   final RxString _channelName = ''.obs;
   final RxString _postalCode = ''.obs;
   final RxString _channelType = ''.obs;
   final RxString _channelToken = ''.obs; // Track channel token changes
+  
+  // Track previous channel token to prevent unnecessary refreshes
+  String _previousChannelToken = '';
+  
+  // Track previous postal code to prevent false positives during refresh
+  String _previousPostalCode = '';
 
   @override
   void initState() {
     super.initState();
     // Initialize reactive variables
-    _updateChannelDisplay();
+    _previousChannelToken = GraphqlService.channelToken;
+    _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh on initial load
     _refreshData();
+    // Mark initial load as complete after first refresh
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isInitialLoad = false;
+      // Check notification permission after page is built
+      _checkNotificationPermission();
+    });
     
     // Listen to channel token changes and update UI immediately
+    // Only trigger refresh if token actually changed (not just emitted)
     ever(GraphqlService.channelTokenRx, (String newToken) {
-      debugPrint('[HomePage] 🔄 Channel token changed reactively: $newToken');
+      // Only proceed if token actually changed
+      if (_previousChannelToken == newToken) {
+        debugPrint('[HomePage] Channel token reactive variable updated but value unchanged: $newToken (skipping refresh)');
+        return;
+      }
+      
+      debugPrint('[HomePage] 🔄 Channel token changed reactively: $_previousChannelToken -> $newToken');
+      _previousChannelToken = newToken;
+      
       if (mounted) {
-        _updateChannelDisplay();
+        _updateChannelDisplay(skipRefreshTrigger: false); // Allow refresh for actual channel token changes
         // Force UI refresh when channel changes
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             setState(() {});
-            // Refresh data with new channel
-            _refreshData();
+            // Refresh data with new channel - force refresh since channel actually changed
+            _refreshData(forceRefresh: true);
           }
         });
       }
@@ -98,8 +125,120 @@ class _MyHomePageState extends State<MyHomePage> {
            channelToken.isNotEmpty;
   }
 
+  /// Check notification permission and show dialog if denied
+  Future<void> _checkNotificationPermission() async {
+    try {
+      // Check current permission status
+      final status = await Permission.notification.status;
+      
+      debugPrint('[HomePage] Notification permission status: $status');
+      
+      // If permission is granted, reset the dialog shown flag (in case user granted it from settings)
+      if (status.isGranted) {
+        await box.remove('notification_permission_dialog_shown');
+        await box.remove('notification_settings_dialog_shown');
+        return;
+      }
+      
+      // Check if we've already shown the dialog in this session
+      final hasShownDialog = box.read<bool>('notification_permission_dialog_shown') ?? false;
+      final lastShownTime = box.read<int>('notification_permission_dialog_last_shown');
+      final now = DateTime.now().millisecondsSinceEpoch;
+      
+      // Show dialog if:
+      // 1. Permission is denied (not granted, not permanently denied)
+      // 2. We haven't shown it before, OR it's been more than 7 days since last shown
+      if (status.isDenied && mounted) {
+        final shouldShow = !hasShownDialog || 
+                          (lastShownTime != null && (now - lastShownTime) > (7 * 24 * 60 * 60 * 1000));
+        
+        if (shouldShow) {
+          // Show the dialog after a short delay to ensure page is fully loaded
+          await Future.delayed(Duration(milliseconds: 500));
+          
+          if (mounted) {
+            await NotificationPermissionDialog.show(context);
+            // Mark that we've shown the dialog and record the time
+            await box.write('notification_permission_dialog_shown', true);
+            await box.write('notification_permission_dialog_last_shown', now);
+          }
+        }
+      } else if (status.isPermanentlyDenied && mounted) {
+        // If permanently denied, show settings dialog (but only once per 30 days)
+        final hasShownSettingsDialog = box.read<bool>('notification_settings_dialog_shown') ?? false;
+        final lastShownSettingsTime = box.read<int>('notification_settings_dialog_last_shown');
+        
+        final shouldShowSettings = !hasShownSettingsDialog || 
+                                  (lastShownSettingsTime != null && 
+                                   (now - lastShownSettingsTime) > (30 * 24 * 60 * 60 * 1000));
+        
+        if (shouldShowSettings) {
+          await Future.delayed(Duration(milliseconds: 500));
+          if (mounted) {
+            // Show settings dialog
+            Get.dialog(
+              AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                backgroundColor: AppColors.surface,
+                title: Row(
+                  children: [
+                    Icon(Icons.settings_rounded, color: AppColors.button),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Enable Notifications',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                content: Text(
+                  'Notification permission is disabled. Please enable it in your device settings to receive order updates and offers.',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text('Later'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      Get.back();
+                      await openAppSettings();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text('Open Settings'),
+                  ),
+                ],
+              ),
+            );
+            await box.write('notification_settings_dialog_shown', true);
+            await box.write('notification_settings_dialog_last_shown', now);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[HomePage] Error checking notification permission: $e');
+    }
+  }
+
   /// Update reactive channel display variables
-  void _updateChannelDisplay() {
+  /// [skipRefreshTrigger] - if true, don't trigger refresh even if values changed (used during refresh operations)
+  void _updateChannelDisplay({bool skipRefreshTrigger = false}) {
     final newChannelName = box.read('channel_name') ?? box.read('channel_code') ?? 'Select Location';
     // Ensure postal code is always converted to string for proper comparison
     final postalCodeValue = box.read('postal_code');
@@ -115,7 +254,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_channelToken.value != newChannelToken) {
       _channelToken.value = newChannelToken;
       channelTokenChanged = true;
+      if (!skipRefreshTrigger && !_isInitialLoad) {
       debugPrint('[HomePage] ⚠️ Channel token changed - forcing UI refresh');
+      } else {
+        debugPrint('[HomePage] Channel token updated (refresh trigger skipped: skipRefresh=$skipRefreshTrigger, initialLoad=$_isInitialLoad)');
+      }
     }
     
     // Always update reactive variables to trigger Obx rebuild, even if value appears same
@@ -132,14 +275,29 @@ class _MyHomePageState extends State<MyHomePage> {
     // Always update postal code reactive variable to ensure UI reflects latest value
     // Convert to string to ensure consistent comparison
     final currentPostalCodeStr = _postalCode.value;
-    if (currentPostalCodeStr != newPostalCode) {
+    // Only consider it a change if:
+    // 1. The value actually changed AND
+    // 2. It's not just going from empty to a value (which happens during initial load/refresh)
+    // 3. OR it's a real change (not empty to empty or same value)
+    final isRealPostalCodeChange = currentPostalCodeStr != newPostalCode && 
+                                    !(currentPostalCodeStr.isEmpty && newPostalCode.isNotEmpty && _previousPostalCode.isNotEmpty);
+    
+    if (isRealPostalCodeChange) {
       _postalCode.value = newPostalCode;
+      _previousPostalCode = newPostalCode;
       postalCodeChanged = true;
       debugPrint('[HomePage] Postal code updated: $newPostalCode (was: $currentPostalCodeStr)');
     } else if (newPostalCode.isNotEmpty) {
       // Even if value appears same, ensure reactive variable is set (handles type mismatches)
       _postalCode.value = newPostalCode;
+      if (_previousPostalCode.isEmpty) {
+        _previousPostalCode = newPostalCode; // Initialize on first load
+      }
+      if (currentPostalCodeStr.isEmpty && newPostalCode.isNotEmpty) {
+        debugPrint('[HomePage] Postal code initialized: $newPostalCode (skipping refresh trigger)');
+      } else {
       debugPrint('[HomePage] Postal code refreshed: $newPostalCode');
+      }
     }
     
     if (_channelType.value != newChannelType) {
@@ -151,7 +309,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     
     // If any value changed, force a UI refresh
-    if ((channelTokenChanged || postalCodeChanged || channelNameChanged) && mounted) {
+    // Only trigger refresh if there was an actual change (not just reactive variable update)
+    // AND we're not in the middle of a refresh operation AND it's not the initial load
+    if ((channelTokenChanged || postalCodeChanged || channelNameChanged) && 
+        !skipRefreshTrigger && 
+        !_isInitialLoad && 
+        mounted) {
       debugPrint('[HomePage] ⚠️ Channel/postal code changed - triggering UI refresh');
       // Force rebuild by updating a reactive variable that the UI observes
       // This ensures all Obx widgets rebuild
@@ -160,19 +323,66 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {}); // Force StatefulWidget rebuild
         }
       });
+    } else if (skipRefreshTrigger || _isInitialLoad) {
+      // Called during refresh or initial load - just update values, don't trigger refresh
+      debugPrint('[HomePage] Channel/postal code updated (refresh trigger skipped: skipRefresh=$skipRefreshTrigger, initialLoad=$_isInitialLoad)');
+    } else {
+      // No actual change detected - just reactive variable updates
+      // Don't trigger unnecessary UI refresh
+      debugPrint('[HomePage] Channel/postal code reactive variables updated but no actual change detected (skipping UI refresh)');
     }
   }
 
   /// Refresh data - called from initState and when returning to page
-  void _refreshData() {
+  /// [forceRefresh] - if true, force refresh even if conditions suggest it's unnecessary
+  void _refreshData({bool forceRefresh = false}) {
     // Prevent duplicate refresh calls
     if (_isRefreshingData) {
       debugPrint('[HomePage] Data refresh already in progress, skipping duplicate call...');
       return;
     }
     
+    // If this is not a forced refresh and we're not on initial load,
+    // check if channel token actually changed to prevent unnecessary refreshes
+    if (!forceRefresh && !_isInitialLoad) {
+      final currentToken = GraphqlService.channelToken;
+      if (currentToken == _previousChannelToken) {
+        debugPrint('[HomePage] _refreshData() called but channel token unchanged ($currentToken). Skipping refresh to prevent unnecessary API calls.');
+        return;
+      }
+    }
+    
     _isRefreshingData = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Check if we're still on HomePage - if not, abort refresh
+      if (!mounted) {
+        debugPrint('[HomePage] Widget not mounted, aborting refresh');
+        _isRefreshingData = false;
+        return;
+      }
+      
+      // Check current route - if we're not on HomePage, abort refresh
+      try {
+        final currentRoute = Get.currentRoute;
+        if (currentRoute != '/home' && currentRoute != '/') {
+          debugPrint('[HomePage] Not on HomePage route (current: $currentRoute), aborting refresh');
+          _isRefreshingData = false;
+          return;
+        }
+      } catch (e) {
+        debugPrint('[HomePage] Could not check current route: $e');
+      }
+      
+      // Double-check: If channel token hasn't changed and this is not initial load or forced refresh, skip
+      if (!forceRefresh && !_isInitialLoad) {
+        final currentToken = GraphqlService.channelToken;
+        if (currentToken == _previousChannelToken) {
+          debugPrint('[HomePage] _refreshData() aborted: Channel token unchanged ($currentToken). This was likely triggered by cart change, not channel change.');
+          _isRefreshingData = false;
+          return;
+        }
+      }
+      
       debugPrint('[HomePage] ========== STARTING DATA REFRESH ==========');
       
       // STEP 1: Get customer data if authenticated
@@ -183,14 +393,24 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       
       // STEP 2: Get postal code from shipping address and set channel FIRST
+      // Skip this step if postal code and channel are already set to prevent unnecessary channel fetch
+      final storedPostalCode = box.read('postal_code');
+      final storedChannelToken = box.read('channel_token');
+      bool channelChanged = false;
+      
+      if (storedPostalCode == null || storedPostalCode.toString().isEmpty || 
+          storedChannelToken == null || storedChannelToken.toString().isEmpty) {
       debugPrint('[HomePage] Checking postal code and setting channel...');
-      final channelChanged = await _ensurePostalCodeAndChannelSet();
+        channelChanged = await _ensurePostalCodeAndChannelSet();
       debugPrint('[HomePage] Postal code and channel check completed. Channel changed: $channelChanged');
+      } else {
+        debugPrint('[HomePage] Postal code and channel already set, skipping channel setup');
+      }
       
       // Always update UI display after checking postal code/channel (ensures UI is in sync)
       // Add small delay to ensure storage is written before reading
       await Future.delayed(Duration(milliseconds: 100));
-      _updateChannelDisplay();
+      _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh trigger since we're already in refresh
       debugPrint('[HomePage] UI display updated with latest channel and postal code');
       
       // STEP 3: Only after channel is set, fetch all other data
@@ -205,7 +425,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Force UI refresh after channel change to ensure UI updates
         if (mounted) {
           debugPrint('[HomePage] Forcing UI refresh after channel change...');
-          _updateChannelDisplay(); // Update again to ensure UI reflects changes
+          _updateChannelDisplay(skipRefreshTrigger: false); // Allow refresh trigger for actual channel changes
           // Trigger a rebuild
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -218,7 +438,11 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint('[HomePage] Fetching channel-specific data...');
       
       if (_isUserAuthenticated()) {
+        // Only fetch cart if it's not already loaded or if it's stale
+        // This prevents duplicate cart fetches when loyalty points are removed
+        if (cartController.cart.value == null) {
         cartController.getActiveOrder();
+        }
         bannerController.getCustomerFavorites();
         
         // Check for default shipping address after customer data is loaded
@@ -823,7 +1047,15 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
     } else {
-      // Postal code exists - check if it has valid channels
+      // Postal code exists - check if channel token is already set
+      // If channel token exists, skip the expensive hasValidPostalCode() call
+      final channelToken = GraphqlService.channelToken;
+      if (channelToken.isNotEmpty) {
+        debugPrint('[HomePage] Postal code and channel token already exist, skipping validity check');
+        return; // Postal code and channel are already set, no need to validate
+      }
+      
+      // Only check validity if channel token is not set
       final postalCodeStr = storedPostalCode.toString();
       debugPrint('[HomePage] Checking if postal code has valid channels: $postalCodeStr');
       
@@ -993,7 +1225,7 @@ class _MyHomePageState extends State<MyHomePage> {
       onPopInvoked: (didPop) {
         // Refresh data when page is about to be popped (user navigating back)
         if (!didPop) {
-          _refreshData();
+          _refreshData(forceRefresh: true); // Force refresh when navigating back to page
         }
       },
       child: Obx(() {
@@ -1026,8 +1258,9 @@ class _MyHomePageState extends State<MyHomePage> {
               await Future.wait(futures);
             },
             color: AppColors.refreshIndicator,
-            child: OrientationBuilder(
-              builder: (context, orientation) {
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Use LayoutBuilder instead of OrientationBuilder to avoid layout callback issues
                 return CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   slivers: [
@@ -1084,17 +1317,16 @@ class _MyHomePageState extends State<MyHomePage> {
           return Column(
             children: [
               _buildShippingTicker(),
-              ResponsiveSpacing.vertical(16),
+              // No spacing before banner - banner has no top padding
             ],
           );
         }),
-        // Hero Banner Section - Clean without overlay
+        // Hero Banner Section - Full width with curvy corners, no top/left/right padding
         _buildHeroBanner(),
         ResponsiveSpacing.vertical(16),
 
         // Category Selection Horizontal Scroll
         _buildCategorySelection(),
-        ResponsiveSpacing.vertical(8),
 
         // Reward Points Section
 
@@ -1114,20 +1346,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return ResponsiveSpacing.vertical(18);
         }),
 
-        // Frequently Ordered Section
-        HomeFrequentlyOrderedSection(
-          bannerController: bannerController,
-          cartController: cartController,
-        ),
-        Obx(() {
-          final enabledProducts = bannerController.frequentlyOrderedProducts
-              .where((item) => item.product.enabled == true)
-              .toList();
-          if (enabledProducts.isEmpty) {
-            return SizedBox.shrink();
-          }
-          return ResponsiveSpacing.vertical(32);
-        }),
+
 
         // All Products Section
         CollectionGrid(
@@ -1142,6 +1361,20 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         ResponsiveSpacing.vertical(40),
+        // Frequently Ordered Section
+        HomeFrequentlyOrderedSection(
+          bannerController: bannerController,
+          cartController: cartController,
+        ),
+        Obx(() {
+          final enabledProducts = bannerController.frequentlyOrderedProducts
+              .where((item) => item.product.enabled == true)
+              .toList();
+          if (enabledProducts.isEmpty) {
+            return SizedBox.shrink();
+          }
+          return ResponsiveSpacing.vertical(32);
+        }),
       ],
     );
   }
@@ -1166,7 +1399,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return Container(
         padding: EdgeInsets.only(
           top: ResponsiveUtils.rp(2),
-          bottom: ResponsiveUtils.rp(2),
+          bottom: 0, // Remove bottom padding to reduce gap
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1285,11 +1518,11 @@ class _MyHomePageState extends State<MyHomePage> {
           onChannelSwitched: () {
             debugPrint('[HomePage] Channel switched callback triggered');
             // Force immediate UI update
-            _updateChannelDisplay();
-            // Refresh data and force UI rebuild
+            _updateChannelDisplay(skipRefreshTrigger: false);
+            // Refresh data and force UI rebuild - force since channel changed
             if (mounted) {
               setState(() {});
-              _refreshData();
+              _refreshData(forceRefresh: true);
             }
           },
         );

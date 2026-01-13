@@ -9,7 +9,7 @@ import '../../utils/price_formatter.dart';
 import '../../utils/navigation_helper.dart';
 import '../../utils/analytics_helper.dart';
 import '../../widgets/responsive_spacing.dart';
-import '../../widgets/product_card.dart';
+import '../../widgets/home_product_card.dart';
 import '../../widgets/snackbar.dart';
 import '../../services/graphql_client.dart';
 
@@ -301,7 +301,7 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
               ),
             ),
             SizedBox(
-              height: ResponsiveUtils.rp(260),
+              height: ResponsiveUtils.rp(240),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: ResponsiveSpacing.screenPadding,
@@ -328,13 +328,17 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
                       : variants.first;
                   
                   final priceText = PriceFormatter.formatPrice(selectedVariant.priceWithTax.round());
-                  final isFavorite = widget.bannerController.isFavorite(product.id);
                   final hasMultipleVariants = variants.length > 1;
                   final variantLabel = _getVariantLabel(selectedVariant);
 
                   return SizedBox(
-                    width: ResponsiveUtils.rp(170),
-                    child: ProductCard(
+                    width: ResponsiveUtils.rp(150),
+                    child: Obx(() {
+                      // Observe favorite status changes reactively
+                      final isFavorite = widget.bannerController.isFavorite(product.id);
+                      
+                      return HomeProductCard(
+                        key: ValueKey('frequently_ordered_${product.id}'),
                       name: product.name,
                       imageUrl: product.featuredAsset?.preview,
                       onTap: () {
@@ -343,9 +347,13 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
                           productName: product.name,
                         );
                       },
-                      onDoubleTap: () => widget.bannerController.toggleFavorite(productId: product.id),
+                        onDoubleTap: () async {
+                          await widget.bannerController.toggleFavorite(productId: product.id);
+                        },
                       isFavorite: isFavorite,
-                      onFavoriteToggle: () => widget.bannerController.toggleFavorite(productId: product.id),
+                        onFavoriteToggle: () async {
+                          await widget.bannerController.toggleFavorite(productId: product.id);
+                        },
                       discountPercent: null,
                       variantSelector: hasMultipleVariants
                           ? _buildVariantDropdown(
@@ -358,6 +366,11 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
                       variantLabel: variantLabel,
                       priceText: priceText,
                       shadowPriceText: null,
+                      orderCount: item.orderCount,
+                      groupName: selectedVariant.options.isNotEmpty
+                          ? selectedVariant.options.first.group.name
+                          : null,
+                      hasMultipleVariants: hasMultipleVariants,
                       onAddToCart: () async {
                         if (selectedVariantId.isEmpty) {
                           SnackBarWidget.showWarning(
@@ -369,7 +382,8 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
                           return await _addVariantToCart(selectedVariantId, product.name);
                         }
                       },
-                    ),
+                      );
+                    }),
                   );
                 },
               ),

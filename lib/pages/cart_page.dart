@@ -36,7 +36,7 @@ class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
 }
 
-class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin {
+class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final CartController cartController = Get.find<CartController>();
   final OrderController orderController = Get.find<OrderController>();
   final UtilityController utilityController = Get.find<UtilityController>();
@@ -65,12 +65,24 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   // Local loading flag to prevent flicker on initial load
   bool _isInitialLoading = true;
   
+  // Track if data refresh is in progress to prevent duplicate calls
+  bool _isRefreshingData = false;
+  
   // Track which order line is currently being adjusted (for loading state)
   final Set<String> _adjustingOrderLineIds = <String>{};
+  
+  // Track if this is the first build to prevent unnecessary refreshes
+  bool _isFirstBuild = true;
+  
+  // Track the last route to detect when returning to cart page
+  String? _lastRoute;
 
   @override
   void initState() {
     super.initState();
+    
+    // Add observer to detect app lifecycle and route changes
+    WidgetsBinding.instance.addObserver(this);
     
     // Initialize blink animation
     _blinkAnimationController = AnimationController(
@@ -84,23 +96,39 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       ),
     );
     
+    // Store current route
+    _lastRoute = Get.currentRoute;
+    
     _refreshData();
   }
 
   /// Refresh data - called from initState and when returning to page
   void _refreshData() {
+    debugPrint('[CartPage] ========== _refreshData() CALLED ==========');
+    // Prevent duplicate refresh calls
+    if (_isRefreshingData) {
+      debugPrint('[CartPage] Data refresh already in progress, skipping duplicate call...');
+      return;
+    }
+    
+    _isRefreshingData = true;
+    debugPrint('[CartPage] Starting data refresh...');
     // Load data without showing loading state to prevent flicker
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      debugPrint('[CartPage] PostFrameCallback executed - calling getActiveOrder()');
       // Load cart first
       await cartController.getActiveOrder();
+      debugPrint('[CartPage] getActiveOrder() completed - cart and order controllers updated');
       
       // Load other data in parallel without blocking
       // Always fetch coupon codes when entering cart page
+      debugPrint('[CartPage] Starting parallel fetches: getCouponCodeList, getEligibleShippingMethods, fetchLoyaltyPointsConfig');
       Future.wait([
         bannerController.getCouponCodeList(),
         orderController.getEligibleShippingMethods(),
         bannerController.fetchLoyaltyPointsConfig(),
       ], eagerError: false).then((_) async {
+        debugPrint('[CartPage] Parallel fetches completed');
         // After shipping methods are loaded, check for single method
         if (orderController.shippingMethods.length == 1) {
           final singleMethod = orderController.shippingMethods.first;
@@ -109,12 +137,17 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
           await _applyShippingMethod(showFeedback: false, force: true);
         }
         
-        // Refresh order to get latest shipping lines
-        await orderController.getActiveOrder(skipLoading: true);
+        // OrderController is already updated by cartController.getActiveOrder() above
+        // No need to fetch again - just load existing data from controllers
+        debugPrint('[CartPage] Loading existing data from controllers (no API calls)...');
         _loadExistingShippingMethod();
         _loadExistingCouponCodes();
         _loadExistingLoyaltyPoints();
         _loadExistingInstructions();
+        
+        // Mark refresh as complete
+        _isRefreshingData = false;
+        debugPrint('[CartPage] ========== _refreshData() COMPLETED ==========');
       });
       
       // Mark initial loading as complete after first frame
@@ -131,6 +164,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _instructionsDebounceTimer?.cancel();
     _scrollController.dispose();
     _blinkAnimationController.dispose();
@@ -645,6 +679,10 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
 
   Future<void> _loadExistingShippingMethod() async {
     try {
+      debugPrint('[CartPage] _loadExistingShippingMethod() called - using already-loaded order data');
+      // Use already-loaded order data instead of fetching again
+      final order = orderController.currentOrder.value;
+      
       // If there's only one shipping method, always set and apply it
       if (orderController.shippingMethods.length == 1) {
         final singleMethod = orderController.shippingMethods.first;
@@ -653,9 +691,7 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
         orderController.selectedShippingMethod.value = singleMethod;
         debugPrint('[CartPage] Auto-selected single shipping method: ${singleMethod.name}');
         
-        // Check if it's already applied to the order
-        await orderController.getActiveOrder(skipLoading: true);
-        final order = orderController.currentOrder.value;
+        // Check if it's already applied to the order (using already-loaded data)
         final isAlreadyApplied = order != null &&
             order.shippingLines.isNotEmpty &&
             order.shippingLines.any((line) => line.shippingMethod.id == singleMethod.id);
@@ -671,10 +707,7 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
         return;
       }
       
-      // Multiple methods - check for existing shipping method from order
-      await orderController.getActiveOrder(skipLoading: true);
-      final order = orderController.currentOrder.value;
-      
+      // Multiple methods - check for existing shipping method from order (using already-loaded data)
       if (order != null && order.shippingLines.isNotEmpty) {
         final shippingLine = order.shippingLines.first;
         final shippingMethodId = shippingLine.shippingMethod.id;
@@ -709,9 +742,11 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
     if (selected == null) return;
 
     if (!force && _lastAppliedShippingMethodId == selected.id) {
+      debugPrint('[CartPage] _applyShippingMethod() skipped - shipping method already applied');
       return; // Already applied
     }
 
+    debugPrint('[CartPage] _applyShippingMethod() called - setting shipping method: ${selected.id}');
     final success = await orderController.setShippingMethod(
       selected.id, 
       skipIfAlreadySet: false,
@@ -722,7 +757,10 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
       if (showFeedback) {
         showSuccessSnackbar('Shipping method selected');
       }
+      // Sync CartController with updated order (OrderController is already updated by setShippingMethod)
+      debugPrint('[CartPage] Shipping method set successfully, syncing CartController...');
       await cartController.getActiveOrder();
+      debugPrint('[CartPage] CartController synced after shipping method change');
     } else {
       showErrorSnackbar('Failed to set shipping method');
     }
@@ -740,7 +778,8 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
 
   Future<void> _loadExistingCouponCodes() async {
     try {
-      await cartController.getActiveOrder();
+      debugPrint('[CartPage] _loadExistingCouponCodes() called - using already-loaded cart data');
+      // Use already-loaded cart data instead of fetching again
       final cart = cartController.cart.value;
       if (cart != null && cart.couponCodes.isNotEmpty) {
         for (final couponCode in cart.couponCodes) {
@@ -748,6 +787,9 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
             bannerController.appliedCouponCodes.add(couponCode);
           }
         }
+        debugPrint('[CartPage] Loaded existing coupon codes: ${cart.couponCodes}');
+      } else {
+        debugPrint('[CartPage] No coupon codes found in cart');
       }
     } catch (e) {
 debugPrint('[CartPage] Error loading existing coupon codes: $e');
@@ -764,7 +806,7 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
       final success = await bannerController.removeLoyaltyPoints();
       if (success) {
         showSuccessSnackbar('Loyalty points removed');
-        await cartController.getActiveOrder();
+        // Cart is already updated in removeLoyaltyPoints(), no need to fetch again
       } else {
         showErrorSnackbar('Failed to remove loyalty points');
       }
@@ -775,7 +817,7 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
         final success = await bannerController.applyLoyaltyPoints(loyaltyPointsUsed);
         if (success) {
           showSuccessSnackbar('Loyalty points applied');
-          await cartController.getActiveOrder();
+          // Cart is already updated in applyLoyaltyPoints(), no need to fetch again
         } else {
           showErrorSnackbar('Failed to apply loyalty points');
         }
@@ -787,32 +829,73 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
 
   Future<void> _loadExistingLoyaltyPoints() async {
     try {
-      await orderController.getActiveOrder(skipLoading: true);
+      debugPrint('[CartPage] _loadExistingLoyaltyPoints() called - checking if loyalty points already loaded');
+      
+      // Loyalty points are now extracted directly in cartController.getActiveOrder()
+      // This function is kept as a fallback, but the main extraction happens in CartController
+      // Check if loyalty points are already set (from getActiveOrder)
+      final isApplied = bannerController.loyaltyPointsApplied.value;
+      final pointsUsed = bannerController.loyaltyPointsUsed.value;
+      
+      if (isApplied && pointsUsed > 0) {
+        debugPrint('[CartPage] Loyalty points already loaded from getActiveOrder(): $pointsUsed');
+        return;
+      }
+      
+      // Fallback: Try to get from order if not already loaded
+      // Note: This is unlikely to work since orderController.currentOrder is Fragment$Cart
+      // which doesn't have customFields, but kept as a safety check
       final order = orderController.currentOrder.value;
-      if (order != null && order is Query$ActiveOrder$activeOrder && order.customFields != null) {
-        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
-        final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
-        if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-          bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
-          bannerController.loyaltyPointsApplied.value = true;
-          // Loyalty points controller is now managed by CartLoyaltyPointsSection component
+      if (order != null) {
+        try {
+          // Try to access customFields if available (for Query$ActiveOrder$activeOrder type)
+          // Fragment$Cart doesn't have customFields, so this will fail gracefully
+          if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
+            final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
+            final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
+            if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
+              bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
+              bannerController.loyaltyPointsApplied.value = true;
+              debugPrint('[CartPage] Loaded existing loyalty points from order (fallback): $loyaltyPointsUsed');
+            }
+          } else {
+            debugPrint('[CartPage] Order type doesn\'t have customFields (Fragment\$Cart), loyalty points should be loaded from getActiveOrder()');
+          }
+        } catch (e) {
+          // Fragment$Cart doesn't have customFields, that's okay
+          debugPrint('[CartPage] Order type doesn\'t have customFields, loyalty points should be loaded from getActiveOrder(): $e');
         }
       }
     } catch (e) {
-debugPrint('[CartPage] Error loading existing loyalty points: $e');
+      debugPrint('[CartPage] Error loading existing loyalty points: $e');
     }
   }
 
   Future<void> _loadExistingInstructions() async {
     try {
-      await orderController.getActiveOrder(skipLoading: true);
+      debugPrint('[CartPage] _loadExistingInstructions() called - using already-loaded order data');
+      // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
+      
+      // Try to get customFields - Fragment$Cart doesn't have customFields, but Query$ActiveOrder$activeOrder does
+      if (order != null) {
+        try {
+          // Try to access customFields if available (for Query$ActiveOrder$activeOrder type)
+          // Fragment$Cart doesn't have customFields, so this will fail gracefully
       if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
         final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
         final instructions = customFields.otherInstructions;
         if (instructions != null && instructions.isNotEmpty && mounted) {
+              debugPrint('[CartPage] Loaded existing instructions: ${instructions.length} chars');
           // Instructions are now managed by CartOtherInstructionsSection component
           // The component will handle loading existing instructions internally
+            }
+          } else {
+            debugPrint('[CartPage] Order type doesn\'t have customFields (Fragment\$Cart), skipping instructions load');
+          }
+        } catch (e) {
+          // Fragment$Cart doesn't have customFields, that's okay
+          debugPrint('[CartPage] Order type doesn\'t have customFields, skipping instructions load: $e');
         }
       }
     } catch (e) {
@@ -823,19 +906,87 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Refresh data when returning to this page
-    _refreshData();
+    
+    // Mark first build as complete
+    if (_isFirstBuild) {
+      _isFirstBuild = false;
+      return; // Skip refresh on first build (already done in initState)
+    }
+    
+    // Check if we're returning to this page from another route
+    final currentRoute = Get.currentRoute;
+    if (_lastRoute != null && 
+        _lastRoute != currentRoute && 
+        currentRoute == '/cart' && 
+        !_isRefreshingData && 
+        mounted) {
+      debugPrint('[CartPage] didChangeDependencies: Returning to cart page from $_lastRoute, refreshing data...');
+      // Reset refresh flag to allow refresh when returning to page
+      _isRefreshingData = false;
+      // Use microtask to ensure it runs after current frame
+      Future.microtask(() {
+        if (mounted && !_isRefreshingData) {
+          _refreshData();
+        }
+      });
+    }
+    
+    // Update last route
+    if (_lastRoute != currentRoute) {
+      _lastRoute = currentRoute;
+    }
+  }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Refresh data when app comes back to foreground
+    if (state == AppLifecycleState.resumed && mounted && !_isRefreshingData) {
+      debugPrint('[CartPage] App resumed, refreshing cart data...');
+      _isRefreshingData = false;
+      _refreshData();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Check route on every build to catch route changes
+    // This is a backup check in case didChangeDependencies doesn't fire
+    final currentRoute = Get.currentRoute;
+    
+    // Detect when returning to cart page from another route (like checkout)
+    // Only check if we're actually on cart route and route changed
+    if (currentRoute == '/cart' && 
+        _lastRoute != null && 
+        _lastRoute != '/cart' && 
+        _lastRoute != currentRoute &&
+        !_isFirstBuild && 
+        !_isRefreshingData && 
+        mounted) {
+      debugPrint('[CartPage] Build: Detected route change to cart from $_lastRoute, refreshing data...');
+      // Use a microtask to ensure this runs after the current build
+      Future.microtask(() {
+        if (mounted && !_isRefreshingData) {
+          _isRefreshingData = false; // Reset flag to allow refresh
+          _refreshData();
+        }
+      });
+    }
+    
+    // Update last route
+    if (_lastRoute != currentRoute) {
+      _lastRoute = currentRoute;
+    }
+    
     return OrientationBuilder(
       builder: (context, orientation) {
         return PopScope(
           canPop: true,
           onPopInvoked: (didPop) {
             // Refresh data when page is about to be popped (user navigating back)
-            if (!didPop) {
+            if (!didPop && !_isRefreshingData && mounted) {
+              debugPrint('[CartPage] PopScope triggered, refreshing data...');
+              _isRefreshingData = false; // Reset flag to allow refresh
               _refreshData();
             }
           },
@@ -1011,10 +1162,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                               final success = await bannerController.applyLoyaltyPoints(points);
                               if (success) {
                                 showSuccessSnackbar('Loyalty points applied successfully');
-                                await Future.wait([
-                                  cartController.getActiveOrder(),
-                                  orderController.getActiveOrder(skipLoading: true),
-                                ]);
+                                // Cart is already updated in applyLoyaltyPoints(), no need to fetch again
                               } else {
                                 showErrorSnackbar('Failed to apply loyalty points');
                               }
@@ -1023,10 +1171,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
                               final success = await bannerController.removeLoyaltyPoints();
                               if (success) {
                                 showSuccessSnackbar('Loyalty points removed successfully');
-                                await Future.wait([
-                                  cartController.getActiveOrder(),
-                                  orderController.getActiveOrder(skipLoading: true),
-                                ]);
+                                // Cart is already updated in removeLoyaltyPoints(), no need to fetch again
                               } else {
                                 showErrorSnackbar('Failed to remove loyalty points');
                               }

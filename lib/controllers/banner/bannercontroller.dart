@@ -215,8 +215,13 @@ class BannerController extends BaseController {
   /// Toggle favorite for a product
   Future<bool> toggleFavorite({required String productId}) async {
     try {
+      debugPrint('[BannerController] ========== TOGGLE FAVORITE START ==========');
+      debugPrint('[BannerController] Product ID: $productId');
+      debugPrint('[BannerController] Current favorite status: ${favoriteProductIds.contains(productId) ? "FAVORITED" : "NOT FAVORITED"}');
+      
       utilityController.setLoadingState(false);
 
+      debugPrint('[BannerController] Executing GraphQL mutation: ToggleFavorite');
       final res = await GraphqlService.client.value.mutate$ToggleFavorite(
         Options$Mutation$ToggleFavorite(
           variables: Variables$Mutation$ToggleFavorite(
@@ -225,21 +230,37 @@ class BannerController extends BaseController {
         ),
       );
 
+      debugPrint('[BannerController] GraphQL mutation completed');
+      debugPrint('[BannerController] Response has data: ${res.data != null}');
+      debugPrint('[BannerController] Response has exception: ${res.hasException}');
+
       if (checkResponseForErrors(res,
           customErrorMessage: 'Failed to update favorite')) {
+        debugPrint('[BannerController] ❌ Toggle favorite failed - checkResponseForErrors returned true');
         utilityController.setLoadingState(false);
         return false;
+      }
+
+      // Check if mutation was successful
+      final toggleResult = res.data?['toggleFavorite'];
+      if (toggleResult != null) {
+        final totalItems = toggleResult['totalItems'] as int? ?? 0;
+        debugPrint('[BannerController] ✅ Toggle favorite successful');
+        debugPrint('[BannerController] New total favorites: $totalItems');
       }
 
       // Refresh customer favorites to ensure UI is up to date
       // Don't try to convert mutation result to query result format because
       // they have different fields (mutation doesn't include 'enabled' field)
+      debugPrint('[BannerController] Refreshing customer favorites list...');
       await getCustomerFavorites();
       
+      debugPrint('[BannerController] ========== TOGGLE FAVORITE END ==========');
       utilityController.setLoadingState(false);
       return true;
     } catch (e) {
-debugPrint('[BannerController] Toggle favorite error: $e');
+      debugPrint('[BannerController] ❌ Toggle favorite error: $e');
+      debugPrint('[BannerController] Error type: ${e.runtimeType}');
       handleException(e, customErrorMessage: 'Failed to update favorite');
       utilityController.setLoadingState(false);
       return false;
@@ -249,7 +270,14 @@ debugPrint('[BannerController] Toggle favorite error: $e');
   /// Get customer favorites
   Future<void> getCustomerFavorites() async {
     try {
+      debugPrint('[BannerController] ========== GET CUSTOMER FAVORITES START ==========');
       utilityController.setLoadingState(false);
+
+      debugPrint('[BannerController] Executing GraphQL query: GetCustomerFavorites');
+      debugPrint('[BannerController] Fetch policy: noCache');
+      debugPrint('[BannerController] Error policy: ignore');
+      debugPrint('[BannerController] Current favorites count: ${favoritesList.length}');
+      debugPrint('[BannerController] Current favorite product IDs: ${favoriteProductIds.length}');
 
       final res = await GraphqlService.client.value.query$GetCustomerFavorites(
         Options$Query$GetCustomerFavorites(
@@ -258,6 +286,10 @@ debugPrint('[BannerController] Toggle favorite error: $e');
               .ignore, // Ignore errors and try to process data anyway
         ),
       );
+      
+      debugPrint('[BannerController] GraphQL query completed');
+      debugPrint('[BannerController] Response has data: ${res.data != null}');
+      debugPrint('[BannerController] Response has exception: ${res.hasException}');
 
       // Check if this is just a cache miss exception (non-fatal)
       bool isCacheMissException = false;
@@ -307,34 +339,53 @@ debugPrint(       '[BannerController] GetCustomerFavorites Exception: ${res.exce
         final favoritesData = activeCustomer['favorites'];
 
         if (favoritesData != null) {
+          debugPrint('[BannerController] Favorites data found in response');
           final favorites = Query$GetCustomerFavorites$activeCustomer$favorites.fromJson(favoritesData as Map<String, dynamic>);
+          
+          debugPrint('[BannerController] Parsed favorites - Total items: ${favorites.totalItems}');
+          debugPrint('[BannerController] Favorites items count: ${favorites.items.length}');
+          
           favoritesList.assignAll(favorites.items);
           favoritesTotalItems.value = favorites.totalItems;
 
           // Update favorite product IDs set
           favoriteProductIds.clear();
-          favoriteProductIds
-              .addAll(favorites.items.map((item) => item.product?.id ?? '').where((id) => id.isNotEmpty));
+          final productIds = favorites.items.map((item) => item.product?.id ?? '').where((id) => id.isNotEmpty).toList();
+          favoriteProductIds.addAll(productIds);
 
-debugPrint('[BannerController] Fetched ${favorites.totalItems} favorites');
-
-          // Debug: Log image URLs
-          for (var _ in favorites.items) {
-            // Logging is commented out, so variable is unused
+          debugPrint('[BannerController] ✅ Fetched ${favorites.totalItems} favorites');
+          debugPrint('[BannerController] Favorite product IDs: ${productIds.length}');
+          
+          // Debug: Log each favorite item
+          for (int i = 0; i < favorites.items.length; i++) {
+            final item = favorites.items[i];
+            final product = item.product;
+            debugPrint('[BannerController] Favorite [$i]:');
+            debugPrint('[BannerController]   - ID: ${item.id}');
+            debugPrint('[BannerController]   - Product ID: ${product?.id ?? "N/A"}');
+            debugPrint('[BannerController]   - Product Name: ${product?.name ?? "N/A"}');
+            debugPrint('[BannerController]   - Product Enabled: ${product?.enabled ?? false}');
+            debugPrint('[BannerController]   - Variants Count: ${product != null ? product.variants.length : 0}');
+            if (product?.featuredAsset != null) {
+              debugPrint('[BannerController]   - Featured Image: ${product?.featuredAsset?.preview ?? "N/A"}');
+            }
           }
         } else {
           // No favorites data, clear the list
+          debugPrint('[BannerController] No favorites data found in response');
           favoritesList.clear();
           favoritesTotalItems.value = 0;
           favoriteProductIds.clear();
-debugPrint('[BannerController] No favorites data found');
+          debugPrint('[BannerController] Cleared favorites list');
         }
       } else {
         // Customer not logged in or not a Customer type, clear favorites
+        debugPrint('[BannerController] Active customer is null or not a Customer type');
+        debugPrint('[BannerController] Active customer data: ${activeCustomer != null ? activeCustomer['__typename'] : "null"}');
         favoritesList.clear();
         favoritesTotalItems.value = 0;
         favoriteProductIds.clear();
-debugPrint(  '[BannerController] Active customer is null or not a Customer type');
+        debugPrint('[BannerController] Cleared favorites list (customer not logged in)');
         
         // Only logout if it's NOT a network error
         // Network errors should not trigger logout as they're temporary connection issues
@@ -478,6 +529,25 @@ debugPrint('[BannerController] Get favorites error: $e');
             result.customFields?.loyaltyPointsEarned ?? 0;
         loyaltyPointsApplied.value = true;
 
+        // Refresh cart and customer controllers to get updated totals and loyalty points
+        // Note: applyLoyaltyPointsToActiveOrder returns Order but we refresh to ensure consistency
+        // and get updated customer loyalty points available
+        // CartController.getActiveOrder() also updates OrderController, so we only need one call
+        try {
+          final cartController = Get.find<CartController>();
+          final customerController = Get.find<CustomerController>();
+          
+          // Refresh cart (which also updates order) and customer in parallel - these are the only calls needed
+          await Future.wait([
+            cartController.getActiveOrder(), // This also updates OrderController
+            customerController.getActiveCustomer(skipPostalCodeCheck: true), // Get updated loyalty points, skip postal code check to prevent channel fetch
+          ], eagerError: false);
+          
+          debugPrint('[BannerController] ✅ Cart, order, and customer controllers refreshed after applying loyalty points');
+        } catch (e) {
+          debugPrint('[BannerController] Could not refresh controllers after applying loyalty points: $e');
+        }
+
 debugPrint(  '[BannerController] Loyalty points applied successfully: ${loyaltyPointsUsed.value}');
         utilityController.setLoadingState(false);
         return true;
@@ -514,6 +584,25 @@ debugPrint('[BannerController] Apply loyalty points error: $e');
       if (result != null) {
         loyaltyPointsUsed.value = 0;
         loyaltyPointsApplied.value = false;
+
+        // Refresh cart and customer controllers to get updated totals and loyalty points
+        // Note: removeLoyaltyPointsFromActiveOrder only returns id, not full Order
+        // So we need to refresh to get the updated cart state and customer loyalty points
+        // CartController.getActiveOrder() also updates OrderController, so we only need one call
+        try {
+          final cartController = Get.find<CartController>();
+          final customerController = Get.find<CustomerController>();
+          
+          // Refresh cart (which also updates order) and customer in parallel - these are the only calls needed
+          await Future.wait([
+            cartController.getActiveOrder(), // This also updates OrderController
+            customerController.getActiveCustomer(skipPostalCodeCheck: true), // Get updated loyalty points, skip postal code check to prevent channel fetch
+          ], eagerError: false);
+          
+          debugPrint('[BannerController] ✅ Cart, order, and customer controllers refreshed after removing loyalty points');
+        } catch (e) {
+          debugPrint('[BannerController] Could not refresh controllers after removing loyalty points: $e');
+        }
 
 debugPrint('[BannerController] Loyalty points removed successfully');
         utilityController.setLoadingState(false);
@@ -1393,11 +1482,27 @@ debugPrint(  '[BannerController] Error validating minimum order amount: $e');
             // Refresh order controller to get updated data
             await orderController.getActiveOrder(skipLoading: true);
             debugPrint('[BannerController] ✅ Order controller refreshed');
+            
+            // Restore coupon tracking from cart to ensure UI shows free products correctly
+            try {
+              await restoreCouponTrackingFromCart();
+              debugPrint('[BannerController] ✅ Coupon tracking restored after applying coupon');
+            } catch (e) {
+              debugPrint('[BannerController] Could not restore coupon tracking: $e');
+            }
           } else {
             // If no lines in response, refresh both controllers
             debugPrint('[BannerController] No lines in response, refreshing controllers...');
             await cartController.getActiveOrder();
             await orderController.getActiveOrder(skipLoading: true);
+            
+            // Restore coupon tracking after refresh
+            try {
+              await restoreCouponTrackingFromCart();
+              debugPrint('[BannerController] ✅ Coupon tracking restored after refresh');
+            } catch (e) {
+              debugPrint('[BannerController] Could not restore coupon tracking: $e');
+            }
           }
         } catch (e) {
           debugPrint('[BannerController] Could not update controllers: $e');
@@ -1408,6 +1513,14 @@ debugPrint(  '[BannerController] Error validating minimum order amount: $e');
             debugPrint('[BannerController] Fallback: refreshing controllers from server...');
             await cartController.getActiveOrder();
             await orderController.getActiveOrder(skipLoading: true);
+            
+            // Restore coupon tracking after fallback refresh
+            try {
+              await restoreCouponTrackingFromCart();
+              debugPrint('[BannerController] ✅ Coupon tracking restored after fallback refresh');
+            } catch (restoreError) {
+              debugPrint('[BannerController] Could not restore coupon tracking: $restoreError');
+            }
           } catch (refreshError) {
             debugPrint('[BannerController] Failed to refresh controllers: $refreshError');
           }
@@ -2449,9 +2562,23 @@ debugPrint('[BannerController] Reset _isAddingItems flag');
         
         final hasProducts = hasCouponProducts(couponCode);
         
-        // Both controllers are already updated by applyCouponCode
-        // No need to call getActiveOrder() which might fetch stale data
-        // The direct updates in applyCouponCode are sufficient
+        // Ensure cart is refreshed first to get latest state
+        try {
+          final cartController = Get.find<CartController>();
+          await cartController.getActiveOrder();
+          debugPrint('[BannerController] ✅ Cart refreshed after applying coupon');
+        } catch (e) {
+          debugPrint('[BannerController] Could not refresh cart: $e');
+        }
+        
+        // Restore coupon tracking to ensure UI updates immediately
+        // This ensures free products show at the top without needing pull-to-refresh
+        try {
+          await restoreCouponTrackingFromCart();
+          debugPrint('[BannerController] ✅ Coupon tracking restored after applying coupon with products');
+        } catch (e) {
+          debugPrint('[BannerController] Could not restore coupon tracking: $e');
+        }
         
         return {
           'success': true,

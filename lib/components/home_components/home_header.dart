@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/app_strings.dart';
@@ -75,25 +76,6 @@ class HomeHeader extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         // Left side: Menu Icon
-                        Positioned(
-                          left: 0,
-                          child: Builder(
-                            builder: (context) => InkWell(
-                              onTap: () {
-                                try {
-                                  Scaffold.of(context).openDrawer();
-                                } catch (e) {
-                                  // No drawer available
-                                }
-                              },
-                              child: Icon(
-                                Icons.menu,
-                                color: AppColors.indNonVegRed,
-                                size: ResponsiveUtils.rp(24),
-                              ),
-                            ),
-                          ),
-                        ),
                         // Center: Welcome Section with Non-Veg Icons
                         Center(
                           child: _buildWelcomeSectionIndNonVeg(),
@@ -105,7 +87,7 @@ class HomeHeader extends StatelessWidget {
                             onTap: () => Get.toNamed('/account'),
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
                             child: Container(
-                              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                              padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
                               decoration: BoxDecoration(
                                 color: AppColors.indNonVegBackgroundLight,
                                 shape: BoxShape.circle,
@@ -117,7 +99,7 @@ class HomeHeader extends StatelessWidget {
                               child: Icon(
                                 Icons.person_outline_rounded,
                                 color: AppColors.indNonVegRed,
-                                size: ResponsiveUtils.rp(22),
+                                size: ResponsiveUtils.rp(26),
                               ),
                             ),
                           ),
@@ -181,7 +163,7 @@ class HomeHeader extends StatelessWidget {
                             onTap: () => Get.toNamed('/account'),
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
                             child: Container(
-                              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                              padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
                               decoration: BoxDecoration(
                                 color: AppColors.backgroundLight,
                                 shape: BoxShape.circle,
@@ -193,7 +175,7 @@ class HomeHeader extends StatelessWidget {
                               child: Icon(
                                 Icons.person_outline_rounded,
                                 color: AppColors.textPrimary,
-                                size: ResponsiveUtils.rp(22),
+                                size: ResponsiveUtils.rp(26),
                               ),
                             ),
                           ),
@@ -264,8 +246,9 @@ class HomeHeader extends StatelessWidget {
                 
                 SizedBox(height: ResponsiveUtils.rp(16)),
                 
-                // Search Bar Row with Loyalty Points
-                _buildSearchRow(),
+                // Search Bar Row with Loyalty Points (hide if brand = city)
+                if (!_isCityChannel())
+                  _buildSearchRow(),
               ],
             ),
           ),
@@ -354,9 +337,43 @@ class HomeHeader extends StatelessWidget {
   }
 
   Widget _buildActionButtons() {
+    // Check if channel type is CITY
+    final isCityChannel = _isCityChannel();
+    
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Search Icon (only show when brand = city)
+        if (isCityChannel)
+          InkWell(
+            onTap: () => Get.toNamed('/search'),
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+            child: Container(
+              margin: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
+              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+              decoration: BoxDecoration(
+                color: AppColors.backgroundLight,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: ResponsiveUtils.rp(4),
+                    offset: Offset(0, ResponsiveUtils.rp(1)),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.search,
+                color: AppColors.button,
+                size: ResponsiveUtils.rp(26),
+              ),
+            ),
+          ),
+        
         // Loyalty Points Badge (if authenticated)
         if (isUserAuthenticated && customerController != null)
           Obx(() {
@@ -364,12 +381,15 @@ class HomeHeader extends StatelessWidget {
             if (loyaltyPoints <= 0) return SizedBox.shrink();
             
             return GestureDetector(
-              onTap: () => Get.toNamed('/account'),
+              onTap: () {
+                // Navigate directly to loyalty points transaction page
+                Get.toNamed('/loyalty-points-transactions');
+              },
               child: Container(
                 margin: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
                 padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(10),
-                  vertical: ResponsiveUtils.rp(6),
+                  horizontal: ResponsiveUtils.rp(12),
+                  vertical: ResponsiveUtils.rp(8),
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -396,13 +416,13 @@ class HomeHeader extends StatelessWidget {
                     Icon(
                       Icons.stars_rounded,
                       color: Colors.white,
-                      size: ResponsiveUtils.rp(16),
+                      size: ResponsiveUtils.rp(20),
                     ),
-                    SizedBox(width: ResponsiveUtils.rp(4)),
+                    SizedBox(width: ResponsiveUtils.rp(5)),
                     Text(
                       '$loyaltyPoints',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(13),
+                        fontSize: ResponsiveUtils.sp(15),
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: 0.5,
@@ -419,7 +439,7 @@ class HomeHeader extends StatelessWidget {
           onTap: () => Get.toNamed('/account'),
           borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
           child: Container(
-            padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+            padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
             decoration: BoxDecoration(
               color: AppColors.backgroundLight,
               shape: BoxShape.circle,
@@ -438,12 +458,24 @@ class HomeHeader extends StatelessWidget {
             child: Icon(
               Icons.person_outline_rounded,
               color: AppColors.button,
-              size: ResponsiveUtils.rp(22),
+              size: ResponsiveUtils.rp(26),
             ),
           ),
         ),
       ],
     );
+  }
+  
+  bool _isCityChannel() {
+    try {
+      final box = GetStorage();
+      final channelType = box.read('channel_type')?.toString() ?? '';
+      if (channelType.isEmpty) return false;
+      // Check if it's CITY type (could be "Enum$ChannelType.CITY" or just "CITY")
+      return channelType.contains('CITY');
+    } catch (e) {
+      return false;
+    }
   }
 
   Widget _buildSearchRowIndSnacks() {

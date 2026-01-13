@@ -114,7 +114,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         _loadShippingMethods(),
         _refreshPaymentMethods(), // Always fetch payment methods when entering checkout page
         _loadCouponCodes(),
-        _loadLoyaltyPointsConfig(),
+        // Removed _loadLoyaltyPointsConfig() - loyalty points config should be loaded from cart page
       ], eagerError: false);
       
       // Mark initial loading as complete
@@ -125,9 +125,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
       }
       
       // Load existing state (non-critical, can happen after initial render)
+      // Use already-loaded data from cart page instead of making new API calls
+      // Note: _loadExistingShippingMethod() must be called after _loadShippingMethods() completes
       _loadExistingInstructions();
       _loadExistingCouponCodes();
       _loadExistingLoyaltyPoints();
+      _loadExistingShippingMethod(); // Load existing shipping method from order (after shipping methods are loaded)
     });
   }
 
@@ -194,8 +197,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       }
     }
     
-    // Load shipping methods after address selection
-    _loadShippingMethods();
+    // Shipping methods will be loaded in initState Future.wait, no need to call here
   }
   
   /// Set shipping address from currently selected address
@@ -217,8 +219,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       
       if (addressSet) {
         debugPrint('[CheckoutPage] ✅ Shipping address automatically set: ${_selectedAddress!.fullName}');
-        // Refresh shipping methods after address is set
-        await _loadShippingMethods();
+        // Shipping methods will be loaded in initState Future.wait, no need to call again
       } else {
         debugPrint('[CheckoutPage] ⚠️ Failed to set shipping address automatically');
       }
@@ -228,64 +229,50 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _loadShippingMethods() async {
+    debugPrint('[CheckoutPage] _loadShippingMethods() called - loading eligible shipping methods');
     await orderController.getEligibleShippingMethods();
 
     if (orderController.shippingMethods.isEmpty) {
       orderController.selectedShippingMethod.value = null;
       _lastAppliedShippingMethodId = null;
-      await _refreshPaymentMethods();
+      debugPrint('[CheckoutPage] No shipping methods available');
       return;
     }
 
-    // If there's only one shipping method, auto-select it
-    final hasSingleMethod = orderController.shippingMethods.length == 1;
-    if (hasSingleMethod) {
-      final singleMethod = orderController.shippingMethods.first;
-      // Auto-select if not already selected
-      if (orderController.selectedShippingMethod.value?.id != singleMethod.id) {
-        orderController.selectedShippingMethod.value = singleMethod;
-        // Auto-apply the single method
-        await _applyShippingMethod(force: true);
-        return;
-      }
-      // If already selected, just refresh payment methods if needed
-      if (orderController.paymentMethods.isEmpty) {
-        await _refreshPaymentMethods();
-      }
-      return;
+    debugPrint('[CheckoutPage] Loaded ${orderController.shippingMethods.length} shipping methods');
+    // Removed auto-select and auto-apply logic - user should select shipping method manually
+    // Just load the methods, don't auto-select or auto-apply
+  }
+
+  /// Load existing shipping method from already-loaded order data
+  Future<void> _loadExistingShippingMethod() async {
+    try {
+      debugPrint('[CheckoutPage] _loadExistingShippingMethod() called - using already-loaded order data');
+      // Use already-loaded order data instead of fetching again
+      final order = orderController.currentOrder.value;
+      
+      if (order != null && order.shippingLines.isNotEmpty) {
+        final shippingLine = order.shippingLines.first;
+        final shippingMethodId = shippingLine.shippingMethod.id;
+        
+        // Find matching shipping method from available methods
+        final matchingMethod = orderController.shippingMethods.firstWhereOrNull(
+          (method) => method.id == shippingMethodId,
+        );
+        
+        if (matchingMethod != null) {
+          orderController.selectedShippingMethod.value = matchingMethod;
+          _lastAppliedShippingMethodId = matchingMethod.id;
+          debugPrint('[CheckoutPage] Loaded existing shipping method: ${matchingMethod.name} (ID: ${matchingMethod.id})');
+        } else {
+          debugPrint('[CheckoutPage] Shipping method ID $shippingMethodId from order not found in available methods');
+        }
+      } else {
+        debugPrint('[CheckoutPage] No shipping method found in order');
     }
-
-    // Don't auto-select delivery method if already selected (for multiple methods)
-    if (orderController.selectedShippingMethod.value != null) {
-      // If shipping method already selected, just refresh payment methods if needed
-      if (orderController.paymentMethods.isEmpty) {
-        await _refreshPaymentMethods();
-      }
-      return;
+    } catch (e) {
+      debugPrint('[CheckoutPage] Error loading existing shipping method: $e');
     }
-
-    final currentId = orderController.selectedShippingMethod.value?.id;
-    final existingSelection = orderController.shippingMethods
-        .firstWhereOrNull((method) => method.id == currentId);
-    final methodToApply =
-        existingSelection ?? orderController.shippingMethods.first;
-
-    // If method is already selected and applied, don't re-apply
-    if (currentId != null && 
-        currentId == methodToApply.id && 
-        _lastAppliedShippingMethodId == currentId) {
-      // Method already applied, just refresh payment methods if needed
-      if (orderController.paymentMethods.isEmpty) {
-        await _refreshPaymentMethods();
-      }
-      return;
-    }
-
-    if (orderController.selectedShippingMethod.value?.id != methodToApply.id) {
-      orderController.selectedShippingMethod.value = methodToApply;
-    }
-
-    await _applyShippingMethod(force: true);
   }
 
   Future<void> _applyShippingMethod(
@@ -397,45 +384,57 @@ debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====
 
   Future<void> _loadExistingInstructions() async {
     try {
-      // Skip loading state when loading existing instructions
-      await orderController.getActiveOrder(skipLoading: true);
+      debugPrint('[CheckoutPage] _loadExistingInstructions() called - using already-loaded order data');
+      // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
-      if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
-        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
-        final instructions = customFields.otherInstructions;
-        if (instructions != null && instructions.isNotEmpty && mounted) {
-          _otherInstructionsController.text = instructions;
+      
+      if (order != null) {
+        try {
+          String? instructions;
           
-          // Check if it matches a default instruction
-          if (_defaultInstructions.contains(instructions)) {
-            setState(() {
-              _selectedDefaultInstruction = instructions;
-              _showInstructionsOptions = true;
-              _showOtherTextField = false;
-            });
-          } else {
-            // It's a custom instruction
-            setState(() {
-              _showInstructionsOptions = true;
-              _showOtherTextField = true;
-              _selectedDefaultInstruction = null;
-            });
+          // Access customFields from Fragment$Cart type (now supports customFields)
+          if (order.customFields != null) {
+            final customFields = order.customFields!;
+            instructions = customFields.otherInstructions;
           }
           
-debugPrint('[CheckoutPage] Loaded existing instructions: $instructions');
+          if (instructions != null && instructions.isNotEmpty && mounted) {
+            _otherInstructionsController.text = instructions;
+            
+            // Check if it matches a default instruction
+            if (_defaultInstructions.contains(instructions)) {
+              setState(() {
+                _selectedDefaultInstruction = instructions;
+                _showInstructionsOptions = true;
+                _showOtherTextField = false;
+              });
+            } else {
+              // It's a custom instruction
+              setState(() {
+                _showInstructionsOptions = true;
+                _showOtherTextField = true;
+                _selectedDefaultInstruction = null;
+              });
+            }
+            
+            debugPrint('[CheckoutPage] Loaded existing instructions: $instructions');
+          } else {
+            debugPrint('[CheckoutPage] No instructions found in order customFields');
+          }
+        } catch (e) {
+          debugPrint('[CheckoutPage] Error accessing customFields: $e');
         }
       }
     } catch (e) {
-debugPrint('[CheckoutPage] Error loading existing instructions: $e');
+      debugPrint('[CheckoutPage] Error loading existing instructions: $e');
     }
   }
 
   /// Load existing coupon codes from the order
   Future<void> _loadExistingCouponCodes() async {
     try {
-debugPrint('[CheckoutPage] Loading existing coupon codes from order...');
-      await cartController.getActiveOrder();
-      
+      debugPrint('[CheckoutPage] _loadExistingCouponCodes() called - using already-loaded cart data');
+      // Use already-loaded cart data instead of fetching again
       final cart = cartController.cart.value;
       if (cart != null && cart.couponCodes.isNotEmpty) {
 debugPrint('[CheckoutPage] Found ${cart.couponCodes.length} coupon codes in order: ${cart.couponCodes}');
@@ -469,44 +468,56 @@ debugPrint('[CheckoutPage] Error loading existing coupon codes: $e');
   /// Load existing loyalty points from the order
   Future<void> _loadExistingLoyaltyPoints() async {
     try {
-debugPrint('[CheckoutPage] Loading existing loyalty points from order...');
-      await orderController.getActiveOrder(skipLoading: true);
-      
+      debugPrint('[CheckoutPage] _loadExistingLoyaltyPoints() called - using already-loaded order data');
+      // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
-      if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
-        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
-        final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
-        
-        if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
+      
+      if (order != null) {
+        try {
+          int? loyaltyPointsUsed;
           
-          // Sync loyalty points state
-          bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
-          bannerController.loyaltyPointsApplied.value = true;
-          
-          // Update the text field to show applied points
-          if (mounted) {
-            _loyaltyPointsController.text = loyaltyPointsUsed.toString();
-debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
+          // Access customFields from Fragment$Cart type (now supports customFields)
+          if (order.customFields != null) {
+            final customFields = order.customFields!;
+            loyaltyPointsUsed = customFields.loyaltyPointsUsed;
           }
-        } else {
-debugPrint('[CheckoutPage] No loyalty points found in order - resetting state');
-          // Reset if no points are applied (important for new orders)
+          
+          if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
+            debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
+            
+            // Sync loyalty points state
+            bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
+            bannerController.loyaltyPointsApplied.value = true;
+            
+            // Update the text field to show applied points
+            if (mounted) {
+              _loyaltyPointsController.text = loyaltyPointsUsed.toString();
+              debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
+            }
+          } else {
+            debugPrint('[CheckoutPage] No loyalty points found in order - resetting state');
+            // Reset if no points are applied (important for new orders)
+            bannerController.resetLoyaltyPoints();
+            if (mounted) {
+              _loyaltyPointsController.clear();
+            }
+          }
+        } catch (e) {
+          debugPrint('[CheckoutPage] Error accessing customFields: $e');
           bannerController.resetLoyaltyPoints();
           if (mounted) {
             _loyaltyPointsController.clear();
           }
         }
       } else {
-        // Order doesn't have custom fields or is null - reset loyalty points state
-debugPrint('[CheckoutPage] Order has no custom fields or is null - resetting loyalty points state');
+        debugPrint('[CheckoutPage] Order is null - resetting loyalty points state');
         bannerController.resetLoyaltyPoints();
         if (mounted) {
           _loyaltyPointsController.clear();
         }
       }
     } catch (e) {
-debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
+      debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
       // On error, reset to be safe
       bannerController.resetLoyaltyPoints();
       if (mounted) {
@@ -805,7 +816,11 @@ debugPrint(  '[Checkout] Razorpay payment successful: ${response.paymentId}');
         final latestCartOrder = cartController.cart.value;
         final latestOrderCode = latestOrderModel?.code ?? latestCartOrder?.code ?? orderCode;
 
-        // Prepare Razorpay payment metadata
+        // Prepare Razorpay payment metadata for online payment
+        // Metadata includes:
+        // - razorpayPaymentId: Payment ID from Razorpay success response
+        // - razorpayOrderId: Razorpay order ID (from response.orderId or empty string)
+        // - razorpaySignature: Payment signature from Razorpay (for verification)
         final metadata = {
           "razorpayPaymentId": response.paymentId ?? '',
           "razorpayOrderId": response.orderId ?? '',

@@ -15,7 +15,7 @@ import 'package:recipe.app/services/crashlytics_service.dart';
 import 'package:recipe.app/services/analytics_service.dart';
 import 'package:recipe.app/services/remote_config_service.dart';
 import 'controllers/customer/customer_controller.dart';
-import 'controllers/banner/bannercontroller.dart';
+// import 'controllers/banner/bannercontroller.dart'; // Commented out - GraphQL query disabled
 import '../controllers/cart/Cartcontroller.dart';
 import 'controllers/collection controller/collectioncontroller.dart';
 import 'routes.dart';
@@ -32,40 +32,36 @@ Future<void> checkAppUpdate() async {
   try {
 debugPrint('[Main] Starting app update check...');
     
+    // COMMENTED OUT: GraphQL query for update info (now using Play Store only)
     // Initialize BannerController for GraphQL calls
-    final bannerController = Get.put(BannerController());
-    
-    // Try to fetch update info from GraphQL
-    try {
-      await bannerController.getAppUpdateInfo();
-debugPrint('[Main] GraphQL update info fetched successfully');
-    } catch (e) {
-debugPrint('[Main] GraphQL update info fetch failed: $e');
-    }
+    // final bannerController = Get.put(BannerController());
+    // 
+    // // Try to fetch update info from GraphQL
+    // try {
+    //   await bannerController.getAppUpdateInfo();
+    //   debugPrint('[Main] GraphQL update info fetched successfully');
+    // } catch (e) {
+    //   debugPrint('[Main] GraphQL update info fetch failed: $e');
+    // }
     
     // Get the update service
     final updateService = InAppUpdateService();
     
-    // Check if immediate update is needed
-    if (updateService.isImmediateUpdateEnabled) {
-debugPrint('[Main] Immediate update is enabled');
+    // Check Play Store for updates directly (GraphQL query disabled)
+    try {
+      await updateService.checkForUpdatesAndDetermineType();
       
-      // Check Play Store for updates
-      try {
-        final updateAvailable = await updateService.checkPlayStoreDirectly();
-        if (updateAvailable) {
-debugPrint('[Main] Update available on Play Store');
-        } else {
+      // Check if immediate update is needed (based on Play Store only)
+      if (updateService.isImmediateUpdateEnabled && updateService.isUpdateAvailable) {
+debugPrint('[Main] Immediate update is enabled - update available on Play Store');
+      } else {
 debugPrint('[Main] No update available on Play Store');
-        }
-      } catch (e) {
-debugPrint('[Main] Play Store check failed: $e');
-        if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
-debugPrint('[Main] App not installed from Play Store - update check skipped');
-        }
       }
-    } else {
-debugPrint('[Main] Immediate update is disabled');
+    } catch (e) {
+debugPrint('[Main] Play Store check failed: $e');
+      if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
+debugPrint('[Main] App not installed from Play Store - update check skipped');
+      }
     }
     
 debugPrint('[Main] App update check completed');
@@ -98,47 +94,42 @@ Future<bool> performAppUpdateCheck() async {
   try {
 debugPrint('[AppUpdate] Performing comprehensive app update check...');
     
+    // COMMENTED OUT: GraphQL query for update info (now using Play Store only)
     // Get BannerController (create if not exists)
-    BannerController bannerController;
-    try {
-      bannerController = Get.find<BannerController>();
-    } catch (e) {
-      bannerController = Get.put(BannerController());
-    }
-    
-    // Try to fetch update info from GraphQL
-    bool graphqlSuccess = false;
-    try {
-      await bannerController.getAppUpdateInfo();
-debugPrint('[AppUpdate] GraphQL update info fetched successfully');
-      graphqlSuccess = true;
-    } catch (e) {
-debugPrint('[AppUpdate] GraphQL update info fetch failed: $e');
-      graphqlSuccess = false;
-    }
+    // BannerController bannerController;
+    // try {
+    //   bannerController = Get.find<BannerController>();
+    // } catch (e) {
+    //   bannerController = Get.put(BannerController());
+    // }
+    // 
+    // // Try to fetch update info from GraphQL
+    // bool graphqlSuccess = false;
+    // try {
+    //   await bannerController.getAppUpdateInfo();
+    //   debugPrint('[AppUpdate] GraphQL update info fetched successfully');
+    //   graphqlSuccess = true;
+    // } catch (e) {
+    //   debugPrint('[AppUpdate] GraphQL update info fetch failed: $e');
+    //   graphqlSuccess = false;
+    // }
     
     // Get the update service
     final updateService = InAppUpdateService();
     
-    // Check if GraphQL provided update info
-    if (graphqlSuccess && updateService.latestVersion != updateService.currentVersion) {
-debugPrint('[AppUpdate] GraphQL provided version info: ${updateService.currentVersion} -> ${updateService.latestVersion}');
-debugPrint('[AppUpdate] Immediate update enabled: ${updateService.isImmediateUpdateEnabled}');
-      return updateService.isImmediateUpdateEnabled;
-    } else {
-      // GraphQL failed or didn't provide version info - fallback to Play Store check
-debugPrint('[AppUpdate] GraphQL failed or no version info, checking Play Store directly...');
-      try {
-        final updateAvailable = await updateService.checkPlayStoreDirectly();
+    // Check Play Store directly (GraphQL query disabled)
+debugPrint('[AppUpdate] Checking Play Store directly (GraphQL disabled)...');
+    try {
+      await updateService.checkForUpdatesAndDetermineType();
+      final updateAvailable = updateService.isUpdateAvailable && updateService.isImmediateUpdateEnabled;
 debugPrint('[AppUpdate] Play Store check result: $updateAvailable');
-        return updateAvailable;
-      } catch (e) {
+      return updateAvailable;
+    } catch (e) {
 debugPrint('[AppUpdate] Play Store check failed: $e');
-        if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
+      if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
 debugPrint('[AppUpdate] App not installed from Play Store');
-        }
-        return false;
       }
+      return false;
     }
   } catch (e) {
 debugPrint('[AppUpdate] Error during comprehensive update check: $e');
@@ -315,6 +306,19 @@ Future<void> main() async {
 void _setupErrorHandlers() {
   // Handle Flutter framework errors (widget build errors, etc.)
   FlutterError.onError = (FlutterErrorDetails details) {
+    // Filter out known harmless keyboard assertion errors (Flutter framework bug)
+    final errorString = details.exception.toString();
+    if (errorString.contains('KeyUpEvent is dispatched') ||
+        errorString.contains('_pressedKeys.containsKey') ||
+        errorString.contains('HardwareKeyboard') ||
+        (errorString.contains('physical key is not pressed') && 
+         errorString.contains('KeyUpEvent'))) {
+      // This is a known Flutter framework bug, especially on Android emulators
+      // It doesn't affect app functionality, so we'll silently ignore it
+      debugPrint('[Main] Ignoring known keyboard event assertion error (Flutter framework bug)');
+      return;
+    }
+    
     // Log to Crashlytics
     CrashlyticsService.instance.recordError(
       details.exception,
@@ -353,6 +357,19 @@ void _setupErrorHandlers() {
 
   // Handle async errors (Future errors, Zone errors, etc.)
   PlatformDispatcher.instance.onError = (error, stack) {
+    // Filter out known harmless keyboard assertion errors (Flutter framework bug)
+    final errorString = error.toString();
+    if (errorString.contains('KeyUpEvent is dispatched') ||
+        errorString.contains('_pressedKeys.containsKey') ||
+        errorString.contains('HardwareKeyboard') ||
+        (errorString.contains('physical key is not pressed') && 
+         errorString.contains('KeyUpEvent'))) {
+      // This is a known Flutter framework bug, especially on Android emulators
+      // It doesn't affect app functionality, so we'll silently ignore it
+      debugPrint('[Main] Ignoring known keyboard event assertion error (Flutter framework bug)');
+      return true; // Return true to indicate error was handled
+    }
+    
     // Log to Crashlytics
     CrashlyticsService.instance.recordError(
       error,
@@ -391,6 +408,19 @@ void _setupErrorHandlers() {
 
   // Override ErrorWidget.builder to show custom error page in release mode
   ErrorWidget.builder = (FlutterErrorDetails details) {
+    // Filter out known harmless keyboard assertion errors (Flutter framework bug)
+    final errorString = details.exception.toString();
+    if (errorString.contains('KeyUpEvent is dispatched') ||
+        errorString.contains('_pressedKeys.containsKey') ||
+        errorString.contains('HardwareKeyboard') ||
+        (errorString.contains('physical key is not pressed') && 
+         errorString.contains('KeyUpEvent'))) {
+      // This is a known Flutter framework bug, especially on Android emulators
+      // Return an empty widget to suppress the error display
+      debugPrint('[Main] Ignoring known keyboard event assertion error in ErrorWidget (Flutter framework bug)');
+      return const SizedBox.shrink();
+    }
+    
     // In release mode, return error page
     if (kReleaseMode) {
       return ErrorPage(

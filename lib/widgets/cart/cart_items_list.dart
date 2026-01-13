@@ -57,6 +57,8 @@ class _CartItemsListState extends State<CartItemsList> {
       
       // Separate coupon products from regular products
       final bannerController = Get.find<BannerController>();
+      // Access reactive map to ensure UI updates when coupon tracking changes
+      final _ = bannerController.couponAddedProducts;
       final regularProducts = <Map<String, dynamic>>[];
       final couponProducts = <Map<String, dynamic>>[];
       
@@ -137,17 +139,7 @@ class _CartItemsListState extends State<CartItemsList> {
         children: [
           // Combined Items Section (coupon products first, then regular)
           if (allProducts.isNotEmpty) ...[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
-              child: Text(
-                'Regular Items',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(16),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ),
+
             ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),

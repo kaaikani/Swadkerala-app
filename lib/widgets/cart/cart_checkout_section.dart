@@ -28,9 +28,9 @@ class CartCheckoutSection extends StatelessWidget {
       final order = orderController.currentOrder.value;
       if (cart == null) return const SizedBox.shrink();
       
-      // Get total directly from query - use order.total if available, otherwise cart.totalWithTax
-      final finalTotal = order?.total != null 
-          ? order!.total.toInt() 
+      // Get total with tax - use order.totalWithTax if available, otherwise cart.totalWithTax
+      final finalTotal = order?.totalWithTax != null 
+          ? order!.totalWithTax.toInt() 
           : cart.totalWithTax.toInt();
       
       // Button is always enabled if cart has items
@@ -41,12 +41,12 @@ class CartCheckoutSection extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Total on left
+          // Total with Tax on left
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total',
+                'Total with Tax',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(14),
                   fontWeight: FontWeight.w500,

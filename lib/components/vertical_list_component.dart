@@ -11,7 +11,7 @@ import '../widgets/responsive_text.dart';
 import '../widgets/responsive_spacing.dart';
 import '../widgets/responsive_icon.dart';
 
-class VerticalListComponent extends StatelessWidget {
+class VerticalListComponent extends StatefulWidget {
   final String title;
   final bool showPrice;
   final void Function(Query$Collections$collections$items) onTap;
@@ -22,6 +22,59 @@ class VerticalListComponent extends StatelessWidget {
     this.showPrice = false,
     required this.onTap,
   }) : super(key: key);
+
+  @override
+  State<VerticalListComponent> createState() => _VerticalListComponentState();
+}
+
+class _VerticalListComponentState extends State<VerticalListComponent> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= 
+        _scrollController.position.maxScrollExtent * 0.8) {
+      // Load more when user scrolls to 80% of the list
+      _loadMoreCollections();
+    }
+  }
+
+  Future<void> _loadMoreCollections() async {
+    if (_isLoadingMore) return;
+    
+    final collectionsController = Get.find<CollectionsController>();
+    if (!collectionsController.hasMoreCollections || 
+        collectionsController.isLoadingMoreCollections) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      await collectionsController.loadMoreCollections();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +105,11 @@ class VerticalListComponent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (title.isNotEmpty)
+            if (widget.title.isNotEmpty)
               Padding(
                 padding: ResponsiveSpacing.padding(horizontal: 16, vertical: 8),
                 child: ResponsiveText(
-                  title,
+                  widget.title,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -66,11 +119,28 @@ class VerticalListComponent extends StatelessWidget {
               child: displayItems.isEmpty
                   ? const SizedBox.shrink()
                   : ListView.separated(
+                      controller: _scrollController,
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
-                      itemCount: displayItems.length,
+                      itemCount: displayItems.length + (collectionsController.hasMoreCollections ? 1 : 0),
                       separatorBuilder: (_, __) => ResponsiveSpacing.horizontal(12),
                 itemBuilder: (_, index) {
+                  // Show loading indicator at the end if there are more items
+                  if (index >= displayItems.length) {
+                    return Container(
+                      width: ResponsiveUtils.rp(80),
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: ResponsiveUtils.rp(24),
+                        height: ResponsiveUtils.rp(24),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                        ),
+                      ),
+                    );
+                  }
+
                   final collection = displayItems[index];
                   final itemWidth = ResponsiveUtils.rp(80);
                   final imageSize = ResponsiveUtils.rp(60);
@@ -81,7 +151,7 @@ class VerticalListComponent extends StatelessWidget {
 
                   return GestureDetector(
                     onTap: collection.id.isNotEmpty
-                        ? () => onTap(collection)
+                        ? () => widget.onTap(collection)
                         : null,
                     child: ResponsiveContainer(
                       width: itemWidth,

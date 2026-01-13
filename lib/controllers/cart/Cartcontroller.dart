@@ -22,6 +22,9 @@ class CartController extends BaseController {
   // Flag to prevent concurrent transitions to AddingItems
   bool _isTransitioningToAddingItems = false;
 
+  // Flag to prevent concurrent calls to getActiveOrder
+  bool _isFetchingActiveOrder = false;
+
   Future<bool> addToCart(
       {required int productVariantId, int quantity = 1}) async {
 
@@ -139,6 +142,13 @@ debugPrint('[Cart] addToCart finished.');
 
   /// Get active order (current cart)
   Future<bool> getActiveOrder() async {
+    // Prevent concurrent calls
+    if (_isFetchingActiveOrder) {
+      debugPrint('[Cart] getActiveOrder already in progress, skipping duplicate call');
+      return false;
+    }
+    
+    _isFetchingActiveOrder = true;
 debugPrint('[Cart] Fetching active order...');
 
     try {
@@ -245,8 +255,58 @@ debugPrint('══════════════════════�
         final hasValidTotal = (orderJson['totalQuantity'] ?? 0) > 0;
         
         if (hasLines || hasValidTotal) {
+          // Extract loyalty points from response before converting to Fragment$Cart
+          // The response.parsedData?.activeOrder is Query$ActiveOrder$activeOrder which has customFields
+          try {
+            final bannerController = Get.find<BannerController>();
+            if (response.parsedData?.activeOrder != null) {
+              final activeOrder = response.parsedData!.activeOrder!;
+              // activeOrder is Query$ActiveOrder$activeOrder type which has customFields
+              if (activeOrder.customFields != null) {
+                final customFields = activeOrder.customFields as Query$ActiveOrder$activeOrder$customFields;
+                final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
+                if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
+                  bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
+                  bannerController.loyaltyPointsApplied.value = true;
+                  debugPrint('[Cart] Loaded loyalty points from order: $loyaltyPointsUsed');
+                } else {
+                  // If loyaltyPointsUsed is 0 or null, reset the applied state
+                  bannerController.loyaltyPointsUsed.value = 0;
+                  bannerController.loyaltyPointsApplied.value = false;
+                  debugPrint('[Cart] No loyalty points applied in order');
+                }
+              } else {
+                // If customFields is null, reset the applied state
+                bannerController.loyaltyPointsUsed.value = 0;
+                bannerController.loyaltyPointsApplied.value = false;
+                debugPrint('[Cart] No customFields in order, resetting loyalty points');
+              }
+            }
+          } catch (e) {
+            debugPrint('[Cart] Could not extract loyalty points from order: $e');
+            // Reset on error to ensure UI is in correct state
+            try {
+              final bannerController = Get.find<BannerController>();
+              bannerController.loyaltyPointsUsed.value = 0;
+              bannerController.loyaltyPointsApplied.value = false;
+            } catch (_) {}
+          }
+          
           // Parse order from JSON using generated type
-          cart.value = cart_graphql.Fragment$Cart.fromJson(orderJson);
+          final cartData = cart_graphql.Fragment$Cart.fromJson(orderJson);
+          cart.value = cartData;
+          
+          // Also update OrderController to avoid duplicate API call
+          // Convert cart_graphql.Fragment$Cart to order.graphql Fragment$Cart
+          try {
+            // Parse the same JSON to get the order.graphql version
+            final orderCartData = Fragment$Cart.fromJson(orderJson);
+            orderController.currentOrder.value = orderCartData;
+            debugPrint('[Cart] OrderController also updated from same response');
+          } catch (e) {
+            debugPrint('[Cart] Could not update OrderController: $e');
+          }
+          
 debugPrint(  '[Cart] Active order loaded with ${cart.value?.totalQuantity ?? 0} items');
           
           // Restore coupon tracking from cart (before validation)
@@ -287,7 +347,9 @@ debugPrint('[Cart] No active order found - cleared cart');
 debugPrint('[Cart] Exception: $e');
       handleException(e, customErrorMessage: 'Failed to load cart');
       return false;
-    } finally {}
+    } finally {
+      _isFetchingActiveOrder = false;
+    }
   }
 
   /// Adjust line quantity

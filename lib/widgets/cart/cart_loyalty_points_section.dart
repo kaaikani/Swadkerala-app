@@ -170,54 +170,53 @@ class _CartLoyaltyPointsSectionState extends State<CartLoyaltyPointsSection> {
                             ],
                           ),
                         ),
-                        SizedBox(width: ResponsiveUtils.rp(8)),
-                        // Edit Button
-                        Container(
-                          height: ResponsiveUtils.rp(40),
-                          decoration: BoxDecoration(
-                            color: AppColors.button.withValues(alpha: 0.7),
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                _showManualInput.value = true;
-                                if (isApplied && appliedPoints > 0) {
-                                  _loyaltyPointsController.text = appliedPoints.toString();
-                                }
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
-                                  _loyaltyPointsFocusNode.requestFocus();
-                                });
-                              },
+                        // Add/Edit Button - Only show when points are NOT applied
+                        if (!isApplied) ...[
+                          SizedBox(width: ResponsiveUtils.rp(8)),
+                          Container(
+                            height: ResponsiveUtils.rp(40),
+                            decoration: BoxDecoration(
+                              color: AppColors.button.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.edit,
-                                        color: Colors.white,
-                                        size: ResponsiveUtils.rp(16),
-                                      ),
-                                      SizedBox(width: ResponsiveUtils.rp(4)),
-                                      Text(
-                                        'Edit',
-                                        style: TextStyle(
-                                          fontSize: ResponsiveUtils.sp(12),
-                                          fontWeight: FontWeight.w600,
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  _showManualInput.value = true;
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    _loyaltyPointsFocusNode.requestFocus();
+                                  });
+                                },
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.add,
                                           color: Colors.white,
+                                          size: ResponsiveUtils.rp(16),
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(width: ResponsiveUtils.rp(4)),
+                                        Text(
+                                          'Add',
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUtils.sp(12),
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ],

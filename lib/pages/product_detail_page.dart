@@ -50,10 +50,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   int _selectedQuantity = 1;
   final GlobalKey _descriptionKey = GlobalKey();
   bool _hasFetchedData = false; // Track if we've attempted to fetch
+  bool _hasInitialized = false; // Flag to prevent multiple initializations
 
   @override
   void initState() {
     super.initState();
+    
+    // Only initialize once
+    if (_hasInitialized) {
+      debugPrint('⚠️ [ProductDetailPage] Already initialized, skipping duplicate initialization');
+      return;
+    }
+    
+    _hasInitialized = true;
+    
     // Set loading state immediately after first frame to show shimmer
     WidgetsBinding.instance.addPostFrameCallback((_) {
       utilityController.setLoadingState(true);

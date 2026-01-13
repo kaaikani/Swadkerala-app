@@ -36,6 +36,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   // Timer for auto-fill phone number
   Timer? _autoFillTimer;
 
+  // Focus node for phone field
+  final FocusNode _phoneFocusNode = FocusNode();
+
   // Validation states
   String? _phoneError;
   String? _otpError;
@@ -799,40 +802,63 @@ debugPrint('[LoginPage] SMS autofill error: $e');
             color: AppColors.border.withValues(alpha: 0.3),
           ),
           Expanded(
-            child: TextField(
-              controller: _authController.phoneNumber,
-              keyboardType: TextInputType.phone,
-              enabled: !_authController.isOtpSent && !_isDetectingSim,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(17),
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-                letterSpacing: 1.0,
-              ),
-              cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(10),
-              ],
-              onChanged: (value) {
-                if (!_phoneFieldTouched) {
-                  setState(() => _phoneFieldTouched = true);
+            child: GestureDetector(
+              onTap: () {
+                // Handle tap even when field is disabled
+                if (!_authController.isOtpSent) {
+                  if (_isDetectingSim) {
+                    // If still detecting, stop detection and enable field
+                    setState(() {
+                      _isDetectingSim = false;
+                    });
+                    // Request focus after a brief delay
+                    Future.delayed(Duration(milliseconds: 50), () {
+                      if (mounted) {
+                        _phoneFocusNode.requestFocus();
+                      }
+                    });
+                  } else {
+                    // Request focus immediately if not detecting
+                    _phoneFocusNode.requestFocus();
+                  }
                 }
-                _validatePhone(value);
               },
-              decoration: InputDecoration(
-                hintText: '1234567890',
-                hintStyle: TextStyle(
-                  color: AppColors.textSecondary.withValues(alpha: 0.35),
+              child: TextField(
+                controller: _authController.phoneNumber,
+                focusNode: _phoneFocusNode,
+                keyboardType: TextInputType.phone,
+                enabled: !_authController.isOtpSent && !_isDetectingSim,
+                style: TextStyle(
                   fontSize: ResponsiveUtils.sp(17),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
                   letterSpacing: 1.0,
                 ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(18),
-                  vertical: ResponsiveUtils.rp(18),
+                cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                onChanged: (value) {
+                  if (!_phoneFieldTouched) {
+                    setState(() => _phoneFieldTouched = true);
+                  }
+                  _validatePhone(value);
+                },
+                decoration: InputDecoration(
+                  hintText: '1234567890',
+                  hintStyle: TextStyle(
+                    color: AppColors.textSecondary.withValues(alpha: 0.35),
+                    fontSize: ResponsiveUtils.sp(17),
+                    letterSpacing: 1.0,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.rp(18),
+                    vertical: ResponsiveUtils.rp(18),
+                  ),
+                  suffixIcon: _buildPhoneSuffixIcon(hasError, isValid),
                 ),
-                suffixIcon: _buildPhoneSuffixIcon(hasError, isValid),
               ),
             ),
           ),
@@ -1359,6 +1385,7 @@ debugPrint('[LoginPage] SMS autofill error: $e');
     _autoFillTimer?.cancel();
     _fadeController.dispose();
     _slideController.dispose();
+    _phoneFocusNode.dispose();
     _smsAutofillService.stopListening();
     super.dispose();
   }

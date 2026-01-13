@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:graphql_flutter/graphql_flutter.dart' as graphql;
+// import 'package:graphql_flutter/graphql_flutter.dart' as graphql; // Commented out - GraphQL query disabled
 import '../widgets/snackbar.dart';
-import '../services/graphql_client.dart';
+// import '../services/graphql_client.dart'; // Commented out - GraphQL query disabled
 
 /// Service to handle in-app updates with flexible and immediate update modes
 class InAppUpdateService {
@@ -567,40 +567,68 @@ debugPrint('[InAppUpdate] Flexible update allowed: ${updateInfo.flexibleUpdateAl
       _updateInfo = updateInfo;
       _isUpdateAvailable = true;
       
-      // STEP 2: Get GraphQL version from API
-debugPrint('[InAppUpdate] Step 2: Getting version from GraphQL API...');
-      final graphqlVersion = await _getPlayStoreVersion();
-      
-      // Check if GraphQL version is valid (not null, not empty)
-      if (graphqlVersion != null && graphqlVersion.isNotEmpty && graphqlVersion.trim().isNotEmpty) {
-        _latestVersion = graphqlVersion.trim();
+      // STEP 2: Use Play Store update info only (GraphQL query commented out)
+      // Compare Play Store version with installed app version
+debugPrint('[InAppUpdate] Step 2: Using Play Store update info only (GraphQL query disabled)');
 debugPrint('[InAppUpdate] Current app version: $_currentVersion');
-debugPrint('[InAppUpdate] GraphQL API latest version: $_latestVersion');
-        
-        // STEP 3: Check update type based on 2nd digit (minor version)
-        // If 2nd digit differs → IMMEDIATE UPDATE
-        // If 2nd digit same → FLEXIBLE UPDATE
-        
-        bool isSameMajorMinor = _isSameMajorMinorUpdate(_currentVersion, _latestVersion);
-        
-        if (isSameMajorMinor) {
-debugPrint('[InAppUpdate] Same 2nd digit (minor version) - FLEXIBLE UPDATE');
-          _isImmediateUpdateEnabled = false;
-          updateConfigurationFromAppInfo(_latestVersion, 'FLEXIBLE');
-        } else {
-debugPrint('[InAppUpdate] Different 2nd digit (minor version) - IMMEDIATE UPDATE');
-          _isImmediateUpdateEnabled = true;
-        }
-      } else {
-        // GraphQL version is null, empty, or error occurred
-debugPrint('[InAppUpdate] GraphQL version is null/empty or API error occurred');
-debugPrint('[InAppUpdate] GraphQL version received: ${graphqlVersion ?? "null"}');
-debugPrint('[InAppUpdate] Forcing IMMEDIATE UPDATE due to missing GraphQL version');
-        
-        // Force immediate update if GraphQL version is not available
-        _isImmediateUpdateEnabled = true;
+debugPrint('[InAppUpdate] Play Store indicates update available: ${updateInfo.updateAvailability == UpdateAvailability.updateAvailable}');
+      
+      // Use Play Store's update availability to determine if update is needed
+      // Only show update if Play Store actually has an update available
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        // Use Play Store's immediate update flag
+        _isImmediateUpdateEnabled = updateInfo.immediateUpdateAllowed;
         _isUpdateAvailable = true;
+        
+        // Set latest version to current version (since we're not using GraphQL)
+        // Play Store will handle the actual version comparison
+        _latestVersion = _currentVersion;
+        
+debugPrint('[InAppUpdate] Update available on Play Store');
+debugPrint('[InAppUpdate] Immediate update allowed by Play Store: ${updateInfo.immediateUpdateAllowed}');
+debugPrint('[InAppUpdate] Flexible update allowed by Play Store: ${updateInfo.flexibleUpdateAllowed}');
+      } else {
+        // No update available on Play Store
+        _isImmediateUpdateEnabled = false;
+        _isUpdateAvailable = false;
+debugPrint('[InAppUpdate] No update available on Play Store');
       }
+      
+      // COMMENTED OUT: GraphQL version query logic
+      // STEP 2: Get GraphQL version from API
+      // debugPrint('[InAppUpdate] Step 2: Getting version from GraphQL API...');
+      // final graphqlVersion = await _getPlayStoreVersion();
+      // 
+      // // Check if GraphQL version is valid (not null, not empty)
+      // if (graphqlVersion != null && graphqlVersion.isNotEmpty && graphqlVersion.trim().isNotEmpty) {
+      //   _latestVersion = graphqlVersion.trim();
+      //   debugPrint('[InAppUpdate] Current app version: $_currentVersion');
+      //   debugPrint('[InAppUpdate] GraphQL API latest version: $_latestVersion');
+      //   
+      //   // STEP 3: Check update type based on 2nd digit (minor version)
+      //   // If 2nd digit differs → IMMEDIATE UPDATE
+      //   // If 2nd digit same → FLEXIBLE UPDATE
+      //   
+      //   bool isSameMajorMinor = _isSameMajorMinorUpdate(_currentVersion, _latestVersion);
+      //   
+      //   if (isSameMajorMinor) {
+      //     debugPrint('[InAppUpdate] Same 2nd digit (minor version) - FLEXIBLE UPDATE');
+      //     _isImmediateUpdateEnabled = false;
+      //     updateConfigurationFromAppInfo(_latestVersion, 'FLEXIBLE');
+      //   } else {
+      //     debugPrint('[InAppUpdate] Different 2nd digit (minor version) - IMMEDIATE UPDATE');
+      //     _isImmediateUpdateEnabled = true;
+      //   }
+      // } else {
+      //   // GraphQL version is null, empty, or error occurred
+      //   debugPrint('[InAppUpdate] GraphQL version is null/empty or API error occurred');
+      //   debugPrint('[InAppUpdate] GraphQL version received: ${graphqlVersion ?? "null"}');
+      //   debugPrint('[InAppUpdate] Forcing IMMEDIATE UPDATE due to missing GraphQL version');
+      //   
+      //   // Force immediate update if GraphQL version is not available
+      //   _isImmediateUpdateEnabled = true;
+      //   _isUpdateAvailable = true;
+      // }
 
     } catch (e) {
 debugPrint('[InAppUpdate] Update check flow error: $e');
@@ -610,64 +638,70 @@ debugPrint('[InAppUpdate] Update check flow error: $e');
 debugPrint('[InAppUpdate] App not installed from Play Store (development build) - skipping update check');
         _isImmediateUpdateEnabled = false;
         _isUpdateAvailable = false;
+      } else if (e.toString().contains('ERROR_INSTALL_NOT_ALLOWED') || e.toString().contains('-6')) {
+        // Device state error (low battery, low disk space, etc.) - don't force update
+debugPrint('[InAppUpdate] Install not allowed due to device state - skipping update check');
+        _isImmediateUpdateEnabled = false;
+        _isUpdateAvailable = false;
       } else {
-debugPrint('[InAppUpdate] Forcing immediate update due to error');
-        _isImmediateUpdateEnabled = true;
-        _isUpdateAvailable = true;
+        // Other errors - don't force update, just disable it
+debugPrint('[InAppUpdate] Error occurred during update check - disabling update');
+        _isImmediateUpdateEnabled = false;
+        _isUpdateAvailable = false;
       }
     }
   }
 
-  /// Get Play Store version from GraphQL API
-  Future<String?> _getPlayStoreVersion() async {
-    try {
-debugPrint('[InAppUpdate] Getting latest version from GraphQL API...');
-      
-      final query = '''
-        query GetAppUpdate {
-          getUpdateInfoForChannel {
-            latestVersion
-            updateType
-          }
-        }
-      ''';
-      
-      final result = await GraphqlService.client.value.query(
-        graphql.QueryOptions(
-          document: graphql.gql(query),
-        ),
-      );
-      
-      if (result.hasException) {
-debugPrint('[InAppUpdate] GraphQL query exception: ${result.exception}');
-debugPrint('[InAppUpdate] Error fetching version from API - will fallback to Play Store flags');
-        return null;
-      }
-      
-      final data = result.data?['getUpdateInfoForChannel'];
-      if (data != null) {
-        final latestVersion = data['latestVersion'] as String?;
-        
-debugPrint('[InAppUpdate] GraphQL API returned latestVersion: $latestVersion');
-        
-        // Check if version is valid (not null, not empty)
-        if (latestVersion != null && latestVersion.isNotEmpty && latestVersion.trim().isNotEmpty) {
-          return latestVersion.trim();
-        } else {
-debugPrint('[InAppUpdate] GraphQL API returned empty or null version');
-          return null;
-        }
-      }
-      
-debugPrint('[InAppUpdate] No version data from GraphQL API - returning null');
-      return null;
-    } catch (e) {
-debugPrint('[InAppUpdate] Error getting version from GraphQL API: $e');
-      // If GraphQL error, force immediate update as requested
-debugPrint('[InAppUpdate] GraphQL error occurred - will use immediate update as fallback');
-      return null;
-    }
-  }
+  /// COMMENTED OUT: Get Play Store version from GraphQL API (no longer used)
+  // Future<String?> _getPlayStoreVersion() async {
+  //   try {
+  //     debugPrint('[InAppUpdate] Getting latest version from GraphQL API...');
+  //     
+  //     final query = '''
+  //       query GetAppUpdate {
+  //         getUpdateInfoForChannel {
+  //           latestVersion
+  //           updateType
+  //         }
+  //       }
+  //     ''';
+  //     
+  //     final result = await GraphqlService.client.value.query(
+  //       graphql.QueryOptions(
+  //         document: graphql.gql(query),
+  //       ),
+  //     );
+  //     
+  //     if (result.hasException) {
+  //       debugPrint('[InAppUpdate] GraphQL query exception: ${result.exception}');
+  //       debugPrint('[InAppUpdate] Error fetching version from API - will fallback to Play Store flags');
+  //       return null;
+  //     }
+  //     
+  //     final data = result.data?['getUpdateInfoForChannel'];
+  //     if (data != null) {
+  //       final latestVersion = data['latestVersion'] as String?;
+  //       
+  //       debugPrint('[InAppUpdate] GraphQL API returned latestVersion: $latestVersion');
+  //       
+  //       // Check if version is valid (not null, not empty)
+  //       if (latestVersion != null && latestVersion.isNotEmpty && latestVersion.trim().isNotEmpty) {
+  //         return latestVersion.trim();
+  //       } else {
+  //         debugPrint('[InAppUpdate] GraphQL API returned empty or null version');
+  //         return null;
+  //       }
+  //     }
+  //     
+  //     debugPrint('[InAppUpdate] No version data from GraphQL API - returning null');
+  //     return null;
+  //   } catch (e) {
+  //     debugPrint('[InAppUpdate] Error getting version from GraphQL API: $e');
+  //     // If GraphQL error, force immediate update as requested
+  //     debugPrint('[InAppUpdate] GraphQL error occurred - will use immediate update as fallback');
+  //     return null;
+  //   }
+  // }
 
   /// Reset update check (useful for testing)
   void reset() {

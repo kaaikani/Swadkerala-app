@@ -71,77 +71,94 @@ class _CartButtonWithBadgeState extends State<CartButtonWithBadge>
       }
       
       if (widget.useIconButton) {
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            IconButton(
-              icon: AnimatedBuilder(
-                animation: _glitterAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: 1.0 + (_glitterAnimation.value * 0.2),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: _glitterAnimation.value > 0
-                            ? RadialGradient(
-                                colors: [
-                                  AppColors.button.withOpacity(0.3 * _glitterAnimation.value),
-                                  Colors.transparent,
-                                ],
-                              )
-                            : null,
-                      ),
-                      child: Icon(
-                        Icons.shopping_cart,
-                        color: AppColors.icon,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              onPressed: () {
-                Get.toNamed('/cart');
-              },
-            ),
-            if (currentQuantity > 0)
-              Positioned(
-                right: 6,
-                top: 6,
-                child: AnimatedBuilder(
+        return Padding(
+          padding: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                iconSize: ResponsiveUtils.rp(32),
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(
+                  minWidth: ResponsiveUtils.rp(48),
+                  minHeight: ResponsiveUtils.rp(48),
+                ),
+                icon: AnimatedBuilder(
                   animation: _glitterAnimation,
                   builder: (context, child) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.rp(6),
-                        vertical: ResponsiveUtils.rp(2),
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.button,
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-                        boxShadow: _glitterAnimation.value > 0
-                            ? [
-                                BoxShadow(
-                                  color: AppColors.button.withOpacity(0.6 * _glitterAnimation.value),
-                                  blurRadius: 8 * _glitterAnimation.value,
-                                  spreadRadius: 2 * _glitterAnimation.value,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Text(
-                        currentQuantity > 99 ? '99+' : currentQuantity.toString(),
-                        style: TextStyle(
-                          color: AppColors.textLight,
-                          fontSize: ResponsiveUtils.sp(10),
-                          fontWeight: FontWeight.bold,
+                    return Transform.scale(
+                      scale: 1.0 + (_glitterAnimation.value * 0.2),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: _glitterAnimation.value > 0
+                              ? RadialGradient(
+                                  colors: [
+                                    AppColors.button.withOpacity(0.3 * _glitterAnimation.value),
+                                    Colors.transparent,
+                                  ],
+                                )
+                              : null,
+                        ),
+                        child: Icon(
+                          Icons.shopping_cart,
+                          color: AppColors.icon,
+                          size: ResponsiveUtils.rp(32),
                         ),
                       ),
                     );
                   },
                 ),
+                onPressed: () {
+                  Get.toNamed('/cart');
+                },
               ),
-          ],
+              if (currentQuantity > 0)
+                Positioned(
+                  right: ResponsiveUtils.rp(2),
+                  top: ResponsiveUtils.rp(2),
+                  child: AnimatedBuilder(
+                    animation: _glitterAnimation,
+                    builder: (context, child) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(8),
+                          vertical: ResponsiveUtils.rp(4),
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.button,
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          boxShadow: _glitterAnimation.value > 0
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.button.withOpacity(0.6 * _glitterAnimation.value),
+                                    blurRadius: 8 * _glitterAnimation.value,
+                                    spreadRadius: 2 * _glitterAnimation.value,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: ResponsiveUtils.rp(22),
+                          minHeight: ResponsiveUtils.rp(22),
+                        ),
+                        child: Center(
+                          child: Text(
+                            currentQuantity > 99 ? '99+' : currentQuantity.toString(),
+                            style: TextStyle(
+                              color: AppColors.textLight,
+                              fontSize: ResponsiveUtils.sp(12),
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
         );
       } else {
         // Custom button style for SliverAppBar (like product detail page)
@@ -192,7 +209,7 @@ class _CartButtonWithBadgeState extends State<CartButtonWithBadge>
                               child: Icon(
                                 Icons.shopping_cart,
                                 color: AppColors.icon,
-                                size: ResponsiveUtils.rp(24),
+                                size: ResponsiveUtils.rp(30),
                               ),
                             ),
                           ),
@@ -204,19 +221,19 @@ class _CartButtonWithBadgeState extends State<CartButtonWithBadge>
               ),
               if (currentQuantity > 0)
                 Positioned(
-                  right: 0,
-                  top: 0,
+                  right: ResponsiveUtils.rp(2),
+                  top: ResponsiveUtils.rp(2),
                   child: AnimatedBuilder(
                     animation: _glitterAnimation,
                     builder: (context, child) {
                       return Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(6),
-                          vertical: ResponsiveUtils.rp(2),
+                          horizontal: ResponsiveUtils.rp(8),
+                          vertical: ResponsiveUtils.rp(4),
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.button,
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                           boxShadow: _glitterAnimation.value > 0
                               ? [
                                   BoxShadow(
@@ -228,15 +245,15 @@ class _CartButtonWithBadgeState extends State<CartButtonWithBadge>
                               : null,
                         ),
                         constraints: BoxConstraints(
-                          minWidth: ResponsiveUtils.rp(18),
-                          minHeight: ResponsiveUtils.rp(18),
+                          minWidth: ResponsiveUtils.rp(22),
+                          minHeight: ResponsiveUtils.rp(22),
                         ),
                         child: Center(
                           child: Text(
                             currentQuantity > 99 ? '99+' : currentQuantity.toString(),
                             style: TextStyle(
                               color: AppColors.textLight,
-                              fontSize: ResponsiveUtils.sp(10),
+                              fontSize: ResponsiveUtils.sp(12),
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,

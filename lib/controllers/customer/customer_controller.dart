@@ -51,7 +51,8 @@ class CustomerController extends BaseController {
   }
 
   /// Get active customer data
-  Future<void> getActiveCustomer() async {
+  /// [skipPostalCodeCheck] - if true, skip postal code/channel check to prevent unnecessary API calls
+  Future<void> getActiveCustomer({bool skipPostalCodeCheck = false}) async {
     try {
       utilityController.setLoadingState(false);
       error.value = '';
@@ -141,7 +142,12 @@ debugPrint('[Customer] Addresses: ${addresses.length}');
 debugPrint('[Customer] Orders: ${orders.length}');
 
         // Check if postal code is in local storage, if not get from shipping address
+        // Skip this check when called from loyalty points operations to prevent unnecessary channel fetches
+        if (!skipPostalCodeCheck) {
         await checkAndSetPostalCodeFromShippingAddress();
+        } else {
+          debugPrint('[Customer] Skipping postal code/channel check (skipPostalCodeCheck=true)');
+        }
       } else {
         orders.value = [];
         totalOrdersCount.value = 0;

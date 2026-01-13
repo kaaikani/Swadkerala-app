@@ -17,6 +17,6 @@ class PriceFormatter {
     final bool isWholeNumber = (amount % 1).abs() < 0.0001;
     final String value =
         isWholeNumber ? amount.toInt().toString() : amount.toStringAsFixed(2);
-    return 'Rs $value';
+    return '₹ $value';
   }
 }

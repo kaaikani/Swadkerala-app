@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../graphql/product.graphql.dart';
+import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import 'package:flutter/foundation.dart';
@@ -17,29 +18,45 @@ class CollectionsController extends GetxController {
   // Track the currently selected variant ID per product for UI dropdowns
   RxMap<String, String> selectedVariantIdByProductId = <String, String>{}.obs;
 
-  // Lazy loading state - client-side pagination
+  // Lazy loading state - client-side pagination for products
   static const int _itemsPerPage = 20;
   int _displayedItemsCount = 0;
   List<Query$Products$collection$productVariants$items> _allUniqueVariants = [];
   bool _isLoadingMore = false;
 
+  // Lazy loading state for collections (server-side pagination)
+  static const int _collectionsPerPage = 15; // Load 15 collections at a time
+  int _collectionsSkip = 0;
+  bool _isLoadingMoreCollections = false;
+  bool _hasMoreCollections = true;
+  List<Query$Collections$collections$items> _allFetchedCollections = []; // Store all fetched collections for sorting
+
   // Flag to prevent multiple simultaneous fetches
   bool _isFetching = false;
 
+  /// Fetch initial batch of collections (lazy loading)
   Future<bool> fetchAllCollections({bool force = false}) async {
     // Prevent multiple simultaneous fetches
     if (_isFetching) {
-debugPrint('[Collection] Already fetching, skipping duplicate request');
+      debugPrint('[Collection] Already fetching, skipping duplicate request');
       return false;
     }
 
     // Don't fetch again if we already have collections (unless forced)
     if (!force && allCollections.isNotEmpty) {
-debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
+      debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
       return true;
     }
 
-debugPrint('[Collection] Starting fetchAllCollections...');
+    // Reset pagination state if force refresh
+    if (force) {
+      _collectionsSkip = 0;
+      _hasMoreCollections = true;
+      _allFetchedCollections.clear();
+      allCollections.clear();
+    }
+
+    debugPrint('[Collection] Starting fetchAllCollections (lazy loading)...');
     _isFetching = true;
 
     utilityController.setLoadingState(true);
@@ -47,76 +64,159 @@ debugPrint('[Collection] Starting fetchAllCollections...');
     try {
       final response = await GraphqlService.client.value.query$Collections(
         Options$Query$Collections(
-          // variables: Variables$Query$Collections(options: options), // remove this if undefined
+          variables: Variables$Query$Collections(
+            options: Input$CollectionListOptions(
+              skip: _collectionsSkip,
+              take: _collectionsPerPage,
+            ),
+          ),
         ),
       );
 
       if (response.hasException) {
-debugPrint(  '[Collection] GraphQL Exception: ${response.exception.toString()}');
+        debugPrint('[Collection] GraphQL Exception: ${response.exception.toString()}');
         return false;
       }
 
-      final items = response.parsedData?.collections.items;
-      if (items != null) {
+      final collectionsData = response.parsedData?.collections;
+      final items = collectionsData?.items;
+      
+      if (items != null && items.isNotEmpty) {
+        // Add new items to the fetched list
+        _allFetchedCollections.addAll(items);
+        
         // Sort collections: slugs ending with numbers positioned by number (1=first, 2=second, etc.), then others at last
-        // Collections ending with same number are grouped together at that position
-        final collections = List<Query$Collections$collections$items>.from(items);
+        final sortedCollections = _sortCollectionsBySlugNumber(_allFetchedCollections);
         
-        // Separate collections into those with numbers and those without
-        final collectionsWithNumbers = <Query$Collections$collections$items>[];
-        final collectionsWithoutNumbers = <Query$Collections$collections$items>[];
+        allCollections.value = sortedCollections;
+        _collectionsSkip = allCollections.length;
         
-        for (final collection in collections) {
-          final slug = collection.slug;
-          final match = RegExp(r'(\d+)$').firstMatch(slug);
-          if (match != null) {
-            collectionsWithNumbers.add(collection);
-          } else {
-            collectionsWithoutNumbers.add(collection);
-          }
-        }
+        // If we got fewer items than requested, we've reached the end
+        _hasMoreCollections = items.length >= _collectionsPerPage;
         
-        // Sort collections with numbers by the number at the end (1, 2, 11, etc.)
-        // Collections with same number will be grouped together
-        collectionsWithNumbers.sort((a, b) {
-          final aSlug = a.slug;
-          final bSlug = b.slug;
-          final aMatch = RegExp(r'(\d+)$').firstMatch(aSlug);
-          final bMatch = RegExp(r'(\d+)$').firstMatch(bSlug);
-          
-          final aNumber = aMatch != null ? int.tryParse(aMatch.group(1) ?? '') : null;
-          final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
-          
-          if (aNumber != null && bNumber != null) {
-            // Sort by number: 1 comes first, 2 comes second, 11 comes 11th, etc.
-            return aNumber.compareTo(bNumber);
-          }
-          
-          // Fallback to slug comparison if parsing fails
-          return aSlug.compareTo(bSlug);
-        });
-        
-        // Combine: collections with numbers (sorted by number) first, then collections without numbers
-        final arrangedCollections = <Query$Collections$collections$items>[];
-        arrangedCollections.addAll(collectionsWithNumbers);
-        arrangedCollections.addAll(collectionsWithoutNumbers);
-
-        allCollections.value = arrangedCollections;
-debugPrint('[Collection] Loaded ${allCollections.length} collections');
+        debugPrint('[Collection] Loaded ${allCollections.length} collections (hasMore: $_hasMoreCollections, fetched: ${items.length})');
       } else {
-debugPrint('[Collection] No collections found');
+        debugPrint('[Collection] No collections found');
+        _hasMoreCollections = false;
       }
 
       return true;
     } catch (e) {
-debugPrint('[Collection] Exception fetching collections: $e');
+      debugPrint('[Collection] Exception fetching collections: $e');
       return false;
     } finally {
       _isFetching = false;
       utilityController.setLoadingState(false);
-debugPrint('[Collection] fetchAllCollections finished.');
+      debugPrint('[Collection] fetchAllCollections finished.');
     }
   }
+
+  /// Load more collections (lazy loading)
+  Future<bool> loadMoreCollections() async {
+    if (_isLoadingMoreCollections || !_hasMoreCollections || _isFetching) {
+      debugPrint('[Collection] Cannot load more: isLoading=$_isLoadingMoreCollections, hasMore=$_hasMoreCollections, isFetching=$_isFetching');
+      return false;
+    }
+
+    _isLoadingMoreCollections = true;
+    debugPrint('[Collection] Loading more collections (skip: $_collectionsSkip, take: $_collectionsPerPage)...');
+
+    try {
+      final response = await GraphqlService.client.value.query$Collections(
+        Options$Query$Collections(
+          variables: Variables$Query$Collections(
+            options: Input$CollectionListOptions(
+              skip: _collectionsSkip,
+              take: _collectionsPerPage,
+            ),
+          ),
+        ),
+      );
+
+      if (response.hasException) {
+        debugPrint('[Collection] GraphQL Exception loading more: ${response.exception.toString()}');
+        return false;
+      }
+
+      final collectionsData = response.parsedData?.collections;
+      final items = collectionsData?.items;
+      
+      if (items != null && items.isNotEmpty) {
+        // Add new items to the fetched list
+        _allFetchedCollections.addAll(items);
+        
+        // Sort all collections again
+        final sortedCollections = _sortCollectionsBySlugNumber(_allFetchedCollections);
+        
+        allCollections.value = sortedCollections;
+        _collectionsSkip = allCollections.length;
+        
+        // If we got fewer items than requested, we've reached the end
+        _hasMoreCollections = items.length >= _collectionsPerPage;
+        
+        debugPrint('[Collection] Loaded more: ${allCollections.length} collections (hasMore: $_hasMoreCollections, fetched: ${items.length})');
+        return true;
+      } else {
+        _hasMoreCollections = false;
+        debugPrint('[Collection] No more collections to load');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('[Collection] Exception loading more collections: $e');
+      return false;
+    } finally {
+      _isLoadingMoreCollections = false;
+    }
+  }
+
+  /// Sort collections by slug number
+  List<Query$Collections$collections$items> _sortCollectionsBySlugNumber(
+    List<Query$Collections$collections$items> collections,
+  ) {
+    // Separate collections into those with numbers and those without
+    final collectionsWithNumbers = <Query$Collections$collections$items>[];
+    final collectionsWithoutNumbers = <Query$Collections$collections$items>[];
+    
+    for (final collection in collections) {
+      final slug = collection.slug;
+      final match = RegExp(r'(\d+)$').firstMatch(slug);
+      if (match != null) {
+        collectionsWithNumbers.add(collection);
+      } else {
+        collectionsWithoutNumbers.add(collection);
+      }
+    }
+    
+    // Sort collections with numbers by the number at the end (1, 2, 11, etc.)
+    collectionsWithNumbers.sort((a, b) {
+      final aSlug = a.slug;
+      final bSlug = b.slug;
+      final aMatch = RegExp(r'(\d+)$').firstMatch(aSlug);
+      final bMatch = RegExp(r'(\d+)$').firstMatch(bSlug);
+      
+      final aNumber = aMatch != null ? int.tryParse(aMatch.group(1) ?? '') : null;
+      final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
+      
+      if (aNumber != null && bNumber != null) {
+        return aNumber.compareTo(bNumber);
+      }
+      
+      return aSlug.compareTo(bSlug);
+    });
+    
+    // Combine: collections with numbers (sorted by number) first, then collections without numbers
+    final arrangedCollections = <Query$Collections$collections$items>[];
+    arrangedCollections.addAll(collectionsWithNumbers);
+    arrangedCollections.addAll(collectionsWithoutNumbers);
+    
+    return arrangedCollections;
+  }
+
+  /// Check if there are more collections to load
+  bool get hasMoreCollections => _hasMoreCollections;
+  
+  /// Check if currently loading more collections
+  bool get isLoadingMoreCollections => _isLoadingMoreCollections;
 
 
   Future<bool> fetchCollectionproducts({String? slug, String? id}) async {

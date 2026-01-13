@@ -142,7 +142,7 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
             // Close dialog when done listening
             if (!_speechService.isListening) {
               Navigator.of(dialogContext).pop();
-            }
+          }
         }
       },
       onError: () {
@@ -594,38 +594,6 @@ class _VoiceSearchDialogState extends State<VoiceSearchDialog>
               ),
               SizedBox(height: ResponsiveUtils.rp(20)),
             ],
-            
-            // Animated microphone button
-            GestureDetector(
-              onTap: _toggleListening,
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (context, child) {
-                  return Container(
-                    width: ResponsiveUtils.rp(80),
-                    height: ResponsiveUtils.rp(80),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _isListening
-                          ? AppColors.error.withValues(alpha: 0.2 + (_animationController.value * 0.3))
-                          : AppColors.button.withValues(alpha: 0.1),
-                      border: Border.all(
-                        color: _isListening
-                            ? AppColors.error
-                            : AppColors.button,
-                        width: ResponsiveUtils.rp(3),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.mic,
-                      size: ResponsiveUtils.rp(40),
-                      color: _isListening ? AppColors.error : AppColors.button,
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(24)),
             
             // Close button
             TextButton(

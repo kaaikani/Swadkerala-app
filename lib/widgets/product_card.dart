@@ -23,6 +23,10 @@ class ProductCard extends StatelessWidget {
     this.variantSelector,
     this.showVariantSelector = false,
     this.shadowPriceText,
+    this.orderCount,
+    this.isOutOfStock = false,
+    this.groupName,
+    this.hasMultipleVariants = false,
   });
 
   final String name;
@@ -38,6 +42,10 @@ class ProductCard extends StatelessWidget {
   final String priceText;
   final String? shadowPriceText;
   final Future<bool> Function()? onAddToCart;
+  final int? orderCount;
+  final bool isOutOfStock;
+  final String? groupName;
+  final bool hasMultipleVariants;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +80,70 @@ class ProductCard extends StatelessWidget {
                         topLeft: Radius.circular(ResponsiveUtils.rp(10)),
                         topRight: Radius.circular(ResponsiveUtils.rp(10)),
                       ),
-                      child: imageUrl != null && imageUrl!.isNotEmpty
+                      child: isOutOfStock
+                          ? Stack(
+                              children: [
+                                // Show product image in background (dimmed) if available
+                                if (imageUrl != null && imageUrl!.isNotEmpty)
+                                  Opacity(
+                                    opacity: 0.3,
+                                    child: Image.network(
+                                      imageUrl!,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      cacheWidth: 500,
+                                      cacheHeight: 500,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // If image fails to load, show placeholder background
+                                        return Container(
+                                          color: AppColors.backgroundLight,
+                                        );
+                                      },
+                                    ),
+                                  )
+                                else
+                                  // If no image URL, show placeholder background
+                                  Container(
+                                    color: AppColors.backgroundLight,
+                                  ),
+                                // Show X icon and "Out of Stock" text at the top
+                                Positioned(
+                                  top: ResponsiveUtils.rp(8),
+                                  left: 0,
+                                  right: 0,
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.close_rounded,
+                                        size: ResponsiveUtils.rp(32),
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(height: ResponsiveUtils.rp(4)),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: ResponsiveUtils.rp(8),
+                                          vertical: ResponsiveUtils.rp(4),
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withValues(alpha: 0.9),
+                                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                        ),
+                                        child: Text(
+                                          'Out of Stock',
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUtils.sp(11),
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : (imageUrl != null && imageUrl!.isNotEmpty
                           ? Image.network(
                               imageUrl!,
                               fit: BoxFit.cover,
@@ -102,6 +173,48 @@ class ProductCard extends StatelessWidget {
                               height: double.infinity,
                               width: double.infinity,
                               radius: 0,
+                                )),
+                    ),
+                  ),
+                  // Order count badge (top-left)
+                  if (orderCount != null && orderCount! > 0)
+                    Positioned(
+                      top: ResponsiveUtils.rp(6),
+                      left: ResponsiveUtils.rp(6),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(8),
+                          vertical: ResponsiveUtils.rp(4),
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.button.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: ResponsiveUtils.rp(4),
+                              offset: Offset(0, ResponsiveUtils.rp(2)),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.shopping_cart_outlined,
+                              size: ResponsiveUtils.rp(14),
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: ResponsiveUtils.rp(4)),
+                            Text(
+                              '$orderCount',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: ResponsiveUtils.sp(12),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                             ),
                     ),
                   ),
@@ -130,7 +243,8 @@ class ProductCard extends StatelessWidget {
                     bottom: -ResponsiveUtils.rp(0),
                     right: -ResponsiveUtils.rp(0),
                     child: _AddToCartButton(
-                      onPressed: onAddToCart ?? () async => false,
+                      onPressed: isOutOfStock ? () async => false : (onAddToCart ?? () async => false),
+                      isDisabled: isOutOfStock,
                     ),
                   ),
                 ],
@@ -145,12 +259,13 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Product Name - Bold, larger, primary color
                   Flexible(
                     child: Text(
                       name,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(14),
-                        fontWeight: FontWeight.w600,
+                        fontSize: ResponsiveUtils.sp(16),
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                         height: 1.2,
                       ),
@@ -162,21 +277,79 @@ class ProductCard extends StatelessWidget {
                   if (showVariantSelector && variantSelector != null) ...[
                     variantSelector!,
                     SizedBox(height: ResponsiveUtils.rp(3)),
-                  ] else
+                  ] else ...[
+                    // If only one variant, show group name and option name on same line
+                    if (!hasMultipleVariants && groupName != null && groupName!.isNotEmpty)
+                      Row(
+                        children: [
+                          Text(
+                            groupName!,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.textSecondary,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(4)),
+                          Text(
+                            '•',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(4)),
+                          Expanded(
+                            child: Text(
+                              variantLabel,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(15),
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.button,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      )
+                    else ...[
+                      // If multiple variants, show group name and option name on separate lines
+                      if (groupName != null && groupName!.isNotEmpty)
+                        Text(
+                          groupName!,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.textSecondary,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      if (groupName != null && groupName!.isNotEmpty)
+                        SizedBox(height: ResponsiveUtils.rp(3)),
+                      // Option Name - Medium size, different color
                     Padding(
                       padding: EdgeInsets.only(top: ResponsiveUtils.rp(1)),
                       child: Text(
                         variantLabel,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(12),
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                            fontSize: ResponsiveUtils.sp(15),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.button,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  SizedBox(height: ResponsiveUtils.rp(4)),
+                    ],
+                  ],
+                  SizedBox(height: ResponsiveUtils.rp(5)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -189,7 +362,7 @@ class ProductCard extends StatelessWidget {
                               child: Text(
                                 priceText,
                                 style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(15),
+                                  fontSize: ResponsiveUtils.sp(19),
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.textPrimary,
                                 ),
@@ -226,9 +399,13 @@ class ProductCard extends StatelessWidget {
 }
 
 class _AddToCartButton extends StatefulWidget {
-  const _AddToCartButton({required this.onPressed});
+  const _AddToCartButton({
+    required this.onPressed,
+    this.isDisabled = false,
+  });
 
   final Future<bool> Function() onPressed;
+  final bool isDisabled;
 
   @override
   State<_AddToCartButton> createState() => _AddToCartButtonState();
@@ -296,6 +473,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
   }
 
   Future<void> _handleTap() async {
+    if (widget.isDisabled) return;
     if (_state == _AddToCartState.loading || _state == _AddToCartState.success) return;
     
     // Show loading state immediately for instant feedback
@@ -366,6 +544,16 @@ class _AddToCartButtonState extends State<_AddToCartButton>
     Color buttonColor2;
     Widget iconWidget;
     
+    // If disabled (out of stock), use grey colors
+    if (widget.isDisabled) {
+      buttonColor1 = Colors.grey.shade400;
+      buttonColor2 = Colors.grey.shade600;
+      iconWidget = Icon(
+        Icons.add,
+        color: Colors.white,
+        size: resolvedSize * 0.45,
+      );
+    } else {
     switch (_state) {
       case _AddToCartState.loading:
         buttonColor1 = AppColors.buttonLight;
@@ -439,6 +627,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
           size: resolvedSize * 0.45,
         );
         break;
+      }
     }
     
       return AnimatedBuilder(
@@ -458,7 +647,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
                 shape: const CircleBorder(),
                 child: InkWell(
                   customBorder: const CircleBorder(),
-                  onTap: _handleTap,
+                  onTap: widget.isDisabled ? null : _handleTap,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
                     curve: Curves.easeOut,

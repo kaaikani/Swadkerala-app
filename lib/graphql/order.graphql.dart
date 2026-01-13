@@ -5936,6 +5936,7 @@ class Fragment$Cart {
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -5957,6 +5958,7 @@ class Fragment$Cart {
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart(
       id: (l$id as String),
@@ -5989,6 +5991,10 @@ class Fragment$Cart {
           .map((e) =>
               Fragment$Cart$discounts.fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Fragment$Cart$customFields.fromJson(
+              (l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -6026,6 +6032,8 @@ class Fragment$Cart {
   final List<Fragment$Cart$shippingLines> shippingLines;
 
   final List<Fragment$Cart$discounts> discounts;
+
+  final Fragment$Cart$customFields? customFields;
 
   final String $__typename;
 
@@ -6066,6 +6074,8 @@ class Fragment$Cart {
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -6090,6 +6100,7 @@ class Fragment$Cart {
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -6109,6 +6120,7 @@ class Fragment$Cart {
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -6241,6 +6253,11 @@ class Fragment$Cart {
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -6284,6 +6301,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
     double? shippingWithTax,
     List<Fragment$Cart$shippingLines>? shippingLines,
     List<Fragment$Cart$discounts>? discounts,
+    Fragment$Cart$customFields? customFields,
     String? $__typename,
   });
   CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus;
@@ -6307,6 +6325,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
               Iterable<
                   CopyWith$Fragment$Cart$discounts<Fragment$Cart$discounts>>)
           _fn);
+  CopyWith$Fragment$Cart$customFields<TRes> get customFields;
 }
 
 class _CopyWithImpl$Fragment$Cart<TRes>
@@ -6340,6 +6359,7 @@ class _CopyWithImpl$Fragment$Cart<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart(
@@ -6395,6 +6415,9 @@ class _CopyWithImpl$Fragment$Cart<TRes>
         discounts: discounts == _undefined || discounts == null
             ? _instance.discounts
             : (discounts as List<Fragment$Cart$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields as Fragment$Cart$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -6454,6 +6477,14 @@ class _CopyWithImpl$Fragment$Cart<TRes>
                     e,
                     (i) => i,
                   ))).toList());
+
+  CopyWith$Fragment$Cart$customFields<TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Fragment$Cart$customFields.stub(_then(_instance))
+        : CopyWith$Fragment$Cart$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Fragment$Cart<TRes>
@@ -6480,6 +6511,7 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
     double? shippingWithTax,
     List<Fragment$Cart$shippingLines>? shippingLines,
     List<Fragment$Cart$discounts>? discounts,
+    Fragment$Cart$customFields? customFields,
     String? $__typename,
   }) =>
       _res;
@@ -6494,6 +6526,9 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Fragment$Cart$customFields<TRes> get customFields =>
+      CopyWith$Fragment$Cart$customFields.stub(_res);
 }
 
 const fragmentDefinitionCart = FragmentDefinitionNode(
@@ -7119,6 +7154,42 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
         ),
         FieldNode(
           name: NameNode(value: 'type'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: '__typename'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
+    ),
+    FieldNode(
+      name: NameNode(value: 'customFields'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: SelectionSetNode(selections: [
+        FieldNode(
+          name: NameNode(value: 'loyaltyPointsEarned'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'loyaltyPointsUsed'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'otherInstructions'),
           alias: null,
           arguments: [],
           directives: [],
@@ -9982,6 +10053,171 @@ class _CopyWithStubImpl$Fragment$Cart$discounts<TRes>
       _res;
 }
 
+class Fragment$Cart$customFields {
+  Fragment$Cart$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Fragment$Cart$customFields.fromJson(Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$customFields
+    on Fragment$Cart$customFields {
+  CopyWith$Fragment$Cart$customFields<Fragment$Cart$customFields>
+      get copyWith => CopyWith$Fragment$Cart$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$customFields<TRes> {
+  factory CopyWith$Fragment$Cart$customFields(
+    Fragment$Cart$customFields instance,
+    TRes Function(Fragment$Cart$customFields) then,
+  ) = _CopyWithImpl$Fragment$Cart$customFields;
+
+  factory CopyWith$Fragment$Cart$customFields.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$Cart$customFields<TRes>
+    implements CopyWith$Fragment$Cart$customFields<TRes> {
+  _CopyWithImpl$Fragment$Cart$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$customFields _instance;
+
+  final TRes Function(Fragment$Cart$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
+    implements CopyWith$Fragment$Cart$customFields<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$customFields(this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Fragment$Asset {
   Fragment$Asset({
     required this.id,
@@ -10908,8 +11144,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
-    this.$__typename = 'Order',
     this.customFields,
+    this.$__typename = 'Order',
   });
 
   factory Query$ActiveOrder$activeOrder.fromJson(Map<String, dynamic> json) {
@@ -10931,8 +11167,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
-    final l$$__typename = json['__typename'];
     final l$customFields = json['customFields'];
+    final l$$__typename = json['__typename'];
     return Query$ActiveOrder$activeOrder(
       currencyCode: fromJson$Enum$CurrencyCode((l$currencyCode as String)),
       id: (l$id as String),
@@ -10966,11 +11202,11 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
           .map((e) => Query$ActiveOrder$activeOrder$discounts.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
-      $__typename: (l$$__typename as String),
       customFields: l$customFields == null
           ? null
           : Query$ActiveOrder$activeOrder$customFields.fromJson(
               (l$customFields as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
     );
   }
 
@@ -11010,9 +11246,9 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
 
   final List<Query$ActiveOrder$activeOrder$discounts> discounts;
 
-  final String $__typename;
-
   final Query$ActiveOrder$activeOrder$customFields? customFields;
+
+  final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
@@ -11053,10 +11289,10 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
     return _resultData;
   }
 
@@ -11080,8 +11316,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
-    final l$$__typename = $__typename;
     final l$customFields = customFields;
+    final l$$__typename = $__typename;
     return Object.hashAll([
       l$currencyCode,
       l$id,
@@ -11101,8 +11337,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
-      l$$__typename,
       l$customFields,
+      l$$__typename,
     ]);
   }
 
@@ -11240,14 +11476,14 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
         return false;
       }
     }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
     final l$customFields = customFields;
     final lOther$customFields = other.customFields;
     if (l$customFields != lOther$customFields) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
       return false;
     }
     return true;
@@ -11291,8 +11527,8 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder<TRes> {
     double? shippingWithTax,
     List<Query$ActiveOrder$activeOrder$shippingLines>? shippingLines,
     List<Query$ActiveOrder$activeOrder$discounts>? discounts,
-    String? $__typename,
     Query$ActiveOrder$activeOrder$customFields? customFields,
+    String? $__typename,
   });
   CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes>
       get validationStatus;
@@ -11355,8 +11591,8 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
-    Object? $__typename = _undefined,
     Object? customFields = _undefined,
+    Object? $__typename = _undefined,
   }) =>
       _then(Query$ActiveOrder$activeOrder(
         currencyCode: currencyCode == _undefined || currencyCode == null
@@ -11416,12 +11652,12 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
         discounts: discounts == _undefined || discounts == null
             ? _instance.discounts
             : (discounts as List<Query$ActiveOrder$activeOrder$discounts>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Query$ActiveOrder$activeOrder$customFields?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
       ));
 
   CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes>
@@ -11518,8 +11754,8 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder<TRes>
     double? shippingWithTax,
     List<Query$ActiveOrder$activeOrder$shippingLines>? shippingLines,
     List<Query$ActiveOrder$activeOrder$discounts>? discounts,
-    String? $__typename,
     Query$ActiveOrder$activeOrder$customFields? customFields,
+    String? $__typename,
   }) =>
       _res;
 
@@ -14475,7 +14711,8 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$discounts<TRes>
       _res;
 }
 
-class Query$ActiveOrder$activeOrder$customFields {
+class Query$ActiveOrder$activeOrder$customFields
+    implements Fragment$Cart$customFields {
   Query$ActiveOrder$activeOrder$customFields({
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
@@ -15696,6 +15933,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -15718,6 +15956,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveOrderLine$removeOrderLine$$Order(
       id: (l$id as String),
@@ -15754,6 +15993,10 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
           .map((e) => Mutation$RemoveOrderLine$removeOrderLine$$Order$discounts
               .fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -15796,6 +16039,9 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
   final List<Mutation$RemoveOrderLine$removeOrderLine$$Order$discounts>
       discounts;
 
+  final Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields?
+      customFields;
+
   final String $__typename;
 
   Map<String, dynamic> toJson() {
@@ -15835,6 +16081,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -15859,6 +16107,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -15878,6 +16127,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -16011,6 +16261,11 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -16061,6 +16316,7 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes> {
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$shippingLines>?
         shippingLines,
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$discounts>? discounts,
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields? customFields,
     String? $__typename,
   });
   CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus<
@@ -16089,6 +16345,8 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes> {
                   CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$discounts<
                       Mutation$RemoveOrderLine$removeOrderLine$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<TRes>
+      get customFields;
 }
 
 class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
@@ -16122,6 +16380,7 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$RemoveOrderLine$removeOrderLine$$Order(
@@ -16182,6 +16441,10 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
             ? _instance.discounts
             : (discounts as List<
                 Mutation$RemoveOrderLine$removeOrderLine$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -16245,6 +16508,16 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<TRes>
+      get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
@@ -16274,6 +16547,7 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$shippingLines>?
         shippingLines,
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$discounts>? discounts,
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields? customFields,
     String? $__typename,
   }) =>
       _res;
@@ -16291,6 +16565,11 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order<TRes>
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<TRes>
+      get customFields =>
+          CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
@@ -19402,6 +19681,187 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$discount
       _res;
 }
 
+class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
+    on Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields {
+  CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
+          Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+    Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields instance,
+    TRes Function(Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields;
+
+  factory CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields _instance;
+
+  final TRes Function(
+      Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$RemoveAllOrderLines {
   Mutation$RemoveAllOrderLines({
     required this.removeAllOrderLines,
@@ -20310,6 +20770,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
   });
 
   factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order.fromJson(
@@ -20332,6 +20793,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order(
       $__typename: (l$$__typename as String),
       id: (l$id as String),
@@ -20370,6 +20832,10 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
               Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$discounts
                   .fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
     );
   }
 
@@ -20415,6 +20881,9 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
   final List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$discounts>
       discounts;
 
+  final Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields?
+      customFields;
+
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$$__typename = $__typename;
@@ -20454,6 +20923,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     return _resultData;
   }
 
@@ -20477,6 +20948,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     return Object.hashAll([
       l$$__typename,
       l$id,
@@ -20496,6 +20968,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
     ]);
   }
 
@@ -20633,6 +21106,11 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     return true;
   }
 }
@@ -20682,6 +21160,8 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
         shippingLines,
     List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$discounts>?
         discounts,
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields?
+        customFields,
   });
   CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
       TRes> get validationStatus;
@@ -20709,6 +21189,8 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
                   CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$discounts<
                       Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+      TRes> get customFields;
 }
 
 class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
@@ -20746,6 +21228,7 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
   }) =>
       _then(Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order(
         $__typename: $__typename == _undefined || $__typename == null
@@ -20808,6 +21291,10 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
             ? _instance.discounts
             : (discounts as List<
                 Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields?),
       ));
 
   CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus<
@@ -20868,6 +21355,16 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+      TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
@@ -20902,6 +21399,8 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
         shippingLines,
     List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$discounts>?
         discounts,
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields?
+        customFields,
   }) =>
       _res;
 
@@ -20918,6 +21417,12 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order<
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+          TRes>
+      get customFields =>
+          CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
@@ -24056,6 +24561,192 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
       _res;
 }
 
+class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
+    on Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields {
+  CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+    Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
+        instance,
+    TRes Function(
+            Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields;
+
+  factory CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
+      _instance;
+
+  final TRes Function(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Variables$Mutation$AdjustOrderLine {
   factory Variables$Mutation$AdjustOrderLine({
     required String orderLineId,
@@ -24868,6 +25559,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
   });
 
   factory Mutation$AdjustOrderLine$adjustOrderLine$$Order.fromJson(
@@ -24890,6 +25582,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     return Mutation$AdjustOrderLine$adjustOrderLine$$Order(
       $__typename: (l$$__typename as String),
       id: (l$id as String),
@@ -24926,6 +25619,10 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
           .map((e) => Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts
               .fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
     );
   }
 
@@ -24969,6 +25666,9 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
   final List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts>
       discounts;
 
+  final Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields?
+      customFields;
+
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$$__typename = $__typename;
@@ -25008,6 +25708,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     return _resultData;
   }
 
@@ -25031,6 +25733,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     return Object.hashAll([
       l$$__typename,
       l$id,
@@ -25050,6 +25753,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
     ]);
   }
 
@@ -25187,6 +25891,11 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     return true;
   }
 }
@@ -25233,6 +25942,7 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes> {
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$shippingLines>?
         shippingLines,
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts>? discounts,
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields? customFields,
   });
   CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
       TRes> get validationStatus;
@@ -25260,6 +25970,8 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes> {
                   CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts<
                       Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<TRes>
+      get customFields;
 }
 
 class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
@@ -25294,6 +26006,7 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
   }) =>
       _then(Mutation$AdjustOrderLine$adjustOrderLine$$Order(
         $__typename: $__typename == _undefined || $__typename == null
@@ -25356,6 +26069,10 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
             ? _instance.discounts
             : (discounts as List<
                 Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields?),
       ));
 
   CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus<
@@ -25416,6 +26133,16 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<TRes>
+      get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
@@ -25446,6 +26173,7 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$shippingLines>?
         shippingLines,
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$discounts>? discounts,
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields? customFields,
   }) =>
       _res;
 
@@ -25462,6 +26190,11 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order<TRes>
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<TRes>
+      get customFields =>
+          CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
@@ -28573,6 +29306,187 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$discount
       _res;
 }
 
+class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
+    on Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields {
+  CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
+          Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+    Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields instance,
+    TRes Function(Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields;
+
+  factory CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields _instance;
+
+  final TRes Function(
+      Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$AdjustOrderLine$adjustOrderLine$$OrderModificationError
     implements
         Fragment$ErrorResult$$OrderModificationError,
@@ -30145,6 +31059,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
   });
 
   factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order.fromJson(
@@ -30168,6 +31083,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     return Mutation$SetShippingAddress$setOrderShippingAddress$$Order(
       shippingAddress: l$shippingAddress == null
           ? null
@@ -30210,6 +31126,10 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
               Mutation$SetShippingAddress$setOrderShippingAddress$$Order$discounts
                   .fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
     );
   }
 
@@ -30259,6 +31179,9 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
           Mutation$SetShippingAddress$setOrderShippingAddress$$Order$discounts>
       discounts;
 
+  final Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields?
+      customFields;
+
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$shippingAddress = shippingAddress;
@@ -30300,6 +31223,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     return _resultData;
   }
 
@@ -30324,6 +31249,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     return Object.hashAll([
       l$shippingAddress,
       l$$__typename,
@@ -30344,6 +31270,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
     ]);
   }
 
@@ -30486,6 +31413,11 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     return true;
   }
 }
@@ -30538,6 +31470,8 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
         shippingLines,
     List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$discounts>?
         discounts,
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields?
+        customFields,
   });
   CopyWith$Fragment$OrderAddress<TRes> get shippingAddress;
   CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus<
@@ -30566,6 +31500,8 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
                   CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$discounts<
                       Mutation$SetShippingAddress$setOrderShippingAddress$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+      TRes> get customFields;
 }
 
 class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
@@ -30605,6 +31541,7 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
   }) =>
       _then(Mutation$SetShippingAddress$setOrderShippingAddress$$Order(
         shippingAddress: shippingAddress == _undefined
@@ -30670,6 +31607,10 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
             ? _instance.discounts
             : (discounts as List<
                 Mutation$SetShippingAddress$setOrderShippingAddress$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields?),
       ));
 
   CopyWith$Fragment$OrderAddress<TRes> get shippingAddress {
@@ -30738,6 +31679,16 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+      TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order<
@@ -30775,6 +31726,8 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
         shippingLines,
     List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$discounts>?
         discounts,
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields?
+        customFields,
   }) =>
       _res;
 
@@ -30794,6 +31747,12 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+          TRes>
+      get customFields =>
+          CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus
@@ -33940,6 +34899,192 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
       _res;
 }
 
+class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
+    on Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields {
+  CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+    Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
+        instance,
+    TRes Function(
+            Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields;
+
+  factory CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$SetShippingAddress$setOrderShippingAddress$$NoActiveOrderError
     implements
         Fragment$ErrorResult$$NoActiveOrderError,
@@ -35725,6 +36870,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -35747,6 +36893,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingMethod$setOrderShippingMethod$$Order(
       id: (l$id as String),
@@ -35785,6 +36932,10 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
               Mutation$SetShippingMethod$setOrderShippingMethod$$Order$discounts
                   .fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -35830,6 +36981,9 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   final List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$discounts>
       discounts;
 
+  final Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields?
+      customFields;
+
   final String $__typename;
 
   Map<String, dynamic> toJson() {
@@ -35869,6 +37023,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -35893,6 +37049,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -35912,6 +37069,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -36045,6 +37203,11 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -36099,6 +37262,8 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
         shippingLines,
     List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$discounts>?
         discounts,
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields?
+        customFields,
     String? $__typename,
   });
   CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus<
@@ -36127,6 +37292,8 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
                   CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$discounts<
                       Mutation$SetShippingMethod$setOrderShippingMethod$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+      TRes> get customFields;
 }
 
 class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
@@ -36164,6 +37331,7 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$SetShippingMethod$setOrderShippingMethod$$Order(
@@ -36224,6 +37392,10 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
             ? _instance.discounts
             : (discounts as List<
                 Mutation$SetShippingMethod$setOrderShippingMethod$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -36287,6 +37459,16 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+      TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order<
@@ -36321,6 +37503,8 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
         shippingLines,
     List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$discounts>?
         discounts,
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields?
+        customFields,
     String? $__typename,
   }) =>
       _res;
@@ -36338,6 +37522,12 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+          TRes>
+      get customFields =>
+          CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
@@ -39480,6 +40670,192 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
       _res;
 }
 
+class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
+    on Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields {
+  CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+    Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
+        instance,
+    TRes Function(
+            Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields;
+
+  factory CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
+      _instance;
+
+  final TRes Function(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$SetShippingMethod$setOrderShippingMethod$$OrderModificationError
     implements
         Fragment$ErrorResult$$OrderModificationError,
@@ -42389,6 +43765,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
     this.$__typename = 'Order',
     required this.updatedAt,
     this.orderPlacedAt,
@@ -42396,7 +43773,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     this.shippingAddress,
     this.billingAddress,
     this.payments,
-    this.customFields,
     this.customer,
   });
 
@@ -42418,6 +43794,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     final l$updatedAt = json['updatedAt'];
     final l$orderPlacedAt = json['orderPlacedAt'];
@@ -42425,7 +43802,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     final l$shippingAddress = json['shippingAddress'];
     final l$billingAddress = json['billingAddress'];
     final l$payments = json['payments'];
-    final l$customFields = json['customFields'];
     final l$customer = json['customer'];
     return Query$GetOrderByCode$orderByCode(
       id: (l$id as String),
@@ -42460,6 +43836,10 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
           .map((e) => Query$GetOrderByCode$orderByCode$discounts.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Query$GetOrderByCode$orderByCode$customFields.fromJson(
+              (l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
       updatedAt: DateTime.parse((l$updatedAt as String)),
       orderPlacedAt: l$orderPlacedAt == null
@@ -42478,10 +43858,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
           ?.map((e) => Query$GetOrderByCode$orderByCode$payments.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
-      customFields: l$customFields == null
-          ? null
-          : Query$GetOrderByCode$orderByCode$customFields.fromJson(
-              (l$customFields as Map<String, dynamic>)),
       customer: l$customer == null
           ? null
           : Query$GetOrderByCode$orderByCode$customer.fromJson(
@@ -42523,6 +43899,8 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
 
   final List<Query$GetOrderByCode$orderByCode$discounts> discounts;
 
+  final Query$GetOrderByCode$orderByCode$customFields? customFields;
+
   final String $__typename;
 
   final DateTime updatedAt;
@@ -42536,8 +43914,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
   final Query$GetOrderByCode$orderByCode$billingAddress? billingAddress;
 
   final List<Query$GetOrderByCode$orderByCode$payments>? payments;
-
-  final Query$GetOrderByCode$orderByCode$customFields? customFields;
 
   final Query$GetOrderByCode$orderByCode$customer? customer;
 
@@ -42578,6 +43954,8 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$updatedAt = updatedAt;
@@ -42592,8 +43970,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     _resultData['billingAddress'] = l$billingAddress?.toJson();
     final l$payments = payments;
     _resultData['payments'] = l$payments?.map((e) => e.toJson()).toList();
-    final l$customFields = customFields;
-    _resultData['customFields'] = l$customFields?.toJson();
     final l$customer = customer;
     _resultData['customer'] = l$customer?.toJson();
     return _resultData;
@@ -42618,6 +43994,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     final l$updatedAt = updatedAt;
     final l$orderPlacedAt = orderPlacedAt;
@@ -42625,7 +44002,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
     final l$shippingAddress = shippingAddress;
     final l$billingAddress = billingAddress;
     final l$payments = payments;
-    final l$customFields = customFields;
     final l$customer = customer;
     return Object.hashAll([
       l$id,
@@ -42645,6 +44021,7 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
       l$$__typename,
       l$updatedAt,
       l$orderPlacedAt,
@@ -42652,7 +44029,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
       l$shippingAddress,
       l$billingAddress,
       l$payments == null ? null : Object.hashAll(l$payments.map((v) => v)),
-      l$customFields,
       l$customer,
     ]);
   }
@@ -42786,6 +44162,11 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -42830,11 +44211,6 @@ class Query$GetOrderByCode$orderByCode implements Fragment$Cart {
         }
       }
     } else if (l$payments != lOther$payments) {
-      return false;
-    }
-    final l$customFields = customFields;
-    final lOther$customFields = other.customFields;
-    if (l$customFields != lOther$customFields) {
       return false;
     }
     final l$customer = customer;
@@ -42882,6 +44258,7 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode<TRes> {
     double? shippingWithTax,
     List<Query$GetOrderByCode$orderByCode$shippingLines>? shippingLines,
     List<Query$GetOrderByCode$orderByCode$discounts>? discounts,
+    Query$GetOrderByCode$orderByCode$customFields? customFields,
     String? $__typename,
     DateTime? updatedAt,
     DateTime? orderPlacedAt,
@@ -42889,7 +44266,6 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode<TRes> {
     Query$GetOrderByCode$orderByCode$shippingAddress? shippingAddress,
     Query$GetOrderByCode$orderByCode$billingAddress? billingAddress,
     List<Query$GetOrderByCode$orderByCode$payments>? payments,
-    Query$GetOrderByCode$orderByCode$customFields? customFields,
     Query$GetOrderByCode$orderByCode$customer? customer,
   });
   CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
@@ -42918,6 +44294,7 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode<TRes> {
                   CopyWith$Query$GetOrderByCode$orderByCode$discounts<
                       Query$GetOrderByCode$orderByCode$discounts>>)
           _fn);
+  CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> get customFields;
   CopyWith$Query$GetOrderByCode$orderByCode$shippingAddress<TRes>
       get shippingAddress;
   CopyWith$Query$GetOrderByCode$orderByCode$billingAddress<TRes>
@@ -42928,7 +44305,6 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode<TRes> {
                   CopyWith$Query$GetOrderByCode$orderByCode$payments<
                       Query$GetOrderByCode$orderByCode$payments>>?)
           _fn);
-  CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> get customFields;
   CopyWith$Query$GetOrderByCode$orderByCode$customer<TRes> get customer;
 }
 
@@ -42963,6 +44339,7 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
     Object? updatedAt = _undefined,
     Object? orderPlacedAt = _undefined,
@@ -42970,7 +44347,6 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
     Object? shippingAddress = _undefined,
     Object? billingAddress = _undefined,
     Object? payments = _undefined,
-    Object? customFields = _undefined,
     Object? customer = _undefined,
   }) =>
       _then(Query$GetOrderByCode$orderByCode(
@@ -43028,6 +44404,9 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
         discounts: discounts == _undefined || discounts == null
             ? _instance.discounts
             : (discounts as List<Query$GetOrderByCode$orderByCode$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields as Query$GetOrderByCode$orderByCode$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -43051,9 +44430,6 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
         payments: payments == _undefined
             ? _instance.payments
             : (payments as List<Query$GetOrderByCode$orderByCode$payments>?),
-        customFields: customFields == _undefined
-            ? _instance.customFields
-            : (customFields as Query$GetOrderByCode$orderByCode$customFields?),
         customer: customer == _undefined
             ? _instance.customer
             : (customer as Query$GetOrderByCode$orderByCode$customer?),
@@ -43118,6 +44494,16 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
                     (i) => i,
                   ))).toList());
 
+  CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes>
+      get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Query$GetOrderByCode$orderByCode$customFields.stub(
+            _then(_instance))
+        : CopyWith$Query$GetOrderByCode$orderByCode$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
+
   CopyWith$Query$GetOrderByCode$orderByCode$shippingAddress<TRes>
       get shippingAddress {
     final local$shippingAddress = _instance.shippingAddress;
@@ -43150,16 +44536,6 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode<TRes>
                     e,
                     (i) => i,
                   )))?.toList());
-
-  CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes>
-      get customFields {
-    final local$customFields = _instance.customFields;
-    return local$customFields == null
-        ? CopyWith$Query$GetOrderByCode$orderByCode$customFields.stub(
-            _then(_instance))
-        : CopyWith$Query$GetOrderByCode$orderByCode$customFields(
-            local$customFields, (e) => call(customFields: e));
-  }
 
   CopyWith$Query$GetOrderByCode$orderByCode$customer<TRes> get customer {
     final local$customer = _instance.customer;
@@ -43195,6 +44571,7 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode<TRes>
     double? shippingWithTax,
     List<Query$GetOrderByCode$orderByCode$shippingLines>? shippingLines,
     List<Query$GetOrderByCode$orderByCode$discounts>? discounts,
+    Query$GetOrderByCode$orderByCode$customFields? customFields,
     String? $__typename,
     DateTime? updatedAt,
     DateTime? orderPlacedAt,
@@ -43202,7 +44579,6 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode<TRes>
     Query$GetOrderByCode$orderByCode$shippingAddress? shippingAddress,
     Query$GetOrderByCode$orderByCode$billingAddress? billingAddress,
     List<Query$GetOrderByCode$orderByCode$payments>? payments,
-    Query$GetOrderByCode$orderByCode$customFields? customFields,
     Query$GetOrderByCode$orderByCode$customer? customer,
   }) =>
       _res;
@@ -43219,6 +44595,10 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode<TRes>
 
   discounts(_fn) => _res;
 
+  CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes>
+      get customFields =>
+          CopyWith$Query$GetOrderByCode$orderByCode$customFields.stub(_res);
+
   CopyWith$Query$GetOrderByCode$orderByCode$shippingAddress<TRes>
       get shippingAddress =>
           CopyWith$Query$GetOrderByCode$orderByCode$shippingAddress.stub(_res);
@@ -43228,10 +44608,6 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode<TRes>
           CopyWith$Query$GetOrderByCode$orderByCode$billingAddress.stub(_res);
 
   payments(_fn) => _res;
-
-  CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes>
-      get customFields =>
-          CopyWith$Query$GetOrderByCode$orderByCode$customFields.stub(_res);
 
   CopyWith$Query$GetOrderByCode$orderByCode$customer<TRes> get customer =>
       CopyWith$Query$GetOrderByCode$orderByCode$customer.stub(_res);
@@ -46196,6 +47572,175 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$discounts<TRes>
       _res;
 }
 
+class Query$GetOrderByCode$orderByCode$customFields
+    implements Fragment$Cart$customFields {
+  Query$GetOrderByCode$orderByCode$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Query$GetOrderByCode$orderByCode$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Query$GetOrderByCode$orderByCode$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetOrderByCode$orderByCode$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetOrderByCode$orderByCode$customFields
+    on Query$GetOrderByCode$orderByCode$customFields {
+  CopyWith$Query$GetOrderByCode$orderByCode$customFields<
+          Query$GetOrderByCode$orderByCode$customFields>
+      get copyWith => CopyWith$Query$GetOrderByCode$orderByCode$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
+  factory CopyWith$Query$GetOrderByCode$orderByCode$customFields(
+    Query$GetOrderByCode$orderByCode$customFields instance,
+    TRes Function(Query$GetOrderByCode$orderByCode$customFields) then,
+  ) = _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields;
+
+  factory CopyWith$Query$GetOrderByCode$orderByCode$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
+    implements CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
+  _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetOrderByCode$orderByCode$customFields _instance;
+
+  final TRes Function(Query$GetOrderByCode$orderByCode$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetOrderByCode$orderByCode$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
+    implements CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
+  _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields(this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Query$GetOrderByCode$orderByCode$shippingAddress {
   Query$GetOrderByCode$orderByCode$shippingAddress({
     this.fullName,
@@ -46962,154 +48507,6 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$payments<TRes>
     String? method,
     double? amount,
     String? transactionId,
-    String? $__typename,
-  }) =>
-      _res;
-}
-
-class Query$GetOrderByCode$orderByCode$customFields {
-  Query$GetOrderByCode$orderByCode$customFields({
-    this.loyaltyPointsEarned,
-    this.loyaltyPointsUsed,
-    this.$__typename = 'OrderCustomFields',
-  });
-
-  factory Query$GetOrderByCode$orderByCode$customFields.fromJson(
-      Map<String, dynamic> json) {
-    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
-    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
-    final l$$__typename = json['__typename'];
-    return Query$GetOrderByCode$orderByCode$customFields(
-      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
-      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final int? loyaltyPointsEarned;
-
-  final int? loyaltyPointsUsed;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$loyaltyPointsEarned = loyaltyPointsEarned;
-    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
-    final l$loyaltyPointsUsed = loyaltyPointsUsed;
-    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$loyaltyPointsEarned = loyaltyPointsEarned;
-    final l$loyaltyPointsUsed = loyaltyPointsUsed;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$loyaltyPointsEarned,
-      l$loyaltyPointsUsed,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Query$GetOrderByCode$orderByCode$customFields ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$loyaltyPointsEarned = loyaltyPointsEarned;
-    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
-    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
-      return false;
-    }
-    final l$loyaltyPointsUsed = loyaltyPointsUsed;
-    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
-    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetOrderByCode$orderByCode$customFields
-    on Query$GetOrderByCode$orderByCode$customFields {
-  CopyWith$Query$GetOrderByCode$orderByCode$customFields<
-          Query$GetOrderByCode$orderByCode$customFields>
-      get copyWith => CopyWith$Query$GetOrderByCode$orderByCode$customFields(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
-  factory CopyWith$Query$GetOrderByCode$orderByCode$customFields(
-    Query$GetOrderByCode$orderByCode$customFields instance,
-    TRes Function(Query$GetOrderByCode$orderByCode$customFields) then,
-  ) = _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields;
-
-  factory CopyWith$Query$GetOrderByCode$orderByCode$customFields.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields;
-
-  TRes call({
-    int? loyaltyPointsEarned,
-    int? loyaltyPointsUsed,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
-    implements CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
-  _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetOrderByCode$orderByCode$customFields _instance;
-
-  final TRes Function(Query$GetOrderByCode$orderByCode$customFields) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? loyaltyPointsEarned = _undefined,
-    Object? loyaltyPointsUsed = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetOrderByCode$orderByCode$customFields(
-        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
-            ? _instance.loyaltyPointsEarned
-            : (loyaltyPointsEarned as int?),
-        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
-            ? _instance.loyaltyPointsUsed
-            : (loyaltyPointsUsed as int?),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
-    implements CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
-  _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields(this._res);
-
-  TRes _res;
-
-  call({
-    int? loyaltyPointsEarned,
-    int? loyaltyPointsUsed,
     String? $__typename,
   }) =>
       _res;
@@ -48278,6 +49675,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -48300,6 +49698,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$AddPayment$addPaymentToOrder$$Order(
       id: (l$id as String),
@@ -48337,6 +49736,10 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
               Mutation$AddPayment$addPaymentToOrder$$Order$discounts.fromJson(
                   (e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$AddPayment$addPaymentToOrder$$Order$customFields.fromJson(
+              (l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -48378,6 +49781,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
 
   final List<Mutation$AddPayment$addPaymentToOrder$$Order$discounts> discounts;
 
+  final Mutation$AddPayment$addPaymentToOrder$$Order$customFields? customFields;
+
   final String $__typename;
 
   Map<String, dynamic> toJson() {
@@ -48417,6 +49822,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -48441,6 +49848,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -48460,6 +49868,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -48593,6 +50002,11 @@ class Mutation$AddPayment$addPaymentToOrder$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -48641,6 +50055,7 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order<TRes> {
     List<Mutation$AddPayment$addPaymentToOrder$$Order$shippingLines>?
         shippingLines,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$discounts>? discounts,
+    Mutation$AddPayment$addPaymentToOrder$$Order$customFields? customFields,
     String? $__typename,
   });
   CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus<TRes>
@@ -48669,6 +50084,8 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order<TRes> {
                   CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$discounts<
                       Mutation$AddPayment$addPaymentToOrder$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<TRes>
+      get customFields;
 }
 
 class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
@@ -48702,6 +50119,7 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddPayment$addPaymentToOrder$$Order(
@@ -48762,6 +50180,10 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
             ? _instance.discounts
             : (discounts as List<
                 Mutation$AddPayment$addPaymentToOrder$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$AddPayment$addPaymentToOrder$$Order$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -48825,6 +50247,16 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<TRes>
+      get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
@@ -48853,6 +50285,7 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
     List<Mutation$AddPayment$addPaymentToOrder$$Order$shippingLines>?
         shippingLines,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$discounts>? discounts,
+    Mutation$AddPayment$addPaymentToOrder$$Order$customFields? customFields,
     String? $__typename,
   }) =>
       _res;
@@ -48869,6 +50302,11 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order<TRes>
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<TRes>
+      get customFields =>
+          CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
@@ -51959,6 +53397,186 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$discounts<
       _res;
 }
 
+class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$AddPayment$addPaymentToOrder$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$AddPayment$addPaymentToOrder$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$AddPayment$addPaymentToOrder$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddPayment$addPaymentToOrder$$Order$customFields
+    on Mutation$AddPayment$addPaymentToOrder$$Order$customFields {
+  CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
+          Mutation$AddPayment$addPaymentToOrder$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+    Mutation$AddPayment$addPaymentToOrder$$Order$customFields instance,
+    TRes Function(Mutation$AddPayment$addPaymentToOrder$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields;
+
+  factory CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddPayment$addPaymentToOrder$$Order$customFields _instance;
+
+  final TRes Function(Mutation$AddPayment$addPaymentToOrder$$Order$customFields)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$AddPayment$addPaymentToOrder$$OrderPaymentStateError
     implements
         Fragment$ErrorResult$$OrderPaymentStateError,
@@ -53974,6 +55592,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -53996,6 +55615,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionOrderToState$transitionOrderToState$$Order(
       id: (l$id as String),
@@ -54034,6 +55654,10 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
               Mutation$TransitionOrderToState$transitionOrderToState$$Order$discounts
                   .fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -54081,6 +55705,9 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
           Mutation$TransitionOrderToState$transitionOrderToState$$Order$discounts>
       discounts;
 
+  final Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields?
+      customFields;
+
   final String $__typename;
 
   Map<String, dynamic> toJson() {
@@ -54120,6 +55747,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -54144,6 +55773,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -54163,6 +55793,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -54297,6 +55928,11 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -54352,6 +55988,8 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
         shippingLines,
     List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$discounts>?
         discounts,
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields?
+        customFields,
     String? $__typename,
   });
   CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus<
@@ -54380,6 +56018,8 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
                   CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$discounts<
                       Mutation$TransitionOrderToState$transitionOrderToState$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+      TRes> get customFields;
 }
 
 class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order<
@@ -54417,6 +56057,7 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$TransitionOrderToState$transitionOrderToState$$Order(
@@ -54477,6 +56118,10 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
             ? _instance.discounts
             : (discounts as List<
                 Mutation$TransitionOrderToState$transitionOrderToState$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -54540,6 +56185,16 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+      TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order<
@@ -54575,6 +56230,8 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
         shippingLines,
     List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$discounts>?
         discounts,
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields?
+        customFields,
     String? $__typename,
   }) =>
       _res;
@@ -54592,6 +56249,12 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+          TRes>
+      get customFields =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus
@@ -57740,6 +59403,192 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
       _res;
 }
 
+class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
+    on Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields {
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+    Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
+        instance,
+    TRes Function(
+            Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields;
+
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$TransitionOrderToState$transitionOrderToState$$OrderStateTransitionError
     implements
         Fragment$ErrorResult$$OrderStateTransitionError,
@@ -58715,6 +60564,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     required this.shippingWithTax,
     required this.shippingLines,
     required this.discounts,
+    this.customFields,
     this.$__typename = 'Order',
   });
 
@@ -58737,6 +60587,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     final l$shippingWithTax = json['shippingWithTax'];
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order(
       id: (l$id as String),
@@ -58775,6 +60626,10 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
               Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$discounts
                   .fromJson((e as Map<String, dynamic>)))
           .toList(),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -58822,6 +60677,9 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
           Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$discounts>
       discounts;
 
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields?
+      customFields;
+
   final String $__typename;
 
   Map<String, dynamic> toJson() {
@@ -58861,6 +60719,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
         l$shippingLines.map((e) => e.toJson()).toList();
     final l$discounts = discounts;
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -58885,6 +60745,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
     final l$shippingWithTax = shippingWithTax;
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -58904,6 +60765,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
       l$shippingWithTax,
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -59038,6 +60900,11 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order
         return false;
       }
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -59095,6 +60962,8 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
         shippingLines,
     List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$discounts>?
         discounts,
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields?
+        customFields,
     String? $__typename,
   });
   CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus<
@@ -59123,6 +60992,8 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
                   CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$discounts<
                       Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$discounts>>)
           _fn);
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+      TRes> get customFields;
 }
 
 class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order<
@@ -59162,6 +61033,7 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
     Object? shippingWithTax = _undefined,
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order(
@@ -59222,6 +61094,10 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
             ? _instance.discounts
             : (discounts as List<
                 Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$discounts>),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -59285,6 +61161,16 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
                 e,
                 (i) => i,
               ))).toList());
+
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+      TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order<
@@ -59320,6 +61206,8 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
         shippingLines,
     List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$discounts>?
         discounts,
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields?
+        customFields,
     String? $__typename,
   }) =>
       _res;
@@ -59337,6 +61225,12 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
   shippingLines(_fn) => _res;
 
   discounts(_fn) => _res;
+
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+          TRes>
+      get customFields =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
+              .stub(_res);
 }
 
 class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus
@@ -62481,6 +64375,192 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
     String? description,
     String? adjustmentSource,
     Enum$AdjustmentType? type,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
+    implements Fragment$Cart$customFields {
+  Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields({
+    this.loyaltyPointsEarned,
+    this.loyaltyPointsUsed,
+    this.otherInstructions,
+    this.$__typename = 'OrderCustomFields',
+  });
+
+  factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
+    final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
+    final l$otherInstructions = json['otherInstructions'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+      loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
+      loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
+      otherInstructions: (l$otherInstructions as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final int? loyaltyPointsEarned;
+
+  final int? loyaltyPointsUsed;
+
+  final String? otherInstructions;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    _resultData['loyaltyPointsUsed'] = l$loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    _resultData['otherInstructions'] = l$otherInstructions;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final l$otherInstructions = otherInstructions;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$loyaltyPointsEarned,
+      l$loyaltyPointsUsed,
+      l$otherInstructions,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$loyaltyPointsEarned = loyaltyPointsEarned;
+    final lOther$loyaltyPointsEarned = other.loyaltyPointsEarned;
+    if (l$loyaltyPointsEarned != lOther$loyaltyPointsEarned) {
+      return false;
+    }
+    final l$loyaltyPointsUsed = loyaltyPointsUsed;
+    final lOther$loyaltyPointsUsed = other.loyaltyPointsUsed;
+    if (l$loyaltyPointsUsed != lOther$loyaltyPointsUsed) {
+      return false;
+    }
+    final l$otherInstructions = otherInstructions;
+    final lOther$otherInstructions = other.otherInstructions;
+    if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
+    on Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields {
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
+        instance,
+    TRes Function(
+            Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields;
+
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields;
+
+  TRes call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? loyaltyPointsEarned = _undefined,
+    Object? loyaltyPointsUsed = _undefined,
+    Object? otherInstructions = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+        loyaltyPointsEarned: loyaltyPointsEarned == _undefined
+            ? _instance.loyaltyPointsEarned
+            : (loyaltyPointsEarned as int?),
+        loyaltyPointsUsed: loyaltyPointsUsed == _undefined
+            ? _instance.loyaltyPointsUsed
+            : (loyaltyPointsUsed as int?),
+        otherInstructions: otherInstructions == _undefined
+            ? _instance.otherInstructions
+            : (otherInstructions as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    int? loyaltyPointsEarned,
+    int? loyaltyPointsUsed,
+    String? otherInstructions,
     String? $__typename,
   }) =>
       _res;

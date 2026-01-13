@@ -44,17 +44,21 @@ class _BannerComponentState extends State<BannerComponent> {
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted || bannerController.bannerList.isEmpty || !_isCarouselReady) return;
       
-      // Check if controller is ready before calling nextPage
-      try {
-      _carouselController.nextPage(
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOut,
-      );
-      } catch (e) {
-        // Controller not ready or disposed, stop autoplay
-        debugPrint('[BannerComponent] Error in autoplay: $e');
-        _stopAutoPlay();
-      }
+      // Use addPostFrameCallback to ensure we're not in the middle of a layout
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_isCarouselReady) return;
+        
+        try {
+          _carouselController.nextPage(
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOut,
+          );
+        } catch (e) {
+          // Controller not ready or disposed, stop autoplay
+          debugPrint('[BannerComponent] Error in autoplay: $e');
+          _stopAutoPlay();
+        }
+      });
     });
   }
 
@@ -76,12 +80,16 @@ class _BannerComponentState extends State<BannerComponent> {
       });
     }
     
-    setState(() {
-      _currentIndex = index;
+    // Use addPostFrameCallback to avoid setState during layout
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _currentIndex = index;
+        });
+        // Scroll dots to keep active dot visible
+        _scrollDotsToActive(index);
+      }
     });
-    
-    // Scroll dots to keep active dot visible
-    _scrollDotsToActive(index);
   }
 
   void _scrollDotsToActive(int activeIndex) {
@@ -146,7 +154,7 @@ class _BannerComponentState extends State<BannerComponent> {
       if (banners.isEmpty && !isLoading) {
         return Container(
           height: ResponsiveUtils.rp(200),
-          margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+          // No margin - full width banner
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -156,7 +164,7 @@ class _BannerComponentState extends State<BannerComponent> {
                 AppColors.button.withValues(alpha: 0.1),
               ],
             ),
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+            borderRadius: BorderRadius.zero,
           ),
           child: Center(
             child: ResponsiveIcon(
@@ -174,10 +182,10 @@ class _BannerComponentState extends State<BannerComponent> {
           enabled: true,
           child: Container(
             height: ResponsiveUtils.rp(200),
-            margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+            // No margin - full width banner
             decoration: BoxDecoration(
               color: AppColors.grey200,
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+              borderRadius: BorderRadius.zero,
             ),
           ),
         );
@@ -195,53 +203,53 @@ class _BannerComponentState extends State<BannerComponent> {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Carousel Slider
-          GestureDetector(
-            onTapDown: (_) => _stopAutoPlay(),
-            onTapUp: (_) {
-              if (_isCarouselReady) {
-                _startAutoPlay();
-              }
-            },
-            onTapCancel: () {
-              if (_isCarouselReady) {
-                _startAutoPlay();
-              }
-            },
-            child: CarouselSlider.builder(
-              carouselController: _carouselController,
-              itemCount: banners.length,
-              itemBuilder: (context, index, realIndex) {
-                final banner = banners[index];
-                final imageUrl = banner.assets.isNotEmpty
-                    ? banner.assets.first.source
-                    : '';
+          // Carousel Slider - Full width without curves
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: ResponsiveUtils.rp(12),
+                  offset: Offset(0, ResponsiveUtils.rp(4)),
+                  spreadRadius: ResponsiveUtils.rp(1),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.zero,
+              child: GestureDetector(
+              onTapDown: (_) => _stopAutoPlay(),
+              onTapUp: (_) {
+                if (_isCarouselReady) {
+                  _startAutoPlay();
+                }
+              },
+              onTapCancel: () {
+                if (_isCarouselReady) {
+                  _startAutoPlay();
+                }
+              },
+              child: CarouselSlider.builder(
+                carouselController: _carouselController,
+                itemCount: banners.length,
+                itemBuilder: (context, index, realIndex) {
+                  final banner = banners[index];
+                  final imageUrl = banner.assets.isNotEmpty
+                      ? banner.assets.first.source
+                      : '';
 
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: ResponsiveUtils.rp(10),
-                        offset: Offset(0, ResponsiveUtils.rp(4)),
-                        spreadRadius: ResponsiveUtils.rp(2),
-                      ),
-                    ],
-                  ),
-                  child: GestureDetector(
-                    onTap: () => _handleBannerTap(banner),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          // Banner Image
-                          imageUrl.isNotEmpty
-                              ? Image.network(
+                  return Container(
+                    // No margin - full width banner
+                    child: GestureDetector(
+                      onTap: () => _handleBannerTap(banner),
+                      child: Container(
+                        width: double.infinity,
+                        child: imageUrl.isNotEmpty
+                            ? Image.network(
                                 imageUrl,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
+                                width: double.infinity,
+                                alignment: Alignment.center,
                                 loadingBuilder: (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
                                   return Container(
@@ -295,34 +303,22 @@ class _BannerComponentState extends State<BannerComponent> {
                                   ),
                                 ),
                               ),
-                          // Gradient overlay for better text readability (if needed)
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.black.withValues(alpha: 0.1),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-                );
-              },
-              options: CarouselOptions(
-                height: ResponsiveUtils.rp(200),
-                viewportFraction: 1.0,
-                autoPlay: false, // Disable built-in autoplay, use custom timer
-                enlargeCenterPage: false,
-                enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                onPageChanged: _onPageChanged,
-                scrollDirection: Axis.horizontal,
+                  );
+                },
+                options: CarouselOptions(
+                  height: ResponsiveUtils.rp(200),
+                  viewportFraction: 1.0,
+                  autoPlay: false, // Disable built-in autoplay, use custom timer
+                  enlargeCenterPage: false,
+                  enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                  enableInfiniteScroll: banners.length > 1,
+                  onPageChanged: _onPageChanged,
+                  scrollDirection: Axis.horizontal,
+                ),
               ),
+            ),
             ),
           ),
           

@@ -1055,6 +1055,103 @@ class _AccountPageState extends State<AccountPage> {
   Widget _buildFooter() {
     return Column(
       children: [
+        // Company Information
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+          padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+            border: Border.all(
+              color: AppColors.border,
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Company Information',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.verified_outlined,
+                    size: ResponsiveUtils.rp(16),
+                    color: AppColors.textSecondary,
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'FSSAI License Number',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(12),
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(4)),
+                        Text(
+                          '12422012001406',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(13),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: ResponsiveUtils.rp(16),
+                    color: AppColors.textSecondary,
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'GST No',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(12),
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(4)),
+                        Text(
+                          '33BFHPS5919D2ZD',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(13),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(16)),
         FutureBuilder<PackageInfo>(
           future: PackageInfo.fromPlatform(),
           builder: (context, snapshot) {

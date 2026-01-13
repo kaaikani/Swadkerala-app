@@ -11,7 +11,7 @@ import '../../utils/price_formatter.dart';
 import '../../utils/navigation_helper.dart';
 import '../../utils/analytics_helper.dart';
 import '../../widgets/responsive_spacing.dart';
-import '../../widgets/product_card.dart';
+import '../../widgets/home_product_card.dart';
 import '../../widgets/snackbar.dart';
 import '../../services/graphql_client.dart';
 
@@ -348,7 +348,7 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
               ),
             ),
             SizedBox(
-              height: ResponsiveUtils.rp(260),
+              height: ResponsiveUtils.rp(240),
               child: widget.utilityController.isLoadingRx.value && enabledFavorites.isEmpty
                   ? _buildShimmerRow()
                   : ListView.separated(
@@ -376,8 +376,8 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
                         final hasMultipleVariants = product.variants.length > 1;
 
                         return SizedBox(
-                          width: ResponsiveUtils.rp(170),
-                          child: ProductCard(
+                          width: ResponsiveUtils.rp(150),
+                          child: HomeProductCard(
                             name: product.name,
                             imageUrl: imageUrl,
                             onTap: () {
@@ -405,6 +405,10 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
                                 ? PriceFormatter.formatPrice(selectedVariant.priceWithTax.round())
                                 : 'Rs --',
                             shadowPriceText: null,
+                            groupName: selectedVariant != null && selectedVariant.options.isNotEmpty
+                                ? selectedVariant.options.first.group.name
+                                : null,
+                            hasMultipleVariants: hasMultipleVariants,
                             onAddToCart: () async {
                               if (selectedVariantId.isEmpty) {
                                 SnackBarWidget.showWarning(

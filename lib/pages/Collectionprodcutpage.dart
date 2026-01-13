@@ -38,12 +38,15 @@ class CollectionProductsPage extends StatefulWidget {
 
 class _CollectionProductsPageState extends State<CollectionProductsPage> {
   final CollectionsController controller = Get.find();
-  final CartController cartController = Get.put(CartController());
-  final BannerController bannerController = Get.put(BannerController());
+  final CartController cartController = Get.find<CartController>();
+  final BannerController bannerController = Get.find<BannerController>();
   final UtilityController utilityController = Get.find();
   
   // Scroll controller for lazy loading
   final ScrollController _scrollController = ScrollController();
+  
+  // Flag to prevent multiple simultaneous fetches
+  bool _hasInitialized = false;
 
   @override
   void initState() {
@@ -52,11 +55,24 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
     _scrollController.addListener(_onScroll);
     
     debugPrint('🎯 [CollectionProductsPage] Initialized with ID: ${widget.collectionId}, Name: ${widget.collectionName}, Slug: ${widget.slug}');
+    
+    // Only fetch once on initialization
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (_hasInitialized) {
+        debugPrint('⚠️ [CollectionProductsPage] Already initialized, skipping duplicate fetch');
+        return;
+      }
+      
+      _hasInitialized = true;
       debugPrint('🔍 [CollectionProductsPage] Fetching products for collection ID: ${widget.collectionId}, Slug: ${widget.slug}');
       
       try {
-        await controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug);
+        // Only call these three methods as requested
+        await Future.wait([
+          controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug),
+          bannerController.getCustomerFavorites(),
+          cartController.getActiveOrder(),
+        ], eagerError: false);
         
         // Check if collection was found after fetch attempt
         if (controller.currentCollection.value == null) {
@@ -70,10 +86,6 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
         _handleCollectionNotFound();
         return;
       }
-      
-      // Fetch favorites to know which products are favorited
-      bannerController.getCustomerFavorites();
-      cartController.getActiveOrder();
     });
   }
 
@@ -448,10 +460,12 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
 
         return RefreshIndicator(
           onRefresh: () async {
+            // Only refresh these three as requested
             await Future.wait([
               controller.fetchCollectionproducts(id: widget.collectionId, slug: widget.slug),
               bannerController.getCustomerFavorites(),
-            ]);
+              cartController.getActiveOrder(),
+            ], eagerError: false);
           },
           color: AppColors.refreshIndicator,
           child: GridView.builder(
@@ -513,6 +527,18 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                     ? PriceFormatter.formatPrice(shadowPriceMinor)
                     : null;
 
+                // Check if product is out of stock
+                final stockLevel = selectedVariant.stockLevel.toUpperCase();
+                final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
+
+                // Get group name for display
+                final groupName = product.optionGroups.isNotEmpty
+                    ? product.optionGroups.first.name
+                    : null;
+
+                // Check if product has multiple variants
+                final hasMultipleVariants = variantsForProduct.length > 1;
+
                 return ProductCard(
                   name: name,
                   imageUrl: imageUrl,
@@ -537,6 +563,9 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                   variantLabel: variantLabel,
                   priceText: priceText,
                   shadowPriceText: shadowPriceText,
+                  isOutOfStock: isOutOfStock,
+                  groupName: groupName,
+                  hasMultipleVariants: hasMultipleVariants,
                   onAddToCart: () => _handleAddToCart(
                     selectedVariant,
                     allowVariantSelector: false,

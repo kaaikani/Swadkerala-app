@@ -280,6 +280,13 @@ class _AddressesPageState extends State<AddressesPage> {
                     groupValue: currentDefaultAddress,
                     onChanged: _isUpdatingAddress ? null : (dynamic selectedAddress) async {
                       if (selectedAddress != null && !_isUpdatingAddress) {
+                        // Check if the selected address is already the default
+                        final isAlreadyDefault = currentDefaultAddress?.id == selectedAddress.id;
+                        if (isAlreadyDefault) {
+                          debugPrint('[AddressesPage] ⚠️ Address ID ${selectedAddress.id} is already set as default, skipping update');
+                          return;
+                        }
+                        
                         debugPrint('═══════════════════════════════════════════════════════════');
                         debugPrint('[AddressesPage] 📻 Radio button selected - Changing default address');
                         debugPrint('[AddressesPage] Selected Address ID: ${selectedAddress.id}');
@@ -451,6 +458,14 @@ class _AddressesPageState extends State<AddressesPage> {
       return;
     }
     
+    // Check if the address is already set as default shipping and billing
+    final isAlreadyDefault = (address.defaultShippingAddress ?? false) && 
+                             (address.defaultBillingAddress ?? false);
+    if (isAlreadyDefault) {
+      debugPrint('[AddressesPage] ⚠️ Address ID ${address.id} is already set as default shipping and billing, skipping update');
+      return;
+    }
+    
     debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS START ==========');
     debugPrint('[AddressesPage] Target Address ID: ${address.id}');
     debugPrint('[AddressesPage] Target Address: ${address.fullName ?? "N/A"}');
@@ -483,48 +498,28 @@ class _AddressesPageState extends State<AddressesPage> {
                   ((addr.defaultShippingAddress ?? false) || (addr.defaultBillingAddress ?? false)),
       );
       
-      // Only update the necessary addresses:
-      // 1. Unset previous default (if exists and different from target)
-      // 2. Set target address as default
+      // Only set the target address as default
+      // The backend should automatically unset the previous default when a new one is set
+      // This avoids postal code validation errors when the previous address has a postal code
+      // that's invalid for the current channel
       
       bool allSuccess = true;
       
-      // Step 1: Unset previous default address (if it exists and is different from target)
+      // Skip unsetting previous default - let the backend handle it automatically
+      // This prevents postal code validation errors when the previous address has a postal code
+      // that's invalid for the current channel (e.g., address from different city/channel)
       if (previousDefault != null) {
-        debugPrint('[AddressesPage] Unsetting default from Address ID: ${previousDefault.id} (${previousDefault.fullName ?? "N/A"})');
+        debugPrint('[AddressesPage] Previous default address ID: ${previousDefault.id} (${previousDefault.fullName ?? "N/A"})');
         debugPrint('[AddressesPage]   - Was Shipping: ${previousDefault.defaultShippingAddress ?? false}');
         debugPrint('[AddressesPage]   - Was Billing: ${previousDefault.defaultBillingAddress ?? false}');
-        
-        final unsetAddress = Query$GetActiveCustomer$activeCustomer$addresses(
-          id: previousDefault.id,
-          fullName: previousDefault.fullName,
-          streetLine1: previousDefault.streetLine1,
-          streetLine2: previousDefault.streetLine2,
-          city: previousDefault.city,
-          postalCode: previousDefault.postalCode,
-          phoneNumber: previousDefault.phoneNumber,
-          company: previousDefault.company,
-            defaultShippingAddress: false,
-            defaultBillingAddress: false,
-          country: previousDefault.country,
-          );
-        
-        debugPrint('[AddressesPage] Calling updateAddress to unset default for ID: ${previousDefault.id}');
-        final unsetResult = await customerController.updateAddress(unsetAddress, skipRefresh: true);
-        debugPrint('[AddressesPage] Unset result for ID ${previousDefault.id}: $unsetResult');
-        
-        if (!unsetResult) {
-          allSuccess = false;
-          debugPrint('[AddressesPage] ❌ Failed to unset default from address ID: ${previousDefault.id}');
-        } else {
-          debugPrint('[AddressesPage] ✅ Successfully unset default from address ID: ${previousDefault.id}');
-        }
+        debugPrint('[AddressesPage] Skipping unset step - backend will automatically unset previous default when new one is set');
       } else {
         debugPrint('[AddressesPage] No previous default address to unset');
       }
 
-      // Step 2: Set the target address as default (only if unset succeeded or wasn't needed)
-      if (allSuccess || previousDefault == null) {
+      // Set the target address as default
+      // The backend will automatically unset the previous default
+      {
       debugPrint('[AddressesPage] Setting Address ID: ${address.id} as default');
       debugPrint('[AddressesPage]   - Setting as Shipping Address: true');
       debugPrint('[AddressesPage]   - Setting as Billing Address: true');
@@ -552,6 +547,7 @@ class _AddressesPageState extends State<AddressesPage> {
           debugPrint('[AddressesPage] ❌ Failed to set default for address ID: ${address.id}');
         } else {
           debugPrint('[AddressesPage] ✅ Successfully set default for address ID: ${address.id}');
+          debugPrint('[AddressesPage] Backend should have automatically unset previous default address');
         }
       }
       

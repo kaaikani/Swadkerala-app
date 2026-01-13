@@ -859,11 +859,14 @@ debugPrint('[Order] Transition error: $e');
 debugPrint('[Order] Adding payment with method: $method');
 debugPrint('[Order] Payment metadata: $metadata');
 
-      // For online payments, don't pass metadata (use empty map)
+      // For online payments (Razorpay), pass metadata with:
+      // - razorpayPaymentId: Payment ID from Razorpay success response
+      // - razorpayOrderId: Razorpay order ID (from response.orderId or empty string)
+      // - razorpaySignature: Payment signature from Razorpay (for verification)
       // For offline payments, pass metadata with total, payment_method, and payment_id
       final input = Input$PaymentInput(
         method: method,
-        metadata: metadata ?? {}, // If null, use empty map (no metadata for online payments)
+        metadata: metadata ?? {}, // If null, use empty map
       );
 
       final response = await GraphqlService.client.value.mutate$AddPayment(
