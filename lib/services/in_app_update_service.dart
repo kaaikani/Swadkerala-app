@@ -6,6 +6,7 @@ import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 // import 'package:graphql_flutter/graphql_flutter.dart' as graphql; // Commented out - GraphQL query disabled
 import '../widgets/snackbar.dart';
+import '../utils/responsive.dart';
 // import '../services/graphql_client.dart'; // Commented out - GraphQL query disabled
 
 /// Service to handle in-app updates with flexible and immediate update modes
@@ -323,7 +324,7 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
         title: Row(
           children: [
             Icon(Icons.system_update, color: Colors.blue[600], size: 32),
-            const SizedBox(width: 12),
+            SizedBox(width: ResponsiveUtils.rp(12)),
             const Expanded(
               child: Text(
                 'Update Available',
@@ -340,7 +341,7 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
               'A new version of the app is available. You can update now or continue using the app.',
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: ResponsiveUtils.rp(16)),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -357,7 +358,7 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
                       Text(_currentVersion, style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: ResponsiveUtils.rp(8)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -411,7 +412,7 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
           title: Row(
             children: [
               Icon(Icons.system_update, color: Colors.green[600], size: 32),
-              const SizedBox(width: 12),
+              SizedBox(width: ResponsiveUtils.rp(12)),
               const Expanded(
                 child: Text(
                   'Update Required',
@@ -428,7 +429,7 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
                 'A new version of the app is available and must be installed to continue.',
                 style: TextStyle(fontSize: 16, color: Colors.grey[700]),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: ResponsiveUtils.rp(16)),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -445,7 +446,7 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
                         Text(_currentVersion, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: ResponsiveUtils.rp(8)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -495,7 +496,7 @@ debugPrint('[InAppUpdate] Error checking update on start: $e');
           title: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.green[600], size: 32),
-              const SizedBox(width: 12),
+              SizedBox(width: ResponsiveUtils.rp(12)),
               const Text('Update Complete'),
             ],
           ),
@@ -572,7 +573,7 @@ debugPrint('[InAppUpdate] Flexible update allowed: ${updateInfo.flexibleUpdateAl
 debugPrint('[InAppUpdate] Step 2: Using Play Store update info only (GraphQL query disabled)');
 debugPrint('[InAppUpdate] Current app version: $_currentVersion');
 debugPrint('[InAppUpdate] Play Store indicates update available: ${updateInfo.updateAvailability == UpdateAvailability.updateAvailable}');
-      
+        
       // Use Play Store's update availability to determine if update is needed
       // Only show update if Play Store actually has an update available
       if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
@@ -587,7 +588,7 @@ debugPrint('[InAppUpdate] Play Store indicates update available: ${updateInfo.up
 debugPrint('[InAppUpdate] Update available on Play Store');
 debugPrint('[InAppUpdate] Immediate update allowed by Play Store: ${updateInfo.immediateUpdateAllowed}');
 debugPrint('[InAppUpdate] Flexible update allowed by Play Store: ${updateInfo.flexibleUpdateAllowed}');
-      } else {
+        } else {
         // No update available on Play Store
         _isImmediateUpdateEnabled = false;
         _isUpdateAvailable = false;

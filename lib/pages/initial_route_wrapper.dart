@@ -3,6 +3,7 @@ import '../widgets/shimmers.dart';
 // import 'package:get/get.dart'; // Commented out - GraphQL query disabled
 // import '../controllers/banner/bannercontroller.dart'; // Commented out - GraphQL query disabled
 import '../services/in_app_update_service.dart';
+import '../utils/responsive.dart';
 import 'update_check_wrapper.dart';
 import 'auth_wrapper.dart';
 
@@ -87,12 +88,12 @@ debugPrint('[InitialRouteWrapper] Showing loading screen');
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Replaced with shimmer
-              SizedBox(height: 200, child: Skeletons.fullScreen()),
-              SizedBox(height: 24),
+              SizedBox(height: ResponsiveUtils.rp(200), child: Skeletons.fullScreen()),
+              SizedBox(height: ResponsiveUtils.rp(24)),
               Text(
                 'Initializing app...',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: ResponsiveUtils.sp(16),
                   color: Colors.grey[600],
                 ),
               ),

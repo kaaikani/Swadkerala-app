@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import '../../controllers/customer/customer_controller.dart';
 import '../../graphql/Customer.graphql.dart';
 import '../../graphql/schema.graphql.dart';
-import '../../services/graphql_client.dart';
+import '../../services/channel_service.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/loading_dialog.dart';
@@ -129,8 +128,7 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     }
 
     // Check if channel is already selected - no action needed
-    final box = GetStorage();
-    final currentChannelToken = box.read('channel_token') ?? '';
+    final currentChannelToken = ChannelService.getChannelToken() ?? '';
     if (channel.token == currentChannelToken) {
       debugPrint('[SwitchStore] Channel ${channel.token} is already selected - no action needed');
       return;
@@ -146,15 +144,13 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     LoadingDialog.show(message: 'Switching store...');
 
     try {
-      final box = GetStorage();
-
-      await box.write('channel_code', channel.code);
-      await box.write('channel_token', channel.token!);
-      await box.write('channel_name', channel.name);
-      await box.write('channel_type', channel.type.toString());
-      await box.write('postal_code', widget.postalCode);
-
-      await GraphqlService.setToken(key: 'channel', token: channel.token!);
+      await ChannelService.setChannelInfo(
+        token: channel.token!,
+        code: channel.code,
+        name: channel.name,
+        type: channel.type.toString(),
+        postalCode: widget.postalCode,
+      );
       await widget.customerController.refreshAllDataAfterChannelChange();
 
       LoadingDialog.hide();
@@ -230,8 +226,7 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }
 
   Widget _buildImageGrid(ScrollController scrollController) {
-    final box = GetStorage();
-    final currentChannelToken = box.read('channel_token') ?? '';
+    final currentChannelToken = ChannelService.getChannelToken() ?? '';
 
     return ListView.builder(
       controller: scrollController,
@@ -270,8 +265,7 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     final showComingSoon = isSwadkerala || imageUrl == null || _imageLoadFailed[channelKey] == true;
 
     // Check if channel is already selected
-    final box = GetStorage();
-    final currentChannelToken = box.read('channel_token') ?? '';
+    final currentChannelToken = ChannelService.getChannelToken() ?? '';
     final isAlreadySelected = channel.token != null && channel.token == currentChannelToken;
     
     // Don't allow tap if already selected, not clickable, or is Swadkerala

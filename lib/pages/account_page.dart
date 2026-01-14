@@ -616,17 +616,17 @@ class _AccountPageState extends State<AccountPage> {
                 // Orders Section
                 _buildOrdersSection(),
 
-                SizedBox(height: 8),
+                SizedBox(height: ResponsiveUtils.rp(8)),
 
                 // Account Options
                 _buildAccountOptions(),
 
-                SizedBox(height: 8),
+                SizedBox(height: ResponsiveUtils.rp(8)),
 
                 // Support Section
                 _buildSupportSection(),
 
-                SizedBox(height: 16),
+                SizedBox(height: ResponsiveUtils.rp(16)),
 
                 // App Version & Logout
                 _buildFooter(),
@@ -908,6 +908,13 @@ class _AccountPageState extends State<AccountPage> {
             onTap: () => Get.toNamed('/favourite'),
           ),
           _buildDivider(),
+          _buildListTile(
+            Icons.shopping_bag_outlined,
+            'Preferred Items',
+            Icons.arrow_forward_ios,
+            onTap: () => Get.toNamed('/frequently-ordered'),
+          ),
+          _buildDivider(),
           _buildDarkModeTile(),
         ],
       ),
@@ -1159,15 +1166,15 @@ class _AccountPageState extends State<AccountPage> {
               'App Version ${snapshot.data?.version ?? "1.0.0"}',
               style: TextStyle(
                 color: Colors.grey[500],
-                fontSize: 12,
+                fontSize: ResponsiveUtils.sp(12),
               ),
             );
           },
         ),
-        SizedBox(height: 16),
+        SizedBox(height: ResponsiveUtils.rp(16)),
         Container(
           width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: 16),
+          margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
           child: OutlinedButton(
             onPressed: () {
 debugPrint('📱 [AccountPage] Logout button pressed by user');
@@ -1176,9 +1183,9 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red,
               side: BorderSide(color: Colors.red),
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
               ),
             ),
             child: Text(
@@ -1190,7 +1197,7 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
             ),
           ),
         ),
-        SizedBox(height: 20),
+        SizedBox(height: ResponsiveUtils.rp(20)),
       ],
     );
   }
@@ -2077,11 +2084,11 @@ debugPrint('📱 [AccountPage] User clicked logout button');
         ),
         title: Text(
           'Logout',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: ResponsiveUtils.sp(18), fontWeight: FontWeight.w600),
         ),
         content: Text(
           'Are you sure you want to logout?',
-          style: TextStyle(fontSize: 14),
+          style: TextStyle(fontSize: ResponsiveUtils.sp(14)),
         ),
         actions: [
           TextButton(

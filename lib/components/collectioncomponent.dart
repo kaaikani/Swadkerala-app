@@ -160,7 +160,7 @@ class CollectionCard extends StatelessWidget {
                                 return Center(
                                   child: ResponsiveIcon(
                                     Icons.broken_image_rounded,
-                                    size: 52,
+                                    size: ResponsiveUtils.rp(52),
                                     color: AppColors.textTertiary,
                                   ),
                                 );
@@ -205,7 +205,7 @@ class CollectionCard extends StatelessWidget {
               child: Center(
                 child: ResponsiveText(
                   collection.name,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.sp(15),
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                   maxLines: 2,

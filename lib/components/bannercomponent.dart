@@ -41,23 +41,23 @@ class _BannerComponentState extends State<BannerComponent> {
 
   void _startAutoPlay() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!mounted || bannerController.bannerList.isEmpty || !_isCarouselReady) return;
       
       // Use addPostFrameCallback to ensure we're not in the middle of a layout
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_isCarouselReady) return;
         
-        try {
-          _carouselController.nextPage(
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.easeInOut,
-          );
-        } catch (e) {
-          // Controller not ready or disposed, stop autoplay
-          debugPrint('[BannerComponent] Error in autoplay: $e');
-          _stopAutoPlay();
-        }
+      try {
+      _carouselController.nextPage(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+      } catch (e) {
+        // Controller not ready or disposed, stop autoplay
+        debugPrint('[BannerComponent] Error in autoplay: $e');
+        _stopAutoPlay();
+      }
       });
     });
   }
@@ -83,11 +83,11 @@ class _BannerComponentState extends State<BannerComponent> {
     // Use addPostFrameCallback to avoid setState during layout
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        setState(() {
-          _currentIndex = index;
-        });
-        // Scroll dots to keep active dot visible
-        _scrollDotsToActive(index);
+    setState(() {
+      _currentIndex = index;
+    });
+    // Scroll dots to keep active dot visible
+    _scrollDotsToActive(index);
       }
     });
   }
@@ -169,7 +169,7 @@ class _BannerComponentState extends State<BannerComponent> {
           child: Center(
             child: ResponsiveIcon(
               Icons.image_outlined,
-              size: 50,
+              size: ResponsiveUtils.rp(50),
               color: AppColors.textSecondary,
             ),
           ),
@@ -218,37 +218,41 @@ class _BannerComponentState extends State<BannerComponent> {
             child: ClipRRect(
               borderRadius: BorderRadius.zero,
               child: GestureDetector(
-              onTapDown: (_) => _stopAutoPlay(),
-              onTapUp: (_) {
-                if (_isCarouselReady) {
-                  _startAutoPlay();
-                }
-              },
-              onTapCancel: () {
-                if (_isCarouselReady) {
-                  _startAutoPlay();
-                }
-              },
-              child: CarouselSlider.builder(
-                carouselController: _carouselController,
-                itemCount: banners.length,
-                itemBuilder: (context, index, realIndex) {
-                  final banner = banners[index];
-                  final imageUrl = banner.assets.isNotEmpty
-                      ? banner.assets.first.source
-                      : '';
+                onTapDown: (_) => _stopAutoPlay(),
+                onTapUp: (_) {
+                  if (_isCarouselReady) {
+                    _startAutoPlay();
+                  }
+                },
+                onTapCancel: () {
+                  if (_isCarouselReady) {
+                    _startAutoPlay();
+                  }
+                },
+                child: CarouselSlider.builder(
+                  carouselController: _carouselController,
+                  itemCount: banners.length,
+                  itemBuilder: (context, index, realIndex) {
+                final banner = banners[index];
+                final imageUrl = banner.assets.isNotEmpty
+                    ? banner.assets.first.source
+                    : '';
 
-                  return Container(
+                return Container(
                     // No margin - full width banner
-                    child: GestureDetector(
-                      onTap: () => _handleBannerTap(banner),
+                    width: double.infinity,
+                    height: double.infinity,
+                  child: GestureDetector(
+                    onTap: () => _handleBannerTap(banner),
                       child: Container(
                         width: double.infinity,
+                        height: double.infinity,
                         child: imageUrl.isNotEmpty
-                            ? Image.network(
+                              ? Image.network(
                                 imageUrl,
-                                fit: BoxFit.contain,
+                                fit: BoxFit.cover,
                                 width: double.infinity,
+                                height: double.infinity,
                                 alignment: Alignment.center,
                                 loadingBuilder: (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
@@ -302,23 +306,23 @@ class _BannerComponentState extends State<BannerComponent> {
                                     color: AppColors.textSecondary,
                                   ),
                                 ),
-                              ),
                       ),
                     ),
-                  );
-                },
-                options: CarouselOptions(
-                  height: ResponsiveUtils.rp(200),
-                  viewportFraction: 1.0,
-                  autoPlay: false, // Disable built-in autoplay, use custom timer
-                  enlargeCenterPage: false,
-                  enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                  enableInfiniteScroll: banners.length > 1,
-                  onPageChanged: _onPageChanged,
-                  scrollDirection: Axis.horizontal,
+                  ),
+                );
+              },
+                  options: CarouselOptions(
+                    height: ResponsiveUtils.rp(200),
+                    viewportFraction: 1.0,
+                    autoPlay: false, // Disable built-in autoplay, use custom timer
+                    enlargeCenterPage: false,
+                    enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                    enableInfiniteScroll: banners.length > 1,
+                    onPageChanged: _onPageChanged,
+                    scrollDirection: Axis.horizontal,
+                  ),
                 ),
               ),
-            ),
             ),
           ),
           

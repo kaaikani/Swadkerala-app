@@ -498,22 +498,22 @@ class _LoyaltyPointsTransactionPageState
                         spacing: ResponsiveUtils.rp(8),
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Row(
+                      Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.access_time_rounded,
-                                size: ResponsiveUtils.rp(14),
-                                color: AppColors.textSecondary,
-                              ),
-                              SizedBox(width: ResponsiveUtils.rp(4)),
-                              Text(
-                                _formatTime(transaction.date),
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(12),
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: ResponsiveUtils.rp(14),
+                            color: AppColors.textSecondary,
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(4)),
+                          Text(
+                            _formatTime(transaction.date),
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(12),
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                             ],
                           ),
                           if (transaction.orderCode != null)

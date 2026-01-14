@@ -56,18 +56,18 @@ class HomeShippingTicker extends StatelessWidget {
                   
                   return Container(
                     alignment: Alignment.center, // Center the Marquee vertically
-                    child: Marquee(
+              child: Marquee(
                       key: ValueKey('shippingTicker_$safeTickerText'),
                       text: safeTickerText,
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                        fontSize: ResponsiveUtils.sp(12),
-                        fontWeight: FontWeight.w600,
-                      ),
-                      blankSpace: 50,
-                      velocity: 30,
-                      pauseAfterRound: const Duration(seconds: 1),
-                      startPadding: 10,
+                style: TextStyle(
+                  color: Colors.brown[800],
+                  fontSize: ResponsiveUtils.sp(12),
+                  fontWeight: FontWeight.w600,
+                ),
+                blankSpace: 50,
+                velocity: 30,
+                pauseAfterRound: const Duration(seconds: 1),
+                startPadding: 10,
                       scrollAxis: Axis.horizontal,
                       crossAxisAlignment: CrossAxisAlignment.center, // Center text vertically
                     ),

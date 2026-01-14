@@ -43,7 +43,7 @@ class SearchComponent extends StatelessWidget {
         child: Row(
           children: [
             ResponsiveIcon(Icons.search,
-                color: AppColors.textSecondary, size: 20),
+                color: AppColors.textSecondary, size: ResponsiveUtils.rp(20)),
             ResponsiveSpacing.horizontal(10),
             Expanded(
               child: ResponsiveText(
@@ -150,14 +150,7 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
           setState(() {
             _isListening = false;
           });
-          Get.snackbar(
-            'Error',
-            'Could not start speech recognition. Please check microphone permissions.',
-            snackPosition: SnackPosition.BOTTOM,
-            duration: Duration(seconds: 2),
-            backgroundColor: AppColors.card,
-            colorText: AppColors.textPrimary,
-          );
+
         }
       },
       ),

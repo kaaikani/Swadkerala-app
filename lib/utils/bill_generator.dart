@@ -4,9 +4,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:flutter/services.dart';
 import '../graphql/order.graphql.dart';
+import '../services/channel_service.dart';
 
 class BillGenerator {
   /// Format price for PDF with rupee symbol
@@ -28,8 +28,7 @@ class BillGenerator {
   }
   static Future<void> generateAndShare(Fragment$Cart order) async {
     // Pre-load logo image asynchronously to avoid blocking
-    final box = GetStorage();
-    final channelType = box.read('channel_type')?.toString() ?? '';
+    final channelType = ChannelService.getChannelType() ?? '';
     final isCityChannel = channelType.contains('CITY');
     pw.Image? logoImage;
     
@@ -107,9 +106,8 @@ class BillGenerator {
 
   static pw.Widget _buildHeader(Fragment$Cart order, pw.Image? logoImage) {
     // Get channel name
-    final box = GetStorage();
-    final channelName = box.read('channel_name')?.toString() ?? 
-                       box.read('channel_code')?.toString() ?? 
+    final channelName = ChannelService.getChannelName()?.toString() ?? 
+                       ChannelService.getChannelCode()?.toString() ?? 
                        'Kaaikani';
     
     // Determine logo widget

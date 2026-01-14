@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/app_strings.dart';
@@ -8,6 +7,7 @@ import '../../components/searchbarcomponent.dart';
 import '../../controllers/banner/bannercontroller.dart';
 import '../../controllers/customer/customer_controller.dart';
 import '../../services/graphql_client.dart';
+import '../../services/channel_service.dart';
 
 class HomeHeader extends StatelessWidget {
   final bool isUserAuthenticated;
@@ -248,7 +248,7 @@ class HomeHeader extends StatelessWidget {
                 
                 // Search Bar Row with Loyalty Points (hide if brand = city)
                 if (!_isCityChannel())
-                  _buildSearchRow(),
+                _buildSearchRow(),
               ],
             ),
           ),
@@ -468,8 +468,7 @@ class HomeHeader extends StatelessWidget {
   
   bool _isCityChannel() {
     try {
-      final box = GetStorage();
-      final channelType = box.read('channel_type')?.toString() ?? '';
+      final channelType = ChannelService.getChannelType() ?? '';
       if (channelType.isEmpty) return false;
       // Check if it's CITY type (could be "Enum$ChannelType.CITY" or just "CITY")
       return channelType.contains('CITY');
@@ -524,25 +523,6 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               // Microphone icon (right)
-              InkWell(
-                onTap: () async {
-                  // Navigate to search page and trigger speech recognition
-                  final result = await Get.toNamed('/search', arguments: {'startSpeechRecognition': true});
-                  if (result != null && result is String) {
-                    // Search was performed with speech result
-                    bannerController.searchProducts({'term': result});
-                  }
-                },
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                child: Padding(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
-                  child: Icon(
-                    Icons.mic,
-                    color: AppColors.textSecondary,
-                    size: ResponsiveUtils.rp(20),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

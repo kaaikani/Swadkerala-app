@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/responsive.dart';
 
 class EmptyState extends StatelessWidget {
   final IconData icon;
@@ -16,39 +17,44 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 80,
-              color: Colors.grey[300],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.bold,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[500],
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            if (action != null) ...[
-              const SizedBox(height: 24),
-              action!,
+    return Container(
+      color: Colors.white,
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(ResponsiveUtils.rp(32)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: ResponsiveUtils.rp(80),
+                color: Colors.grey[300],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(24)),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.bold,
+                      fontSize: ResponsiveUtils.sp(18),
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[500],
+                      fontSize: ResponsiveUtils.sp(14),
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              if (action != null) ...[
+                SizedBox(height: ResponsiveUtils.rp(24)),
+                action!,
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

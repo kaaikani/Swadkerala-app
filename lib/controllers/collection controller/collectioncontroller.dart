@@ -38,13 +38,13 @@ class CollectionsController extends GetxController {
   Future<bool> fetchAllCollections({bool force = false}) async {
     // Prevent multiple simultaneous fetches
     if (_isFetching) {
-      debugPrint('[Collection] Already fetching, skipping duplicate request');
+debugPrint('[Collection] Already fetching, skipping duplicate request');
       return false;
     }
 
     // Don't fetch again if we already have collections (unless forced)
     if (!force && allCollections.isNotEmpty) {
-      debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
+debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
       return true;
     }
 
@@ -173,42 +173,42 @@ class CollectionsController extends GetxController {
   List<Query$Collections$collections$items> _sortCollectionsBySlugNumber(
     List<Query$Collections$collections$items> collections,
   ) {
-    // Separate collections into those with numbers and those without
-    final collectionsWithNumbers = <Query$Collections$collections$items>[];
-    final collectionsWithoutNumbers = <Query$Collections$collections$items>[];
-    
-    for (final collection in collections) {
-      final slug = collection.slug;
-      final match = RegExp(r'(\d+)$').firstMatch(slug);
-      if (match != null) {
-        collectionsWithNumbers.add(collection);
-      } else {
-        collectionsWithoutNumbers.add(collection);
-      }
-    }
-    
-    // Sort collections with numbers by the number at the end (1, 2, 11, etc.)
-    collectionsWithNumbers.sort((a, b) {
-      final aSlug = a.slug;
-      final bSlug = b.slug;
-      final aMatch = RegExp(r'(\d+)$').firstMatch(aSlug);
-      final bMatch = RegExp(r'(\d+)$').firstMatch(bSlug);
-      
-      final aNumber = aMatch != null ? int.tryParse(aMatch.group(1) ?? '') : null;
-      final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
-      
-      if (aNumber != null && bNumber != null) {
-        return aNumber.compareTo(bNumber);
-      }
-      
-      return aSlug.compareTo(bSlug);
-    });
-    
-    // Combine: collections with numbers (sorted by number) first, then collections without numbers
-    final arrangedCollections = <Query$Collections$collections$items>[];
-    arrangedCollections.addAll(collectionsWithNumbers);
-    arrangedCollections.addAll(collectionsWithoutNumbers);
-    
+        // Separate collections into those with numbers and those without
+        final collectionsWithNumbers = <Query$Collections$collections$items>[];
+        final collectionsWithoutNumbers = <Query$Collections$collections$items>[];
+        
+        for (final collection in collections) {
+          final slug = collection.slug;
+          final match = RegExp(r'(\d+)$').firstMatch(slug);
+          if (match != null) {
+            collectionsWithNumbers.add(collection);
+          } else {
+            collectionsWithoutNumbers.add(collection);
+          }
+        }
+        
+        // Sort collections with numbers by the number at the end (1, 2, 11, etc.)
+        collectionsWithNumbers.sort((a, b) {
+          final aSlug = a.slug;
+          final bSlug = b.slug;
+          final aMatch = RegExp(r'(\d+)$').firstMatch(aSlug);
+          final bMatch = RegExp(r'(\d+)$').firstMatch(bSlug);
+          
+          final aNumber = aMatch != null ? int.tryParse(aMatch.group(1) ?? '') : null;
+          final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
+          
+          if (aNumber != null && bNumber != null) {
+            return aNumber.compareTo(bNumber);
+          }
+          
+          return aSlug.compareTo(bSlug);
+        });
+        
+        // Combine: collections with numbers (sorted by number) first, then collections without numbers
+        final arrangedCollections = <Query$Collections$collections$items>[];
+        arrangedCollections.addAll(collectionsWithNumbers);
+        arrangedCollections.addAll(collectionsWithoutNumbers);
+
     return arrangedCollections;
   }
 

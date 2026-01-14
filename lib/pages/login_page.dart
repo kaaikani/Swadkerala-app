@@ -823,41 +823,41 @@ debugPrint('[LoginPage] SMS autofill error: $e');
                   }
                 }
               },
-              child: TextField(
-                controller: _authController.phoneNumber,
+            child: TextField(
+              controller: _authController.phoneNumber,
                 focusNode: _phoneFocusNode,
-                keyboardType: TextInputType.phone,
-                enabled: !_authController.isOtpSent && !_isDetectingSim,
-                style: TextStyle(
+              keyboardType: TextInputType.phone,
+              enabled: !_authController.isOtpSent && !_isDetectingSim,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(17),
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+                letterSpacing: 1.0,
+              ),
+              cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(10),
+              ],
+              onChanged: (value) {
+                if (!_phoneFieldTouched) {
+                  setState(() => _phoneFieldTouched = true);
+                }
+                _validatePhone(value);
+              },
+              decoration: InputDecoration(
+                hintText: '1234567890',
+                hintStyle: TextStyle(
+                  color: AppColors.textSecondary.withValues(alpha: 0.35),
                   fontSize: ResponsiveUtils.sp(17),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
                   letterSpacing: 1.0,
                 ),
-                cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(10),
-                ],
-                onChanged: (value) {
-                  if (!_phoneFieldTouched) {
-                    setState(() => _phoneFieldTouched = true);
-                  }
-                  _validatePhone(value);
-                },
-                decoration: InputDecoration(
-                  hintText: '1234567890',
-                  hintStyle: TextStyle(
-                    color: AppColors.textSecondary.withValues(alpha: 0.35),
-                    fontSize: ResponsiveUtils.sp(17),
-                    letterSpacing: 1.0,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: ResponsiveUtils.rp(18),
-                    vertical: ResponsiveUtils.rp(18),
-                  ),
-                  suffixIcon: _buildPhoneSuffixIcon(hasError, isValid),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(18),
+                  vertical: ResponsiveUtils.rp(18),
+                ),
+                suffixIcon: _buildPhoneSuffixIcon(hasError, isValid),
                 ),
               ),
             ),

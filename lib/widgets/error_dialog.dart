@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../theme/colors.dart';
+import '../utils/responsive.dart';
 
 /// Centralized error dialog utility for controllers
 /// No need to pass BuildContext - uses Get.context
@@ -18,21 +19,21 @@ class ErrorDialog {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
         ),
         title: Row(
           children: [
             Icon(
               Icons.error_outline,
               color: AppColors.error,
-              size: 28,
+              size: ResponsiveUtils.rp(28),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: ResponsiveUtils.rp(12)),
             Expanded(
               child: Text(
                 title ?? 'Error',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: ResponsiveUtils.sp(18),
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
@@ -43,7 +44,7 @@ class ErrorDialog {
         content: Text(
           message,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: ResponsiveUtils.sp(15),
             color: AppColors.textSecondary,
           ),
         ),
@@ -58,7 +59,7 @@ class ErrorDialog {
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.button,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                 ),
               ),
               child: Text(secondButtonText),
@@ -171,7 +172,7 @@ class ErrorDialog {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
         ),
         title: Row(
           children: [
@@ -196,7 +197,7 @@ class ErrorDialog {
         content: Text(
           message,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: ResponsiveUtils.sp(15),
             color: AppColors.textSecondary,
           ),
         ),

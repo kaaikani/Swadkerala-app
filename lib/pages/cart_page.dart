@@ -851,11 +851,11 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
           // Try to access customFields if available (for Query$ActiveOrder$activeOrder type)
           // Fragment$Cart doesn't have customFields, so this will fail gracefully
           if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
-            final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
-            final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
-            if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-              bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
-              bannerController.loyaltyPointsApplied.value = true;
+        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
+        final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
+        if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
+          bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
+          bannerController.loyaltyPointsApplied.value = true;
               debugPrint('[CartPage] Loaded existing loyalty points from order (fallback): $loyaltyPointsUsed');
             }
           } else {
@@ -867,7 +867,7 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
         }
       }
     } catch (e) {
-      debugPrint('[CartPage] Error loading existing loyalty points: $e');
+debugPrint('[CartPage] Error loading existing loyalty points: $e');
     }
   }
 
@@ -926,7 +926,7 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
       // Use microtask to ensure it runs after current frame
       Future.microtask(() {
         if (mounted && !_isRefreshingData) {
-          _refreshData();
+    _refreshData();
         }
       });
     }

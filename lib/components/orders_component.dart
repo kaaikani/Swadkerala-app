@@ -79,7 +79,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
           itemCount: filteredOrders.length + (hasMore || isLoadingMore ? 1 : 0),
           separatorBuilder: (context, index) {
             if (index < filteredOrders.length - 1) {
-              return const SizedBox(height: 12);
+              return SizedBox(height: ResponsiveUtils.rp(12));
             }
             return const SizedBox.shrink();
           },
@@ -163,7 +163,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                   CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: ResponsiveUtils.rp(12)),
                   Text(
                     'Loading more orders...',
                     style: TextStyle(
@@ -230,7 +230,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                                 color: AppColors.textPrimary,
                               ),
                             ),
-                            SizedBox(width: 8),
+                            SizedBox(width: ResponsiveUtils.rp(8)),
                             // Status badge
                             Container(
                               padding: EdgeInsets.symmetric(
@@ -252,7 +252,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: ResponsiveUtils.rp(4)),
                         Text(
                           _formatDate(order.orderPlacedAt ?? DateTime.now()),
                           style: TextStyle(
@@ -266,13 +266,13 @@ class _OrdersComponentState extends State<OrdersComponent> {
                 ],
               ),
               
-              SizedBox(height: 12),
+              SizedBox(height: ResponsiveUtils.rp(12)),
               
               // Products Preview - Compact
               if (order.lines != null && order.lines.isNotEmpty) ...[
                 _buildProductPreview(order),
                 if (order.totalQuantity > 1) ...[
-                  SizedBox(height: 4),
+                  SizedBox(height: ResponsiveUtils.rp(4)),
                   Text(
                     '+${order.totalQuantity - 1} more item${order.totalQuantity > 2 ? 's' : ''}',
                     style: TextStyle(
@@ -281,7 +281,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                     ),
                   ),
                 ],
-                SizedBox(height: 12),
+                SizedBox(height: ResponsiveUtils.rp(12)),
               ],
 
               // Order Footer - Compact
@@ -299,7 +299,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      SizedBox(height: ResponsiveUtils.rp(2)),
                       Text(
                         PriceFormatter.formatPrice(order.totalWithTax.round()),
                         style: TextStyle(
@@ -341,7 +341,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                         child: Text(
                           'View Details',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: ResponsiveUtils.sp(13),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -398,7 +398,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                   ),
           ),
         ),
-        SizedBox(width: 10),
+        SizedBox(width: ResponsiveUtils.rp(10)),
         // Product Name
         Expanded(
           child: Text(
@@ -458,36 +458,36 @@ class _OrdersComponentState extends State<OrdersComponent> {
                 ),
                 child: Icon(
                   Icons.shopping_bag_outlined,
-                  size: 64,
+                  size: ResponsiveUtils.rp(64),
                   color: AppColors.iconLight,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveUtils.rp(24)),
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: ResponsiveUtils.sp(20),
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: ResponsiveUtils.rp(8)),
               Text(
                 message,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.sp(14),
                   color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
               if (currentFilter != OrderFilter.all) ...[
-                const SizedBox(height: 32),
+                SizedBox(height: ResponsiveUtils.rp(32)),
                 ElevatedButton.icon(
                   onPressed: () {
                     // Navigate to orders page with all filter, replacing current page
                     Get.offNamed('/orders', arguments: OrderFilter.all);
                   },
-                  icon: const Icon(Icons.list, size: 20),
+                  icon: Icon(Icons.list, size: ResponsiveUtils.rp(20)),
                   label: const Text(AppStrings.viewAllOrders),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,
@@ -501,10 +501,10 @@ class _OrdersComponentState extends State<OrdersComponent> {
                   ),
                 ),
               ] else ...[
-                const SizedBox(height: 32),
+                SizedBox(height: ResponsiveUtils.rp(32)),
                 ElevatedButton.icon(
                   onPressed: () => Get.toNamed('/home'),
-                  icon: const Icon(Icons.shopping_cart, size: 20),
+                  icon: Icon(Icons.shopping_cart, size: ResponsiveUtils.rp(20)),
                   label: const Text(AppStrings.startShopping),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,

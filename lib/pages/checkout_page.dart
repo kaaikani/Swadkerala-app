@@ -398,26 +398,26 @@ debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====
             instructions = customFields.otherInstructions;
           }
           
-          if (instructions != null && instructions.isNotEmpty && mounted) {
-            _otherInstructionsController.text = instructions;
-            
-            // Check if it matches a default instruction
-            if (_defaultInstructions.contains(instructions)) {
-              setState(() {
-                _selectedDefaultInstruction = instructions;
-                _showInstructionsOptions = true;
-                _showOtherTextField = false;
-              });
-            } else {
-              // It's a custom instruction
-              setState(() {
-                _showInstructionsOptions = true;
-                _showOtherTextField = true;
-                _selectedDefaultInstruction = null;
-              });
-            }
-            
-            debugPrint('[CheckoutPage] Loaded existing instructions: $instructions');
+        if (instructions != null && instructions.isNotEmpty && mounted) {
+          _otherInstructionsController.text = instructions;
+          
+          // Check if it matches a default instruction
+          if (_defaultInstructions.contains(instructions)) {
+            setState(() {
+              _selectedDefaultInstruction = instructions;
+              _showInstructionsOptions = true;
+              _showOtherTextField = false;
+            });
+          } else {
+            // It's a custom instruction
+            setState(() {
+              _showInstructionsOptions = true;
+              _showOtherTextField = true;
+              _selectedDefaultInstruction = null;
+            });
+          }
+          
+debugPrint('[CheckoutPage] Loaded existing instructions: $instructions');
           } else {
             debugPrint('[CheckoutPage] No instructions found in order customFields');
           }
@@ -426,7 +426,7 @@ debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====
         }
       }
     } catch (e) {
-      debugPrint('[CheckoutPage] Error loading existing instructions: $e');
+debugPrint('[CheckoutPage] Error loading existing instructions: $e');
     }
   }
 
@@ -481,22 +481,22 @@ debugPrint('[CheckoutPage] Error loading existing coupon codes: $e');
             final customFields = order.customFields!;
             loyaltyPointsUsed = customFields.loyaltyPointsUsed;
           }
+        
+        if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
+debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
           
-          if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-            debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
-            
-            // Sync loyalty points state
-            bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
-            bannerController.loyaltyPointsApplied.value = true;
-            
-            // Update the text field to show applied points
-            if (mounted) {
-              _loyaltyPointsController.text = loyaltyPointsUsed.toString();
-              debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
-            }
-          } else {
-            debugPrint('[CheckoutPage] No loyalty points found in order - resetting state');
-            // Reset if no points are applied (important for new orders)
+          // Sync loyalty points state
+          bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
+          bannerController.loyaltyPointsApplied.value = true;
+          
+          // Update the text field to show applied points
+          if (mounted) {
+            _loyaltyPointsController.text = loyaltyPointsUsed.toString();
+debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
+          }
+        } else {
+debugPrint('[CheckoutPage] No loyalty points found in order - resetting state');
+          // Reset if no points are applied (important for new orders)
             bannerController.resetLoyaltyPoints();
             if (mounted) {
               _loyaltyPointsController.clear();
@@ -517,7 +517,7 @@ debugPrint('[CheckoutPage] Error loading existing coupon codes: $e');
         }
       }
     } catch (e) {
-      debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
+debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
       // On error, reset to be safe
       bannerController.resetLoyaltyPoints();
       if (mounted) {

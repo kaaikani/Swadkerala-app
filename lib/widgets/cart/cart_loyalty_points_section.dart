@@ -172,50 +172,50 @@ class _CartLoyaltyPointsSectionState extends State<CartLoyaltyPointsSection> {
                         ),
                         // Add/Edit Button - Only show when points are NOT applied
                         if (!isApplied) ...[
-                          SizedBox(width: ResponsiveUtils.rp(8)),
-                          Container(
-                            height: ResponsiveUtils.rp(40),
-                            decoration: BoxDecoration(
-                              color: AppColors.button.withValues(alpha: 0.7),
+                        SizedBox(width: ResponsiveUtils.rp(8)),
+                        Container(
+                          height: ResponsiveUtils.rp(40),
+                          decoration: BoxDecoration(
+                            color: AppColors.button.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                _showManualInput.value = true;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  _loyaltyPointsFocusNode.requestFocus();
+                                });
+                              },
                               borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  _showManualInput.value = true;
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                                    _loyaltyPointsFocusNode.requestFocus();
-                                  });
-                                },
-                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
+                                child: Center(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
                                           Icons.add,
-                                          color: Colors.white,
-                                          size: ResponsiveUtils.rp(16),
-                                        ),
-                                        SizedBox(width: ResponsiveUtils.rp(4)),
-                                        Text(
+                                        color: Colors.white,
+                                        size: ResponsiveUtils.rp(16),
+                                      ),
+                                      SizedBox(width: ResponsiveUtils.rp(4)),
+                                      Text(
                                           'Add',
-                                          style: TextStyle(
-                                            fontSize: ResponsiveUtils.sp(12),
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
+                                        style: TextStyle(
+                                          fontSize: ResponsiveUtils.sp(12),
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
                           ),
+                        ),
                         ],
                       ],
                     ),

@@ -110,7 +110,7 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
                 padding: ResponsiveSpacing.padding(horizontal: 16, vertical: 8),
                 child: ResponsiveText(
                   widget.title,
-                  fontSize: 16,
+                  fontSize: ResponsiveUtils.sp(16),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -191,7 +191,7 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
                             collection.name.isNotEmpty
                                 ? collection.name
                                 : 'Collection',
-                            fontSize: 12,
+                            fontSize: ResponsiveUtils.sp(12),
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                             maxLines: 2,

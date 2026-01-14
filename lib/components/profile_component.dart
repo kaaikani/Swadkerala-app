@@ -5,6 +5,7 @@ import '../widgets/button.dart';
 import '../widgets/shimmers.dart';
 import '../widgets/snackbar.dart';
 import '../theme/colors.dart';
+import '../utils/responsive.dart';
 
 class ProfileComponent extends StatelessWidget {
   final CustomerController customerController;
@@ -17,15 +18,15 @@ class ProfileComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            blurRadius: ResponsiveUtils.rp(20),
+            offset: Offset(0, ResponsiveUtils.rp(10)),
           ),
         ],
       ),
@@ -34,19 +35,19 @@ class ProfileComponent extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.person_outline, color: AppColors.primary, size: 24),
-              SizedBox(width: 12),
+              Icon(Icons.person_outline, color: AppColors.primary, size: ResponsiveUtils.rp(24)),
+              SizedBox(width: ResponsiveUtils.rp(12)),
               Text(
                 'Profile Information',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: ResponsiveUtils.sp(20),
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: ResponsiveUtils.rp(20)),
           _buildEditProfileForm(),
         ],
       ),
@@ -74,14 +75,14 @@ class ProfileComponent extends StatelessWidget {
               enabled: customerController.isEditingProfile.value,
               icon: Icons.person_outline,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: ResponsiveUtils.rp(16)),
             _buildModernTextField(
               controller: customerController.lastNameController,
               hint: 'Last Name',
               enabled: customerController.isEditingProfile.value,
               icon: Icons.person_outline,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: ResponsiveUtils.rp(24)),
 
             // Action Buttons
             Row(
@@ -109,7 +110,7 @@ class ProfileComponent extends StatelessWidget {
                   ),
                 ),
                 if (customerController.isEditingProfile.value) ...[
-                  const SizedBox(width: 12),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
                   Expanded(
                     child: AppButton(
                       text: 'Cancel',
@@ -136,7 +137,7 @@ class ProfileComponent extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: enabled ? Colors.grey[50] : Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
         border: Border.all(
           color: enabled
               ? AppColors.primary.withValues(alpha: 0.3)
@@ -149,15 +150,15 @@ class ProfileComponent extends StatelessWidget {
         enabled: enabled,
         style: TextStyle(
           color: enabled ? Colors.black87 : Colors.grey[600],
-          fontSize: 16,
+          fontSize: ResponsiveUtils.sp(16),
         ),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(color: Colors.grey[500]),
-          prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
+          prefixIcon: Icon(icon, color: AppColors.primary, size: ResponsiveUtils.rp(20)),
           border: InputBorder.none,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16), vertical: ResponsiveUtils.rp(16)),
         ),
       ),
     );

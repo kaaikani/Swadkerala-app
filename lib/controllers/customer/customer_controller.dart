@@ -8,6 +8,7 @@ import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../../services/postal_code_service.dart';
+import '../../services/channel_service.dart';
 import '../../utils/app_strings.dart';
 import '../../widgets/error_dialog.dart';
 import '../../widgets/loading_dialog.dart';
@@ -47,6 +48,56 @@ class CustomerController extends BaseController {
     // Initialize with current customer data if available
     if (activeCustomer.value != null) {
       _initializeProfileFields();
+    }
+    // On app restart, switch to channel based on saved postal code
+    _initializeChannelFromSavedPostalCode();
+  }
+
+  /// Initialize channel from saved postal code on app restart
+  /// This ensures the app always uses the correct brand city channel for the saved postal code
+  Future<void> _initializeChannelFromSavedPostalCode() async {
+    try {
+      // Only run if user is authenticated (has auth token)
+      final authToken = GraphqlService.authToken;
+      if (authToken.isEmpty) {
+        debugPrint('[Customer] User not authenticated, skipping channel initialization from postal code');
+        return;
+      }
+      
+      final storedPostalCode = ChannelService.getPostalCode();
+      
+      debugPrint('[Customer] ========== INITIALIZING CHANNEL FROM SAVED POSTAL CODE ==========');
+      debugPrint('[Customer] Stored postal code: ${storedPostalCode ?? "NOT FOUND"}');
+      
+      // If postal code exists, always switch to the channel for that postal code
+      // This ensures the channel is always correct for the saved postal code on app restart
+      if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {
+        final postalCode = storedPostalCode.toString();
+        
+        // Get city from channel service if available (from previous channel switch)
+        final storedCity = ChannelService.getChannelName(); // Channel name might contain city info
+        
+        debugPrint('[Customer] Switching to brand city channel for saved postal code: $postalCode');
+        
+        // Switch channel based on saved postal code (without showing loading dialog)
+        // This ensures the app always uses the correct channel for the saved postal code
+        final success = await switchChannelByPostalCode(
+          postalCode,
+          city: storedCity?.toString(),
+          showLoading: false, // Don't show loading dialog on app startup
+        );
+        
+        if (success) {
+          debugPrint('[Customer] ✅ Successfully switched to brand city channel for postal code: $postalCode');
+        } else {
+          debugPrint('[Customer] ⚠️ Failed to switch channel for postal code: $postalCode');
+        }
+      } else {
+        debugPrint('[Customer] No saved postal code found, skipping channel initialization');
+      }
+    } catch (e) {
+      debugPrint('[Customer] Error initializing channel from saved postal code: $e');
+      // Don't throw error - app should still start even if channel switch fails
     }
   }
 
@@ -1229,16 +1280,14 @@ debugPrint('[Customer] Logout error: $e');
       debugPrint('[Customer] Channel type: ${selectedChannel.type}');
       debugPrint('[Customer] Channel is available: ${selectedChannel.isAvailable}');
 
-      // Save channel token and postal code
-      await _storage.write('channel_code', selectedChannel.code);
-      await _storage.write('channel_token', selectedChannel.token ?? '');
-      await _storage.write('channel_name', selectedChannel.name);
-      await _storage.write('channel_type', selectedChannel.type.toString());
-      await _storage.write('postal_code', postalCode);
-      
-      if (selectedChannel.token != null && selectedChannel.token!.isNotEmpty) {
-        await GraphqlService.setToken(key: 'channel', token: selectedChannel.token!);
-      }
+      // Save channel information using ChannelService
+      await ChannelService.setChannelInfo(
+        token: selectedChannel.token ?? '',
+        code: selectedChannel.code,
+        name: selectedChannel.name,
+        type: selectedChannel.type.toString(),
+        postalCode: postalCode,
+      );
 
       debugPrint('[Customer] Channel switched successfully');
       debugPrint('[Customer] Saved postal code: $postalCode');
@@ -1298,7 +1347,7 @@ debugPrint('[Customer] Logout error: $e');
       
       // Check channel token before making query
       final channelToken = GraphqlService.channelToken;
-      final storedChannelToken = _storage.read('channel_token');
+      final storedChannelToken = ChannelService.getChannelToken();
       debugPrint('[Customer] Current channel token in GraphQL service: $channelToken');
       debugPrint('[Customer] Stored channel token: ${storedChannelToken ?? "null"}');
       
@@ -1442,9 +1491,9 @@ debugPrint('[Customer] Logout error: $e');
       
       // Check channel token before making query
       final channelToken = GraphqlService.channelToken;
-      final storedChannelToken = _storage.read('channel_token');
-      final channelCode = _storage.read('channel_code');
-      final channelType = _storage.read('channel_type')?.toString() ?? '';
+      final storedChannelToken = ChannelService.getChannelToken();
+      final channelCode = ChannelService.getChannelCode();
+      final channelType = ChannelService.getChannelType() ?? '';
       
       debugPrint('[Customer] ──── CHANNEL TOKEN CHECK ────');
       debugPrint('[Customer] Current channel token from GraphQLService: ${channelToken.isNotEmpty ? "$channelToken (length: ${channelToken.length})" : "NOT SET"}');
@@ -1599,8 +1648,8 @@ debugPrint('[Customer] Logout error: $e');
       // Additional error context
       debugPrint('[Customer] ──── ERROR CONTEXT ────');
       debugPrint('[Customer] Channel token at error: ${GraphqlService.channelToken.isNotEmpty ? GraphqlService.channelToken : "NOT SET"}');
-      debugPrint('[Customer] Storage channel token: ${_storage.read('channel_token') ?? "NOT SET"}');
-      debugPrint('[Customer] Storage channel code: ${_storage.read('channel_code') ?? "NOT SET"}');
+      debugPrint('[Customer] Storage channel token: ${ChannelService.getChannelToken() ?? "NOT SET"}');
+      debugPrint('[Customer] Storage channel code: ${ChannelService.getChannelCode() ?? "NOT SET"}');
       
       // Check if it's a GraphQL specific error
       if (e.toString().contains('GraphQL') || e.toString().contains('graphql')) {

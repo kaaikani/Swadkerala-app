@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../services/graphql_client.dart';
+import '../../services/channel_service.dart';
 import '../../theme/colors.dart';
 import '../../widgets/snackbar.dart';
 import '../../widgets/error_dialog.dart';
@@ -74,7 +75,7 @@ class AuthController extends BaseController {
     try {
       final box = GetStorage();
       final authToken = box.read('auth_token') ?? '';
-      final channelToken = box.read('channel_token') ?? '';
+      final channelToken = ChannelService.getChannelToken() ?? '';
 
       // Check if both tokens exist
       if (authToken.isNotEmpty && channelToken.isNotEmpty) {
@@ -187,9 +188,10 @@ class AuthController extends BaseController {
 
       // Use the first available channel
       final channel = channels.first;
-      await _storage.write('channel_code', channel.code);
-      await _storage.write('channel_token', channel.token);
-      await GraphqlService.setToken(key: 'channel', token: channel.token);
+      await ChannelService.setChannelInfo(
+        token: channel.token,
+        code: channel.code,
+      );
 
       debugPrint('[AuthController] Channel saved - Code: ${channel.code}, Token: ${channel.token}');
       // Use GetX snackbar to avoid context issues

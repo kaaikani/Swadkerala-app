@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/customer/customer_controller.dart';
 import '../../services/postal_code_service.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
+import '../../utils/app_config.dart';
 import '../../widgets/snackbar.dart';
 
 class HomePostalCodeSheet extends StatefulWidget {
@@ -114,24 +116,58 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                       setState(() {
                         isGettingLocation = true;
                         searchResults = [];
+                        isServiceUnavailable = false;
                       });
                       
                       final postalCodeService = PostalCodeService();
                       final locationData = await postalCodeService.getPostalCodeFromLocation();
                       
-                      setState(() {
-                        isGettingLocation = false;
-                      });
-                      
                       if (locationData != null) {
-                        // Just show the postal code data from location
-                        // Service availability will be checked only when user taps on it
+                        // Check service availability without switching channel
+                        final serviceAvailable = await widget.customerController.hasValidPostalCode(
+                          locationData.pincode,
+                        );
+                        
+                        if (!mounted) return;
+                        
                         setState(() {
+                          isGettingLocation = false;
                           pincodeController.text = locationData.pincode;
-                          searchResults = [locationData];
-                          isServiceUnavailable = false; // Reset service availability flag
                         });
+                        
+                        // Get Indian postal code data regardless of service availability
+                        final postalCodeResults = await widget.customerController.searchPostalCodes(locationData.pincode);
+                        
+                        if (!mounted) return;
+                        
+                        if (serviceAvailable) {
+                          // Service available - show Indian postal code data for user to select
+                          setState(() {
+                            searchResults = postalCodeResults;
+                            isServiceUnavailable = false;
+                          });
+                        } else {
+                          // Service not available
+                          if (postalCodeResults.isNotEmpty) {
+                            // Indian postal code data exists - show service unavailable message
+                            setState(() {
+                              searchResults = postalCodeResults;
+                              isServiceUnavailable = true;
+                            });
+                          } else {
+                            // No Indian postal code data - show enter valid postal code
+                            setState(() {
+                              searchResults = [];
+                              isServiceUnavailable = false;
+                            });
+                            SnackBarWidget.showError('Service not available for this location. Please enter postal code manually.');
+                          }
+                        }
                       } else {
+                        if (!mounted) return;
+                        setState(() {
+                          isGettingLocation = false;
+                        });
                         SnackBarWidget.showError('Could not get location. Please enter postal code manually.');
                       }
                     },
@@ -166,37 +202,53 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                       borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                     ),
                   ),
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     if (value.length == 6) {
                       // Close keyboard when 6 digits are entered
                       FocusScope.of(context).unfocus();
                       
-                      // Auto-search when 6 digits are entered - just show postal code data
-                      // Don't check service availability yet
+                      // First check service availability when 6 digits are entered (without switching channel)
                       setState(() {
                         isSearching = true;
                         searchResults = [];
-                        isServiceUnavailable = false; // Reset service availability flag
+                        isServiceUnavailable = false;
                       });
-                      widget.customerController.searchPostalCodes(value).then((results) {
-                        if (mounted) {
-                          // Just show postal code results from India postal code data
-                          // Service availability will be checked only when user taps on a result
+                      
+                      // Check service availability without switching channel
+                      final serviceAvailable = await widget.customerController.hasValidPostalCode(value);
+                      
+                      if (!mounted) return;
+                      
+                      // Get Indian postal code data regardless of service availability
+                      final postalCodeResults = await widget.customerController.searchPostalCodes(value);
+                      
+                      if (!mounted) return;
+                      
+                      if (serviceAvailable) {
+                        // Service available - show Indian postal code data for user to select
+                        setState(() {
+                          searchResults = postalCodeResults;
+                          isSearching = false;
+                          isServiceUnavailable = false;
+                        });
+                      } else {
+                        // Service not available
+                        if (postalCodeResults.isNotEmpty) {
+                          // Indian postal code data exists - show service unavailable message
                           setState(() {
-                            searchResults = results;
+                            searchResults = postalCodeResults; // Store for reference but don't show
                             isSearching = false;
-                            isServiceUnavailable = false;
+                            isServiceUnavailable = true;
                           });
-                        }
-                      }).catchError((error) {
-                        if (mounted) {
+                        } else {
+                          // No Indian postal code data - show enter valid postal code
                           setState(() {
                             searchResults = [];
                             isSearching = false;
                             isServiceUnavailable = false;
                           });
                         }
-                      });
+                      }
                     } else {
                       setState(() {
                         searchResults = [];
@@ -231,10 +283,10 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                       ),
                     ),
                   )
-                : isServiceUnavailable && searchResults.isNotEmpty
+                : isServiceUnavailable
                     ? Column(
                         children: [
-                          // Error message banner
+                          // Error message banner at top
                           Container(
                             margin: EdgeInsets.all(ResponsiveUtils.rp(16)),
                             padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
@@ -268,7 +320,7 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                                       ),
                                       SizedBox(height: ResponsiveUtils.rp(4)),
                                       Text(
-                                        'Service is not available for this location. Please try another postal code.',
+                                        'Not available in this postal code. Contact customer care',
                                         style: TextStyle(
                                           color: AppColors.textSecondary,
                                           fontSize: ResponsiveUtils.sp(14),
@@ -277,91 +329,34 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                                     ],
                                   ),
                                 ),
-                                IconButton(
-                                  icon: Icon(Icons.close, size: ResponsiveUtils.rp(20)),
-                                  color: AppColors.textSecondary,
-                                  onPressed: () {
-                                    setState(() {
-                                      isServiceUnavailable = false;
-                                    });
-                                  },
+                                SizedBox(width: ResponsiveUtils.rp(8)),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.success,
+                                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () => _launchPhone(AppConfig.phoneNumber),
+                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                        child: Icon(
+                                          Icons.phone,
+                                          color: Colors.white,
+                                          size: ResponsiveUtils.rp(20),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          // Show postal codes list so user can try another
+                          // Empty space below
                           Expanded(
-                            child: ListView.builder(
-                              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                              itemCount: searchResults.length,
-                              itemBuilder: (context, index) {
-                                final result = searchResults[index];
-                                return ListTile(
-                                  leading: Icon(Icons.location_city, color: AppColors.button),
-                                  title: Text(
-                                    '${result.city}, ${result.district}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    '${result.state} - ${result.pincode}',
-                                    style: TextStyle(color: AppColors.textSecondary),
-                                  ),
-                                  onTap: () async {
-                                    // Show loading indicator in the sheet
-                                    if (!mounted) return;
-                                    
-                                    // Save navigator reference BEFORE async operation
-                                    final navigator = Navigator.of(context, rootNavigator: false);
-                                    
-                                    setState(() {
-                                      isSearching = true;
-                                      isServiceUnavailable = false;
-                                    });
-                                    
-                                    // Now check service availability when user taps on a postal code
-                                    // Don't show loading dialog - show message in sheet instead
-                                    final success = await widget.customerController.switchChannelByPostalCode(
-                                      result.pincode,
-                                      city: result.city,
-                                      showLoading: false, // Don't show dialog, show in sheet instead
-                                    );
-                                    
-                                    if (!mounted) return;
-                                    
-                                    setState(() {
-                                      isSearching = false;
-                                    });
-                                  
-                                    if (success) {
-                                      // Service available - close sheet and trigger callback
-                                      // Use a post-frame callback to ensure context is still valid
-                                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                                        if (mounted) {
-                                          try {
-                                            if (navigator.canPop()) {
-                                              navigator.pop();
-                                            }
-                                            widget.onPostalCodeSelected();
-                                          } catch (e) {
-                                            // Navigator already popped or context invalid
-                                            debugPrint('[HomePostalCodeSheet] Error closing sheet: $e');
-                                          }
-                                        }
-                                      });
-                                    } else {
-                                      // Service not available - show error message in the sheet
-                                      // Keep the list visible so user can try another postal code
-                                      setState(() {
-                                        isServiceUnavailable = true;
-                                      });
-                                    }
-                                  },
-                                );
-                              },
-                            ),
+                            child: SizedBox.shrink(),
                           ),
                         ],
                       )
@@ -455,6 +450,20 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
       ),
       ),
     );
+  }
+
+  /// Launch phone call
+  Future<void> _launchPhone(String phoneNumber) async {
+    try {
+      final url = Uri.parse('tel:$phoneNumber');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      } else {
+        SnackBarWidget.showError('Could not make phone call');
+      }
+    } catch (e) {
+      SnackBarWidget.showError('Error opening phone');
+    }
   }
 }
 

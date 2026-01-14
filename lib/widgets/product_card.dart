@@ -114,12 +114,7 @@ class ProductCard extends StatelessWidget {
                                   right: 0,
                                   child: Column(
                                     children: [
-                                      Icon(
-                                        Icons.close_rounded,
-                                        size: ResponsiveUtils.rp(32),
-                                        color: Colors.red,
-                                      ),
-                                      SizedBox(height: ResponsiveUtils.rp(4)),
+
                                       Container(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: ResponsiveUtils.rp(8),

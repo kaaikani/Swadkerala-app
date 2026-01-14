@@ -31,6 +31,7 @@ import '../services/graphql_client.dart';
 import '../controllers/theme_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../widgets/notification_permission_dialog.dart';
+import '../services/channel_service.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -185,12 +186,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: Row(
                   children: [
                     Icon(Icons.settings_rounded, color: AppColors.button),
-                    SizedBox(width: 12),
+                    SizedBox(width: ResponsiveUtils.rp(12)),
                     Expanded(
                       child: Text(
                         'Enable Notifications',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: ResponsiveUtils.sp(18),
                           fontWeight: FontWeight.w700,
                           color: AppColors.textPrimary,
                         ),
@@ -201,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 content: Text(
                   'Notification permission is disabled. Please enable it in your device settings to receive order updates and offers.',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: ResponsiveUtils.sp(15),
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -239,12 +240,12 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Update reactive channel display variables
   /// [skipRefreshTrigger] - if true, don't trigger refresh even if values changed (used during refresh operations)
   void _updateChannelDisplay({bool skipRefreshTrigger = false}) {
-    final newChannelName = box.read('channel_name') ?? box.read('channel_code') ?? 'Select Location';
+    final newChannelName = ChannelService.getChannelName() ?? ChannelService.getChannelCode() ?? 'Select Location';
     // Ensure postal code is always converted to string for proper comparison
-    final postalCodeValue = box.read('postal_code');
+    final postalCodeValue = ChannelService.getPostalCode();
     final newPostalCode = postalCodeValue != null ? postalCodeValue.toString() : '';
-    final newChannelType = box.read('channel_type')?.toString() ?? '';
-    final newChannelToken = box.read('channel_token')?.toString() ?? GraphqlService.channelToken;
+    final newChannelType = ChannelService.getChannelType() ?? '';
+    final newChannelToken = ChannelService.getChannelToken()?.toString() ?? GraphqlService.channelToken;
     
     // Track channel token changes to force UI refresh
     bool channelTokenChanged = false;
@@ -394,8 +395,8 @@ class _MyHomePageState extends State<MyHomePage> {
       
       // STEP 2: Get postal code from shipping address and set channel FIRST
       // Skip this step if postal code and channel are already set to prevent unnecessary channel fetch
-      final storedPostalCode = box.read('postal_code');
-      final storedChannelToken = box.read('channel_token');
+      final storedPostalCode = ChannelService.getPostalCode();
+      final storedChannelToken = ChannelService.getChannelToken();
       bool channelChanged = false;
       
       if (storedPostalCode == null || storedPostalCode.toString().isEmpty || 
@@ -925,11 +926,11 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint('[HomePage] ========== ENSURING POSTAL CODE AND CHANNEL SET ==========');
       
       // Store current channel token to detect changes
-      final currentChannelToken = box.read('channel_token');
+      final currentChannelToken = ChannelService.getChannelToken();
       debugPrint('[HomePage] Current channel token: ${currentChannelToken ?? "NOT FOUND"}');
       
       // Check if postal code exists in local storage
-      final storedPostalCode = box.read('postal_code');
+      final storedPostalCode = ChannelService.getPostalCode();
       debugPrint('[HomePage] Postal code in local storage: ${storedPostalCode ?? "NOT FOUND"}');
       
       // If authenticated, try to get postal code from shipping address first
@@ -938,7 +939,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await customerController.checkAndSetPostalCodeFromShippingAddress();
         
         // Re-check postal code after trying to get from shipping address
-        final updatedPostalCode = box.read('postal_code');
+        final updatedPostalCode = ChannelService.getPostalCode();
         if (updatedPostalCode != null && updatedPostalCode.toString().isNotEmpty) {
           debugPrint('[HomePage] Postal code set from shipping address: $updatedPostalCode');
           
@@ -965,7 +966,7 @@ class _MyHomePageState extends State<MyHomePage> {
       
       // If postal code is in local storage, verify channel is set
       if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {
-        final channelToken = box.read('channel_token');
+        final channelToken = ChannelService.getChannelToken();
         if (channelToken != null && channelToken.toString().isNotEmpty) {
           debugPrint('[HomePage] Postal code and channel already set');
           return false;
@@ -1023,7 +1024,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return; // Prevent multiple dialogs
     }
     
-    final storedPostalCode = box.read('postal_code');
+    final storedPostalCode = ChannelService.getPostalCode();
     debugPrint('[HomePage] Checking postal code in local storage: ${storedPostalCode ?? "NOT FOUND"}');
     
     // If no postal code is saved, show the postal code bottom sheet
@@ -1272,7 +1273,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       bannerController: bannerController,
                       channelName: _channelName.value.isNotEmpty 
                           ? _channelName.value 
-                          : (box.read('channel_name')?.toString() ?? box.read('channel_code')?.toString() ?? 'Kaaikani'),
+                          : (ChannelService.getChannelName()?.toString() ?? ChannelService.getChannelCode()?.toString() ?? 'Kaaikani'),
                       customerController: customerController,
                     ),
 
@@ -1298,7 +1299,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isBrandChannel() {
     try {
       final channelType = _channelType.value.isEmpty 
-          ? (box.read('channel_type')?.toString() ?? '')
+          ? (ChannelService.getChannelType() ?? '')
           : _channelType.value;
       if (channelType.isEmpty) return false;
       // Check if it's BRAND type (could be "Enum$ChannelType.BRAND" or just "BRAND")
@@ -1437,7 +1438,7 @@ class _MyHomePageState extends State<MyHomePage> {
     debugPrint('[HomePage] ========== SHOWING POSTAL CODE BOTTOM SHEET ==========');
     debugPrint('[HomePage] Is mandatory: $isMandatory');
     
-    final storedPostalCode = box.read('postal_code');
+    final storedPostalCode = ChannelService.getPostalCode();
     final bool hasValidPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty && !isMandatory;
 
     try {
@@ -1458,7 +1459,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Future.delayed(Duration(milliseconds: 150), () {
                 if (mounted) {
                   // Read latest postal code from storage and update reactive variable immediately
-                  final latestPostalCode = box.read('postal_code');
+                  final latestPostalCode = ChannelService.getPostalCode();
                   if (latestPostalCode != null) {
                     final postalCodeStr = latestPostalCode.toString();
                     if (_postalCode.value != postalCodeStr) {
@@ -1502,7 +1503,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Show switch store bottom sheet
   void _showSwitchStoreBottomSheet() {
-    final storedPostalCode = box.read('postal_code');
+    final storedPostalCode = ChannelService.getPostalCode();
     if (storedPostalCode == null || storedPostalCode.toString().isEmpty) {
       showErrorSnackbar('Please select a postal code first');
       return;

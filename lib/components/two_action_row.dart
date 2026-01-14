@@ -100,13 +100,13 @@ class _ActionCard extends StatelessWidget {
                 backgroundColor: Colors.white.withValues(alpha: 0.25),
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
                 boxShadow: [],
-                child: ResponsiveIcon(icon, color: Colors.white, size: 20),
+                child: ResponsiveIcon(icon, color: Colors.white, size: ResponsiveUtils.rp(20)),
               ),
               ResponsiveSpacing.horizontal(10),
               Flexible(
                 child: ResponsiveText(
                   label,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.sp(15),
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
                   maxLines: 1,

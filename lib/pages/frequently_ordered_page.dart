@@ -69,6 +69,7 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBarWidget(
         title: 'Frequently Ordered',
         actions: [
@@ -80,7 +81,10 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
       ),
       body: Obx(() {
         if (utilityController.isLoadingRx.value) {
-          return _buildShimmerGrid();
+          return Container(
+            color: Colors.white,
+            child: _buildShimmerGrid(),
+          );
         }
 
         // Filter out disabled products
@@ -89,15 +93,18 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
             .toList();
 
         if (enabledProducts.isEmpty) {
-          return EmptyState(
-            icon: Icons.shopping_bag_outlined,
-            title: 'No Frequently Ordered Items',
-            subtitle: 'Your frequently ordered products will appear here',
-            action: AppButton(
-              text: 'Browse Products',
-              onPressed: () async {
-                Get.back();
-              },
+          return Container(
+            color: Colors.white,
+            child: EmptyState(
+              icon: Icons.shopping_bag_outlined,
+              title: 'No Frequently Ordered Items',
+              subtitle: 'Your frequently ordered products will appear here',
+              action: AppButton(
+                text: 'Browse Products',
+                onPressed: () async {
+                  Get.back();
+                },
+              ),
             ),
           );
         }
@@ -127,12 +134,17 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
               final name = product.name;
               final imageUrl = product.featuredAsset?.preview;
               final productId = product.id;
-              
-              // Get first variant directly (no dropdown)
-              final variant = product.variants.isNotEmpty
-                  ? product.variants.first
-                  : null;
-              
+
+              // Get all variants (enabled check not available in this GraphQL query)
+              final variantsForProduct = product.variants;
+
+              if (variantsForProduct.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              // Get first variant as default (can be improved with variant selection state)
+              final variant = variantsForProduct.first;
+
               final isFavorite = bannerController.isFavorite(productId);
 
               return _buildProductTile(
@@ -141,6 +153,7 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
                 productId: productId,
                 product: product,
                 variant: variant,
+                variantsForProduct: variantsForProduct,
                 isFavorite: isFavorite,
               );
             },
@@ -166,24 +179,108 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
         ),
         itemCount: 8,
         itemBuilder: (context, index) {
-          return _buildSkeletonTile();
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.5),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadowLight.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Image shimmer (proportional)
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.shimmerBase,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(ResponsiveUtils.rp(10)),
+                      ),
+                    ),
+                  ),
+                ),
+                // Content shimmer
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(8),
+                      vertical: ResponsiveUtils.rp(6),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Product name shimmer (2 lines)
+                        Container(
+                          height: ResponsiveUtils.rp(14),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: AppColors.shimmerBase,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(3)),
+                        Container(
+                          height: ResponsiveUtils.rp(12),
+                          width: ResponsiveUtils.rp(80),
+                          decoration: BoxDecoration(
+                            color: AppColors.shimmerBase,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(4)),
+                        // Price shimmer
+                        Container(
+                          height: ResponsiveUtils.rp(14),
+                          width: ResponsiveUtils.rp(50),
+                          decoration: BoxDecoration(
+                            color: AppColors.shimmerBase,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
   }
 
   /// Get variant label from selected variant (option name)
-  String _getVariantLabel(
-      Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants? variant) {
-    if (variant == null) return 'Default';
+  String _getVariantLabelFromSelectedVariant(
+      Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants selectedVariant,
+      String? groupName) {
+    // If there's an option group, get the option name from that group
+    if (groupName != null && selectedVariant.options.isNotEmpty) {
+      for (final opt in selectedVariant.options) {
+        if (opt.group.name == groupName) {
+          return opt.name; // Return the option name
+        }
+      }
+    }
     
     // If variant has options, return the first option name
-    if (variant.options.isNotEmpty) {
-      return variant.options.first.name;
+    if (selectedVariant.options.isNotEmpty) {
+      return selectedVariant.options.first.name;
     }
     
     // Fallback to variant name if no options
-    return variant.name;
+    return selectedVariant.name;
   }
 
   Widget _buildProductTile({
@@ -191,14 +288,44 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
     required String? imageUrl,
     required String productId,
     required Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product product,
-    required Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants? variant,
+    required Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants variant,
+    required List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants> variantsForProduct,
     required bool isFavorite,
   }) {
-    final priceText = variant != null
-        ? PriceFormatter.formatPrice(variant.priceWithTax.round())
-        : 'Rs --';
-    
-    final variantId = variant?.id ?? '';
+    final priceMinorUnits = variant.priceWithTax.round();
+    final priceText = PriceFormatter.formatPrice(priceMinorUnits);
+
+    // Get group name from first variant's options (if available)
+    String? groupName;
+    if (variant.options.isNotEmpty) {
+      groupName = variant.options.first.group.name;
+    }
+
+    // Get variant label
+    final variantLabel = _getVariantLabelFromSelectedVariant(variant, groupName);
+
+    // No shadow price or discount available in this GraphQL query
+    final discountPercent = null;
+    final shadowPriceText = null;
+
+    // Check if product has multiple variants
+    final hasMultipleVariants = variantsForProduct.length > 1;
+    final showVariantSelector = groupName != null && hasMultipleVariants;
+
+    // Stock level not available in this GraphQL query - default to false
+    final isOutOfStock = false;
+
+    // Build variant selector if needed
+    Widget? variantSelectorWidget;
+    if (showVariantSelector) {
+      // groupName is guaranteed to be non-null when showVariantSelector is true
+      // ignore: unnecessary_null_checks
+      variantSelectorWidget = _buildVariantSelector(
+        productId: productId,
+        variantsForProduct: variantsForProduct,
+        groupName: groupName!,
+      );
+    }
 
     return ProductCard(
       name: name,
@@ -212,87 +339,134 @@ debugPrint('[FrequentlyOrdered] Fetching frequently ordered products...');
       onDoubleTap: () => bannerController.toggleFavorite(productId: productId),
       isFavorite: isFavorite,
       onFavoriteToggle: () => bannerController.toggleFavorite(productId: productId),
-      discountPercent: null,
-      variantSelector: null,
-      showVariantSelector: false,
-      variantLabel: _getVariantLabel(variant),
+      discountPercent: discountPercent,
+      variantSelector: variantSelectorWidget,
+      showVariantSelector: showVariantSelector,
+      variantLabel: variantLabel,
       priceText: priceText,
-      shadowPriceText: null,
-      onAddToCart: () => _handleAddToCart(name, variantId),
+      shadowPriceText: shadowPriceText,
+      isOutOfStock: isOutOfStock,
+      groupName: groupName,
+      hasMultipleVariants: hasMultipleVariants,
+      onAddToCart: () => _handleAddToCart(name, variant.id),
     );
   }
 
-  Widget _buildSkeletonTile() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = AppColors.border.withValues(alpha: isDark ? 0.45 : 0.2);
+  /// Dropdown selector for product option groups (similar to collection products page)
+  Widget _buildVariantSelector({
+    required String productId,
+    required List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants> variantsForProduct,
+    required String groupName,
+  }) {
+    if (variantsForProduct.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final selectedVariant = variantsForProduct.first;
+
+    // Get unique options from all variants
+    final uniqueOptions = <String>{};
+    for (final variant in variantsForProduct) {
+      for (final opt in variant.options) {
+        if (opt.group.name == groupName) {
+          uniqueOptions.add(opt.name);
+        }
+      }
+    }
+
+    if (uniqueOptions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Get first variant as default
+    String? currentOptionValue;
+    for (final opt in selectedVariant.options) {
+      if (opt.group.name == groupName) {
+        currentOptionValue = opt.name;
+        break;
+      }
+    }
 
     return Container(
+      height: ResponsiveUtils.rp(32),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-        border: Border.all(color: borderColor),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppColors.backgroundLight,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.6),
+          width: 1,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            flex: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.shimmerBase,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(ResponsiveUtils.rp(10)),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: currentOptionValue,
+          isExpanded: true,
+          isDense: true,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: ResponsiveUtils.rp(20),
+            color: AppColors.icon.withValues(alpha: 0.7),
+          ),
+          iconSize: ResponsiveUtils.rp(20),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(12),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+            height: 1.2,
+          ),
+          hint: Text(
+            groupName,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(12),
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary.withValues(alpha: 0.7),
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          items: uniqueOptions.map((optionName) {
+            final isSelected = optionName == currentOptionValue;
+            return DropdownMenuItem<String>(
+              value: optionName,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: ResponsiveUtils.rp(4),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        optionName,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(13),
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: ResponsiveUtils.rp(14),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: AppColors.shimmerBase,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(4)),
-                  Container(
-                    height: ResponsiveUtils.rp(12),
-                    width: ResponsiveUtils.rp(80),
-                    decoration: BoxDecoration(
-                      color: AppColors.shimmerBase,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  Spacer(),
-                  Container(
-                    height: ResponsiveUtils.rp(36),
-                    width: ResponsiveUtils.rp(80),
-                    decoration: BoxDecoration(
-                      color: AppColors.shimmerBase,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+            );
+          }).toList(),
+          dropdownColor: AppColors.card,
+          menuMaxHeight: ResponsiveUtils.rp(200),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+          onChanged: (String? newOptionName) {
+            if (newOptionName == null) return;
+            // Note: Variant selection state management can be added here if needed
+            // For now, this is a UI-only selector
+            setState(() {});
+          },
+        ),
       ),
     );
   }
+
 }
 

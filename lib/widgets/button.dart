@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/colors.dart';
+import '../utils/responsive.dart';
 import 'shimmers.dart';
 import '../theme/sizes.dart';
 
@@ -21,8 +22,8 @@ class AppButton extends StatefulWidget {
     this.icon,
     Color? backgroundColor,
     this.textColor = Colors.white,
-    this.borderRadius = 8,
-    this.padding = const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+    this.borderRadius,
+    this.padding,
     this.elevation = 2,
   })  : backgroundColor = backgroundColor ?? AppColors.primary,
         super(key: key);
@@ -48,10 +49,10 @@ class _AppButtonState extends State<AppButton> {
       style: ElevatedButton.styleFrom(
         backgroundColor: widget.backgroundColor,
         foregroundColor: widget.textColor,
-        padding: widget.padding,
+        padding: widget.padding ?? EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(10), horizontal: ResponsiveUtils.rp(12)),
         elevation: widget.elevation,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius ?? 8),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(widget.borderRadius ?? 8)),
         ),
       ),
       child: _isLoading
@@ -60,11 +61,11 @@ class _AppButtonState extends State<AppButton> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.icon != null)
-                  Icon(widget.icon, size: 16, color: widget.textColor),
-                if (widget.icon != null) const SizedBox(width: 6),
+                  Icon(widget.icon, size: ResponsiveUtils.rp(16), color: widget.textColor),
+                if (widget.icon != null) SizedBox(width: ResponsiveUtils.rp(6)),
                 Text(
                   widget.text,
-                  style: TextStyle(color: widget.textColor, fontSize: 14),
+                  style: TextStyle(color: widget.textColor, fontSize: ResponsiveUtils.sp(14)),
                 ),
               ],
             ),
@@ -133,7 +134,7 @@ debugPrint('[AppTextButton] Error in onPressed: $e');
             ),
         shape: RoundedRectangleBorder(
           borderRadius:
-              BorderRadius.circular(widget.borderRadius ?? AppSizes.cardRadius),
+              BorderRadius.circular(ResponsiveUtils.rp(widget.borderRadius ?? AppSizes.cardRadius)),
         ),
       ),
       child: Text(

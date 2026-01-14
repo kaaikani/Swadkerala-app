@@ -54,14 +54,14 @@ debugPrint('[Main] Starting app update check...');
       // Check if immediate update is needed (based on Play Store only)
       if (updateService.isImmediateUpdateEnabled && updateService.isUpdateAvailable) {
 debugPrint('[Main] Immediate update is enabled - update available on Play Store');
-      } else {
+        } else {
 debugPrint('[Main] No update available on Play Store');
-      }
-    } catch (e) {
+        }
+      } catch (e) {
 debugPrint('[Main] Play Store check failed: $e');
-      if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
+        if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
 debugPrint('[Main] App not installed from Play Store - update check skipped');
-      }
+        }
     }
     
 debugPrint('[Main] App update check completed');
@@ -123,13 +123,13 @@ debugPrint('[AppUpdate] Checking Play Store directly (GraphQL disabled)...');
       await updateService.checkForUpdatesAndDetermineType();
       final updateAvailable = updateService.isUpdateAvailable && updateService.isImmediateUpdateEnabled;
 debugPrint('[AppUpdate] Play Store check result: $updateAvailable');
-      return updateAvailable;
-    } catch (e) {
+        return updateAvailable;
+      } catch (e) {
 debugPrint('[AppUpdate] Play Store check failed: $e');
-      if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
+        if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
 debugPrint('[AppUpdate] App not installed from Play Store');
-      }
-      return false;
+        }
+        return false;
     }
   } catch (e) {
 debugPrint('[AppUpdate] Error during comprehensive update check: $e');
