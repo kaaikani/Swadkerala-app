@@ -53,8 +53,12 @@ class ErrorDialog {
           if (secondButtonText != null && onSecondButtonPressed != null)
             TextButton(
               onPressed: () {
+                // Close dialog first, then execute callback in next frame
                 Get.back();
-                onSecondButtonPressed();
+                // Use Future.microtask to ensure dialog is closed before navigation
+                Future.microtask(() {
+                  onSecondButtonPressed();
+                });
               },
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.button,

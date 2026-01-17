@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
+import '../controllers/cart/Cartcontroller.dart';
 import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
 import '../graphql/Customer.graphql.dart';
@@ -20,6 +21,18 @@ class _AddressesPageState extends State<AddressesPage> {
   bool _showAddForm = false;
   dynamic _editingAddress;
   bool _isUpdatingAddress = false; // Loading state for address updates
+
+  @override
+  void initState() {
+    super.initState();
+    // Refresh customer addresses when page is opened to ensure latest data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final customerController = Get.find<CustomerController>();
+        customerController.getActiveCustomer(skipPostalCodeCheck: true);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,17 +296,9 @@ class _AddressesPageState extends State<AddressesPage> {
                         // Check if the selected address is already the default
                         final isAlreadyDefault = currentDefaultAddress?.id == selectedAddress.id;
                         if (isAlreadyDefault) {
-                          debugPrint('[AddressesPage] ⚠️ Address ID ${selectedAddress.id} is already set as default, skipping update');
                           return;
                         }
                         
-                        debugPrint('═══════════════════════════════════════════════════════════');
-                        debugPrint('[AddressesPage] 📻 Radio button selected - Changing default address');
-                        debugPrint('[AddressesPage] Selected Address ID: ${selectedAddress.id}');
-                        debugPrint('[AddressesPage] Selected Address: ${selectedAddress.fullName ?? "N/A"}');
-                        debugPrint('[AddressesPage] Address Location: ${selectedAddress.city ?? "N/A"}, ${selectedAddress.postalCode ?? "N/A"}');
-                        debugPrint('[AddressesPage] Current Default Address ID: ${currentDefaultAddress?.id ?? "N/A"}');
-                        debugPrint('[AddressesPage] Setting as both Shipping and Billing address...');
                         await _setAsDefaultAndShipping(
                           context, 
                           selectedAddress, 
@@ -454,7 +459,6 @@ class _AddressesPageState extends State<AddressesPage> {
   }) async {
     // Prevent duplicate calls
     if (_isUpdatingAddress) {
-      debugPrint('[AddressesPage] ⚠️ Address update already in progress, ignoring duplicate call');
       return;
     }
     
@@ -462,19 +466,11 @@ class _AddressesPageState extends State<AddressesPage> {
     final isAlreadyDefault = (address.defaultShippingAddress ?? false) && 
                              (address.defaultBillingAddress ?? false);
     if (isAlreadyDefault) {
-      debugPrint('[AddressesPage] ⚠️ Address ID ${address.id} is already set as default shipping and billing, skipping update');
       return;
     }
     
-    debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS START ==========');
-    debugPrint('[AddressesPage] Target Address ID: ${address.id}');
-    debugPrint('[AddressesPage] Target Address: ${address.fullName ?? "N/A"}');
-    debugPrint('[AddressesPage] Target Location: ${address.city ?? "N/A"}, ${address.postalCode ?? "N/A"}');
     if (previousDefaultAddress != null) {
-      debugPrint('[AddressesPage] Previous Default Address ID: ${previousDefaultAddress.id}');
-      debugPrint('[AddressesPage] Previous Default Address: ${previousDefaultAddress.fullName ?? "N/A"}');
     }
-    debugPrint('[AddressesPage] Total Addresses: ${customerController.addresses.length}');
     
     // Show loading indicator
     setState(() {
@@ -509,20 +505,12 @@ class _AddressesPageState extends State<AddressesPage> {
       // This prevents postal code validation errors when the previous address has a postal code
       // that's invalid for the current channel (e.g., address from different city/channel)
       if (previousDefault != null) {
-        debugPrint('[AddressesPage] Previous default address ID: ${previousDefault.id} (${previousDefault.fullName ?? "N/A"})');
-        debugPrint('[AddressesPage]   - Was Shipping: ${previousDefault.defaultShippingAddress ?? false}');
-        debugPrint('[AddressesPage]   - Was Billing: ${previousDefault.defaultBillingAddress ?? false}');
-        debugPrint('[AddressesPage] Skipping unset step - backend will automatically unset previous default when new one is set');
       } else {
-        debugPrint('[AddressesPage] No previous default address to unset');
       }
 
       // Set the target address as default
       // The backend will automatically unset the previous default
       {
-      debugPrint('[AddressesPage] Setting Address ID: ${address.id} as default');
-      debugPrint('[AddressesPage]   - Setting as Shipping Address: true');
-      debugPrint('[AddressesPage]   - Setting as Billing Address: true');
         
       final selectedUpdatedAddress = Query$GetActiveCustomer$activeCustomer$addresses(
         id: address.id,
@@ -538,34 +526,26 @@ class _AddressesPageState extends State<AddressesPage> {
         country: address.country,
       );
         
-        debugPrint('[AddressesPage] Calling updateAddress to set default for ID: ${address.id}');
         final setResult = await customerController.updateAddress(selectedUpdatedAddress, skipRefresh: false);
-        debugPrint('[AddressesPage] Set result for ID ${address.id}: $setResult');
         
         if (!setResult) {
           allSuccess = false;
-          debugPrint('[AddressesPage] ❌ Failed to set default for address ID: ${address.id}');
         } else {
-          debugPrint('[AddressesPage] ✅ Successfully set default for address ID: ${address.id}');
-          debugPrint('[AddressesPage] Backend should have automatically unset previous default address');
         }
       }
       
       if (allSuccess) {
-        debugPrint('[AddressesPage] ✅ Successfully set Address ID: ${address.id} as default shipping and billing');
-        debugPrint('[AddressesPage]   - Shipping Address: ${address.fullName ?? "N/A"} (${address.city ?? "N/A"})');
-        debugPrint('[AddressesPage]   - Billing Address: ${address.fullName ?? "N/A"} (${address.city ?? "N/A"})');
         // Refresh customer data once after both updates complete
         // (First update skipped refresh, second one will refresh)
         if (mounted) {
-          debugPrint('[AddressesPage] Addresses updated successfully');
+          // Refresh active order after address change
+          final cartController = Get.find<CartController>();
+          await cartController.getActiveOrder();
         }
       } else {
-        debugPrint('[AddressesPage] ❌ Address update failed - Attempting rollback');
         
         // Rollback: Restore previous default address if it existed
         if (previousDefaultForRollback != null) {
-          debugPrint('[AddressesPage] 🔄 Rolling back to previous default address ID: ${previousDefaultForRollback.id}');
           try {
             final rollbackAddress = Query$GetActiveCustomer$activeCustomer$addresses(
               id: previousDefaultForRollback.id,
@@ -583,15 +563,11 @@ class _AddressesPageState extends State<AddressesPage> {
             
             final rollbackResult = await customerController.updateAddress(rollbackAddress);
             if (rollbackResult) {
-              debugPrint('[AddressesPage] ✅ Rollback successful - Previous default address restored');
             } else {
-              debugPrint('[AddressesPage] ⚠️ Rollback failed - Previous default address could not be restored');
             }
           } catch (rollbackError) {
-            debugPrint('[AddressesPage] ❌ Rollback error: $rollbackError');
           }
         } else {
-          debugPrint('[AddressesPage] ⚠️ No previous default address to rollback to');
         }
         
         // Note: getActiveCustomer() may have been called by updateAddress() already
@@ -601,15 +577,10 @@ class _AddressesPageState extends State<AddressesPage> {
           showErrorSnackbar('Failed to set default address. Please try again.');
         }
       }
-      debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS END ==========');
-      debugPrint('═══════════════════════════════════════════════════════════');
     } catch (e, stackTrace) {
-      debugPrint('[AddressesPage] ❌ Error setting default address: $e');
-      debugPrint('[AddressesPage] Stack trace: $stackTrace');
       
       // Rollback on exception
       if (previousDefaultAddress != null) {
-        debugPrint('[AddressesPage] 🔄 Exception occurred - Attempting rollback to previous default');
         try {
           final rollbackAddress = Query$GetActiveCustomer$activeCustomer$addresses(
             id: previousDefaultAddress.id,
@@ -625,9 +596,7 @@ class _AddressesPageState extends State<AddressesPage> {
             country: previousDefaultAddress.country,
           );
           await customerController.updateAddress(rollbackAddress);
-          debugPrint('[AddressesPage] ✅ Rollback successful after exception');
         } catch (rollbackError) {
-          debugPrint('[AddressesPage] ❌ Rollback error after exception: $rollbackError');
         }
       }
       
@@ -636,8 +605,6 @@ class _AddressesPageState extends State<AddressesPage> {
       if (mounted) {
         showErrorSnackbar('Failed to set default address. Previous selection restored.');
       }
-      debugPrint('[AddressesPage] ========== SET DEFAULT ADDRESS ERROR ==========');
-      debugPrint('═══════════════════════════════════════════════════════════');
     } finally {
       // Hide loading indicator
       if (mounted) {
@@ -836,8 +803,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   @override
   void initState() {
     super.initState();
-    debugPrint('[AddressesPage] ========== ADD ADDRESS FORM INIT ==========');
-    debugPrint('[AddressesPage] Fetching postal codes for add address form...');
     
     // Pre-initialize controllers for better performance
     final box = GetStorage();
@@ -858,9 +823,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     final channelType = box.read('channel_type')?.toString() ?? '';
     _isBrandChannel = channelType.toUpperCase().contains('BRAND');
     
-    debugPrint('[AddressesPage] Channel Type Check (Add):');
-    debugPrint('[AddressesPage]   - channelType from storage: "$channelType"');
-    debugPrint('[AddressesPage]   - isBrandChannel: $_isBrandChannel');
     
     // Only auto-fill city with channel code if NOT a BRAND channel
     cityController = TextEditingController(
@@ -887,29 +849,19 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   
   /// Fetch postal codes for the current channel
   void _fetchPostalCodes() {
-    debugPrint('[AddressesPage] Calling customerController.fetchPostalCodes()...');
     widget.customerController.fetchPostalCodes().then((codes) {
-      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH COMPLETED ==========');
-      debugPrint('[AddressesPage] Received ${codes.length} postal codes');
       if (codes.isNotEmpty) {
-        debugPrint('[AddressesPage] Postal codes list:');
         for (var code in codes) {
-          debugPrint('[AddressesPage]   - ${code.code} (ID: ${code.id}, isAnywhere: ${code.isAnywhere})');
         }
       } else {
-        debugPrint('[AddressesPage] No postal codes returned');
       }
       if (mounted) {
         setState(() {
           _postalCodesList = codes;
           _isLoadingPostalCodes = false;
         });
-        debugPrint('[AddressesPage] State updated - postalCodesList.length: ${_postalCodesList.length}, isLoadingPostalCodes: $_isLoadingPostalCodes');
       }
     }).catchError((error) {
-      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH ERROR ==========');
-      debugPrint('[AddressesPage] Error type: ${error.runtimeType}');
-      debugPrint('[AddressesPage] Error message: $error');
       if (mounted) {
         setState(() {
           _isLoadingPostalCodes = false;
@@ -1247,6 +1199,9 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                           widget.onSuccess();
                           showSuccessSnackbar('Address added!');
                           widget.customerController.refreshAddresses();
+                          // Refresh active order after adding address
+                          final cartController = Get.find<CartController>();
+                          await cartController.getActiveOrder();
                         } else {
                           showErrorSnackbar('Failed to add address');
                         }
@@ -1384,10 +1339,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     final hasPostalCodes = postalCodesList.isNotEmpty;
     final hasError = errorText != null && errorText.isNotEmpty;
     
-    debugPrint('[AddressesPage] _buildPostalCodeField called:');
-    debugPrint('[AddressesPage]   - isLoadingPostalCodes: $isLoadingPostalCodes');
-    debugPrint('[AddressesPage]   - postalCodesList.length: ${postalCodesList.length}');
-    debugPrint('[AddressesPage]   - hasPostalCodes: $hasPostalCodes');
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1636,8 +1587,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   @override
   void initState() {
     super.initState();
-    debugPrint('[AddressesPage] ========== EDIT ADDRESS FORM INIT ==========');
-    debugPrint('[AddressesPage] Fetching postal codes for edit address form...');
     
     // Pre-initialize controllers for better performance
     final existingAddress = widget.existingAddress;
@@ -1655,9 +1604,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     final channelType = box.read('channel_type')?.toString() ?? '';
     _isBrandChannel = channelType.toUpperCase().contains('BRAND');
     
-    debugPrint('[AddressesPage] Channel Type Check (Edit):');
-    debugPrint('[AddressesPage]   - channelType from storage: "$channelType"');
-    debugPrint('[AddressesPage]   - isBrandChannel: $_isBrandChannel');
     
     // Only auto-fill city with channel code if NOT a BRAND channel
     cityController = TextEditingController(
@@ -1686,29 +1632,19 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   
   /// Fetch postal codes for the current channel
   void _fetchPostalCodes() {
-    debugPrint('[AddressesPage] Calling customerController.fetchPostalCodes()...');
     widget.customerController.fetchPostalCodes().then((codes) {
-      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH COMPLETED ==========');
-      debugPrint('[AddressesPage] Received ${codes.length} postal codes');
       if (codes.isNotEmpty) {
-        debugPrint('[AddressesPage] Postal codes list:');
         for (var code in codes) {
-          debugPrint('[AddressesPage]   - ${code.code} (ID: ${code.id}, isAnywhere: ${code.isAnywhere})');
         }
       } else {
-        debugPrint('[AddressesPage] No postal codes returned');
       }
       if (mounted) {
         setState(() {
           _postalCodesList = codes;
           _isLoadingPostalCodes = false;
         });
-        debugPrint('[AddressesPage] State updated - postalCodesList.length: ${_postalCodesList.length}, isLoadingPostalCodes: $_isLoadingPostalCodes');
       }
     }).catchError((error) {
-      debugPrint('[AddressesPage] ========== POSTAL CODES FETCH ERROR ==========');
-      debugPrint('[AddressesPage] Error type: ${error.runtimeType}');
-      debugPrint('[AddressesPage] Error message: $error');
       if (mounted) {
         setState(() {
           _isLoadingPostalCodes = false;
@@ -1728,10 +1664,8 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
         setState(() {
           provinceController.text = postalData.state;
         });
-        debugPrint('[AddressesPage] Auto-populated province for existing address: ${postalData.state}');
       }
     } catch (e) {
-      debugPrint('[AddressesPage] Error fetching state for postal code: $e');
     }
   }
 
@@ -2073,6 +2007,9 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                           widget.onSuccess();
                           showSuccessSnackbar('Address updated!');
                           widget.customerController.refreshAddresses();
+                          // Refresh active order after updating address
+                          final cartController = Get.find<CartController>();
+                          await cartController.getActiveOrder();
                         } else {
                           showErrorSnackbar('Failed to update address');
                         }
@@ -2209,10 +2146,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     final hasPostalCodes = postalCodesList.isNotEmpty;
     final hasError = errorText != null && errorText.isNotEmpty;
     
-    debugPrint('[AddressesPage] _buildPostalCodeField called:');
-    debugPrint('[AddressesPage]   - isLoadingPostalCodes: $isLoadingPostalCodes');
-    debugPrint('[AddressesPage]   - postalCodesList.length: ${postalCodesList.length}');
-    debugPrint('[AddressesPage]   - hasPostalCodes: $hasPostalCodes');
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

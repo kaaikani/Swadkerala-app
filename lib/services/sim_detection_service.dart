@@ -41,14 +41,12 @@ class SimDetectionService {
   Future<bool> hasPhonePermission() async {
     // Platform check: mobile_number has limited iOS support
     if (!Platform.isAndroid || kIsWeb) {
-      debugPrint('[SimDetectionService] Phone permission check skipped - not on Android platform');
       return false;
     }
 
     try {
       return await MobileNumber.hasPhonePermission;
     } catch (e) {
-debugPrint('[SimDetectionService] Error checking permission: $e');
       return false;
     }
   }
@@ -57,19 +55,16 @@ debugPrint('[SimDetectionService] Error checking permission: $e');
   Future<bool> requestPhonePermission() async {
     // Platform check: mobile_number has limited iOS support
     if (!Platform.isAndroid || kIsWeb) {
-      debugPrint('[SimDetectionService] Phone permission request skipped - not on Android platform');
       return false;
     }
 
     try {
-debugPrint('[SimDetectionService] Requesting phone permission...');
 
       // Request permission with optimized timeout
       try {
         await MobileNumber.requestPhonePermission.timeout(
           const Duration(seconds: 3),
           onTimeout: () {
-debugPrint('[SimDetectionService] Permission request timeout');
           },
         );
 
@@ -77,14 +72,11 @@ debugPrint('[SimDetectionService] Permission request timeout');
         await Future.delayed(const Duration(milliseconds: 500));
 
         final permissionGranted = await hasPhonePermission();
-debugPrint('[SimDetectionService] Permission result: $permissionGranted');
         return permissionGranted;
       } catch (e) {
-debugPrint('[SimDetectionService] Permission request error: $e');
         return false;
       }
     } catch (e) {
-debugPrint('[SimDetectionService] Error requesting permission: $e');
       return false;
     }
   }
@@ -93,7 +85,6 @@ debugPrint('[SimDetectionService] Error requesting permission: $e');
   Future<List<SimInfo>> getAllSimInfo({bool forcePermissionRequest = false}) async {
     // Platform check: mobile_number has limited iOS support
     if (!Platform.isAndroid || kIsWeb) {
-      debugPrint('[SimDetectionService] SIM detection skipped - not on Android platform. iOS requires manual phone number input.');
       return []; // Return empty list for iOS/Web
     }
 
@@ -102,7 +93,6 @@ debugPrint('[SimDetectionService] Error requesting permission: $e');
         _cachedSimInfo != null &&
         _lastDetectionTime != null &&
         DateTime.now().difference(_lastDetectionTime!) < _cacheValidDuration) {
-debugPrint('[SimDetectionService] Using cached SIM info');
       return _cachedSimInfo!;
     }
 
@@ -116,7 +106,6 @@ debugPrint('[SimDetectionService] Using cached SIM info');
       );
 
       if (!hasPermission) {
-debugPrint('[SimDetectionService] No phone permission - will return empty list');
         return simInfoList;
       }
 
@@ -124,12 +113,10 @@ debugPrint('[SimDetectionService] No phone permission - will return empty list')
       List<SimCard>? simCards = await MobileNumber.getSimCards?.timeout(
         const Duration(seconds: 2),
         onTimeout: () {
-debugPrint('[SimDetectionService] SIM cards fetch timeout');
           return <SimCard>[];
         },
       );
 
-debugPrint('[SimDetectionService] Found ${simCards?.length ?? 0} SIM cards');
 
       if (simCards != null && simCards.isNotEmpty) {
         // Process all SIM cards
@@ -157,7 +144,6 @@ debugPrint('[SimDetectionService] Found ${simCards?.length ?? 0} SIM cards');
                   slotIndex: card.slotIndex ?? i,
                   isActive: true,
                 ));
-debugPrint('[SimDetectionService] Added SIM: $cleanNumber (${card.carrierName})');
               }
             }
           }
@@ -166,7 +152,6 @@ debugPrint('[SimDetectionService] Added SIM: $cleanNumber (${card.carrierName})'
 
       // If no SIMs found, try mobileNumber method
       if (simInfoList.isEmpty) {
-debugPrint('[SimDetectionService] No SIMs found, trying mobileNumber method');
 
         String? mobileNumber = await MobileNumber.mobileNumber?.timeout(
           const Duration(seconds: 1),
@@ -182,20 +167,17 @@ debugPrint('[SimDetectionService] No SIMs found, trying mobileNumber method');
               slotIndex: 0,
               isActive: true,
             ));
-debugPrint('[SimDetectionService] Found via mobileNumber: $cleanNumber');
           }
         }
       }
 
     } catch (e) {
-debugPrint('[SimDetectionService] Error getting SIM info: $e');
     }
 
     // Update cache
     _cachedSimInfo = simInfoList;
     _lastDetectionTime = DateTime.now();
 
-debugPrint('[SimDetectionService] Final result: ${simInfoList.length} SIM cards detected');
     return simInfoList;
   }
 
@@ -204,15 +186,11 @@ debugPrint('[SimDetectionService] Final result: ${simInfoList.length} SIM cards 
     try {
       // Check permission
       bool hasPermission = await hasPhonePermission();
-debugPrint('[SimDetectionService] Permission check: $hasPermission');
 
       if (!hasPermission) {
-debugPrint('[SimDetectionService] Requesting permission...');
         hasPermission = await requestPhonePermission();
-debugPrint('[SimDetectionService] Permission result: $hasPermission');
 
         if (!hasPermission) {
-debugPrint('[SimDetectionService] Permission denied, returning empty list');
           return [];
         }
       }
@@ -222,7 +200,6 @@ debugPrint('[SimDetectionService] Permission denied, returning empty list');
 
       // Optional: check again if no SIMs found
       if (simInfoList.isEmpty) {
-debugPrint('[SimDetectionService] No SIMs found, rechecking permission...');
         if (await hasPhonePermission()) {
           simInfoList = await getAllSimInfo(forcePermissionRequest: true);
         }
@@ -230,7 +207,6 @@ debugPrint('[SimDetectionService] No SIMs found, rechecking permission...');
 
       return simInfoList;
     } catch (e) {
-debugPrint('[SimDetectionService] Error in getAllSimInfoWithRetry: $e');
       return [];
     }
   }
@@ -254,7 +230,6 @@ debugPrint('[SimDetectionService] Error in getAllSimInfoWithRetry: $e');
       // If no active SIM found, return the first one
       return simInfoList.first.last10Digits;
     } catch (e) {
-debugPrint('[SimDetectionService] Error getting primary SIM: $e');
       return null;
     }
   }
@@ -263,7 +238,6 @@ debugPrint('[SimDetectionService] Error getting primary SIM: $e');
   void clearCache() {
     _cachedSimInfo = null;
     _lastDetectionTime = null;
-debugPrint('[SimDetectionService] Cache cleared');
   }
 
   /// Show SIM selection dialog

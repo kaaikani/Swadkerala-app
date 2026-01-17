@@ -56,48 +56,35 @@ class _AccountPageState extends State<AccountPage> {
 
   /// Check and show dialogs for invalid email or missing phone number
   void _checkAndShowUpdateDialogs() {
-    debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS START ==========');
     
     final customer = customerController.activeCustomer.value;
     if (customer == null) {
-      debugPrint('[AccountPage] ⚠️ Customer is null, skipping dialog check');
       return;
     }
 
-    debugPrint('[AccountPage] 👤 Customer Info:');
-    debugPrint('[AccountPage] - Email: "${customer.emailAddress}"');
-    debugPrint('[AccountPage] - Phone: "${customer.phoneNumber ?? "null"}"');
 
     // Check if email is not a valid Gmail
     final isValidEmail = _isValidGmail(customer.emailAddress);
-    debugPrint('[AccountPage] 📧 Email validation: $isValidEmail');
     
     if (!isValidEmail) {
-      debugPrint('[AccountPage] ❌ Email is not valid Gmail, showing email update dialog');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _showUpdateEmailDialog();
         }
       });
-      debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS END (EMAIL DIALOG) ==========');
       return; // Don't check phone if email dialog is shown
     }
 
     // Check if phone number is null
     final hasPhone = customer.phoneNumber != null && customer.phoneNumber!.isNotEmpty;
-    debugPrint('[AccountPage] 📱 Phone number check: ${hasPhone ? "Present" : "Missing"}');
     
     if (!hasPhone) {
-      debugPrint('[AccountPage] ❌ Phone number is missing, showing phone update dialog');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _showUpdatePhoneDialog();
         }
       });
-      debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS END (PHONE DIALOG) ==========');
     } else {
-      debugPrint('[AccountPage] ✅ All validations passed, no dialogs needed');
-      debugPrint('[AccountPage] ========== CHECK UPDATE DIALOGS END (NO DIALOGS) ==========');
     }
   }
 
@@ -244,57 +231,42 @@ class _AccountPageState extends State<AccountPage> {
                     children: [
                       ElevatedButton(
                         onPressed: isLoading ? null : () async {
-                          debugPrint('[AccountPage] ========== UPDATE EMAIL START ==========');
                           
                           final email = emailController.text.trim();
-                          debugPrint('[AccountPage] 📧 Email Update Request: "$email"');
                           
                           if (email.isEmpty) {
-                            debugPrint('[AccountPage] ❌ Validation failed: Email is empty');
                             showErrorSnackbar('Please enter an email address');
                             return;
                           }
                           if (!_isValidGmail(email)) {
-                            debugPrint('[AccountPage] ❌ Validation failed: Not a valid Gmail address');
                             showErrorSnackbar('Please enter a valid Gmail address');
                             return;
                           }
 
-                          debugPrint('[AccountPage] ✅ Email validation passed');
-                          debugPrint('[AccountPage] 🔄 Setting loading state to true');
 
                           setState(() {
                             isLoading = true;
                           });
 
-                          debugPrint('[AccountPage] 🚀 Calling customerController.updateCustomerEmail()...');
                           // Clear previous error
                           customerController.emailUpdateError.value = '';
                           
                           // Update email using the dedicated method
                           final success = await customerController.updateCustomerEmail(email);
                           
-                          debugPrint('[AccountPage] 📥 Email update result received: $success');
 
                           setState(() {
                             isLoading = false;
                           });
 
                           if (success) {
-                            debugPrint('[AccountPage] ✅ Email update successful');
-                            debugPrint('[AccountPage] 🔙 Closing dialog');
                             Get.back();
-                            debugPrint('[AccountPage] 📢 Showing success snackbar');
                             showSuccessSnackbar('Email updated successfully');
-                            debugPrint('[AccountPage] 🔍 Checking for phone number update...');
                             // Check for phone number after email is updated
                             _checkAndShowUpdateDialogs();
-                            debugPrint('[AccountPage] ========== UPDATE EMAIL END (SUCCESS) ==========');
                           } else {
-                            debugPrint('[AccountPage] ❌ Email update failed');
                             // Error message is already set in controller and will be shown in UI
                             // Don't show snackbar as error is displayed in dialog
-                            debugPrint('[AccountPage] ========== UPDATE EMAIL END (FAILED) ==========');
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -466,50 +438,38 @@ class _AccountPageState extends State<AccountPage> {
                     children: [
                       ElevatedButton(
                         onPressed: isLoading ? null : () async {
-                          debugPrint('[AccountPage] ========== UPDATE PHONE START ==========');
                           
                           final phone = phoneController.text.trim();
-                          debugPrint('[AccountPage] 📱 Phone Update Request: "$phone"');
                           
                           if (phone.isEmpty) {
-                            debugPrint('[AccountPage] ❌ Validation failed: Phone is empty');
                             showErrorSnackbar('Please enter a phone number');
                             return;
                           }
                           if (phone.length != 10) {
-                            debugPrint('[AccountPage] ❌ Validation failed: Phone length is ${phone.length}, expected 10');
                             showErrorSnackbar('Phone number must be 10 digits');
                             return;
                           }
 
-                          debugPrint('[AccountPage] ✅ Phone validation passed');
-                          debugPrint('[AccountPage] 🔄 Setting loading state to true');
 
                           setState(() {
                             isLoading = true;
                           });
 
-                          debugPrint('[AccountPage] 🔄 Calling customerController.updateCustomerPhoneNumber()...');
                           // Update phone number using customer controller
                           try {
                           final success = await customerController.updateCustomerPhoneNumber(phone);
 
                           if (success) {
-                            debugPrint('[AccountPage] ✅ Phone number updated successfully');
-                            debugPrint('[AccountPage] 🔙 Closing dialog');
                               // Close dialog first
                               Navigator.of(context).pop();
-                            debugPrint('[AccountPage] 📢 Showing success snackbar');
                             showSuccessSnackbar('Phone number updated successfully');
                           } else {
-                            debugPrint('[AccountPage] ❌ Phone number update failed');
                               setState(() {
                                 isLoading = false;
                                 errorMessage = 'Failed to update phone number. Please try again.';
                               });
                             }
                           } catch (e) {
-                            debugPrint('[AccountPage] ❌ Exception during phone update: $e');
                             setState(() {
                               isLoading = false;
                               // Check if error message contains "already registered"
@@ -522,7 +482,6 @@ class _AccountPageState extends State<AccountPage> {
                               }
                             });
                           }
-                          debugPrint('[AccountPage] ========== UPDATE PHONE END ==========');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.button,
@@ -1177,7 +1136,6 @@ class _AccountPageState extends State<AccountPage> {
           margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
           child: OutlinedButton(
             onPressed: () {
-debugPrint('📱 [AccountPage] Logout button pressed by user');
               _showLogoutDialog();
             },
             style: OutlinedButton.styleFrom(
@@ -1731,56 +1689,37 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
                           flex: 2,
                           child: ElevatedButton(
                             onPressed: isLoading ? null : () async {
-                              debugPrint('[AccountPage] ========== UPDATE PROFILE START ==========');
                               
                               final firstName = firstNameController.text.trim();
                               final lastName = lastNameController.text.trim();
                               
-                              debugPrint('[AccountPage] 📝 Profile Update Request:');
-                              debugPrint('[AccountPage] - First Name: "$firstName"');
-                              debugPrint('[AccountPage] - Last Name: "$lastName"');
                               
                               if (firstName.isEmpty || lastName.isEmpty) {
-                                debugPrint('[AccountPage] ❌ Validation failed: Empty fields');
                                 showErrorSnackbar('Please fill in all fields');
                                 return;
                               }
 
-                              debugPrint('[AccountPage] ✅ Validation passed');
-                              debugPrint('[AccountPage] 🔄 Setting loading state to true');
 
                               setState(() {
                                 isLoading = true;
                               });
 
-                              debugPrint('[AccountPage] 📋 Setting controller values:');
-                              debugPrint('[AccountPage] - firstNameController: "$firstName"');
-                              debugPrint('[AccountPage] - lastNameController: "$lastName"');
 
               customerController.firstNameController.text = firstName;
               customerController.lastNameController.text = lastName;
 
-              debugPrint('[AccountPage] 🚀 Calling customerController.updateCustomer()...');
               final success = await customerController.updateCustomer();
               
-              debugPrint('[AccountPage] 📥 Update result received: $success');
                               
                               setState(() {
                                 isLoading = false;
                               });
 
               if (success) {
-                debugPrint('[AccountPage] ✅ Profile update successful');
-                debugPrint('[AccountPage] 🔙 Closing dialog');
                 Get.back();
-                debugPrint('[AccountPage] 📢 Showing success snackbar');
                 showSuccessSnackbar('Profile updated successfully');
-                debugPrint('[AccountPage] ========== UPDATE PROFILE END (SUCCESS) ==========');
               } else {
-                debugPrint('[AccountPage] ❌ Profile update failed');
-                debugPrint('[AccountPage] 📢 Showing error snackbar');
                 showErrorSnackbar('Failed to update profile');
-                debugPrint('[AccountPage] ========== UPDATE PROFILE END (FAILED) ==========');
               }
             },
             style: ElevatedButton.styleFrom(
@@ -1837,7 +1776,6 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
     try {
       const platform = MethodChannel('com.kaaikani.kaaikani/account_manager');
       final List<dynamic> accounts = await platform.invokeMethod('getGoogleAccounts') as List<dynamic>;
-      debugPrint('[AccountPage] Retrieved ${accounts.length} accounts from AccountManager');
       
       if (accounts.isNotEmpty) {
         // Convert to list of maps with email
@@ -1848,7 +1786,6 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
           };
         }).toList();
         
-        debugPrint('[AccountPage] Found ${accountList.length} Google accounts');
         
         // Show dialog with all Google accounts
         final selectedAccount = await showDialog<Map<String, String>>(
@@ -1941,26 +1878,18 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
         if (selectedAccount != null) {
           final selectedEmail = selectedAccount['email'] ?? '';
           if (selectedEmail.isNotEmpty) {
-            debugPrint('[AccountPage] ========== EMAIL SELECTED FROM GOOGLE ACCOUNTS ==========');
-            debugPrint('[AccountPage] 📧 Selected Email: "$selectedEmail"');
-            debugPrint('[AccountPage] 📋 Previous Email in TextBox: "${emailController.text}"');
             
             emailController.text = selectedEmail;
             setState(() {});
             
-            debugPrint('[AccountPage] ✅ Email set in text box: "${emailController.text}"');
-            debugPrint('[AccountPage] ℹ️ Note: Email will be saved when user clicks "Save Changes"');
-            debugPrint('[AccountPage] ========== EMAIL SELECTION END ==========');
             return;
           }
         }
       }
     } catch (e) {
-      debugPrint('[AccountPage] Error getting accounts from AccountManager: $e');
     }
     
     // If no accounts found or error occurred, show manual email input dialog
-    debugPrint('[AccountPage] Showing manual email input dialog');
     _showManualEmailInputDialog(context, setState, emailController);
   }
 
@@ -2046,17 +1975,11 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
                     onPressed: () {
                       final email = manualEmailController.text.trim();
                       if (email.isNotEmpty) {
-                        debugPrint('[AccountPage] ========== MANUAL EMAIL ENTERED ==========');
-                        debugPrint('[AccountPage] 📧 Manual Email: "$email"');
-                        debugPrint('[AccountPage] 📋 Previous Email in TextBox: "${emailController.text}"');
                         
                         emailController.text = email;
                         setState(() {});
                         Navigator.of(context).pop();
                         
-                        debugPrint('[AccountPage] ✅ Email set in text box: "${emailController.text}"');
-                        debugPrint('[AccountPage] ℹ️ Note: Email will be saved when user clicks "Save Changes"');
-                        debugPrint('[AccountPage] ========== MANUAL EMAIL ENTRY END ==========');
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -2075,8 +1998,6 @@ debugPrint('📱 [AccountPage] Logout button pressed by user');
   }
 
   void _showLogoutDialog() {
-debugPrint('📱 [AccountPage] ========== LOGOUT DIALOG REQUESTED ==========');
-debugPrint('📱 [AccountPage] User clicked logout button');
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(
@@ -2093,7 +2014,6 @@ debugPrint('📱 [AccountPage] User clicked logout button');
         actions: [
           TextButton(
             onPressed: () {
-debugPrint('📱 [AccountPage] User cancelled logout dialog');
               Get.back();
             },
             child: Text(
@@ -2103,12 +2023,8 @@ debugPrint('📱 [AccountPage] User cancelled logout dialog');
           ),
           ElevatedButton(
             onPressed: () {
-debugPrint('📱 [AccountPage] User confirmed logout');
-debugPrint('📱 [AccountPage] Closing dialog and calling authController.logout()');
               Get.back();
-debugPrint('📱 [AccountPage] Dialog closed, initiating logout process...');
               authController.logout(context);
-debugPrint('📱 [AccountPage] Logout call completed');
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: Text('Logout'),
@@ -2116,7 +2032,6 @@ debugPrint('📱 [AccountPage] Logout call completed');
         ],
       ),
     );
-debugPrint('📱 [AccountPage] Logout dialog displayed');
   }
 
   Future<void> _shareApp() async {
@@ -2140,17 +2055,13 @@ debugPrint('📱 [AccountPage] Logout dialog displayed');
       final webStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=$packageName');
 
-debugPrint('[AccountPage] Opening Play Store for package: $packageName');
 
       if (await canLaunchUrl(playStoreUrl)) {
         await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
-debugPrint('[AccountPage] Opened Play Store app');
       } else {
         await launchUrl(webStoreUrl, mode: LaunchMode.externalApplication);
-debugPrint('[AccountPage] Opened Play Store in browser');
       }
     } catch (e) {
-debugPrint('[AccountPage] Error opening Play Store: $e');
       showErrorSnackbar('Could not open Play Store: $e');
     }
   }

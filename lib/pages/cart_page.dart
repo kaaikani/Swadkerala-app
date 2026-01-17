@@ -104,42 +104,33 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
   /// Refresh data - called from initState and when returning to page
   void _refreshData() {
-    debugPrint('[CartPage] ========== _refreshData() CALLED ==========');
     // Prevent duplicate refresh calls
     if (_isRefreshingData) {
-      debugPrint('[CartPage] Data refresh already in progress, skipping duplicate call...');
       return;
     }
     
     _isRefreshingData = true;
-    debugPrint('[CartPage] Starting data refresh...');
     // Load data without showing loading state to prevent flicker
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      debugPrint('[CartPage] PostFrameCallback executed - calling getActiveOrder()');
       // Load cart first
       await cartController.getActiveOrder();
-      debugPrint('[CartPage] getActiveOrder() completed - cart and order controllers updated');
       
-      // Load other data in parallel without blocking
-      // Always fetch coupon codes when entering cart page
-      debugPrint('[CartPage] Starting parallel fetches: getCouponCodeList, getEligibleShippingMethods, fetchLoyaltyPointsConfig');
+      // Call getActiveCustomer which will also load coupon codes and loyalty points config
+      // Load other data in parallel
       Future.wait([
-        bannerController.getCouponCodeList(),
+        customerController.getActiveCustomer(),
         orderController.getEligibleShippingMethods(),
-        bannerController.fetchLoyaltyPointsConfig(),
       ], eagerError: false).then((_) async {
-        debugPrint('[CartPage] Parallel fetches completed');
         // After shipping methods are loaded, check for single method
         if (orderController.shippingMethods.length == 1) {
           final singleMethod = orderController.shippingMethods.first;
           orderController.selectedShippingMethod.value = singleMethod;
-          debugPrint('[CartPage] Auto-selected single shipping method: ${singleMethod.name}');
-          await _applyShippingMethod(showFeedback: false, force: true);
+          // Skip sync during initialization since getActiveOrder was just called
+          await _applyShippingMethod(showFeedback: false, force: true, skipSync: true);
         }
         
         // OrderController is already updated by cartController.getActiveOrder() above
         // No need to fetch again - just load existing data from controllers
-        debugPrint('[CartPage] Loading existing data from controllers (no API calls)...');
         _loadExistingShippingMethod();
         _loadExistingCouponCodes();
         _loadExistingLoyaltyPoints();
@@ -147,7 +138,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         
         // Mark refresh as complete
         _isRefreshingData = false;
-        debugPrint('[CartPage] ========== _refreshData() COMPLETED ==========');
       });
       
       // Mark initial loading as complete after first frame
@@ -185,7 +175,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         }
       }
     } catch (e) {
-debugPrint('Error getting coupon minimum amount: $e');
     }
     return null;
   }
@@ -254,8 +243,6 @@ debugPrint('Error getting coupon minimum amount: $e');
   Future<void> _applyCouponCode(String couponCode) async {
     // Check if coupon has products to add
     final hasProducts = bannerController.hasCouponProducts(couponCode);
-debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
-    
     final result = hasProducts 
         ? await bannerController.applyCouponCodeWithProducts(couponCode)
         : await bannerController.applyCouponCode(couponCode);
@@ -318,12 +305,9 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
 
   Future<void> _handleQuantityChange(
       String orderLineId, int newQuantity) async {
-    debugPrint('[CartPage] _handleQuantityChange called - orderLineId: $orderLineId, newQuantity: $newQuantity');
-    
     // Ensure minimum quantity is 1
     if (newQuantity < 1) {
       newQuantity = 1;
-      debugPrint('[CartPage] Quantity adjusted to minimum 1');
     }
 
     // Set loading state for this specific order line
@@ -332,17 +316,11 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
     });
 
     try {
-      debugPrint('[CartPage] Calling adjustOrderLine with orderLineId: $orderLineId, quantity: $newQuantity');
-      
       final success = await cartController.adjustOrderLine(
         orderLineId: orderLineId,
         quantity: newQuantity,
       );
-
-      debugPrint('[CartPage] adjustOrderLine result: $success');
-
       if (!success) {
-        debugPrint('[CartPage] Failed to update quantity');
         showErrorSnackbar('Failed to update quantity');
       }
       // Note: No need to call getActiveOrder() here because adjustOrderLine already updates cart.value
@@ -356,10 +334,6 @@ debugPrint('[CartPage] Coupon $couponCode has products: $hasProducts');
   }
 
   void _proceedToCheckout() {
-debugPrint('[CartPage] _proceedToCheckout called');
-debugPrint('[CartPage] Shipping methods count: ${orderController.shippingMethods.length}');
-debugPrint('[CartPage] Selected shipping method: ${orderController.selectedShippingMethod.value?.name ?? "null"}');
-    
     if (cartController.cartItemCount == 0) {
       showErrorSnackbar('Your cart is empty');
       return;
@@ -370,7 +344,6 @@ debugPrint('[CartPage] Selected shipping method: ${orderController.selectedShipp
     if (cart != null) {
       final validationStatus = cart.validationStatus;
       if (validationStatus.hasUnavailableItems && validationStatus.unavailableItems.isNotEmpty) {
-debugPrint('[CartPage] ❌ ValidationStatus shows ${validationStatus.totalUnavailableItems} unavailable items');
         // Iterate through unavailable items (unused in loop, just for logging)
         for (final _ in validationStatus.unavailableItems) {
           // Logging is commented out, so variable is unused
@@ -434,7 +407,6 @@ debugPrint('[CartPage] ❌ ValidationStatus shows ${validationStatus.totalUnavai
         
         if (isUnavailable) {
           unavailableItems.add(i);
-debugPrint('[CartPage] Item $i is unavailable - isAvailable: ${line.isAvailable}, stockLevel: $stockLevel, productEnabled: ${line.productVariant.product.enabled}, unavailableReason: ${line.unavailableReason}');
         }
       }
       
@@ -461,8 +433,6 @@ debugPrint('[CartPage] Item $i is unavailable - isAvailable: ${line.isAvailable}
             if (isProductDisabled || isDisabledByReason) disabledCount++;
           }
         }
-debugPrint('[CartPage] ❌ Found ${unavailableItems.length} unavailable items: $outOfStockCount out of stock, $lowStockCount low stock, $disabledCount disabled');
-debugPrint('[CartPage] ❌ Blocking checkout - Please remove unavailable items');
         showErrorSnackbar('Some product out of stock remove product from cart to proceed');
         
         // Auto-expand list if there are more than 3 items and list is collapsed
@@ -492,7 +462,6 @@ debugPrint('[CartPage] ❌ Blocking checkout - Please remove unavailable items')
 
     // Check if shipping methods are available
     if (orderController.shippingMethods.isEmpty) {
-debugPrint('[CartPage] ❌ No shipping methods available');
       showErrorSnackbar('No shipping methods available. Please contact support.');
       return;
     }
@@ -515,23 +484,9 @@ debugPrint('[CartPage] ❌ No shipping methods available');
                              line.shippingMethod.id == selectedMethod?.id);
     
     final isShippingMethodValid = isMethodSelected && isMethodApplied;
-    
-debugPrint('[CartPage] Shipping method validation:');
-debugPrint('[CartPage] - selectedMethod: ${selectedMethod != null ? "not null" : "null"}');
-debugPrint('[CartPage] - method ID: ${selectedMethod?.id ?? "null"}');
-debugPrint('[CartPage] - method Name: ${selectedMethod?.name ?? "null"}');
-debugPrint('[CartPage] - currentOrder: ${currentOrder != null ? "exists" : "null"}');
-debugPrint('[CartPage] - order shippingLines count: ${currentOrder?.shippingLines.length ?? 0}');
-debugPrint('[CartPage] - isMethodSelected: $isMethodSelected');
-debugPrint('[CartPage] - isMethodApplied: $isMethodApplied');
-debugPrint('[CartPage] - isShippingMethodValid: $isShippingMethodValid');
-    
     if (!isShippingMethodValid) {
-debugPrint('[CartPage] ❌ Shipping method validation FAILED - preventing checkout');
-      
       // If method is selected but not applied, clear the selection
       if (isMethodSelected && !isMethodApplied) {
-debugPrint('[CartPage] Clearing selected shipping method (not applied to order)');
         orderController.selectedShippingMethod.value = null;
       }
       
@@ -579,15 +534,9 @@ debugPrint('[CartPage] Clearing selected shipping method (not applied to order)'
         finalCheck.id == '0' || 
         finalCheck.id == 'null' ||
         !finalIsApplied) {
-debugPrint('[CartPage] ❌ Final validation check FAILED - blocking navigation');
-debugPrint('[CartPage] Final check - ID: ${finalCheck?.id ?? "null"}, Name: ${finalCheck?.name ?? "null"}');
-debugPrint('[CartPage] Final check - isApplied: $finalIsApplied');
       showErrorSnackbar('Please select a delivery method before checkout');
       return; // Block navigation
     }
-    
-debugPrint('[CartPage] ✅ All validations passed, proceeding to checkout');
-debugPrint('[CartPage] Selected shipping method: ${selectedMethod.name} (ID: ${selectedMethod.id})');
 
     // Track begin checkout event
     final cartForAnalytics = cartController.cart.value;
@@ -608,8 +557,6 @@ debugPrint('[CartPage] Selected shipping method: ${selectedMethod.name} (ID: ${s
         items: items,
       );
     }
-
-debugPrint('[CartPage] 🚀 Navigating to checkout page...');
     NavigationHelper.navigateToCheckout();
   }
 
@@ -679,7 +626,6 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
 
   Future<void> _loadExistingShippingMethod() async {
     try {
-      debugPrint('[CartPage] _loadExistingShippingMethod() called - using already-loaded order data');
       // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
       
@@ -689,8 +635,6 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
         
         // Always set the single method
         orderController.selectedShippingMethod.value = singleMethod;
-        debugPrint('[CartPage] Auto-selected single shipping method: ${singleMethod.name}');
-        
         // Check if it's already applied to the order (using already-loaded data)
         final isAlreadyApplied = order != null &&
             order.shippingLines.isNotEmpty &&
@@ -698,11 +642,9 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
         
         // Only apply if not already applied
         if (!isAlreadyApplied) {
-          debugPrint('[CartPage] Auto-applying single shipping method: ${singleMethod.name}');
           await _applyShippingMethod(showFeedback: false, force: true);
         } else {
           _lastAppliedShippingMethodId = singleMethod.id;
-          debugPrint('[CartPage] Single shipping method already applied: ${singleMethod.name}');
         }
         return;
       }
@@ -720,7 +662,6 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
         if (matchingMethod != null) {
           orderController.selectedShippingMethod.value = matchingMethod;
           _lastAppliedShippingMethodId = matchingMethod.id;
-          debugPrint('[CartPage] Loaded existing shipping method: ${matchingMethod.name}');
           return; // Already has a shipping method, no need to auto-apply
         }
       }
@@ -730,23 +671,19 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
           orderController.shippingMethods.isNotEmpty) {
         final firstMethod = orderController.shippingMethods.first;
         orderController.selectedShippingMethod.value = firstMethod;
-        debugPrint('[CartPage] Selected first shipping method: ${firstMethod.name} (user needs to confirm)');
       }
     } catch (e) {
-      debugPrint('[CartPage] Error loading existing shipping method: $e');
     }
   }
 
-  Future<void> _applyShippingMethod({bool showFeedback = false, bool force = false}) async {
+  Future<void> _applyShippingMethod({bool showFeedback = false, bool force = false, bool skipSync = false}) async {
     final selected = orderController.selectedShippingMethod.value;
     if (selected == null) return;
 
     if (!force && _lastAppliedShippingMethodId == selected.id) {
-      debugPrint('[CartPage] _applyShippingMethod() skipped - shipping method already applied');
       return; // Already applied
     }
 
-    debugPrint('[CartPage] _applyShippingMethod() called - setting shipping method: ${selected.id}');
     final success = await orderController.setShippingMethod(
       selected.id, 
       skipIfAlreadySet: false,
@@ -757,10 +694,14 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
       if (showFeedback) {
         showSuccessSnackbar('Shipping method selected');
       }
-      // Sync CartController with updated order (OrderController is already updated by setShippingMethod)
-      debugPrint('[CartPage] Shipping method set successfully, syncing CartController...');
-      await cartController.getActiveOrder();
-      debugPrint('[CartPage] CartController synced after shipping method change');
+      // Sync CartController with updated order only if not skipping sync
+      // (skipSync is true during initialization when getActiveOrder was just called)
+      if (!skipSync) {
+        await cartController.getActiveOrder();
+      }
+      // During initialization with skipSync=true, we skip the getActiveOrder call
+      // The order is already updated in orderController.currentOrder by setShippingMethod
+      // and will be synced on the next getActiveOrder call or when needed
     } else {
       showErrorSnackbar('Failed to set shipping method');
     }
@@ -778,7 +719,6 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
 
   Future<void> _loadExistingCouponCodes() async {
     try {
-      debugPrint('[CartPage] _loadExistingCouponCodes() called - using already-loaded cart data');
       // Use already-loaded cart data instead of fetching again
       final cart = cartController.cart.value;
       if (cart != null && cart.couponCodes.isNotEmpty) {
@@ -787,12 +727,9 @@ debugPrint('[CartPage] 🚀 Navigating to checkout page...');
             bannerController.appliedCouponCodes.add(couponCode);
           }
         }
-        debugPrint('[CartPage] Loaded existing coupon codes: ${cart.couponCodes}');
       } else {
-        debugPrint('[CartPage] No coupon codes found in cart');
       }
     } catch (e) {
-debugPrint('[CartPage] Error loading existing coupon codes: $e');
     }
   }
 
@@ -829,7 +766,6 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
 
   Future<void> _loadExistingLoyaltyPoints() async {
     try {
-      debugPrint('[CartPage] _loadExistingLoyaltyPoints() called - checking if loyalty points already loaded');
       
       // Loyalty points are now extracted directly in cartController.getActiveOrder()
       // This function is kept as a fallback, but the main extraction happens in CartController
@@ -838,7 +774,6 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
       final pointsUsed = bannerController.loyaltyPointsUsed.value;
       
       if (isApplied && pointsUsed > 0) {
-        debugPrint('[CartPage] Loyalty points already loaded from getActiveOrder(): $pointsUsed');
         return;
       }
       
@@ -856,24 +791,19 @@ debugPrint('[CartPage] Error loading existing coupon codes: $e');
         if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
           bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
           bannerController.loyaltyPointsApplied.value = true;
-              debugPrint('[CartPage] Loaded existing loyalty points from order (fallback): $loyaltyPointsUsed');
             }
           } else {
-            debugPrint('[CartPage] Order type doesn\'t have customFields (Fragment\$Cart), loyalty points should be loaded from getActiveOrder()');
           }
         } catch (e) {
           // Fragment$Cart doesn't have customFields, that's okay
-          debugPrint('[CartPage] Order type doesn\'t have customFields, loyalty points should be loaded from getActiveOrder(): $e');
         }
       }
     } catch (e) {
-debugPrint('[CartPage] Error loading existing loyalty points: $e');
     }
   }
 
   Future<void> _loadExistingInstructions() async {
     try {
-      debugPrint('[CartPage] _loadExistingInstructions() called - using already-loaded order data');
       // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
       
@@ -886,20 +816,16 @@ debugPrint('[CartPage] Error loading existing loyalty points: $e');
         final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
         final instructions = customFields.otherInstructions;
         if (instructions != null && instructions.isNotEmpty && mounted) {
-              debugPrint('[CartPage] Loaded existing instructions: ${instructions.length} chars');
           // Instructions are now managed by CartOtherInstructionsSection component
           // The component will handle loading existing instructions internally
             }
           } else {
-            debugPrint('[CartPage] Order type doesn\'t have customFields (Fragment\$Cart), skipping instructions load');
           }
         } catch (e) {
           // Fragment$Cart doesn't have customFields, that's okay
-          debugPrint('[CartPage] Order type doesn\'t have customFields, skipping instructions load: $e');
         }
       }
     } catch (e) {
-debugPrint('[CartPage] Error loading existing instructions: $e');
     }
   }
 
@@ -920,7 +846,6 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
         currentRoute == '/cart' && 
         !_isRefreshingData && 
         mounted) {
-      debugPrint('[CartPage] didChangeDependencies: Returning to cart page from $_lastRoute, refreshing data...');
       // Reset refresh flag to allow refresh when returning to page
       _isRefreshingData = false;
       // Use microtask to ensure it runs after current frame
@@ -942,7 +867,6 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
     super.didChangeAppLifecycleState(state);
     // Refresh data when app comes back to foreground
     if (state == AppLifecycleState.resumed && mounted && !_isRefreshingData) {
-      debugPrint('[CartPage] App resumed, refreshing cart data...');
       _isRefreshingData = false;
       _refreshData();
     }
@@ -963,7 +887,6 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
         !_isFirstBuild && 
         !_isRefreshingData && 
         mounted) {
-      debugPrint('[CartPage] Build: Detected route change to cart from $_lastRoute, refreshing data...');
       // Use a microtask to ensure this runs after the current build
       Future.microtask(() {
         if (mounted && !_isRefreshingData) {
@@ -985,7 +908,6 @@ debugPrint('[CartPage] Error loading existing instructions: $e');
           onPopInvoked: (didPop) {
             // Refresh data when page is about to be popped (user navigating back)
             if (!didPop && !_isRefreshingData && mounted) {
-              debugPrint('[CartPage] PopScope triggered, refreshing data...');
               _isRefreshingData = false; // Reset flag to allow refresh
               _refreshData();
             }

@@ -55,7 +55,6 @@ class _BannerComponentState extends State<BannerComponent> {
       );
       } catch (e) {
         // Controller not ready or disposed, stop autoplay
-        debugPrint('[BannerComponent] Error in autoplay: $e');
         _stopAutoPlay();
       }
       });
@@ -133,7 +132,6 @@ class _BannerComponentState extends State<BannerComponent> {
   void _handleBannerTap(Query$customBanners$customBanners banner) {
     // Handle banner tap - navigate based on banner link or custom fields
     // TODO: Implement navigation based on banner custom fields
-    debugPrint('[BannerComponent] Banner tapped: ${banner.id}');
   }
 
   @override

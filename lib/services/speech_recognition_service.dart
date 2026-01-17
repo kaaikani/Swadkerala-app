@@ -17,27 +17,18 @@ class SpeechRecognitionService {
     try {
       _isAvailable = await _speech.initialize(
         onError: (error) {
-          debugPrint('[SpeechRecognition] Error: ${error.errorMsg}');
         },
         onStatus: (status) {
-          debugPrint('[SpeechRecognition] Status: $status');
           if (status == 'done' || status == 'notListening') {
             _isListening = false;
           }
         },
       );
-      debugPrint('[SpeechRecognition] Initialized: $_isAvailable');
       return _isAvailable;
     } catch (e) {
-      debugPrint('[SpeechRecognition] Initialization error: $e');
       
       // Handle MissingPluginException - plugin not properly linked
       if (e.toString().contains('MissingPluginException')) {
-        debugPrint('[SpeechRecognition] ⚠️ Plugin not found. Please rebuild the app:');
-        debugPrint('[SpeechRecognition]   1. Stop the app completely');
-        debugPrint('[SpeechRecognition]   2. Uninstall the old app from device');
-        debugPrint('[SpeechRecognition]   3. Run: flutter clean && flutter pub get');
-        debugPrint('[SpeechRecognition]   4. Rebuild and install: flutter run');
       }
       
       _isAvailable = false;
@@ -66,7 +57,6 @@ class SpeechRecognitionService {
 
       return false;
     } catch (e) {
-      debugPrint('[SpeechRecognition] Permission error: $e');
       return false;
     }
   }
@@ -87,7 +77,6 @@ class SpeechRecognitionService {
     // Check permission
     final hasPermission = await checkAndRequestPermission();
     if (!hasPermission) {
-      debugPrint('[SpeechRecognition] Microphone permission denied');
       onError?.call();
       return;
     }
@@ -104,7 +93,6 @@ class SpeechRecognitionService {
         onResult: (result) {
           _lastWords = result.recognizedWords;
           if (result.finalResult) {
-            debugPrint('[SpeechRecognition] Final result: $_lastWords');
             _isListening = false;
             onResult(_lastWords);
           } else {
@@ -119,9 +107,7 @@ class SpeechRecognitionService {
         partialResults: true,
       );
       
-      debugPrint('[SpeechRecognition] Started listening');
     } catch (e) {
-      debugPrint('[SpeechRecognition] Error starting: $e');
       _isListening = false;
       onError?.call();
     }
@@ -133,9 +119,7 @@ class SpeechRecognitionService {
       try {
         await _speech.stop();
         _isListening = false;
-        debugPrint('[SpeechRecognition] Stopped listening');
       } catch (e) {
-        debugPrint('[SpeechRecognition] Error stopping: $e');
       }
     }
   }
@@ -147,9 +131,7 @@ class SpeechRecognitionService {
         await _speech.cancel();
         _isListening = false;
         _lastWords = '';
-        debugPrint('[SpeechRecognition] Cancelled listening');
       } catch (e) {
-        debugPrint('[SpeechRecognition] Error cancelling: $e');
       }
     }
   }

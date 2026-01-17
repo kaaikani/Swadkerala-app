@@ -45,13 +45,11 @@ class PostalCodeService {
   /// Search postal code by pincode
   Future<List<PostalCodeData>> searchPostalCode(String pincode) async {
     if (pincode.isEmpty || pincode.length != 6) {
-      debugPrint('[PostalCodeService] Invalid pincode: $pincode');
       return [];
     }
 
     try {
       final url = '$_baseUrl/$pincode';
-      debugPrint('[PostalCodeService] Fetching postal code data from: $url');
 
       final response = await http.get(
         Uri.parse(url),
@@ -61,19 +59,15 @@ class PostalCodeService {
       ).timeout(
         const Duration(seconds: 10),
         onTimeout: () {
-          debugPrint('[PostalCodeService] Request timeout');
           throw Exception('Request timeout');
         },
       );
 
-      debugPrint('[PostalCodeService] Response status: ${response.statusCode}');
-      debugPrint('[PostalCodeService] Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         
         if (data.isEmpty || data[0]['Status'] != 'Success') {
-          debugPrint('[PostalCodeService] No data found for pincode: $pincode');
           return [];
         }
 
@@ -92,14 +86,11 @@ class PostalCodeService {
           }
         }
 
-        debugPrint('[PostalCodeService] Found ${results.length} postal code results');
         return results;
       } else {
-        debugPrint('[PostalCodeService] Error: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      debugPrint('[PostalCodeService] Exception: $e');
       return [];
     }
   }
@@ -107,15 +98,12 @@ class PostalCodeService {
   /// Get current location postal code (if location services are available)
   Future<PostalCodeData?> getPostalCodeFromLocation() async {
     try {
-      debugPrint('[PostalCodeService] Requesting location permission...');
       
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        debugPrint('[PostalCodeService] Location services are disabled - opening location settings...');
         // Open location settings for the user to enable location services
         await Geolocator.openLocationSettings();
-        debugPrint('[PostalCodeService] Location settings opened');
         return null;
       }
 
@@ -124,24 +112,19 @@ class PostalCodeService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          debugPrint('[PostalCodeService] Location permissions are denied');
           return null;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        debugPrint('[PostalCodeService] Location permissions are permanently denied');
         return null;
       }
 
-      debugPrint('[PostalCodeService] Getting current position...');
       // Get current position
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      debugPrint('[PostalCodeService] Position: ${position.latitude}, ${position.longitude}');
-      debugPrint('[PostalCodeService] Converting to address...');
 
       // Convert coordinates to address
       List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -150,7 +133,6 @@ class PostalCodeService {
       );
 
       if (placemarks.isEmpty) {
-        debugPrint('[PostalCodeService] No placemarks found');
         return null;
       }
 
@@ -158,12 +140,9 @@ class PostalCodeService {
       final postalCode = placemark.postalCode ?? '';
       
       if (postalCode.isEmpty) {
-        debugPrint('[PostalCodeService] No postal code found in location');
         return null;
       }
 
-      debugPrint('[PostalCodeService] Found postal code from location: $postalCode');
-      debugPrint('[PostalCodeService] Location: ${placemark.locality}, ${placemark.administrativeArea}');
 
       // Create PostalCodeData from location
       return PostalCodeData(
@@ -174,7 +153,6 @@ class PostalCodeService {
         country: placemark.country ?? 'India',
       );
     } catch (e) {
-      debugPrint('[PostalCodeService] Error getting postal code from location: $e');
       return null;
     }
   }

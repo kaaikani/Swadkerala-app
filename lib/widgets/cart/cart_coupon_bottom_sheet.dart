@@ -306,7 +306,6 @@ class CartCouponBottomSheet {
                                         callback: () async {
                                           final couponCode = coupon.couponCode ?? '';
                                           final hasProducts = bannerController.hasCouponProducts(couponCode);
-                                          debugPrint('[CartCouponBottomSheet] Coupon $couponCode has products: $hasProducts');
                                           
                                           final result = hasProducts
                                               ? await bannerController.applyCouponCodeWithProducts(couponCode)

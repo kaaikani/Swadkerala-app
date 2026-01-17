@@ -44,7 +44,7 @@ dependencies:
   flutter_html: ^3.0.0-beta.2
   marquee: ^2.3.0
 
-  skeletonizer: ^2.1.0
+  skeletonizer: ^2.1.0  # Using 2.1.0 for Flutter 3.35.5+ compatibility
   firebase_core: ^2.30.1
   firebase_messaging: ^14.9.1
   firebase_crashlytics: ^3.5.7
@@ -86,5 +86,6 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/images/kklogo.png"
   adaptive_icon_background: "#4CB150"
-  adaptive_icon_foreground: "assets/images/kklogo.png"
+  adaptive_icon_foreground: "assets/images/kklogo_padded.png"  # Using padded version (65% size) with built-in transparent space
+  # Logo is resized to 65% and centered with transparent padding to prevent cut-off
   remove_alpha_ios: true

@@ -271,8 +271,6 @@ class AddressComponent extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context, dynamic address) {
-    debugPrint('[AddressComponent] ========== EDIT ADDRESS DIALOG OPENED ==========');
-    debugPrint('[AddressComponent] Opening edit address form...');
     _showAddressForm(context, existingAddress: address);
   }
 
@@ -361,9 +359,6 @@ class AddressComponent extends StatelessWidget {
 
   void _showAddressForm(BuildContext context, {dynamic existingAddress}) {
     final isEdit = existingAddress != null;
-    debugPrint('[AddressComponent] ========== ADDRESS FORM DIALOG OPENED ==========');
-    debugPrint('[AddressComponent] Mode: ${isEdit ? "EDIT" : "ADD"}');
-    debugPrint('[AddressComponent] Dialog will open and fetch postal codes...');
     final box = GetStorage();
 
     // Get channel code and type from storage
@@ -373,9 +368,6 @@ class AddressComponent extends StatelessWidget {
     // Check if channel type is BRAND (case-insensitive check)
     final isBrandChannel = channelType.toUpperCase().contains('BRAND');
     
-    debugPrint('[AddressComponent] Channel Type Check:');
-    debugPrint('[AddressComponent]   - channelType from storage: "$channelType"');
-    debugPrint('[AddressComponent]   - isBrandChannel: $isBrandChannel');
 
     // Get customer data for auto-fill (only when adding new address)
     final customer = customerController.activeCustomer.value;
@@ -420,8 +412,6 @@ class AddressComponent extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        debugPrint('[AddressComponent] ========== DIALOG BUILDER CALLED ==========');
-        debugPrint('[AddressComponent] Dialog builder executed');
         
         // State variables for postal codes - use closure to persist
         final postalCodesState = _PostalCodesState();
@@ -433,48 +423,31 @@ class AddressComponent extends StatelessWidget {
         void triggerUpdate() {
           if (dialogSetState != null && context.mounted) {
             dialogSetState!(() {});
-            debugPrint('[AddressComponent] Triggered setState to update UI');
           } else {
-            debugPrint('[AddressComponent] setState not ready yet, will update when StatefulBuilder is called');
           }
         }
         
         // Trigger fetch immediately when dialog builder is called (synchronously)
-        debugPrint('[AddressComponent] ========== FETCHING POSTAL CODES ==========');
-        debugPrint('[AddressComponent] Starting postal codes fetch IMMEDIATELY...');
-        debugPrint('[AddressComponent] Calling customerController.fetchPostalCodes()...');
         
         // Always fetch postal codes when dialog opens (don't check hasFetched)
         // This ensures fresh data every time the dialog is opened
         customerController.fetchPostalCodes().then((codes) {
-          debugPrint('[AddressComponent] ========== POSTAL CODES FETCH COMPLETED ==========');
-          debugPrint('[AddressComponent] Received ${codes.length} postal codes');
           if (codes.isNotEmpty) {
-            debugPrint('[AddressComponent] Postal codes list:');
             for (var code in codes) {
-              debugPrint('[AddressComponent]   - ${code.code} (ID: ${code.id}, isAnywhere: ${code.isAnywhere})');
             }
           } else {
-            debugPrint('[AddressComponent] No postal codes returned');
           }
           postalCodesState.postalCodesList = codes;
           postalCodesState.isLoadingPostalCodes = false;
-          debugPrint('[AddressComponent] State updated - postalCodesList.length: ${postalCodesState.postalCodesList.length}, isLoadingPostalCodes: ${postalCodesState.isLoadingPostalCodes}');
           // Trigger rebuild after state update
           triggerUpdate();
         }).catchError((error) {
-          debugPrint('[AddressComponent] ========== POSTAL CODES FETCH ERROR ==========');
-          debugPrint('[AddressComponent] Error type: ${error.runtimeType}');
-          debugPrint('[AddressComponent] Error message: $error');
           postalCodesState.isLoadingPostalCodes = false;
-          debugPrint('[AddressComponent] State updated (error) - isLoadingPostalCodes: false');
           triggerUpdate();
         });
 
         return StatefulBuilder(
           builder: (context, setState) {
-            debugPrint('[AddressComponent] StatefulBuilder builder called');
-            debugPrint('[AddressComponent] Current state - postalCodesList.length: ${postalCodesState.postalCodesList.length}, isLoadingPostalCodes: ${postalCodesState.isLoadingPostalCodes}');
             
             // Re-check channel type inside builder to ensure it's accessible
             final boxInBuilder = GetStorage();
@@ -486,21 +459,10 @@ class AddressComponent extends StatelessWidget {
             final containsCity = channelTypeUpper.contains('CITY');
             final isBrandChannelInBuilder = containsBrand && !containsCity;
             
-            debugPrint('[AddressComponent] ========== CHANNEL TYPE CHECK IN BUILDER ==========');
-            debugPrint('[AddressComponent] Channel Type Check in Builder:');
-            debugPrint('[AddressComponent]   - channelType from storage (raw): "$channelTypeInBuilder"');
-            debugPrint('[AddressComponent]   - channelType (upper): "$channelTypeUpper"');
-            debugPrint('[AddressComponent]   - contains BRAND: $containsBrand');
-            debugPrint('[AddressComponent]   - contains CITY: $containsCity');
-            debugPrint('[AddressComponent]   - isBrandChannel (final): $isBrandChannelInBuilder');
-            debugPrint('[AddressComponent]   - City field readOnly: ${!isBrandChannelInBuilder}');
-            debugPrint('[AddressComponent] ===================================================');
             
             // Force a rebuild if channel type changes (for debugging)
             if (channelTypeInBuilder.isNotEmpty) {
-              debugPrint('[AddressComponent] ✅ Channel type detected, city field should be ${isBrandChannelInBuilder ? "EDITABLE" : "LOCKED"}');
             } else {
-              debugPrint('[AddressComponent] ⚠️ Channel type is empty, defaulting to LOCKED');
             }
             
             // Store setState reference for postal codes state updates
@@ -509,7 +471,6 @@ class AddressComponent extends StatelessWidget {
             
             // If fetch completed before StatefulBuilder was called, trigger update now
             if (!postalCodesState.isLoadingPostalCodes) {
-              debugPrint('[AddressComponent] Fetch completed (or failed), postalCodesList.length: ${postalCodesState.postalCodesList.length}');
               // Trigger a rebuild to ensure UI shows the postal codes
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
@@ -951,10 +912,6 @@ class AddressComponent extends StatelessWidget {
   ) {
     final hasPostalCodes = postalCodesList.isNotEmpty;
     
-    debugPrint('[AddressComponent] _buildPostalCodeField called:');
-    debugPrint('[AddressComponent]   - isLoadingPostalCodes: $isLoadingPostalCodes');
-    debugPrint('[AddressComponent]   - postalCodesList.length: ${postalCodesList.length}');
-    debugPrint('[AddressComponent]   - hasPostalCodes: $hasPostalCodes');
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -14,9 +14,7 @@ class SmsAutofillService {
   Future<void> initialize() async {
     try {
       _appHash = await SmsAutoFill().getAppSignature;
-debugPrint('[SmsAutofillService] App Hash Key: $_appHash');
     } catch (e) {
-debugPrint('[SmsAutofillService] Error getting app hash: $e');
       _appHash = 'PLACEHOLDER_HASH';
     }
   }
@@ -31,14 +29,11 @@ debugPrint('[SmsAutofillService] Error getting app hash: $e');
 
       _smsSubscription = SmsAutoFill().code.listen((otp) {
         if (otp.isNotEmpty) {
-debugPrint('[SmsAutofillService] OTP received: $otp');
           _onOtpReceived?.call(otp);
         }
       });
 
-debugPrint('[SmsAutofillService] Listening for OTP...');
     } catch (e) {
-debugPrint('[SmsAutofillService] Error starting listener: $e');
       _showManualEntryMessage();
     }
   }
@@ -49,7 +44,6 @@ debugPrint('[SmsAutofillService] Error starting listener: $e');
     _smsSubscription = null;
     _onOtpReceived = null;
     SmsAutoFill().unregisterListener();
-debugPrint('[SmsAutofillService] Stopped listening for OTP');
   }
 
   /// Get app hash
@@ -60,6 +54,5 @@ debugPrint('[SmsAutofillService] Stopped listening for OTP');
 
   /// Show manual entry message when SMS autofill fails
   void _showManualEntryMessage() {
-debugPrint('[SmsAutofillService] SMS autofill not available, user should enter OTP manually');
   }
 }

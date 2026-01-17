@@ -34,7 +34,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
     try {
       await authController.checkLoginStatusFromGraphqlService();
     } catch (e) {
-debugPrint('[AuthWrapper] GraphQL auth check failed: $e');
       authController.setLoggedIn(false);
     }
 
@@ -58,9 +57,6 @@ debugPrint('[AuthWrapper] GraphQL auth check failed: $e');
       final authToken = GraphqlService.authToken;
       final channelToken = GraphqlService.channelToken;
 
-debugPrint('[AuthWrapper] Auth token present: ${authToken.isNotEmpty}');
-debugPrint(  '[AuthWrapper] Channel token present: ${channelToken.isNotEmpty}');
-debugPrint(  '[AuthWrapper] AuthController logged in: ${authController.isLoggedIn}');
 
       // User is logged in and tokens are valid → Home
       if (authController.isLoggedIn &&
@@ -72,7 +68,6 @@ debugPrint(  '[AuthWrapper] AuthController logged in: ${authController.isLoggedI
       // If user is logged in but tokens missing → reset login state
       if (authController.isLoggedIn &&
           (authToken.isEmpty || channelToken.isEmpty)) {
-debugPrint('[AuthWrapper] Tokens missing, clearing login state');
         authController.setLoggedIn(false);
       }
 

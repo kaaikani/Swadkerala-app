@@ -95,7 +95,6 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                           navigator.pop();
                         }
                       } catch (e) {
-                        debugPrint('[HomePostalCodeSheet] Error closing sheet: $e');
                       }
                     },
                   ),
@@ -430,7 +429,6 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                                           widget.onPostalCodeSelected();
                                         } catch (e) {
                                           // Navigator already popped or context invalid
-                                          debugPrint('[HomePostalCodeSheet] Error closing sheet: $e');
                                         }
                                       }
                                     });

@@ -18,32 +18,59 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   final _authController = Get.find<AuthController>();
   final _smsAutofillService = SmsAutofillService();
-
-  // Use PageController for smooth sliding between steps
-  final PageController _pageController = PageController();
 
   // Form Keys for separate validation per step
   final _step1Key = GlobalKey<FormState>();
   final _step2Key = GlobalKey<FormState>();
 
   int _currentStep = 0;
-  final int _totalSteps = 2;
+
+  // Animation controllers
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
+    _initializeAnimations();
     _initializeSmsAutofill();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _authController.resetFormField();
     });
   }
 
+  void _initializeAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
+
+    _fadeController.forward();
+    _slideController.forward();
+  }
+
   @override
   void dispose() {
-    _pageController.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
     _smsAutofillService.stopListening();
     super.dispose();
   }
@@ -52,7 +79,6 @@ class _SignupPageState extends State<SignupPage> {
     try {
       await _smsAutofillService.initialize();
     } catch (e) {
-      debugPrint('[SignupPage] SMS init error: $e');
     }
   }
 
@@ -63,7 +89,6 @@ class _SignupPageState extends State<SignupPage> {
         if (otp.length == 4) _handleFinalSubmit();
       });
     } catch (e) {
-      debugPrint('[SignupPage] SMS listening error: $e');
     }
   }
 
@@ -98,7 +123,6 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> _clearCache() async {
     try {
-      debugPrint('[SignupPage] Clearing cache before returning to login...');
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
       final storage = GetStorage();
@@ -106,19 +130,12 @@ class _SignupPageState extends State<SignupPage> {
       _authController.setLoggedIn(false);
       _authController.setOtpSent(false);
       _authController.resetFormField();
-      debugPrint('[SignupPage] ✅ Cache cleared successfully');
     } catch (e) {
-      debugPrint('[SignupPage] Error clearing cache: $e');
     }
   }
 
   void _animateToPage(int page) {
     setState(() => _currentStep = page);
-    _pageController.animateToPage(
-      page,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOutQuart,
-    );
   }
 
   Future<void> _processSendOtp() async {
@@ -182,7 +199,6 @@ class _SignupPageState extends State<SignupPage> {
         }
       }
     } catch (e) {
-      debugPrint('[SignupPage] SIM selection failed: $e');
       if (mounted) {
         showErrorSnackbar('Error loading SIM numbers: $e');
       }
@@ -197,6 +213,8 @@ class _SignupPageState extends State<SignupPage> {
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: true,
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -210,164 +228,55 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ),
         child: SafeArea(
-          child: Stack(
-            children: [
-              // Decorative Background
-              _buildBackgroundDecorations(),
-              
-              // Main Content
-              Column(
-                children: [
-                  // Compact Header
-                  _buildCompactHeader(),
-                  
-                  SizedBox(height: ResponsiveUtils.rp(20)),
-                  
-                  // Progress Indicator
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(20)),
-                    child: _buildProgressBar(),
+          bottom: false,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveUtils.rp(24),
+                  ResponsiveUtils.rp(32),
+                  ResponsiveUtils.rp(24),
+                  ResponsiveUtils.rp(24),
+                ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 420,
                   ),
-                  
-                  SizedBox(height: ResponsiveUtils.rp(24)),
-                  
-                  // Content Area - Floating Card
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Center(
-                          child: SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(20)),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: 420,
-                                minHeight: constraints.maxHeight,
-                              ),
-                              child: _buildFloatingContentCard(
-                                availableHeight: constraints.maxHeight,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Simple Header
+                      _buildSimpleHeader(),
+                      
+                      SizedBox(height: ResponsiveUtils.rp(48)),
+                      
+                      // Progress Indicator
+                      _buildProgressBar(),
+                      
+                      SizedBox(height: ResponsiveUtils.rp(40)),
+                      
+                      // Form Content
+                      _currentStep == 0
+                          ? _buildStep1PersonalInfo()
+                          : _buildStep2Otp(),
+                      
+                      SizedBox(height: ResponsiveUtils.rp(32)),
+                      
+                      // Action Button
+                      _buildActionButton(),
+                      
+                      SizedBox(height: ResponsiveUtils.rp(24)),
+                    ],
                   ),
-                  
-                  // Bottom Navigation Bar
-                  _buildBottomBar(),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackgroundDecorations() {
-    return Stack(
-      children: [
-        // Top Right Circle
-        Positioned(
-          top: -100,
-          right: -100,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  AppColors.button.withValues(alpha: 0.1),
-                  AppColors.button.withValues(alpha: 0.0),
-                ],
+                ),
               ),
             ),
           ),
         ),
-        // Bottom Left Circle
-        Positioned(
-          bottom: -150,
-          left: -150,
-          child: Container(
-            width: 400,
-            height: 400,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  AppColors.button.withValues(alpha: 0.08),
-                  AppColors.button.withValues(alpha: 0.0),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCompactHeader() {
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(20),
-        ResponsiveUtils.rp(16),
-        ResponsiveUtils.rp(20),
-        ResponsiveUtils.rp(8),
-      ),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: ResponsiveUtils.rp(12),
-                  offset: Offset(0, ResponsiveUtils.rp(4)),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () => Get.back(),
-              icon: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColors.textPrimary,
-                size: ResponsiveUtils.rp(18),
-              ),
-              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-            ),
-          ),
-          SizedBox(width: ResponsiveUtils.rp(16)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(24),
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
-                    letterSpacing: -0.8,
-                    height: 1.2,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(4)),
-                Text(
-                  'Step ${_currentStep + 1} of $_totalSteps',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(13),
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -464,198 +373,184 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  Widget _buildFloatingContentCard({double? availableHeight}) {
-    final height = availableHeight != null && availableHeight > 0
-        ? availableHeight - ResponsiveUtils.rp(40)
-        : MediaQuery.of(context).size.height * 0.6;
-    
-    return Container(
-      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(20)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(28)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: ResponsiveUtils.rp(40),
-            offset: Offset(0, ResponsiveUtils.rp(15)),
-            spreadRadius: 0,
+  Widget _buildSimpleHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title
+        Text(
+          'Create Account',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(32),
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+            letterSpacing: -1.0,
           ),
-          BoxShadow(
-            color: AppColors.button.withValues(alpha: 0.08),
-            blurRadius: ResponsiveUtils.rp(30),
-            offset: Offset(0, ResponsiveUtils.rp(10)),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: SizedBox(
-        height: height,
-        child: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            _buildStep1PersonalInfo(),
-            _buildStep2Otp(),
-          ],
+          overflow: TextOverflow.visible,
+          softWrap: true,
         ),
-      ),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        
+        // Subtitle
+        Text(
+          'Sign up to get started',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(16),
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w400,
+          ),
+          overflow: TextOverflow.visible,
+          softWrap: true,
+        ),
+      ],
     );
   }
 
   // --- Step 1: Personal Info + Phone Number ---
   Widget _buildStep1PersonalInfo() {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.all(ResponsiveUtils.rp(28)),
-      child: Form(
-        key: _step1Key,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildSectionTitle('Personal Information', 'Enter your details to get started'),
-            SizedBox(height: ResponsiveUtils.rp(32)),
+    return Form(
+      key: _step1Key,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildSectionTitle('Personal Information', 'Enter your details to get started'),
+          SizedBox(height: ResponsiveUtils.rp(32)),
 
-            ModernTextField(
-              controller: _authController.firstname,
-              label: 'First Name',
-              hint: 'e.g. John',
-              icon: Icons.person_outline_rounded,
-              validator: (v) {
-                if (v == null || v.trim().length < 2) return 'Min 2 characters required';
-                if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(v)) return 'Only alphabets allowed';
-                return null;
-              },
-            ),
-            SizedBox(height: ResponsiveUtils.rp(20)),
-            ModernTextField(
-              controller: _authController.lastname,
-              label: 'Last Name',
-              hint: 'e.g. Doe',
-              icon: Icons.family_restroom_rounded,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Last name required';
-                return null;
-              },
-            ),
-            SizedBox(height: ResponsiveUtils.rp(20)),
-            ModernTextField(
-              controller: _authController.phoneNumber,
-              label: 'Mobile Number',
-              hint: '10-digit number',
-              icon: Icons.phone_iphone_rounded,
-              inputType: TextInputType.phone,
-              prefixText: '+91 ',
-              maxLength: 10,
-              onSimTap: _showSimSelectionDialog,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Phone number is required';
-                if (v.length != 10) return 'Enter valid 10-digit number';
-                return null;
-              },
-            ),
-          ],
-        ),
+          ModernTextField(
+            controller: _authController.firstname,
+            label: 'First Name',
+            hint: 'e.g. John',
+            icon: Icons.person_outline_rounded,
+            validator: (v) {
+              if (v == null || v.trim().length < 2) return 'Min 2 characters required';
+              if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(v)) return 'Only alphabets allowed';
+              return null;
+            },
+          ),
+          SizedBox(height: ResponsiveUtils.rp(20)),
+          ModernTextField(
+            controller: _authController.lastname,
+            label: 'Last Name',
+            hint: 'e.g. Doe',
+            icon: Icons.family_restroom_rounded,
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) return 'Last name required';
+              return null;
+            },
+          ),
+          SizedBox(height: ResponsiveUtils.rp(20)),
+          ModernTextField(
+            controller: _authController.phoneNumber,
+            label: 'Mobile Number',
+            hint: '10-digit number',
+            icon: Icons.phone_iphone_rounded,
+            inputType: TextInputType.phone,
+            prefixText: '+91 ',
+            maxLength: 10,
+            onSimTap: _showSimSelectionDialog,
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) return 'Phone number is required';
+              if (v.length != 10) return 'Enter valid 10-digit number';
+              return null;
+            },
+          ),
+        ],
       ),
     );
   }
 
   // --- Step 2: OTP Verification ---
   Widget _buildStep2Otp() {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.all(ResponsiveUtils.rp(28)),
-      child: Form(
-        key: _step2Key,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildSectionTitle('Verification', 'Enter the code sent to +91 ${_authController.phoneNumber.text}'),
-            SizedBox(height: ResponsiveUtils.rp(40)),
+    return Form(
+      key: _step2Key,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildSectionTitle('Verification', 'Enter the code sent to +91 ${_authController.phoneNumber.text}'),
+          SizedBox(height: ResponsiveUtils.rp(40)),
 
-            Center(
-              child: Container(
-                width: ResponsiveUtils.rp(240),
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(24),
-                  vertical: ResponsiveUtils.rp(24),
+          Center(
+            child: Container(
+              width: ResponsiveUtils.rp(240),
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(24),
+                vertical: ResponsiveUtils.rp(24),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1.5,
                 ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-                  border: Border.all(
-                    color: AppColors.border.withValues(alpha: 0.3),
-                    width: 1.5,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: ResponsiveUtils.rp(12),
+                    offset: Offset(0, ResponsiveUtils.rp(4)),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: ResponsiveUtils.rp(12),
-                      offset: Offset(0, ResponsiveUtils.rp(4)),
-                    ),
-                  ],
+                ],
+              ),
+              child: TextFormField(
+                controller: _authController.otpController,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(32),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: ResponsiveUtils.rp(16),
+                  color: AppColors.textPrimary,
                 ),
-                child: TextFormField(
-                  controller: _authController.otpController,
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
+                maxLength: 4,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  counterText: "",
+                  hintText: "○ ○ ○ ○",
+                  hintStyle: TextStyle(
+                    color: AppColors.textSecondary.withValues(alpha: 0.2),
                     fontSize: ResponsiveUtils.sp(32),
-                    fontWeight: FontWeight.w800,
                     letterSpacing: ResponsiveUtils.rp(16),
-                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w300,
                   ),
-                  maxLength: 4,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    counterText: "",
-                    hintText: "○ ○ ○ ○",
-                    hintStyle: TextStyle(
-                      color: AppColors.textSecondary.withValues(alpha: 0.2),
-                      fontSize: ResponsiveUtils.sp(32),
-                      letterSpacing: ResponsiveUtils.rp(16),
-                      fontWeight: FontWeight.w300,
-                    ),
-                    border: InputBorder.none,
-                  ),
-                  onChanged: (val) {
-                    if (val.length == 4) _handleFinalSubmit();
-                  },
-                  validator: (v) => (v?.length ?? 0) < 4 ? "" : null,
+                  border: InputBorder.none,
                 ),
+                onChanged: (val) {
+                  if (val.length == 4) _handleFinalSubmit();
+                },
+                validator: (v) => (v?.length ?? 0) < 4 ? "" : null,
               ),
             ),
+          ),
 
-            SizedBox(height: ResponsiveUtils.rp(32)),
-            Center(
-              child: Obx(() => TextButton.icon(
-                onPressed: _authController.isLoading ? null : () => _authController.resendOtp(context),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ResponsiveUtils.rp(20),
-                    vertical: ResponsiveUtils.rp(12),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                  ),
+          SizedBox(height: ResponsiveUtils.rp(32)),
+          Center(
+            child: Obx(() => TextButton.icon(
+              onPressed: _authController.isLoading ? null : () => _authController.resendOtp(context),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(20),
+                  vertical: ResponsiveUtils.rp(12),
                 ),
-                icon: Icon(
-                  Icons.refresh_rounded,
-                  size: ResponsiveUtils.rp(18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                ),
+              ),
+              icon: Icon(
+                Icons.refresh_rounded,
+                size: ResponsiveUtils.rp(18),
+                color: AppColors.button,
+              ),
+              label: Text(
+                'Resend Code',
+                style: TextStyle(
                   color: AppColors.button,
+                  fontWeight: FontWeight.w600,
+                  fontSize: ResponsiveUtils.sp(14),
                 ),
-                label: Text(
-                  'Resend Code',
-                  style: TextStyle(
-                    color: AppColors.button,
-                    fontWeight: FontWeight.w600,
-                    fontSize: ResponsiveUtils.sp(14),
-                  ),
-                ),
-              )),
-            ),
-          ],
-        ),
+              ),
+            )),
+          ),
+        ],
       ),
     );
   }
@@ -688,177 +583,142 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  Widget _buildBottomBar() {
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.rp(24),
-        ResponsiveUtils.rp(20),
-        ResponsiveUtils.rp(24),
-        ResponsiveUtils.rp(24),
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: ResponsiveUtils.rp(30),
-            offset: const Offset(0, -8),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Obx(() {
-        final isLoading = _authController.isLoading;
+  Widget _buildActionButton() {
+    return Obx(() {
+      final isLoading = _authController.isLoading;
 
-        return Row(
-          children: [
-            if (_currentStep > 0) ...[
-              Expanded(
-                flex: 1,
-                child: Container(
-                  height: ResponsiveUtils.rp(58),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-                    border: Border.all(
-                      color: AppColors.border.withValues(alpha: 0.4),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: ResponsiveUtils.rp(12),
-                        offset: Offset(0, ResponsiveUtils.rp(4)),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: isLoading ? null : _prevStep,
-                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.arrow_back_rounded,
-                              color: AppColors.textPrimary,
-                              size: ResponsiveUtils.rp(18),
-                            ),
-                            SizedBox(width: ResponsiveUtils.rp(6)),
-                            Text(
-                              'Back',
-                              style: TextStyle(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                                fontSize: ResponsiveUtils.sp(16),
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: ResponsiveUtils.rp(16)),
-            ],
-
+      return Row(
+        children: [
+          if (_currentStep > 0) ...[
             Expanded(
-              flex: 2,
+              flex: 1,
               child: Container(
                 height: ResponsiveUtils.rp(58),
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-                  gradient: LinearGradient(
-                    colors: [AppColors.button, AppColors.buttonLight],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.4),
+                    width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.button.withValues(alpha: 0.35),
-                      blurRadius: ResponsiveUtils.rp(24),
-                      offset: Offset(0, ResponsiveUtils.rp(8)),
-                      spreadRadius: ResponsiveUtils.rp(2),
-                    ),
-                    BoxShadow(
-                      color: AppColors.button.withValues(alpha: 0.15),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: ResponsiveUtils.rp(12),
                       offset: Offset(0, ResponsiveUtils.rp(4)),
-                      spreadRadius: 0,
                     ),
                   ],
                 ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: isLoading ? null : _nextStep,
+                    onTap: isLoading ? null : _prevStep,
                     borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
                     child: Center(
-                      child: isLoading
-                          ? SizedBox(
-                              width: ResponsiveUtils.rp(26),
-                              height: ResponsiveUtils.rp(26),
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _currentStep == 1 ? 'Verify & Finish' : 'Continue',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: ResponsiveUtils.sp(17),
-                                    letterSpacing: 0.8,
-                                  ),
-                                ),
-                                if (_currentStep < 1) ...[
-                                  SizedBox(width: ResponsiveUtils.rp(12)),
-                                  Container(
-                                    padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_forward_rounded,
-                                      color: Colors.white,
-                                      size: ResponsiveUtils.rp(18),
-                                    ),
-                                  ),
-                                ] else ...[
-                                  SizedBox(width: ResponsiveUtils.rp(12)),
-                                  Container(
-                                    padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                                    ),
-                                    child: Icon(
-                                      Icons.check_rounded,
-                                      color: Colors.white,
-                                      size: ResponsiveUtils.rp(18),
-                                    ),
-                                  ),
-                                ],
-                              ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.arrow_back_rounded,
+                            color: AppColors.textPrimary,
+                            size: ResponsiveUtils.rp(18),
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(6)),
+                          Text(
+                            'Back',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: ResponsiveUtils.sp(16),
+                              letterSpacing: 0.3,
                             ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
+            SizedBox(width: ResponsiveUtils.rp(16)),
           ],
-        );
-      }),
-    );
+
+          Expanded(
+            flex: _currentStep > 0 ? 2 : 1,
+            child: Container(
+              height: ResponsiveUtils.rp(58),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+                gradient: LinearGradient(
+                  colors: [AppColors.button, AppColors.buttonLight],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.button.withValues(alpha: 0.35),
+                    blurRadius: ResponsiveUtils.rp(24),
+                    offset: Offset(0, ResponsiveUtils.rp(8)),
+                    spreadRadius: ResponsiveUtils.rp(2),
+                  ),
+                  BoxShadow(
+                    color: AppColors.button.withValues(alpha: 0.15),
+                    blurRadius: ResponsiveUtils.rp(12),
+                    offset: Offset(0, ResponsiveUtils.rp(4)),
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isLoading ? null : _nextStep,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+                  child: Center(
+                    child: isLoading
+                        ? SizedBox(
+                            width: ResponsiveUtils.rp(26),
+                            height: ResponsiveUtils.rp(26),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _currentStep == 1 ? 'Verify & Finish' : 'Continue',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: ResponsiveUtils.sp(17),
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                              SizedBox(width: ResponsiveUtils.rp(12)),
+                              Container(
+                                padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                ),
+                                child: Icon(
+                                  _currentStep == 1 ? Icons.check_rounded : Icons.arrow_forward_rounded,
+                                  color: Colors.white,
+                                  size: ResponsiveUtils.rp(18),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
 

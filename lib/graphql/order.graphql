@@ -8,7 +8,10 @@ query ActiveOrder {
             shippingWithTax
             couponCodes
             state
-
+            shippingAddress {
+                ...OrderAddress
+                __typename
+            }
 
             customFields {
                 loyaltyPointsEarned

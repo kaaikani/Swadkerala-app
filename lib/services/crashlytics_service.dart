@@ -16,7 +16,6 @@ class CrashlyticsService {
     if (_initialized) return;
 
     if (kIsWeb) {
-debugPrint('[Crashlytics] Skipping initialization on Web');
       return;
     }
 
@@ -33,9 +32,7 @@ debugPrint('[Crashlytics] Skipping initialization on Web');
       };
 
       _initialized = true;
-debugPrint('[Crashlytics] Initialized successfully');
     } catch (e) {
-debugPrint('[Crashlytics] Initialization error: $e');
     }
   }
 
@@ -67,7 +64,6 @@ debugPrint('[Crashlytics] Initialization error: $e');
         reason: reason,
       );
     } catch (e) {
-debugPrint('[Crashlytics] Error recording: $e');
     }
   }
 
@@ -78,7 +74,6 @@ debugPrint('[Crashlytics] Error recording: $e');
     try {
       FirebaseCrashlytics.instance.log(message);
     } catch (e) {
-debugPrint('[Crashlytics] Error logging: $e');
     }
   }
 
@@ -89,7 +84,6 @@ debugPrint('[Crashlytics] Error logging: $e');
     try {
       FirebaseCrashlytics.instance.setUserIdentifier(userId);
     } catch (e) {
-debugPrint('[Crashlytics] Error setting user ID: $e');
     }
   }
 
@@ -110,7 +104,6 @@ debugPrint('[Crashlytics] Error setting user ID: $e');
         FirebaseCrashlytics.instance.setCustomKey(key, value.toString());
       }
     } catch (e) {
-debugPrint('[Crashlytics] Error setting custom key: $e');
     }
   }
 
@@ -123,7 +116,6 @@ debugPrint('[Crashlytics] Error setting custom key: $e');
         setCustomKey(key, value);
       });
     } catch (e) {
-debugPrint('[Crashlytics] Error setting custom keys: $e');
     }
   }
 

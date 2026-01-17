@@ -27,7 +27,6 @@ class HtmlUtils {
 
     if (kDebugMode && text.isEmpty) {
       // Helpful when debugging unexpected blank strings coming from the API.
-debugPrint('[HtmlUtils] stripHtmlTags resulted in an empty string.');
     }
 
     return text;

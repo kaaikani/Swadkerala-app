@@ -44,26 +44,19 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
       // }
 
       // Check Play Store for updates directly (GraphQL query disabled)
-debugPrint('[InitialRouteWrapper] Checking Play Store for updates...');
       try {
         await updateService.checkForUpdatesAndDetermineType();
-debugPrint('[InitialRouteWrapper] Play Store update check completed');
       } catch (e) {
-debugPrint('[InitialRouteWrapper] Play Store update check failed: $e');
       }
 
       // Check if immediate update is enabled (based on Play Store only)
       if (updateService.isImmediateUpdateEnabled && updateService.isUpdateAvailable) {
         _shouldCheckImmediateUpdate = true;
-debugPrint('[InitialRouteWrapper] IMMEDIATE UPDATE enabled - showing update page');
       } else {
         _shouldCheckImmediateUpdate = false;
-debugPrint('[InitialRouteWrapper] No immediate update needed - proceeding to login');
       }
 
-debugPrint(  '[InitialRouteWrapper] Final decision - Should check immediate update: $_shouldCheckImmediateUpdate');
     } catch (e) {
-debugPrint('[InitialRouteWrapper] Error checking update settings: $e');
       _shouldCheckImmediateUpdate = false;
     } finally {
       if (mounted) {
@@ -76,11 +69,9 @@ debugPrint('[InitialRouteWrapper] Error checking update settings: $e');
 
   @override
   Widget build(BuildContext context) {
-debugPrint(  '[InitialRouteWrapper] Build called - _isLoading: $_isLoading, _shouldCheckImmediateUpdate: $_shouldCheckImmediateUpdate');
 
     // Show loading while checking settings
     if (_isLoading) {
-debugPrint('[InitialRouteWrapper] Showing loading screen');
       return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -105,10 +96,8 @@ debugPrint('[InitialRouteWrapper] Showing loading screen');
 
     // Decide which wrapper to use based on IMMEDIATE_UPDATE setting
     if (_shouldCheckImmediateUpdate) {
-debugPrint(  '[InitialRouteWrapper] Using UpdateCheckWrapper for immediate updates');
       return const UpdateCheckWrapper();
     } else {
-debugPrint(  '[InitialRouteWrapper] Using AuthWrapper for flexible updates');
       return const AuthWrapper();
     }
   }

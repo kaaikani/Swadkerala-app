@@ -91,27 +91,31 @@ class _MyHomePageState extends State<MyHomePage> {
     
     // Listen to channel token changes and update UI immediately
     // Only trigger refresh if token actually changed (not just emitted)
-    ever(GraphqlService.channelTokenRx, (String newToken) {
-      // Only proceed if token actually changed
-      if (_previousChannelToken == newToken) {
-        debugPrint('[HomePage] Channel token reactive variable updated but value unchanged: $newToken (skipping refresh)');
-        return;
-      }
-      
-      debugPrint('[HomePage] 🔄 Channel token changed reactively: $_previousChannelToken -> $newToken');
-      _previousChannelToken = newToken;
-      
-      if (mounted) {
-        _updateChannelDisplay(skipRefreshTrigger: false); // Allow refresh for actual channel token changes
-        // Force UI refresh when channel changes
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Wait until initial load is complete before setting up listener to prevent loops
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Set up listener after initial load to prevent loops during initialization
+      Future.delayed(Duration(milliseconds: 500), () {
+        ever(GraphqlService.channelTokenRx, (String newToken) {
+          // Only proceed if token actually changed and initial load is complete
+          if (_isInitialLoad || _previousChannelToken == newToken) {
+            return;
+          }
+          
+          _previousChannelToken = newToken;
+          
           if (mounted) {
-            setState(() {});
-            // Refresh data with new channel - force refresh since channel actually changed
-            _refreshData(forceRefresh: true);
+            _updateChannelDisplay(skipRefreshTrigger: false); // Allow refresh for actual channel token changes
+            // Force UI refresh when channel changes
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && !_isInitialLoad) {
+                setState(() {});
+                // Refresh data with new channel - force refresh since channel actually changed
+                _refreshData(forceRefresh: true);
+              }
+            });
           }
         });
-      }
+      });
     });
   }
 
@@ -132,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // Check current permission status
       final status = await Permission.notification.status;
       
-      debugPrint('[HomePage] Notification permission status: $status');
       
       // If permission is granted, reset the dialog shown flag (in case user granted it from settings)
       if (status.isGranted) {
@@ -233,7 +236,6 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
     } catch (e) {
-      debugPrint('[HomePage] Error checking notification permission: $e');
     }
   }
 
@@ -256,9 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _channelToken.value = newChannelToken;
       channelTokenChanged = true;
       if (!skipRefreshTrigger && !_isInitialLoad) {
-      debugPrint('[HomePage] ⚠️ Channel token changed - forcing UI refresh');
       } else {
-        debugPrint('[HomePage] Channel token updated (refresh trigger skipped: skipRefresh=$skipRefreshTrigger, initialLoad=$_isInitialLoad)');
       }
     }
     
@@ -267,7 +267,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_channelName.value != newChannelName) {
       _channelName.value = newChannelName;
       channelNameChanged = true;
-      debugPrint('[HomePage] Channel name updated: $newChannelName');
     } else {
       // Force update even if same to ensure Obx rebuilds
       _channelName.value = newChannelName;
@@ -287,7 +286,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _postalCode.value = newPostalCode;
       _previousPostalCode = newPostalCode;
       postalCodeChanged = true;
-      debugPrint('[HomePage] Postal code updated: $newPostalCode (was: $currentPostalCodeStr)');
     } else if (newPostalCode.isNotEmpty) {
       // Even if value appears same, ensure reactive variable is set (handles type mismatches)
       _postalCode.value = newPostalCode;
@@ -295,15 +293,12 @@ class _MyHomePageState extends State<MyHomePage> {
         _previousPostalCode = newPostalCode; // Initialize on first load
       }
       if (currentPostalCodeStr.isEmpty && newPostalCode.isNotEmpty) {
-        debugPrint('[HomePage] Postal code initialized: $newPostalCode (skipping refresh trigger)');
       } else {
-      debugPrint('[HomePage] Postal code refreshed: $newPostalCode');
       }
     }
     
     if (_channelType.value != newChannelType) {
       _channelType.value = newChannelType;
-      debugPrint('[HomePage] Channel type updated: $newChannelType');
     } else {
       // Force update even if same
       _channelType.value = newChannelType;
@@ -316,7 +311,6 @@ class _MyHomePageState extends State<MyHomePage> {
         !skipRefreshTrigger && 
         !_isInitialLoad && 
         mounted) {
-      debugPrint('[HomePage] ⚠️ Channel/postal code changed - triggering UI refresh');
       // Force rebuild by updating a reactive variable that the UI observes
       // This ensures all Obx widgets rebuild
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -326,11 +320,9 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     } else if (skipRefreshTrigger || _isInitialLoad) {
       // Called during refresh or initial load - just update values, don't trigger refresh
-      debugPrint('[HomePage] Channel/postal code updated (refresh trigger skipped: skipRefresh=$skipRefreshTrigger, initialLoad=$_isInitialLoad)');
     } else {
       // No actual change detected - just reactive variable updates
       // Don't trigger unnecessary UI refresh
-      debugPrint('[HomePage] Channel/postal code reactive variables updated but no actual change detected (skipping UI refresh)');
     }
   }
 
@@ -339,7 +331,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _refreshData({bool forceRefresh = false}) {
     // Prevent duplicate refresh calls
     if (_isRefreshingData) {
-      debugPrint('[HomePage] Data refresh already in progress, skipping duplicate call...');
       return;
     }
     
@@ -348,7 +339,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!forceRefresh && !_isInitialLoad) {
       final currentToken = GraphqlService.channelToken;
       if (currentToken == _previousChannelToken) {
-        debugPrint('[HomePage] _refreshData() called but channel token unchanged ($currentToken). Skipping refresh to prevent unnecessary API calls.');
         return;
       }
     }
@@ -357,7 +347,6 @@ class _MyHomePageState extends State<MyHomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Check if we're still on HomePage - if not, abort refresh
       if (!mounted) {
-        debugPrint('[HomePage] Widget not mounted, aborting refresh');
         _isRefreshingData = false;
         return;
       }
@@ -366,31 +355,25 @@ class _MyHomePageState extends State<MyHomePage> {
       try {
         final currentRoute = Get.currentRoute;
         if (currentRoute != '/home' && currentRoute != '/') {
-          debugPrint('[HomePage] Not on HomePage route (current: $currentRoute), aborting refresh');
           _isRefreshingData = false;
           return;
         }
       } catch (e) {
-        debugPrint('[HomePage] Could not check current route: $e');
       }
       
       // Double-check: If channel token hasn't changed and this is not initial load or forced refresh, skip
       if (!forceRefresh && !_isInitialLoad) {
         final currentToken = GraphqlService.channelToken;
         if (currentToken == _previousChannelToken) {
-          debugPrint('[HomePage] _refreshData() aborted: Channel token unchanged ($currentToken). This was likely triggered by cart change, not channel change.');
           _isRefreshingData = false;
           return;
         }
       }
       
-      debugPrint('[HomePage] ========== STARTING DATA REFRESH ==========');
       
       // STEP 1: Get customer data if authenticated
       if (_isUserAuthenticated()) {
-        debugPrint('[HomePage] User is authenticated, fetching customer data...');
         await customerController.getActiveCustomer();
-        debugPrint('[HomePage] Customer data fetched');
       }
       
       // STEP 2: Get postal code from shipping address and set channel FIRST
@@ -401,31 +384,24 @@ class _MyHomePageState extends State<MyHomePage> {
       
       if (storedPostalCode == null || storedPostalCode.toString().isEmpty || 
           storedChannelToken == null || storedChannelToken.toString().isEmpty) {
-      debugPrint('[HomePage] Checking postal code and setting channel...');
         channelChanged = await _ensurePostalCodeAndChannelSet();
-      debugPrint('[HomePage] Postal code and channel check completed. Channel changed: $channelChanged');
       } else {
-        debugPrint('[HomePage] Postal code and channel already set, skipping channel setup');
       }
       
       // Always update UI display after checking postal code/channel (ensures UI is in sync)
       // Add small delay to ensure storage is written before reading
       await Future.delayed(Duration(milliseconds: 100));
       _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh trigger since we're already in refresh
-      debugPrint('[HomePage] UI display updated with latest channel and postal code');
       
       // STEP 3: Only after channel is set, fetch all other data
       // If channel changed, data is already being refreshed by switchChannelByPostalCode
       // So we can skip duplicate fetches or wait a bit for refresh to complete
       if (channelChanged) {
-        debugPrint('[HomePage] Channel changed, waiting for data refresh to complete...');
         // Wait a bit for the refresh to complete (it's async in the background)
         await Future.delayed(Duration(milliseconds: 500));
-        debugPrint('[HomePage] Data refresh should be complete, continuing...');
         
         // Force UI refresh after channel change to ensure UI updates
         if (mounted) {
-          debugPrint('[HomePage] Forcing UI refresh after channel change...');
           _updateChannelDisplay(skipRefreshTrigger: false); // Allow refresh trigger for actual channel changes
           // Trigger a rebuild
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -436,7 +412,6 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
       
-      debugPrint('[HomePage] Fetching channel-specific data...');
       
       if (_isUserAuthenticated()) {
         // Only fetch cart if it's not already loaded or if it's stale
@@ -459,11 +434,12 @@ class _MyHomePageState extends State<MyHomePage> {
       // These can be fetched regardless of authentication status
       // Only fetch if channel didn't change (to avoid duplicate fetches)
       if (!channelChanged) {
-      collectionController.fetchAllCollections();
-        bannerController.getBannersForChannel(); // Refresh banners with current channel token
-      bannerController.getFrequentlyOrderedProducts();
-      } else {
-        debugPrint('[HomePage] Skipping duplicate data fetch - already refreshed after channel change');
+        // Fetch collections and banners only once
+        await Future.wait([
+          collectionController.fetchAllCollections(),
+          bannerController.getBannersForChannel(),
+          bannerController.getFrequentlyOrderedProducts(),
+        ], eagerError: false);
       }
       
       // Check for postal code dialog if still needed (for non-authenticated users)
@@ -472,7 +448,6 @@ class _MyHomePageState extends State<MyHomePage> {
         _checkAndShowPostalCodeDialog();
       }
       
-      debugPrint('[HomePage] ========== DATA REFRESH COMPLETED ==========');
       
       // Track screen view
       AnalyticsService().logScreenView(screenName: 'Home');
@@ -923,31 +898,25 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Returns true if channel was changed, false otherwise
   Future<bool> _ensurePostalCodeAndChannelSet() async {
     try {
-      debugPrint('[HomePage] ========== ENSURING POSTAL CODE AND CHANNEL SET ==========');
       
       // Store current channel token to detect changes
       final currentChannelToken = ChannelService.getChannelToken();
-      debugPrint('[HomePage] Current channel token: ${currentChannelToken ?? "NOT FOUND"}');
       
       // Check if postal code exists in local storage
       final storedPostalCode = ChannelService.getPostalCode();
-      debugPrint('[HomePage] Postal code in local storage: ${storedPostalCode ?? "NOT FOUND"}');
       
       // If authenticated, try to get postal code from shipping address first
       if (_isUserAuthenticated()) {
-        debugPrint('[HomePage] User is authenticated, checking shipping address for postal code...');
         await customerController.checkAndSetPostalCodeFromShippingAddress();
         
         // Re-check postal code after trying to get from shipping address
         final updatedPostalCode = ChannelService.getPostalCode();
         if (updatedPostalCode != null && updatedPostalCode.toString().isNotEmpty) {
-          debugPrint('[HomePage] Postal code set from shipping address: $updatedPostalCode');
           
           // Check if channel changed
           final newChannelToken = box.read('channel_token');
           final channelChanged = currentChannelToken != newChannelToken;
           if (channelChanged) {
-            debugPrint('[HomePage] ⚠️ Channel changed from $currentChannelToken to $newChannelToken');
             // Force UI refresh when channel changes
             if (mounted) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -968,22 +937,18 @@ class _MyHomePageState extends State<MyHomePage> {
       if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {
         final channelToken = ChannelService.getChannelToken();
         if (channelToken != null && channelToken.toString().isNotEmpty) {
-          debugPrint('[HomePage] Postal code and channel already set');
           return false;
         } else {
           // Postal code exists but channel not set, fetch channel
-          debugPrint('[HomePage] Postal code exists but channel not set, fetching channel...');
           final success = await customerController.switchChannelByPostalCode(
             storedPostalCode.toString(),
             showLoading: false, // Don't show loading dialog during initialization
           );
           if (success) {
-            debugPrint('[HomePage] Channel successfully set for postal code: $storedPostalCode');
             // Check if channel changed
             final newChannelToken = box.read('channel_token');
             final channelChanged = currentChannelToken != newChannelToken;
             if (channelChanged) {
-              debugPrint('[HomePage] ⚠️ Channel changed from $currentChannelToken to $newChannelToken');
               // Force UI refresh when channel changes
               if (mounted) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -998,16 +963,13 @@ class _MyHomePageState extends State<MyHomePage> {
             }
             return false;
           } else {
-            debugPrint('[HomePage] Failed to set channel for postal code: $storedPostalCode');
             return false;
           }
         }
       } else {
-        debugPrint('[HomePage] No postal code found in local storage');
         return false;
       }
     } catch (e) {
-      debugPrint('[HomePage] Error ensuring postal code and channel: $e');
       // Don't throw - continue with data fetch even if channel setup fails
       return false;
     }
@@ -1016,20 +978,16 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Check if postal code is saved, if not show postal code bottom sheet
   void _checkAndShowPostalCodeDialog() async {
     if (!mounted) {
-      debugPrint('[HomePage] Widget not mounted, skipping postal code dialog check');
       return;
     }
     if (_isPostalCodeDialogShowing) {
-      debugPrint('[HomePage] Postal code dialog already showing, skipping...');
       return; // Prevent multiple dialogs
     }
     
     final storedPostalCode = ChannelService.getPostalCode();
-    debugPrint('[HomePage] Checking postal code in local storage: ${storedPostalCode ?? "NOT FOUND"}');
     
     // If no postal code is saved, show the postal code bottom sheet
     if (storedPostalCode == null || storedPostalCode.toString().isEmpty) {
-      debugPrint('[HomePage] No postal code found, showing postal code bottom sheet');
       _isPostalCodeDialogShowing = true; // Mark as showing
       
       // Use multiple callbacks to ensure the widget tree is ready
@@ -1038,10 +996,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // Add a small delay to ensure context is fully available
           Future.delayed(Duration(milliseconds: 300), () {
             if (mounted && _isPostalCodeDialogShowing && context.mounted) {
-              debugPrint('[HomePage] Showing postal code bottom sheet now...');
               _showPostalCodeBottomSheet(isMandatory: true);
             } else {
-              debugPrint('[HomePage] Context not available, resetting flag');
               _isPostalCodeDialogShowing = false;
             }
           });
@@ -1052,19 +1008,15 @@ class _MyHomePageState extends State<MyHomePage> {
       // If channel token exists, skip the expensive hasValidPostalCode() call
       final channelToken = GraphqlService.channelToken;
       if (channelToken.isNotEmpty) {
-        debugPrint('[HomePage] Postal code and channel token already exist, skipping validity check');
         return; // Postal code and channel are already set, no need to validate
       }
       
       // Only check validity if channel token is not set
       final postalCodeStr = storedPostalCode.toString();
-      debugPrint('[HomePage] Checking if postal code has valid channels: $postalCodeStr');
       
       final hasValidChannels = await customerController.hasValidPostalCode(postalCodeStr);
-      debugPrint('[HomePage] Postal code validity check result: $hasValidChannels');
       
       if (!hasValidChannels) {
-        debugPrint('[HomePage] Postal code has no valid channels, showing mandatory postal code bottom sheet');
         _isPostalCodeDialogShowing = true; // Mark as showing
         
         // Use multiple callbacks to ensure the widget tree is ready
@@ -1073,10 +1025,8 @@ class _MyHomePageState extends State<MyHomePage> {
             // Add a small delay to ensure context is fully available
             Future.delayed(Duration(milliseconds: 300), () {
               if (mounted && _isPostalCodeDialogShowing && context.mounted) {
-                debugPrint('[HomePage] Showing mandatory postal code bottom sheet now...');
                 _showPostalCodeBottomSheet(isMandatory: true);
               } else {
-                debugPrint('[HomePage] Context not available, resetting flag');
                 _isPostalCodeDialogShowing = false;
               }
             });
@@ -1094,7 +1044,6 @@ class _MyHomePageState extends State<MyHomePage> {
     
     // Don't show dialog if there are no addresses
     if (addresses.isEmpty) {
-      debugPrint('[HomePage] No addresses found, skipping default address dialog');
       return;
     }
     
@@ -1424,7 +1373,6 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Show postal code search bottom sheet
   void _showPostalCodeBottomSheet({bool isMandatory = false}) {
     if (!mounted || !context.mounted) {
-      debugPrint('[HomePage] Context not mounted, cannot show postal code bottom sheet');
       _isPostalCodeDialogShowing = false;
       return;
     }
@@ -1432,11 +1380,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // Check if bottom sheet is already showing by checking Navigator
     if (Navigator.of(context).canPop()) {
       // There might be a route/dialog already showing, check more carefully
-      debugPrint('[HomePage] Navigator can pop - checking if postal code sheet is already showing');
     }
     
-    debugPrint('[HomePage] ========== SHOWING POSTAL CODE BOTTOM SHEET ==========');
-    debugPrint('[HomePage] Is mandatory: $isMandatory');
     
     final storedPostalCode = ChannelService.getPostalCode();
     final bool hasValidPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty && !isMandatory;
@@ -1449,12 +1394,10 @@ class _MyHomePageState extends State<MyHomePage> {
         enableDrag: hasValidPostalCode, // Only draggable if postal code exists and is valid
         backgroundColor: Colors.transparent,
         builder: (BuildContext bottomSheetContext) {
-          debugPrint('[HomePage] Building postal code bottom sheet widget');
           return HomePostalCodeSheet(
             customerController: customerController,
             isMandatory: isMandatory,
             onPostalCodeSelected: () {
-              debugPrint('[HomePage] Postal code selected callback triggered');
               // Add small delay to ensure storage is written before reading
               Future.delayed(Duration(milliseconds: 150), () {
                 if (mounted) {
@@ -1464,7 +1407,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     final postalCodeStr = latestPostalCode.toString();
                     if (_postalCode.value != postalCodeStr) {
                       _postalCode.value = postalCodeStr;
-                      debugPrint('[HomePage] Postal code updated in callback: $postalCodeStr');
                     }
                   }
                   // Force immediate UI update
@@ -1479,15 +1421,11 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ).then((_) {
-        debugPrint('[HomePage] Postal code bottom sheet closed');
         _isPostalCodeDialogShowing = false;
-        debugPrint('[HomePage] Postal code bottom sheet closed, flag reset');
       }).catchError((error) {
-        debugPrint('[HomePage] Error showing postal code bottom sheet: $error');
         _isPostalCodeDialogShowing = false;
       });
     } catch (e) {
-      debugPrint('[HomePage] Exception showing postal code bottom sheet: $e');
       _isPostalCodeDialogShowing = false;
     }
   }
@@ -1517,7 +1455,6 @@ class _MyHomePageState extends State<MyHomePage> {
           postalCode: storedPostalCode.toString(),
           customerController: customerController,
           onChannelSwitched: () {
-            debugPrint('[HomePage] Channel switched callback triggered');
             // Force immediate UI update
             _updateChannelDisplay(skipRefreshTrigger: false);
             // Refresh data and force UI rebuild - force since channel changed

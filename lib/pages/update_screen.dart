@@ -47,13 +47,10 @@ class _UpdateScreenState extends State<UpdateScreen> {
       });
 
       // If immediate update fails (e.g., app not from Play Store), open Play Store
-debugPrint('[UpdateScreen] Immediate update failed: $e');
-debugPrint('[UpdateScreen] Falling back to Play Store...');
 
       try {
         await _openPlayStoreForUpdate();
       } catch (playStoreError) {
-debugPrint('[UpdateScreen] Play Store fallback also failed: $playStoreError');
 
         // Show error dialog with only retry option (no bypass)
         showDialog(
@@ -109,7 +106,6 @@ debugPrint('[UpdateScreen] Play Store fallback also failed: $playStoreError');
       final Uri webStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=$packageName');
 
-debugPrint('[UpdateScreen] Opening Play Store...');
 
       // Try to open Play Store app
       if (await canLaunchUrl(playStoreUrl)) {
@@ -125,7 +121,6 @@ debugPrint('[UpdateScreen] Opening Play Store...');
         duration: const Duration(seconds: 5),
       );
     } catch (e) {
-debugPrint('[UpdateScreen] Error opening Play Store: $e');
       rethrow; // Re-throw to be caught by the calling method
     }
   }
@@ -138,7 +133,6 @@ debugPrint('[UpdateScreen] Error opening Play Store: $e');
       final Uri appStoreUrl = Uri.parse('https://apps.apple.com/app/id$appId');
       final Uri itmsUrl = Uri.parse('itms-apps://apps.apple.com/app/id$appId');
 
-debugPrint('[UpdateScreen] Opening App Store...');
 
       // Try to open App Store app
       if (await canLaunchUrl(itmsUrl)) {
@@ -154,7 +148,6 @@ debugPrint('[UpdateScreen] Opening App Store...');
         duration: const Duration(seconds: 5),
       );
     } catch (e) {
-debugPrint('[UpdateScreen] Error opening App Store: $e');
       SnackBarWidget.showInfo(
         'Unable to open App Store. Please update manually from the App Store.',
         duration: const Duration(seconds: 5),

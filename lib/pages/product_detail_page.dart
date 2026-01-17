@@ -51,6 +51,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   final GlobalKey _descriptionKey = GlobalKey();
   bool _hasFetchedData = false; // Track if we've attempted to fetch
   bool _hasInitialized = false; // Flag to prevent multiple initializations
+  bool _isAddedToCart = false; // Track if item was successfully added to cart
 
   @override
   void initState() {
@@ -58,7 +59,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     
     // Only initialize once
     if (_hasInitialized) {
-      debugPrint('⚠️ [ProductDetailPage] Already initialized, skipping duplicate initialization');
       return;
     }
     
@@ -120,9 +120,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         subject: 'Check out $productName',
       );
       
-      debugPrint('[ProductDetail] Shared product link: $shareLink');
     } catch (e) {
-      debugPrint('[ProductDetail] Error sharing product: $e');
       showErrorSnackbar(AppStrings.failedToShareProduct);
     }
   }
@@ -213,7 +211,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       
       return cleaned;
     } catch (e) {
-      debugPrint('[ProductDetailPage] Error cleaning product data: $e');
       return data; // Return original data if cleaning fails
     }
   }
@@ -265,7 +262,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         }
       }
     } catch (e) {
-debugPrint('[ProductDetailPage] Error getting shadow price: $e');
     }
     return null;
   }
@@ -851,6 +847,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                         setState(() {
                           selectedVariant = variant;
                           _selectedQuantity = 1; // Reset quantity when variant changes
+                          _isAddedToCart = false; // Reset success state when variant changes
                         });
                       },
                       child: Container(
@@ -1110,8 +1107,21 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
     if (success) {
       setState(() {
         _selectedQuantity = 1;
+        _isAddedToCart = true; // Set success state
+      });
+      
+      // Reset the button text after 3 seconds
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            _isAddedToCart = false;
+          });
+        }
       });
     } else {
+      setState(() {
+        _isAddedToCart = false; // Reset on failure
+      });
       showErrorSnackbar(AppStrings.failedToAddToCart);
     }
   }
@@ -1182,6 +1192,7 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                         if (result != null && result > 0) {
                           setState(() {
                             _selectedQuantity = result;
+                            _isAddedToCart = false; // Reset success state when quantity changes
                           });
                           await _addToCart(quantity: result);
                         }
@@ -1246,13 +1257,17 @@ debugPrint('[ProductDetailPage] Error getting shadow price: $e');
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.add_shopping_cart_rounded,
+                              _isAddedToCart
+                                  ? Icons.check_circle_rounded
+                                  : Icons.add_shopping_cart_rounded,
                               color: Colors.white,
                               size: ResponsiveUtils.rp(20),
                             ),
                             SizedBox(width: ResponsiveUtils.rp(8)),
                             Text(
-                              AppStrings.addToCart,
+                              _isAddedToCart
+                                  ? 'Added to Cart Successfully'
+                                  : AppStrings.addToCart,
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
                                 fontWeight: FontWeight.w700,

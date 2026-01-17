@@ -35,7 +35,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     super.initState();
     // Fetch favorites when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-debugPrint('[Favorites] Fetching customer favorites...');
       bannerController.getCustomerFavorites();
     });
   }
@@ -58,7 +57,6 @@ debugPrint('[Favorites] Fetching customer favorites...');
   /// Handle removing a product from favorites
   Future<void> _handleRemoveFavorite(
       String productId, String productName) async {
-debugPrint('[Favorites] Removing product: $productName (ID: $productId)');
 
     // Add small delay to ensure image has time to render if loading
     await Future.delayed(const Duration(milliseconds: 100));
@@ -66,7 +64,6 @@ debugPrint('[Favorites] Removing product: $productName (ID: $productId)');
     final success = await bannerController.toggleFavorite(productId: productId);
 
     if (success) {
-debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.favoritesList.length}');
     } else {
       showErrorSnackbar('Failed to remove from favorites');
     }
@@ -124,7 +121,6 @@ debugPrint(  '[Favorites] Successfully removed. Remaining: ${bannerController.fa
         // Wrap both empty state and grid with RefreshIndicator
         return RefreshIndicator(
           onRefresh: () async {
-            debugPrint('[Favorites] Refreshing favorites list...');
             await bannerController.getCustomerFavorites();
           },
           color: AppColors.refreshIndicator,

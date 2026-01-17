@@ -535,7 +535,6 @@ class _AnimatedFavoriteButtonState extends State<_AnimatedFavoriteButton>
             _controller.forward(from: 0.0);
           } catch (e) {
             // Ignore animation errors during widget rebuild
-            debugPrint('[AnimatedFavoriteButton] Animation error ignored: $e');
           }
         }
       });

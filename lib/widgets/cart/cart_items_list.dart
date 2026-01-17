@@ -72,7 +72,6 @@ class _CartItemsListState extends State<CartItemsList> {
           final couponAddedQty = bannerController.getCouponAddedQuantity(variant.id, couponCode);
           final originalQty = bannerController.getOriginalQuantity(variant.id, couponCode);
           
-          debugPrint('[CartItemsList] Variant ${variant.id}: Total=${line.quantity}, Original=$originalQty, CouponAdded=$couponAddedQty');
           
           // Only split display if there's actually coupon-added quantity > 0
           if (couponAddedQty > 0 && couponAddedQty <= line.quantity) {
@@ -80,7 +79,6 @@ class _CartItemsListState extends State<CartItemsList> {
             // This ensures we always show the correct split even if user modified quantities after coupon was applied
             final regularQty = line.quantity - couponAddedQty;
             
-            debugPrint('[CartItemsList] Variant ${variant.id}: RegularQty=$regularQty (Total=${line.quantity} - Coupon=$couponAddedQty)');
             
             // If there's a regular quantity (after subtracting coupon quantity), show it as regular product
             if (regularQty > 0) {
@@ -105,7 +103,6 @@ class _CartItemsListState extends State<CartItemsList> {
             // - couponAddedQty > line.quantity (shouldn't happen, but handle it)
             // This means the product wasn't actually added by the coupon or there's a mismatch
             // Show as regular product with full quantity
-            debugPrint('[CartItemsList] Warning: Variant ${variant.id} in coupon map but not splitting. Total=${line.quantity}, CouponAdded=$couponAddedQty. Showing as regular product.');
             regularProducts.add({
               'line': line,
               'displayQuantity': line.quantity,
@@ -330,7 +327,6 @@ class _CartItemsListState extends State<CartItemsList> {
                           ? () {
                               // Double-check: prevent decreasing if displayQuantity is 1 or less
                               if (displayQuantity <= 1) {
-                                debugPrint('[CartItemsList] Prevented decrease: displayQuantity is $displayQuantity (minimum is 1)');
                                 return;
                               }
                               
@@ -345,7 +341,6 @@ class _CartItemsListState extends State<CartItemsList> {
                                   if (newTotal > couponQty) {
                                     widget.onQuantityChange(line.id, newTotal);
                                   } else {
-                                    debugPrint('[CartItemsList] Prevented decrease: newTotal ($newTotal) would be <= couponQty ($couponQty)');
                                   }
                                 } else {
                                   // Fallback: allow decrease only if displayQuantity > 1

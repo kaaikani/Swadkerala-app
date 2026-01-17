@@ -68,7 +68,6 @@ class NavigationHelper {
                          Get.arguments?['intendedRoute'] as String?;
     final intendedArguments = Get.arguments?['intendedArguments'];
     
-debugPrint('[NavigationHelper] Intended route: $intendedRoute, arguments: $intendedArguments');
     
     if (intendedRoute != null && intendedRoute.isNotEmpty) {
       try {
@@ -82,13 +81,10 @@ debugPrint('[NavigationHelper] Intended route: $intendedRoute, arguments: $inten
         } else {
           await Get.toNamed(intendedRoute);
         }
-debugPrint('[NavigationHelper] Successfully navigated to intended route: $intendedRoute with home in stack');
       } catch (e) {
-debugPrint('[NavigationHelper] Error navigating to intended route: $e');
         Get.offAllNamed(AppRoutes.home);
       }
     } else {
-debugPrint('[NavigationHelper] No intended route found, navigating to home');
       Get.offAllNamed(AppRoutes.home);
     }
   }

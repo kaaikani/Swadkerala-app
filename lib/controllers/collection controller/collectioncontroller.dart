@@ -4,6 +4,7 @@ import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import 'package:flutter/foundation.dart';
+import '../../utils/logger.dart';
 
 class CollectionsController extends GetxController {
   RxList<Query$Collections$collections$items> allCollections = <Query$Collections$collections$items>[].obs;
@@ -38,13 +39,11 @@ class CollectionsController extends GetxController {
   Future<bool> fetchAllCollections({bool force = false}) async {
     // Prevent multiple simultaneous fetches
     if (_isFetching) {
-debugPrint('[Collection] Already fetching, skipping duplicate request');
       return false;
     }
 
     // Don't fetch again if we already have collections (unless forced)
     if (!force && allCollections.isNotEmpty) {
-debugPrint('[Collection] Collections already loaded (${allCollections.length} items), skipping fetch');
       return true;
     }
 
@@ -56,7 +55,6 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
       allCollections.clear();
     }
 
-    debugPrint('[Collection] Starting fetchAllCollections (lazy loading)...');
     _isFetching = true;
 
     utilityController.setLoadingState(true);
@@ -74,7 +72,6 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
       );
 
       if (response.hasException) {
-        debugPrint('[Collection] GraphQL Exception: ${response.exception.toString()}');
         return false;
       }
 
@@ -94,32 +91,26 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
         // If we got fewer items than requested, we've reached the end
         _hasMoreCollections = items.length >= _collectionsPerPage;
         
-        debugPrint('[Collection] Loaded ${allCollections.length} collections (hasMore: $_hasMoreCollections, fetched: ${items.length})');
       } else {
-        debugPrint('[Collection] No collections found');
         _hasMoreCollections = false;
       }
 
       return true;
     } catch (e) {
-      debugPrint('[Collection] Exception fetching collections: $e');
       return false;
     } finally {
       _isFetching = false;
       utilityController.setLoadingState(false);
-      debugPrint('[Collection] fetchAllCollections finished.');
     }
   }
 
   /// Load more collections (lazy loading)
   Future<bool> loadMoreCollections() async {
     if (_isLoadingMoreCollections || !_hasMoreCollections || _isFetching) {
-      debugPrint('[Collection] Cannot load more: isLoading=$_isLoadingMoreCollections, hasMore=$_hasMoreCollections, isFetching=$_isFetching');
       return false;
     }
 
     _isLoadingMoreCollections = true;
-    debugPrint('[Collection] Loading more collections (skip: $_collectionsSkip, take: $_collectionsPerPage)...');
 
     try {
       final response = await GraphqlService.client.value.query$Collections(
@@ -134,7 +125,6 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
       );
 
       if (response.hasException) {
-        debugPrint('[Collection] GraphQL Exception loading more: ${response.exception.toString()}');
         return false;
       }
 
@@ -154,15 +144,12 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
         // If we got fewer items than requested, we've reached the end
         _hasMoreCollections = items.length >= _collectionsPerPage;
         
-        debugPrint('[Collection] Loaded more: ${allCollections.length} collections (hasMore: $_hasMoreCollections, fetched: ${items.length})');
         return true;
       } else {
         _hasMoreCollections = false;
-        debugPrint('[Collection] No more collections to load');
         return false;
       }
     } catch (e) {
-      debugPrint('[Collection] Exception loading more collections: $e');
       return false;
     } finally {
       _isLoadingMoreCollections = false;
@@ -198,7 +185,8 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
           final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
           
           if (aNumber != null && bNumber != null) {
-            return aNumber.compareTo(bNumber);
+                Logger.logFunction(functionName: 'fetchCollectionproducts', queryName: 'Product');
+    return aNumber.compareTo(bNumber);
           }
           
           return aSlug.compareTo(bSlug);
@@ -220,8 +208,6 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
 
 
   Future<bool> fetchCollectionproducts({String? slug, String? id}) async {
-    debugPrint('=== [Collection] fetchCollectionproducts START ===');
-    debugPrint('[Collection] Parameters: slug="$slug", id="$id"');
 
     // Clear previous data before loading new collection
     currentCollection.value = null;
@@ -241,7 +227,6 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
       );
 
       if (response.hasException) {
-        debugPrint('⚠️ [Collection] GraphQL Exception: ${response.exception}');
         return false;
       }
 
@@ -249,10 +234,8 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
 
       if (collectionData != null) {
         currentCollection.value = collectionData;
-        debugPrint('✅ [Collection] Loaded Collection: ${currentCollection.value?.name}');
 
         final productItems = collectionData.productVariants.items;
-        debugPrint('📦 Product Variants count: ${productItems.length}');
 
         // Filter unique products by product.id and group variants
         final loggedProductIds = <String>{};
@@ -272,7 +255,6 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
             loggedProductIds.add(productId);
             _allUniqueVariants.add(item); // Store all variants
             selectedVariantIdByProductId[productId] = item.id;
-            debugPrint('• Product: ${product.name} | ID: $productId | Variants: ${variantsByProductId[productId]!.length}');
           }
         }
         
@@ -285,18 +267,14 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
             : _itemsPerPage;
         uniqueProductVariants.value = _allUniqueVariants.take(_displayedItemsCount).toList();
         
-        debugPrint('📊 [Collection] Lazy Loading: displaying $_displayedItemsCount of ${_allUniqueVariants.length} products');
       } else {
-        debugPrint('⚠️ [Collection] No collection found for slug="$slug" id="$id"');
       }
 
       return true;
     } catch (e) {
-      debugPrint('❌ [Collection] Exception: $e');
       return false;
     } finally {
       utilityController.setLoadingState(false);
-      debugPrint('=== [Collection] fetchCollectionproducts END ===');
     }
   }
 
@@ -320,7 +298,6 @@ debugPrint('[Collection] Collections already loaded (${allCollections.length} it
         uniqueProductVariants.addAll(newItems);
         _displayedItemsCount = nextBatchEnd;
         
-        debugPrint('📥 [Collection] Loaded more: $_displayedItemsCount of ${_allUniqueVariants.length} products');
         return true;
       }
       

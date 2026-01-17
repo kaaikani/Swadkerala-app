@@ -108,7 +108,6 @@ class _AppTextButtonState extends State<AppTextButton> {
     try {
       await widget.onPressed!();
     } catch (e) {
-debugPrint('[AppTextButton] Error in onPressed: $e');
     }
 
     // Wait 3 seconds before allowing next press

@@ -69,7 +69,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _requestPermissions() async {
-debugPrint('[SplashScreen] Starting permission request...');
 
     setState(() {
       _isRequestingPermission = true;
@@ -78,18 +77,14 @@ debugPrint('[SplashScreen] Starting permission request...');
 
     try {
       // Check phone permission using permission_handler
-debugPrint('[SplashScreen] Checking phone permission...');
       PermissionStatus phoneStatus = await Permission.phone.status;
-debugPrint('[SplashScreen] Phone permission status: $phoneStatus');
 
       if (phoneStatus.isDenied || phoneStatus.isPermanentlyDenied) {
         setState(() {
           _statusMessage = 'Please grant phone permission for SIM detection...';
         });
 
-debugPrint('[SplashScreen] Requesting phone permission...');
         phoneStatus = await Permission.phone.request();
-debugPrint('[SplashScreen] Phone permission result: $phoneStatus');
 
         if (phoneStatus.isGranted) {
           setState(() {
@@ -97,7 +92,6 @@ debugPrint('[SplashScreen] Phone permission result: $phoneStatus');
           });
 
           // Try to detect SIM cards and cache them
-debugPrint('[SplashScreen] Detecting SIM cards...');
           final simService = SimDetectionService();
           await simService.getAllSimInfo();
 
@@ -115,7 +109,6 @@ debugPrint('[SplashScreen] Detecting SIM cards...');
           _statusMessage = 'Permission already granted. Detecting SIM cards...';
         });
 
-debugPrint(  '[SplashScreen] Permission already granted, detecting SIM cards...');
         // Try to detect SIM cards and cache them
         final simService = SimDetectionService();
         await simService.getAllSimInfo();
@@ -133,7 +126,6 @@ debugPrint(  '[SplashScreen] Permission already granted, detecting SIM cards...'
       // Wait a bit to show the final status
       await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
-debugPrint('[SplashScreen] Permission request error: $e');
       setState(() {
         _statusMessage = 'Ready!';
       });
@@ -188,8 +180,6 @@ debugPrint('[SplashScreen] Permission request error: $e');
                           width: 80,
                           height: 80,
                           errorBuilder: (context, error, stackTrace) {
-                            debugPrint('[SplashScreen] ❌ Error loading logo: $error');
-                            debugPrint('[SplashScreen] StackTrace: $stackTrace');
                             // Fallback to icon if image not found
                             return const Icon(
                               Icons.shopping_bag,
@@ -199,9 +189,7 @@ debugPrint('[SplashScreen] Permission request error: $e');
                           },
                           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
                             if (wasSynchronouslyLoaded) {
-                              debugPrint('[SplashScreen] ✅ Logo loaded synchronously');
                             } else if (frame != null) {
-                              debugPrint('[SplashScreen] ✅ Logo loaded asynchronously');
                             }
                             return child;
                           },

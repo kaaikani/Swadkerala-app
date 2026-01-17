@@ -152,7 +152,6 @@ class NotificationPermissionDialog {
       
       if (status.isGranted) {
         // Permission granted - reset dialog flags
-        debugPrint('[NotificationPermission] Permission granted');
         await box.remove('notification_permission_dialog_shown');
         await box.remove('notification_permission_dialog_last_shown');
         await box.remove('notification_settings_dialog_shown');
@@ -171,14 +170,11 @@ class NotificationPermissionDialog {
         );
       } else if (status.isPermanentlyDenied) {
         // Permission permanently denied - show settings dialog
-        debugPrint('[NotificationPermission] Permission permanently denied');
         _showSettingsDialog(context);
       } else {
         // Permission denied (but can be requested again)
-        debugPrint('[NotificationPermission] Permission denied');
       }
     } catch (e) {
-      debugPrint('[NotificationPermission] Error requesting permission: $e');
     }
   }
 

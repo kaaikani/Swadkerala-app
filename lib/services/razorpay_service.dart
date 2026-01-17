@@ -70,10 +70,6 @@ class RazorpayService {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-debugPrint('[Razorpay] ✅ Payment Success!');
-debugPrint('[Razorpay] Payment ID: ${response.paymentId}');
-debugPrint('[Razorpay] Order ID: ${response.orderId}');
-debugPrint('[Razorpay] Signature: ${response.signature}');
     
     if (onSuccess != null) {
       onSuccess!(response);
@@ -81,9 +77,6 @@ debugPrint('[Razorpay] Signature: ${response.signature}');
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-debugPrint('[Razorpay] ❌ Payment Failed!');
-debugPrint('[Razorpay] Error Code: ${response.code}');
-debugPrint('[Razorpay] Error Message: ${response.message}');
     
     if (onFailure != null) {
       onFailure!(response);
@@ -91,7 +84,6 @@ debugPrint('[Razorpay] Error Message: ${response.message}');
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-debugPrint('[Razorpay] External Wallet: ${response.walletName}');
   }
 
   /// Open Razorpay payment gateway
@@ -111,7 +103,6 @@ debugPrint('[Razorpay] External Wallet: ${response.walletName}');
 
     // Validate Razorpay key
     if (razorpayKeyId.isEmpty) {
-debugPrint('[Razorpay] ⚠️ ERROR: No Razorpay key provided from backend!');
       return;
     }
 
@@ -120,7 +111,6 @@ debugPrint('[Razorpay] ⚠️ ERROR: No Razorpay key provided from backend!');
 
     // Validate and format phone number for Razorpay
     if (customerPhone.isEmpty) {
-      debugPrint('[Razorpay] ⚠️ ERROR: Customer phone number is empty!');
       if (onFailure != null) {
         final mockResponse = PaymentFailureResponse(
           0, 
@@ -137,26 +127,9 @@ debugPrint('[Razorpay] ⚠️ ERROR: No Razorpay key provided from backend!');
     
     // Validate phone number format
     if (formattedPhone.isEmpty || !formattedPhone.startsWith('+91') || formattedPhone.length != 13) {
-      debugPrint('[Razorpay] ⚠️ WARNING: Phone number format may be invalid!');
-      debugPrint('[Razorpay] - Original: $customerPhone');
-      debugPrint('[Razorpay] - Formatted: $formattedPhone');
-      debugPrint('[Razorpay] - Will attempt to use anyway, but Razorpay may not pre-fill correctly');
     }
     
-debugPrint('[Razorpay] 📞 Phone Number Validation:');
-debugPrint('[Razorpay] - Original Phone: $customerPhone');
-debugPrint('[Razorpay] - Formatted Phone (with +91): $formattedPhone');
-debugPrint('[Razorpay] - Phone Without Country Code: $phoneWithoutCountryCode');
-debugPrint('[Razorpay] - Phone Length: ${formattedPhone.length}');
-debugPrint('[Razorpay] - Phone Valid: ${formattedPhone.startsWith('+91') && formattedPhone.length == 13}');
 
-debugPrint('[Razorpay] Payment Details:');
-debugPrint('[Razorpay] - Order ID: $razorpayOrderId');
-debugPrint('[Razorpay] - Amount: Rs.${amountInPaise / 100}');
-debugPrint('[Razorpay] - Customer: $customerName');
-debugPrint('[Razorpay] - Phone: $formattedPhone');
-debugPrint('[Razorpay] - Email: $customerEmail');
-debugPrint('[Razorpay] - Description: $enhancedDescription');
 
     // Ensure we have a valid phone number for prefill
     final prefillContact = formattedPhone.isNotEmpty && formattedPhone.startsWith('+91') && formattedPhone.length == 13
@@ -222,20 +195,8 @@ debugPrint('[Razorpay] - Description: $enhancedDescription');
     };
 
     try {
-debugPrint('[Razorpay] 🚀 Opening payment gateway...');
-debugPrint('[Razorpay] - Amount: Rs.${amountInPaise / 100}');
-debugPrint('[Razorpay] - Phone Prefill Contact: $prefillContact');
-debugPrint('[Razorpay] - Formatted Phone: $formattedPhone');
-debugPrint('[Razorpay] - Phone Without Country Code: $phoneWithoutCountryCode');
-debugPrint('[Razorpay] - Contact Field Readonly: true');
-debugPrint('[Razorpay] - Contact Required: true');
-debugPrint('[Razorpay] - Prefill Object: ${options['prefill']}');
-debugPrint('[Razorpay] - Customer Object: ${options['customer']}');
-debugPrint('[Razorpay] - Readonly Object: ${options['readonly']}');
-debugPrint('[Razorpay] - Full Options: $options');
       _razorpay.open(options);
     } catch (e) {
-debugPrint('[Razorpay] ❌ Error opening payment gateway: $e');
       if (onFailure != null) {
         // Create a mock failure response for gateway opening errors
         final mockResponse = PaymentFailureResponse(

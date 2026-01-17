@@ -121,7 +121,6 @@ class CartItemCardPremium extends StatelessWidget {
                               InkWell(
                                   onTap: canAdjust && onDecreaseQuantity != null && quantity > 1
                                     ? () {
-                                        debugPrint('[CartItemCard] Decrease quantity tapped - current quantity: $quantity');
                                         onDecreaseQuantity!();
                                       }
                                     : null,
@@ -154,7 +153,6 @@ class CartItemCardPremium extends StatelessWidget {
                               InkWell(
                                 onTap: canAdjust && onIncreaseQuantity != null
                                     ? () {
-                                        debugPrint('[CartItemCard] Increase quantity tapped - current quantity: $quantity');
                                         onIncreaseQuantity!();
                                       }
                                     : null,

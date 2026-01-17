@@ -11,6 +11,7 @@ import '../utils/app_strings.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../utils/responsive.dart';
 import '../utils/bill_generator.dart';
+import '../utils/logger.dart';
 
 class OrderConfirmationPage extends StatefulWidget {
   final String orderId;
@@ -24,149 +25,40 @@ class OrderConfirmationPage extends StatefulWidget {
   State<OrderConfirmationPage> createState() => _OrderConfirmationPageState();
 }
 
-class _OrderConfirmationPageState extends State<OrderConfirmationPage> with SingleTickerProviderStateMixin {
+class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   final OrderController orderController = Get.find<OrderController>();
   final CartController cartController = Get.find<CartController>();
   final CustomerController customerController = Get.find<CustomerController>();
   final UtilityController utilityController = Get.find<UtilityController>();
-  bool _hasShownPointsDialog = false;
-  late AnimationController _animationController;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    // Initialize animation controller
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1.0), // Start from bottom
-      end: Offset.zero, // End at top
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ));
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadOrderDetails();
     });
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
   Future<void> _loadOrderDetails() async {
     try {
+      Logger.logFunction(functionName: '_loadOrderDetails', queryName: 'GetOrderByCode');
       await orderController.getOrderByCode(widget.orderId);
-      // Check for points earned after order is loaded
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _checkAndShowPointsDialog();
-      });
     } catch (e) {
-debugPrint('[OrderConfirmation] Error loading order details: $e');
+      Logger.logError(functionName: '_loadOrderDetails', error: e);
     }
   }
 
-  void _checkAndShowPointsDialog() {
-    if (_hasShownPointsDialog) return;
-    
+  /// Get loyalty points earned from order customFields
+  int _getLoyaltyPointsEarned() {
     final order = orderController.currentOrder.value;
     if (order != null) {
       // Access customFields using dynamic cast since order is actually Query$GetOrderByCode$orderByCode
       // which has customFields, but currentOrder is typed as Fragment$Cart?
       final orderDynamic = order as dynamic;
       final customFields = orderDynamic.customFields;
-      final pointsEarned = customFields?.loyaltyPointsEarned ?? 0;
-      
-      if (pointsEarned > 0 && mounted) {
-        _hasShownPointsDialog = true;
-        // Show dialog after a short delay to ensure page is fully loaded
-        Future.delayed(Duration(milliseconds: 500), () {
-          if (mounted) {
-            _showPointsEarnedDialog(pointsEarned);
-          }
-        });
-      }
+      return customFields?.loyaltyPointsEarned ?? 0;
     }
-  }
-
-  void _showPointsEarnedDialog(int points) {
-    // Reset animation
-    _animationController.reset();
-    
-    Get.dialog(
-      Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        insetPadding: EdgeInsets.only(
-          left: ResponsiveUtils.rp(20),
-          right: ResponsiveUtils.rp(20),
-          bottom: ResponsiveUtils.rp(40),
-        ),
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: Center(
-              child: ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: [
-                    Color(0xFFFFD700), // Gold
-                    Color(0xFFFFA500), // Darker gold
-                  ],
-                ).createShader(bounds),
-                child: Text(
-                  'You earned $points points',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(32),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // Will be masked with gold gradient
-                    letterSpacing: 0.5,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.4),
-                        blurRadius: ResponsiveUtils.rp(8),
-                        offset: Offset(0, ResponsiveUtils.rp(4)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-      barrierDismissible: false, // Don't allow dismiss by tapping outside
-      barrierColor: Colors.transparent, // No background overlay
-    );
-    
-    // Start animation
-    _animationController.forward();
-    
-    // Auto-dismiss after 5 seconds with reverse animation
-    Future.delayed(Duration(seconds: 5), () {
-      if (mounted && Get.isDialogOpen == true) {
-        _animationController.reverse().then((_) {
-          if (Get.isDialogOpen == true) {
-            Get.back();
-          }
-        });
-      }
-    });
+    return 0;
   }
 
   Future<void> _shareBill() async {
@@ -177,7 +69,7 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
         // Generate bill in background to avoid blocking UI
         await BillGenerator.generateAndShare(orderModel);
       } catch (e) {
-        debugPrint('[OrderConfirmation] Error generating bill: $e');
+        Logger.logError(functionName: '_shareBill', error: e);
         SnackBarWidget.showError('${AppStrings.failedToGenerateBill}: $e');
       } finally {
         LoadingDialog.hide();
@@ -319,6 +211,11 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
                       _buildSummaryRow('Subtotal', order.subTotalWithTax.toDouble()),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       _buildSummaryRow('Shipping', order.shippingWithTax.toDouble()),
+                      // Show Points Earned if available
+                      if (_getLoyaltyPointsEarned() > 0) ...[
+                        SizedBox(height: ResponsiveUtils.rp(8)),
+                        _buildPointsEarnedRow(_getLoyaltyPointsEarned()),
+                      ],
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       _buildSummaryRow('Total', order.totalWithTax.toDouble(), isBold: true),
                     ],
@@ -432,6 +329,43 @@ debugPrint('[OrderConfirmation] Error loading order details: $e');
             fontSize: isBold ? ResponsiveUtils.sp(18) : ResponsiveUtils.sp(14),
             fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
             color: AppColors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPointsEarnedRow(int points) {
+    // Gold color for points earned
+    final goldColor = Color(0xFFFFD700);
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.stars_rounded,
+              size: ResponsiveUtils.rp(18),
+              color: goldColor,
+            ),
+            SizedBox(width: ResponsiveUtils.rp(6)),
+            Text(
+              'Points Earned',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.w600,
+                color: goldColor,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          '$points pts',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            fontWeight: FontWeight.bold,
+            color: goldColor,
           ),
         ),
       ],

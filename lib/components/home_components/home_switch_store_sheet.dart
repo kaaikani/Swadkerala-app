@@ -43,35 +43,22 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     });
 
     try {
-      debugPrint('[SwitchStore] Calling customerController.getAvailableChannels()...');
       final channels = await widget.customerController.getAvailableChannels(widget.postalCode);
 
-      debugPrint('[SwitchStore] Received ${channels.length} channels from controller');
-      debugPrint('[SwitchStore] Sorting channels...');
       final sortedChannels = _sortChannels(channels);
 
-      debugPrint('[SwitchStore] Sorted channels: ${sortedChannels.length} total');
-      debugPrint('[SwitchStore] ──── SORTED CHANNELS LIST ────');
       for (int i = 0; i < sortedChannels.length; i++) {
         final channel = sortedChannels[i];
         final isClickable = _isChannelClickable(channel);
         final displayName = _getChannelDisplayName(channel);
-        debugPrint('[SwitchStore] ${i + 1}. ${displayName} (${channel.code})');
-        debugPrint('[SwitchStore]    Type: ${channel.type}, Available: ${channel.isAvailable}, Clickable: $isClickable');
-        debugPrint('[SwitchStore]    Message: ${channel.message ?? "null"}');
       }
-      debugPrint('[SwitchStore] ─────────────────────────────────────');
 
       setState(() {
         _channels = sortedChannels;
         _isLoading = false;
       });
 
-      debugPrint('[SwitchStore] ========== FETCH COMPLETED ==========');
     } catch (e, stackTrace) {
-      debugPrint('[SwitchStore] ========== ERROR FETCHING CHANNELS ==========');
-      debugPrint('[SwitchStore] ❌ Exception: $e');
-      debugPrint('[SwitchStore] Stack trace: $stackTrace');
       setState(() {
         _errorMessage = 'Error loading channels: $e';
         _isLoading = false;
@@ -82,37 +69,27 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   List<Query$GetAvailableChannels$getAvailableChannels> _sortChannels(
     List<Query$GetAvailableChannels$getAvailableChannels> channels,
   ) {
-    debugPrint('[SwitchStore] Filtering and sorting ${channels.length} channels...');
     final List<Query$GetAvailableChannels$getAvailableChannels> cityAvailable = [];
     final List<Query$GetAvailableChannels$getAvailableChannels> brandAvailable = [];
     final List<Query$GetAvailableChannels$getAvailableChannels> brandComingSoon = [];
 
     for (final channel in channels) {
       if (channel.type == Enum$ChannelType.CITY && channel.isAvailable == true) {
-        debugPrint('[SwitchStore]   → Adding to cityAvailable: ${channel.name}');
         cityAvailable.add(channel);
       } else if (channel.type == Enum$ChannelType.BRAND) {
         final message = channel.message?.toLowerCase().trim() ?? '';
 
         if ((message.isEmpty || message == 'null') && channel.isAvailable == true) {
-          debugPrint('[SwitchStore]   → Adding to brandAvailable: ${channel.name} (message: null/empty, available: true)');
           brandAvailable.add(channel);
         } else if (message.contains('brand will available soon') ||
                    message.contains('will available soon')) {
-          debugPrint('[SwitchStore]   → Adding to brandComingSoon: ${channel.name} (message: $message)');
           brandComingSoon.add(channel);
         } else {
-          debugPrint('[SwitchStore]   → Skipping brand: ${channel.name} (message: $message, available: ${channel.isAvailable})');
         }
       } else {
-        debugPrint('[SwitchStore]   → Skipping channel: ${channel.name} (type: ${channel.type})');
       }
     }
 
-    debugPrint('[SwitchStore] Filter results:');
-    debugPrint('[SwitchStore]   - cityAvailable: ${cityAvailable.length}');
-    debugPrint('[SwitchStore]   - brandAvailable: ${brandAvailable.length}');
-    debugPrint('[SwitchStore]   - brandComingSoon: ${brandComingSoon.length}');
 
     return [
       ...cityAvailable,
@@ -130,14 +107,12 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     // Check if channel is already selected - no action needed
     final currentChannelToken = ChannelService.getChannelToken() ?? '';
     if (channel.token == currentChannelToken) {
-      debugPrint('[SwitchStore] Channel ${channel.token} is already selected - no action needed');
       return;
     }
     
     // Check if channel token is ind-Swadkerala - should not switch
     final channelToken = channel.token!.toLowerCase();
     if (channelToken == 'ind-swadkerala') {
-      debugPrint('[SwitchStore] ind-Swadkerala is Opening Soon - cannot switch');
       return;
     }
 
@@ -189,20 +164,17 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     // Check if channel token is ind-Swadkerala (case-insensitive) - not clickable
     final channelToken = channel.token?.toLowerCase() ?? '';
     if (channelToken == 'ind-swadkerala') {
-      debugPrint('[SwitchStore] _isChannelClickable - ind-Swadkerala: NOT clickable (Opening Soon)');
       return false;
     }
     
     if (channel.type == Enum$ChannelType.CITY) {
       final isClickable = channel.isAvailable == true;
-      debugPrint('[SwitchStore] _isChannelClickable - CITY ${channel.name}: isAvailable=${channel.isAvailable}, clickable=$isClickable');
       return isClickable;
     }
 
     if (channel.type == Enum$ChannelType.BRAND) {
       final message = channel.message?.toLowerCase().trim() ?? '';
       final isClickable = (message.isEmpty || message == 'null') && channel.isAvailable == true;
-      debugPrint('[SwitchStore] _isChannelClickable - BRAND ${channel.name}: message="$message", isAvailable=${channel.isAvailable}, clickable=$isClickable');
       return isClickable;
     }
 
@@ -427,8 +399,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
         );
       },
       errorBuilder: (context, error, stackTrace) {
-        debugPrint('[SwitchStore] Primary image failed: $error');
-        debugPrint('[SwitchStore] Trying fallback URL: $fallbackUrl');
         // Try fallback URL
         return Image.network(
           fallbackUrl,
@@ -463,7 +433,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
             );
           },
           errorBuilder: (context, error, stackTrace) {
-            debugPrint('[SwitchStore] Fallback image also failed: $error');
             // Mark image as failed for this channel
             if (channelKey != null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {

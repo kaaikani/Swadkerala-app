@@ -46,15 +46,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future<void> _loadOrderDetails() async {
     try {
-debugPrint('[OrderDetail] Loading order with code: ${widget.orderCode}');
       final order = await orderController.getOrderByCode(widget.orderCode);
       if (order == null) {
-debugPrint('[OrderDetail] Order not found for code: ${widget.orderCode}');
       } else {
-debugPrint('[OrderDetail] Order loaded successfully: ${order.code}');
       }
     } catch (e) {
-debugPrint('[OrderDetail] Error loading order details: $e');
     }
   }
 
@@ -1085,7 +1081,6 @@ debugPrint('[OrderDetail] Error loading order details: $e');
         rethrow;
       }
     } catch (e) {
-      debugPrint('[OrderDetail] Exception requesting cancellation: $e');
       SnackBarWidget.showError('Failed to request cancellation. Please try again.');
     } finally {
       utilityController.setLoadingState(false);

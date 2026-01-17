@@ -569,7 +569,6 @@ class _OrdersComponentState extends State<OrdersComponent> {
   }
 
   void _viewOrderDetails(dynamic order) {
-    debugPrint('[OrdersComponent] Viewing order details for code: ${order.code}');
     Get.toNamed('/order-detail', arguments: order.code);
   }
 
@@ -596,7 +595,6 @@ class _OrdersComponentState extends State<OrdersComponent> {
         SnackBarWidget.showError('Failed to load order details');
       }
     } catch (e) {
-      debugPrint('[OrdersComponent] Error sharing invoice: $e');
       SnackBarWidget.showError('Failed to generate invoice: $e');
     } finally {
       LoadingDialog.hide();

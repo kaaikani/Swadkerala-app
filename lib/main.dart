@@ -30,7 +30,6 @@ import 'pages/error_page.dart';
 /// when the app starts
 Future<void> checkAppUpdate() async {
   try {
-debugPrint('[Main] Starting app update check...');
     
     // COMMENTED OUT: GraphQL query for update info (now using Play Store only)
     // Initialize BannerController for GraphQL calls
@@ -53,20 +52,14 @@ debugPrint('[Main] Starting app update check...');
       
       // Check if immediate update is needed (based on Play Store only)
       if (updateService.isImmediateUpdateEnabled && updateService.isUpdateAvailable) {
-debugPrint('[Main] Immediate update is enabled - update available on Play Store');
         } else {
-debugPrint('[Main] No update available on Play Store');
         }
       } catch (e) {
-debugPrint('[Main] Play Store check failed: $e');
         if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
-debugPrint('[Main] App not installed from Play Store - update check skipped');
         }
     }
     
-debugPrint('[Main] App update check completed');
   } catch (e) {
-debugPrint('[Main] Error during app update check: $e');
   }
 }
 
@@ -92,7 +85,6 @@ debugPrint('[Main] Error during app update check: $e');
 /// Returns true if update is available, false otherwise
 Future<bool> performAppUpdateCheck() async {
   try {
-debugPrint('[AppUpdate] Performing comprehensive app update check...');
     
     // COMMENTED OUT: GraphQL query for update info (now using Play Store only)
     // Get BannerController (create if not exists)
@@ -118,21 +110,16 @@ debugPrint('[AppUpdate] Performing comprehensive app update check...');
     final updateService = InAppUpdateService();
     
     // Check Play Store directly (GraphQL query disabled)
-debugPrint('[AppUpdate] Checking Play Store directly (GraphQL disabled)...');
     try {
       await updateService.checkForUpdatesAndDetermineType();
       final updateAvailable = updateService.isUpdateAvailable && updateService.isImmediateUpdateEnabled;
-debugPrint('[AppUpdate] Play Store check result: $updateAvailable');
         return updateAvailable;
       } catch (e) {
-debugPrint('[AppUpdate] Play Store check failed: $e');
         if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
-debugPrint('[AppUpdate] App not installed from Play Store');
         }
         return false;
     }
   } catch (e) {
-debugPrint('[AppUpdate] Error during comprehensive update check: $e');
     return false;
   }
 }
@@ -147,7 +134,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> _initializeFirebase() async {
   if (kIsWeb) {
     // Skip Firebase initialization on Web (no options configured).
-debugPrint('[Main] Skipping Firebase initialization on Web.');
     return;
   }
 
@@ -166,19 +152,14 @@ debugPrint('[Main] Skipping Firebase initialization on Web.');
     // Get and print FCM token
     try {
       final token = await messaging.getToken();
-debugPrint('🔥 [FCM] Token: $token');
       if (token != null) {
-debugPrint('🔥 [FCM] Token length: ${token.length}');
       } else {
-debugPrint('🔥 [FCM] Token is null');
       }
     } catch (e) {
-debugPrint('🔥 [FCM] Error getting token: $e');
     }
 
     // Listen for token refresh
     messaging.onTokenRefresh.listen((newToken) {
-debugPrint('🔥 [FCM] Token refreshed: $newToken');
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -195,7 +176,6 @@ debugPrint('🔥 [FCM] Token refreshed: $newToken');
     final remoteConfigService = Get.put(RemoteConfigService());
     await remoteConfigService.initialize();
   } catch (e, stackTrace) {
-debugPrint('[Main] Firebase initialization error: $e');
     CrashlyticsService.instance.recordError(e, stackTrace, reason: 'Firebase initialization failed');
   }
 }
@@ -289,13 +269,10 @@ Future<void> main() async {
               );
             }
           } catch (e) {
-            debugPrint('Error navigating to error page: $e');
           }
         });
       } else {
         // In debug mode, print error
-        debugPrint('Unhandled error: $error');
-        debugPrint('Stack trace: $stackTrace');
       }
     },
   );
@@ -315,7 +292,6 @@ void _setupErrorHandlers() {
          errorString.contains('KeyUpEvent'))) {
       // This is a known Flutter framework bug, especially on Android emulators
       // It doesn't affect app functionality, so we'll silently ignore it
-      debugPrint('[Main] Ignoring known keyboard event assertion error (Flutter framework bug)');
       return;
     }
     
@@ -346,7 +322,6 @@ void _setupErrorHandlers() {
             );
           }
         } catch (e) {
-          debugPrint('Error navigating to error page: $e');
         }
       });
     } else {
@@ -366,7 +341,6 @@ void _setupErrorHandlers() {
          errorString.contains('KeyUpEvent'))) {
       // This is a known Flutter framework bug, especially on Android emulators
       // It doesn't affect app functionality, so we'll silently ignore it
-      debugPrint('[Main] Ignoring known keyboard event assertion error (Flutter framework bug)');
       return true; // Return true to indicate error was handled
     }
     
@@ -398,7 +372,6 @@ void _setupErrorHandlers() {
             );
           }
         } catch (e) {
-          debugPrint('Error navigating to error page: $e');
         }
       });
     }
@@ -417,7 +390,6 @@ void _setupErrorHandlers() {
          errorString.contains('KeyUpEvent'))) {
       // This is a known Flutter framework bug, especially on Android emulators
       // Return an empty widget to suppress the error display
-      debugPrint('[Main] Ignoring known keyboard event assertion error in ErrorWidget (Flutter framework bug)');
       return const SizedBox.shrink();
     }
     

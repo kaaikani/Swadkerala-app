@@ -30,17 +30,11 @@ class GraphqlService {
   }
 
   static GraphQLClient _createClient() {
-    debugPrint("🔧 [GraphQL Client] Creating client with tokens:");
-    debugPrint("   - Vendure Token (auth): ${_authToken.isNotEmpty ? 'Bearer $_authToken' : 'NOT SET'}");
-    debugPrint("   - Channel Token: ${_channelToken.isNotEmpty ? _channelToken : 'NOT SET'}");
-
     final authLink = AuthLink(getToken: () async {
       final token = _authToken.isNotEmpty ? 'Bearer $_authToken' : null;
       if (token != null) {
-        debugPrint("🔑 [GraphQL Client] Authorization header: $token");
       }
       // Always print channel token when auth header is accessed
-      debugPrint("🔑 [GraphQL Client] Channel token: ${_channelToken.isNotEmpty ? _channelToken : 'NOT SET'}");
       return token;
     });
 
@@ -66,30 +60,16 @@ class GraphqlService {
     };
     
     // Debug print channel token header prominently
-    debugPrint("═══════════════════════════════════════════════════════════");
-    debugPrint("📤 [GraphQL Client] ========== HTTP REQUEST HEADERS ==========");
     if (_channelToken.isNotEmpty) {
-      debugPrint("✅ [GraphQL Client] Channel Token in Header:");
-      debugPrint("   Header Key: $_channelTokenKey");
-      debugPrint("   Header Value: $_channelToken");
-      debugPrint("   Token Length: ${_channelToken.length} characters");
     } else {
-      debugPrint("⚠️ [GraphQL Client] Channel Token in Header: NOT SET");
     }
-    debugPrint("───────────────────────────────────────────────────────────");
-    
     // Debug print all headers
-    debugPrint("📋 [GraphQL Client] All HTTP Headers:");
     headers.forEach((key, value) {
       if (key == _channelTokenKey) {
         // Highlight channel token header
-        debugPrint("   ✅ $key: $value (Channel Token)");
       } else {
-        debugPrint("   - $key: $value");
       }
     });
-    debugPrint("═══════════════════════════════════════════════════════════");
-    
     final httpLink = HttpLink(
       dotenv.env['SHOP_API_URL'] ?? '',
       httpClient: httpClient,
@@ -112,21 +92,15 @@ class GraphqlService {
 
   // Initialize from storage
   static Future<void> initialize() async {
-    debugPrint("⚡ [GraphQL Client] Initializing GraphqlService...");
     await GetStorage.init();
     _authToken = _storage.read('auth_token') ?? "";
     _channelToken = _storage.read('channel_token') ?? "";
     channelTokenRx.value = _channelToken; // Initialize reactive observable
-    debugPrint("✅ [GraphQL Client] Tokens loaded from storage:");
-    debugPrint("   - Vendure Token (auth_token): ${_authToken.isNotEmpty ? '${_authToken.substring(0, _authToken.length > 20 ? 20 : _authToken.length)}...' : 'NOT SET'}");
-    debugPrint("   - Channel Token (channel_token): ${_channelToken.isNotEmpty ? '${_channelToken.substring(0, _channelToken.length > 20 ? 20 : _channelToken.length)}...' : 'NOT SET'}");
     _client ??= ValueNotifier(_createClient());
   }
 
   // Generic setter for token
   static Future<void> setToken({required String key, required String token}) async {
-    debugPrint("📝 [GraphQL Client] setToken called for $key");
-    debugPrint("   - Token value: ${token.length > 20 ? '${token.substring(0, 20)}...' : token}");
     if (key == 'auth') {
       if (_authToken != token) _authToken = token;
     } else if (key == 'channel') {
@@ -134,15 +108,11 @@ class GraphqlService {
         _channelToken = token;
         // Update reactive observable to trigger UI updates
         channelTokenRx.value = token;
-        debugPrint("🔄 [GraphQL Client] Channel token reactive observable updated: $token");
-        debugPrint("📤 [GraphQL Client] Channel token will be included in HTTP headers as: $_channelTokenKey");
       }
     }
     await _storage.write('${key}_token', token);
     _client?.value = _createClient();
-    debugPrint("✅ [GraphQL Client] $key token updated and client recreated");
     if (key == 'channel' && token.isNotEmpty) {
-      debugPrint("📤 [GraphQL Client] Channel token is now set and will be sent in all GraphQL request headers");
     }
   }
 

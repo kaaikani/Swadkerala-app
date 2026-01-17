@@ -53,27 +53,22 @@ class ChannelService {
       await _storage.write(_channelTokenKey, token);
       // Also update GraphQL service
       await GraphqlService.setToken(key: 'channel', token: token);
-      debugPrint('[ChannelService] Channel token set: $token');
     }
     
     if (code != null) {
       await _storage.write(_channelCodeKey, code);
-      debugPrint('[ChannelService] Channel code set: $code');
     }
     
     if (name != null) {
       await _storage.write(_channelNameKey, name);
-      debugPrint('[ChannelService] Channel name set: $name');
     }
     
     if (type != null) {
       await _storage.write(_channelTypeKey, type);
-      debugPrint('[ChannelService] Channel type set: $type');
     }
     
     if (postalCode != null) {
       await _storage.write(_postalCodeKey, postalCode);
-      debugPrint('[ChannelService] Postal code set: $postalCode');
     }
   }
 
@@ -99,7 +94,6 @@ class ChannelService {
     await _storage.remove(_channelTypeKey);
     await _storage.remove(_postalCodeKey);
     await GraphqlService.clearToken('channel');
-    debugPrint('[ChannelService] All channel information cleared');
   }
 
   /// Get all channel information as a map

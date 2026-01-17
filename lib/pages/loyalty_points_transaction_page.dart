@@ -114,7 +114,6 @@ class _LoyaltyPointsTransactionPageState
       setState(() {
         _isLoading = false;
       });
-      debugPrint('[LoyaltyPoints] Error fetching transactions: $e');
     }
   }
 

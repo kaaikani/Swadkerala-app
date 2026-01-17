@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../widgets/error_dialog.dart';
+import '../../utils/logger.dart';
 
 /// Base controller with centralized error handling
 /// All controllers should extend this to get automatic error dialog handling
@@ -112,7 +113,10 @@ abstract class BaseController extends GetxController {
   }
 
   /// Handle generic exceptions and show error dialog
-  void handleException(dynamic exception, {String? customErrorMessage}) {
+  void handleException(dynamic exception, {String? customErrorMessage, String? functionName}) {
+    // Log error in allowed format
+    final funcName = functionName ?? runtimeType.toString();
+    Logger.logError(functionName: funcName, error: exception);
     
     String errorMessage = customErrorMessage ?? 'An unexpected error occurred';
     

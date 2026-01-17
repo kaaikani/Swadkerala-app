@@ -11,8 +11,9 @@ import '../services/razorpay_service.dart';
 import '../services/analytics_service.dart';
 import '../widgets/snackbar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
-import '../graphql/order.graphql.dart';
 import '../graphql/Customer.graphql.dart';
+import '../graphql/order.graphql.dart';
+import '../services/graphql_client.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../utils/app_config.dart';
@@ -32,7 +33,7 @@ class CheckoutPage extends StatefulWidget {
   State<CheckoutPage> createState() => _CheckoutPageState();
 }
 
-class _CheckoutPageState extends State<CheckoutPage> {
+class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver {
   final CartController cartController = Get.find<CartController>();
   final OrderController orderController = Get.find<OrderController>();
   final UtilityController utilityController = Get.find<UtilityController>();
@@ -90,23 +91,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
   
   // Local loading flag to prevent flicker on initial load
   bool _isInitialLoading = true;
+  
+  // Track last route to detect navigation changes
+  String? _lastRoute;
+  bool _hasRefreshedFromAddresses = false; // Flag to prevent duplicate refreshes
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _razorpayService = RazorpayService();
-    debugPrint('[CheckoutPage] initState called');
-    
+    _lastRoute = Get.currentRoute;
     // Load data without showing loading state to prevent flicker
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Reset loyalty points state after the current frame to avoid build-time state updates
       // This ensures clean state for new orders. The actual order state will be loaded and synced later.
-      debugPrint('[CheckoutPage] Resetting loyalty points state on page entry');
       bannerController.resetLoyaltyPoints();
       if (_loyaltyPointsController.text.isNotEmpty) {
         _loyaltyPointsController.clear();
       }
-      debugPrint('[CheckoutPage] PostFrameCallback executing...');
       // Load shipping address first (at the top)
       await _loadCustomerAddresses();
       // Then load other data in parallel
@@ -136,11 +139,40 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _loyaltyPointsController.dispose();
     _otherInstructionsController.dispose();
     _instructionsDebounceTimer?.cancel();
     _razorpayService.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if we're returning from addresses page
+    final currentRoute = Get.currentRoute;
+    if (_lastRoute != null && 
+        _lastRoute == '/addresses' && 
+        currentRoute == '/checkout' &&
+        !_isInitialLoading &&
+        !_hasRefreshedFromAddresses) {
+      // User returned from addresses page - refresh data
+      _hasRefreshedFromAddresses = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && Get.currentRoute == '/checkout') {
+          _refreshCheckoutData().then((_) {
+            // Reset flag after refresh completes
+            _hasRefreshedFromAddresses = false;
+          });
+        }
+      });
+    }
+    // Reset flag if route changes away from checkout
+    if (currentRoute != '/checkout') {
+      _hasRefreshedFromAddresses = false;
+    }
+    _lastRoute = currentRoute;
   }
 
   Future<void> _refreshPaymentMethods() async {
@@ -163,6 +195,32 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _loadCustomerAddresses() async {
+    // First, check if active order has a shipping address
+    await orderController.getActiveOrder(skipLoading: true);
+    
+    // Try to get shipping address from active order response
+    // Note: This will work after GraphQL files are regenerated with shippingAddress in ActiveOrder query
+    try {
+      final response = await GraphqlService.client.value.query$ActiveOrder(
+        Options$Query$ActiveOrder(),
+      );
+      
+      final activeOrder = response.parsedData?.activeOrder;
+      if (activeOrder != null) {
+        // Check if activeOrder has shippingAddress (Query$ActiveOrder$activeOrder type)
+        // Using reflection/dynamic access since types may not be regenerated yet
+        final orderJson = activeOrder.toJson();
+        if (orderJson['shippingAddress'] != null) {
+          final shippingAddressData = orderJson['shippingAddress'] as Map<String, dynamic>?;
+          if (shippingAddressData != null && shippingAddressData.isNotEmpty) {
+            // If order has a shipping address, we should match it to customer addresses
+            // This will be handled below in customer address matching
+          }
+        }
+      }
+    } catch (e) {
+    }
+    
     await customerController.getActiveCustomer();
     Query$GetActiveCustomer$activeCustomer$addresses? defaultShipping;
     
@@ -218,28 +276,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
       );
       
       if (addressSet) {
-        debugPrint('[CheckoutPage] ✅ Shipping address automatically set: ${_selectedAddress!.fullName}');
         // Shipping methods will be loaded in initState Future.wait, no need to call again
       } else {
-        debugPrint('[CheckoutPage] ⚠️ Failed to set shipping address automatically');
       }
     } catch (e) {
-      debugPrint('[CheckoutPage] ❌ Error setting shipping address: $e');
     }
   }
 
   Future<void> _loadShippingMethods() async {
-    debugPrint('[CheckoutPage] _loadShippingMethods() called - loading eligible shipping methods');
     await orderController.getEligibleShippingMethods();
 
     if (orderController.shippingMethods.isEmpty) {
       orderController.selectedShippingMethod.value = null;
       _lastAppliedShippingMethodId = null;
-      debugPrint('[CheckoutPage] No shipping methods available');
       return;
     }
-
-    debugPrint('[CheckoutPage] Loaded ${orderController.shippingMethods.length} shipping methods');
     // Removed auto-select and auto-apply logic - user should select shipping method manually
     // Just load the methods, don't auto-select or auto-apply
   }
@@ -247,7 +298,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   /// Load existing shipping method from already-loaded order data
   Future<void> _loadExistingShippingMethod() async {
     try {
-      debugPrint('[CheckoutPage] _loadExistingShippingMethod() called - using already-loaded order data');
       // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
       
@@ -263,15 +313,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
         if (matchingMethod != null) {
           orderController.selectedShippingMethod.value = matchingMethod;
           _lastAppliedShippingMethodId = matchingMethod.id;
-          debugPrint('[CheckoutPage] Loaded existing shipping method: ${matchingMethod.name} (ID: ${matchingMethod.id})');
         } else {
-          debugPrint('[CheckoutPage] Shipping method ID $shippingMethodId from order not found in available methods');
         }
       } else {
-        debugPrint('[CheckoutPage] No shipping method found in order');
     }
     } catch (e) {
-      debugPrint('[CheckoutPage] Error loading existing shipping method: $e');
     }
   }
 
@@ -326,65 +372,32 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _loadCouponCodes() async {
-debugPrint('[CheckoutPage] ===== LOADING COUPON CODES =====');
-debugPrint('[CheckoutPage] BannerController available: true');
-debugPrint(  '[CheckoutPage] Current coupon codes count: ${bannerController.availableCouponCodes.length}');
-debugPrint(  '[CheckoutPage] Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
-
     try {
-debugPrint(  '[CheckoutPage] Calling bannerController.getCouponCodeList()...');
       await bannerController.getCouponCodeList();
-debugPrint(  '[CheckoutPage] bannerController.getCouponCodeList() completed');
-
-debugPrint(  '[CheckoutPage] After loading - Coupon codes count: ${bannerController.availableCouponCodes.length}');
-debugPrint(  '[CheckoutPage] After loading - Coupon codes loaded: ${bannerController.couponCodesLoaded.value}');
-
       if (bannerController.availableCouponCodes.isNotEmpty) {
-debugPrint(  '[CheckoutPage] ✅ Successfully loaded ${bannerController.availableCouponCodes.length} coupon codes');
         for (int i = 0; i < bannerController.availableCouponCodes.length; i++) {
           // final coupon = bannerController.availableCouponCodes[i]; // Unused variable
-debugPrint( '[CheckoutPage] Coupon $i: ${bannerController.availableCouponCodes[i].name} (${bannerController.availableCouponCodes[i].couponCode}) - Enabled: ${bannerController.availableCouponCodes[i].enabled}');
         }
       } else {
-debugPrint('[CheckoutPage] ❌ No coupon codes loaded');
       }
     } catch (e) {
-debugPrint('[CheckoutPage] ❌ Error loading coupon codes: $e');
-debugPrint('[CheckoutPage] Error type: ${e.runtimeType}');
-debugPrint('[CheckoutPage] Stack trace: ${StackTrace.current}');
     }
-
-debugPrint('[CheckoutPage] ===== COUPON CODE LOADING COMPLETED =====');
   }
 
   Future<void> _loadLoyaltyPointsConfig() async {
-debugPrint('[CheckoutPage] ===== LOADING LOYALTY POINTS CONFIG =====');
-
     try {
-debugPrint(  '[CheckoutPage] Calling bannerController.fetchLoyaltyPointsConfig()...');
       await bannerController.fetchLoyaltyPointsConfig();
-debugPrint(  '[CheckoutPage] bannerController.fetchLoyaltyPointsConfig() completed');
 
       final config = bannerController.loyaltyPointsConfig.value;
       if (config != null) {
-debugPrint(  '[CheckoutPage] ✅ Successfully loaded loyalty points config');
-debugPrint('[CheckoutPage] Rupees per point: ${config.rupeesPerPoint}');
-debugPrint('[CheckoutPage] Points per rupee: ${config.pointsPerRupee}');
       } else {
-debugPrint('[CheckoutPage] ❌ No loyalty points config loaded');
       }
     } catch (e) {
-debugPrint('[CheckoutPage] ❌ Error loading loyalty points config: $e');
-debugPrint('[CheckoutPage] Error type: ${e.runtimeType}');
-debugPrint('[CheckoutPage] Stack trace: ${StackTrace.current}');
     }
-
-debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====');
   }
 
   Future<void> _loadExistingInstructions() async {
     try {
-      debugPrint('[CheckoutPage] _loadExistingInstructions() called - using already-loaded order data');
       // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
       
@@ -416,34 +429,25 @@ debugPrint(  '[CheckoutPage] ===== LOYALTY POINTS CONFIG LOADING COMPLETED =====
               _selectedDefaultInstruction = null;
             });
           }
-          
-debugPrint('[CheckoutPage] Loaded existing instructions: $instructions');
           } else {
-            debugPrint('[CheckoutPage] No instructions found in order customFields');
           }
         } catch (e) {
-          debugPrint('[CheckoutPage] Error accessing customFields: $e');
         }
       }
     } catch (e) {
-debugPrint('[CheckoutPage] Error loading existing instructions: $e');
     }
   }
 
   /// Load existing coupon codes from the order
   Future<void> _loadExistingCouponCodes() async {
     try {
-      debugPrint('[CheckoutPage] _loadExistingCouponCodes() called - using already-loaded cart data');
       // Use already-loaded cart data instead of fetching again
       final cart = cartController.cart.value;
       if (cart != null && cart.couponCodes.isNotEmpty) {
-debugPrint('[CheckoutPage] Found ${cart.couponCodes.length} coupon codes in order: ${cart.couponCodes}');
-        
         // Sync applied coupon codes with the order
         for (final couponCode in cart.couponCodes) {
           if (!bannerController.appliedCouponCodes.contains(couponCode)) {
             bannerController.appliedCouponCodes.add(couponCode);
-debugPrint('[CheckoutPage] Added coupon code to applied list: $couponCode');
           }
         }
         
@@ -453,22 +457,16 @@ debugPrint('[CheckoutPage] Added coupon code to applied list: $couponCode');
             .toList();
         for (final code in codesToRemove) {
           bannerController.appliedCouponCodes.remove(code);
-debugPrint('[CheckoutPage] Removed coupon code from applied list: $code');
         }
-        
-debugPrint('[CheckoutPage] Synced applied coupon codes: ${bannerController.appliedCouponCodes}');
       } else {
-debugPrint('[CheckoutPage] No coupon codes found in order');
       }
     } catch (e) {
-debugPrint('[CheckoutPage] Error loading existing coupon codes: $e');
     }
   }
 
   /// Load existing loyalty points from the order
   Future<void> _loadExistingLoyaltyPoints() async {
     try {
-      debugPrint('[CheckoutPage] _loadExistingLoyaltyPoints() called - using already-loaded order data');
       // Use already-loaded order data instead of fetching again
       final order = orderController.currentOrder.value;
       
@@ -483,8 +481,6 @@ debugPrint('[CheckoutPage] Error loading existing coupon codes: $e');
           }
         
         if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUsed');
-          
           // Sync loyalty points state
           bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
           bannerController.loyaltyPointsApplied.value = true;
@@ -492,10 +488,8 @@ debugPrint('[CheckoutPage] Found loyalty points used in order: $loyaltyPointsUse
           // Update the text field to show applied points
           if (mounted) {
             _loyaltyPointsController.text = loyaltyPointsUsed.toString();
-debugPrint('[CheckoutPage] Updated loyalty points controller with: $loyaltyPointsUsed');
           }
         } else {
-debugPrint('[CheckoutPage] No loyalty points found in order - resetting state');
           // Reset if no points are applied (important for new orders)
             bannerController.resetLoyaltyPoints();
             if (mounted) {
@@ -503,21 +497,18 @@ debugPrint('[CheckoutPage] No loyalty points found in order - resetting state');
             }
           }
         } catch (e) {
-          debugPrint('[CheckoutPage] Error accessing customFields: $e');
           bannerController.resetLoyaltyPoints();
           if (mounted) {
             _loyaltyPointsController.clear();
           }
         }
       } else {
-        debugPrint('[CheckoutPage] Order is null - resetting loyalty points state');
         bannerController.resetLoyaltyPoints();
         if (mounted) {
           _loyaltyPointsController.clear();
         }
       }
     } catch (e) {
-debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
       // On error, reset to be safe
       bannerController.resetLoyaltyPoints();
       if (mounted) {
@@ -643,16 +634,10 @@ debugPrint('[CheckoutPage] Error loading existing loyalty points: $e');
 
   /// Handle Razorpay online payment
   Future<void> _handleRazorpayPayment() async {
-debugPrint('[Checkout] [Razorpay] Starting payment flow...');
     // final currentOrderBeforeTransition = orderController.currentOrder.value; // Unused variable
-debugPrint('[Checkout] [Razorpay] Order state before transition: ${orderController.currentOrder.value?.state ?? "null"}');
-debugPrint('[Checkout] [Razorpay] Order ID before transition: ${orderController.currentOrder.value?.id ?? "null"}');
-    
     // Transition to ArrangingPayment state
     final transitioned = await orderController.transitionToArrangingPayment();
     if (!transitioned) {
-debugPrint('[Checkout] ❌ [Razorpay] Failed to transition to ArrangingPayment state');
-debugPrint('[Checkout] [Razorpay] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
       showErrorSnackbar('Failed to process order');
       // Reset slider on error
       Future.delayed(
@@ -661,8 +646,6 @@ debugPrint('[Checkout] [Razorpay] Order state after failed transition: ${orderCo
       );
       return;
     }
-debugPrint('[Checkout] ✅ [Razorpay] Successfully transitioned to ArrangingPayment state');
-
     // Refresh order to get latest state from server
     await orderController.getActiveOrder(skipLoading: true);
     // Also refresh cart to get latest data
@@ -674,22 +657,14 @@ debugPrint('[Checkout] ✅ [Razorpay] Successfully transitioned to ArrangingPaym
     // Verify order is in ArrangingPayment state before generating Razorpay order
     final currentOrder = orderController.currentOrder.value;
     if (currentOrder != null && currentOrder.state != 'ArrangingPayment') {
-debugPrint('[Checkout] ⚠️ Order state mismatch - Current: ${currentOrder.state}, Expected: ArrangingPayment');
-debugPrint('[Checkout] Order ID: ${currentOrder.id}, Order Code: ${currentOrder.code}');
-debugPrint('[Checkout] Order Active: ${currentOrder.active}');
       // Try refreshing one more time
       await orderController.getActiveOrder(skipLoading: true);
       await cartController.getActiveOrder();
       final refreshedOrder = orderController.currentOrder.value;
       if (refreshedOrder?.state != 'ArrangingPayment') {
-debugPrint('[Checkout] ❌ Order state error after refresh - State: ${refreshedOrder?.state ?? "null"}, Expected: ArrangingPayment');
-debugPrint('[Checkout] Refreshed Order ID: ${refreshedOrder?.id ?? "null"}, Order Code: ${refreshedOrder?.code ?? "null"}');
-debugPrint('[Checkout] Refreshed Order Active: ${refreshedOrder?.active ?? "null"}');
-debugPrint('[Checkout] Cart Order State: ${cartController.cart.value?.state ?? "null"}');
         showErrorSnackbar('Order state error. Please try again.');
         return;
       } else {
-debugPrint('[Checkout] ✅ Order state corrected after refresh - State: ${refreshedOrder?.state ?? "null"}');
       }
     }
 
@@ -718,9 +693,6 @@ debugPrint('[Checkout] ✅ Order state corrected after refresh - State: ${refres
         : orderController.getShippingPrice(orderController.selectedShippingMethod.value);
     final amount = orderTotal + shippingCost;
 
-debugPrint(  '[Checkout] Order Total: $orderTotal, Shipping: $shippingCost, Final Amount: $amount');
-debugPrint(  '[Checkout] Free shipping coupon applied: ${cartController.hasFreeShippingCoupon()}');
-
     // Generate Razorpay Order ID from backend
     showSuccessSnackbar('Generating payment order...');
     final razorpayOrder =
@@ -730,7 +702,6 @@ debugPrint(  '[Checkout] Free shipping coupon applied: ${cartController.hasFreeS
         razorpayOrder.razorpayOrderId == null || 
         razorpayOrder.keyId == null) {
       // Error message is already shown by the controller's error handling
-debugPrint('[Checkout] Razorpay order generation failed');
       // Reset slider on error
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -738,12 +709,6 @@ debugPrint('[Checkout] Razorpay order generation failed');
       );
       return;
     }
-
-debugPrint(  '[Checkout] Razorpay Order ID: ${razorpayOrder.razorpayOrderId}');
-debugPrint('[Checkout] Razorpay Key ID: ${razorpayOrder.keyId}');
-debugPrint('[Checkout] Razorpay Amount: ${razorpayOrder.amount}');
-debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
-
     // Ensure customer data is loaded before getting phone number
     if (customerController.activeCustomer.value == null) {
       await customerController.getActiveCustomer();
@@ -789,9 +754,6 @@ debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
     // Ensure phone number is properly formatted (remove spaces, ensure it starts with country code if needed)
     customerPhone = customerPhone.replaceAll(' ', '').replaceAll('-', '');
     
-    debugPrint('[Checkout] Customer Phone (cleaned): $customerPhone');
-    debugPrint('[Checkout] Customer Phone Length: ${customerPhone.length}');
-
     // Use amount from response if available, otherwise use calculated amount
     final paymentAmount = razorpayOrder.amount ?? amount.toInt();
 
@@ -806,8 +768,6 @@ debugPrint('[Checkout] Razorpay Currency: ${razorpayOrder.currency}');
       customerPhone: customerPhone,
       description: 'Order #${orderCode ?? orderId}',
       onPaymentSuccess: (response) async {
-debugPrint(  '[Checkout] Razorpay payment successful: ${response.paymentId}');
-
         // Get latest order for payment - refresh to get current state
         await orderController.getActiveOrder(skipLoading: true);
         await cartController.getActiveOrder();
@@ -815,20 +775,32 @@ debugPrint(  '[Checkout] Razorpay payment successful: ${response.paymentId}');
         final latestOrderModel = orderController.currentOrder.value;
         final latestCartOrder = cartController.cart.value;
         final latestOrderCode = latestOrderModel?.code ?? latestCartOrder?.code ?? orderCode;
+        final systemOrderId = latestOrderModel?.id ?? latestCartOrder?.id ?? orderId;
 
         // Prepare Razorpay payment metadata for online payment
+        // IMPORTANT: Use the Razorpay order ID we generated from backend (not response.orderId)
+        // The signature verification on backend uses the order ID we generated
         // Metadata includes:
         // - razorpayPaymentId: Payment ID from Razorpay success response
-        // - razorpayOrderId: Razorpay order ID (from response.orderId or empty string)
+        // - razorpayOrderId: Razorpay order ID (MUST be the one we generated from backend)
         // - razorpaySignature: Payment signature from Razorpay (for verification)
+        // - orderId: Our system's order ID (needed for backend to look up the Razorpay secret)
+        // Note: The signature is generated by Razorpay using: razorpay_order_id + razorpay_payment_id + secret
+        // So we MUST use the same razorpay_order_id that was used to generate the signature
+        final razorpayOrderIdToUse = razorpayOrder.razorpayOrderId ?? '';
+        // Verify that the order IDs match (they should be the same)
+        if (razorpayOrderIdToUse.isNotEmpty && 
+            response.orderId != null && 
+            response.orderId!.isNotEmpty &&
+            razorpayOrderIdToUse != response.orderId) {
+        }
+        
         final metadata = {
           "razorpayPaymentId": response.paymentId ?? '',
-          "razorpayOrderId": response.orderId ?? '',
+          "razorpayOrderId": razorpayOrderIdToUse, // Use the one we generated from backend
           "razorpaySignature": response.signature ?? '',
+          "orderId": systemOrderId, // Add system order ID for backend verification
         };
-
-debugPrint('[Checkout] Adding payment to order with Razorpay metadata: $metadata');
-
         // Add payment to order with Razorpay metadata
         // Order should be in ArrangingPayment state at this point
         final paymentMethod = orderController.selectedPaymentMethod.value?.code ?? 'razorpay';
@@ -838,10 +810,8 @@ debugPrint('[Checkout] Adding payment to order with Razorpay metadata: $metadata
         );
 
         if (!paymentAdded) {
-debugPrint('[Checkout] ⚠️ Failed to add payment to order, but continuing with order processing');
           // Continue even if payment addition fails - payment was successful on Razorpay side
         } else {
-debugPrint('[Checkout] ✅ Payment successfully added to order with metadata');
         }
         
         // Get latest order for analytics
@@ -896,7 +866,6 @@ debugPrint('[Checkout] ✅ Payment successfully added to order with metadata');
         }
         
         // Try to transition order to next state
-debugPrint('[Checkout] Payment successful, transitioning order...');
         final transitioned = await orderController.transitionToNextState();
         final finalOrderCode = latestOrderCode ?? orderId;
         // Mark order as placed successfully - don't reset slider
@@ -918,7 +887,6 @@ debugPrint('[Checkout] Payment successful, transitioning order...');
         }
       },
       onPaymentFailure: (response) {
-debugPrint('[Checkout] Razorpay payment failed: ${response.message}');
         showErrorSnackbar('Payment failed: ${response.message}');
         // Reset slider on error so user can try again
         Future.delayed(
@@ -931,16 +899,10 @@ debugPrint('[Checkout] Razorpay payment failed: ${response.message}');
 
   /// Handle Cash on Delivery payment
   Future<void> _handleCODPayment() async {
-debugPrint('[Checkout] [COD] Starting payment flow...');
     // final currentOrderBeforeTransition = orderController.currentOrder.value; // Unused variable
-debugPrint('[Checkout] [COD] Order state before transition: ${orderController.currentOrder.value?.state ?? "null"}');
-debugPrint('[Checkout] [COD] Order ID before transition: ${orderController.currentOrder.value?.id ?? "null"}');
-    
     // Transition to ArrangingPayment state
     final transitioned = await orderController.transitionToArrangingPayment();
     if (!transitioned) {
-debugPrint('[Checkout] ❌ [COD] Failed to transition to ArrangingPayment state');
-debugPrint('[Checkout] [COD] Order state after failed transition: ${orderController.currentOrder.value?.state ?? "null"}');
       showErrorSnackbar('Failed to process order');
       // Reset slider on error
       Future.delayed(
@@ -949,8 +911,6 @@ debugPrint('[Checkout] [COD] Order state after failed transition: ${orderControl
       );
       return;
     }
-debugPrint('[Checkout] ✅ [COD] Successfully transitioned to ArrangingPayment state');
-
     // Refresh order to get latest state from server
     await orderController.getActiveOrder(skipLoading: true);
     
@@ -960,23 +920,14 @@ debugPrint('[Checkout] ✅ [COD] Successfully transitioned to ArrangingPayment s
     // Verify order is in ArrangingPayment state before adding payment
     final currentOrder = orderController.currentOrder.value;
     if (currentOrder != null && currentOrder.state != 'ArrangingPayment') {
-debugPrint('[Checkout] ⚠️ [COD] Order state mismatch - Current: ${currentOrder.state}, Expected: ArrangingPayment');
-debugPrint('[Checkout] [COD] Order ID: ${currentOrder.id}, Order Code: ${currentOrder.code}');
-debugPrint('[Checkout] [COD] Order Active: ${currentOrder.active}');
       // Try refreshing one more time
       await orderController.getActiveOrder(skipLoading: true);
       await cartController.getActiveOrder();
       final refreshedOrder = orderController.currentOrder.value;
       if (refreshedOrder?.state != 'ArrangingPayment') {
-debugPrint('[Checkout] ❌ [COD] Order state error after refresh - State: ${refreshedOrder?.state ?? "null"}, Expected: ArrangingPayment');
-debugPrint('[Checkout] [COD] Refreshed Order ID: ${refreshedOrder?.id ?? "null"}, Order Code: ${refreshedOrder?.code ?? "null"}');
-debugPrint('[Checkout] [COD] Refreshed Order Active: ${refreshedOrder?.active ?? "null"}');
-debugPrint('[Checkout] [COD] Cart Order State: ${cartController.cart.value?.state ?? "null"}');
-debugPrint('[Checkout] [COD] Transition result was: $transitioned');
         showErrorSnackbar('Order state error. Please try again.');
         return;
       } else {
-debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${refreshedOrder?.state ?? "null"}');
       }
     }
 
@@ -1063,10 +1014,27 @@ debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${
 
   /// Apply loyalty points
 
+  /// Refresh checkout data when returning from addresses page
+  Future<void> _refreshCheckoutData() async {
+    await Future.wait([
+      _loadCustomerAddresses(),
+      _loadShippingMethods(),
+      _refreshPaymentMethods(),
+    ], eagerError: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return Scaffold(
+      return PopScope(
+        canPop: true,
+        onPopInvoked: (didPop) {
+          // Reset route tracking when leaving checkout page
+          if (didPop) {
+            _lastRoute = null;
+          }
+        },
+        child: Scaffold(
         backgroundColor: AppColors.background,
         body: Container(
           color: AppColors.background,
@@ -1174,6 +1142,7 @@ debugPrint('[Checkout] ✅ [COD] Order state corrected after refresh - State: ${
               ),
             ],
           ),
+        ),
         ),
       ),
       );
