@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:sms_autofill/sms_autofill.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart'; // Unused import removed
 class SmsAutofillService {
   static final SmsAutofillService _instance = SmsAutofillService._internal();
   factory SmsAutofillService() => _instance;

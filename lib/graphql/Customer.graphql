@@ -83,7 +83,7 @@ query GetCurrentUser{
     }
 }
 
-query GetActiveCustomer {
+query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
     activeCustomer {
         __typename
         ... on Customer {
@@ -122,7 +122,11 @@ query GetActiveCustomer {
                 defaultShippingAddress
                 defaultBillingAddress
             }
-            orders(options: { take: 10, skip: 0 }) {
+            orders(options: { 
+                take: 10, 
+                skip: 0,
+                filter: $orderStateFilter
+            }) {
 
                 totalItems
                 items {
@@ -196,11 +200,15 @@ query GetActiveCustomer {
     }
 }
 
-query GetCustomerOrders($skip: Int!, $take: Int!) {
+query GetCustomerOrders($skip: Int!, $take: Int!, $orderStateFilter: OrderFilterParameter) {
     activeCustomer {
         __typename
         ... on Customer {
-            orders(options: { skip: $skip, take: $take }) {
+            orders(options: { 
+                skip: $skip, 
+                take: $take,
+                filter: $orderStateFilter
+            }) {
                 totalItems
                 items {
                     id

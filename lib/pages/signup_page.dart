@@ -464,94 +464,169 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     return Form(
       key: _step2Key,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('Verification', 'Enter the code sent to +91 ${_authController.phoneNumber.text}'),
-          SizedBox(height: ResponsiveUtils.rp(40)),
-
-          Center(
-            child: Container(
-              width: ResponsiveUtils.rp(240),
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUtils.rp(24),
-                vertical: ResponsiveUtils.rp(24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Verification Code',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(18),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                      overflow: TextOverflow.visible,
+                      softWrap: true,
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(8)),
+                    Text(
+                      '+91 ${_authController.phoneNumber.text}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.visible,
+                      softWrap: true,
+                    ),
+                  ],
+                ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: ResponsiveUtils.rp(12),
-                    offset: Offset(0, ResponsiveUtils.rp(4)),
-                  ),
-                ],
-              ),
-              child: TextFormField(
-                controller: _authController.otpController,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(32),
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: ResponsiveUtils.rp(16),
-                  color: AppColors.textPrimary,
-                ),
-                maxLength: 4,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(
-                  counterText: "",
-                  hintText: "○ ○ ○ ○",
-                  hintStyle: TextStyle(
-                    color: AppColors.textSecondary.withValues(alpha: 0.2),
-                    fontSize: ResponsiveUtils.sp(32),
-                    letterSpacing: ResponsiveUtils.rp(16),
-                    fontWeight: FontWeight.w300,
-                  ),
-                  border: InputBorder.none,
-                ),
-                onChanged: (val) {
-                  if (val.length == 4) _handleFinalSubmit();
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _currentStep = 0;
+                    _authController.setOtpSent(false);
+                    _authController.otpController.clear();
+                  });
                 },
-                validator: (v) => (v?.length ?? 0) < 4 ? "" : null,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.rp(12),
+                    vertical: ResponsiveUtils.rp(8),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                  ),
+                ),
+                child: Text(
+                  'Change',
+                  style: TextStyle(
+                    color: AppColors.button,
+                    fontSize: ResponsiveUtils.sp(14),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
+          SizedBox(height: ResponsiveUtils.rp(28)),
+          _buildOtpField(),
+          SizedBox(height: ResponsiveUtils.rp(24)),
+          _buildResendSection(),
+        ],
+      ),
+    );
+  }
 
-          SizedBox(height: ResponsiveUtils.rp(32)),
-          Center(
-            child: Obx(() => TextButton.icon(
-              onPressed: _authController.isLoading ? null : () => _authController.resendOtp(context),
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(20),
-                  vertical: ResponsiveUtils.rp(12),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                ),
-              ),
-              icon: Icon(
-                Icons.refresh_rounded,
-                size: ResponsiveUtils.rp(18),
-                color: AppColors.button,
-              ),
-              label: Text(
-                'Resend Code',
-                style: TextStyle(
-                  color: AppColors.button,
-                  fontWeight: FontWeight.w600,
-                  fontSize: ResponsiveUtils.sp(14),
-                ),
-              ),
-            )),
+  Widget _buildOtpField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: ResponsiveUtils.rp(12),
+            offset: Offset(0, ResponsiveUtils.rp(4)),
           ),
         ],
       ),
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.rp(24),
+        vertical: ResponsiveUtils.rp(24),
+      ),
+      child: TextFormField(
+        controller: _authController.otpController,
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: ResponsiveUtils.sp(32),
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary,
+          letterSpacing: ResponsiveUtils.rp(16),
+        ),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(4),
+        ],
+        onChanged: (value) {
+          if (value.length == 4) {
+            _handleFinalSubmit();
+          }
+        },
+        validator: (v) => (v?.length ?? 0) < 4 ? "" : null,
+        decoration: InputDecoration(
+          hintText: '○ ○ ○ ○',
+          hintStyle: TextStyle(
+            color: Colors.black.withValues(alpha: 0.3),
+            fontSize: ResponsiveUtils.sp(32),
+            letterSpacing: ResponsiveUtils.rp(16),
+            fontWeight: FontWeight.w300,
+          ),
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResendSection() {
+    return Column(
+      children: [
+        Text(
+          "Didn't receive the code?",
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: ResponsiveUtils.sp(14),
+          ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        Obx(() => TextButton.icon(
+          onPressed: _authController.isLoading ? null : () => _authController.resendOtp(context),
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.rp(20),
+              vertical: ResponsiveUtils.rp(12),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+            ),
+          ),
+          icon: Icon(
+            Icons.refresh_rounded,
+            size: ResponsiveUtils.rp(18),
+            color: AppColors.button,
+          ),
+          label: Text(
+            'Resend Code',
+            style: TextStyle(
+              color: AppColors.button,
+              fontWeight: FontWeight.w600,
+              fontSize: ResponsiveUtils.sp(14),
+            ),
+          ),
+        )),
+      ],
     );
   }
 
@@ -785,10 +860,10 @@ class ModernTextField extends StatelessWidget {
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(16),
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: Colors.black,
             letterSpacing: 0.3,
           ),
-          cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
+          cursorColor: Colors.black,
           validator: validator,
           maxLength: maxLength,
           textCapitalization: TextCapitalization.words,
@@ -799,7 +874,7 @@ class ModernTextField extends StatelessWidget {
             counterText: "",
             hintText: hint,
             hintStyle: TextStyle(
-              color: AppColors.textSecondary.withValues(alpha: 0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               fontWeight: FontWeight.w400,
               fontSize: ResponsiveUtils.sp(15),
             ),

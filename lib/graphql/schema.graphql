@@ -903,6 +903,7 @@ type CurrentUser {
   id: ID!
   identifier: String!
   channels: [CurrentUserChannel!]!
+  customerId: ID
 }
 
 type CurrentUserChannel {

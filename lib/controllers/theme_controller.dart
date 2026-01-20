@@ -9,18 +9,42 @@ class ThemeController extends GetxController {
   
   // Initialize theme synchronously before onInit
   ThemeController() {
-    // Load saved theme preference immediately
-    _isDarkMode.value = _storage.read('isDarkMode') ?? false;
+    // Try to load saved theme preference immediately
+    try {
+      final savedTheme = _storage.read('isDarkMode');
+      if (savedTheme != null) {
+        _isDarkMode.value = savedTheme as bool;
+      } else {
+        _isDarkMode.value = false;
+      }
+    } catch (e) {
+      // Storage might not be ready yet, default to light mode
+      _isDarkMode.value = false;
+    }
   }
   
   @override
   void onInit() {
     super.onInit();
-    // Ensure theme is loaded (in case storage wasn't ready in constructor)
-    if (!_storage.hasData('isDarkMode')) {
-      _isDarkMode.value = false;
-    } else {
-    _isDarkMode.value = _storage.read('isDarkMode') ?? false;
+    // Reload theme from storage once storage is ready
+    _loadThemeFromStorage();
+    
+    // Also reload after a short delay in case storage wasn't ready
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _loadThemeFromStorage();
+    });
+  }
+  
+  void _loadThemeFromStorage() {
+    try {
+      if (_storage.hasData('isDarkMode')) {
+        final savedTheme = _storage.read('isDarkMode') as bool?;
+        if (savedTheme != null && _isDarkMode.value != savedTheme) {
+          _isDarkMode.value = savedTheme;
+        }
+      }
+    } catch (e) {
+      // Storage not ready yet, keep current value
     }
   }
   

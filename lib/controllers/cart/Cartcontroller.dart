@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:graphql/client.dart' as graphql;
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart'; // Unused import removed
 import '../../graphql/cart.graphql.dart' as cart_graphql; // Generated GraphQL queries/mutations
 import '../../graphql/order.graphql.dart';
 import '../../services/graphql_client.dart';

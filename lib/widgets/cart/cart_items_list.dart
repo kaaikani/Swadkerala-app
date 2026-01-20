@@ -70,7 +70,8 @@ class _CartItemsListState extends State<CartItemsList> {
         if (couponCode != null) {
           // This product has coupon-added quantity
           final couponAddedQty = bannerController.getCouponAddedQuantity(variant.id, couponCode);
-          final originalQty = bannerController.getOriginalQuantity(variant.id, couponCode);
+          // ignore: unused_local_variable
+          final _originalQty = bannerController.getOriginalQuantity(variant.id, couponCode);
           
           
           // Only split display if there's actually coupon-added quantity > 0

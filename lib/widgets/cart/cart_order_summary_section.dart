@@ -217,14 +217,14 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                 ],
               ),
             ],
-              // Shipping with Tax
+              // Delivery Charge
               if (order != null && order.shippingLines.isNotEmpty) ...[
               SizedBox(height: ResponsiveUtils.rp(8)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                      'Shipping with Tax',
+                      'Delivery Charge',
                     style: TextStyle(
                       fontSize: ResponsiveUtils.sp(14),
                       fontWeight: FontWeight.w500,

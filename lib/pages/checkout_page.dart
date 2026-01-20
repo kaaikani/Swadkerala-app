@@ -694,7 +694,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     final amount = orderTotal + shippingCost;
 
     // Generate Razorpay Order ID from backend
-    showSuccessSnackbar('Generating payment order...');
     final razorpayOrder =
         await orderController.generateRazorpayOrderId(orderId);
 
@@ -753,7 +752,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     
     // Ensure phone number is properly formatted (remove spaces, ensure it starts with country code if needed)
     customerPhone = customerPhone.replaceAll(' ', '').replaceAll('-', '');
-    
+
     // Use amount from response if available, otherwise use calculated amount
     final paymentAmount = razorpayOrder.amount ?? amount.toInt();
 
@@ -882,7 +881,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         } else {
           // Clear cart after successful order placement
           cartController.clearCart();
-          showSuccessSnackbar('Payment successful! Order will be processed.');
           Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
         }
       },
@@ -995,7 +993,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       
       // Clear cart after successful order placement
       cartController.clearCart();
-      showSuccessSnackbar('Order placed successfully!');
       // Navigate to order confirmation page
       if (cart != null) {
         Get.offAllNamed('/order-confirmation', arguments: cart.code);
@@ -1142,7 +1139,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
               ),
             ],
           ),
-        ),
+          ),
         ),
       ),
       );
@@ -1466,7 +1463,9 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                           if (!_isPaymentExpanded && selectedMethod != null) ...[
                             SizedBox(height: ResponsiveUtils.rp(4)),
                             Text(
-                              _formatPaymentMethodName(selectedMethod.code),
+                              selectedMethod.name.isNotEmpty 
+                                  ? selectedMethod.name 
+                                  : _formatPaymentMethodName(selectedMethod.code),
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(13),
                                 color: AppColors.textSecondary,

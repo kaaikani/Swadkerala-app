@@ -476,6 +476,56 @@ class CheckoutCouponBottomSheet {
                                             final couponCodeToRemove = coupon.couponCode;
                                             final hadProducts = bannerController.couponAddedProducts.containsKey(couponCodeToRemove);
                                             
+                                            // Show loading dialog
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (dialogContext) => WillPopScope(
+                                                onWillPop: () async => false,
+                                                child: Dialog(
+                                                  backgroundColor: Colors.transparent,
+                                                  elevation: 0,
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.surface,
+                                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                                                    ),
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        CircularProgressIndicator(
+                                                          color: AppColors.button,
+                                                        ),
+                                                        SizedBox(height: ResponsiveUtils.rp(16)),
+                                                        Text(
+                                                          'Removing coupon code...',
+                                                          style: TextStyle(
+                                                            fontSize: ResponsiveUtils.sp(16),
+                                                            fontWeight: FontWeight.w600,
+                                                            color: AppColors.textPrimary,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                            
+                                            // Wait for 2 seconds
+                                            await Future.delayed(const Duration(seconds: 2));
+                                            
+                                            // Close the dialog
+                                            if (context.mounted) {
+                                              Navigator.pop(context);
+                                            }
+                                            
+                                            // Close the bottom sheet after dialog closes
+                                            if (context.mounted) {
+                                              Navigator.pop(context);
+                                            }
+                                            
                                             final success =
                                                 await bannerController
                                                     .removeCouponCode(
@@ -493,26 +543,74 @@ class CheckoutCouponBottomSheet {
                                                   : 'Coupon code removed successfully';
                                               
                                               showSuccessSnackbar(message);
-                                              Navigator.pop(context);
                                               onStateChanged();
                                             } else {
                                               showErrorSnackbar(
                                                   'Failed to remove coupon code');
                                             }
                                           } else {
+                                            final couponCode = coupon.couponCode ?? '';
+                                            
+                                            // Show loading dialog
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (dialogContext) => WillPopScope(
+                                                onWillPop: () async => false,
+                                                child: Dialog(
+                                                  backgroundColor: Colors.transparent,
+                                                  elevation: 0,
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.surface,
+                                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                                                    ),
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        CircularProgressIndicator(
+                                                          color: AppColors.button,
+                                                        ),
+                                                        SizedBox(height: ResponsiveUtils.rp(16)),
+                                                        Text(
+                                                          'Applying coupon code...',
+                                                          style: TextStyle(
+                                                            fontSize: ResponsiveUtils.sp(16),
+                                                            fontWeight: FontWeight.w600,
+                                                            color: AppColors.textPrimary,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                            
+                                            // Wait for 2 seconds
+                                            await Future.delayed(const Duration(seconds: 2));
+                                            
+                                            // Close the dialog
+                                            if (context.mounted) {
+                                              Navigator.pop(context);
+                                            }
+                                            
+                                            // Close the bottom sheet after dialog closes
+                                            if (context.mounted) {
+                                              Navigator.pop(context);
+                                            }
+                                            
                                             final hasProducts = bannerController
-                                                .hasCouponProducts(
-                                                    coupon.couponCode ?? '');
+                                                .hasCouponProducts(couponCode);
                                             
                                             if (hasProducts) {
                                               final result = await bannerController
-                                                  .applyCouponCodeWithProducts(
-                                                      coupon.couponCode ?? '');
+                                                  .applyCouponCodeWithProducts(couponCode);
                                               if (result['success']) {
                                                 showSuccessSnackbar(result[
                                                         'message'] ??
                                                     'Coupon applied successfully with products added!');
-                                                Navigator.pop(context);
                                                 onStateChanged();
                                               } else {
                                                 if (result[
@@ -530,13 +628,11 @@ class CheckoutCouponBottomSheet {
                                             } else {
                                               final result =
                                                   await bannerController
-                                                      .applyCouponCode(
-                                                      coupon.couponCode ?? '');
+                                                      .applyCouponCode(couponCode);
                                               if (result['success']) {
                                                 showSuccessSnackbar(result[
                                                         'message'] ??
                                                     'Coupon applied successfully!');
-                                                Navigator.pop(context);
                                                 onStateChanged();
                                               } else {
                                                 showErrorSnackbar(result[

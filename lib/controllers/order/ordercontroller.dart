@@ -10,7 +10,8 @@ import '../base_controller.dart';
 import '../../utils/price_formatter.dart';
 import '../../utils/logger.dart';
 import '../../widgets/loading_dialog.dart';
-import '../../widgets/error_dialog.dart';
+import '../../widgets/snackbar.dart';
+import '../../services/channel_service.dart';
 import '../customer/customer_controller.dart';
 
 class OrderController extends BaseController {
@@ -273,10 +274,7 @@ class OrderController extends BaseController {
         ),
       );
 
-      if (checkResponseForErrors(response,
-          customErrorMessage: 'Failed to set shipping method')) {
-        return false;
-      }
+
 
       final result = response.parsedData?.setOrderShippingMethod;
       if (result != null && result is Mutation$SetShippingMethod$setOrderShippingMethod$$Order) {
@@ -313,7 +311,6 @@ class OrderController extends BaseController {
 
       return false;
     } catch (e) {
-      handleException(e, customErrorMessage: 'Failed to set shipping method');
       return false;
     }
     // Removed finally block - no loading state management needed
@@ -485,17 +482,22 @@ class OrderController extends BaseController {
         }
       }
 
-      // Show custom dialog for postal code errors
+      // Show snackbar for postal code errors (not dialog)
       if (isPostalCodeError) {
-        ErrorDialog.show(
-          title: 'Postal Code Invalid',
-          message: 'Kindly change the address',
-          buttonText: 'OK',
-          secondButtonText: 'Change Address',
-          onSecondButtonPressed: () {
-            Get.toNamed('/addresses');
-          },
-        );
+        // Check if postal code is from storage
+        final storedPostalCode = ChannelService.getPostalCode();
+        final channelName = ChannelService.getChannelName();
+        
+        String errorMessage;
+        if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty && channelName != null) {
+          // Postal code is from storage, show channel name not in this city
+          errorMessage = '$channelName not in this city';
+        } else {
+          // Default error message
+          errorMessage = 'Invalid postal code. Please select a valid postal code from available options';
+        }
+        
+        showErrorSnackbar(errorMessage);
         return false;
       }
 
@@ -518,7 +520,8 @@ class OrderController extends BaseController {
         
         // Check if shipping address is in the result
         if (orderJson.containsKey('shippingAddress') && orderJson['shippingAddress'] != null) {
-          final shippingAddr = orderJson['shippingAddress'];
+          // ignore: unused_local_variable
+          final _shippingAddr = orderJson['shippingAddress'];
         } else {
         }
         
@@ -540,7 +543,7 @@ class OrderController extends BaseController {
       }
       
       return false;
-    } catch (e, stackTrace) {
+    } catch (e) {
       handleException(e, customErrorMessage: 'Failed to set shipping address', functionName: 'setShippingAddress');
       return false;
     } finally {
@@ -824,7 +827,7 @@ class OrderController extends BaseController {
     }
   }
 
-  /// Generate Razorpay Order ID from backend
+  /// FGenerate Razorpay Order ID from backend
   Future<Mutation$GenerateRazorpayOrderId$generateRazorpayOrderId?> generateRazorpayOrderId(String orderId) async {
         Logger.logFunction(functionName: 'generateRazorpayOrderId', mutationName: 'GenerateRazorpayOrderId');
     try {
@@ -953,7 +956,8 @@ class OrderController extends BaseController {
   }
 
   void _handleOrderMutationError(dynamic result, String fallbackMessage) {
-    final code = result?.$__typename ?? 'UNKNOWN_ERROR';
+    // ignore: unused_local_variable
+    final _code = result?.$__typename ?? 'UNKNOWN_ERROR';
     final message = _readOrderMutationMessage(result) ?? fallbackMessage;
     if (result is Fragment$ErrorResult) {
       error.value = result;

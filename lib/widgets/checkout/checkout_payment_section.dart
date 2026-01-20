@@ -79,7 +79,7 @@ class CheckoutPaymentSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _getPaymentMethodName(method.code),
+                      method.name.isNotEmpty ? method.name : _getPaymentMethodName(method.code),
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(16),
                         fontWeight: FontWeight.w600,

@@ -174,7 +174,6 @@ class AuthController extends BaseController {
         code: channel.code,
       );
       // Use GetX snackbar to avoid context issues
-      SnackBarWidget.showSuccess('Phone number verified!');
 
       return true;
     } catch (e) {

@@ -213,112 +213,103 @@ class _BannerComponentState extends State<BannerComponent> {
                 ),
               ],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.zero,
-              child: GestureDetector(
-                onTapDown: (_) => _stopAutoPlay(),
-                onTapUp: (_) {
-                  if (_isCarouselReady) {
-                    _startAutoPlay();
-                  }
-                },
-                onTapCancel: () {
-                  if (_isCarouselReady) {
-                    _startAutoPlay();
-                  }
-                },
-                child: CarouselSlider.builder(
-                  carouselController: _carouselController,
-                  itemCount: banners.length,
-                  itemBuilder: (context, index, realIndex) {
-                final banner = banners[index];
-                final imageUrl = banner.assets.isNotEmpty
-                    ? banner.assets.first.source
-                    : '';
-
-                return Container(
-                    // No margin - full width banner
-                    width: double.infinity,
-                    height: double.infinity,
-                  child: GestureDetector(
-                    onTap: () => _handleBannerTap(banner),
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: imageUrl.isNotEmpty
-                              ? Image.network(
-                                imageUrl,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                                alignment: Alignment.center,
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Container(
-                                    color: AppColors.grey200,
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        value: loadingProgress.expectedTotalBytes != null
-                                            ? loadingProgress.cumulativeBytesLoaded /
-                                                loadingProgress.expectedTotalBytes!
-                                            : null,
-                                        color: AppColors.button,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          AppColors.grey200,
-                                          AppColors.grey300,
-                                        ],
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.broken_image,
-                                        size: ResponsiveUtils.rp(50),
-                                        color: AppColors.textSecondary,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      AppColors.grey200,
-                                      AppColors.grey300,
-                                    ],
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.image,
-                                    size: ResponsiveUtils.rp(50),
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                      ),
-                    ),
-                  ),
-                );
+            child: GestureDetector(
+              onTapDown: (_) => _stopAutoPlay(),
+              onTapUp: (_) {
+                if (_isCarouselReady) {
+                  _startAutoPlay();
+                }
               },
-                  options: CarouselOptions(
-                    height: ResponsiveUtils.rp(200),
-                    viewportFraction: 1.0,
-                    autoPlay: false, // Disable built-in autoplay, use custom timer
-                    enlargeCenterPage: false,
-                    enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                    enableInfiniteScroll: banners.length > 1,
-                    onPageChanged: _onPageChanged,
-                    scrollDirection: Axis.horizontal,
-                  ),
+              onTapCancel: () {
+                if (_isCarouselReady) {
+                  _startAutoPlay();
+                }
+              },
+              child: CarouselSlider.builder(
+                carouselController: _carouselController,
+                itemCount: banners.length,
+                itemBuilder: (context, index, realIndex) {
+                  final banner = banners[index];
+                  final imageUrl = banner.assets.isNotEmpty
+                      ? banner.assets.first.source
+                      : '';
+
+                  return Container(
+                    width: double.infinity,
+                    child: GestureDetector(
+                      onTap: () => _handleBannerTap(banner),
+                      child: imageUrl.isNotEmpty
+                          ? Image.network(
+                              imageUrl,
+                              fit: BoxFit.contain,
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  color: AppColors.grey200,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
+                                          : null,
+                                      color: AppColors.button,
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.grey200,
+                                        AppColors.grey300,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      size: ResponsiveUtils.rp(50),
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.grey200,
+                                    AppColors.grey300,
+                                  ],
+                                ),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.image,
+                                  size: ResponsiveUtils.rp(50),
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                    ),
+                  );
+                },
+                options: CarouselOptions(
+                  aspectRatio: 16 / 9, // Use aspect ratio instead of fixed height
+                  viewportFraction: 1.0,
+                  autoPlay: false, // Disable built-in autoplay, use custom timer
+                  enlargeCenterPage: false,
+                  enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                  enableInfiniteScroll: banners.length > 1,
+                  onPageChanged: _onPageChanged,
+                  scrollDirection: Axis.horizontal,
                 ),
               ),
             ),

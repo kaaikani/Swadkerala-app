@@ -92,7 +92,18 @@ class BillGenerator {
 
     // Save PDF to temporary file
     final bytes = await pdf.save();
-    final output = await getTemporaryDirectory();
+    Directory output;
+    try {
+      output = await getTemporaryDirectory();
+    } catch (e) {
+      // Fallback to cache directory if temporary directory fails
+      try {
+        output = await getApplicationCacheDirectory();
+      } catch (e2) {
+        // Last resort: use system temp
+        output = Directory.systemTemp;
+      }
+    }
     final file = File('${output.path}/invoice_${order.code}.pdf');
     await file.writeAsBytes(bytes);
     

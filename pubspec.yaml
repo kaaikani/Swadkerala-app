@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.86+165
+version: 2.0.93+174
 environment:
   sdk: ">=2.17.6 <4.0.0"
 
@@ -62,6 +62,7 @@ dependencies:
   google_sign_in: ^6.2.1
   carousel_slider: ^5.0.0
   speech_to_text: 6.6.0
+  font_awesome_flutter: ^10.7.0
 
 
 
@@ -73,6 +74,7 @@ dev_dependencies:
   build_runner: ^2.4.6
   graphql_codegen: ^1.1.0
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.1
 
 flutter:
   uses-material-design: true
@@ -89,3 +91,12 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/kklogo_padded.png"  # Using padded version (65% size) with built-in transparent space
   # Logo is resized to 65% and centered with transparent padding to prevent cut-off
   remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#4CB150"
+  image: "assets/images/kklogo.png"
+  android: true
+  ios: true
+  android_12:
+    image: "assets/images/kklogo.png"
+    color: "#4CB150"

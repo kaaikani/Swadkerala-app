@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart'; // Unused import removed
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart'
     show Context, HttpLinkHeaders, QueryResult, gql;
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart'; // Unused import removed
 import '../../graphql/banner.graphql.dart';
 import '../../graphql/cart.graphql.dart' as cart_graphql;
 import '../../graphql/order.graphql.dart';
@@ -250,7 +250,8 @@ class BannerController extends BaseController {
       // Check if mutation was successful
       final toggleResult = res.data?['toggleFavorite'];
       if (toggleResult != null) {
-        final totalItems = toggleResult['totalItems'] as int? ?? 0;
+        // ignore: unused_local_variable
+        final _totalItems = toggleResult['totalItems'] as int? ?? 0;
       }
 
       // Refresh customer favorites to ensure UI is up to date
@@ -412,7 +413,8 @@ class BannerController extends BaseController {
           final item = products[i];
           final product = item.product;
           if (product.variants.isNotEmpty) {
-            final firstVariant = product.variants.first;
+            // ignore: unused_local_variable
+            final _firstVariant = product.variants.first;
           }
           if (product.featuredAsset != null) {
           }
@@ -422,7 +424,7 @@ class BannerController extends BaseController {
       
       frequentlyOrderedProducts.assignAll(products);
       utilityController.setLoadingState(false);
-    } catch (e, stackTrace) {
+    } catch (e) {
       handleException(e,
           customErrorMessage: 'Failed to load frequently ordered products');
       utilityController.setLoadingState(false);
@@ -826,7 +828,8 @@ class BannerController extends BaseController {
           couponCodesLoaded.value = true;
           // Debug print each coupon details
           for (int i = 0; i < fetchedCoupons.length; i++) {
-            final coupon = fetchedCoupons[i];
+            // ignore: unused_local_variable
+            final _coupon = fetchedCoupons[i];
             // final sanitizedDescription = HtmlUtils.stripHtmlTags(coupon.description); // Unused variable
             // Products are extracted from coupon actions/conditions, not directly from coupon
             // This debug section removed as products field doesn't exist in generated type
@@ -1614,6 +1617,7 @@ class BannerController extends BaseController {
 
       for (final couponCode in cartCouponCodes) {
         // Find the coupon in available coupons
+        // ignore: unused_local_variable
         Query$GetCouponCodeList$getCouponCodeList$items? coupon;
         try {
           coupon = availableCouponCodes.firstWhere(

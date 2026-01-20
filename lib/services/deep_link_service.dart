@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../routes.dart';
 import '../utils/navigation_helper.dart';
@@ -57,6 +59,20 @@ class DeepLinkService {
       // Listen for incoming links while app is running
       _listenToIncomingLinks();
     } catch (e) {
+      // Handle MissingPluginException for app_links
+      if (e is MissingPluginException) {
+        if (kDebugMode) {
+          debugPrint('ERROR: app_links plugin not available - MissingPluginException');
+          debugPrint('Error: ${e.message}');
+          debugPrint('Deep linking will not work. App will continue normally.');
+        }
+        _isInitialized = false; // Mark as not initialized so we don't try again
+      } else {
+        // Other errors - log but don't crash
+        if (kDebugMode) {
+          debugPrint('ERROR: DeepLinkService initialization failed: $e');
+        }
+      }
     }
   }
 
@@ -71,21 +87,49 @@ class DeepLinkService {
       if (initialLink != null) {
         // Mark this as an initial link so we can use offAllNamed
         _handleLink(initialLink, isInitialLink: true);
-      } else {
       }
     } catch (e) {
+      // Handle MissingPluginException
+      if (e is MissingPluginException) {
+        if (kDebugMode) {
+          debugPrint('ERROR: app_links plugin not available - cannot get initial link');
+          debugPrint('Error: ${e.message}');
+        }
+      } else {
+        if (kDebugMode) {
+          debugPrint('ERROR: Failed to get initial deep link: $e');
+        }
+      }
     }
   }
 
   /// Listen for incoming links while app is running
   void _listenToIncomingLinks() {
-    _linkSubscription = _appLinks.uriLinkStream.listen(
-      (Uri uri) {
-        _handleLink(uri, isInitialLink: false);
-      },
-      onError: (err) {
-      },
-    );
+    try {
+      _linkSubscription = _appLinks.uriLinkStream.listen(
+        (Uri uri) {
+          _handleLink(uri, isInitialLink: false);
+        },
+        onError: (err) {
+          if (kDebugMode) {
+            debugPrint('ERROR: Deep link stream error: $err');
+          }
+        },
+      );
+    } catch (e) {
+      // Handle MissingPluginException when trying to listen to stream
+      if (e is MissingPluginException) {
+        if (kDebugMode) {
+          debugPrint('ERROR: app_links plugin not available - cannot listen to deep links');
+          debugPrint('Error: ${e.message}');
+          debugPrint('Deep linking will not work. App will continue normally.');
+        }
+      } else {
+        if (kDebugMode) {
+          debugPrint('ERROR: Failed to listen to deep link stream: $e');
+        }
+      }
+    }
   }
 
   /// Handle the deep link and navigate accordingly

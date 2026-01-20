@@ -365,7 +365,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
       actions: [
         // Share button
-        Padding(
+      /*  Padding(
           padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
           child: Container(
             width: ResponsiveUtils.rp(48),
@@ -394,7 +394,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           ),
-        ),
+        ),  */
         // Cart button
         CartButtonWithBadge(
           cartController: cartController,
@@ -1128,7 +1128,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
 
   Future<void> _showQuantityDialog() async {
-    const maxQuantity = 20;
+    const maxQuantity = 100;
     
     final result = await showDialog<int>(
       context: context,

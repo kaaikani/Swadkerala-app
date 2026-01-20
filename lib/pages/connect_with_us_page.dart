@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/premium_card.dart';
@@ -51,7 +52,7 @@ class ConnectWithUsPage extends StatelessWidget {
                   ),
                   SizedBox(height: ResponsiveUtils.rp(16)),
                   _buildSocialTile(
-                    icon: Icons.facebook,
+                    icon: FontAwesomeIcons.facebook,
                     title: 'Facebook',
                     subtitle: 'Like and follow us on Facebook',
                     color: Color(0xFF1877F2),
@@ -59,7 +60,7 @@ class ConnectWithUsPage extends StatelessWidget {
                   ),
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   _buildSocialTile(
-                    icon: Icons.camera_alt_outlined,
+                    icon: FontAwesomeIcons.instagram,
                     title: 'Instagram',
                     subtitle: 'Follow us on Instagram',
                     color: Color(0xFFE4405F),
@@ -67,7 +68,7 @@ class ConnectWithUsPage extends StatelessWidget {
                   ),
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   _buildSocialTile(
-                    icon: Icons.play_circle_outline,
+                    icon: FontAwesomeIcons.youtube,
                     title: 'YouTube',
                     subtitle: 'Subscribe to our channel',
                     color: Color(0xFFFF0000),
@@ -94,7 +95,7 @@ class ConnectWithUsPage extends StatelessWidget {
                   ),
                   SizedBox(height: ResponsiveUtils.rp(16)),
                   _buildSupportTile(
-                    icon: Icons.help_outline,
+                    icon: FontAwesomeIcons.circleQuestion,
                     title: 'Help Center',
                     subtitle: 'Get answers to common questions',
                     onTap: () => Get.to(() => const HelpSupportPage()),
@@ -135,7 +136,9 @@ class ConnectWithUsPage extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
               ),
-              child: Icon(icon, color: Colors.white, size: ResponsiveUtils.rp(24)),
+              child: Center(
+                child: FaIcon(icon, color: Colors.white, size: ResponsiveUtils.rp(24)),
+              ),
             ),
             SizedBox(width: ResponsiveUtils.rp(16)),
             Expanded(
@@ -197,7 +200,9 @@ class ConnectWithUsPage extends StatelessWidget {
                 color: AppColors.button,
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
               ),
-              child: Icon(icon, color: Colors.white, size: ResponsiveUtils.rp(24)),
+              child: Center(
+                child: FaIcon(icon, color: Colors.white, size: ResponsiveUtils.rp(24)),
+              ),
             ),
             SizedBox(width: ResponsiveUtils.rp(16)),
             Expanded(

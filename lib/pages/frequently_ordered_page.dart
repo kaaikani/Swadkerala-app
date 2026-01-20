@@ -68,7 +68,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBarWidget(
         title: 'Frequently Ordered',
         actions: [
@@ -81,7 +81,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
       body: Obx(() {
         if (utilityController.isLoadingRx.value) {
           return Container(
-            color: Colors.white,
+            color: AppColors.background,
             child: _buildShimmerGrid(),
           );
         }
@@ -93,7 +93,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
 
         if (enabledProducts.isEmpty) {
           return Container(
-            color: Colors.white,
+            color: AppColors.background,
             child: EmptyState(
               icon: Icons.shopping_bag_outlined,
               title: 'No Frequently Ordered Items',
@@ -322,7 +322,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
       variantSelectorWidget = _buildVariantSelector(
         productId: productId,
         variantsForProduct: variantsForProduct,
-        groupName: groupName!,
+        groupName: groupName,
       );
     }
 

@@ -13,7 +13,11 @@ class MainActivity : FlutterActivity() {
     private val TAG = "MainActivity"
     
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        // Note: With Flutter 2.0+ embedding, plugins are automatically registered
+        // No need to manually call GeneratedPluginRegistrant.registerWith()
         super.configureFlutterEngine(flutterEngine)
+        
+        Log.d(TAG, "MainActivity: FlutterEngine configured, plugins auto-registered")
         
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {

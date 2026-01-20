@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
+import '../controllers/theme_controller.dart';
 import '../graphql/product.graphql.dart';
 import '../theme/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -103,6 +104,7 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
       return Skeletonizer(
         enabled: isLoading,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.title.isNotEmpty)
@@ -115,7 +117,7 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
                 ),
               ),
             SizedBox(
-              height: ResponsiveUtils.rp(140),
+              height: ResponsiveUtils.rp(140) + 4.5,
               child: displayItems.isEmpty
                   ? const SizedBox.shrink()
                   : ListView.separated(
@@ -149,6 +151,10 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
                                       collection.id.isNotEmpty && 
                                       asset.preview.isNotEmpty;
 
+                  // Get theme controller to check dark mode
+                  final themeController = Get.find<ThemeController>();
+                  final isDarkMode = themeController.isDarkMode;
+                  
                   return GestureDetector(
                     onTap: collection.id.isNotEmpty
                         ? () => widget.onTap(collection)
@@ -156,6 +162,7 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
                     child: ResponsiveContainer(
                       width: itemWidth,
                       borderRadius: BorderRadius.zero,
+                      backgroundColor: isDarkMode ? Colors.transparent : null,
                       boxShadow: [],
                       child: Column(
                         mainAxisSize: MainAxisSize.min,

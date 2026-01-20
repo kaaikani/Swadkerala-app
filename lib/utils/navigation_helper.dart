@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import '../routes.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart'; // Unused import removed
 /// Centralized navigation helper for consistent navigation across the app
 class NavigationHelper {
   /// Navigate to product detail page

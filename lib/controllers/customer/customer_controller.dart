@@ -6,7 +6,9 @@ import 'package:graphql_flutter/graphql_flutter.dart' show FetchPolicy;
 import 'package:recipe.app/graphql/Customer.graphql.dart';
 import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/schema.graphql.dart';
+import '../../graphql/schema.graphql.dart' show Input$OrderFilterParameter, Input$StringOperators;
 import '../../services/graphql_client.dart';
+import '../../pages/orders_page.dart';
 import '../../services/postal_code_service.dart';
 import '../../services/channel_service.dart';
 import '../../utils/app_strings.dart';
@@ -36,8 +38,45 @@ class CustomerController extends BaseController {
   final RxBool isLoadingMoreOrders = false.obs;
   final RxBool hasMoreOrders = true.obs;
   static const int ordersPerPage = 10;
+  
+  // Current order filter state
+  OrderFilter? _currentOrderFilter;
 
   RxBool get isLoading => utilityController.isLoadingRx;
+  
+  /// Convert OrderFilter to Input$OrderFilterParameter
+  Input$OrderFilterParameter? _getOrderStateFilter(OrderFilter? filter) {
+    if (filter == null || filter == OrderFilter.all) {
+      return null;
+    }
+    
+    switch (filter) {
+      case OrderFilter.paid:
+        return Input$OrderFilterParameter(
+          state: Input$StringOperators(eq: 'PaymentSettled'),
+        );
+      
+      case OrderFilter.paymentAuthorized:
+        return Input$OrderFilterParameter(
+          state: Input$StringOperators(eq: 'PaymentAuthorized'),
+        );
+      
+      case OrderFilter.delivered:
+        return Input$OrderFilterParameter(
+          state: Input$StringOperators(
+            $in: ['Fulfilled', 'Delivered', 'Shipped', 'PartiallyFulfilled'],
+          ),
+        );
+      
+      case OrderFilter.cancelled:
+        return Input$OrderFilterParameter(
+          state: Input$StringOperators(eq: 'Cancelled'),
+        );
+      
+      case OrderFilter.all:
+        return null;
+    }
+  }
 
   // Profile editing controllers
   final firstNameController = TextEditingController();
@@ -92,13 +131,25 @@ class CustomerController extends BaseController {
 
   /// Get active customer data
   /// [skipPostalCodeCheck] - if true, skip postal code/channel check to prevent unnecessary API calls
-  Future<void> getActiveCustomer({bool skipPostalCodeCheck = false}) async {
+  Future<void> getActiveCustomer({bool skipPostalCodeCheck = false, OrderFilter? orderFilter}) async {
     try {
           Logger.logFunction(functionName: 'getActiveCustomer');
     utilityController.setLoadingState(false);
       error.value = '';
-      final response =
-          await GraphqlService.client.value.query$GetActiveCustomer();
+      
+      // Store current filter
+      _currentOrderFilter = orderFilter;
+      
+      // Build filter parameter
+      final stateFilter = _getOrderStateFilter(orderFilter);
+      
+      final response = await GraphqlService.client.value.query$GetActiveCustomer(
+        Options$Query$GetActiveCustomer(
+          variables: Variables$Query$GetActiveCustomer(
+            orderStateFilter: stateFilter,
+          ),
+        ),
+      );
 
       // Check if error contains "User not found" - handle specially
       bool isNetworkError = false;
@@ -147,7 +198,8 @@ class CustomerController extends BaseController {
       final customerData = response.parsedData?.activeCustomer;
       if (customerData != null) {
         // Convert the GraphQL response to a Map
-        final customerJson = customerData.toJson();
+        // ignore: unused_local_variable
+        final _customerJson = customerData.toJson();
         // Use the parsed data directly (it's already the correct type)
         activeCustomer.value = customerData;
         addresses.value = customerData.addresses ?? [];
@@ -223,7 +275,7 @@ class CustomerController extends BaseController {
   }
 
   /// Load more orders with pagination
-  Future<bool> loadMoreOrders() async {
+  Future<bool> loadMoreOrders({OrderFilter? orderFilter}) async {
     // Don't load if already loading or no more orders
     if (isLoadingMoreOrders.value || !hasMoreOrders.value) {
       return false;
@@ -232,13 +284,18 @@ class CustomerController extends BaseController {
     try {
       isLoadingMoreOrders.value = true;
       final skip = orders.length;
-      // Use raw GraphQL query until code generation runs
-      const query = '''
-        query GetCustomerOrders(\$skip: Int!, \$take: Int!) {
+      
+      // Use current filter if not provided
+      final filter = orderFilter ?? _currentOrderFilter;
+      final stateFilter = _getOrderStateFilter(filter);
+      
+      // Use raw GraphQL query with filter support
+      final query = '''
+        query GetCustomerOrders(\$skip: Int!, \$take: Int!, \$orderStateFilter: OrderFilterParameter) {
           activeCustomer {
             __typename
             ... on Customer {
-              orders(options: { skip: \$skip, take: \$take }) {
+              orders(options: { skip: \$skip, take: \$take, filter: \$orderStateFilter }) {
                 totalItems
                 items {
                   id
@@ -314,6 +371,7 @@ class CustomerController extends BaseController {
           variables: {
             'skip': skip,
             'take': ordersPerPage,
+            'orderStateFilter': stateFilter?.toJson(),
           },
           fetchPolicy: FetchPolicy.networkOnly,
         ),
@@ -428,7 +486,8 @@ class CustomerController extends BaseController {
       return false;
     }
     
-    final currentEmail = customer.emailAddress;
+    // ignore: unused_local_variable
+    final _currentEmail = customer.emailAddress;
     try {
       Logger.logFunction(functionName: 'updateProfileEmail', mutationName: 'UpdateProfileEmail');
       
@@ -483,7 +542,7 @@ class CustomerController extends BaseController {
       } else {
         return false;
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Check if it's a GraphQL error with email-related message
       String? errorMessage;
       if (e is graphql.OperationException) {
@@ -514,7 +573,8 @@ class CustomerController extends BaseController {
       return false;
     }
     
-    final currentPhone = customer.phoneNumber ?? 'N/A';
+    // ignore: unused_local_variable
+    final _currentPhone = customer.phoneNumber ?? 'N/A';
     try {
       Logger.logFunction(functionName: 'updateCustomerPhone', mutationName: 'UpdateCustomer');
       
@@ -570,7 +630,7 @@ class CustomerController extends BaseController {
       } else {
         return false;
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       handleException(e, customErrorMessage: 'Failed to update phone number');
       return false;
     } finally {
@@ -684,7 +744,8 @@ class CustomerController extends BaseController {
       if (response.hasException) {
         if (response.exception?.graphqlErrors.isNotEmpty == true) {
           for (int i = 0; i < response.exception!.graphqlErrors.length; i++) {
-            final error = response.exception!.graphqlErrors[i];
+            // ignore: unused_local_variable
+            final _error = response.exception!.graphqlErrors[i];
           }
         }
         if (response.exception?.linkException != null) {
@@ -934,7 +995,8 @@ class CustomerController extends BaseController {
       if (showLoading) {
         LoadingDialog.show(message: 'Checking availability...');
       }
-      final channelToken = GraphqlService.channelToken;
+      // ignore: unused_local_variable
+      final _channelToken = GraphqlService.channelToken;
       final response = await GraphqlService.client.value.query$GetAvailableChannels(
         Options$Query$GetAvailableChannels(
           variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
@@ -962,11 +1024,13 @@ class CustomerController extends BaseController {
 
       // Debug: Print all channels received
       for (int i = 0; i < channels.length; i++) {
-        final channel = channels[i];
+        // ignore: unused_local_variable
+        final _channel = channels[i];
       }
 
       // Debug: Check enum comparison
-      final cityEnum = Enum$ChannelType.CITY;
+      // ignore: unused_local_variable
+        final _cityEnum = Enum$ChannelType.CITY;
       
       // Filter for CITY type channels
       final cityChannels = <Query$GetAvailableChannels$getAvailableChannels>[];
@@ -980,7 +1044,8 @@ class CustomerController extends BaseController {
       // Debug: Print CITY channels
       if (cityChannels.isNotEmpty) {
         for (int i = 0; i < cityChannels.length; i++) {
-          final channel = cityChannels[i];
+          // ignore: unused_local_variable
+        final _channel = cityChannels[i];
         }
       }
 
@@ -994,11 +1059,13 @@ class CustomerController extends BaseController {
       // Debug: Print available CITY channels
       if (availableCityChannels.isNotEmpty) {
         for (int i = 0; i < availableCityChannels.length; i++) {
-          final channel = availableCityChannels[i];
+          // ignore: unused_local_variable
+        final _channel = availableCityChannels[i];
         }
       } else {
         if (cityChannels.isEmpty) {
         } else {
+          // ignore: unused_local_variable
           for (final cityChannel in cityChannels) {
           }
         }
@@ -1093,8 +1160,9 @@ class CustomerController extends BaseController {
     
     try {
       // Check channel token before making query
-      final channelToken = GraphqlService.channelToken;
-      final storedChannelToken = ChannelService.getChannelToken();
+      // ignore: unused_local_variable
+      final _channelToken = GraphqlService.channelToken;
+      final _storedChannelToken = ChannelService.getChannelToken();
       final response = await GraphqlService.client.value.query$GetAvailableChannels(
         Options$Query$GetAvailableChannels(
           variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
@@ -1114,12 +1182,13 @@ class CustomerController extends BaseController {
       final channels = response.parsedData?.getAvailableChannels ?? [];
       if (channels.isNotEmpty) {
         for (int i = 0; i < channels.length; i++) {
-          final channel = channels[i];
+          // ignore: unused_local_variable
+        final _channel = channels[i];
         }
       } else {
       }
       return channels;
-    } catch (e, stackTrace) {
+    } catch (e) {
       handleException(e, customErrorMessage: 'Failed to fetch available channels');
       return [];
     }
@@ -1180,14 +1249,15 @@ class CustomerController extends BaseController {
   Future<List<Query$PostalCodes$postalCodes>> fetchPostalCodes() async {
     try {
       // Check channel token before making query
-      final channelToken = GraphqlService.channelToken;
-      final storedChannelToken = ChannelService.getChannelToken();
-      final channelCode = ChannelService.getChannelCode();
-      final channelType = ChannelService.getChannelType() ?? '';
+      // ignore: unused_local_variable
+      final _channelToken = GraphqlService.channelToken;
+      final _storedChannelToken = ChannelService.getChannelToken();
+      final _channelCode = ChannelService.getChannelCode();
+      final _channelType = ChannelService.getChannelType() ?? '';
       
       // Ensure channel token is set in GraphQLService
-      if (channelToken.isEmpty && storedChannelToken != null && storedChannelToken.toString().isNotEmpty) {
-        await GraphqlService.setToken(key: 'channel', token: storedChannelToken.toString());
+      if (_channelToken.isEmpty && _storedChannelToken != null && _storedChannelToken.toString().isNotEmpty) {
+        await GraphqlService.setToken(key: 'channel', token: _storedChannelToken.toString());
       }
       
       if (GraphqlService.channelToken.isEmpty) {
@@ -1199,7 +1269,7 @@ class CustomerController extends BaseController {
       // Print raw response data for debugging
       if (response.data != null) {
         if (response.data!['postalCodes'] != null) {
-          final postalCodesData = response.data!['postalCodes'];
+          final _postalCodesData = response.data!['postalCodes'];
         } else {
         }
       } else {
@@ -1207,6 +1277,7 @@ class CustomerController extends BaseController {
       
       if (response.hasException) {
         if (response.exception?.graphqlErrors != null) {
+          // ignore: unused_local_variable
           for (var error in response.exception!.graphqlErrors) {
           }
         }
@@ -1217,6 +1288,7 @@ class CustomerController extends BaseController {
           customErrorMessage: 'Failed to fetch postal codes')) {
         if (response.hasException) {
           if (response.exception?.graphqlErrors != null) {
+            // ignore: unused_local_variable
             for (var error in response.exception!.graphqlErrors) {
             }
           }
@@ -1229,12 +1301,13 @@ class CustomerController extends BaseController {
       final postalCodes = response.parsedData?.postalCodes ?? [];
       if (postalCodes.isNotEmpty) {
         for (int i = 0; i < postalCodes.length; i++) {
-          final code = postalCodes[i];
+          // ignore: unused_local_variable
+          final _code = postalCodes[i];
         }
       } else {
       }
       return postalCodes;
-    } catch (e, stackTrace) {
+    } catch (e) {
       
       // Print stack trace
       // Additional error context

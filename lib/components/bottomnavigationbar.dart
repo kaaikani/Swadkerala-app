@@ -70,7 +70,7 @@ class _BottomNavComponentState extends State<BottomNavComponent> {
                   SizedBox(width: ResponsiveUtils.rp(12)),
                 
                 // Cart Section (Right Side) - Only show when cart has items
-                if (widget.cartCount > 0)
+              //  if (widget.cartCount > 0)
                   Expanded(
                     child: InkWell(
                       onTap: () => NavigationHelper.navigateToCart(),
@@ -141,9 +141,9 @@ class _BottomNavComponentState extends State<BottomNavComponent> {
                       ),
                     ),
                   )
-                else
+             //   else
                   // If no cart items, expand to fill space
-                  Spacer(),
+               //   Spacer(),
               ],
             ),
           ),

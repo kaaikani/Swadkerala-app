@@ -33,6 +33,24 @@ class _OrdersComponentState extends State<OrdersComponent> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    // Fetch orders with the current filter when component initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.customerController.getActiveCustomer(orderFilter: widget.filter);
+    });
+  }
+  
+  @override
+  void didUpdateWidget(OrdersComponent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If filter changed, refetch orders with new filter
+    // Use addPostFrameCallback to avoid calling setState during build
+    if (oldWidget.filter != widget.filter) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.customerController.hasMoreOrders.value = true;
+        widget.customerController.orders.clear();
+        widget.customerController.getActiveCustomer(orderFilter: widget.filter);
+      });
+    }
   }
 
   @override
@@ -46,7 +64,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.8) {
       // Load more when user scrolls to 80% of the list
-      widget.customerController.loadMoreOrders();
+      widget.customerController.loadMoreOrders(orderFilter: widget.filter);
     }
   }
 
@@ -70,7 +88,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
         onRefresh: () async {
           // Reset pagination on refresh
           widget.customerController.hasMoreOrders.value = true;
-          await widget.customerController.getActiveCustomer();
+          await widget.customerController.getActiveCustomer(orderFilter: widget.filter);
         },
         color: AppColors.refreshIndicator,
         child: ListView.separated(

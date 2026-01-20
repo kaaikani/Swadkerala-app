@@ -10,10 +10,13 @@ import '../services/sim_detection_service.dart';
 import '../services/sms_autofill_service.dart';
 import 'package:mobile_number/mobile_number.dart';
 import '../theme/theme.dart';
+import '../controllers/theme_controller.dart';
 import '../utils/navigation_helper.dart';
 import '../utils/responsive.dart';
 import '../services/analytics_service.dart';
 import '../widgets/snackbar.dart';
+import '../routes.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -214,6 +217,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      floatingActionButton: Obx(() => !_authController.isOtpSent
+          ? _buildFloatingConnectButton()
+          : const SizedBox.shrink()),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -554,6 +561,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     bool isValid = _phoneFieldTouched &&
         _phoneError == null &&
         _authController.phoneNumber.text.length == 10;
+    
+    // Get theme controller to check dark mode
+    final themeController = Get.find<ThemeController>();
+    final isDarkMode = themeController.isDarkMode;
 
     return Container(
       decoration: BoxDecoration(
@@ -564,12 +575,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               ? AppColors.error
               : isValid
                   ? AppColors.success
-                  : AppColors.border.withValues(alpha: 0.3),
+                  : isDarkMode
+                      ? AppColors.border.withValues(alpha: 0.5)
+                      : AppColors.border.withValues(alpha: 0.3),
           width: hasError || isValid ? 2 : 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: isDarkMode
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.04),
             blurRadius: ResponsiveUtils.rp(12),
             offset: Offset(0, ResponsiveUtils.rp(4)),
           ),
@@ -591,10 +606,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppColors.button.withValues(alpha: 0.15),
-                  AppColors.button.withValues(alpha: 0.08),
-                ],
+                colors: isDarkMode
+                    ? [
+                        AppColors.button.withValues(alpha: 0.2),
+                        AppColors.button.withValues(alpha: 0.12),
+                      ]
+                    : [
+                        AppColors.button.withValues(alpha: 0.15),
+                        AppColors.button.withValues(alpha: 0.08),
+                      ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -628,7 +648,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             width: 1,
             height: ResponsiveUtils.rp(28),
             margin: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(10)),
-            color: AppColors.border.withValues(alpha: 0.3),
+            color: isDarkMode
+                ? AppColors.border.withValues(alpha: 0.5)
+                : AppColors.border.withValues(alpha: 0.3),
           ),
           Expanded(
             child: GestureDetector(
@@ -660,10 +682,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: ResponsiveUtils.sp(17),
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: Colors.black,
                 letterSpacing: 1.0,
               ),
-              cursorColor: AppColors.textPrimary, // Black in light mode, white in dark mode
+              cursorColor: Colors.black,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
@@ -675,9 +697,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 _validatePhone(value);
               },
               decoration: InputDecoration(
-                hintText: '1234567890',
+                hintText: '10 Digit number only',
                 hintStyle: TextStyle(
-                  color: AppColors.textSecondary.withValues(alpha: 0.35),
+                  color: Colors.black.withValues(alpha: 0.4),
                   fontSize: ResponsiveUtils.sp(17),
                   letterSpacing: 1.0,
                 ),
@@ -864,7 +886,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         decoration: InputDecoration(
           hintText: '○ ○ ○ ○',
           hintStyle: TextStyle(
-            color: AppColors.textSecondary.withValues(alpha: 0.2),
+            color: Colors.black.withValues(alpha: 0.3),
             fontSize: ResponsiveUtils.sp(32),
             letterSpacing: ResponsiveUtils.rp(16),
             fontWeight: FontWeight.w300,
@@ -935,7 +957,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         Text(
                           isOtpSent ? 'Verify & Login' : 'Continue',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: isEnabled ? Colors.white : AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: ResponsiveUtils.sp(17),
                             letterSpacing: 0.8,
@@ -945,12 +967,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         Container(
                           padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: isEnabled 
+                                ? Colors.white.withValues(alpha: 0.2)
+                                : AppColors.border.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
                           ),
                           child: Icon(
                             isOtpSent ? Icons.verified_rounded : Icons.arrow_forward_rounded,
-                            color: Colors.white,
+                            color: isEnabled ? Colors.white : AppColors.textPrimary,
                             size: ResponsiveUtils.rp(18),
                           ),
                         ),
@@ -1058,32 +1082,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          width: ResponsiveUtils.rp(28),
-                          height: ResponsiveUtils.rp(28),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                              width: 1,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'G',
-                              style: TextStyle(
-                                color: Colors.blue.shade700,
-                                fontSize: ResponsiveUtils.sp(18),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                        FaIcon(
+                          FontAwesomeIcons.google,
+                          size: ResponsiveUtils.rp(24),
+                          color: Colors.blue.shade700,
                         ),
                         SizedBox(width: ResponsiveUtils.rp(14)),
                         Text(
                           'Continue with Google',
                           style: TextStyle(
-                            color: AppColors.textPrimary,
+                            color: Colors.black,
                             fontWeight: FontWeight.w600,
                             fontSize: ResponsiveUtils.sp(16),
                             letterSpacing: 0.3,
@@ -1097,6 +1105,154 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       );
     });
   }
+
+  Widget _buildFloatingConnectButton() {
+    return FloatingActionButton(
+      onPressed: () => _showConnectOptionsDialog(),
+      backgroundColor: AppColors.button,
+      elevation: 4,
+      child: FaIcon(
+        FontAwesomeIcons.circleQuestion,
+        color: Colors.white,
+        size: ResponsiveUtils.rp(24),
+      ),
+    );
+  }
+
+  void _showConnectOptionsDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(ResponsiveUtils.rp(20)),
+            ),
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUtils.rp(20),
+            vertical: ResponsiveUtils.rp(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: ResponsiveUtils.rp(40),
+                height: ResponsiveUtils.rp(4),
+                decoration: BoxDecoration(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(2)),
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(20)),
+              // Title
+              Text(
+                'Connect with us',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: ResponsiveUtils.sp(18),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(24)),
+              // Options list
+              _buildConnectOption(
+                icon: FontAwesomeIcons.circleQuestion,
+                title: 'Help Center',
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.toNamed(AppRoutes.helpSupport);
+                },
+              ),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              _buildConnectOption(
+                icon: FontAwesomeIcons.shield,
+                title: 'Privacy Policy',
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.toNamed(AppRoutes.privacyPolicy);
+                },
+              ),
+              SizedBox(height: ResponsiveUtils.rp(12)),
+              _buildConnectOption(
+                icon: FontAwesomeIcons.fileContract,
+                title: 'Terms and Condition',
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.toNamed(AppRoutes.termsConditions);
+                },
+              ),
+              SizedBox(height: ResponsiveUtils.rp(20)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildConnectOption({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUtils.rp(16),
+          vertical: ResponsiveUtils.rp(16),
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+          border: Border.all(
+            color: AppColors.border.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: ResponsiveUtils.rp(40),
+              height: ResponsiveUtils.rp(40),
+              decoration: BoxDecoration(
+                color: AppColors.button.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              ),
+              child: Center(
+                child: FaIcon(
+                  icon,
+                  color: AppColors.button,
+                  size: ResponsiveUtils.rp(20),
+                ),
+              ),
+            ),
+            SizedBox(width: ResponsiveUtils.rp(16)),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: ResponsiveUtils.sp(15),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textSecondary,
+              size: ResponsiveUtils.rp(24),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildSignUpLink() {
     return Row(

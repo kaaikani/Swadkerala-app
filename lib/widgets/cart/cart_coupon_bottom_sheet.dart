@@ -296,8 +296,58 @@ class CartCouponBottomSheet {
                                             showErrorSnackbar('Cannot remove coupon when multiple coupons are applied');
                                             return;
                                           }
+                                          
+                                          // Show loading dialog
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (dialogContext) => WillPopScope(
+                                              onWillPop: () async => false,
+                                              child: Dialog(
+                                                backgroundColor: Colors.transparent,
+                                                elevation: 0,
+                                                child: Container(
+                                                  padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors.surface,
+                                                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      CircularProgressIndicator(
+                                                        color: AppColors.button,
+                                                      ),
+                                                      SizedBox(height: ResponsiveUtils.rp(16)),
+                                                      Text(
+                                                        'Removing coupon code...',
+                                                        style: TextStyle(
+                                                          fontSize: ResponsiveUtils.sp(16),
+                                                          fontWeight: FontWeight.w600,
+                                                          color: AppColors.textPrimary,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                          
+                                          // Wait for 2 seconds
+                                          await Future.delayed(const Duration(seconds: 2));
+                                          
+                                          // Close the dialog
+                                          if (context.mounted) {
+                                            Navigator.pop(context);
+                                          }
+                                          
+                                          // Close the bottom sheet after dialog closes
+                                          if (context.mounted) {
+                                            Navigator.pop(context);
+                                          }
+                                          
                                           await bannerController.removeCouponCode(coupon.couponCode ?? '');
-                                          Navigator.pop(context);
                                         },
                                       )
                                     : AnalyticsHelper.trackButtonAsync(
@@ -305,6 +355,58 @@ class CartCouponBottomSheet {
                                         screenName: 'Cart',
                                         callback: () async {
                                           final couponCode = coupon.couponCode ?? '';
+                                          
+                                          // Show loading dialog
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (dialogContext) => WillPopScope(
+                                              onWillPop: () async => false,
+                                              child: Dialog(
+                                                backgroundColor: Colors.transparent,
+                                                elevation: 0,
+                                                child: Container(
+                                                  padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColors.surface,
+                                                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      CircularProgressIndicator(
+                                                        color: AppColors.button,
+                                                      ),
+                                                      SizedBox(height: ResponsiveUtils.rp(16)),
+                                                      Text(
+                                                        'Applying coupon code...',
+                                                        style: TextStyle(
+                                                          fontSize: ResponsiveUtils.sp(16),
+                                                          fontWeight: FontWeight.w600,
+                                                          color: AppColors.textPrimary,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                          
+                                          // Wait for 2 seconds
+                                          await Future.delayed(const Duration(seconds: 2));
+                                          
+                                          // Close the dialog
+                                          if (context.mounted) {
+                                            Navigator.pop(context);
+                                          }
+                                          
+                                          // Close the bottom sheet after dialog closes
+                                          if (context.mounted) {
+                                            Navigator.pop(context);
+                                          }
+                                          
+                                          // Now apply the coupon
                                           final hasProducts = bannerController.hasCouponProducts(couponCode);
                                           
                                           final result = hasProducts
@@ -312,7 +414,7 @@ class CartCouponBottomSheet {
                                               : await bannerController.applyCouponCode(couponCode);
                                           
                                           if (result['success'] == true) {
-                                            Navigator.pop(context);
+                                            // Success message already handled by controller
                                           } else {
                                             if (result['rollbackPerformed'] == true) {
                                               showErrorSnackbar(result['message'] ?? 'Failed to apply coupon. Added products have been removed.');

@@ -23,13 +23,11 @@ import 'pages/login_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/homepage.dart';
 import 'pages/intro_page.dart';
-import 'pages/splash_screen.dart';
 import 'pages/initial_route_wrapper.dart';
 import 'middleware/auth_guard.dart';
 
 class AppRoutes {
   static const String initial = '/';
-  static const String splash = '/splash';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String home = '/home';
@@ -56,11 +54,6 @@ class AppRoutes {
     GetPage(
       name: initial,
       page: () => const InitialRouteWrapper(),
-    ),
-    GetPage(
-      name: splash,
-      page: () => const SplashScreen(),
-      transition: Transition.fadeIn,
     ),
     GetPage(
       name: login,

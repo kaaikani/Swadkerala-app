@@ -80,29 +80,65 @@ class HomeHeader extends StatelessWidget {
                         Center(
                           child: _buildWelcomeSectionIndNonVeg(),
                         ),
-                        // Right side: Profile Icon
+                        // Right side: Profile Icon with error indicator (red dot)
                         Positioned(
                           right: 0,
-                          child: InkWell(
-                            onTap: () => Get.toNamed('/account'),
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                            child: Container(
-                              padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                              decoration: BoxDecoration(
-                                color: AppColors.indNonVegBackgroundLight,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.indNonVegRed.withValues(alpha: 0.3),
-                                  width: 1,
+                          child: Obx(() {
+                            // Check error conditions:
+                            // 1. Phone number is empty/null -> show red
+                            // 2. Email ends with "@kaikani.com" -> show red
+                            final customer = customerController?.activeCustomer.value;
+                            final hasPhoneError = customer?.phoneNumber == null || 
+                                                 customer!.phoneNumber!.isEmpty;
+                            final hasEmailError = customer?.emailAddress != null && 
+                                                 customer!.emailAddress.isNotEmpty && 
+                                                 customer.emailAddress.endsWith('@kaikani.com');
+                            final hasError = hasPhoneError || hasEmailError;
+                            
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                InkWell(
+                                  onTap: () => Get.toNamed('/account'),
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                                  child: Container(
+                                    padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.indNonVegBackgroundLight,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.indNonVegRed.withValues(alpha: 0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.person_outline_rounded,
+                                      color: AppColors.indNonVegRed,
+                                      size: ResponsiveUtils.rp(26),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              child: Icon(
-                                Icons.person_outline_rounded,
-                                color: AppColors.indNonVegRed,
-                                size: ResponsiveUtils.rp(26),
-                              ),
-                            ),
-                          ),
+                                // Red dot error indicator
+                                if (hasError)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      width: ResponsiveUtils.rp(12),
+                                      height: ResponsiveUtils.rp(12),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.error,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }),
                         ),
                       ],
                     ),
@@ -156,29 +192,65 @@ class HomeHeader extends StatelessWidget {
                         Center(
                           child: _buildWelcomeSectionIndSnacks(),
                         ),
-                        // Right side: Profile Icon
+                        // Right side: Profile Icon with error indicator (red dot)
                         Positioned(
                           right: 0,
-                          child: InkWell(
-                            onTap: () => Get.toNamed('/account'),
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                            child: Container(
-                              padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                              decoration: BoxDecoration(
-                                color: AppColors.backgroundLight,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.border.withValues(alpha: 0.3),
-                                  width: 1,
+                          child: Obx(() {
+                            // Check error conditions:
+                            // 1. Phone number is empty/null -> show red
+                            // 2. Email ends with "@kaikani.com" -> show red
+                            final customer = customerController?.activeCustomer.value;
+                            final hasPhoneError = customer?.phoneNumber == null || 
+                                                 customer!.phoneNumber!.isEmpty;
+                            final hasEmailError = customer?.emailAddress != null && 
+                                                 customer!.emailAddress.isNotEmpty && 
+                                                 customer.emailAddress.endsWith('@kaikani.com');
+                            final hasError = hasPhoneError || hasEmailError;
+                            
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                InkWell(
+                                  onTap: () => Get.toNamed('/account'),
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                                  child: Container(
+                                    padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.backgroundLight,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.border.withValues(alpha: 0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.person_outline_rounded,
+                                      color: AppColors.textPrimary,
+                                      size: ResponsiveUtils.rp(26),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              child: Icon(
-                                Icons.person_outline_rounded,
-                                color: AppColors.textPrimary,
-                                size: ResponsiveUtils.rp(26),
-                              ),
-                            ),
-                          ),
+                                // Red dot error indicator
+                                if (hasError)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      width: ResponsiveUtils.rp(12),
+                                      height: ResponsiveUtils.rp(12),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.error,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }),
                         ),
                       ],
                     ),
@@ -203,7 +275,7 @@ class HomeHeader extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.white,
+              AppColors.background,
               AppColors.backgroundLight.withValues(alpha: 0.3),
             ],
           ),
@@ -434,34 +506,70 @@ class HomeHeader extends StatelessWidget {
             );
           }),
         
-        // Profile Icon
-        InkWell(
-          onTap: () => Get.toNamed('/account'),
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-          child: Container(
-            padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundLight,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.3),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: ResponsiveUtils.rp(4),
-                  offset: Offset(0, ResponsiveUtils.rp(1)),
+        // Profile Icon with error indicator (red dot)
+        Obx(() {
+          // Check error conditions:
+          // 1. Phone number is empty/null -> show red
+          // 2. Email ends with "@kaikani.com" -> show red
+          final customer = customerController?.activeCustomer.value;
+          final hasPhoneError = customer?.phoneNumber == null || 
+                               customer!.phoneNumber!.isEmpty;
+          final hasEmailError = customer?.emailAddress != null && 
+                               customer!.emailAddress.isNotEmpty && 
+                               customer.emailAddress.endsWith('@kaikani.com');
+          final hasError = hasPhoneError || hasEmailError;
+          
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              InkWell(
+                onTap: () => Get.toNamed('/account'),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                child: Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                  decoration: BoxDecoration(
+                    color: AppColors.backgroundLight,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.border.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: ResponsiveUtils.rp(4),
+                        offset: Offset(0, ResponsiveUtils.rp(1)),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.person_outline_rounded,
+                    color: AppColors.button,
+                    size: ResponsiveUtils.rp(26),
+                  ),
                 ),
-              ],
-            ),
-            child: Icon(
-              Icons.person_outline_rounded,
-              color: AppColors.button,
-              size: ResponsiveUtils.rp(26),
-            ),
-          ),
-        ),
+              ),
+              // Red dot error indicator
+              if (hasError)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: ResponsiveUtils.rp(12),
+                    height: ResponsiveUtils.rp(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.error,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        }),
       ],
     );
   }

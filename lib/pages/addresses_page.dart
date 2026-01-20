@@ -505,7 +505,7 @@ class _AddressesPageState extends State<AddressesPage> {
       // This prevents postal code validation errors when the previous address has a postal code
       // that's invalid for the current channel (e.g., address from different city/channel)
       if (previousDefault != null) {
-      } else {
+        } else {
       }
 
       // Set the target address as default
@@ -573,11 +573,9 @@ class _AddressesPageState extends State<AddressesPage> {
         // Note: getActiveCustomer() may have been called by updateAddress() already
         // Refresh addresses list to reflect current state
         customerController.refreshAddresses();
-        if (mounted) {
-          showErrorSnackbar('Failed to set default address. Please try again.');
-        }
+
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       
       // Rollback on exception
       if (previousDefaultAddress != null) {
@@ -602,9 +600,7 @@ class _AddressesPageState extends State<AddressesPage> {
       
       // Refresh to get correct state from server
       customerController.refreshAddresses();
-      if (mounted) {
-        showErrorSnackbar('Failed to set default address. Previous selection restored.');
-      }
+
     } finally {
       // Hide loading indicator
       if (mounted) {
@@ -742,7 +738,6 @@ class _AddressesPageState extends State<AddressesPage> {
               final success = await customerController.deleteAddress(addressId);
               if (success) {
                 customerController.refreshAddresses();
-                showSuccessSnackbar('Address deleted successfully');
               } else {
                 showErrorSnackbar('Failed to delete address');
               }
@@ -851,7 +846,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   void _fetchPostalCodes() {
     widget.customerController.fetchPostalCodes().then((codes) {
       if (codes.isNotEmpty) {
-        for (var code in codes) {
+        for (var _ in codes) {
         }
       } else {
       }
@@ -1021,83 +1016,122 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                     }
                   }),
               SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: defaultShipping
-                      ? AppColors.button.withValues(alpha: 0.1)
-                      : AppColors.background,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
+              GestureDetector(
+                onTap: (isOnlyAddress && defaultShipping)
+                    ? null // Disable if only default address
+                    : () {
+                        // Toggle checkbox value
+                        final newValue = !defaultShipping;
+                        
+                        // Prevent unchecking if it's the only default address (edit form only)
+                        if (isOnlyDefault == true && defaultShipping && newValue == false) {
+                          SnackBarWidget.show(
+                            context,
+                            'Unable to deselect default address. At least one address must be set as default.',
+                            backgroundColor: AppColors.error,
+                          );
+                          return;
+                        }
+                        // Prevent unchecking if it's the only address
+                        if (isOnlyAddress && defaultShipping && newValue == false) {
+                          SnackBarWidget.show(
+                            context,
+                            'Unable to deselect default address. At least one address must be set as default.',
+                            backgroundColor: AppColors.error,
+                          );
+                          return;
+                        }
+                        setState(() => defaultShipping = newValue);
+                      },
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
                     color: defaultShipping
-                        ? AppColors.button
-                        : AppColors.border,
-                    width: defaultShipping ? 2 : 1,
+                        ? AppColors.button.withValues(alpha: 0.1)
+                        : AppColors.background,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: defaultShipping
+                          ? AppColors.button
+                          : AppColors.border,
+                      width: defaultShipping ? 2 : 1,
+                    ),
                   ),
-                ),
-                child: Opacity(
-                  opacity: (isOnlyAddress && defaultShipping) ? 0.6 : 1.0,
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: defaultShipping,
-                        onChanged: (isOnlyAddress && defaultShipping)
-                            ? null // Disable if only default address
-                            : (value) {
-                                // Prevent unchecking if it's the only default address (edit form only)
-                                if (isOnlyDefault == true && defaultShipping && value == false) {
-                                  SnackBarWidget.show(
-                                    context,
-                                    'Unable to deselect default address. At least one address must be set as default.',
-                                    backgroundColor: AppColors.error,
-                                  );
-                                  return;
-                                }
-                                // Prevent unchecking if it's the only address
-                                if (isOnlyAddress && defaultShipping && value == false) {
-                                  SnackBarWidget.show(
-                                    context,
-                                    'Unable to deselect default address. At least one address must be set as default.',
-                                    backgroundColor: AppColors.error,
-                                  );
-                                  return;
-                                }
-                                setState(() => defaultShipping = value ?? false);
-                              },
-                        activeColor: AppColors.button,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4)),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Set as default address',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                                fontSize: 15,
-                              ),
-                            ),
-                            if (isOnlyAddress && defaultShipping)
-                              Padding(
-                                padding: EdgeInsets.only(top: 4),
-                                child: Text(
-                                  isOnlyAddress && addressCount == 0
-                                      ? 'This will be your default address'
-                                      : 'This is your only address and must remain default',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                  ),
+                  child: Opacity(
+                    opacity: (isOnlyAddress && defaultShipping) ? 0.6 : 1.0,
+                    child: Row(
+                      children: [
+                        Checkbox(
+                          value: defaultShipping,
+                          onChanged: (isOnlyAddress && defaultShipping)
+                              ? null // Disable if only default address
+                              : (value) {
+                                  // Prevent unchecking if it's the only default address (edit form only)
+                                  if (isOnlyDefault == true && defaultShipping && value == false) {
+                                    SnackBarWidget.show(
+                                      context,
+                                      'Unable to deselect default address. At least one address must be set as default.',
+                                      backgroundColor: AppColors.error,
+                                    );
+                                    return;
+                                  }
+                                  // Prevent unchecking if it's the only address
+                                  if (isOnlyAddress && defaultShipping && value == false) {
+                                    SnackBarWidget.show(
+                                      context,
+                                      'Unable to deselect default address. At least one address must be set as default.',
+                                      backgroundColor: AppColors.error,
+                                    );
+                                    return;
+                                  }
+                                  setState(() => defaultShipping = value ?? false);
+                                },
+                          activeColor: AppColors.button,
+                          checkColor: Colors.white,
+                          fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return AppColors.button;
+                            }
+                            return Colors.transparent;
+                          }),
+                          side: BorderSide(
+                            color: defaultShipping ? AppColors.button : AppColors.border,
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Set as default address',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                  fontSize: 15,
                                 ),
                               ),
-                          ],
+                              if (isOnlyAddress && defaultShipping)
+                                Padding(
+                                  padding: EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    isOnlyAddress && addressCount == 0
+                                        ? 'This will be your default address'
+                                        : 'This is your only address and must remain default',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1197,7 +1231,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
 
                         if (success) {
                           widget.onSuccess();
-                          showSuccessSnackbar('Address added!');
                           widget.customerController.refreshAddresses();
                           // Refresh active order after adding address
                           final cartController = Get.find<CartController>();
@@ -1634,7 +1667,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   void _fetchPostalCodes() {
     widget.customerController.fetchPostalCodes().then((codes) {
       if (codes.isNotEmpty) {
-        for (var code in codes) {
+        for (var _ in codes) {
         }
       } else {
       }
@@ -1827,83 +1860,122 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                     }
                   }),
               SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: defaultShipping
-                      ? AppColors.button.withValues(alpha: 0.1)
-                      : AppColors.background,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
+              GestureDetector(
+                onTap: (isOnlyAddress && defaultShipping)
+                    ? null // Disable if only default address
+                    : () {
+                        // Toggle checkbox value
+                        final newValue = !defaultShipping;
+                        
+                        // Prevent unchecking if it's the only default address (edit form only)
+                        if (isOnlyDefault == true && defaultShipping && newValue == false) {
+                          SnackBarWidget.show(
+                            context,
+                            'Unable to deselect default address. At least one address must be set as default.',
+                            backgroundColor: AppColors.error,
+                          );
+                          return;
+                        }
+                        // Prevent unchecking if it's the only address
+                        if (isOnlyAddress && defaultShipping && newValue == false) {
+                          SnackBarWidget.show(
+                            context,
+                            'Unable to deselect default address. At least one address must be set as default.',
+                            backgroundColor: AppColors.error,
+                          );
+                          return;
+                        }
+                        setState(() => defaultShipping = newValue);
+                      },
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
                     color: defaultShipping
-                        ? AppColors.button
-                        : AppColors.border,
-                    width: defaultShipping ? 2 : 1,
+                        ? AppColors.button.withValues(alpha: 0.1)
+                        : AppColors.background,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: defaultShipping
+                          ? AppColors.button
+                          : AppColors.border,
+                      width: defaultShipping ? 2 : 1,
+                    ),
                   ),
-                ),
-                child: Opacity(
-                  opacity: (isOnlyAddress && defaultShipping) ? 0.6 : 1.0,
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: defaultShipping,
-                        onChanged: (isOnlyAddress && defaultShipping)
-                            ? null // Disable if only default address
-                            : (value) {
-                                // Prevent unchecking if it's the only default address (edit form only)
-                                if (isOnlyDefault == true && defaultShipping && value == false) {
-                                  SnackBarWidget.show(
-                                    context,
-                                    'Unable to deselect default address. At least one address must be set as default.',
-                                    backgroundColor: AppColors.error,
-                                  );
-                                  return;
-                                }
-                                // Prevent unchecking if it's the only address
-                                if (isOnlyAddress && defaultShipping && value == false) {
-                                  SnackBarWidget.show(
-                                    context,
-                                    'Unable to deselect default address. At least one address must be set as default.',
-                                    backgroundColor: AppColors.error,
-                                  );
-                                  return;
-                                }
-                                setState(() => defaultShipping = value ?? false);
-                              },
-                        activeColor: AppColors.button,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4)),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Set as default address',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                                fontSize: 15,
-                              ),
-                            ),
-                            if (isOnlyAddress && defaultShipping)
-                              Padding(
-                                padding: EdgeInsets.only(top: 4),
-                                child: Text(
-                                  isOnlyAddress && addressCount == 0
-                                      ? 'This will be your default address'
-                                      : 'This is your only address and must remain default',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                  ),
+                  child: Opacity(
+                    opacity: (isOnlyAddress && defaultShipping) ? 0.6 : 1.0,
+                    child: Row(
+                      children: [
+                        Checkbox(
+                          value: defaultShipping,
+                          onChanged: (isOnlyAddress && defaultShipping)
+                              ? null // Disable if only default address
+                              : (value) {
+                                  // Prevent unchecking if it's the only default address (edit form only)
+                                  if (isOnlyDefault == true && defaultShipping && value == false) {
+                                    SnackBarWidget.show(
+                                      context,
+                                      'Unable to deselect default address. At least one address must be set as default.',
+                                      backgroundColor: AppColors.error,
+                                    );
+                                    return;
+                                  }
+                                  // Prevent unchecking if it's the only address
+                                  if (isOnlyAddress && defaultShipping && value == false) {
+                                    SnackBarWidget.show(
+                                      context,
+                                      'Unable to deselect default address. At least one address must be set as default.',
+                                      backgroundColor: AppColors.error,
+                                    );
+                                    return;
+                                  }
+                                  setState(() => defaultShipping = value ?? false);
+                                },
+                          activeColor: AppColors.button,
+                          checkColor: Colors.white,
+                          fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return AppColors.button;
+                            }
+                            return Colors.transparent;
+                          }),
+                          side: BorderSide(
+                            color: defaultShipping ? AppColors.button : AppColors.border,
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Set as default address',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                  fontSize: 15,
                                 ),
                               ),
-                          ],
+                              if (isOnlyAddress && defaultShipping)
+                                Padding(
+                                  padding: EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    isOnlyAddress && addressCount == 0
+                                        ? 'This will be your default address'
+                                        : 'This is your only address and must remain default',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -2005,7 +2077,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
 
                         if (success) {
                           widget.onSuccess();
-                          showSuccessSnackbar('Address updated!');
                           widget.customerController.refreshAddresses();
                           // Refresh active order after updating address
                           final cartController = Get.find<CartController>();

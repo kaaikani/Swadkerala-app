@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../utils/responsive.dart';
+import '../theme/colors.dart';
+import '../controllers/theme_controller.dart';
 
 class EmptyState extends StatelessWidget {
   final IconData icon;
@@ -17,8 +20,11 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final isDarkMode = themeController.isDarkMode;
+    
     return Container(
-      color: Colors.white,
+      color: AppColors.background,
       child: Center(
       child: Padding(
           padding: EdgeInsets.all(ResponsiveUtils.rp(32)),
@@ -28,13 +34,15 @@ class EmptyState extends StatelessWidget {
             Icon(
               icon,
                 size: ResponsiveUtils.rp(80),
-              color: Colors.grey[300],
+              color: isDarkMode 
+                  ? AppColors.textSecondary.withValues(alpha: 0.5)
+                  : AppColors.textSecondary.withValues(alpha: 0.4),
             ),
               SizedBox(height: ResponsiveUtils.rp(24)),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.grey[700],
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                       fontSize: ResponsiveUtils.sp(18),
                   ),
@@ -44,7 +52,7 @@ class EmptyState extends StatelessWidget {
             Text(
               subtitle,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[500],
+                    color: AppColors.textSecondary,
                       fontSize: ResponsiveUtils.sp(14),
                   ),
               textAlign: TextAlign.center,

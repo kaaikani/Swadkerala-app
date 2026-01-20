@@ -1,9 +1,12 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../widgets/shimmers.dart';
 // import 'package:get/get.dart'; // Commented out - GraphQL query disabled
 // import '../controllers/banner/bannercontroller.dart'; // Commented out - GraphQL query disabled
 import '../services/in_app_update_service.dart';
 import '../utils/responsive.dart';
+import '../theme/colors.dart';
 import 'update_check_wrapper.dart';
 import 'auth_wrapper.dart';
 
@@ -23,6 +26,7 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
   @override
   void initState() {
     super.initState();
+    debugPrint('[InitialRouteWrapper] initState called');
     _checkUpdateSettings();
   }
 
@@ -44,9 +48,20 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
       // }
 
       // Check Play Store for updates directly (GraphQL query disabled)
+      // Add timeout to prevent blocking
+      debugPrint('[InitialRouteWrapper] Starting update check...');
       try {
-        await updateService.checkForUpdatesAndDetermineType();
+        await updateService.checkForUpdatesAndDetermineType().timeout(
+          const Duration(seconds: 3),
+          onTimeout: () {
+            debugPrint('[InitialRouteWrapper] Update check timed out');
+            // If update check times out, continue anyway
+          },
+        );
+        debugPrint('[InitialRouteWrapper] Update check completed');
       } catch (e) {
+        debugPrint('[InitialRouteWrapper] Update check error: $e');
+        // Continue even if update check fails
       }
 
       // Check if immediate update is enabled (based on Play Store only)
@@ -57,9 +72,11 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
       }
 
     } catch (e) {
+      debugPrint('[InitialRouteWrapper] Update check error: $e');
       _shouldCheckImmediateUpdate = false;
     } finally {
       if (mounted) {
+        debugPrint('[InitialRouteWrapper] Setting _isLoading = false');
         setState(() {
           _isLoading = false;
         });
@@ -73,7 +90,7 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
     // Show loading while checking settings
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +102,7 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
                 'Initializing app...',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(16),
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],

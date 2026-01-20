@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../widgets/shimmers.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
-import '../controllers/utilitycontroller/utilitycontroller.dart';
+// import '../controllers/utilitycontroller/utilitycontroller.dart'; // Unused import removed
 import '../services/graphql_client.dart';
+import '../theme/colors.dart';
 import 'login_page.dart';
 import 'homepage.dart';
 import 'intro_page.dart';
@@ -22,6 +24,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
+    debugPrint('[AuthWrapper] initState called');
     _checkTokensAfterInit();
   }
 
@@ -29,61 +32,98 @@ class _AuthWrapperState extends State<AuthWrapper> {
     // Small delay to ensure GraphqlService is ready
     await Future.delayed(const Duration(milliseconds: 100));
 
-    final AuthController authController = Get.find();
-
     try {
-      await authController.checkLoginStatusFromGraphqlService();
+      final AuthController authController = Get.find();
+
+    debugPrint('[AuthWrapper] Starting token check...');
+    try {
+      // Add timeout to prevent blocking
+      await authController.checkLoginStatusFromGraphqlService().timeout(
+        const Duration(seconds: 2),
+        onTimeout: () {
+          debugPrint('[AuthWrapper] Token check timed out');
+          // If token check times out, assume not logged in
+          authController.setLoggedIn(false);
+        },
+      );
+      debugPrint('[AuthWrapper] Token check completed');
     } catch (e) {
+      debugPrint('[AuthWrapper] Token check error: $e');
       authController.setLoggedIn(false);
     }
 
-    setState(() {
-      _hasCheckedTokens = true;
-    });
+    debugPrint('[AuthWrapper] Setting _hasCheckedTokens = true');
+    if (mounted) {
+      setState(() {
+        _hasCheckedTokens = true;
+      });
+    }
+    } catch (e) {
+      debugPrint('[AuthWrapper] Error getting AuthController: $e');
+      // If Get.find() fails, set checked anyway to proceed
+      if (mounted) {
+        setState(() {
+          _hasCheckedTokens = true;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find();
-    final UtilityController utilityController = Get.find();
-    final box = GetStorage();
+    try {
+      final AuthController authController = Get.find();
+      // Removed utilityController check - it was causing the app to hang
+      final box = GetStorage();
 
-    return Obx(() {
       // Show loading while checking authentication
-      if (utilityController.isLoading || !_hasCheckedTokens) {
-        return Scaffold(body: Skeletons.fullScreen());
+      if (!_hasCheckedTokens) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: Skeletons.fullScreen(),
+        );
       }
 
-      final authToken = GraphqlService.authToken;
-      final channelToken = GraphqlService.channelToken;
+      // Use Obx to react to authController.isLoggedIn changes
+      // Access the reactive variable through the controller
+      return Obx(() {
+        final authToken = GraphqlService.authToken;
+        final channelToken = GraphqlService.channelToken;
+        
+        // Access isLoggedIn to trigger Obx rebuild when it changes
+        final isLoggedIn = authController.isLoggedIn;
 
+        // User is logged in and tokens are valid → Home
+        if (isLoggedIn &&
+            authToken.isNotEmpty &&
+            channelToken.isNotEmpty) {
+          return MyHomePage();
+        }
 
-      // User is logged in and tokens are valid → Home
-      if (authController.isLoggedIn &&
-          authToken.isNotEmpty &&
-          channelToken.isNotEmpty) {
-        return MyHomePage();
-      }
+        // If user is logged in but tokens missing → reset login state
+        if (isLoggedIn &&
+            (authToken.isEmpty || channelToken.isEmpty)) {
+          authController.setLoggedIn(false);
+        }
 
-      // If user is logged in but tokens missing → reset login state
-      if (authController.isLoggedIn &&
-          (authToken.isEmpty || channelToken.isEmpty)) {
-        authController.setLoggedIn(false);
-      }
+        // Check if intro page has been shown
+        final bool introShown = box.read('intro_shown') ?? false;
 
-      // Check if intro page has been shown
-      final bool introShown = box.read('intro_shown') ?? false;
+        if (!introShown) {
+          // Mark intro as shown after displaying
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            box.write('intro_shown', true);
+          });
+          return const IntroPage();
+        }
 
-      if (!introShown) {
-        // Mark intro as shown after displaying
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          box.write('intro_shown', true);
-        });
-        return const IntroPage();
-      }
-
-      // Default → show login page
+        // Default → show login page
+        return const LoginPage();
+      });
+    } catch (e) {
+      debugPrint('[AuthWrapper] Error in build: $e');
+      // Fallback to login page if anything fails
       return const LoginPage();
-    });
+    }
   }
 }

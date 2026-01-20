@@ -1346,26 +1346,14 @@ class _MyHomePageState extends State<MyHomePage> {
         return const SizedBox.shrink();
       }
 
-      return Container(
-        padding: EdgeInsets.only(
-          top: ResponsiveUtils.rp(2),
-          bottom: 0, // Remove bottom padding to reduce gap
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            VerticalListComponent(
-              title: '',
-              onTap: (collection) {
-                Get.toNamed('/collection-products', arguments: {
-                  'collectionId': collection.id,
-                  'collectionName': collection.name,
-                });
-              },
-            ),
-          ],
-        ),
+      return VerticalListComponent(
+        title: '',
+        onTap: (collection) {
+          Get.toNamed('/collection-products', arguments: {
+            'collectionId': collection.id,
+            'collectionName': collection.name,
+          });
+        },
       );
     });
   }

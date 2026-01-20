@@ -49,8 +49,11 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
 
       for (int i = 0; i < sortedChannels.length; i++) {
         final channel = sortedChannels[i];
-        final isClickable = _isChannelClickable(channel);
-        final displayName = _getChannelDisplayName(channel);
+        // Variables computed but not used - may be needed for future logic
+        // ignore: unused_local_variable
+        final _isClickable = _isChannelClickable(channel);
+        // ignore: unused_local_variable
+        final _displayName = _getChannelDisplayName(channel);
       }
 
       setState(() {
@@ -58,7 +61,7 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
         _isLoading = false;
       });
 
-    } catch (e, stackTrace) {
+    } catch (e) {
       setState(() {
         _errorMessage = 'Error loading channels: $e';
         _isLoading = false;
@@ -98,6 +101,19 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     ];
   }
 
+  /// Helper function to check if channel is Swad Kerala
+  bool _isSwadKeralaChannel(Query$GetAvailableChannels$getAvailableChannels channel) {
+    final channelToken = channel.token?.toLowerCase() ?? '';
+    final channelName = channel.name.toLowerCase();
+    final channelCode = channel.code.toLowerCase();
+    
+    return channelToken == 'ind-swadkerala' || 
+           channelName.contains('swad kerala') || 
+           channelCode.contains('swad kerala') ||
+           channelName.contains('swadkerala') ||
+           channelCode.contains('swadkerala');
+  }
+
   Future<void> _switchChannel(Query$GetAvailableChannels$getAvailableChannels channel) async {
     if (channel.token == null || channel.token!.isEmpty) {
       showErrorSnackbar('Channel token is missing');
@@ -110,9 +126,8 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
       return;
     }
     
-    // Check if channel token is ind-Swadkerala - should not switch
-    final channelToken = channel.token!.toLowerCase();
-    if (channelToken == 'ind-swadkerala') {
+    // Check if channel is Swad Kerala - should not switch
+    if (_isSwadKeralaChannel(channel)) {
       return;
     }
 
@@ -131,7 +146,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
       LoadingDialog.hide();
       Navigator.of(context).pop();
       widget.onChannelSwitched();
-      showSuccessSnackbar('Store switched successfully');
     } catch (e) {
       LoadingDialog.hide();
       showErrorSnackbar('Error switching store: $e');
@@ -139,9 +153,8 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }
 
   String _getChannelDisplayName(Query$GetAvailableChannels$getAvailableChannels channel) {
-    // Check if channel token is ind-Swadkerala (case-insensitive)
-    final channelToken = channel.token?.toLowerCase() ?? '';
-    if (channelToken == 'ind-swadkerala') {
+    // Check if channel is Swad Kerala
+    if (_isSwadKeralaChannel(channel)) {
       return '${channel.name} - Opening soon';
     }
     
@@ -161,9 +174,8 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }
 
   bool _isChannelClickable(Query$GetAvailableChannels$getAvailableChannels channel) {
-    // Check if channel token is ind-Swadkerala (case-insensitive) - not clickable
-    final channelToken = channel.token?.toLowerCase() ?? '';
-    if (channelToken == 'ind-swadkerala') {
+    // Check if channel is Swad Kerala - not clickable
+    if (_isSwadKeralaChannel(channel)) {
       return false;
     }
     
@@ -182,18 +194,42 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }
 
   String? _getChannelImageUrl(Query$GetAvailableChannels$getAvailableChannels channel) {
-    // Check if channel token is ind-snacks
     final channelToken = channel.token?.toLowerCase() ?? '';
+    final channelName = channel.name.toLowerCase();
+    final channelCode = channel.code.toLowerCase();
+    
+    debugPrint('🔍 [SwitchStore] Getting image URL for channel:');
+    debugPrint('   - Token: "${channel.token}"');
+    debugPrint('   - Token (lowercase): "$channelToken"');
+    debugPrint('   - Name: "${channel.name}"');
+    debugPrint('   - Name (lowercase): "$channelName"');
+    debugPrint('   - Code: "${channel.code}"');
+    debugPrint('   - Code (lowercase): "$channelCode"');
+    debugPrint('   - Type: ${channel.type}');
+    
+    // Check if channel token is ind-snacks
     if (channelToken == 'ind-snacks') {
-      return 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/bcc15eac-3b2b-4faf-9862-769f43fd3b30.jpg';
+      final url = 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/bcc15eac-3b2b-4faf-9862-769f43fd3b30.jpg';
+      debugPrint('✅ [SwitchStore] Returning ind-snacks image URL: $url');
+      return url;
+    }
+    
+    // Check if channel is Swad Kerala
+    if (_isSwadKeralaChannel(channel)) {
+      final url = 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/SwadKerala+Ban.jpg';
+      debugPrint('✅ [SwitchStore] Returning Swad Kerala image URL (matched by token/name/code): $url');
+      return url;
     }
 
     // Check if channel type is CITY
     if (channel.type == Enum$ChannelType.CITY) {
-      return 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/Kaaikani+(2).jpg';
+      final url = 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/Kaaikani+(2).jpg';
+      debugPrint('✅ [SwitchStore] Returning CITY image URL: $url');
+      return url;
     }
 
     // For other channels, return null to show a placeholder
+    debugPrint('⚠️ [SwitchStore] No image URL found, returning null');
     return null;
   }
 
@@ -211,6 +247,13 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
         final isSelected = channel.token != null &&
                           channel.token == currentChannelToken;
         final imageUrl = _getChannelImageUrl(channel);
+        
+        debugPrint('📦 [SwitchStore] Building card for channel:');
+        debugPrint('   - Token: "${channel.token}"');
+        debugPrint('   - Display Name: "$displayName"');
+        debugPrint('   - Image URL: $imageUrl');
+        debugPrint('   - Is Clickable: $isClickable');
+        debugPrint('   - Is Selected: $isSelected');
 
         return _buildChannelImageCard(
           channel: channel,
@@ -232,9 +275,17 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }) {
     final channelKey = channel.token ?? channel.code;
     final channelToken = channel.token?.toLowerCase() ?? '';
-    final isSwadkerala = channelToken == 'ind-swadkerala';
-    // Show "Coming Soon" if image fails, no image URL, or is ind-Swadkerala
-    final showComingSoon = isSwadkerala || imageUrl == null || _imageLoadFailed[channelKey] == true;
+    final channelName = channel.name.toLowerCase();
+    final channelCode = channel.code.toLowerCase();
+    final isSwadkerala = _isSwadKeralaChannel(channel);
+    
+    debugPrint('🎴 [SwitchStore] Building image card:');
+    debugPrint('   - Channel Key: "$channelKey"');
+    debugPrint('   - Channel Token: "$channelToken"');
+    debugPrint('   - Channel Name: "$channelName"');
+    debugPrint('   - Channel Code: "$channelCode"');
+    debugPrint('   - Is Swadkerala: $isSwadkerala');
+    debugPrint('   - Image URL passed: $imageUrl');
 
     // Check if channel is already selected
     final currentChannelToken = ChannelService.getChannelToken() ?? '';
@@ -281,11 +332,29 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
             child: Stack(
               children: [
               // Background Image or Placeholder
-              imageUrl != null && !showComingSoon
-                  ? _buildNetworkImageWithFallback(
-                      imageUrl,
-                      'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/bcc15eac-3b2b-4faf-9862-769f43fd3b30.jpg',
-                      channelKey: channelKey,
+              imageUrl != null
+                  ? Stack(
+                      children: [
+                        // Image (dimmed for Swad Kerala)
+                        Opacity(
+                          opacity: isSwadkerala ? 0.3 : 1.0, // Grey shade effect - 30% opacity for Swad Kerala
+                          child: _buildNetworkImageWithFallback(
+                            imageUrl,
+                            // Use appropriate fallback based on channel
+                            isSwadkerala
+                                ? 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/SwadKerala+Ban.jpg'
+                                : 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/bcc15eac-3b2b-4faf-9862-769f43fd3b30.jpg',
+                            channelKey: channelKey,
+                          ),
+                        ),
+                        // Grey overlay for Swad Kerala
+                        if (isSwadkerala)
+                          Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            color: Colors.grey.withValues(alpha: 0.3), // Additional grey overlay
+                          ),
+                      ],
                     )
                   : Container(
                       width: double.infinity,
@@ -354,6 +423,49 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
                   ),
                 ),
 
+              // Opening Soon Text - Show in center for Swad Kerala (Grey color)
+              if (isSwadkerala && imageUrl != null)
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(24),
+                      vertical: ResponsiveUtils.rp(12),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: ResponsiveUtils.rp(12),
+                          offset: Offset(0, ResponsiveUtils.rp(4)),
+                          spreadRadius: ResponsiveUtils.rp(2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.schedule_rounded,
+                          color: Colors.grey.shade200,
+                          size: ResponsiveUtils.rp(24),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(10)),
+                        Text(
+                          'Opening Soon',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(18),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade200,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
               // Content Overlay - Bottom Section (Only show if NOT selected)
               ],
             ),
@@ -364,18 +476,26 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }
 
   Widget _buildNetworkImageWithFallback(String primaryUrl, String fallbackUrl, {String? channelKey}) {
+    debugPrint('🖼️ [SwitchStore] Loading image:');
+    debugPrint('   - Primary URL: $primaryUrl');
+    debugPrint('   - Fallback URL: $fallbackUrl');
+    debugPrint('   - Channel Key: $channelKey');
+    
     return Image.network(
       primaryUrl,
       width: double.infinity,
       height: double.infinity,
-      fit: BoxFit.contain, // Show image at exact size without zooming
+      fit: BoxFit.cover, // Use cover to fill the card properly for banner images
       headers: {
         'Accept': 'image/*',
       },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) {
+          debugPrint('✅ [SwitchStore] Image loaded successfully: $primaryUrl');
           return child;
         }
+        debugPrint('⏳ [SwitchStore] Loading image: $primaryUrl');
+        debugPrint('   - Progress: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
           return Container(
             width: double.infinity,
             height: double.infinity,
@@ -399,12 +519,26 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
         );
       },
       errorBuilder: (context, error, stackTrace) {
-        // Try fallback URL
+        debugPrint('❌ [SwitchStore] Primary image failed to load: $primaryUrl');
+        debugPrint('   - Error: $error');
+        debugPrint('   - StackTrace: $stackTrace');
+        
+        // Try URL-encoded version if original URL has + character
+        String? encodedUrl;
+        if (primaryUrl.contains('+') && !primaryUrl.contains('%2B')) {
+          encodedUrl = primaryUrl.replaceAll('+', '%2B');
+          debugPrint('🔄 [SwitchStore] Trying URL-encoded version: $encodedUrl');
+        }
+        
+        // Try encoded URL first if available, otherwise use fallback
+        final urlToTry = encodedUrl ?? fallbackUrl;
+        debugPrint('🔄 [SwitchStore] Trying fallback URL: $urlToTry');
+        
         return Image.network(
-          fallbackUrl,
+          urlToTry,
           width: double.infinity,
           height: double.infinity,
-          fit: BoxFit.contain, // Show image at exact size without zooming
+          fit: BoxFit.cover, // Use cover to fill the card properly for banner images
           headers: {
             'Accept': 'image/*',
           },
@@ -433,7 +567,59 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
             );
           },
           errorBuilder: (context, error, stackTrace) {
+            debugPrint('❌ [SwitchStore] Fallback image also failed: $urlToTry');
+            debugPrint('   - Error: $error');
+            
+            // If encoded URL failed and we haven't tried fallback yet, try fallback
+            if (encodedUrl != null && urlToTry == encodedUrl) {
+              debugPrint('🔄 [SwitchStore] Trying original fallback URL: $fallbackUrl');
+              return Image.network(
+                fallbackUrl,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                headers: {
+                  'Accept': 'image/*',
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  debugPrint('❌ [SwitchStore] All image URLs failed for channel: $channelKey');
+                  // Mark image as failed for this channel
+                  if (channelKey != null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _imageLoadFailed[channelKey] = true;
+                        });
+                      }
+                    });
+                  }
+                  return Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.button.withValues(alpha: 0.4),
+                          AppColors.button.withValues(alpha: 0.2),
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.store_rounded,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        size: ResponsiveUtils.rp(48),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+            
             // Mark image as failed for this channel
+            debugPrint('❌ [SwitchStore] All image attempts failed for channel: $channelKey');
             if (channelKey != null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) {

@@ -10915,6 +10915,25 @@ const documentNodeQueryActiveOrder = DocumentNode(definitions: [
                 selectionSet: null,
               ),
               FieldNode(
+                name: NameNode(value: 'shippingAddress'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FragmentSpreadNode(
+                    name: NameNode(value: 'OrderAddress'),
+                    directives: [],
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
                 name: NameNode(value: 'customFields'),
                 alias: null,
                 arguments: [],
@@ -10986,6 +11005,7 @@ const documentNodeQueryActiveOrder = DocumentNode(definitions: [
   ),
   fragmentDefinitionCart,
   fragmentDefinitionAsset,
+  fragmentDefinitionOrderAddress,
 ]);
 Query$ActiveOrder _parserFn$Query$ActiveOrder(Map<String, dynamic> data) =>
     Query$ActiveOrder.fromJson(data);
@@ -11146,6 +11166,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     required this.discounts,
     this.customFields,
     this.$__typename = 'Order',
+    this.shippingAddress,
   });
 
   factory Query$ActiveOrder$activeOrder.fromJson(Map<String, dynamic> json) {
@@ -11169,6 +11190,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     final l$discounts = json['discounts'];
     final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
+    final l$shippingAddress = json['shippingAddress'];
     return Query$ActiveOrder$activeOrder(
       currencyCode: fromJson$Enum$CurrencyCode((l$currencyCode as String)),
       id: (l$id as String),
@@ -11207,6 +11229,10 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
           : Query$ActiveOrder$activeOrder$customFields.fromJson(
               (l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
+      shippingAddress: l$shippingAddress == null
+          ? null
+          : Fragment$OrderAddress.fromJson(
+              (l$shippingAddress as Map<String, dynamic>)),
     );
   }
 
@@ -11249,6 +11275,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
   final Query$ActiveOrder$activeOrder$customFields? customFields;
 
   final String $__typename;
+
+  final Fragment$OrderAddress? shippingAddress;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
@@ -11293,6 +11321,8 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
+    final l$shippingAddress = shippingAddress;
+    _resultData['shippingAddress'] = l$shippingAddress?.toJson();
     return _resultData;
   }
 
@@ -11318,6 +11348,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     final l$discounts = discounts;
     final l$customFields = customFields;
     final l$$__typename = $__typename;
+    final l$shippingAddress = shippingAddress;
     return Object.hashAll([
       l$currencyCode,
       l$id,
@@ -11339,6 +11370,7 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
       Object.hashAll(l$discounts.map((v) => v)),
       l$customFields,
       l$$__typename,
+      l$shippingAddress,
     ]);
   }
 
@@ -11486,6 +11518,11 @@ class Query$ActiveOrder$activeOrder implements Fragment$Cart {
     if (l$$__typename != lOther$$__typename) {
       return false;
     }
+    final l$shippingAddress = shippingAddress;
+    final lOther$shippingAddress = other.shippingAddress;
+    if (l$shippingAddress != lOther$shippingAddress) {
+      return false;
+    }
     return true;
   }
 }
@@ -11529,6 +11566,7 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder<TRes> {
     List<Query$ActiveOrder$activeOrder$discounts>? discounts,
     Query$ActiveOrder$activeOrder$customFields? customFields,
     String? $__typename,
+    Fragment$OrderAddress? shippingAddress,
   });
   CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes>
       get validationStatus;
@@ -11557,6 +11595,7 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder<TRes> {
                       Query$ActiveOrder$activeOrder$discounts>>)
           _fn);
   CopyWith$Query$ActiveOrder$activeOrder$customFields<TRes> get customFields;
+  CopyWith$Fragment$OrderAddress<TRes> get shippingAddress;
 }
 
 class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
@@ -11593,6 +11632,7 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
     Object? discounts = _undefined,
     Object? customFields = _undefined,
     Object? $__typename = _undefined,
+    Object? shippingAddress = _undefined,
   }) =>
       _then(Query$ActiveOrder$activeOrder(
         currencyCode: currencyCode == _undefined || currencyCode == null
@@ -11658,6 +11698,9 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
+        shippingAddress: shippingAddress == _undefined
+            ? _instance.shippingAddress
+            : (shippingAddress as Fragment$OrderAddress?),
       ));
 
   CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes>
@@ -11727,6 +11770,14 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder<TRes>
         : CopyWith$Query$ActiveOrder$activeOrder$customFields(
             local$customFields, (e) => call(customFields: e));
   }
+
+  CopyWith$Fragment$OrderAddress<TRes> get shippingAddress {
+    final local$shippingAddress = _instance.shippingAddress;
+    return local$shippingAddress == null
+        ? CopyWith$Fragment$OrderAddress.stub(_then(_instance))
+        : CopyWith$Fragment$OrderAddress(
+            local$shippingAddress, (e) => call(shippingAddress: e));
+  }
 }
 
 class _CopyWithStubImpl$Query$ActiveOrder$activeOrder<TRes>
@@ -11756,6 +11807,7 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder<TRes>
     List<Query$ActiveOrder$activeOrder$discounts>? discounts,
     Query$ActiveOrder$activeOrder$customFields? customFields,
     String? $__typename,
+    Fragment$OrderAddress? shippingAddress,
   }) =>
       _res;
 
@@ -11773,6 +11825,9 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder<TRes>
 
   CopyWith$Query$ActiveOrder$activeOrder$customFields<TRes> get customFields =>
       CopyWith$Query$ActiveOrder$activeOrder$customFields.stub(_res);
+
+  CopyWith$Fragment$OrderAddress<TRes> get shippingAddress =>
+      CopyWith$Fragment$OrderAddress.stub(_res);
 }
 
 class Query$ActiveOrder$activeOrder$validationStatus
@@ -41547,6 +41602,13 @@ const documentNodeQueryGetEligiblePaymentMethods = DocumentNode(definitions: [
             selectionSet: null,
           ),
           FieldNode(
+            name: NameNode(value: 'name'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
             name: NameNode(value: 'code'),
             alias: null,
             arguments: [],
@@ -41746,6 +41808,7 @@ class Query$GetEligiblePaymentMethods$Widget
 class Query$GetEligiblePaymentMethods$eligiblePaymentMethods {
   Query$GetEligiblePaymentMethods$eligiblePaymentMethods({
     required this.id,
+    required this.name,
     required this.code,
     this.eligibilityMessage,
     required this.isEligible,
@@ -41755,12 +41818,14 @@ class Query$GetEligiblePaymentMethods$eligiblePaymentMethods {
   factory Query$GetEligiblePaymentMethods$eligiblePaymentMethods.fromJson(
       Map<String, dynamic> json) {
     final l$id = json['id'];
+    final l$name = json['name'];
     final l$code = json['code'];
     final l$eligibilityMessage = json['eligibilityMessage'];
     final l$isEligible = json['isEligible'];
     final l$$__typename = json['__typename'];
     return Query$GetEligiblePaymentMethods$eligiblePaymentMethods(
       id: (l$id as String),
+      name: (l$name as String),
       code: (l$code as String),
       eligibilityMessage: (l$eligibilityMessage as String?),
       isEligible: (l$isEligible as bool),
@@ -41769,6 +41834,8 @@ class Query$GetEligiblePaymentMethods$eligiblePaymentMethods {
   }
 
   final String id;
+
+  final String name;
 
   final String code;
 
@@ -41782,6 +41849,8 @@ class Query$GetEligiblePaymentMethods$eligiblePaymentMethods {
     final _resultData = <String, dynamic>{};
     final l$id = id;
     _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
     final l$code = code;
     _resultData['code'] = l$code;
     final l$eligibilityMessage = eligibilityMessage;
@@ -41796,12 +41865,14 @@ class Query$GetEligiblePaymentMethods$eligiblePaymentMethods {
   @override
   int get hashCode {
     final l$id = id;
+    final l$name = name;
     final l$code = code;
     final l$eligibilityMessage = eligibilityMessage;
     final l$isEligible = isEligible;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
+      l$name,
       l$code,
       l$eligibilityMessage,
       l$isEligible,
@@ -41821,6 +41892,11 @@ class Query$GetEligiblePaymentMethods$eligiblePaymentMethods {
     final l$id = id;
     final lOther$id = other.id;
     if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
       return false;
     }
     final l$code = code;
@@ -41871,6 +41947,7 @@ abstract class CopyWith$Query$GetEligiblePaymentMethods$eligiblePaymentMethods<
 
   TRes call({
     String? id,
+    String? name,
     String? code,
     String? eligibilityMessage,
     bool? isEligible,
@@ -41895,6 +41972,7 @@ class _CopyWithImpl$Query$GetEligiblePaymentMethods$eligiblePaymentMethods<TRes>
 
   TRes call({
     Object? id = _undefined,
+    Object? name = _undefined,
     Object? code = _undefined,
     Object? eligibilityMessage = _undefined,
     Object? isEligible = _undefined,
@@ -41902,6 +41980,9 @@ class _CopyWithImpl$Query$GetEligiblePaymentMethods$eligiblePaymentMethods<TRes>
   }) =>
       _then(Query$GetEligiblePaymentMethods$eligiblePaymentMethods(
         id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
         code: code == _undefined || code == null
             ? _instance.code
             : (code as String),
@@ -41928,6 +42009,7 @@ class _CopyWithStubImpl$Query$GetEligiblePaymentMethods$eligiblePaymentMethods<
 
   call({
     String? id,
+    String? name,
     String? code,
     String? eligibilityMessage,
     bool? isEligible,

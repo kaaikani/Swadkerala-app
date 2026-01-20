@@ -5,6 +5,7 @@ import '../../controllers/order/ordercontroller.dart';
 import '../../graphql/order.graphql.dart';
 import '../../utils/responsive.dart';
 import '../../theme/colors.dart';
+import '../../services/graphql_client.dart';
 
 class CheckoutShippingSection extends StatelessWidget {
   final OrderController orderController;
@@ -24,6 +25,18 @@ class CheckoutShippingSection extends StatelessWidget {
       if (orderController.shippingMethods.isEmpty) {
         return SizedBox.shrink();
       }
+
+      // Check if channel is Ind-Snacks
+      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
+          ? GraphqlService.channelTokenRx.value 
+          : GraphqlService.channelToken;
+      final channelTokenLower = channelToken.toLowerCase();
+      final isIndSnacksChannel = channelTokenLower == 'ind-snacks';
+      
+      // Use indSnacksAccent color for border if ind-snacks channel
+      final borderColor = isIndSnacksChannel 
+          ? AppColors.indSnacksAccent 
+          : AppColors.border;
 
       final hasSingleMethod = orderController.shippingMethods.length == 1;
       final singleMethod = hasSingleMethod ? orderController.shippingMethods.first : null;
@@ -67,7 +80,7 @@ class CheckoutShippingSection extends StatelessWidget {
                 color: AppColors.card,
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                 border: Border.all(
-                  color: AppColors.border,
+                  color: borderColor,
                   width: 1,
                 ),
               ),
@@ -108,7 +121,7 @@ class CheckoutShippingSection extends StatelessWidget {
                 color: AppColors.card,
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                 border: Border.all(
-                  color: AppColors.border,
+                  color: borderColor,
                   width: 1,
                 ),
               ),

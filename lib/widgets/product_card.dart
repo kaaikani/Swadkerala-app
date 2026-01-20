@@ -89,11 +89,9 @@ class ProductCard extends StatelessWidget {
                                     opacity: 0.3,
                                     child: Image.network(
                                       imageUrl!,
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.contain,
                                       width: double.infinity,
                                       height: double.infinity,
-                                      cacheWidth: 500,
-                                      cacheHeight: 500,
                                       errorBuilder: (context, error, stackTrace) {
                                         // If image fails to load, show placeholder background
                                         return Container(
@@ -107,33 +105,28 @@ class ProductCard extends StatelessWidget {
                                   Container(
                                     color: AppColors.backgroundLight,
                                   ),
-                                // Show X icon and "Out of Stock" text at the top
-                                Positioned(
-                                  top: ResponsiveUtils.rp(8),
-                                  left: 0,
-                                  right: 0,
-                                  child: Column(
-                                    children: [
-
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: ResponsiveUtils.rp(8),
-                                          vertical: ResponsiveUtils.rp(4),
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withValues(alpha: 0.9),
-                                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                                        ),
-                                        child: Text(
-                                          'Out of Stock',
-                                          style: TextStyle(
-                                            fontSize: ResponsiveUtils.sp(11),
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white,
-                                          ),
+                                // Show "Out of Stock" text in the center of the image
+                                Positioned.fill(
+                                  child: Center(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: ResponsiveUtils.rp(12),
+                                        vertical: ResponsiveUtils.rp(8),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withValues(alpha: 0.9),
+                                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                                      ),
+                                      child: Text(
+                                        'Out of Stock',
+                                        style: TextStyle(
+                                          fontSize: ResponsiveUtils.sp(14),
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
+                                          letterSpacing: 0.5,
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -141,11 +134,9 @@ class ProductCard extends StatelessWidget {
                           : (imageUrl != null && imageUrl!.isNotEmpty
                           ? Image.network(
                               imageUrl!,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                               width: double.infinity,
                               height: double.infinity,
-                              cacheWidth: 500,
-                              cacheHeight: 500,
                               loadingBuilder: (context, child, loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 // Show shimmer while loading

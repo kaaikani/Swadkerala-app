@@ -5200,6 +5200,120 @@ class _CopyWithStubImpl$Query$GetCurrentUser$me$channels<TRes>
       _res;
 }
 
+class Variables$Query$GetActiveCustomer {
+  factory Variables$Query$GetActiveCustomer(
+          {Input$OrderFilterParameter? orderStateFilter}) =>
+      Variables$Query$GetActiveCustomer._({
+        if (orderStateFilter != null) r'orderStateFilter': orderStateFilter,
+      });
+
+  Variables$Query$GetActiveCustomer._(this._$data);
+
+  factory Variables$Query$GetActiveCustomer.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    if (data.containsKey('orderStateFilter')) {
+      final l$orderStateFilter = data['orderStateFilter'];
+      result$data['orderStateFilter'] = l$orderStateFilter == null
+          ? null
+          : Input$OrderFilterParameter.fromJson(
+              (l$orderStateFilter as Map<String, dynamic>));
+    }
+    return Variables$Query$GetActiveCustomer._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  Input$OrderFilterParameter? get orderStateFilter =>
+      (_$data['orderStateFilter'] as Input$OrderFilterParameter?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    if (_$data.containsKey('orderStateFilter')) {
+      final l$orderStateFilter = orderStateFilter;
+      result$data['orderStateFilter'] = l$orderStateFilter?.toJson();
+    }
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$GetActiveCustomer<Variables$Query$GetActiveCustomer>
+      get copyWith => CopyWith$Variables$Query$GetActiveCustomer(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$GetActiveCustomer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderStateFilter = orderStateFilter;
+    final lOther$orderStateFilter = other.orderStateFilter;
+    if (_$data.containsKey('orderStateFilter') !=
+        other._$data.containsKey('orderStateFilter')) {
+      return false;
+    }
+    if (l$orderStateFilter != lOther$orderStateFilter) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderStateFilter = orderStateFilter;
+    return Object.hashAll([
+      _$data.containsKey('orderStateFilter') ? l$orderStateFilter : const {}
+    ]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$GetActiveCustomer<TRes> {
+  factory CopyWith$Variables$Query$GetActiveCustomer(
+    Variables$Query$GetActiveCustomer instance,
+    TRes Function(Variables$Query$GetActiveCustomer) then,
+  ) = _CopyWithImpl$Variables$Query$GetActiveCustomer;
+
+  factory CopyWith$Variables$Query$GetActiveCustomer.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$GetActiveCustomer;
+
+  TRes call({Input$OrderFilterParameter? orderStateFilter});
+}
+
+class _CopyWithImpl$Variables$Query$GetActiveCustomer<TRes>
+    implements CopyWith$Variables$Query$GetActiveCustomer<TRes> {
+  _CopyWithImpl$Variables$Query$GetActiveCustomer(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Query$GetActiveCustomer _instance;
+
+  final TRes Function(Variables$Query$GetActiveCustomer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? orderStateFilter = _undefined}) =>
+      _then(Variables$Query$GetActiveCustomer._({
+        ..._instance._$data,
+        if (orderStateFilter != _undefined)
+          'orderStateFilter': (orderStateFilter as Input$OrderFilterParameter?),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Query$GetActiveCustomer<TRes>
+    implements CopyWith$Variables$Query$GetActiveCustomer<TRes> {
+  _CopyWithStubImpl$Variables$Query$GetActiveCustomer(this._res);
+
+  TRes _res;
+
+  call({Input$OrderFilterParameter? orderStateFilter}) => _res;
+}
+
 class Query$GetActiveCustomer {
   Query$GetActiveCustomer({
     this.activeCustomer,
@@ -5342,7 +5456,17 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.query,
     name: NameNode(value: 'GetActiveCustomer'),
-    variableDefinitions: [],
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'orderStateFilter')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'OrderFilterParameter'),
+          isNonNull: false,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
     directives: [],
     selectionSet: SelectionSetNode(selections: [
       FieldNode(
@@ -5593,6 +5717,11 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                       ObjectFieldNode(
                         name: NameNode(value: 'skip'),
                         value: IntValueNode(value: '0'),
+                      ),
+                      ObjectFieldNode(
+                        name: NameNode(value: 'filter'),
+                        value: VariableNode(
+                            name: NameNode(value: 'orderStateFilter')),
                       ),
                     ]),
                   )
@@ -6093,6 +6222,7 @@ class Options$Query$GetActiveCustomer
     extends graphql.QueryOptions<Query$GetActiveCustomer> {
   Options$Query$GetActiveCustomer({
     String? operationName,
+    Variables$Query$GetActiveCustomer? variables,
     graphql.FetchPolicy? fetchPolicy,
     graphql.ErrorPolicy? errorPolicy,
     graphql.CacheRereadPolicy? cacheRereadPolicy,
@@ -6104,6 +6234,7 @@ class Options$Query$GetActiveCustomer
     graphql.OnQueryError? onError,
   })  : onCompleteWithParsed = onComplete,
         super(
+          variables: variables?.toJson() ?? {},
           operationName: operationName,
           fetchPolicy: fetchPolicy,
           errorPolicy: errorPolicy,
@@ -6139,6 +6270,7 @@ class WatchOptions$Query$GetActiveCustomer
     extends graphql.WatchQueryOptions<Query$GetActiveCustomer> {
   WatchOptions$Query$GetActiveCustomer({
     String? operationName,
+    Variables$Query$GetActiveCustomer? variables,
     graphql.FetchPolicy? fetchPolicy,
     graphql.ErrorPolicy? errorPolicy,
     graphql.CacheRereadPolicy? cacheRereadPolicy,
@@ -6150,6 +6282,7 @@ class WatchOptions$Query$GetActiveCustomer
     bool carryForwardDataOnException = true,
     bool fetchResults = false,
   }) : super(
+          variables: variables?.toJson() ?? {},
           operationName: operationName,
           fetchPolicy: fetchPolicy,
           errorPolicy: errorPolicy,
@@ -6167,10 +6300,12 @@ class WatchOptions$Query$GetActiveCustomer
 
 class FetchMoreOptions$Query$GetActiveCustomer
     extends graphql.FetchMoreOptions {
-  FetchMoreOptions$Query$GetActiveCustomer(
-      {required graphql.UpdateQuery updateQuery})
-      : super(
+  FetchMoreOptions$Query$GetActiveCustomer({
+    required graphql.UpdateQuery updateQuery,
+    Variables$Query$GetActiveCustomer? variables,
+  }) : super(
           updateQuery: updateQuery,
+          variables: variables?.toJson() ?? {},
           document: documentNodeQueryGetActiveCustomer,
         );
 }
@@ -6184,21 +6319,28 @@ extension ClientExtension$Query$GetActiveCustomer on graphql.GraphQLClient {
       this.watchQuery(options ?? WatchOptions$Query$GetActiveCustomer());
   void writeQuery$GetActiveCustomer({
     required Query$GetActiveCustomer data,
+    Variables$Query$GetActiveCustomer? variables,
     bool broadcast = true,
   }) =>
       this.writeQuery(
         graphql.Request(
-            operation: graphql.Operation(
-                document: documentNodeQueryGetActiveCustomer)),
+          operation:
+              graphql.Operation(document: documentNodeQueryGetActiveCustomer),
+          variables: variables?.toJson() ?? const {},
+        ),
         data: data.toJson(),
         broadcast: broadcast,
       );
-  Query$GetActiveCustomer? readQuery$GetActiveCustomer(
-      {bool optimistic = true}) {
+  Query$GetActiveCustomer? readQuery$GetActiveCustomer({
+    Variables$Query$GetActiveCustomer? variables,
+    bool optimistic = true,
+  }) {
     final result = this.readQuery(
       graphql.Request(
-          operation:
-              graphql.Operation(document: documentNodeQueryGetActiveCustomer)),
+        operation:
+            graphql.Operation(document: documentNodeQueryGetActiveCustomer),
+        variables: variables?.toJson() ?? const {},
+      ),
       optimistic: optimistic,
     );
     return result == null ? null : Query$GetActiveCustomer.fromJson(result);
@@ -10036,10 +10178,12 @@ class Variables$Query$GetCustomerOrders {
   factory Variables$Query$GetCustomerOrders({
     required int skip,
     required int take,
+    Input$OrderFilterParameter? orderStateFilter,
   }) =>
       Variables$Query$GetCustomerOrders._({
         r'skip': skip,
         r'take': take,
+        if (orderStateFilter != null) r'orderStateFilter': orderStateFilter,
       });
 
   Variables$Query$GetCustomerOrders._(this._$data);
@@ -10051,6 +10195,13 @@ class Variables$Query$GetCustomerOrders {
     result$data['skip'] = (l$skip as int);
     final l$take = data['take'];
     result$data['take'] = (l$take as int);
+    if (data.containsKey('orderStateFilter')) {
+      final l$orderStateFilter = data['orderStateFilter'];
+      result$data['orderStateFilter'] = l$orderStateFilter == null
+          ? null
+          : Input$OrderFilterParameter.fromJson(
+              (l$orderStateFilter as Map<String, dynamic>));
+    }
     return Variables$Query$GetCustomerOrders._(result$data);
   }
 
@@ -10060,12 +10211,19 @@ class Variables$Query$GetCustomerOrders {
 
   int get take => (_$data['take'] as int);
 
+  Input$OrderFilterParameter? get orderStateFilter =>
+      (_$data['orderStateFilter'] as Input$OrderFilterParameter?);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$skip = skip;
     result$data['skip'] = l$skip;
     final l$take = take;
     result$data['take'] = l$take;
+    if (_$data.containsKey('orderStateFilter')) {
+      final l$orderStateFilter = orderStateFilter;
+      result$data['orderStateFilter'] = l$orderStateFilter?.toJson();
+    }
     return result$data;
   }
 
@@ -10094,6 +10252,15 @@ class Variables$Query$GetCustomerOrders {
     if (l$take != lOther$take) {
       return false;
     }
+    final l$orderStateFilter = orderStateFilter;
+    final lOther$orderStateFilter = other.orderStateFilter;
+    if (_$data.containsKey('orderStateFilter') !=
+        other._$data.containsKey('orderStateFilter')) {
+      return false;
+    }
+    if (l$orderStateFilter != lOther$orderStateFilter) {
+      return false;
+    }
     return true;
   }
 
@@ -10101,9 +10268,11 @@ class Variables$Query$GetCustomerOrders {
   int get hashCode {
     final l$skip = skip;
     final l$take = take;
+    final l$orderStateFilter = orderStateFilter;
     return Object.hashAll([
       l$skip,
       l$take,
+      _$data.containsKey('orderStateFilter') ? l$orderStateFilter : const {},
     ]);
   }
 }
@@ -10120,6 +10289,7 @@ abstract class CopyWith$Variables$Query$GetCustomerOrders<TRes> {
   TRes call({
     int? skip,
     int? take,
+    Input$OrderFilterParameter? orderStateFilter,
   });
 }
 
@@ -10139,11 +10309,14 @@ class _CopyWithImpl$Variables$Query$GetCustomerOrders<TRes>
   TRes call({
     Object? skip = _undefined,
     Object? take = _undefined,
+    Object? orderStateFilter = _undefined,
   }) =>
       _then(Variables$Query$GetCustomerOrders._({
         ..._instance._$data,
         if (skip != _undefined && skip != null) 'skip': (skip as int),
         if (take != _undefined && take != null) 'take': (take as int),
+        if (orderStateFilter != _undefined)
+          'orderStateFilter': (orderStateFilter as Input$OrderFilterParameter?),
       }));
 }
 
@@ -10156,6 +10329,7 @@ class _CopyWithStubImpl$Variables$Query$GetCustomerOrders<TRes>
   call({
     int? skip,
     int? take,
+    Input$OrderFilterParameter? orderStateFilter,
   }) =>
       _res;
 }
@@ -10321,6 +10495,15 @@ const documentNodeQueryGetCustomerOrders = DocumentNode(definitions: [
         defaultValue: DefaultValueNode(value: null),
         directives: [],
       ),
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'orderStateFilter')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'OrderFilterParameter'),
+          isNonNull: false,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
     ],
     directives: [],
     selectionSet: SelectionSetNode(selections: [
@@ -10359,6 +10542,11 @@ const documentNodeQueryGetCustomerOrders = DocumentNode(definitions: [
                       ObjectFieldNode(
                         name: NameNode(value: 'take'),
                         value: VariableNode(name: NameNode(value: 'take')),
+                      ),
+                      ObjectFieldNode(
+                        name: NameNode(value: 'filter'),
+                        value: VariableNode(
+                            name: NameNode(value: 'orderStateFilter')),
                       ),
                     ]),
                   )

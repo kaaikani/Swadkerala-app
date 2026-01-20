@@ -61,6 +61,7 @@ mutation LoginWithGoogle($token: String!) {
 
 mutation SendPhoneOtp($phoneNumber: String!) {
     sendPhoneOtp(phoneNumber: $phoneNumber)
+
 }
 mutation ResendPhoneOtp($phoneNumber: String!) {
     resendPhoneOtp(phoneNumber: $phoneNumber)

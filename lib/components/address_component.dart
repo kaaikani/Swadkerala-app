@@ -433,7 +433,9 @@ class AddressComponent extends StatelessWidget {
         // This ensures fresh data every time the dialog is opened
         customerController.fetchPostalCodes().then((codes) {
           if (codes.isNotEmpty) {
-            for (var code in codes) {
+            // Postal codes fetched successfully
+            for (var _ in codes) {
+              // Process codes if needed
             }
           } else {
           }

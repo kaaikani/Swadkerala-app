@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -180,6 +181,87 @@ Future<void> _initializeFirebase() async {
   }
 }
 
+/// Initialize GetStorage synchronously - blocks until ready or timeout
+Future<void> _initializeGetStorageSync() async {
+  try {
+    // Try to initialize GetStorage immediately
+    await GetStorage.init();
+    if (kDebugMode) {
+      debugPrint('✅ GetStorage initialized synchronously');
+    }
+  } catch (e) {
+    // If it fails, try with a short delay (platform channels might not be ready)
+    if (kDebugMode) {
+      debugPrint('⚠️ GetStorage sync init failed, retrying...');
+    }
+    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      await GetStorage.init();
+      if (kDebugMode) {
+        debugPrint('✅ GetStorage initialized on retry');
+      }
+    } catch (e2) {
+      // If still fails, log but continue - background retry will handle it
+      if (kDebugMode) {
+        debugPrint('⚠️ GetStorage sync init failed, will retry in background');
+      }
+    }
+  }
+}
+
+/// Initialize GetStorage - non-blocking, runs in background after app starts
+Future<void> _initializeGetStorageWithRetry() async {
+  // Don't wait - initialize in background to avoid blocking app startup
+  // Wait for app to fully start before initializing storage
+  Future.delayed(const Duration(seconds: 2), () async {
+    // Additional delay to ensure platform channels are fully ready
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    try {
+      await GetStorage.init();
+      if (kDebugMode) {
+        debugPrint('✅ GetStorage initialized successfully');
+      }
+    } catch (e) {
+      // Log error in debug mode (but don't spam)
+      if (kDebugMode) {
+        if (e is PlatformException && 
+            e.code == 'channel-error' && 
+            e.message?.contains('path_provider') == true) {
+          debugPrint('⚠️ GetStorage initialization failed - path_provider not ready');
+          debugPrint('   App will continue. Storage will be available after platform channels are ready.');
+        } else {
+          debugPrint('⚠️ GetStorage initialization failed: $e');
+        }
+      }
+      // Record to Crashlytics if available
+      try {
+        CrashlyticsService.instance.recordError(
+          e, 
+          StackTrace.current, 
+          reason: 'GetStorage initialization failed - will retry later'
+        );
+      } catch (_) {
+        // Crashlytics might not be initialized yet, ignore
+      }
+      
+      // Retry once more after a longer delay
+      Future.delayed(const Duration(seconds: 3), () async {
+        try {
+          await GetStorage.init();
+          if (kDebugMode) {
+            debugPrint('✅ GetStorage initialized successfully on retry');
+          }
+        } catch (e2) {
+          if (kDebugMode) {
+            debugPrint('⚠️ GetStorage retry also failed. Storage may not be available.');
+          }
+        }
+      });
+    }
+  });
+}
+
 Future<void> main() async {
   // Set up global error handlers first (before any initialization)
   _setupErrorHandlers();
@@ -193,8 +275,10 @@ Future<void> main() async {
       // Initialize Firebase (Crashlytics + Messaging) only on mobile/desktop, not Web.
       await _initializeFirebase();
 
-      // Initialize GetStorage
-      await GetStorage.init();
+      // Initialize GetStorage synchronously before creating controllers
+      await _initializeGetStorageSync();
+      // Also initialize in background for retry logic
+      _initializeGetStorageWithRetry();
       await dotenv.load(fileName: ".env"); // <-- load dotenv first
       
       try {
@@ -424,7 +508,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme(),
         themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.initial,
+      initialRoute: AppRoutes.initial, // Start directly with initial route wrapper
       getPages: AppRoutes.routes,
       navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
       );

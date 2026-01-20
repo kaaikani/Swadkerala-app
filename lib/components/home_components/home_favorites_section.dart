@@ -297,7 +297,11 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: ResponsiveSpacing.screenPadding,
+              padding: EdgeInsets.only(
+                left: ResponsiveSpacing.screenPadding.left,
+                right: ResponsiveSpacing.screenPadding.right,
+                bottom: ResponsiveSpacing.screenPadding.bottom,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

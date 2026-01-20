@@ -516,7 +516,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         });
       }
       
-      showErrorSnackbar('Please select a delivery method before checkout');
       return; // CRITICAL: Return early to prevent navigation
     }
     
@@ -534,7 +533,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         finalCheck.id == '0' || 
         finalCheck.id == 'null' ||
         !finalIsApplied) {
-      showErrorSnackbar('Please select a delivery method before checkout');
       return; // Block navigation
     }
 
@@ -612,7 +610,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       await cartController.getActiveOrder();
       
       // Show success snackbar with different style for clear cart
-      SnackBarWidget.showWarning('Cart cleared successfully');
     } else {
       // Clear clearing state on failure
       setState(() {
@@ -691,9 +688,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
     if (success) {
       _lastAppliedShippingMethodId = selected.id;
-      if (showFeedback) {
-        showSuccessSnackbar('Shipping method selected');
-      }
+
       // Sync CartController with updated order only if not skipping sync
       // (skipSync is true during initialization when getActiveOrder was just called)
       if (!skipSync) {
@@ -703,7 +698,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       // The order is already updated in orderController.currentOrder by setShippingMethod
       // and will be synced on the next getActiveOrder call or when needed
     } else {
-      showErrorSnackbar('Failed to set shipping method');
     }
   }
 
