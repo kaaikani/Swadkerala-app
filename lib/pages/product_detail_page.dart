@@ -106,25 +106,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return shareLink;
   }
 
-  /// Share product link
-  Future<void> _shareProduct() async {
-    try {
-      final shareLink = _generateShareLink();
-      final productName = productDetail?.name ?? widget.productName ?? 'this product';
-      
-      // Share text with link
-      final shareText = 'Check out $productName on Kaaikani!\n\n$shareLink';
-      
-      await Share.share(
-        shareText,
-        subject: 'Check out $productName',
-      );
-      
-    } catch (e) {
-      showErrorSnackbar(AppStrings.failedToShareProduct);
-    }
-  }
-
   /// Get display name from variant options, fallback to variant name
   String _getVariantDisplayName(Query$GetProductDetail$product$variants variant) {
     // Always prefer showing option names over variant name

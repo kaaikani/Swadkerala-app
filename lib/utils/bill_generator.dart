@@ -16,7 +16,7 @@ class BillGenerator {
     final bool isWholeNumber = (amount % 1).abs() < 0.0001;
     final String value =
         isWholeNumber ? amount.toInt().toString() : amount.toStringAsFixed(2);
-    return '₹ $value';
+    return 'Rs. $value';
   }
   
   /// Format price for PDF from double (already in rupees)
@@ -24,7 +24,7 @@ class BillGenerator {
     final bool isWholeNumber = (priceInRupees % 1).abs() < 0.0001;
     final String value =
         isWholeNumber ? priceInRupees.toInt().toString() : priceInRupees.toStringAsFixed(2);
-    return '₹ $value';
+    return 'Rs. $value';
   }
   static Future<void> generateAndShare(Fragment$Cart order) async {
     // Pre-load logo image asynchronously to avoid blocking
@@ -339,8 +339,8 @@ class BillGenerator {
       children: [
         _buildTotalRow('Subtotal', order.subTotalWithTax),
         _buildTotalRow('Shipping', order.shippingWithTax),
-        // Show coupon discount if applied
-        if (order.couponCodes.isNotEmpty && couponDiscount > 0) ...[
+        // Show coupon codes if applied (show even if discount is 0, as coupon might have other effects)
+        if (order.couponCodes.isNotEmpty) ...[
           pw.SizedBox(height: 4),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.end,
@@ -349,11 +349,18 @@ class BillGenerator {
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.green700)),
-              pw.Text('-${BillGenerator.formatPriceForPdf(couponDiscount.toInt())}',
-                  style: pw.TextStyle(
-                      fontSize: 12,
-                      color: PdfColors.green700,
-                      fontWeight: pw.FontWeight.bold)),
+              if (couponDiscount > 0)
+                pw.Text('-${BillGenerator.formatPriceForPdf(couponDiscount.toInt())}',
+                    style: pw.TextStyle(
+                        fontSize: 12,
+                        color: PdfColors.green700,
+                        fontWeight: pw.FontWeight.bold))
+              else
+                pw.Text('Applied',
+                    style: pw.TextStyle(
+                        fontSize: 12,
+                        color: PdfColors.green700,
+                        fontWeight: pw.FontWeight.bold)),
             ],
           ),
         ],

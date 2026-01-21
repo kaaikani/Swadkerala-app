@@ -44,7 +44,18 @@ class AuthController extends BaseController {
 
   // Setters
   void setLoggedIn(bool value) => _isLoggedIn.value = value;
-  void setOtpSent(bool value) => _isOtpSent.value = value;
+  void setOtpSent(bool value) {
+    print('[AuthController] setOtpSent called with: $value, current value: ${_isOtpSent.value}');
+    if (_isOtpSent.value != value) {
+      _isOtpSent.value = value;
+      print('[AuthController] _isOtpSent.value updated to: ${_isOtpSent.value}');
+    } else {
+      print('[AuthController] _isOtpSent.value already $value, forcing update');
+      // Force update even if value is the same
+      _isOtpSent.value = !value;
+      _isOtpSent.value = value;
+    }
+  }
   void setLoading(bool value) => utilityController.setLoadingState(value);
 
   @override
@@ -149,8 +160,6 @@ class AuthController extends BaseController {
     }
 
     setLoading(true);
-    final domain = dotenv.env['EMAIL_DOMAIN'] ?? '@kaikani.com';
-    final email = '${phoneNumber.text}$domain';
     try {
       final response = await GraphqlService.client.value.query$GetChannelList(
         Options$Query$GetChannelList(),
@@ -193,8 +202,6 @@ class AuthController extends BaseController {
     }
 
     setLoading(true);
-    final domain = dotenv.env['EMAIL_DOMAIN'] ?? '@kaikani.com';
-    final email = '${phoneNumber.text}$domain';
     try {
       final response = await GraphqlService.client.value.query$GetChannelList(
         Options$Query$GetChannelList(),
@@ -228,9 +235,11 @@ class AuthController extends BaseController {
     Logger.logFunction(functionName: 'checkChannelsByPhoneNumber', queryName: 'GetChannelsByCustomerPhoneNumber');
     
     if (!_isValidPhoneNumber(phoneNumber.text)) {
+      SnackBarWidget.showError('Please enter a valid phone number');
       return false;
     }
 
+    setLoading(true);
     try {
       final response = await GraphqlService.client.value.query$GetChannelsByCustomerPhoneNumber(
         Options$Query$GetChannelsByCustomerPhoneNumber(
@@ -239,72 +248,85 @@ class AuthController extends BaseController {
           ),
         ),
       );
+      
+      // First check for exceptions/errors - if any error occurs, don't proceed
       if (response.hasException) {
+        // Check for GraphQL errors
         if (response.exception?.graphqlErrors.isNotEmpty == true) {
-          for (int i = 0; i < response.exception!.graphqlErrors.length; i++) {
-            final error = response.exception!.graphqlErrors[i];
-          }
-        }
-        if (response.exception?.linkException != null) {
-        }
-      }
-
-      // Check for "Customer not found" or "Customer is not registered" error
-      // This is expected during registration, but should show error during login
-      bool isCustomerNotFoundError = false;
-      if (response.hasException && response.exception?.graphqlErrors.isNotEmpty == true) {
-        final errorMessages = response.exception!.graphqlErrors
-            .map((e) => e.message.toLowerCase())
-            .toList();
-        isCustomerNotFoundError = errorMessages.any((msg) => 
-          msg.contains('customer not found') || 
-          msg.contains('not found with phone') ||
-          msg.contains('customer is not registered') ||
-          msg.contains('not registered') ||
-          msg.contains('is not registered'));
-        
-        if (isCustomerNotFoundError) {
-          if (!isLogin) {
-            // For registration, "customer not found/not registered" is expected - proceed with OTP
-            return true;
+          final errorMessages = response.exception!.graphqlErrors
+              .map((e) => e.message.toLowerCase())
+              .toList();
+          
+          // Check for "Customer not found" or "Customer is not registered" error
+          bool isCustomerNotFoundError = errorMessages.any((msg) => 
+            msg.contains('customer not found') || 
+            msg.contains('not found with phone') ||
+            msg.contains('customer is not registered') ||
+            msg.contains('not registered') ||
+            msg.contains('is not registered'));
+          
+          if (isCustomerNotFoundError) {
+            if (!isLogin) {
+              // For registration, "customer not found/not registered" is expected - proceed with OTP
+              setLoading(false);
+              return true;
+            } else {
+              // For login, "customer not registered" means account doesn't exist - show error
+              setLoading(false);
+              ErrorDialog.showError('No account found with this phone number. Please register first.');
+              return false;
+            }
           } else {
-            // For login, "customer not registered" means account doesn't exist - show error
-            ErrorDialog.showError('No account found with this phone number. Please register first.');
+            // Other GraphQL errors - don't proceed
+            setLoading(false);
+            if (checkResponseForErrors(response, customErrorMessage: 'Failed to check phone number')) {
+              return false;
+            }
             return false;
           }
         }
+        
+        // Check for link exceptions (network errors, etc.)
+        if (response.exception?.linkException != null) {
+          setLoading(false);
+          if (checkResponseForErrors(response, customErrorMessage: 'Failed to check phone number')) {
+            return false;
+          }
+          return false;
+        }
       }
 
-      if (checkResponseForErrors(response, customErrorMessage: 'Failed to check channels')) {
+      // Check for general response errors
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to check phone number')) {
+        setLoading(false);
         return false;
       }
 
       final channels = response.parsedData?.getChannelsByCustomerPhoneNumber ?? [];
-      if (channels.isNotEmpty) {
-        for (int i = 0; i < channels.length; i++) {
-          final channel = channels[i];
-        }
-      } else {
-      }
 
       if (isLogin) {
         // For login: channel must exist
         if (channels.isEmpty) {
+          setLoading(false);
           ErrorDialog.showError('No account found with this phone number. Please register first.');
           return false;
         }
         // Channel exists, proceed with OTP
+        setLoading(false);
         return true;
       } else {
         // For register: if channels exist, show error. If empty, proceed (kindly register)
         if (channels.isNotEmpty) {
+          setLoading(false);
           ErrorDialog.showError('An account already exists with this phone number. Please login instead.');
           return false;
         }
         // No channels found, proceed with registration OTP
+        setLoading(false);
         return true;
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
+      setLoading(false);
       handleException(e, customErrorMessage: 'Failed to check phone number', functionName: 'checkChannelsByPhoneNumber');
       return false;
     }
@@ -319,11 +341,14 @@ class AuthController extends BaseController {
       return false;
     }
 
-    // Check channels before sending OTP
+    // CRITICAL: Check channels before sending OTP - if this fails, don't send OTP
+    print('[sendOtp] Checking channels before sending OTP...');
     final canProceed = await checkChannelsByPhoneNumber(isLogin: isLogin);
     if (!canProceed) {
+      print('[sendOtp] Channel check failed - NOT sending OTP');
       return false;
     }
+    print('[sendOtp] Channel check passed - proceeding to send OTP');
 
     setLoading(true);
     try {
@@ -334,6 +359,7 @@ class AuthController extends BaseController {
       );
 
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to send OTP')) {
+        setLoading(false);
         return false;
       }
 
@@ -343,28 +369,40 @@ class AuthController extends BaseController {
       final success = rawResult != null && rawResult != false && rawResult != "false" && rawResult != 0;
 
       if (success) {
-        // Set OTP sent flag first to trigger UI update
+        print('[sendOtp] OTP sent successfully - setting isOtpSent to true');
+        
+        // Set OTP sent flag using setter which includes refresh
         setOtpSent(true);
-        // Wait a moment to ensure UI updates, then show success message
-        await Future.delayed(Duration(milliseconds: 100));
+        
+        // Wait for next frame to ensure UI rebuilds
+        await Future.delayed(Duration(milliseconds: 50));
+        
+        // Verify the value was set
+        print('[sendOtp] After delay - isOtpSent: ${isOtpSent}, _isOtpSent.value: ${_isOtpSent.value}');
         
         // Show success message
         SnackBarWidget.showSuccess('OTP sent successfully!');
         
-        // Ensure UI has time to update and show OTP field
-        await Future.delayed(Duration(milliseconds: 200));
+        // Force a UI update by scheduling on next frame
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          print('[sendOtp] PostFrameCallback - isOtpSent: ${isOtpSent}');
+        });
         
+        // Ensure UI has time to update and show OTP field
+        await Future.delayed(Duration(milliseconds: 100));
+        
+        setLoading(false);
         return true;
       } else {
+        setLoading(false);
         ErrorDialog.showError('Failed to send OTP');
         return false;
       }
 
     } catch (e) {
+      setLoading(false);
       handleException(e, customErrorMessage: 'Failed to send OTP', functionName: 'sendOtp');
       return false;
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -423,7 +461,7 @@ class AuthController extends BaseController {
       ErrorDialog.showError('OTP verification failed');
       return false;
 
-    } catch (e, stackTrace) {
+    } catch (e) {
       handleException(e, customErrorMessage: 'OTP verification failed');
       return false;
     } finally {
@@ -515,7 +553,7 @@ class AuthController extends BaseController {
       ErrorDialog.showError('OTP verification failed');
       return false;
 
-    } catch (e, stackTrace) {
+    } catch (e) {
       handleException(e, customErrorMessage: 'OTP verification failed');
       return false;
     } finally {
@@ -661,7 +699,7 @@ class AuthController extends BaseController {
       Future.microtask(() {
         Get.offAllNamed('/login');
       });
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Don't show error dialog for logout - just log it
       // Still try to clear data even if logout mutation failed
       try {
@@ -708,7 +746,8 @@ class AuthController extends BaseController {
       await _storage.remove('order_data');
       await _storage.remove('loyalty_points');
       await _storage.remove('app_settings');
-      await _storage.remove('intro_shown');
+      // Don't remove intro_shown on logout - user should not see onboarding again
+      // await _storage.remove('intro_shown');
       await _storage.remove('active_customer');
       await _storage.remove('customer_addresses');
       await _storage.remove('customer_orders');
@@ -750,7 +789,8 @@ class AuthController extends BaseController {
       await _storage.remove('phone_verified');
       await _storage.remove('email_verified');
       await _storage.remove('profile_complete');
-      await _storage.remove('onboarding_complete');
+      // Don't remove onboarding_complete on logout - user should not see onboarding again
+      // await _storage.remove('onboarding_complete');
       await _storage.remove('tutorial_shown');
       await _storage.remove('help_shown');
       await _storage.remove('tips_shown');
@@ -858,7 +898,7 @@ class AuthController extends BaseController {
 
       } catch (controllerError) {
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
     }
   }
 
@@ -888,9 +928,6 @@ class AuthController extends BaseController {
         ErrorDialog.showError('Google Client ID not configured');
         return false;
       }
-      final clientIdPreview = googleClientId.length > 20
-          ? '${googleClientId.substring(0, 20)}...'
-          : googleClientId;
       // Initialize Google Sign In
       // serverClientId is required to get ID token for backend verification
       // This should be a Web OAuth client ID from the same Google Cloud project
@@ -961,7 +998,6 @@ class AuthController extends BaseController {
       // accessToken is for direct Google API calls (not needed here)
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final String? idToken = googleAuth.idToken;
-      final String? accessToken = googleAuth.accessToken;
       if (idToken == null || idToken.isEmpty) {
         ErrorDialog.showError('Failed to get Google ID token');
         return false;
@@ -980,8 +1016,7 @@ class AuthController extends BaseController {
       // Handle GraphQL errors
       if (response.hasException) {
         if (response.exception?.graphqlErrors != null) {
-          for (final error in response.exception!.graphqlErrors) {
-          }
+          // GraphQL errors handled by exception
         }
         if (response.exception?.linkException != null) {
         }
@@ -1026,9 +1061,6 @@ class AuthController extends BaseController {
                 await _storage.write('channel_token', channel.token);
                 await GraphqlService.setToken(key: 'channel', token: channel.token);
                 channelFetched = true;
-                final tokenPreview = channel.token.length > 20
-                    ? '${channel.token.substring(0, 20)}...'
-                    : channel.token;
                 break;
               } else {
                 if (i < 2) {
@@ -1036,7 +1068,7 @@ class AuthController extends BaseController {
                   continue;
                 }
               }
-            } catch (e, stackTrace) {
+            } catch (e) {
               if (i < 2) {
                 await Future.delayed(Duration(milliseconds: 500));
                 continue;
@@ -1077,7 +1109,7 @@ class AuthController extends BaseController {
       ErrorDialog.showError('Google authentication failed');
       return false;
 
-    } catch (e, stackTrace) {
+    } catch (e) {
       // Check if it's a cancellation - don't show error dialog for cancellations
       final errorStr = e.toString().toLowerCase();
       final isCancellation = errorStr.contains('canceled') ||

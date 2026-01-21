@@ -269,9 +269,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       SizedBox(height: ResponsiveUtils.rp(40)),
                       
                       // Form Content (no card)
-                      Obx(() => _authController.isOtpSent
-                          ? _buildOtpSection()
-                          : _buildPhoneSection()),
+                      Obx(() {
+                        final isOtpSent = _authController.isOtpSent;
+                        print('[LoginPage] Obx rebuild - isOtpSent: $isOtpSent');
+                        return isOtpSent
+                            ? _buildOtpSection()
+                            : _buildPhoneSection();
+                      }),
                       
                       SizedBox(height: ResponsiveUtils.rp(32)),
                       
@@ -1333,7 +1337,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
 
     await _startSmsAutofill();
-    await _authController.startLoginFlow(context);
+    final success = await _authController.startLoginFlow(context);
+    
+    // Force UI rebuild after OTP is sent
+    if (success && _authController.isOtpSent) {
+      print('[LoginPage] OTP sent successfully, forcing UI rebuild');
+      // Force a rebuild by calling setState
+      if (mounted) {
+        setState(() {});
+      }
+      // Also ensure Obx rebuilds by accessing the reactive variable
+      _authController.isOtpSent; // Access to trigger Obx
+    }
   }
 
   Future<void> _verifyOtp() async {

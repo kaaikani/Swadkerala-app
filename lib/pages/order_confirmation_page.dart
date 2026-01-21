@@ -211,6 +211,11 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                       _buildSummaryRow('Subtotal', order.subTotalWithTax.toDouble()),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       _buildSummaryRow('Shipping', order.shippingWithTax.toDouble()),
+                      // Show coupon codes if applied
+                      if (order.couponCodes.isNotEmpty) ...[
+                        SizedBox(height: ResponsiveUtils.rp(8)),
+                        _buildCouponCodeRow(order),
+                      ],
                       // Show Points Earned if available
                       if (_getLoyaltyPointsEarned() > 0) ...[
                         SizedBox(height: ResponsiveUtils.rp(8)),
@@ -331,6 +336,67 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             color: AppColors.textPrimary,
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildCouponCodeRow(dynamic order) {
+    // Calculate discount amount from discounts
+    double couponDiscount = 0.0;
+    if (order.discounts.isNotEmpty) {
+      couponDiscount = order.discounts.fold<double>(
+        0.0,
+        (sum, discount) => sum + discount.amountWithTax,
+      );
+    }
+    
+    // Green color for coupon discount
+    final greenColor = AppColors.success;
+    final couponCodesText = order.couponCodes.join(", ");
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.local_offer_rounded,
+              size: ResponsiveUtils.rp(18),
+              color: greenColor,
+            ),
+            SizedBox(width: ResponsiveUtils.rp(6)),
+            Flexible(
+              child: Text(
+                'Coupon (${couponCodesText})',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: FontWeight.w600,
+                  color: greenColor,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        if (couponDiscount > 0)
+          Text(
+            '-${cartController.formatPrice(couponDiscount.toInt())}',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.bold,
+              color: greenColor,
+            ),
+          )
+        else
+          Text(
+            'Applied',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.bold,
+              color: greenColor,
+            ),
+          ),
       ],
     );
   }

@@ -321,9 +321,12 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         quantity: newQuantity,
       );
       if (!success) {
-        showErrorSnackbar('Failed to update quantity');
+        // If adjustOrderLine failed, ensure cart is refreshed to show correct quantity
+        // This is especially important for OrderInterceptorError cases
+        print('[CartPage] adjustOrderLine failed, refreshing cart to ensure UI is in sync');
+        await cartController.getActiveOrder();
       }
-      // Note: No need to call getActiveOrder() here because adjustOrderLine already updates cart.value
+      // Note: When success is true, adjustOrderLine already updates cart.value
       // and calls validateAndRemoveCouponsIfNeeded(). The UI will update via reactive variables.
     } finally {
       // Clear loading state for this order line
@@ -339,9 +342,46 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       return;
     }
 
-    // Check validationStatus for unavailable items (e.g., "This variant is no longer available")
+    // Check for quantity limit violations
     final cart = cartController.cart.value;
     if (cart != null) {
+      final quantityLimitStatus = cart.quantityLimitStatus;
+      if (quantityLimitStatus.hasViolations && quantityLimitStatus.violations.isNotEmpty) {
+        // Show error message with details
+        final violationMessages = quantityLimitStatus.violations
+            .map((v) => '${v.productName} (${v.variantName}): Max ${v.maxQuantity} allowed, current ${v.currentQuantity}')
+            .join('\n');
+        showErrorSnackbar('Quantity limit exceeded. Please decrease quantities:\n$violationMessages');
+        
+        // Find the first violation order line for scrolling
+        final firstViolationLineId = quantityLimitStatus.violations.first.orderLineId;
+        int? firstViolationIndex;
+        for (int i = 0; i < cart.lines.length; i++) {
+          if (cart.lines[i].id == firstViolationLineId) {
+            firstViolationIndex = i;
+            break;
+          }
+        }
+        
+        // Scroll to first violation item
+        if (firstViolationIndex != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              final estimatedPosition = firstViolationIndex! * 150.0;
+              _scrollController.animateTo(
+                estimatedPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            }
+          });
+        }
+        
+        // CRITICAL: Return early to prevent checkout navigation
+        return;
+      }
+
+      // Check validationStatus for unavailable items (e.g., "This variant is no longer available")
       final validationStatus = cart.validationStatus;
       if (validationStatus.hasUnavailableItems && validationStatus.unavailableItems.isNotEmpty) {
         // Iterate through unavailable items (unused in loop, just for logging)

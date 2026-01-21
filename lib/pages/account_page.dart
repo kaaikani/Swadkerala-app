@@ -391,8 +391,12 @@ class _AccountPageState extends State<AccountPage> {
                     enabled: !isLoading,
                     keyboardType: TextInputType.phone,
                     maxLength: 10,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                     decoration: InputDecoration(
-                      hintText: 'Enter phone number',
+                      hintText: 'Enter 10 digit phone number',
                       prefixIcon: Icon(Icons.phone_outlined),
                       filled: true,
                       fillColor: AppColors.inputFill,
@@ -430,6 +434,12 @@ class _AccountPageState extends State<AccountPage> {
                           errorMessage = null;
                         });
                       }
+                      // Validate on change - show error if non-digit characters are entered
+                      if (value.isNotEmpty && !RegExp(r'^[0-9]+$').hasMatch(value)) {
+                        setState(() {
+                          errorMessage = 'Only numbers are allowed';
+                        });
+                      }
                     },
                   ),
                   SizedBox(height: ResponsiveUtils.rp(20)),
@@ -442,11 +452,25 @@ class _AccountPageState extends State<AccountPage> {
                           final phone = phoneController.text.trim();
                           
                           if (phone.isEmpty) {
-                            showErrorSnackbar('Please enter a phone number');
+                            setState(() {
+                              errorMessage = 'Please enter a phone number';
+                            });
                             return;
                           }
+                          
+                          // Validate: Only digits allowed
+                          if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+                            setState(() {
+                              errorMessage = 'Only numbers are allowed. No special characters.';
+                            });
+                            return;
+                          }
+                          
+                          // Validate: Must be exactly 10 digits
                           if (phone.length != 10) {
-                            showErrorSnackbar('Phone number must be 10 digits');
+                            setState(() {
+                              errorMessage = 'Phone number must be exactly 10 digits';
+                            });
                             return;
                           }
 
@@ -1118,19 +1142,6 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ),
         SizedBox(height: ResponsiveUtils.rp(16)),
-        FutureBuilder<PackageInfo>(
-          future: PackageInfo.fromPlatform(),
-          builder: (context, snapshot) {
-            return Text(
-              'App Version ${snapshot.data?.version ?? "1.0.0"}',
-              style: TextStyle(
-                color: Colors.grey[500],
-                fontSize: ResponsiveUtils.sp(12),
-              ),
-            );
-          },
-        ),
-        SizedBox(height: ResponsiveUtils.rp(16)),
         Container(
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
@@ -1154,6 +1165,21 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
           ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(16)),
+        FutureBuilder<PackageInfo>(
+          future: PackageInfo.fromPlatform(),
+          builder: (context, snapshot) {
+            return Center(
+              child: Text(
+                'App Version ${snapshot.data?.version ?? "1.0.0"}',
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: ResponsiveUtils.sp(12),
+                ),
+              ),
+            );
+          },
         ),
         SizedBox(height: ResponsiveUtils.rp(20)),
       ],

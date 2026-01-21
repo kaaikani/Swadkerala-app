@@ -20811,6 +20811,7 @@ const possibleTypesMap = <String, Set<String>>{
     'PaymentFailedError',
     'VerificationTokenExpiredError',
     'VerificationTokenInvalidError',
+    'QuantityLimitError',
   },
   'ApplyCouponCodeResult': {
     'Order',
@@ -20948,6 +20949,7 @@ const possibleTypesMap = <String, Set<String>>{
     'Order',
     'OrderStateTransitionError',
     'CartContainsUnavailableItemsError',
+    'QuantityLimitError',
   },
   'UpdateCustomerEmailAddressResult': {
     'Success',

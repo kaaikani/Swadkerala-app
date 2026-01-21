@@ -22,6 +22,8 @@ import '../collection controller/collectioncontroller.dart';
 import '../cart/Cartcontroller.dart';
 import '../order/ordercontroller.dart';
 import '../../utils/logger.dart';
+import '../../theme/colors.dart';
+import '../../utils/responsive.dart';
 
 class CustomerController extends BaseController {
   // Observable variables
@@ -667,6 +669,49 @@ class CustomerController extends BaseController {
       // This ensures error dialog can be displayed properly
       LoadingDialog.hide();
 
+      // Check for postal code errors specifically before general error check
+      bool isPostalCodeError = false;
+      if (response.hasException) {
+        // Check GraphQL errors for postal code related errors
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          for (final error in response.exception!.graphqlErrors) {
+            final errorMessage = error.message.toLowerCase();
+            if (errorMessage.contains('postal') || 
+                errorMessage.contains('postcode') ||
+                errorMessage.contains('zip code') ||
+                errorMessage.contains('invalid postal') ||
+                errorMessage.contains('postal code')) {
+              isPostalCodeError = true;
+              break;
+            }
+          }
+        }
+        
+        // Also check response data for error codes related to postal code
+        if (!isPostalCodeError && response.data != null) {
+          if (response.data!.containsKey('createCustomerAddress')) {
+            final resultData = response.data!['createCustomerAddress'];
+            if (resultData is Map) {
+              final errorCode = resultData['errorCode']?.toString().toLowerCase() ?? '';
+              final errorMessage = resultData['message']?.toString().toLowerCase() ?? '';
+              if (errorCode.contains('postal') || 
+                  errorMessage.contains('postal') ||
+                  errorCode.contains('postcode') ||
+                  errorMessage.contains('postcode') ||
+                  errorMessage.contains('invalid postal')) {
+                isPostalCodeError = true;
+              }
+            }
+          }
+        }
+      }
+
+      // Show dialog for postal code errors
+      if (isPostalCodeError) {
+        _showAddressMismatchDialog();
+        return false;
+      }
+
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to create address')) {
         return false;
@@ -750,6 +795,52 @@ class CustomerController extends BaseController {
         }
         if (response.exception?.linkException != null) {
         }
+      }
+
+      // Check for postal code errors specifically before general error check
+      bool isPostalCodeError = false;
+      if (response.hasException) {
+        // Check GraphQL errors for postal code related errors
+        if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          for (final error in response.exception!.graphqlErrors) {
+            final errorMessage = error.message.toLowerCase();
+            if (errorMessage.contains('postal') || 
+                errorMessage.contains('postcode') ||
+                errorMessage.contains('zip code') ||
+                errorMessage.contains('invalid postal') ||
+                errorMessage.contains('postal code')) {
+              isPostalCodeError = true;
+              break;
+            }
+          }
+        }
+        
+        // Also check response data for error codes related to postal code
+        if (!isPostalCodeError && response.data != null) {
+          if (response.data!.containsKey('updateCustomerAddress')) {
+            final resultData = response.data!['updateCustomerAddress'];
+            if (resultData is Map) {
+              final errorCode = resultData['errorCode']?.toString().toLowerCase() ?? '';
+              final errorMessage = resultData['message']?.toString().toLowerCase() ?? '';
+              if (errorCode.contains('postal') || 
+                  errorMessage.contains('postal') ||
+                  errorCode.contains('postcode') ||
+                  errorMessage.contains('postcode') ||
+                  errorMessage.contains('invalid postal')) {
+                isPostalCodeError = true;
+              }
+            }
+          }
+        }
+      }
+
+      // Show dialog for postal code errors
+      if (isPostalCodeError) {
+        if (!skipLoading) {
+          LoadingDialog.hide();
+        }
+        _showAddressMismatchDialog();
+        return false;
       }
 
       if (checkResponseForErrors(response,
@@ -1162,7 +1253,6 @@ class CustomerController extends BaseController {
       // Check channel token before making query
       // ignore: unused_local_variable
       final _channelToken = GraphqlService.channelToken;
-      final _storedChannelToken = ChannelService.getChannelToken();
       final response = await GraphqlService.client.value.query$GetAvailableChannels(
         Options$Query$GetAvailableChannels(
           variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
@@ -1252,8 +1342,6 @@ class CustomerController extends BaseController {
       // ignore: unused_local_variable
       final _channelToken = GraphqlService.channelToken;
       final _storedChannelToken = ChannelService.getChannelToken();
-      final _channelCode = ChannelService.getChannelCode();
-      final _channelType = ChannelService.getChannelType() ?? '';
       
       // Ensure channel token is set in GraphQLService
       if (_channelToken.isEmpty && _storedChannelToken != null && _storedChannelToken.toString().isNotEmpty) {
@@ -1269,7 +1357,7 @@ class CustomerController extends BaseController {
       // Print raw response data for debugging
       if (response.data != null) {
         if (response.data!['postalCodes'] != null) {
-          final _postalCodesData = response.data!['postalCodes'];
+          // Postal codes data available
         } else {
         }
       } else {
@@ -1365,5 +1453,94 @@ class CustomerController extends BaseController {
     } catch (e) {
       // Don't throw - this is a background operation
     }
+  }
+
+  /// Show address mismatch dialog when postal code error occurs
+  void _showAddressMismatchDialog() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_off,
+                    size: ResponsiveUtils.rp(28),
+                    color: AppColors.error,
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  Expanded(
+                    child: Text(
+                      'Address Mismatch',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(20),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(20)),
+              Text(
+                'Invalid postal code. Please change your address to continue.',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(24)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Get.back(),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: ResponsiveUtils.sp(14),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveUtils.rp(20),
+                        vertical: ResponsiveUtils.rp(12),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                      ),
+                    ),
+                    child: Text(
+                      'Change Address',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
   }
 }

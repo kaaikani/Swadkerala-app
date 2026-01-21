@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:flutter/material.dart';
 import '../../graphql/order.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
@@ -10,9 +11,9 @@ import '../base_controller.dart';
 import '../../utils/price_formatter.dart';
 import '../../utils/logger.dart';
 import '../../widgets/loading_dialog.dart';
-import '../../widgets/snackbar.dart';
-import '../../services/channel_service.dart';
 import '../customer/customer_controller.dart';
+import '../../theme/colors.dart';
+import '../../utils/responsive.dart';
 
 class OrderController extends BaseController {
   Rx<Fragment$Cart?> currentOrder = Rx<Fragment$Cart?>(null);
@@ -482,22 +483,16 @@ class OrderController extends BaseController {
         }
       }
 
-      // Show snackbar for postal code errors (not dialog)
+      // Show dialog for postal code errors
       if (isPostalCodeError) {
-        // Check if postal code is from storage
-        final storedPostalCode = ChannelService.getPostalCode();
-        final channelName = ChannelService.getChannelName();
-        
-        String errorMessage;
-        if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty && channelName != null) {
-          // Postal code is from storage, show channel name not in this city
-          errorMessage = '$channelName not in this city';
-        } else {
-          // Default error message
-          errorMessage = 'Invalid postal code. Please select a valid postal code from available options';
+        // Close loading dialog first
+        if (!skipLoading) {
+          LoadingDialog.hide();
         }
         
-        showErrorSnackbar(errorMessage);
+        // Show address mismatch dialog
+        _showAddressMismatchDialog();
+        
         return false;
       }
 
@@ -551,6 +546,96 @@ class OrderController extends BaseController {
         LoadingDialog.hide();
       }
     }
+  }
+
+  /// Show address mismatch dialog when postal code error occurs
+  void _showAddressMismatchDialog() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_off,
+                    size: ResponsiveUtils.rp(28),
+                    color: AppColors.error,
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  Expanded(
+                    child: Text(
+                      'Address Mismatch',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(20),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(20)),
+              Text(
+                'Invalid postal code. Please change your address to continue.',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(24)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Get.back(),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: ResponsiveUtils.sp(14),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                      Get.toNamed('/addresses');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveUtils.rp(20),
+                        vertical: ResponsiveUtils.rp(12),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                      ),
+                    ),
+                    child: Text(
+                      'Change Address',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
   }
 
   /// Set other instructions for the order

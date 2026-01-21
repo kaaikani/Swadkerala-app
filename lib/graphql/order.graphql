@@ -18,6 +18,19 @@ query ActiveOrder {
                 loyaltyPointsUsed
                 otherInstructions
             }
+            quantityLimitStatus {
+                isValid
+                hasViolations
+                totalViolations
+                violations {
+                    orderLineId
+                    productName
+                    variantName
+                    currentQuantity
+                    maxQuantity
+                    reason
+                }
+            }
             total
         }
         __typename
@@ -50,6 +63,12 @@ mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!){
         __typename
         ...Cart
         ...ErrorResult
+        ... on OrderInterceptorError {
+            interceptorError
+            errorCode
+            message
+            __typename
+        }
     }
 }
 
@@ -331,6 +350,19 @@ fragment Cart on Order {
         loyaltyPointsEarned
         loyaltyPointsUsed
         otherInstructions
+    }
+    quantityLimitStatus {
+        isValid
+        hasViolations
+        totalViolations
+        violations {
+            orderLineId
+            productName
+            variantName
+            currentQuantity
+            maxQuantity
+            reason
+        }
     }
 
     __typename

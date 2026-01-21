@@ -20,6 +20,8 @@ class CartItemCardPremium extends StatelessWidget {
   final bool isLoading;
   final bool isUnavailable;
   final String? statusMessage;
+  final int? maxQuantity;
+  final bool hasQuantityLimitViolation;
 
   const CartItemCardPremium({
     Key? key,
@@ -35,6 +37,8 @@ class CartItemCardPremium extends StatelessWidget {
     this.isLoading = false,
     this.isUnavailable = false,
     this.statusMessage,
+    this.maxQuantity,
+    this.hasQuantityLimitViolation = false,
   }) : super(key: key);
 
   @override
@@ -218,6 +222,44 @@ class CartItemCardPremium extends StatelessWidget {
               ),
             ],
           ),
+          // Show quantity limit violation message
+          if (hasQuantityLimitViolation && maxQuantity != null) ...[
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            Container(
+              padding: ResponsiveSpacing.padding(
+                horizontal: 10,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.error.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: ResponsiveUtils.rp(16),
+                    color: AppColors.error,
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(6)),
+                  Expanded(
+                    child: ResponsiveText(
+                      'Max $maxQuantity quantity allowed',
+                      fontSize: 12,
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w500,
+                      maxLines: 2,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
           if (statusMessage?.isNotEmpty ?? false) ...[
             SizedBox(height: ResponsiveUtils.rp(12)),
             Container(

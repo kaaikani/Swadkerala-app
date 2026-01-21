@@ -26,6 +26,7 @@ class Fragment$Cart {
     required this.shippingLines,
     required this.discounts,
     this.customFields,
+    required this.quantityLimitStatus,
     this.$__typename = 'Order',
   });
 
@@ -48,6 +49,7 @@ class Fragment$Cart {
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
     final l$customFields = json['customFields'];
+    final l$quantityLimitStatus = json['quantityLimitStatus'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart(
       id: (l$id as String),
@@ -84,6 +86,8 @@ class Fragment$Cart {
           ? null
           : Fragment$Cart$customFields.fromJson(
               (l$customFields as Map<String, dynamic>)),
+      quantityLimitStatus: Fragment$Cart$quantityLimitStatus.fromJson(
+          (l$quantityLimitStatus as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -123,6 +127,8 @@ class Fragment$Cart {
   final List<Fragment$Cart$discounts> discounts;
 
   final Fragment$Cart$customFields? customFields;
+
+  final Fragment$Cart$quantityLimitStatus quantityLimitStatus;
 
   final String $__typename;
 
@@ -165,6 +171,8 @@ class Fragment$Cart {
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields?.toJson();
+    final l$quantityLimitStatus = quantityLimitStatus;
+    _resultData['quantityLimitStatus'] = l$quantityLimitStatus.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -190,6 +198,7 @@ class Fragment$Cart {
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
     final l$customFields = customFields;
+    final l$quantityLimitStatus = quantityLimitStatus;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -210,6 +219,7 @@ class Fragment$Cart {
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
       l$customFields,
+      l$quantityLimitStatus,
       l$$__typename,
     ]);
   }
@@ -347,6 +357,11 @@ class Fragment$Cart {
     if (l$customFields != lOther$customFields) {
       return false;
     }
+    final l$quantityLimitStatus = quantityLimitStatus;
+    final lOther$quantityLimitStatus = other.quantityLimitStatus;
+    if (l$quantityLimitStatus != lOther$quantityLimitStatus) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -391,6 +406,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
     List<Fragment$Cart$shippingLines>? shippingLines,
     List<Fragment$Cart$discounts>? discounts,
     Fragment$Cart$customFields? customFields,
+    Fragment$Cart$quantityLimitStatus? quantityLimitStatus,
     String? $__typename,
   });
   CopyWith$Fragment$Cart$validationStatus<TRes> get validationStatus;
@@ -415,6 +431,7 @@ abstract class CopyWith$Fragment$Cart<TRes> {
                   CopyWith$Fragment$Cart$discounts<Fragment$Cart$discounts>>)
           _fn);
   CopyWith$Fragment$Cart$customFields<TRes> get customFields;
+  CopyWith$Fragment$Cart$quantityLimitStatus<TRes> get quantityLimitStatus;
 }
 
 class _CopyWithImpl$Fragment$Cart<TRes>
@@ -449,6 +466,7 @@ class _CopyWithImpl$Fragment$Cart<TRes>
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
     Object? customFields = _undefined,
+    Object? quantityLimitStatus = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart(
@@ -507,6 +525,10 @@ class _CopyWithImpl$Fragment$Cart<TRes>
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields as Fragment$Cart$customFields?),
+        quantityLimitStatus:
+            quantityLimitStatus == _undefined || quantityLimitStatus == null
+                ? _instance.quantityLimitStatus
+                : (quantityLimitStatus as Fragment$Cart$quantityLimitStatus),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -574,6 +596,12 @@ class _CopyWithImpl$Fragment$Cart<TRes>
         : CopyWith$Fragment$Cart$customFields(
             local$customFields, (e) => call(customFields: e));
   }
+
+  CopyWith$Fragment$Cart$quantityLimitStatus<TRes> get quantityLimitStatus {
+    final local$quantityLimitStatus = _instance.quantityLimitStatus;
+    return CopyWith$Fragment$Cart$quantityLimitStatus(
+        local$quantityLimitStatus, (e) => call(quantityLimitStatus: e));
+  }
 }
 
 class _CopyWithStubImpl$Fragment$Cart<TRes>
@@ -601,6 +629,7 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
     List<Fragment$Cart$shippingLines>? shippingLines,
     List<Fragment$Cart$discounts>? discounts,
     Fragment$Cart$customFields? customFields,
+    Fragment$Cart$quantityLimitStatus? quantityLimitStatus,
     String? $__typename,
   }) =>
       _res;
@@ -618,6 +647,9 @@ class _CopyWithStubImpl$Fragment$Cart<TRes>
 
   CopyWith$Fragment$Cart$customFields<TRes> get customFields =>
       CopyWith$Fragment$Cart$customFields.stub(_res);
+
+  CopyWith$Fragment$Cart$quantityLimitStatus<TRes> get quantityLimitStatus =>
+      CopyWith$Fragment$Cart$quantityLimitStatus.stub(_res);
 }
 
 const fragmentDefinitionCart = FragmentDefinitionNode(
@@ -1276,6 +1308,99 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
           arguments: [],
           directives: [],
           selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: '__typename'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
+    ),
+    FieldNode(
+      name: NameNode(value: 'quantityLimitStatus'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: SelectionSetNode(selections: [
+        FieldNode(
+          name: NameNode(value: 'isValid'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'hasViolations'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'totalViolations'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: 'violations'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: SelectionSetNode(selections: [
+            FieldNode(
+              name: NameNode(value: 'orderLineId'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'productName'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'variantName'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'currentQuantity'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'maxQuantity'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: 'reason'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+            FieldNode(
+              name: NameNode(value: '__typename'),
+              alias: null,
+              arguments: [],
+              directives: [],
+              selectionSet: null,
+            ),
+          ]),
         ),
         FieldNode(
           name: NameNode(value: '__typename'),
@@ -4300,6 +4425,453 @@ class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
       _res;
 }
 
+class Fragment$Cart$quantityLimitStatus {
+  Fragment$Cart$quantityLimitStatus({
+    required this.isValid,
+    required this.hasViolations,
+    required this.totalViolations,
+    required this.violations,
+    this.$__typename = 'QuantityLimitValidationStatus',
+  });
+
+  factory Fragment$Cart$quantityLimitStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasViolations = json['hasViolations'];
+    final l$totalViolations = json['totalViolations'];
+    final l$violations = json['violations'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$quantityLimitStatus(
+      isValid: (l$isValid as bool),
+      hasViolations: (l$hasViolations as bool),
+      totalViolations: (l$totalViolations as int),
+      violations: (l$violations as List<dynamic>)
+          .map((e) => Fragment$Cart$quantityLimitStatus$violations.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasViolations;
+
+  final int totalViolations;
+
+  final List<Fragment$Cart$quantityLimitStatus$violations> violations;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasViolations = hasViolations;
+    _resultData['hasViolations'] = l$hasViolations;
+    final l$totalViolations = totalViolations;
+    _resultData['totalViolations'] = l$totalViolations;
+    final l$violations = violations;
+    _resultData['violations'] = l$violations.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasViolations = hasViolations;
+    final l$totalViolations = totalViolations;
+    final l$violations = violations;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasViolations,
+      l$totalViolations,
+      Object.hashAll(l$violations.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$quantityLimitStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasViolations = hasViolations;
+    final lOther$hasViolations = other.hasViolations;
+    if (l$hasViolations != lOther$hasViolations) {
+      return false;
+    }
+    final l$totalViolations = totalViolations;
+    final lOther$totalViolations = other.totalViolations;
+    if (l$totalViolations != lOther$totalViolations) {
+      return false;
+    }
+    final l$violations = violations;
+    final lOther$violations = other.violations;
+    if (l$violations.length != lOther$violations.length) {
+      return false;
+    }
+    for (int i = 0; i < l$violations.length; i++) {
+      final l$violations$entry = l$violations[i];
+      final lOther$violations$entry = lOther$violations[i];
+      if (l$violations$entry != lOther$violations$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$quantityLimitStatus
+    on Fragment$Cart$quantityLimitStatus {
+  CopyWith$Fragment$Cart$quantityLimitStatus<Fragment$Cart$quantityLimitStatus>
+      get copyWith => CopyWith$Fragment$Cart$quantityLimitStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$quantityLimitStatus<TRes> {
+  factory CopyWith$Fragment$Cart$quantityLimitStatus(
+    Fragment$Cart$quantityLimitStatus instance,
+    TRes Function(Fragment$Cart$quantityLimitStatus) then,
+  ) = _CopyWithImpl$Fragment$Cart$quantityLimitStatus;
+
+  factory CopyWith$Fragment$Cart$quantityLimitStatus.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$quantityLimitStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasViolations,
+    int? totalViolations,
+    List<Fragment$Cart$quantityLimitStatus$violations>? violations,
+    String? $__typename,
+  });
+  TRes violations(
+      Iterable<Fragment$Cart$quantityLimitStatus$violations> Function(
+              Iterable<
+                  CopyWith$Fragment$Cart$quantityLimitStatus$violations<
+                      Fragment$Cart$quantityLimitStatus$violations>>)
+          _fn);
+}
+
+class _CopyWithImpl$Fragment$Cart$quantityLimitStatus<TRes>
+    implements CopyWith$Fragment$Cart$quantityLimitStatus<TRes> {
+  _CopyWithImpl$Fragment$Cart$quantityLimitStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$quantityLimitStatus _instance;
+
+  final TRes Function(Fragment$Cart$quantityLimitStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasViolations = _undefined,
+    Object? totalViolations = _undefined,
+    Object? violations = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$quantityLimitStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasViolations: hasViolations == _undefined || hasViolations == null
+            ? _instance.hasViolations
+            : (hasViolations as bool),
+        totalViolations:
+            totalViolations == _undefined || totalViolations == null
+                ? _instance.totalViolations
+                : (totalViolations as int),
+        violations: violations == _undefined || violations == null
+            ? _instance.violations
+            : (violations
+                as List<Fragment$Cart$quantityLimitStatus$violations>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes violations(
+          Iterable<Fragment$Cart$quantityLimitStatus$violations> Function(
+                  Iterable<
+                      CopyWith$Fragment$Cart$quantityLimitStatus$violations<
+                          Fragment$Cart$quantityLimitStatus$violations>>)
+              _fn) =>
+      call(
+          violations: _fn(_instance.violations
+              .map((e) => CopyWith$Fragment$Cart$quantityLimitStatus$violations(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Fragment$Cart$quantityLimitStatus<TRes>
+    implements CopyWith$Fragment$Cart$quantityLimitStatus<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$quantityLimitStatus(this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasViolations,
+    int? totalViolations,
+    List<Fragment$Cart$quantityLimitStatus$violations>? violations,
+    String? $__typename,
+  }) =>
+      _res;
+
+  violations(_fn) => _res;
+}
+
+class Fragment$Cart$quantityLimitStatus$violations {
+  Fragment$Cart$quantityLimitStatus$violations({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.currentQuantity,
+    required this.maxQuantity,
+    required this.reason,
+    this.$__typename = 'QuantityLimitViolation',
+  });
+
+  factory Fragment$Cart$quantityLimitStatus$violations.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$currentQuantity = json['currentQuantity'];
+    final l$maxQuantity = json['maxQuantity'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Fragment$Cart$quantityLimitStatus$violations(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      currentQuantity: (l$currentQuantity as int),
+      maxQuantity: (l$maxQuantity as int),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final int currentQuantity;
+
+  final int maxQuantity;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$currentQuantity = currentQuantity;
+    _resultData['currentQuantity'] = l$currentQuantity;
+    final l$maxQuantity = maxQuantity;
+    _resultData['maxQuantity'] = l$maxQuantity;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$currentQuantity = currentQuantity;
+    final l$maxQuantity = maxQuantity;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$currentQuantity,
+      l$maxQuantity,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$Cart$quantityLimitStatus$violations ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$currentQuantity = currentQuantity;
+    final lOther$currentQuantity = other.currentQuantity;
+    if (l$currentQuantity != lOther$currentQuantity) {
+      return false;
+    }
+    final l$maxQuantity = maxQuantity;
+    final lOther$maxQuantity = other.maxQuantity;
+    if (l$maxQuantity != lOther$maxQuantity) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$Cart$quantityLimitStatus$violations
+    on Fragment$Cart$quantityLimitStatus$violations {
+  CopyWith$Fragment$Cart$quantityLimitStatus$violations<
+          Fragment$Cart$quantityLimitStatus$violations>
+      get copyWith => CopyWith$Fragment$Cart$quantityLimitStatus$violations(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$Cart$quantityLimitStatus$violations<TRes> {
+  factory CopyWith$Fragment$Cart$quantityLimitStatus$violations(
+    Fragment$Cart$quantityLimitStatus$violations instance,
+    TRes Function(Fragment$Cart$quantityLimitStatus$violations) then,
+  ) = _CopyWithImpl$Fragment$Cart$quantityLimitStatus$violations;
+
+  factory CopyWith$Fragment$Cart$quantityLimitStatus$violations.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$Cart$quantityLimitStatus$violations;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    int? currentQuantity,
+    int? maxQuantity,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$Cart$quantityLimitStatus$violations<TRes>
+    implements CopyWith$Fragment$Cart$quantityLimitStatus$violations<TRes> {
+  _CopyWithImpl$Fragment$Cart$quantityLimitStatus$violations(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$Cart$quantityLimitStatus$violations _instance;
+
+  final TRes Function(Fragment$Cart$quantityLimitStatus$violations) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? currentQuantity = _undefined,
+    Object? maxQuantity = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$Cart$quantityLimitStatus$violations(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        currentQuantity:
+            currentQuantity == _undefined || currentQuantity == null
+                ? _instance.currentQuantity
+                : (currentQuantity as int),
+        maxQuantity: maxQuantity == _undefined || maxQuantity == null
+            ? _instance.maxQuantity
+            : (maxQuantity as int),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$Cart$quantityLimitStatus$violations<TRes>
+    implements CopyWith$Fragment$Cart$quantityLimitStatus$violations<TRes> {
+  _CopyWithStubImpl$Fragment$Cart$quantityLimitStatus$violations(this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    int? currentQuantity,
+    int? maxQuantity,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Fragment$Asset {
   Fragment$Asset({
     required this.id,
@@ -4909,6 +5481,9 @@ class Fragment$ErrorResult {
         return Fragment$ErrorResult$$VerificationTokenInvalidError.fromJson(
             json);
 
+      case "QuantityLimitError":
+        return Fragment$ErrorResult$$QuantityLimitError.fromJson(json);
+
       default:
         final l$errorCode = json['errorCode'];
         final l$message = json['message'];
@@ -5048,6 +5623,8 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         verificationTokenExpiredError,
     required _T Function(Fragment$ErrorResult$$VerificationTokenInvalidError)
         verificationTokenInvalidError,
+    required _T Function(Fragment$ErrorResult$$QuantityLimitError)
+        quantityLimitError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -5173,6 +5750,10 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         return verificationTokenInvalidError(
             this as Fragment$ErrorResult$$VerificationTokenInvalidError);
 
+      case "QuantityLimitError":
+        return quantityLimitError(
+            this as Fragment$ErrorResult$$QuantityLimitError);
+
       default:
         return orElse();
     }
@@ -5236,6 +5817,7 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         verificationTokenExpiredError,
     _T Function(Fragment$ErrorResult$$VerificationTokenInvalidError)?
         verificationTokenInvalidError,
+    _T Function(Fragment$ErrorResult$$QuantityLimitError)? quantityLimitError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -5482,6 +6064,14 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         if (verificationTokenInvalidError != null) {
           return verificationTokenInvalidError(
               this as Fragment$ErrorResult$$VerificationTokenInvalidError);
+        } else {
+          return orElse();
+        }
+
+      case "QuantityLimitError":
+        if (quantityLimitError != null) {
+          return quantityLimitError(
+              this as Fragment$ErrorResult$$QuantityLimitError);
         } else {
           return orElse();
         }
@@ -10286,6 +10876,153 @@ class _CopyWithStubImpl$Fragment$ErrorResult$$VerificationTokenInvalidError<
       _res;
 }
 
+class Fragment$ErrorResult$$QuantityLimitError implements Fragment$ErrorResult {
+  Fragment$ErrorResult$$QuantityLimitError({
+    required this.errorCode,
+    required this.message,
+    this.$__typename = 'QuantityLimitError',
+  });
+
+  factory Fragment$ErrorResult$$QuantityLimitError.fromJson(
+      Map<String, dynamic> json) {
+    final l$errorCode = json['errorCode'];
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Fragment$ErrorResult$$QuantityLimitError(
+      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Enum$ErrorCode errorCode;
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$errorCode = errorCode;
+    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$errorCode = errorCode;
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$errorCode,
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$ErrorResult$$QuantityLimitError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$errorCode = errorCode;
+    final lOther$errorCode = other.errorCode;
+    if (l$errorCode != lOther$errorCode) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$ErrorResult$$QuantityLimitError
+    on Fragment$ErrorResult$$QuantityLimitError {
+  CopyWith$Fragment$ErrorResult$$QuantityLimitError<
+          Fragment$ErrorResult$$QuantityLimitError>
+      get copyWith => CopyWith$Fragment$ErrorResult$$QuantityLimitError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
+  factory CopyWith$Fragment$ErrorResult$$QuantityLimitError(
+    Fragment$ErrorResult$$QuantityLimitError instance,
+    TRes Function(Fragment$ErrorResult$$QuantityLimitError) then,
+  ) = _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError;
+
+  factory CopyWith$Fragment$ErrorResult$$QuantityLimitError.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError;
+
+  TRes call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError<TRes>
+    implements CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
+  _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$ErrorResult$$QuantityLimitError _instance;
+
+  final TRes Function(Fragment$ErrorResult$$QuantityLimitError) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? errorCode = _undefined,
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$ErrorResult$$QuantityLimitError(
+        errorCode: errorCode == _undefined || errorCode == null
+            ? _instance.errorCode
+            : (errorCode as Enum$ErrorCode),
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError<TRes>
+    implements CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
+  _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError(this._res);
+
+  TRes _res;
+
+  call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Variables$Mutation$AddToCart {
   factory Variables$Mutation$AddToCart({
     required String variantId,
@@ -10633,6 +11370,44 @@ const documentNodeMutationAddToCart = DocumentNode(definitions: [
               ),
             ]),
           ),
+          InlineFragmentNode(
+            typeCondition: TypeConditionNode(
+                on: NamedTypeNode(
+              name: NameNode(value: 'OrderInterceptorError'),
+              isNonNull: false,
+            )),
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'interceptorError'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'errorCode'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'message'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
           FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
@@ -10872,6 +11647,10 @@ class Mutation$AddToCart$addItemToOrder {
         return Mutation$AddToCart$addItemToOrder$$InsufficientStockError
             .fromJson(json);
 
+      case "OrderInterceptorError":
+        return Mutation$AddToCart$addItemToOrder$$OrderInterceptorError
+            .fromJson(json);
+
       case "Order":
         return Mutation$AddToCart$addItemToOrder$$Order.fromJson(json);
 
@@ -10885,10 +11664,6 @@ class Mutation$AddToCart$addItemToOrder {
 
       case "NegativeQuantityError":
         return Mutation$AddToCart$addItemToOrder$$NegativeQuantityError
-            .fromJson(json);
-
-      case "OrderInterceptorError":
-        return Mutation$AddToCart$addItemToOrder$$OrderInterceptorError
             .fromJson(json);
 
       default:
@@ -10942,6 +11717,9 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
     required _T Function(
             Mutation$AddToCart$addItemToOrder$$InsufficientStockError)
         insufficientStockError,
+    required _T Function(
+            Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
+        orderInterceptorError,
     required _T Function(Mutation$AddToCart$addItemToOrder$$Order) order,
     required _T Function(
             Mutation$AddToCart$addItemToOrder$$OrderModificationError)
@@ -10951,15 +11729,16 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
     required _T Function(
             Mutation$AddToCart$addItemToOrder$$NegativeQuantityError)
         negativeQuantityError,
-    required _T Function(
-            Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
-        orderInterceptorError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
       case "InsufficientStockError":
         return insufficientStockError(
             this as Mutation$AddToCart$addItemToOrder$$InsufficientStockError);
+
+      case "OrderInterceptorError":
+        return orderInterceptorError(
+            this as Mutation$AddToCart$addItemToOrder$$OrderInterceptorError);
 
       case "Order":
         return order(this as Mutation$AddToCart$addItemToOrder$$Order);
@@ -10976,10 +11755,6 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
         return negativeQuantityError(
             this as Mutation$AddToCart$addItemToOrder$$NegativeQuantityError);
 
-      case "OrderInterceptorError":
-        return orderInterceptorError(
-            this as Mutation$AddToCart$addItemToOrder$$OrderInterceptorError);
-
       default:
         return orElse();
     }
@@ -10988,6 +11763,8 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
   _T maybeWhen<_T>({
     _T Function(Mutation$AddToCart$addItemToOrder$$InsufficientStockError)?
         insufficientStockError,
+    _T Function(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)?
+        orderInterceptorError,
     _T Function(Mutation$AddToCart$addItemToOrder$$Order)? order,
     _T Function(Mutation$AddToCart$addItemToOrder$$OrderModificationError)?
         orderModificationError,
@@ -10995,8 +11772,6 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
         orderLimitError,
     _T Function(Mutation$AddToCart$addItemToOrder$$NegativeQuantityError)?
         negativeQuantityError,
-    _T Function(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)?
-        orderInterceptorError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -11004,6 +11779,14 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
         if (insufficientStockError != null) {
           return insufficientStockError(this
               as Mutation$AddToCart$addItemToOrder$$InsufficientStockError);
+        } else {
+          return orElse();
+        }
+
+      case "OrderInterceptorError":
+        if (orderInterceptorError != null) {
+          return orderInterceptorError(
+              this as Mutation$AddToCart$addItemToOrder$$OrderInterceptorError);
         } else {
           return orElse();
         }
@@ -11035,14 +11818,6 @@ extension UtilityExtension$Mutation$AddToCart$addItemToOrder
         if (negativeQuantityError != null) {
           return negativeQuantityError(
               this as Mutation$AddToCart$addItemToOrder$$NegativeQuantityError);
-        } else {
-          return orElse();
-        }
-
-      case "OrderInterceptorError":
-        if (orderInterceptorError != null) {
-          return orderInterceptorError(
-              this as Mutation$AddToCart$addItemToOrder$$OrderInterceptorError);
         } else {
           return orElse();
         }
@@ -11284,6 +12059,189 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$InsufficientStockErro
   CopyWith$Fragment$Cart<TRes> get order => CopyWith$Fragment$Cart.stub(_res);
 }
 
+class Mutation$AddToCart$addItemToOrder$$OrderInterceptorError
+    implements
+        Fragment$ErrorResult$$OrderInterceptorError,
+        Mutation$AddToCart$addItemToOrder {
+  Mutation$AddToCart$addItemToOrder$$OrderInterceptorError({
+    required this.interceptorError,
+    required this.errorCode,
+    required this.message,
+    this.$__typename = 'OrderInterceptorError',
+  });
+
+  factory Mutation$AddToCart$addItemToOrder$$OrderInterceptorError.fromJson(
+      Map<String, dynamic> json) {
+    final l$interceptorError = json['interceptorError'];
+    final l$errorCode = json['errorCode'];
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
+      interceptorError: (l$interceptorError as String),
+      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String interceptorError;
+
+  final Enum$ErrorCode errorCode;
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$interceptorError = interceptorError;
+    _resultData['interceptorError'] = l$interceptorError;
+    final l$errorCode = errorCode;
+    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$interceptorError = interceptorError;
+    final l$errorCode = errorCode;
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$interceptorError,
+      l$errorCode,
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$AddToCart$addItemToOrder$$OrderInterceptorError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$interceptorError = interceptorError;
+    final lOther$interceptorError = other.interceptorError;
+    if (l$interceptorError != lOther$interceptorError) {
+      return false;
+    }
+    final l$errorCode = errorCode;
+    final lOther$errorCode = other.errorCode;
+    if (l$errorCode != lOther$errorCode) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError
+    on Mutation$AddToCart$addItemToOrder$$OrderInterceptorError {
+  CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
+          Mutation$AddToCart$addItemToOrder$$OrderInterceptorError>
+      get copyWith =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
+    TRes> {
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
+    Mutation$AddToCart$addItemToOrder$$OrderInterceptorError instance,
+    TRes Function(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
+        then,
+  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError;
+
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError;
+
+  TRes call({
+    String? interceptorError,
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
+            TRes> {
+  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddToCart$addItemToOrder$$OrderInterceptorError _instance;
+
+  final TRes Function(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? interceptorError = _undefined,
+    Object? errorCode = _undefined,
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
+        interceptorError:
+            interceptorError == _undefined || interceptorError == null
+                ? _instance.interceptorError
+                : (interceptorError as String),
+        errorCode: errorCode == _undefined || errorCode == null
+            ? _instance.errorCode
+            : (errorCode as Enum$ErrorCode),
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? interceptorError,
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$AddToCart$addItemToOrder$$Order
     implements Fragment$Cart, Mutation$AddToCart$addItemToOrder {
   Mutation$AddToCart$addItemToOrder$$Order({
@@ -11305,6 +12263,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
     required this.shippingLines,
     required this.discounts,
     this.customFields,
+    required this.quantityLimitStatus,
     this.$__typename = 'Order',
   });
 
@@ -11328,6 +12287,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
     final l$shippingLines = json['shippingLines'];
     final l$discounts = json['discounts'];
     final l$customFields = json['customFields'];
+    final l$quantityLimitStatus = json['quantityLimitStatus'];
     final l$$__typename = json['__typename'];
     return Mutation$AddToCart$addItemToOrder$$Order(
       id: (l$id as String),
@@ -11369,6 +12329,9 @@ class Mutation$AddToCart$addItemToOrder$$Order
           ? null
           : Mutation$AddToCart$addItemToOrder$$Order$customFields.fromJson(
               (l$customFields as Map<String, dynamic>)),
+      quantityLimitStatus:
+          Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus.fromJson(
+              (l$quantityLimitStatus as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -11411,6 +12374,9 @@ class Mutation$AddToCart$addItemToOrder$$Order
 
   final Mutation$AddToCart$addItemToOrder$$Order$customFields? customFields;
 
+  final Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus
+      quantityLimitStatus;
+
   final String $__typename;
 
   Map<String, dynamic> toJson() {
@@ -11452,6 +12418,8 @@ class Mutation$AddToCart$addItemToOrder$$Order
     _resultData['discounts'] = l$discounts.map((e) => e.toJson()).toList();
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields?.toJson();
+    final l$quantityLimitStatus = quantityLimitStatus;
+    _resultData['quantityLimitStatus'] = l$quantityLimitStatus.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -11477,6 +12445,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
     final l$shippingLines = shippingLines;
     final l$discounts = discounts;
     final l$customFields = customFields;
+    final l$quantityLimitStatus = quantityLimitStatus;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -11497,6 +12466,7 @@ class Mutation$AddToCart$addItemToOrder$$Order
       Object.hashAll(l$shippingLines.map((v) => v)),
       Object.hashAll(l$discounts.map((v) => v)),
       l$customFields,
+      l$quantityLimitStatus,
       l$$__typename,
     ]);
   }
@@ -11635,6 +12605,11 @@ class Mutation$AddToCart$addItemToOrder$$Order
     if (l$customFields != lOther$customFields) {
       return false;
     }
+    final l$quantityLimitStatus = quantityLimitStatus;
+    final lOther$quantityLimitStatus = other.quantityLimitStatus;
+    if (l$quantityLimitStatus != lOther$quantityLimitStatus) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -11682,6 +12657,8 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order<TRes> {
     List<Mutation$AddToCart$addItemToOrder$$Order$shippingLines>? shippingLines,
     List<Mutation$AddToCart$addItemToOrder$$Order$discounts>? discounts,
     Mutation$AddToCart$addItemToOrder$$Order$customFields? customFields,
+    Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus?
+        quantityLimitStatus,
     String? $__typename,
   });
   CopyWith$Mutation$AddToCart$addItemToOrder$$Order$validationStatus<TRes>
@@ -11712,6 +12689,8 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order<TRes> {
           _fn);
   CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
       get customFields;
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<TRes>
+      get quantityLimitStatus;
 }
 
 class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
@@ -11746,6 +12725,7 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
     Object? shippingLines = _undefined,
     Object? discounts = _undefined,
     Object? customFields = _undefined,
+    Object? quantityLimitStatus = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddToCart$addItemToOrder$$Order(
@@ -11809,6 +12789,11 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
             ? _instance.customFields
             : (customFields
                 as Mutation$AddToCart$addItemToOrder$$Order$customFields?),
+        quantityLimitStatus: quantityLimitStatus == _undefined ||
+                quantityLimitStatus == null
+            ? _instance.quantityLimitStatus
+            : (quantityLimitStatus
+                as Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -11882,6 +12867,13 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
         : CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields(
             local$customFields, (e) => call(customFields: e));
   }
+
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<TRes>
+      get quantityLimitStatus {
+    final local$quantityLimitStatus = _instance.quantityLimitStatus;
+    return CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus(
+        local$quantityLimitStatus, (e) => call(quantityLimitStatus: e));
+  }
 }
 
 class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
@@ -11909,6 +12901,8 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
     List<Mutation$AddToCart$addItemToOrder$$Order$shippingLines>? shippingLines,
     List<Mutation$AddToCart$addItemToOrder$$Order$discounts>? discounts,
     Mutation$AddToCart$addItemToOrder$$Order$customFields? customFields,
+    Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus?
+        quantityLimitStatus,
     String? $__typename,
   }) =>
       _res;
@@ -11930,6 +12924,11 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order<TRes>
       get customFields =>
           CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields.stub(
               _res);
+
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<TRes>
+      get quantityLimitStatus =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus
+              .stub(_res);
 }
 
 class Mutation$AddToCart$addItemToOrder$$Order$validationStatus
@@ -15166,6 +16165,492 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<
       _res;
 }
 
+class Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus
+    implements Fragment$Cart$quantityLimitStatus {
+  Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus({
+    required this.isValid,
+    required this.hasViolations,
+    required this.totalViolations,
+    required this.violations,
+    this.$__typename = 'QuantityLimitValidationStatus',
+  });
+
+  factory Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus.fromJson(
+      Map<String, dynamic> json) {
+    final l$isValid = json['isValid'];
+    final l$hasViolations = json['hasViolations'];
+    final l$totalViolations = json['totalViolations'];
+    final l$violations = json['violations'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus(
+      isValid: (l$isValid as bool),
+      hasViolations: (l$hasViolations as bool),
+      totalViolations: (l$totalViolations as int),
+      violations: (l$violations as List<dynamic>)
+          .map((e) =>
+              Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final bool isValid;
+
+  final bool hasViolations;
+
+  final int totalViolations;
+
+  final List<
+          Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations>
+      violations;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$isValid = isValid;
+    _resultData['isValid'] = l$isValid;
+    final l$hasViolations = hasViolations;
+    _resultData['hasViolations'] = l$hasViolations;
+    final l$totalViolations = totalViolations;
+    _resultData['totalViolations'] = l$totalViolations;
+    final l$violations = violations;
+    _resultData['violations'] = l$violations.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$isValid = isValid;
+    final l$hasViolations = hasViolations;
+    final l$totalViolations = totalViolations;
+    final l$violations = violations;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$isValid,
+      l$hasViolations,
+      l$totalViolations,
+      Object.hashAll(l$violations.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$isValid = isValid;
+    final lOther$isValid = other.isValid;
+    if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$hasViolations = hasViolations;
+    final lOther$hasViolations = other.hasViolations;
+    if (l$hasViolations != lOther$hasViolations) {
+      return false;
+    }
+    final l$totalViolations = totalViolations;
+    final lOther$totalViolations = other.totalViolations;
+    if (l$totalViolations != lOther$totalViolations) {
+      return false;
+    }
+    final l$violations = violations;
+    final lOther$violations = other.violations;
+    if (l$violations.length != lOther$violations.length) {
+      return false;
+    }
+    for (int i = 0; i < l$violations.length; i++) {
+      final l$violations$entry = l$violations[i];
+      final lOther$violations$entry = lOther$violations[i];
+      if (l$violations$entry != lOther$violations$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus
+    on Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus {
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<
+          Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus>
+      get copyWith =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<
+    TRes> {
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus(
+    Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus instance,
+    TRes Function(Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus)
+        then,
+  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus;
+
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus;
+
+  TRes call({
+    bool? isValid,
+    bool? hasViolations,
+    int? totalViolations,
+    List<Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations>?
+        violations,
+    String? $__typename,
+  });
+  TRes violations(
+      Iterable<Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations> Function(
+              Iterable<
+                  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+                      Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations>>)
+          _fn);
+}
+
+class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<
+            TRes> {
+  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus _instance;
+
+  final TRes Function(
+      Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? isValid = _undefined,
+    Object? hasViolations = _undefined,
+    Object? totalViolations = _undefined,
+    Object? violations = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus(
+        isValid: isValid == _undefined || isValid == null
+            ? _instance.isValid
+            : (isValid as bool),
+        hasViolations: hasViolations == _undefined || hasViolations == null
+            ? _instance.hasViolations
+            : (hasViolations as bool),
+        totalViolations:
+            totalViolations == _undefined || totalViolations == null
+                ? _instance.totalViolations
+                : (totalViolations as int),
+        violations: violations == _undefined || violations == null
+            ? _instance.violations
+            : (violations as List<
+                Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes violations(
+          Iterable<Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations> Function(
+                  Iterable<
+                      CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+                          Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations>>)
+              _fn) =>
+      call(
+          violations: _fn(_instance.violations.map((e) =>
+              CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus(
+      this._res);
+
+  TRes _res;
+
+  call({
+    bool? isValid,
+    bool? hasViolations,
+    int? totalViolations,
+    List<Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations>?
+        violations,
+    String? $__typename,
+  }) =>
+      _res;
+
+  violations(_fn) => _res;
+}
+
+class Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations
+    implements Fragment$Cart$quantityLimitStatus$violations {
+  Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations({
+    required this.orderLineId,
+    required this.productName,
+    required this.variantName,
+    required this.currentQuantity,
+    required this.maxQuantity,
+    required this.reason,
+    this.$__typename = 'QuantityLimitViolation',
+  });
+
+  factory Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations.fromJson(
+      Map<String, dynamic> json) {
+    final l$orderLineId = json['orderLineId'];
+    final l$productName = json['productName'];
+    final l$variantName = json['variantName'];
+    final l$currentQuantity = json['currentQuantity'];
+    final l$maxQuantity = json['maxQuantity'];
+    final l$reason = json['reason'];
+    final l$$__typename = json['__typename'];
+    return Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations(
+      orderLineId: (l$orderLineId as String),
+      productName: (l$productName as String),
+      variantName: (l$variantName as String),
+      currentQuantity: (l$currentQuantity as int),
+      maxQuantity: (l$maxQuantity as int),
+      reason: (l$reason as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String orderLineId;
+
+  final String productName;
+
+  final String variantName;
+
+  final int currentQuantity;
+
+  final int maxQuantity;
+
+  final String reason;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$orderLineId = orderLineId;
+    _resultData['orderLineId'] = l$orderLineId;
+    final l$productName = productName;
+    _resultData['productName'] = l$productName;
+    final l$variantName = variantName;
+    _resultData['variantName'] = l$variantName;
+    final l$currentQuantity = currentQuantity;
+    _resultData['currentQuantity'] = l$currentQuantity;
+    final l$maxQuantity = maxQuantity;
+    _resultData['maxQuantity'] = l$maxQuantity;
+    final l$reason = reason;
+    _resultData['reason'] = l$reason;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$orderLineId = orderLineId;
+    final l$productName = productName;
+    final l$variantName = variantName;
+    final l$currentQuantity = currentQuantity;
+    final l$maxQuantity = maxQuantity;
+    final l$reason = reason;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$orderLineId,
+      l$productName,
+      l$variantName,
+      l$currentQuantity,
+      l$maxQuantity,
+      l$reason,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$orderLineId = orderLineId;
+    final lOther$orderLineId = other.orderLineId;
+    if (l$orderLineId != lOther$orderLineId) {
+      return false;
+    }
+    final l$productName = productName;
+    final lOther$productName = other.productName;
+    if (l$productName != lOther$productName) {
+      return false;
+    }
+    final l$variantName = variantName;
+    final lOther$variantName = other.variantName;
+    if (l$variantName != lOther$variantName) {
+      return false;
+    }
+    final l$currentQuantity = currentQuantity;
+    final lOther$currentQuantity = other.currentQuantity;
+    if (l$currentQuantity != lOther$currentQuantity) {
+      return false;
+    }
+    final l$maxQuantity = maxQuantity;
+    final lOther$maxQuantity = other.maxQuantity;
+    if (l$maxQuantity != lOther$maxQuantity) {
+      return false;
+    }
+    final l$reason = reason;
+    final lOther$reason = other.reason;
+    if (l$reason != lOther$reason) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations
+    on Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations {
+  CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+          Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations>
+      get copyWith =>
+          CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+    TRes> {
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations(
+    Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations
+        instance,
+    TRes Function(
+            Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations)
+        then,
+  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations;
+
+  factory CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations;
+
+  TRes call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    int? currentQuantity,
+    int? maxQuantity,
+    String? reason,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+            TRes> {
+  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations
+      _instance;
+
+  final TRes Function(
+          Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? orderLineId = _undefined,
+    Object? productName = _undefined,
+    Object? variantName = _undefined,
+    Object? currentQuantity = _undefined,
+    Object? maxQuantity = _undefined,
+    Object? reason = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations(
+        orderLineId: orderLineId == _undefined || orderLineId == null
+            ? _instance.orderLineId
+            : (orderLineId as String),
+        productName: productName == _undefined || productName == null
+            ? _instance.productName
+            : (productName as String),
+        variantName: variantName == _undefined || variantName == null
+            ? _instance.variantName
+            : (variantName as String),
+        currentQuantity:
+            currentQuantity == _undefined || currentQuantity == null
+                ? _instance.currentQuantity
+                : (currentQuantity as int),
+        maxQuantity: maxQuantity == _undefined || maxQuantity == null
+            ? _instance.maxQuantity
+            : (maxQuantity as int),
+        reason: reason == _undefined || reason == null
+            ? _instance.reason
+            : (reason as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+        TRes>
+    implements
+        CopyWith$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations<
+            TRes> {
+  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$quantityLimitStatus$violations(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? orderLineId,
+    String? productName,
+    String? variantName,
+    int? currentQuantity,
+    int? maxQuantity,
+    String? reason,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$AddToCart$addItemToOrder$$OrderModificationError
     implements
         Fragment$ErrorResult$$OrderModificationError,
@@ -15634,168 +17119,6 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$NegativeQuantityError
         CopyWith$Mutation$AddToCart$addItemToOrder$$NegativeQuantityError<
             TRes> {
   _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$NegativeQuantityError(
-      this._res);
-
-  TRes _res;
-
-  call({
-    Enum$ErrorCode? errorCode,
-    String? message,
-    String? $__typename,
-  }) =>
-      _res;
-}
-
-class Mutation$AddToCart$addItemToOrder$$OrderInterceptorError
-    implements
-        Fragment$ErrorResult$$OrderInterceptorError,
-        Mutation$AddToCart$addItemToOrder {
-  Mutation$AddToCart$addItemToOrder$$OrderInterceptorError({
-    required this.errorCode,
-    required this.message,
-    this.$__typename = 'OrderInterceptorError',
-  });
-
-  factory Mutation$AddToCart$addItemToOrder$$OrderInterceptorError.fromJson(
-      Map<String, dynamic> json) {
-    final l$errorCode = json['errorCode'];
-    final l$message = json['message'];
-    final l$$__typename = json['__typename'];
-    return Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
-      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
-      message: (l$message as String),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final Enum$ErrorCode errorCode;
-
-  final String message;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$errorCode = errorCode;
-    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
-    final l$message = message;
-    _resultData['message'] = l$message;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$errorCode = errorCode;
-    final l$message = message;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$errorCode,
-      l$message,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Mutation$AddToCart$addItemToOrder$$OrderInterceptorError ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$errorCode = errorCode;
-    final lOther$errorCode = other.errorCode;
-    if (l$errorCode != lOther$errorCode) {
-      return false;
-    }
-    final l$message = message;
-    final lOther$message = other.message;
-    if (l$message != lOther$message) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError
-    on Mutation$AddToCart$addItemToOrder$$OrderInterceptorError {
-  CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
-          Mutation$AddToCart$addItemToOrder$$OrderInterceptorError>
-      get copyWith =>
-          CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
-    TRes> {
-  factory CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
-    Mutation$AddToCart$addItemToOrder$$OrderInterceptorError instance,
-    TRes Function(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
-        then,
-  ) = _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError;
-
-  factory CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError.stub(
-          TRes res) =
-      _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError;
-
-  TRes call({
-    Enum$ErrorCode? errorCode,
-    String? message,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
-        TRes>
-    implements
-        CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
-            TRes> {
-  _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
-    this._instance,
-    this._then,
-  );
-
-  final Mutation$AddToCart$addItemToOrder$$OrderInterceptorError _instance;
-
-  final TRes Function(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError)
-      _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? errorCode = _undefined,
-    Object? message = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
-        errorCode: errorCode == _undefined || errorCode == null
-            ? _instance.errorCode
-            : (errorCode as Enum$ErrorCode),
-        message: message == _undefined || message == null
-            ? _instance.message
-            : (message as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
-        TRes>
-    implements
-        CopyWith$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError<
-            TRes> {
-  _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$OrderInterceptorError(
       this._res);
 
   TRes _res;

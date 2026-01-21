@@ -269,6 +269,11 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                       // Action Button
                       _buildActionButton(),
                       
+                      SizedBox(height: ResponsiveUtils.rp(16)),
+                      
+                      // Already have account? Login link
+                      _buildLoginLink(),
+                      
                       SizedBox(height: ResponsiveUtils.rp(24)),
                     ],
                   ),
@@ -794,6 +799,33 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         ],
       );
     });
+  }
+
+  Widget _buildLoginLink() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Already have an account? ',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textSecondary,
+          ),
+        ),
+        GestureDetector(
+          onTap: () => Get.toNamed('/login'),
+          child: Text(
+            'Login',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.w600,
+              color: AppColors.button,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 

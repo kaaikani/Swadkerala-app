@@ -235,6 +235,22 @@ class _CartItemsListState extends State<CartItemsList> {
           final imageUrl = line.featuredAsset?.preview;
           final isLoading = widget.adjustingOrderLineIds.contains(line.id);
           
+          // Check for quantity limit violations for this line
+          final cart = widget.cartController.cart.value;
+          int? maxQuantityForLine;
+          bool hasQuantityLimitViolationForLine = false;
+          if (cart != null && cart.quantityLimitStatus.hasViolations) {
+            try {
+              final violation = cart.quantityLimitStatus.violations.firstWhere(
+                (v) => v.orderLineId == line.id,
+              );
+              maxQuantityForLine = violation.maxQuantity;
+              hasQuantityLimitViolationForLine = true;
+            } catch (e) {
+              // No violation found for this line
+            }
+          }
+          
           final stockLevel = variant.stockLevel.toUpperCase();
           final isLowStock = stockLevel == 'LOW_STOCK';
           final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
@@ -284,6 +300,8 @@ class _CartItemsListState extends State<CartItemsList> {
                         isLoading: isLoading,
                         isUnavailable: isUnavailable,
                         statusMessage: '',
+                        maxQuantity: maxQuantityForLine,
+                        hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
                       ),
                     ),
                   );
@@ -318,7 +336,7 @@ class _CartItemsListState extends State<CartItemsList> {
                       // Allow quantity changes even for virtual (split) items
                       // This will update the total quantity, and the display will automatically adjust
                       // because we calculate regularQty = line.quantity - couponAddedQty
-                      onIncreaseQuantity: !isUnavailable
+                      onIncreaseQuantity: !isUnavailable && !hasQuantityLimitViolationForLine
                           ? () {
                               // Increase total quantity (which includes both regular and coupon quantities)
                               widget.onQuantityChange(line.id, line.quantity + 1);
@@ -365,6 +383,8 @@ class _CartItemsListState extends State<CartItemsList> {
                       statusMessage: isVirtual 
                           ? ''
                           : (isUnavailable ? statusMessage : null),
+                      maxQuantity: maxQuantityForLine,
+                      hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
               ),
             ),
           );

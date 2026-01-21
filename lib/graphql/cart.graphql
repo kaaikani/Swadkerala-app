@@ -12,6 +12,12 @@ mutation AddToCart($variantId: ID!, $qty: Int!) {
             }
             __typename
         }
+        ... on OrderInterceptorError {
+            interceptorError
+            errorCode
+            message
+            __typename
+        }
         __typename
     }
 }
@@ -117,6 +123,19 @@ fragment Cart on Order {
         loyaltyPointsEarned
         loyaltyPointsUsed
         otherInstructions
+    }
+    quantityLimitStatus {
+        isValid
+        hasViolations
+        totalViolations
+        violations {
+            orderLineId
+            productName
+            variantName
+            currentQuantity
+            maxQuantity
+            reason
+        }
     }
 
     __typename

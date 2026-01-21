@@ -114,6 +114,11 @@ class SlideToPayButtonState extends State<SlideToPayButton>
   }
 
   void reset() {
+    // Don't reset if loading or already reset
+    if (widget.isLoading || (_dragPosition == 0 && !_isSubmitted && !_isDragging)) {
+      return;
+    }
+    
     setState(() {
       _dragPosition = 0;
       _dragPercentage = 0;
@@ -124,7 +129,7 @@ class SlideToPayButtonState extends State<SlideToPayButton>
 
     // Restart hint animation after reset
     Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted && widget.isEnabled && !_isSubmitted) {
+      if (mounted && widget.isEnabled && !_isSubmitted && !widget.isLoading) {
         _startHintAnimation();
       }
     });
@@ -139,6 +144,7 @@ class SlideToPayButtonState extends State<SlideToPayButton>
 
     _hintAnimationController.stop();
     _hintAnimationController.reset();
+    _pulseAnimationController.stop();
 
     setState(() {
       _isDragging = true;
@@ -233,6 +239,17 @@ class SlideToPayButtonState extends State<SlideToPayButton>
   }
 
   @override
+  void didUpdateWidget(SlideToPayButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Prevent unnecessary rebuilds when only isLoading changes during payment
+    if (oldWidget.isLoading != widget.isLoading && widget.isLoading) {
+      // When loading starts, stop all animations to prevent flickering
+      _hintAnimationController.stop();
+      _pulseAnimationController.stop();
+    }
+  }
+
+  @override
   void dispose() {
     _hintAnimationController.dispose();
     _successAnimationController.dispose();
@@ -243,10 +260,13 @@ class SlideToPayButtonState extends State<SlideToPayButton>
   @override
   Widget build(BuildContext context) {
     if (widget.isLoading) {
-      return _buildLoadingState();
+      return RepaintBoundary(
+        child: _buildLoadingState(),
+      );
     }
 
-    return LayoutBuilder(
+    return RepaintBoundary(
+      child: LayoutBuilder(
       builder: (context, constraints) {
         final containerWidth = constraints.maxWidth;
         final maxDrag = _getMaxDragDistance(containerWidth);
@@ -256,7 +276,7 @@ class SlideToPayButtonState extends State<SlideToPayButton>
           builder: (context, child) {
             // Calculate position including hint animation
             double displayPosition = _dragPosition;
-            if (!_isDragging && !_isSubmitted && _dragPosition == 0) {
+            if (!_isDragging && !_isSubmitted && _dragPosition == 0 && !widget.isLoading) {
               displayPosition = _hintAnimation.value * maxDrag;
             }
 
@@ -291,7 +311,8 @@ class SlideToPayButtonState extends State<SlideToPayButton>
                 children: [
                   // Progress fill
                   AnimatedContainer(
-                    duration: const Duration(milliseconds: 50),
+                    duration: const Duration(milliseconds: 100),
+                    curve: Curves.easeOut,
                     width: displayPosition + _buttonSize + _horizontalPadding,
                     height: _containerHeight,
                     decoration: BoxDecoration(
@@ -410,11 +431,12 @@ class SlideToPayButtonState extends State<SlideToPayButton>
                     left: _horizontalPadding + displayPosition,
                     top: (_containerHeight - _buttonSize) / 2,
                     child: GestureDetector(
-                      onHorizontalDragStart: (details) => _onDragStart(details, containerWidth),
-                      onHorizontalDragUpdate: (details) => _onDragUpdate(details, containerWidth),
-                      onHorizontalDragEnd: (details) => _onDragEnd(details, containerWidth),
+                      onHorizontalDragStart: widget.isLoading ? null : (details) => _onDragStart(details, containerWidth),
+                      onHorizontalDragUpdate: widget.isLoading ? null : (details) => _onDragUpdate(details, containerWidth),
+                      onHorizontalDragEnd: widget.isLoading ? null : (details) => _onDragEnd(details, containerWidth),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 100),
+                        duration: const Duration(milliseconds: 150),
+                        curve: Curves.easeOut,
                         width: _buttonSize,
                         height: _buttonSize,
                         decoration: BoxDecoration(
@@ -452,11 +474,14 @@ class SlideToPayButtonState extends State<SlideToPayButton>
           },
         );
       },
+      ),
     );
   }
 
   Widget _buildLoadingState() {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
       height: _containerHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),

@@ -1,5 +1,6 @@
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../components/collectioncomponent.dart';
@@ -778,8 +779,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     enabled: !isLoading,
                     keyboardType: TextInputType.phone,
                     maxLength: 10,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                     decoration: InputDecoration(
-                      hintText: 'Enter phone number',
+                      hintText: 'Enter 10 digit phone number',
                       prefixIcon: Icon(Icons.phone_outlined),
                       filled: true,
                       fillColor: AppColors.inputFill,
@@ -817,6 +822,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           errorMessage = null;
                         });
                       }
+                      // Validate on change - show error if non-digit characters are entered
+                      if (value.isNotEmpty && !RegExp(r'^[0-9]+$').hasMatch(value)) {
+                        setState(() {
+                          errorMessage = 'Only numbers are allowed';
+                        });
+                      }
                     },
                   ),
                   SizedBox(height: ResponsiveUtils.rp(20)),
@@ -826,12 +837,27 @@ class _MyHomePageState extends State<MyHomePage> {
                       ElevatedButton(
                         onPressed: isLoading ? null : () async {
                           final phone = phoneController.text.trim();
+                          
                           if (phone.isEmpty) {
-                            showErrorSnackbar('Please enter a phone number');
+                            setState(() {
+                              errorMessage = 'Please enter a phone number';
+                            });
                             return;
                           }
+                          
+                          // Validate: Only digits allowed
+                          if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+                            setState(() {
+                              errorMessage = 'Only numbers are allowed. No special characters.';
+                            });
+                            return;
+                          }
+                          
+                          // Validate: Must be exactly 10 digits
                           if (phone.length != 10) {
-                            showErrorSnackbar('Phone number must be 10 digits');
+                            setState(() {
+                              errorMessage = 'Phone number must be exactly 10 digits';
+                            });
                             return;
                           }
                           setState(() {

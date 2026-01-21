@@ -610,6 +610,63 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     await _handlePayment();
   }
   
+  /// Track payment analytics (helper method to reduce callback complexity)
+  Future<void> _trackPaymentAnalytics(
+    dynamic response,
+    dynamic orderModel,
+    dynamic cartOrder,
+  ) async {
+    try {
+      if (orderModel != null) {
+        // Track purchase event using OrderModel
+        final items = orderModel.lines.map((line) {
+          return analytics.AnalyticsEventItem(
+            itemId: line.productVariant.id,
+            itemName: line.productVariant.name,
+            itemCategory: 'Product',
+            price: line.unitPriceWithTax / 100.0,
+            quantity: line.quantity,
+          );
+        }).toList();
+        
+        await AnalyticsService().logPurchase(
+          transactionId: orderModel.code.isNotEmpty ? orderModel.code : orderModel.id,
+          value: orderModel.totalWithTax / 100.0,
+          currency: 'INR',
+          items: items,
+          parameters: {
+            'payment_method': 'razorpay',
+            'payment_id': response.paymentId ?? '',
+          },
+        );
+      } else if (cartOrder != null) {
+        // Track purchase event using Order (from cart)
+        final items = cartOrder.lines.map((line) {
+          return analytics.AnalyticsEventItem(
+            itemId: line.productVariant.id,
+            itemName: line.productVariant.name,
+            itemCategory: 'Product',
+            price: line.unitPriceWithTax / 100.0,
+            quantity: line.quantity,
+          );
+        }).toList();
+        
+        await AnalyticsService().logPurchase(
+          transactionId: cartOrder.code.isNotEmpty ? cartOrder.code : cartOrder.id,
+          value: cartOrder.totalWithTax / 100.0,
+          currency: 'INR',
+          items: items,
+          parameters: {
+            'payment_method': 'razorpay',
+            'payment_id': response.paymentId ?? '',
+          },
+        );
+      }
+    } catch (e) {
+      // Silently fail analytics - don't block payment success flow
+    }
+  }
+  
   /// Trigger blink animation on address card
   void _triggerAddressBlink() {
     // Create a repeating blink effect (3 blinks)
@@ -767,9 +824,15 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       customerPhone: customerPhone,
       description: 'Order #${orderCode ?? orderId}',
       onPaymentSuccess: (response) async {
+        // Mark order as placed immediately to prevent UI flickering
+        _orderPlacedSuccessfully = true;
+        
+        // Batch all async operations to minimize state updates
         // Get latest order for payment - refresh to get current state
-        await orderController.getActiveOrder(skipLoading: true);
-        await cartController.getActiveOrder();
+        await Future.wait([
+          orderController.getActiveOrder(skipLoading: true),
+          cartController.getActiveOrder(),
+        ]);
         
         final latestOrderModel = orderController.currentOrder.value;
         final latestCartOrder = cartController.cart.value;
@@ -800,89 +863,34 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
           "razorpaySignature": response.signature ?? '',
           "orderId": systemOrderId, // Add system order ID for backend verification
         };
-        // Add payment to order with Razorpay metadata
-        // Order should be in ArrangingPayment state at this point
+        
+        // Batch payment addition and analytics tracking
         final paymentMethod = orderController.selectedPaymentMethod.value?.code ?? 'razorpay';
-        final paymentAdded = await orderController.addPayment(
-          method: paymentMethod,
-          metadata: metadata,
-        );
-
-        if (!paymentAdded) {
-          // Continue even if payment addition fails - payment was successful on Razorpay side
-        } else {
-        }
         
-        // Get latest order for analytics
-        final orderForAnalyticsModel = orderController.currentOrder.value;
-        final orderForAnalyticsCart = cartController.cart.value;
-        
-        // Use whichever is available
-        if (orderForAnalyticsModel != null) {
-          // Track purchase event using OrderModel
-          final items = orderForAnalyticsModel.lines.map((line) {
-            return analytics.AnalyticsEventItem(
-              itemId: line.productVariant.id,
-              itemName: line.productVariant.name,
-              itemCategory: 'Product',
-              price: line.unitPriceWithTax / 100.0,
-              quantity: line.quantity,
-            );
-          }).toList();
-          
-          await AnalyticsService().logPurchase(
-            transactionId: orderForAnalyticsModel.code.isNotEmpty ? orderForAnalyticsModel.code : orderForAnalyticsModel.id,
-            value: orderForAnalyticsModel.totalWithTax / 100.0,
-            currency: 'INR',
-            items: items,
-            parameters: {
-              'payment_method': 'razorpay',
-              'payment_id': response.paymentId ?? '',
-            },
-          );
-        } else if (orderForAnalyticsCart != null) {
-          // Track purchase event using Order (from cart)
-          final items = orderForAnalyticsCart.lines.map((line) {
-            return analytics.AnalyticsEventItem(
-              itemId: line.productVariant.id,
-              itemName: line.productVariant.name,
-              itemCategory: 'Product',
-              price: line.unitPriceWithTax / 100.0,
-              quantity: line.quantity,
-            );
-          }).toList();
-          
-          await AnalyticsService().logPurchase(
-            transactionId: orderForAnalyticsCart.code.isNotEmpty ? orderForAnalyticsCart.code : orderForAnalyticsCart.id,
-            value: orderForAnalyticsCart.totalWithTax / 100.0,
-            currency: 'INR',
-            items: items,
-            parameters: {
-              'payment_method': 'razorpay',
-              'payment_id': response.paymentId ?? '',
-            },
-          );
-        }
+        // Execute payment addition and analytics in parallel to reduce time
+        await Future.wait([
+          // Add payment to order with Razorpay metadata
+          orderController.addPayment(
+            method: paymentMethod,
+            metadata: metadata,
+          ),
+          // Analytics tracking (non-blocking)
+          _trackPaymentAnalytics(response, latestOrderModel, latestCartOrder),
+        ]);
         
         // Try to transition order to next state
         final transitioned = await orderController.transitionToNextState();
         final finalOrderCode = latestOrderCode ?? orderId;
-        // Mark order as placed successfully - don't reset slider
-        _orderPlacedSuccessfully = true;
         
         // Reset loyalty points state after order placement (for next order)
         bannerController.resetLoyaltyPoints();
         
-        if (transitioned) {
-          // Clear cart after successful order placement
-          cartController.clearCart();
-          showSuccessSnackbar('Payment successful! Order placed.');
-          Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
-        } else {
-          // Clear cart after successful order placement
-          cartController.clearCart();
-          Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
-        }
+        // Clear cart and navigate in a single operation
+        cartController.clearCart();
+        
+        // Navigate immediately without showing snackbar to prevent flickering
+        // The order confirmation page will show success message
+        Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
       },
       onPaymentFailure: (response) {
         showErrorSnackbar('Payment failed: ${response.message}');

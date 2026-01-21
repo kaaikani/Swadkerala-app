@@ -9,7 +9,7 @@ import '../services/graphql_client.dart';
 import '../theme/colors.dart';
 import 'login_page.dart';
 import 'homepage.dart';
-import 'intro_page.dart';
+import 'onboarding_page.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -106,15 +106,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
           authController.setLoggedIn(false);
         }
 
-        // Check if intro page has been shown
+        // Check if onboarding has been completed
+        // Onboarding should only show on first app install/launch
+        // Once completed, it should never show again (even after logout)
+        final bool onboardingComplete = box.read('onboarding_complete') ?? false;
         final bool introShown = box.read('intro_shown') ?? false;
 
-        if (!introShown) {
-          // Mark intro as shown after displaying
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            box.write('intro_shown', true);
-          });
-          return const IntroPage();
+        // Show onboarding ONLY if both flags are false (first time ever)
+        // If either flag is true, user has seen onboarding before - don't show again
+        if (!onboardingComplete && !introShown) {
+          debugPrint('[AuthWrapper] First app launch - showing onboarding');
+          return const OnboardingPage();
+        } else {
+          debugPrint('[AuthWrapper] Onboarding already shown - onboardingComplete: $onboardingComplete, introShown: $introShown');
         }
 
         // Default → show login page

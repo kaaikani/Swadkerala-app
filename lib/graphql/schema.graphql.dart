@@ -13669,6 +13669,7 @@ class Input$ProductVariantFilterParameter {
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
     Input$NumberOperators? shadowPrice,
+    Input$NumberOperators? maxOrderQuantity,
   }) =>
       Input$ProductVariantFilterParameter._({
         if (id != null) r'id': id,
@@ -13685,6 +13686,7 @@ class Input$ProductVariantFilterParameter {
         if ($_and != null) r'_and': $_and,
         if ($_or != null) r'_or': $_or,
         if (shadowPrice != null) r'shadowPrice': shadowPrice,
+        if (maxOrderQuantity != null) r'maxOrderQuantity': maxOrderQuantity,
       });
 
   Input$ProductVariantFilterParameter._(this._$data);
@@ -13783,6 +13785,13 @@ class Input$ProductVariantFilterParameter {
           : Input$NumberOperators.fromJson(
               (l$shadowPrice as Map<String, dynamic>));
     }
+    if (data.containsKey('maxOrderQuantity')) {
+      final l$maxOrderQuantity = data['maxOrderQuantity'];
+      result$data['maxOrderQuantity'] = l$maxOrderQuantity == null
+          ? null
+          : Input$NumberOperators.fromJson(
+              (l$maxOrderQuantity as Map<String, dynamic>));
+    }
     return Input$ProductVariantFilterParameter._(result$data);
   }
 
@@ -13826,6 +13835,9 @@ class Input$ProductVariantFilterParameter {
 
   Input$NumberOperators? get shadowPrice =>
       (_$data['shadowPrice'] as Input$NumberOperators?);
+
+  Input$NumberOperators? get maxOrderQuantity =>
+      (_$data['maxOrderQuantity'] as Input$NumberOperators?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -13884,6 +13896,10 @@ class Input$ProductVariantFilterParameter {
     if (_$data.containsKey('shadowPrice')) {
       final l$shadowPrice = shadowPrice;
       result$data['shadowPrice'] = l$shadowPrice?.toJson();
+    }
+    if (_$data.containsKey('maxOrderQuantity')) {
+      final l$maxOrderQuantity = maxOrderQuantity;
+      result$data['maxOrderQuantity'] = l$maxOrderQuantity?.toJson();
     }
     return result$data;
   }
@@ -14046,6 +14062,15 @@ class Input$ProductVariantFilterParameter {
     if (l$shadowPrice != lOther$shadowPrice) {
       return false;
     }
+    final l$maxOrderQuantity = maxOrderQuantity;
+    final lOther$maxOrderQuantity = other.maxOrderQuantity;
+    if (_$data.containsKey('maxOrderQuantity') !=
+        other._$data.containsKey('maxOrderQuantity')) {
+      return false;
+    }
+    if (l$maxOrderQuantity != lOther$maxOrderQuantity) {
+      return false;
+    }
     return true;
   }
 
@@ -14065,6 +14090,7 @@ class Input$ProductVariantFilterParameter {
     final l$$_and = $_and;
     final l$$_or = $_or;
     final l$shadowPrice = shadowPrice;
+    final l$maxOrderQuantity = maxOrderQuantity;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -14088,6 +14114,7 @@ class Input$ProductVariantFilterParameter {
               : Object.hashAll(l$$_or.map((v) => v))
           : const {},
       _$data.containsKey('shadowPrice') ? l$shadowPrice : const {},
+      _$data.containsKey('maxOrderQuantity') ? l$maxOrderQuantity : const {},
     ]);
   }
 }
@@ -14116,6 +14143,7 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
     Input$NumberOperators? shadowPrice,
+    Input$NumberOperators? maxOrderQuantity,
   });
   CopyWith$Input$IDOperators<TRes> get id;
   CopyWith$Input$IDOperators<TRes> get productId;
@@ -14141,6 +14169,7 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
                       Input$ProductVariantFilterParameter>>?)
           _fn);
   CopyWith$Input$NumberOperators<TRes> get shadowPrice;
+  CopyWith$Input$NumberOperators<TRes> get maxOrderQuantity;
 }
 
 class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
@@ -14171,6 +14200,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     Object? $_and = _undefined,
     Object? $_or = _undefined,
     Object? shadowPrice = _undefined,
+    Object? maxOrderQuantity = _undefined,
   }) =>
       _then(Input$ProductVariantFilterParameter._({
         ..._instance._$data,
@@ -14198,6 +14228,8 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
           '_or': ($_or as List<Input$ProductVariantFilterParameter>?),
         if (shadowPrice != _undefined)
           'shadowPrice': (shadowPrice as Input$NumberOperators?),
+        if (maxOrderQuantity != _undefined)
+          'maxOrderQuantity': (maxOrderQuantity as Input$NumberOperators?),
       }));
 
   CopyWith$Input$IDOperators<TRes> get id {
@@ -14317,6 +14349,14 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
         : CopyWith$Input$NumberOperators(
             local$shadowPrice, (e) => call(shadowPrice: e));
   }
+
+  CopyWith$Input$NumberOperators<TRes> get maxOrderQuantity {
+    final local$maxOrderQuantity = _instance.maxOrderQuantity;
+    return local$maxOrderQuantity == null
+        ? CopyWith$Input$NumberOperators.stub(_then(_instance))
+        : CopyWith$Input$NumberOperators(
+            local$maxOrderQuantity, (e) => call(maxOrderQuantity: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
@@ -14340,6 +14380,7 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
     List<Input$ProductVariantFilterParameter>? $_and,
     List<Input$ProductVariantFilterParameter>? $_or,
     Input$NumberOperators? shadowPrice,
+    Input$NumberOperators? maxOrderQuantity,
   }) =>
       _res;
 
@@ -14381,6 +14422,9 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
   $_or(_fn) => _res;
 
   CopyWith$Input$NumberOperators<TRes> get shadowPrice =>
+      CopyWith$Input$NumberOperators.stub(_res);
+
+  CopyWith$Input$NumberOperators<TRes> get maxOrderQuantity =>
       CopyWith$Input$NumberOperators.stub(_res);
 }
 
@@ -14656,6 +14700,7 @@ class Input$ProductVariantSortParameter {
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
     Enum$SortOrder? shadowPrice,
+    Enum$SortOrder? maxOrderQuantity,
   }) =>
       Input$ProductVariantSortParameter._({
         if (id != null) r'id': id,
@@ -14668,6 +14713,7 @@ class Input$ProductVariantSortParameter {
         if (priceWithTax != null) r'priceWithTax': priceWithTax,
         if (stockLevel != null) r'stockLevel': stockLevel,
         if (shadowPrice != null) r'shadowPrice': shadowPrice,
+        if (maxOrderQuantity != null) r'maxOrderQuantity': maxOrderQuantity,
       });
 
   Input$ProductVariantSortParameter._(this._$data);
@@ -14731,6 +14777,12 @@ class Input$ProductVariantSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$shadowPrice as String));
     }
+    if (data.containsKey('maxOrderQuantity')) {
+      final l$maxOrderQuantity = data['maxOrderQuantity'];
+      result$data['maxOrderQuantity'] = l$maxOrderQuantity == null
+          ? null
+          : fromJson$Enum$SortOrder((l$maxOrderQuantity as String));
+    }
     return Input$ProductVariantSortParameter._(result$data);
   }
 
@@ -14756,6 +14808,9 @@ class Input$ProductVariantSortParameter {
   Enum$SortOrder? get stockLevel => (_$data['stockLevel'] as Enum$SortOrder?);
 
   Enum$SortOrder? get shadowPrice => (_$data['shadowPrice'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get maxOrderQuantity =>
+      (_$data['maxOrderQuantity'] as Enum$SortOrder?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -14806,6 +14861,12 @@ class Input$ProductVariantSortParameter {
       final l$shadowPrice = shadowPrice;
       result$data['shadowPrice'] =
           l$shadowPrice == null ? null : toJson$Enum$SortOrder(l$shadowPrice);
+    }
+    if (_$data.containsKey('maxOrderQuantity')) {
+      final l$maxOrderQuantity = maxOrderQuantity;
+      result$data['maxOrderQuantity'] = l$maxOrderQuantity == null
+          ? null
+          : toJson$Enum$SortOrder(l$maxOrderQuantity);
     }
     return result$data;
   }
@@ -14911,6 +14972,15 @@ class Input$ProductVariantSortParameter {
     if (l$shadowPrice != lOther$shadowPrice) {
       return false;
     }
+    final l$maxOrderQuantity = maxOrderQuantity;
+    final lOther$maxOrderQuantity = other.maxOrderQuantity;
+    if (_$data.containsKey('maxOrderQuantity') !=
+        other._$data.containsKey('maxOrderQuantity')) {
+      return false;
+    }
+    if (l$maxOrderQuantity != lOther$maxOrderQuantity) {
+      return false;
+    }
     return true;
   }
 
@@ -14926,6 +14996,7 @@ class Input$ProductVariantSortParameter {
     final l$priceWithTax = priceWithTax;
     final l$stockLevel = stockLevel;
     final l$shadowPrice = shadowPrice;
+    final l$maxOrderQuantity = maxOrderQuantity;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -14937,6 +15008,7 @@ class Input$ProductVariantSortParameter {
       _$data.containsKey('priceWithTax') ? l$priceWithTax : const {},
       _$data.containsKey('stockLevel') ? l$stockLevel : const {},
       _$data.containsKey('shadowPrice') ? l$shadowPrice : const {},
+      _$data.containsKey('maxOrderQuantity') ? l$maxOrderQuantity : const {},
     ]);
   }
 }
@@ -14961,6 +15033,7 @@ abstract class CopyWith$Input$ProductVariantSortParameter<TRes> {
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
     Enum$SortOrder? shadowPrice,
+    Enum$SortOrder? maxOrderQuantity,
   });
 }
 
@@ -14988,6 +15061,7 @@ class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
     Object? priceWithTax = _undefined,
     Object? stockLevel = _undefined,
     Object? shadowPrice = _undefined,
+    Object? maxOrderQuantity = _undefined,
   }) =>
       _then(Input$ProductVariantSortParameter._({
         ..._instance._$data,
@@ -15007,6 +15081,8 @@ class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
           'stockLevel': (stockLevel as Enum$SortOrder?),
         if (shadowPrice != _undefined)
           'shadowPrice': (shadowPrice as Enum$SortOrder?),
+        if (maxOrderQuantity != _undefined)
+          'maxOrderQuantity': (maxOrderQuantity as Enum$SortOrder?),
       }));
 }
 
@@ -15027,6 +15103,7 @@ class _CopyWithStubImpl$Input$ProductVariantSortParameter<TRes>
     Enum$SortOrder? priceWithTax,
     Enum$SortOrder? stockLevel,
     Enum$SortOrder? shadowPrice,
+    Enum$SortOrder? maxOrderQuantity,
   }) =>
       _res;
 }
@@ -17770,6 +17847,7 @@ Enum$AssetType fromJson$Enum$AssetType(String value) {
 enum Enum$ChannelType {
   CITY,
   BRAND,
+  SERVICE,
   $unknown;
 
   factory Enum$ChannelType.fromJson(String value) =>
@@ -17784,6 +17862,8 @@ String toJson$Enum$ChannelType(Enum$ChannelType e) {
       return r'CITY';
     case Enum$ChannelType.BRAND:
       return r'BRAND';
+    case Enum$ChannelType.SERVICE:
+      return r'SERVICE';
     case Enum$ChannelType.$unknown:
       return r'$unknown';
   }
@@ -17795,6 +17875,8 @@ Enum$ChannelType fromJson$Enum$ChannelType(String value) {
       return Enum$ChannelType.CITY;
     case r'BRAND':
       return Enum$ChannelType.BRAND;
+    case r'SERVICE':
+      return Enum$ChannelType.SERVICE;
     default:
       return Enum$ChannelType.$unknown;
   }
@@ -18707,6 +18789,7 @@ enum Enum$ErrorCode {
   PASSWORD_RESET_TOKEN_EXPIRED_ERROR,
   NOT_VERIFIED_ERROR,
   CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR,
+  QUANTITY_LIMIT_ERROR,
   $unknown;
 
   factory Enum$ErrorCode.fromJson(String value) =>
@@ -18781,6 +18864,8 @@ String toJson$Enum$ErrorCode(Enum$ErrorCode e) {
       return r'NOT_VERIFIED_ERROR';
     case Enum$ErrorCode.CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR:
       return r'CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR';
+    case Enum$ErrorCode.QUANTITY_LIMIT_ERROR:
+      return r'QUANTITY_LIMIT_ERROR';
     case Enum$ErrorCode.$unknown:
       return r'$unknown';
   }
@@ -18852,6 +18937,8 @@ Enum$ErrorCode fromJson$Enum$ErrorCode(String value) {
       return Enum$ErrorCode.NOT_VERIFIED_ERROR;
     case r'CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR':
       return Enum$ErrorCode.CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR;
+    case r'QUANTITY_LIMIT_ERROR':
+      return Enum$ErrorCode.QUANTITY_LIMIT_ERROR;
     default:
       return Enum$ErrorCode.$unknown;
   }

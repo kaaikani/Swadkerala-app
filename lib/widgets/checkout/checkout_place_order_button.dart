@@ -101,17 +101,19 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
                 ),
               ],
 
-              SlideToPayButton(
-                key: slideActionKey,
-                text: 'Slide to Pay',
-                amount: total > 0 ? PriceFormatter.formatPrice(total.toInt()) : '',
-                isEnabled: isEnabled && !orderPlacedSuccessfully,
-                isLoading: isLoading,
-                onSubmit: () {
-                  if (!isLoading && isEnabled && !orderPlacedSuccessfully) {
-                    onPlaceOrder();
-                  }
-                },
+              RepaintBoundary(
+                child: SlideToPayButton(
+                  key: slideActionKey,
+                  text: 'Slide to Pay',
+                  amount: total > 0 ? PriceFormatter.formatPrice(total.toInt()) : '',
+                  isEnabled: isEnabled && !orderPlacedSuccessfully,
+                  isLoading: isLoading,
+                  onSubmit: () {
+                    if (!isLoading && isEnabled && !orderPlacedSuccessfully) {
+                      onPlaceOrder();
+                    }
+                  },
+                ),
               ),
             ],
           ),
