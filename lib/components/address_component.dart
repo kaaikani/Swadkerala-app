@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
@@ -581,7 +582,11 @@ class AddressComponent extends StatelessWidget {
                           ),
                           SizedBox(height: ResponsiveUtils.rp(16)),
                           _buildFormField(phoneController, 'Phone', Icons.phone,
-                              keyboardType: TextInputType.phone),
+                              keyboardType: TextInputType.phone,
+                              maxLength: 10,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ]),
                           SizedBox(height: ResponsiveUtils.rp(20)),
                           InkWell(
                             onTap: () {
@@ -808,6 +813,8 @@ class AddressComponent extends StatelessWidget {
     bool required = false,
     TextInputType? keyboardType,
     bool readOnly = false,
+    int? maxLength,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -859,6 +866,8 @@ class AddressComponent extends StatelessWidget {
           keyboardType: keyboardType,
           readOnly: readOnly,
           enabled: true, // Always enable the field, readOnly controls editability
+          maxLength: maxLength,
+          inputFormatters: inputFormatters,
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(15),
             color: readOnly ? AppColors.textSecondary : AppColors.textPrimary,

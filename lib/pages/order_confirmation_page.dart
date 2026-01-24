@@ -343,10 +343,19 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   Widget _buildCouponCodeRow(dynamic order) {
     // Calculate discount amount from discounts
     double couponDiscount = 0.0;
-    if (order.discounts.isNotEmpty) {
+    if (order.discounts != null && order.discounts.isNotEmpty) {
       couponDiscount = order.discounts.fold<double>(
         0.0,
-        (sum, discount) => sum + discount.amountWithTax,
+        (double sum, dynamic discount) {
+          final amount = discount.amountWithTax;
+          if (amount is num) {
+            return sum + amount.toDouble();
+          } else if (amount is double) {
+            return sum + amount;
+          } else {
+            return sum;
+          }
+        },
       );
     }
     
@@ -357,27 +366,30 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Icon(
-              Icons.local_offer_rounded,
-              size: ResponsiveUtils.rp(18),
-              color: greenColor,
-            ),
-            SizedBox(width: ResponsiveUtils.rp(6)),
-            Flexible(
-              child: Text(
-                'Coupon (${couponCodesText})',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(14),
-                  fontWeight: FontWeight.w600,
-                  color: greenColor,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+        Flexible(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.local_offer_rounded,
+                size: ResponsiveUtils.rp(18),
+                color: greenColor,
               ),
-            ),
-          ],
+              SizedBox(width: ResponsiveUtils.rp(6)),
+              Flexible(
+                child: Text(
+                  'Coupon (${couponCodesText})',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(14),
+                    fontWeight: FontWeight.w600,
+                    color: greenColor,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
         if (couponDiscount > 0)
           Text(

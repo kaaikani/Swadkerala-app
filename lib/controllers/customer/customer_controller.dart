@@ -99,6 +99,18 @@ class CustomerController extends BaseController {
   /// This ensures the app always uses the correct brand city channel for the saved postal code
   Future<void> _initializeChannelFromSavedPostalCode() async {
     try {
+      // Skip if app is restarting (channel token already exists) - don't call switchChannelByPostalCode
+      final existingChannelToken = ChannelService.getChannelToken();
+      if (existingChannelToken != null && existingChannelToken.toString().isNotEmpty) {
+        return; // Channel already set, skip on app restart
+      }
+      
+      // Also check GraphqlService channel token
+      final graphqlChannelToken = GraphqlService.channelToken;
+      if (graphqlChannelToken.isNotEmpty) {
+        return; // Channel token exists in GraphqlService, skip on app restart
+      }
+      
       // Only run if user is authenticated (has auth token)
       final authToken = GraphqlService.authToken;
       if (authToken.isEmpty) {

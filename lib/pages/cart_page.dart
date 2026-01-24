@@ -701,14 +701,15 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
           _lastAppliedShippingMethodId = matchingMethod.id;
           return; // Already has a shipping method, no need to auto-apply
         }
+        // If order has shipping method but it doesn't match any available method, clear selection
+        orderController.selectedShippingMethod.value = null;
+        _lastAppliedShippingMethodId = null;
+        return;
       }
       
-      // If no existing shipping method and multiple methods available, select first one but don't auto-apply
-      if (orderController.selectedShippingMethod.value == null &&
-          orderController.shippingMethods.isNotEmpty) {
-        final firstMethod = orderController.shippingMethods.first;
-        orderController.selectedShippingMethod.value = firstMethod;
-      }
+      // If no existing shipping method in order, clear selection to show "Select delivery method"
+      orderController.selectedShippingMethod.value = null;
+      _lastAppliedShippingMethodId = null;
     } catch (e) {
     }
   }

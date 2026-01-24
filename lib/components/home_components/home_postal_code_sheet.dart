@@ -195,7 +195,7 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                   maxLength: 6,
                   decoration: InputDecoration(
                     labelText: 'Enter 6-digit postal code',
-                    hintText: '628008',
+                    hintText: 'eg: 625018',
                     prefixIcon: Icon(Icons.pin),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),

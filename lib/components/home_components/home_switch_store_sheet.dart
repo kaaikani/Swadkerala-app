@@ -209,23 +209,23 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     
     // Check if channel token is ind-snacks
     if (channelToken == 'ind-snacks') {
-      final url = 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/bcc15eac-3b2b-4faf-9862-769f43fd3b30.jpg';
-      debugPrint('✅ [SwitchStore] Returning ind-snacks image URL: $url');
-      return url;
+      final assetPath = 'assets/images/SouthMithai.jpeg';
+      debugPrint('✅ [SwitchStore] Returning ind-snacks image asset path: $assetPath');
+      return assetPath;
     }
     
     // Check if channel is Swad Kerala
     if (_isSwadKeralaChannel(channel)) {
-      final url = 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/SwadKerala+Ban.jpg';
-      debugPrint('✅ [SwitchStore] Returning Swad Kerala image URL (matched by token/name/code): $url');
-      return url;
+      final assetPath = 'assets/images/SwadKerala Ban.jpeg';
+      debugPrint('✅ [SwitchStore] Returning Swad Kerala image asset path (matched by token/name/code): $assetPath');
+      return assetPath;
     }
 
     // Check if channel type is CITY
     if (channel.type == Enum$ChannelType.CITY) {
-      final url = 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/Kaaikani+(2).jpg';
-      debugPrint('✅ [SwitchStore] Returning CITY image URL: $url');
-      return url;
+      final assetPath = 'assets/images/Kaaikani.jpeg';
+      debugPrint('✅ [SwitchStore] Returning CITY image asset path: $assetPath');
+      return assetPath;
     }
 
     // For other channels, return null to show a placeholder
@@ -338,12 +338,12 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
                         // Image (dimmed for Swad Kerala)
                         Opacity(
                           opacity: isSwadkerala ? 0.3 : 1.0, // Grey shade effect - 30% opacity for Swad Kerala
-                          child: _buildNetworkImageWithFallback(
+                          child: _buildImageWithFallback(
                             imageUrl,
                             // Use appropriate fallback based on channel
                             isSwadkerala
-                                ? 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/SwadKerala+Ban.jpg'
-                                : 'https://s3.ap-south-1.amazonaws.com/cdn.kaaikani.co.in/App-switch-store-image/bcc15eac-3b2b-4faf-9862-769f43fd3b30.jpg',
+                                ? 'assets/images/SwadKerala Ban.jpeg'
+                                : 'assets/images/Kaaikani.jpeg',
                             channelKey: channelKey,
                           ),
                         ),
@@ -475,14 +475,61 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     );
   }
 
-  Widget _buildNetworkImageWithFallback(String primaryUrl, String fallbackUrl, {String? channelKey}) {
+  Widget _buildImageWithFallback(String primaryPath, String fallbackPath, {String? channelKey}) {
     debugPrint('🖼️ [SwitchStore] Loading image:');
-    debugPrint('   - Primary URL: $primaryUrl');
-    debugPrint('   - Fallback URL: $fallbackUrl');
+    debugPrint('   - Primary Path: $primaryPath');
+    debugPrint('   - Fallback Path: $fallbackPath');
     debugPrint('   - Channel Key: $channelKey');
     
+    // Check if primary path is an asset
+    final isPrimaryAsset = primaryPath.startsWith('assets/');
+    final isFallbackAsset = fallbackPath.startsWith('assets/');
+    
+    // If primary is an asset, use Image.asset
+    if (isPrimaryAsset) {
+      return Image.asset(
+        primaryPath,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          debugPrint('❌ [SwitchStore] Primary asset failed to load: $primaryPath');
+          debugPrint('   - Error: $error');
+          
+          // Try fallback
+          if (isFallbackAsset) {
+            return Image.asset(
+              fallbackPath,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                debugPrint('❌ [SwitchStore] Fallback asset also failed: $fallbackPath');
+                return _buildPlaceholder();
+              },
+            );
+          } else {
+            // Fallback is a network URL, use network image
+            return Image.network(
+              fallbackPath,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              headers: {
+                'Accept': 'image/*',
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return _buildPlaceholder(channelKey: channelKey);
+              },
+            );
+          }
+        },
+      );
+    }
+    
+    // Otherwise, use network image
     return Image.network(
-      primaryUrl,
+      primaryPath,
       width: double.infinity,
       height: double.infinity,
       fit: BoxFit.cover, // Use cover to fill the card properly for banner images
@@ -491,10 +538,10 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
       },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) {
-          debugPrint('✅ [SwitchStore] Image loaded successfully: $primaryUrl');
+          debugPrint('✅ [SwitchStore] Image loaded successfully: $primaryPath');
           return child;
         }
-        debugPrint('⏳ [SwitchStore] Loading image: $primaryUrl');
+        debugPrint('⏳ [SwitchStore] Loading image: $primaryPath');
         debugPrint('   - Progress: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
           return Container(
             width: double.infinity,
@@ -519,23 +566,37 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
         );
       },
       errorBuilder: (context, error, stackTrace) {
-        debugPrint('❌ [SwitchStore] Primary image failed to load: $primaryUrl');
+        debugPrint('❌ [SwitchStore] Primary image failed to load: $primaryPath');
         debugPrint('   - Error: $error');
         debugPrint('   - StackTrace: $stackTrace');
         
         // Try URL-encoded version if original URL has + character
         String? encodedUrl;
-        if (primaryUrl.contains('+') && !primaryUrl.contains('%2B')) {
-          encodedUrl = primaryUrl.replaceAll('+', '%2B');
+        if (primaryPath.contains('+') && !primaryPath.contains('%2B')) {
+          encodedUrl = primaryPath.replaceAll('+', '%2B');
           debugPrint('🔄 [SwitchStore] Trying URL-encoded version: $encodedUrl');
         }
         
         // Try encoded URL first if available, otherwise use fallback
-        final urlToTry = encodedUrl ?? fallbackUrl;
-        debugPrint('🔄 [SwitchStore] Trying fallback URL: $urlToTry');
+        final pathToTry = encodedUrl ?? fallbackPath;
+        debugPrint('🔄 [SwitchStore] Trying fallback path: $pathToTry');
+        
+        // Check if fallback is an asset
+        if (pathToTry.startsWith('assets/')) {
+          return Image.asset(
+            pathToTry,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              debugPrint('❌ [SwitchStore] Fallback asset also failed: $pathToTry');
+              return _buildPlaceholder();
+            },
+          );
+        }
         
         return Image.network(
-          urlToTry,
+          pathToTry,
           width: double.infinity,
           height: double.infinity,
           fit: BoxFit.cover, // Use cover to fill the card properly for banner images
@@ -567,14 +628,28 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
             );
           },
           errorBuilder: (context, error, stackTrace) {
-            debugPrint('❌ [SwitchStore] Fallback image also failed: $urlToTry');
+            debugPrint('❌ [SwitchStore] Fallback image also failed: $pathToTry');
             debugPrint('   - Error: $error');
             
             // If encoded URL failed and we haven't tried fallback yet, try fallback
-            if (encodedUrl != null && urlToTry == encodedUrl) {
-              debugPrint('🔄 [SwitchStore] Trying original fallback URL: $fallbackUrl');
+            if (encodedUrl != null && pathToTry == encodedUrl) {
+              debugPrint('🔄 [SwitchStore] Trying original fallback path: $fallbackPath');
+              
+              // Check if fallback is an asset
+              if (fallbackPath.startsWith('assets/')) {
+                return Image.asset(
+                  fallbackPath,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return _buildPlaceholder(channelKey: channelKey);
+                  },
+                );
+              }
+              
               return Image.network(
-                fallbackUrl,
+                fallbackPath,
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
@@ -629,30 +704,34 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
                 }
               });
             }
-            return Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.button.withValues(alpha: 0.4),
-                    AppColors.button.withValues(alpha: 0.2),
-                  ],
-                ),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.store_rounded,
-                  color: Colors.white.withValues(alpha: 0.8),
-                  size: ResponsiveUtils.rp(48),
-                ),
-              ),
-            );
+            return _buildPlaceholder(channelKey: channelKey);
           },
         );
       },
+    );
+  }
+
+  Widget _buildPlaceholder({String? channelKey}) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.button.withValues(alpha: 0.4),
+            AppColors.button.withValues(alpha: 0.2),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.store_rounded,
+          color: Colors.white.withValues(alpha: 0.8),
+          size: ResponsiveUtils.rp(48),
+        ),
+      ),
     );
   }
 

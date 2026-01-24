@@ -19,6 +19,27 @@
     <!-- Speech recognition permission -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- Declare hardware features as optional to maximize device compatibility -->
+    <!-- Without these declarations, permissions implicitly require hardware, excluding devices -->
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:name="android.hardware.location.network" android:required="false" />
+    <uses-feature android:name="android.hardware.vibrator" android:required="false" />
+    <!-- Allow app to work on TVs and devices without touch screens -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <!-- Support all screen sizes including tablets and TVs -->
+    <supports-screens android:smallScreens="true"
+                      android:normalScreens="true"
+                      android:largeScreens="true"
+                      android:xlargeScreens="true"
+                      android:anyDensity="true" />
+    <!-- Support all screen densities -->
+    <compatible-screens />
+    <!-- OpenGL ES version - make it optional for maximum compatibility -->
+    <uses-feature android:name="android.hardware.opengles.aep" android:required="false" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="false" />
+
     <application
         android:label="Kaaikani"
         android:name="${applicationName}"
@@ -34,7 +55,6 @@
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
             <!-- App Icon Launcher -->
@@ -45,6 +65,12 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <!-- Support Android TV -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 
             <!-- 1. Custom Scheme (kaaikani://) - No verification needed -->

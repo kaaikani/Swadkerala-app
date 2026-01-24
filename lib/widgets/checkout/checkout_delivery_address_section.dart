@@ -194,7 +194,7 @@ class CheckoutDeliveryAddressSection extends StatelessWidget {
                       ),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       Text(
-                        '${selectedAddress!.streetLine1}${(selectedAddress!.streetLine2?.isNotEmpty ?? false) ? ', ${selectedAddress!.streetLine2}' : ''}, ${selectedAddress!.city ?? ''}',
+                        '${selectedAddress!.streetLine1}${(selectedAddress!.streetLine2?.isNotEmpty ?? false) ? ', ${selectedAddress!.streetLine2}' : ''}, ${selectedAddress!.city ?? ''}${(selectedAddress!.postalCode?.isNotEmpty ?? false) ? ' - ${selectedAddress!.postalCode}' : ''}',
                         style: TextStyle(
                           fontSize: ResponsiveUtils.sp(14),
                           color: shouldBlink ? AppColors.error : AppColors.textSecondary,

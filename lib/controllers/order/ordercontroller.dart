@@ -822,7 +822,8 @@ class OrderController extends BaseController {
   }
 
   /// Add payment to order
-  Future<bool> addPayment({
+  /// Returns a map with 'success' (bool) and 'errorMessage' (String?) keys
+  Future<Map<String, dynamic>> addPayment({
     required String method,
     Map<String, dynamic>? metadata,
   }) async {
@@ -850,7 +851,7 @@ class OrderController extends BaseController {
 
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to add payment')) {
-        return false;
+        return {'success': false, 'errorMessage': 'Failed to add payment'};
       }
 
       final result = response.parsedData?.addPaymentToOrder;
@@ -858,19 +859,23 @@ class OrderController extends BaseController {
         // Check if it's an error result
         final resultJson = result.toJson();
         if (resultJson.containsKey('errorCode')) {
-          return false;
+          // Extract error message
+          final errorMessage = _readOrderMutationMessage(result) ?? 
+                              resultJson['message']?.toString() ?? 
+                              'Payment failed';
+          return {'success': false, 'errorMessage': errorMessage};
         }
 
         // If it's an Order, update current order
         if (result is Mutation$AddPayment$addPaymentToOrder$$Order) {
           currentOrder.value = result;
-          return true;
+          return {'success': true, 'errorMessage': null};
         }
       }
-      return false;
+      return {'success': false, 'errorMessage': 'Unknown error occurred'};
     } catch (e) {
       handleException(e, customErrorMessage: 'Failed to add payment', functionName: 'addPayment');
-      return false;
+      return {'success': false, 'errorMessage': 'Failed to add payment'};
     } finally {
       utilityController.setLoadingState(false);
     }

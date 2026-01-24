@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
@@ -1008,6 +1009,9 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   keyboardType: TextInputType.phone,
                   maxLength: 10,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
                   errorText: errors['phone'],
                   onChanged: () {
                     if (errors.containsKey('phone')) {
@@ -1273,6 +1277,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     String? errorText,
     VoidCallback? onChanged,
     int? maxLength,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     final hasError = errorText != null && errorText.isNotEmpty;
     
@@ -1284,6 +1289,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
           keyboardType: keyboardType,
           readOnly: readOnly,
           maxLength: maxLength,
+          inputFormatters: inputFormatters,
           onChanged: (_) => onChanged?.call(),
           style: TextStyle(
             fontSize: 15,
@@ -1852,6 +1858,9 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   keyboardType: TextInputType.phone,
                   maxLength: 10,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
                   errorText: errors['phone'],
                   onChanged: () {
                     if (errors.containsKey('phone')) {
@@ -2119,6 +2128,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     String? errorText,
     VoidCallback? onChanged,
     int? maxLength,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     final hasError = errorText != null && errorText.isNotEmpty;
     
@@ -2130,6 +2140,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
           keyboardType: keyboardType,
           readOnly: readOnly,
           maxLength: maxLength,
+          inputFormatters: inputFormatters,
           onChanged: (_) => onChanged?.call(),
           style: TextStyle(
             fontSize: 15,

@@ -47,6 +47,8 @@ android {
     defaultConfig {
         applicationId = "com.kaaikani.kaaikani"
         minSdk = flutter.minSdkVersion
+        // Google Play requires targetSdk 35 (Android 15) as of 2025
+        // Device compatibility is handled via optional hardware features in AndroidManifest.xml
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -58,11 +60,13 @@ android {
         // Note: resourceConfigurations is deprecated, using androidResources.localeFilters instead
         // androidResources.localeFilters += listOf("en", "hi") // Only include English and Hindi resources
         
-        // For universal APK: Only ARM architectures (exclude x86/x86_64 to reduce size)
-        // This covers 99%+ of real devices while reducing APK size by ~15-20MB
-        ndk {
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
-        }
+        // ABI filters removed for maximum device compatibility
+        // Since we're building an App Bundle (AAB), Google Play automatically
+        // serves only the required architecture per device, so there's no size penalty.
+        // This ensures support for all devices including emulators, tablets, and TVs.
+        // ndk {
+        //     abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        // }
         
         // Enable resource shrinking to remove unused resources
         // This can reduce APK size by 10-30%

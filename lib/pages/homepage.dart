@@ -33,6 +33,7 @@ import '../controllers/theme_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../widgets/notification_permission_dialog.dart';
 import '../services/channel_service.dart';
+import '../graphql/schema.graphql.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -82,6 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // Initialize reactive variables
     _previousChannelToken = GraphqlService.channelToken;
     _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh on initial load
+    
+    // Check postal code and validate available channels
+    _checkPostalCodeAndChannels();
+    
     _refreshData();
     // Mark initial load as complete after first refresh
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -373,80 +378,61 @@ class _MyHomePageState extends State<MyHomePage> {
       
       
       // STEP 1: Get customer data if authenticated
+      // This internally calls checkAndSetPostalCodeFromShippingAddress() to extract postal code from address
       if (_isUserAuthenticated()) {
         await customerController.getActiveCustomer();
       }
       
-      // STEP 2: Get postal code from shipping address and set channel FIRST
-      // Skip this step if postal code and channel are already set to prevent unnecessary channel fetch
+      // STEP 2: Check if postal code is saved in local storage
+      // Only fetch collections, banners, and other data if postal code exists AND has available CITY channel
       final storedPostalCode = ChannelService.getPostalCode();
-      final storedChannelToken = ChannelService.getChannelToken();
-      bool channelChanged = false;
-      
-      if (storedPostalCode == null || storedPostalCode.toString().isEmpty || 
-          storedChannelToken == null || storedChannelToken.toString().isEmpty) {
-        channelChanged = await _ensurePostalCodeAndChannelSet();
-      } else {
-      }
+      final hasPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty;
       
       // Always update UI display after checking postal code/channel (ensures UI is in sync)
       // Add small delay to ensure storage is written before reading
       await Future.delayed(Duration(milliseconds: 100));
       _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh trigger since we're already in refresh
       
-      // STEP 3: Only after channel is set, fetch all other data
-      // If channel changed, data is already being refreshed by switchChannelByPostalCode
-      // So we can skip duplicate fetches or wait a bit for refresh to complete
-      if (channelChanged) {
-        // Wait a bit for the refresh to complete (it's async in the background)
-        await Future.delayed(Duration(milliseconds: 500));
-        
-        // Force UI refresh after channel change to ensure UI updates
-        if (mounted) {
-          _updateChannelDisplay(skipRefreshTrigger: false); // Allow refresh trigger for actual channel changes
-          // Trigger a rebuild
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {});
-            }
-          });
-        }
+      // STEP 3: Check if postal code has valid available CITY channel
+      bool hasValidAvailableChannel = false;
+      if (hasPostalCode) {
+        // Check if postal code has available CITY channel (isAvailable == true)
+        hasValidAvailableChannel = await customerController.hasValidPostalCode(storedPostalCode.toString());
       }
       
-      
-      if (_isUserAuthenticated()) {
-        // Only fetch cart if it's not already loaded or if it's stale
-        // This prevents duplicate cart fetches when loyalty points are removed
-        if (cartController.cart.value == null) {
-        cartController.getActiveOrder();
+      // STEP 4: Only fetch collections, banners, and other data if postal code exists AND has available channel
+      if (hasPostalCode && hasValidAvailableChannel) {
+        // Postal code exists and has available CITY channel - fetch all data
+        if (_isUserAuthenticated()) {
+          // Only fetch cart if it's not already loaded or if it's stale
+          // This prevents duplicate cart fetches when loyalty points are removed
+          if (cartController.cart.value == null) {
+            cartController.getActiveOrder();
+          }
+          bannerController.getCustomerFavorites();
+          
+          // Check for default shipping address after customer data is loaded
+          // Only check if widget is still mounted
+          if (mounted) {
+            _checkAndShowShippingAddressDialog();
+            // Check for invalid email or missing phone number
+            //   _checkAndShowUpdateDialogs();
+          }
         }
-        bannerController.getCustomerFavorites();
-        
-        // Check for default shipping address after customer data is loaded
-        // Only check if widget is still mounted
-        if (mounted) {
-          _checkAndShowShippingAddressDialog();
-          // Check for invalid email or missing phone number
-          //   _checkAndShowUpdateDialogs();
-        }
-      }
 
-
-      // These can be fetched regardless of authentication status
-      // Only fetch if channel didn't change (to avoid duplicate fetches)
-      if (!channelChanged) {
-        // Fetch collections and banners only once
+        // Fetch collections and banners (only if postal code exists and has available channel)
         await Future.wait([
           collectionController.fetchAllCollections(),
           bannerController.getBannersForChannel(),
           bannerController.getFrequentlyOrderedProducts(),
         ], eagerError: false);
-      }
-      
-      // Check for postal code dialog if still needed (for non-authenticated users)
-      // Only check if dialog is not already showing
-      if (mounted && !_isPostalCodeDialogShowing) {
-        _checkAndShowPostalCodeDialog();
+      } else {
+        // No postal code OR no available channel - show dialog but don't fetch collections/banners
+        // Check for postal code dialog if still needed
+        // Only check if dialog is not already showing
+        if (mounted && !_isPostalCodeDialogShowing) {
+          _checkAndShowPostalCodeDialog();
+        }
       }
       
       
@@ -920,88 +906,62 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  /// Ensure postal code and channel are set before fetching data
-  /// Returns true if channel was changed, false otherwise
-  Future<bool> _ensurePostalCodeAndChannelSet() async {
+
+  /// Check postal code from GetStorage and validate available channels
+  /// REVERSED LOGIC: Show postal code bottom sheet ONLY if there IS an available CITY type channel
+  Future<void> _checkPostalCodeAndChannels() async {
     try {
+      // Skip if app is restarting (channel token already exists) - don't call getAvailableChannels
+      final channelToken = ChannelService.getChannelToken();
+      if (channelToken != null && channelToken.toString().isNotEmpty) {
+        return; // App restarting with existing channel, skip getAvailableChannels call
+      }
       
-      // Store current channel token to detect changes
-      final currentChannelToken = ChannelService.getChannelToken();
-      
-      // Check if postal code exists in local storage
+      // Get postal code from GetStorage
       final storedPostalCode = ChannelService.getPostalCode();
       
-      // If authenticated, try to get postal code from shipping address first
-      if (_isUserAuthenticated()) {
-        await customerController.checkAndSetPostalCodeFromShippingAddress();
-        
-        // Re-check postal code after trying to get from shipping address
-        final updatedPostalCode = ChannelService.getPostalCode();
-        if (updatedPostalCode != null && updatedPostalCode.toString().isNotEmpty) {
-          
-          // Check if channel changed
-          final newChannelToken = box.read('channel_token');
-          final channelChanged = currentChannelToken != newChannelToken;
-          if (channelChanged) {
-            // Force UI refresh when channel changes
-            if (mounted) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  _updateChannelDisplay();
-                  setState(() {});
-                }
-              });
-            }
-            // Data is already being refreshed by checkAndSetPostalCodeFromShippingAddress
-            return true;
-          }
-          return false; // Channel should already be set by checkAndSetPostalCodeFromShippingAddress
+      // If no postal code exists, don't show bottom sheet (reversed logic)
+      if (storedPostalCode == null || storedPostalCode.toString().isEmpty) {
+        return;
+      }
+      
+      // Postal code exists, call getAvailableChannels
+      final channels = await customerController.getAvailableChannels(storedPostalCode.toString());
+      
+      // If no data returned, don't show postal code bottom sheet (reversed logic)
+      if (channels.isEmpty) {
+        return;
+      }
+      
+      // Check if there's an available CITY type channel
+      bool hasAvailableCityChannel = false;
+      for (final channel in channels) {
+        if (channel.isAvailable == true && channel.type == Enum$ChannelType.CITY) {
+          hasAvailableCityChannel = true;
+          break;
         }
       }
       
-      // If postal code is in local storage, verify channel is set
-      if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {
-        final channelToken = ChannelService.getChannelToken();
-        if (channelToken != null && channelToken.toString().isNotEmpty) {
-          return false;
-        } else {
-          // Postal code exists but channel not set, fetch channel
-          final success = await customerController.switchChannelByPostalCode(
-            storedPostalCode.toString(),
-            showLoading: false, // Don't show loading dialog during initialization
-          );
-          if (success) {
-            // Check if channel changed
-            final newChannelToken = box.read('channel_token');
-            final channelChanged = currentChannelToken != newChannelToken;
-            if (channelChanged) {
-              // Force UI refresh when channel changes
-              if (mounted) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) {
-                    _updateChannelDisplay();
-                    setState(() {});
-                  }
-                });
+      // REVERSED: If there IS an available CITY channel, show postal code bottom sheet
+      if (hasAvailableCityChannel) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && context.mounted) {
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted && context.mounted) {
+                _showPostalCodeBottomSheet(isMandatory: true);
               }
-              // Data is already being refreshed by switchChannelByPostalCode
-              return true;
-            }
-            return false;
-          } else {
-            return false;
+            });
           }
-        }
-      } else {
-        return false;
+        });
       }
     } catch (e) {
-      // Don't throw - continue with data fetch even if channel setup fails
-      return false;
+      // On error, don't show postal code bottom sheet (reversed logic)
+      return;
     }
   }
 
   /// Check if postal code is saved, if not show postal code bottom sheet
+  /// Also shows dialog if postal code exists but no available CITY channel
   void _checkAndShowPostalCodeDialog() async {
     if (!mounted) {
       return;
@@ -1030,18 +990,11 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
     } else {
-      // Postal code exists - check if channel token is already set
-      // If channel token exists, skip the expensive hasValidPostalCode() call
-      final channelToken = GraphqlService.channelToken;
-      if (channelToken.isNotEmpty) {
-        return; // Postal code and channel are already set, no need to validate
-      }
-      
-      // Only check validity if channel token is not set
+      // Postal code exists - check if it has valid available CITY channel
       final postalCodeStr = storedPostalCode.toString();
-      
       final hasValidChannels = await customerController.hasValidPostalCode(postalCodeStr);
       
+      // Show dialog if no available channel (even if postal code exists)
       if (!hasValidChannels) {
         _isPostalCodeDialogShowing = true; // Mark as showing
         
