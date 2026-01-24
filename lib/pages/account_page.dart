@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
@@ -96,9 +98,6 @@ class _AccountPageState extends State<AccountPage> {
     // Clear any previous error
     customerController.emailUpdateError.value = '';
 
-    final emailController = TextEditingController();
-    bool isLoading = false;
-
     Get.dialog(
       WillPopScope(
         onWillPop: () async => false, // Prevent closing by back button
@@ -107,142 +106,227 @@ class _AccountPageState extends State<AccountPage> {
             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
           ),
           child: StatefulBuilder(
-            builder: (context, setState) => Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.email,
-                        size: ResponsiveUtils.rp(28),
-                        color: AppColors.button,
-                      ),
-                      SizedBox(width: ResponsiveUtils.rp(12)),
-                      Expanded(
-                        child: Text(
-                          'Update Email Address',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(20),
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+            builder: (context, setState) {
+              bool isLoading = false;
+              final emailController = TextEditingController();
+
+              return Container(
+                padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.email,
+                          size: ResponsiveUtils.rp(28),
+                          color: AppColors.button,
                         ),
-                      ),
-                      // Close button (X mark)
-                      IconButton(
-                        onPressed: isLoading ? null : () {
-                          Get.back();
-                        },
-                        icon: Icon(
-                          Icons.close,
-                          size: ResponsiveUtils.rp(24),
-                          color: AppColors.textSecondary,
-                        ),
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
-                        tooltip: 'Close',
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(20)),
-                  Text(
-                    'Please enter a valid Gmail address',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(16)),
-                  // Show error message if available
-                  Obx(() {
-                    final errorMsg = customerController.emailUpdateError.value;
-                    if (errorMsg.isNotEmpty) {
-                      return Container(
-                        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
-                        padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-                        decoration: BoxDecoration(
-                          color: AppColors.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                          border: Border.all(
-                            color: AppColors.error.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.warning_amber_rounded,
-                              color: AppColors.error,
-                              size: ResponsiveUtils.rp(20),
+                        SizedBox(width: ResponsiveUtils.rp(12)),
+                        Expanded(
+                          child: Text(
+                            'Update Email Address',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(20),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
                             ),
-                            SizedBox(width: ResponsiveUtils.rp(8)),
-                            Expanded(
-                              child: Text(
-                                errorMsg,
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(13),
-                                  color: AppColors.error,
-                                  fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        // Close button (X mark)
+                        IconButton(
+                          onPressed: () {
+                            Get.back();
+                          },
+                          icon: Icon(
+                            Icons.close,
+                            size: ResponsiveUtils.rp(24),
+                            color: AppColors.textSecondary,
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: BoxConstraints(),
+                          tooltip: 'Close',
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(20)),
+                    Text(
+                      'Enter your Gmail address or sign in with Google',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    // Show error message if available
+                    Obx(() {
+                      final errorMsg = customerController.emailUpdateError.value;
+                      if (errorMsg.isNotEmpty) {
+                        return Container(
+                          margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                            border: Border.all(
+                              color: AppColors.error.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.warning_amber_rounded,
+                                color: AppColors.error,
+                                size: ResponsiveUtils.rp(20),
+                              ),
+                              SizedBox(width: ResponsiveUtils.rp(8)),
+                              Expanded(
+                                child: Text(
+                                  errorMsg,
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUtils.sp(13),
+                                    color: AppColors.error,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    return SizedBox.shrink();
-                  }),
-                  SizedBox(height: ResponsiveUtils.rp(16)),
-                  TextField(
-                    controller: emailController,
-                    enabled: !isLoading,
-                    keyboardType: TextInputType.emailAddress,
-                    onChanged: (value) {
-                      // Clear error when user starts typing
-                      if (customerController.emailUpdateError.value.isNotEmpty) {
-                        customerController.emailUpdateError.value = '';
+                            ],
+                          ),
+                        );
                       }
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter Gmail address',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      filled: true,
-                      fillColor: AppColors.inputFill,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                        borderSide: BorderSide(color: AppColors.border),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                        borderSide: BorderSide(color: AppColors.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                        borderSide: BorderSide(color: AppColors.button, width: 2),
+                      return SizedBox.shrink();
+                    }),
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    // Manual Email Input TextField
+                    TextField(
+                      controller: emailController,
+                      enabled: !isLoading,
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (value) {
+                        // Clear error when user starts typing
+                        if (customerController.emailUpdateError.value.isNotEmpty) {
+                          customerController.emailUpdateError.value = '';
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Enter Gmail address',
+                        prefixIcon: Icon(Icons.email_outlined),
+                        filled: true,
+                        fillColor: AppColors.inputFill,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          borderSide: BorderSide(color: AppColors.button, width: 2),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: ResponsiveUtils.rp(20)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    // Divider with "OR" text
+                    Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
+                          child: Text(
+                            'OR',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(12),
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(16)),
+                    // Google Sign-In Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: isLoading
+                            ? null
+                            : () async {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                await _handleGoogleSignInForEmail(context, setState, emailController, () {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                });
+                              },
+                        icon: isLoading
+                            ? SizedBox(
+                                width: ResponsiveUtils.rp(20),
+                                height: ResponsiveUtils.rp(20),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                                ),
+                              )
+                            : Image.asset(
+                                'assets/images/google_logo.png',
+                                width: ResponsiveUtils.rp(24),
+                                height: ResponsiveUtils.rp(24),
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                    Icons.login,
+                                    size: ResponsiveUtils.rp(20),
+                                    color: AppColors.button,
+                                  );
+                                },
+                              ),
+                        label: Text(
+                          'Sign in with Google',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(16),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.button,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(
+                            color: AppColors.button,
+                            width: 1.5,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(16),
+                            vertical: ResponsiveUtils.rp(14),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(20)),
+                    // Update Email Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
                         onPressed: isLoading ? null : () async {
-                          
                           final email = emailController.text.trim();
                           
                           if (email.isEmpty) {
                             showErrorSnackbar('Please enter an email address');
                             return;
                           }
+                          
                           if (!_isValidGmail(email)) {
                             showErrorSnackbar('Please enter a valid Gmail address');
                             return;
                           }
-
 
                           setState(() {
                             isLoading = true;
@@ -254,7 +338,6 @@ class _AccountPageState extends State<AccountPage> {
                           // Update email using the dedicated method
                           final success = await customerController.updateCustomerEmail(email);
                           
-
                           setState(() {
                             isLoading = false;
                           });
@@ -272,6 +355,12 @@ class _AccountPageState extends State<AccountPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.button,
                           foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            vertical: ResponsiveUtils.rp(14),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          ),
                         ),
                         child: isLoading
                             ? SizedBox(
@@ -282,18 +371,203 @@ class _AccountPageState extends State<AccountPage> {
                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                 ),
                               )
-                            : Text('Update Email'),
+                            : Text(
+                                'Update Email',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(16),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),
       barrierDismissible: false, // Prevent closing by tapping outside
     );
+  }
+
+  /// Handle Google Sign-In specifically for email retrieval
+  /// This only requests email scope, not full authentication
+  Future<void> _handleGoogleSignInForEmail(
+    BuildContext context,
+    StateSetter setState,
+    TextEditingController emailController,
+    VoidCallback onComplete,
+  ) async {
+    setState(() {
+      customerController.emailUpdateError.value = '';
+    });
+
+    try {
+      // Get Google Client ID from .env
+      final googleClientId = dotenv.env['GOOGLE_CLIENT_ID'];
+      if (googleClientId == null || googleClientId.isEmpty) {
+        setState(() {
+          customerController.emailUpdateError.value = 'Google Client ID not configured';
+        });
+        onComplete();
+        return;
+      }
+
+      // Initialize Google Sign In with email scope only
+      // scopes: ['email'] - only requests email address
+      // serverClientId is required to get ID token for backend verification
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        serverClientId: googleClientId,
+        scopes: ['email'], // Only request email scope
+      );
+
+      // Sign out any existing Google account to force account selection
+      try {
+        final currentUser = await googleSignIn.signInSilently();
+        if (currentUser != null) {
+          await googleSignIn.signOut();
+        }
+      } catch (e) {
+        // Try to sign out anyway
+        try {
+          await googleSignIn.signOut();
+        } catch (signOutError) {
+          // Ignore sign out errors
+        }
+      }
+
+      // Sign in with Google - this will show account picker
+      GoogleSignInAccount? googleUser;
+      try {
+        googleUser = await googleSignIn.signIn();
+      } catch (e) {
+        // Handle cancellation or other sign-in errors
+        final errorStr = e.toString().toLowerCase();
+
+        // Check for cancellation
+        if (errorStr.contains('canceled') ||
+            errorStr.contains('cancelled') ||
+            errorStr.contains('sign_in_canceled') ||
+            errorStr.contains('sign_in_cancelled') ||
+            errorStr.contains('12501')) {
+          // User cancelled, just return without error
+          onComplete();
+          return;
+        }
+
+        // Check for developer error (error code 10)
+        final hasError10 = errorStr.contains('apiexception: 10') ||
+            errorStr.contains('apiException: 10') ||
+            errorStr.contains('apiexception:10') ||
+            errorStr.contains('error 10') ||
+            errorStr.contains('developer_error') ||
+            errorStr.contains(': 10:') ||
+            errorStr.contains(': 10 ') ||
+            RegExp(r'apiexception.*10|error.*10').hasMatch(errorStr);
+
+        if (hasError10) {
+          setState(() {
+            customerController.emailUpdateError.value =
+                'Google Sign-In Configuration Error. Please contact support.';
+          });
+          onComplete();
+          return;
+        }
+
+        // For other errors
+        setState(() {
+          customerController.emailUpdateError.value = 'Failed to sign in with Google. Please try again.';
+        });
+        onComplete();
+        return;
+      }
+
+      if (googleUser == null) {
+        // User cancelled the sign in
+        onComplete();
+        return;
+      }
+
+      // Extract email from Google account
+      final email = googleUser.email;
+      if (email.isEmpty) {
+        setState(() {
+          customerController.emailUpdateError.value = 'Failed to get email address from Google account';
+        });
+        onComplete();
+        return;
+      }
+
+      // Validate that it's a Gmail address
+      if (!_isValidGmail(email)) {
+        setState(() {
+          customerController.emailUpdateError.value = 'Please use a Gmail address (@gmail.com)';
+        });
+        onComplete();
+        return;
+      }
+
+      // Populate the text field with the email from Google
+      setState(() {
+        emailController.text = email;
+        customerController.emailUpdateError.value = '';
+      });
+
+      // Automatically update the email
+      final success = await customerController.updateCustomerEmail(email);
+
+      onComplete();
+
+      if (success) {
+        // Close dialog and show success message
+        Get.back();
+        showSuccessSnackbar('Email updated successfully');
+        // Check for phone number after email is updated
+        _checkAndShowUpdateDialogs();
+      } else {
+        // Error message is already set in controller and will be shown in UI
+        // Don't show snackbar as error is displayed in dialog
+      }
+    } catch (e) {
+      // Check if it's a cancellation
+      final errorStr = e.toString().toLowerCase();
+      final isCancellation = errorStr.contains('canceled') ||
+          errorStr.contains('cancelled') ||
+          errorStr.contains('sign_in_canceled') ||
+          errorStr.contains('sign_in_cancelled') ||
+          errorStr.contains('12501');
+
+      if (isCancellation) {
+        onComplete();
+        return;
+      }
+
+      // Check for developer error
+      final isDeveloperError = errorStr.contains('apiexception: 10') ||
+          errorStr.contains('apiException: 10') ||
+          errorStr.contains('apiexception:10') ||
+          errorStr.contains('error 10') ||
+          errorStr.contains('developer_error') ||
+          errorStr.contains(': 10:') ||
+          errorStr.contains(': 10 ') ||
+          RegExp(r'apiexception.*10|error.*10').hasMatch(errorStr);
+
+      if (isDeveloperError) {
+        setState(() {
+          customerController.emailUpdateError.value =
+              'Google Sign-In Configuration Error. Please contact support.';
+        });
+        onComplete();
+        return;
+      }
+
+      // For other errors
+      setState(() {
+        customerController.emailUpdateError.value = 'Failed to sign in with Google. Please try again.';
+      });
+      onComplete();
+    }
   }
 
   /// Show dialog to update phone number

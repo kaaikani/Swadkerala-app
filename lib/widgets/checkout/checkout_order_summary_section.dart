@@ -95,7 +95,15 @@ class CheckoutOrderSummarySection extends StatelessWidget {
       
       final itemCount = cart?.lines.length ?? 0;
       final subtotal = cart?.subTotalWithTax ?? 0;
-      final shipping = orderController.getShippingPrice(orderController.selectedShippingMethod.value);
+      // Get shipping price from selected method, fallback to cart's shippingWithTax
+      final selectedMethod = orderController.selectedShippingMethod.value;
+      final shippingFromMethod = orderController.getShippingPrice(selectedMethod);
+      final shippingFromCart = cart?.shippingWithTax ?? 0;
+      // Use shipping from method if method is selected and has valid price, otherwise use cart's shippingWithTax
+      // This ensures delivery charge is always shown correctly even if method selection is delayed
+      final shipping = (selectedMethod != null && shippingFromMethod > 0) 
+          ? shippingFromMethod 
+          : shippingFromCart.toInt();
       // Use cart's totalWithTax directly (updated after coupon application)
       final total = cart?.totalWithTax ?? 0;
       final hasFreeShipping = cartController.hasFreeShippingCoupon();

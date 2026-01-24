@@ -1086,10 +1086,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FaIcon(
-                          FontAwesomeIcons.google,
-                          size: ResponsiveUtils.rp(24),
-                          color: Colors.blue.shade700,
+                        Image.asset(
+                          'assets/images/google_logo.png',
+                          width: ResponsiveUtils.rp(24),
+                          height: ResponsiveUtils.rp(24),
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return FaIcon(
+                              FontAwesomeIcons.google,
+                              size: ResponsiveUtils.rp(24),
+                              color: Colors.blue.shade700,
+                            );
+                          },
                         ),
                         SizedBox(width: ResponsiveUtils.rp(14)),
                         Text(
