@@ -102,7 +102,41 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
       final storage = GetStorage();
+      
+      // Preserve onboarding flags - user should not see onboarding again after first install
+      final preservedOnboardingComplete = storage.read('onboarding_complete');
+      final preservedIntroShown = storage.read('intro_shown');
+      
+      // Preserve landing page cache keys for better user experience
+      final preservedPostalCode = storage.read('postal_code');
+      final preservedChannelCode = storage.read('channel_code');
+      final preservedChannelName = storage.read('channel_name');
+      final preservedChannelType = storage.read('channel_type');
+      
       await storage.erase();
+      
+      // Restore onboarding flags if they existed
+      if (preservedOnboardingComplete != null) {
+        await storage.write('onboarding_complete', preservedOnboardingComplete);
+      }
+      if (preservedIntroShown != null) {
+        await storage.write('intro_shown', preservedIntroShown);
+      }
+      
+      // Restore landing page cache if they existed
+      if (preservedPostalCode != null) {
+        await storage.write('postal_code', preservedPostalCode);
+      }
+      if (preservedChannelCode != null) {
+        await storage.write('channel_code', preservedChannelCode);
+      }
+      if (preservedChannelName != null) {
+        await storage.write('channel_name', preservedChannelName);
+      }
+      if (preservedChannelType != null) {
+        await storage.write('channel_type', preservedChannelType);
+      }
+      
       _authController.setLoggedIn(false);
       _authController.setOtpSent(false);
     } catch (e) {
