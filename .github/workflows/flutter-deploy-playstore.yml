@@ -58,7 +58,7 @@ jobs:
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
       - name: Set build number (versionCode)
-        run: echo "Building versionCode = ${{ github.run_number }} (from pubspec: $(grep '^version:' pubspec.yaml | sed 's/.*+//'))"
+        run: echo "Building versionCode = ${{ github.run_number }}"
 
       # versionCode = github.run_number (unique per workflow run, always increasing)
       - name: Build App Bundle
