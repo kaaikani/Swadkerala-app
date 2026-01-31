@@ -21,7 +21,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,9 +45,16 @@ jobs:
         run: flutter test || true
 
       # Decode keystore from secret (required for Play Store signing)
+      # Secret must be a single line: base64 -w0 /path/to/keystore.jks (no trailing text/newlines)
       - name: Decode Keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+          echo "$KEYSTORE_B64" | tr -d '\n\r[:space:]' | base64 --decode > android/app/upload-keystore.jks
+          if [ ! -s android/app/upload-keystore.jks ]; then
+            echo "::error::Decoded keystore is empty. Fix ANDROID_KEYSTORE_BASE64: use base64 -w0 /path/to/keystore and paste only the single line (no shell prompt)."
+            exit 1
+          fi
 
       # Create key.properties so Gradle signs the AAB with your upload key
       - name: Create key.properties
@@ -94,5 +101,3 @@ jobs:
           name: app-release-aab
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
-
-
