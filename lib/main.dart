@@ -24,7 +24,6 @@ import 'controllers/utilitycontroller/utilitycontroller.dart';
 import 'controllers/authentication/authenticationcontroller.dart';
 import 'controllers/theme_controller.dart';
 import 'theme/theme.dart';
-import 'pages/error_page.dart';
 
 /// Check for app updates on startup
 /// This function is called automatically in main() to check for updates
@@ -332,38 +331,11 @@ Future<void> main() async {
         reason: 'Unhandled error in Zone',
         fatal: true,
       );
-
-      // In release mode, show error page
-      if (kReleaseMode) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          try {
-            final context = Get.key.currentContext;
-            if (context != null) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (_) => ErrorPage(
-                    errorDetails: FlutterErrorDetails(
-                      exception: error,
-                      stack: stackTrace,
-                    ),
-                    isReleaseMode: true,
-                  ),
-                ),
-                (route) => false,
-              );
-            }
-          } catch (e) {
-          }
-        });
-      } else {
-        // In debug mode, print error
-      }
     },
   );
 }
 
-/// Set up global error handlers to catch unhandled exceptions
-/// In release mode, shows user-friendly error page instead of grey screen
+/// Set up global error handlers; widget build errors are shown via ErrorWidget
 void _setupErrorHandlers() {
   // Handle Flutter framework errors (widget build errors, etc.)
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -374,117 +346,46 @@ void _setupErrorHandlers() {
         errorString.contains('HardwareKeyboard') ||
         (errorString.contains('physical key is not pressed') && 
          errorString.contains('KeyUpEvent'))) {
-      // This is a known Flutter framework bug, especially on Android emulators
-      // It doesn't affect app functionality, so we'll silently ignore it
       return;
     }
-    
-    // Log to Crashlytics
     CrashlyticsService.instance.recordError(
       details.exception,
       details.stack,
       reason: 'Flutter framework error',
       fatal: true,
     );
-
-    // In release mode, show error page instead of grey screen
-    if (kReleaseMode) {
-      // Navigate to error page after frame is built
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        try {
-          // Use Get.key.currentContext or navigate directly
-          final context = Get.key.currentContext;
-          if (context != null) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (_) => ErrorPage(
-                  errorDetails: details,
-                  isReleaseMode: true,
-                ),
-              ),
-              (route) => false,
-            );
-          }
-        } catch (e) {
-        }
-      });
-    } else {
-      // In debug mode, show default error screen
-      FlutterError.presentError(details);
-    }
+    FlutterError.presentError(details);
   };
 
   // Handle async errors (Future errors, Zone errors, etc.)
   PlatformDispatcher.instance.onError = (error, stack) {
-    // Filter out known harmless keyboard assertion errors (Flutter framework bug)
     final errorString = error.toString();
     if (errorString.contains('KeyUpEvent is dispatched') ||
         errorString.contains('_pressedKeys.containsKey') ||
         errorString.contains('HardwareKeyboard') ||
         (errorString.contains('physical key is not pressed') && 
          errorString.contains('KeyUpEvent'))) {
-      // This is a known Flutter framework bug, especially on Android emulators
-      // It doesn't affect app functionality, so we'll silently ignore it
-      return true; // Return true to indicate error was handled
+      return true;
     }
-    
-    // Log to Crashlytics
     CrashlyticsService.instance.recordError(
       error,
       stack,
       reason: 'Async error',
       fatal: true,
     );
-
-    // In release mode, show error page
-    if (kReleaseMode) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        try {
-          final context = Get.key.currentContext;
-          if (context != null) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (_) => ErrorPage(
-                  errorDetails: FlutterErrorDetails(
-                    exception: error,
-                    stack: stack,
-                  ),
-                  isReleaseMode: true,
-                ),
-              ),
-              (route) => false,
-            );
-          }
-        } catch (e) {
-        }
-      });
-    }
-
-    return true; // Return true to indicate error was handled
+    return true;
   };
 
-  // Override ErrorWidget.builder to show custom error page in release mode
+  // Show errors in widget via ErrorWidget (no full-screen error page)
   ErrorWidget.builder = (FlutterErrorDetails details) {
-    // Filter out known harmless keyboard assertion errors (Flutter framework bug)
     final errorString = details.exception.toString();
     if (errorString.contains('KeyUpEvent is dispatched') ||
         errorString.contains('_pressedKeys.containsKey') ||
         errorString.contains('HardwareKeyboard') ||
         (errorString.contains('physical key is not pressed') && 
          errorString.contains('KeyUpEvent'))) {
-      // This is a known Flutter framework bug, especially on Android emulators
-      // Return an empty widget to suppress the error display
       return const SizedBox.shrink();
     }
-    
-    // In release mode, return error page
-    if (kReleaseMode) {
-      return ErrorPage(
-        errorDetails: details,
-        isReleaseMode: true,
-      );
-    }
-    // In debug mode, show default error widget
     return ErrorWidget(details.exception);
   };
 }

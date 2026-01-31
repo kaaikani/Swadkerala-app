@@ -1785,7 +1785,7 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                             ],
                             SizedBox(height: ResponsiveUtils.rp(20)),
-                            // Phone Number Field
+                            // Phone Number Field (always editable)
                             Text(
                               'Phone Number',
                               style: TextStyle(
@@ -1797,8 +1797,7 @@ class _AccountPageState extends State<AccountPage> {
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             TextField(
                               controller: phoneController,
-                              enabled: !isLoading && !canEditOnlyName,
-                              readOnly: canEditOnlyName,
+                              enabled: !isLoading,
                               keyboardType: TextInputType.phone,
                               maxLength: 10,
                               style: TextStyle(
@@ -1809,10 +1808,10 @@ class _AccountPageState extends State<AccountPage> {
                                 hintText: 'Enter phone number',
                                 prefixIcon: Icon(
                                   Icons.phone_outlined,
-                                  color: canEditOnlyName ? AppColors.textSecondary : AppColors.button,
+                                  color: AppColors.button,
                                 ),
                                 filled: true,
-                                fillColor: canEditOnlyName ? AppColors.background : AppColors.inputFill,
+                                fillColor: AppColors.inputFill,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                                   borderSide: BorderSide(
@@ -1821,13 +1820,6 @@ class _AccountPageState extends State<AccountPage> {
                                   ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                                  borderSide: BorderSide(
-                                    color: AppColors.border,
-                                    width: 1,
-                                  ),
-                                ),
-                                disabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                                   borderSide: BorderSide(
                                     color: AppColors.border,
@@ -1849,9 +1841,8 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                             ),
                           ] else ...[
-                            // Show email and phone as read-only display fields
+                            // Email: show email with Edit button (opens email dialog)
                             SizedBox(height: ResponsiveUtils.rp(20)),
-                            // Email Display (Read-only)
                             Text(
                               'Email',
                               style: TextStyle(
@@ -1861,44 +1852,64 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                             ),
                             SizedBox(height: ResponsiveUtils.rp(8)),
-                            TextField(
-                              controller: emailController,
-                              enabled: false,
-                              readOnly: true,
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(16),
-                                color: AppColors.textPrimary,
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(16),
+                                vertical: ResponsiveUtils.rp(14),
                               ),
-                              decoration: InputDecoration(
-                                hintText: 'No email address',
-                                prefixIcon: Icon(
-                                  Icons.email_outlined,
-                                  color: AppColors.textSecondary,
+                              decoration: BoxDecoration(
+                                color: AppColors.background,
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                border: Border.all(
+                                  color: AppColors.border,
+                                  width: 1,
                                 ),
-                                filled: true,
-                                fillColor: AppColors.background,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                                  borderSide: BorderSide(
-                                    color: AppColors.border,
-                                    width: 1,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.email_outlined,
+                                    color: AppColors.textSecondary,
+                                    size: ResponsiveUtils.rp(22),
                                   ),
-                                ),
-                                disabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                                  borderSide: BorderSide(
-                                    color: AppColors.border,
-                                    width: 1,
+                                  SizedBox(width: ResponsiveUtils.rp(12)),
+                                  Expanded(
+                                    child: Text(
+                                      customer.emailAddress.isNotEmpty
+                                          ? customer.emailAddress
+                                          : 'No email address',
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUtils.sp(16),
+                                        color: customer.emailAddress.isNotEmpty
+                                            ? AppColors.textPrimary
+                                            : AppColors.textSecondary,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: ResponsiveUtils.rp(16),
-                                  vertical: ResponsiveUtils.rp(16),
-                                ),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      Get.back();
+                                      _showUpdateEmailDialog();
+                                    },
+                                    icon: Icon(
+                                      Icons.edit_outlined,
+                                      size: ResponsiveUtils.rp(18),
+                                      color: AppColors.button,
+                                    ),
+                                    label: Text(
+                                      'Edit',
+                                      style: TextStyle(
+                                        fontSize: ResponsiveUtils.sp(14),
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.button,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             SizedBox(height: ResponsiveUtils.rp(20)),
-                            // Phone Number Display (Read-only)
+                            // Phone Number Field (always editable)
                             Text(
                               'Phone Number',
                               style: TextStyle(
@@ -1910,20 +1921,21 @@ class _AccountPageState extends State<AccountPage> {
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             TextField(
                               controller: phoneController,
-                              enabled: false,
-                              readOnly: true,
+                              enabled: !isLoading,
+                              keyboardType: TextInputType.phone,
+                              maxLength: 10,
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
                                 color: AppColors.textPrimary,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'No phone number',
+                                hintText: 'Enter phone number',
                                 prefixIcon: Icon(
                                   Icons.phone_outlined,
-                                  color: AppColors.textSecondary,
+                                  color: AppColors.button,
                                 ),
                                 filled: true,
-                                fillColor: AppColors.background,
+                                fillColor: AppColors.inputFill,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                                   borderSide: BorderSide(
@@ -1931,17 +1943,25 @@ class _AccountPageState extends State<AccountPage> {
                                     width: 1,
                                   ),
                                 ),
-                                disabledBorder: OutlineInputBorder(
+                                enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                                   borderSide: BorderSide(
                                     color: AppColors.border,
                                     width: 1,
                                   ),
                                 ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                  borderSide: BorderSide(
+                                    color: AppColors.button,
+                                    width: 2,
+                                  ),
+                                ),
                                 contentPadding: EdgeInsets.symmetric(
                                   horizontal: ResponsiveUtils.rp(16),
                                   vertical: ResponsiveUtils.rp(16),
                                 ),
+                                counterText: '',
                               ),
                             ),
                           ],
@@ -1989,39 +2009,56 @@ class _AccountPageState extends State<AccountPage> {
                           flex: 2,
                           child: ElevatedButton(
                             onPressed: isLoading ? null : () async {
-                              
                               final firstName = firstNameController.text.trim();
                               final lastName = lastNameController.text.trim();
-                              
-                              
+                              final phone = phoneController.text.trim();
+
                               if (firstName.isEmpty || lastName.isEmpty) {
-                                showErrorSnackbar('Please fill in all fields');
+                                showErrorSnackbar('Please fill in first and last name');
                                 return;
                               }
-
+                              if (phone.isNotEmpty) {
+                                if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+                                  showErrorSnackbar('Phone number must contain only digits');
+                                  return;
+                                }
+                                if (phone.length != 10) {
+                                  showErrorSnackbar('Phone number must be exactly 10 digits');
+                                  return;
+                                }
+                              }
 
                               setState(() {
                                 isLoading = true;
                               });
 
+                              customerController.firstNameController.text = firstName;
+                              customerController.lastNameController.text = lastName;
 
-              customerController.firstNameController.text = firstName;
-              customerController.lastNameController.text = lastName;
+                              bool success = await customerController.updateCustomer();
+                              if (success && phone.isNotEmpty && phone != (customer.phoneNumber ?? '')) {
+                                try {
+                                  final phoneSuccess = await customerController.updateCustomerPhoneNumber(phone);
+                                  if (!phoneSuccess) {
+                                    showErrorSnackbar('Profile saved but phone update failed. Try updating phone separately.');
+                                  }
+                                } catch (e) {
+                                  final msg = e.toString().replaceFirst('Exception: ', '');
+                                  showErrorSnackbar(msg.isNotEmpty ? msg : 'Failed to update phone number');
+                                }
+                              }
 
-              final success = await customerController.updateCustomer();
-              
-                              
                               setState(() {
                                 isLoading = false;
                               });
 
-              if (success) {
-                Get.back();
-                showSuccessSnackbar('Profile updated successfully');
-              } else {
-                showErrorSnackbar('Failed to update profile');
-              }
-            },
+                              if (success) {
+                                Get.back();
+                                showSuccessSnackbar('Profile updated successfully');
+                              } else {
+                                showErrorSnackbar('Failed to update profile');
+                              }
+                            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.button,
               foregroundColor: Colors.white,

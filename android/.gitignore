@@ -12,3 +12,7 @@ GeneratedPluginRegistrant.java
 # key.properties - REMOVED FROM GITIGNORE TO PUSH TO GIT
 # **/*.keystore - REMOVED FROM GITIGNORE TO PUSH TO GIT
 # **/*.jks - REMOVED FROM GITIGNORE TO PUSH TO GIT
+
+# Google Play / Fastlane service account key (never commit)
+kaaikani-420702-6cb05f6d0f33.json
+fastlane-api.json

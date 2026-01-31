@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "kaaikani-420702",
+  "private_key_id": "6cb05f6d0f33d957f1fd9c8c4c86de5c6f328121",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDj6jCSWM2BQQFr\nuYz7jeimapnobgJyn6kvXb0Xz1tezuBAgWP/BUhPIdNsSSQtP/83aJNW38ANLacL\ndl1RT7Yaa0zS7iqR4LBYNWAhpLsj0GrluGd9+lXeCpmhQV8qPm3bDmoQ3oQJOeny\n3HVmlYRal7rW+52LZUvqXl0vTEwzL+n9jixAiCf1YvBNYDACbkahd4gKevKlMWk6\nBvmOupGgxTjASjm5MWW3N/6ft11uWbUXRQaVokbGV2fh/y/SO0IV4GdxgoHub+oU\ntSa8k0XFdv4k3ebF0O/xYWf+2+OHaki2dQprrKJqVHBgMr1QI4A8OO4x8yUiy3Sd\n2n2tl98xAgMBAAECggEABvD/AbYKrEEalflUveSYjVj5zwZqtKsAMB0ewTbjhYOv\neMd4EDBM/3v8QHQJ0gb88ucQdbji1IPrboHwXaWb2joiYNo4GbFKLaWSg/PMb07N\nsqlnHYMeUmDoRO0ExPiZx+4sdM8SHmXRJkBoovMy0L+GRT3skm5HXZ/6HpKoT3a7\nZr/0DUI0JObcpg6mBCz+04vlf7Ad/oretGiZeDdAWk25G16lRs1TafJdSWUeiDQe\nGpc0KGjH+9J+4QwMbl5of1NZNy3LsBLz/YhufdCM18Ws9MvFboSi+HSKNFR27PSP\nXlYyPBNPSMQCNjzXOX6+wSIs84dSlWxJ6vgtH2fBQQKBgQD0V81Grj9xIwRNiHqh\n8o/h9ZZ/qW4pueGCyhUUbjk4NQ5CxFBEJjqCs1eatCkbl6I6IPAhVFcfYK4QfkLo\nWPNlkUGCfhIZ+lS9m0JhSWQIcr99rlL42ByWiJ9RH6CAmAOt5bekPSUgk+MZYALq\nfbz9CLlgxH6PkZRFSFIXdqfUTQKBgQDuyb+C6jw4u2k148S2OpOekueRaQ0VBNpB\n2TRY917nVFy+b/O4VptIsAZz2tSNFXqltYXLI+4+6z5JFWFIs+ofgIlHILZSrf7y\n9AHnBYUWSrLKiOsXs/r0t1BelYblkx9Aqg/sTaA27RtIWQ/UD7X/4c7N2as1BdEt\nYI0BM784dQKBgQCoE5GgEhKP5495Ke15Yxo4S7AnxsuBplyKlCml8SApGs3hfZrd\nFhLffzA+ubkhQtAT/j5QHu0DJ4T00XWC0FU1Q5L1iXU4K2uJNbiWpV5LNWulr3lh\ntX8MyZQVwJSugGLfhwoozuqwGyp3dQTsemu6/vpNpzyL049TjSjy/Or7bQKBgQDs\nCJZ6hKjkdzQHZc6TRpGWpKWr0Yhx52sKvfYFnve7eGN4htcFtu4lyoGGUZ/amYmz\ndRv8cdbVcNkPisewAs+BNh/8I/S1A3LImrOqtYUZRNs4YmDn/CsrbGxQIkPGeEfj\nNnco4I5m3LckK4z+1EzV01IFnoyii855qT+YGZuB5QKBgQDYsVlvH9DTDlyhANE6\ngzYcDdpSHtQkF2Uy/HZGxN28dQbpogn3AGYxmfQX7R3L0VKa3+hrSJmOdqhXUmqE\nshsCh7q+LmP3X4l13HvZNdhTn7yPe8Ahnip1e0N+4df88snTrU+tItGZLBnaUCCw\ncn2MgoYM5gaGxS3s+M6XCDXXLg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "kaaikani-app@kaaikani-420702.iam.gserviceaccount.com",
+  "client_id": "101169814766569962018",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/kaaikani-app%40kaaikani-420702.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

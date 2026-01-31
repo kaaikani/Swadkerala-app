@@ -1,4 +1,11 @@
-name: Deploy to Google Play Store
+# Required GitHub Secrets:
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON - Full JSON content of your Play Console service account key (e.g. kaaikani-420702-6cb05f6d0f33.json)
+#   ANDROID_KEYSTORE_BASE64         - base64 of upload keystore: base64 -w0 /path/to/upload-keystore.jks
+#   ANDROID_KEYSTORE_PASSWORD      - Keystore store password
+#   ANDROID_KEY_ALIAS              - Key alias (e.g. upload)
+#   ANDROID_KEY_PASSWORD           - Key alias password
+
+name: Deploy to Google Play (Internal Testing Only)
 
 on:
   push:
@@ -6,20 +13,7 @@ on:
       - main
       - master
       - develop
-    tags:
-      - 'v*'
   workflow_dispatch:
-    inputs:
-      track:
-        description: 'Release track (internal, closed, open, production)'
-        required: true
-        default: 'internal'
-        type: choice
-        options:
-          - internal
-          - closed
-          - open
-          - production
 
 env:
   APPLICATION_ID: com.kaaikani.kaaikani
@@ -50,18 +44,34 @@ jobs:
       - name: Run tests
         run: flutter test || true
 
+      # Decode keystore from secret (required for Play Store signing)
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      # Create key.properties so Gradle signs the AAB with your upload key
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+      - name: Set build number (versionCode)
+        run: echo "Building versionCode = ${{ github.run_number }} (from pubspec: $(grep '^version:' pubspec.yaml | sed 's/.*+//'))"
+
+      # versionCode = github.run_number (unique per workflow run, always increasing)
       - name: Build App Bundle
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --build-number=${{ github.run_number }}
         env:
           FLUTTER_BUILD_MODE: release
 
       - name: Build APK (for internal testing)
-        run: flutter build apk --release
+        run: flutter build apk --release --build-number=${{ github.run_number }}
         env:
           FLUTTER_BUILD_MODE: release
 
       - name: Upload to Internal Testing
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') || (github.event.inputs.track == 'internal')
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
@@ -70,39 +80,6 @@ jobs:
           track: internal
           status: completed
           inAppUpdatePriority: 2
-
-      - name: Upload to Closed Testing
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.track == 'closed'
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: ${{ env.APPLICATION_ID }}
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          track: closed
-          status: completed
-          inAppUpdatePriority: 3
-
-      - name: Upload to Open Testing
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.track == 'open'
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: ${{ env.APPLICATION_ID }}
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          track: open
-          status: completed
-          inAppUpdatePriority: 4
-
-      - name: Upload to Production
-        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.track == 'production')
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: ${{ env.APPLICATION_ID }}
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          track: production
-          status: completed
-          inAppUpdatePriority: 5
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
