@@ -70,19 +70,27 @@ jobs:
       - name: Set build number (versionCode)
         run: echo "Building versionCode = ${{ github.run_number }}"
 
-      # Remove fluttertoast from build (avoids :fluttertoast:compileReleaseKotlin failure)
-      # Use --no-pub so "flutter build" does not run pub get and regenerate .flutter-plugins
+      # Remove fluttertoast from build (avoids :fluttertoast:compileReleaseKotlin failure).
+      # Flutter plugin loader reads .flutter-plugins-dependencies (JSON); also patch .flutter-plugins.
       - name: Exclude fluttertoast from Android build
         run: |
-          if [ -f .flutter-plugins ]; then
-            sed -i '/^fluttertoast=/d' .flutter-plugins
-            echo "Excluded fluttertoast from .flutter-plugins"
-            grep -q fluttertoast .flutter-plugins && echo "WARNING: fluttertoast still in file" || echo "fluttertoast removed OK"
-          else
-            echo "WARNING: .flutter-plugins not found"
+          sed -i '/^fluttertoast=/d' .flutter-plugins 2>/dev/null || true
+          if [ -f .flutter-plugins-dependencies ]; then
+            jq '
+              .plugins.android |= map(select(.name != "fluttertoast")) |
+              .plugins.ios |= map(select(.name != "fluttertoast")) |
+              .plugins.web |= map(select(.name != "fluttertoast")) |
+              .plugins.macos |= map(select(.name != "fluttertoast")) |
+              .plugins.linux |= map(select(.name != "fluttertoast")) |
+              .plugins.windows |= map(select(.name != "fluttertoast")) |
+              .dependencyGraph |= map(select(.name != "fluttertoast")) |
+              .dependencyGraph |= map(if .dependencies then .dependencies |= map(select(. != "fluttertoast")) else . end)
+            ' .flutter-plugins-dependencies > .flutter-plugins-dependencies.tmp && mv .flutter-plugins-dependencies.tmp .flutter-plugins-dependencies
+            echo "Removed fluttertoast from .flutter-plugins-dependencies"
           fi
+          echo "Excluded fluttertoast from plugin lists"
 
-      # versionCode = github.run_number. --no-pub prevents pub get from re-adding fluttertoast to .flutter-plugins
+      # versionCode = github.run_number. --no-pub prevents pub get from regenerating plugin files
       - name: Build App Bundle
         run: flutter build appbundle --release --no-pub --build-number=${{ github.run_number }}
         env:

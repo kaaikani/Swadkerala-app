@@ -5,12 +5,27 @@
 echo "🔧 Fixing Flutter plugin issues..."
 
 # Remove fluttertoast from build (causes :fluttertoast:compileReleaseKotlin failure)
-# It is a transitive dependency (e.g. from flutter_local_notifications) and is not used in app code.
+# Flutter reads from BOTH .flutter-plugins AND .flutter-plugins-dependencies (JSON).
 FLUTTER_PLUGINS=".flutter-plugins"
 if [ -f "$FLUTTER_PLUGINS" ]; then
   if grep -q '^fluttertoast=' "$FLUTTER_PLUGINS"; then
-    echo "  ✅ Removing fluttertoast from Android build..."
+    echo "  ✅ Removing fluttertoast from .flutter-plugins..."
     grep -v '^fluttertoast=' "$FLUTTER_PLUGINS" > "${FLUTTER_PLUGINS}.tmp" && mv "${FLUTTER_PLUGINS}.tmp" "$FLUTTER_PLUGINS"
+  fi
+fi
+if [ -f .flutter-plugins-dependencies ]; then
+  if grep -q '"name":"fluttertoast"' .flutter-plugins-dependencies; then
+    echo "  ✅ Removing fluttertoast from .flutter-plugins-dependencies..."
+    jq '
+      .plugins.android |= map(select(.name != "fluttertoast")) |
+      .plugins.ios |= map(select(.name != "fluttertoast")) |
+      .plugins.web |= map(select(.name != "fluttertoast")) |
+      .plugins.macos |= map(select(.name != "fluttertoast")) |
+      .plugins.linux |= map(select(.name != "fluttertoast")) |
+      .plugins.windows |= map(select(.name != "fluttertoast")) |
+      .dependencyGraph |= map(select(.name != "fluttertoast")) |
+      .dependencyGraph |= map(if .dependencies then .dependencies |= map(select(. != "fluttertoast")) else . end)
+    ' .flutter-plugins-dependencies > .flutter-plugins-dependencies.tmp && mv .flutter-plugins-dependencies.tmp .flutter-plugins-dependencies
     echo "     fluttertoast excluded (avoids Kotlin compile error)"
   fi
 fi
