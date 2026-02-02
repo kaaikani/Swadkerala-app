@@ -71,22 +71,25 @@ jobs:
         run: echo "Building versionCode = ${{ github.run_number }}"
 
       # Remove fluttertoast from build (avoids :fluttertoast:compileReleaseKotlin failure)
-      # Must run immediately before build in case .flutter-plugins was regenerated
+      # Use --no-pub so "flutter build" does not run pub get and regenerate .flutter-plugins
       - name: Exclude fluttertoast from Android build
         run: |
           if [ -f .flutter-plugins ]; then
             sed -i '/^fluttertoast=/d' .flutter-plugins
             echo "Excluded fluttertoast from .flutter-plugins"
+            grep -q fluttertoast .flutter-plugins && echo "WARNING: fluttertoast still in file" || echo "fluttertoast removed OK"
+          else
+            echo "WARNING: .flutter-plugins not found"
           fi
 
-      # versionCode = github.run_number (unique per workflow run, always increasing)
+      # versionCode = github.run_number. --no-pub prevents pub get from re-adding fluttertoast to .flutter-plugins
       - name: Build App Bundle
-        run: flutter build appbundle --release --build-number=${{ github.run_number }}
+        run: flutter build appbundle --release --no-pub --build-number=${{ github.run_number }}
         env:
           FLUTTER_BUILD_MODE: release
 
       - name: Build APK (for internal testing)
-        run: flutter build apk --release --build-number=${{ github.run_number }}
+        run: flutter build apk --release --no-pub --build-number=${{ github.run_number }}
         env:
           FLUTTER_BUILD_MODE: release
 
