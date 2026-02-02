@@ -295,11 +295,12 @@ class BillGenerator {
   static pw.Widget _buildItemsTable(Fragment$Cart order) {
     final headers = ['Item', 'Qty', 'Price', 'Total'];
     final data = order.lines.map((line) {
+      final isFree = line.discountedLinePriceWithTax == 0 || line.linePriceWithTax == 0;
       return [
         line.productVariant.name,
         '${line.quantity}',
-        BillGenerator.formatPriceForPdf(line.unitPriceWithTax.toInt()),
-        BillGenerator.formatPriceForPdf(line.linePriceWithTax.toInt()),
+        isFree ? 'Free' : BillGenerator.formatPriceForPdf(line.unitPriceWithTax.toInt()),
+        isFree ? 'Free' : BillGenerator.formatPriceForPdf(line.linePriceWithTax.toInt()),
       ];
     }).toList();
 

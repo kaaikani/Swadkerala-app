@@ -4,6 +4,17 @@
 
 echo "🔧 Fixing Flutter plugin issues..."
 
+# Remove fluttertoast from build (causes :fluttertoast:compileReleaseKotlin failure)
+# It is a transitive dependency (e.g. from flutter_local_notifications) and is not used in app code.
+FLUTTER_PLUGINS=".flutter-plugins"
+if [ -f "$FLUTTER_PLUGINS" ]; then
+  if grep -q '^fluttertoast=' "$FLUTTER_PLUGINS"; then
+    echo "  ✅ Removing fluttertoast from Android build..."
+    grep -v '^fluttertoast=' "$FLUTTER_PLUGINS" > "${FLUTTER_PLUGINS}.tmp" && mv "${FLUTTER_PLUGINS}.tmp" "$FLUTTER_PLUGINS"
+    echo "     fluttertoast excluded (avoids Kotlin compile error)"
+  fi
+fi
+
 # Fix flutter_app_badger
 BADGER_FILE="$HOME/.pub-cache/hosted/pub.dev/flutter_app_badger-1.5.0/android/build.gradle"
 if [ -f "$BADGER_FILE" ]; then

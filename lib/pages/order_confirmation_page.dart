@@ -206,7 +206,29 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                         ),
                       ),
                       SizedBox(height: ResponsiveUtils.rp(16)),
-                      ...order.lines.map((line) => _buildProductItem(line)).toList(),
+                      // Paid products
+                      ...order.lines
+                          .where((line) => line.discountedLinePriceWithTax > 0)
+                          .map((line) => _buildProductItem(line, isFree: false))
+                          .toList(),
+                      // Coupon / free products (show separately as free)
+                      if (order.couponCodes.isNotEmpty &&
+                          order.lines.any((line) => line.discountedLinePriceWithTax == 0)) ...[
+                        SizedBox(height: ResponsiveUtils.rp(12)),
+                        Text(
+                          'Free with coupon',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(14),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.success,
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(8)),
+                        ...order.lines
+                            .where((line) => line.discountedLinePriceWithTax == 0)
+                            .map((line) => _buildProductItem(line, isFree: true))
+                            .toList(),
+                      ],
                       Divider(height: ResponsiveUtils.rp(32), color: AppColors.divider),
                       _buildSummaryRow('Subtotal', order.subTotalWithTax.toDouble()),
                       SizedBox(height: ResponsiveUtils.rp(8)),
@@ -253,7 +275,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     );
   }
 
-  Widget _buildProductItem(dynamic line) {
+  Widget _buildProductItem(dynamic line, {bool isFree = false}) {
     return Padding(
       padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
       child: Row(
@@ -304,11 +326,11 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             ),
           ),
           Text(
-            cartController.formatPrice(line.linePriceWithTax.toInt()),
+            isFree ? 'Free' : cartController.formatPrice(line.linePriceWithTax.toInt()),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: ResponsiveUtils.sp(14),
-              color: AppColors.textPrimary,
+              color: isFree ? AppColors.success : AppColors.textPrimary,
             ),
           ),
         ],

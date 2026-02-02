@@ -25,6 +25,10 @@ android {
     buildFeatures {
         buildConfig = true
     }
+
+    androidResources {
+        localeFilters += listOf("en", "hi")
+    }
     
     // Fix 16 KB Page Size Rejection - Ensure proper alignment
     // AGP 8.5.1+ automatically handles 16 KB alignment, but we ensure it's configured
@@ -68,9 +72,8 @@ android {
         //     abiFilters += listOf("armeabi-v7a", "arm64-v8a")
         // }
         
-        // Enable resource shrinking to remove unused resources
+        // Enable resource shrinking - only include English and Hindi (localeFilters set in androidResources below)
         // This can reduce APK size by 10-30%
-        resConfigs("en", "hi") // Only include English and Hindi resources
         
         // Remove debug validation layers to reduce size
         packaging {
@@ -173,6 +176,14 @@ android {
 flutter {
     source = "../.."
     target = "lib/main.dart"
+}
+
+// Don't fail the build if Crashlytics mapping upload fails (e.g. CI DNS/network to firebasecrashlyticssymbols.googleapis.com)
+// Skip the upload task so build succeeds; you can upload mapping files manually to Firebase if needed.
+afterEvaluate {
+    tasks.matching { it.name.contains("uploadCrashlyticsMappingFile", ignoreCase = true) }.configureEach {
+        enabled = false
+    }
 }
 
 configurations.all {
