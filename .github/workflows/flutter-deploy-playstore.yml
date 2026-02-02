@@ -70,6 +70,15 @@ jobs:
       - name: Set build number (versionCode)
         run: echo "Building versionCode = ${{ github.run_number }}"
 
+      # Remove fluttertoast from build (avoids :fluttertoast:compileReleaseKotlin failure)
+      # Must run immediately before build in case .flutter-plugins was regenerated
+      - name: Exclude fluttertoast from Android build
+        run: |
+          if [ -f .flutter-plugins ]; then
+            sed -i '/^fluttertoast=/d' .flutter-plugins
+            echo "Excluded fluttertoast from .flutter-plugins"
+          fi
+
       # versionCode = github.run_number (unique per workflow run, always increasing)
       - name: Build App Bundle
         run: flutter build appbundle --release --build-number=${{ github.run_number }}
