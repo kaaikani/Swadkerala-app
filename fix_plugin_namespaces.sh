@@ -4,29 +4,29 @@
 
 echo "🔧 Fixing Flutter plugin issues..."
 
-# Remove fluttertoast from build (causes :fluttertoast:compileReleaseKotlin failure)
+# Remove plugins that fail Android Kotlin compile (v1 embedding / Registrar issues).
 # Flutter reads from BOTH .flutter-plugins AND .flutter-plugins-dependencies (JSON).
 FLUTTER_PLUGINS=".flutter-plugins"
 if [ -f "$FLUTTER_PLUGINS" ]; then
-  if grep -q '^fluttertoast=' "$FLUTTER_PLUGINS"; then
-    echo "  ✅ Removing fluttertoast from .flutter-plugins..."
-    grep -v '^fluttertoast=' "$FLUTTER_PLUGINS" > "${FLUTTER_PLUGINS}.tmp" && mv "${FLUTTER_PLUGINS}.tmp" "$FLUTTER_PLUGINS"
+  if grep -qE '^(fluttertoast|speech_to_text)=' "$FLUTTER_PLUGINS"; then
+    echo "  ✅ Removing fluttertoast and speech_to_text from .flutter-plugins..."
+    grep -vE '^(fluttertoast|speech_to_text)=' "$FLUTTER_PLUGINS" > "${FLUTTER_PLUGINS}.tmp" && mv "${FLUTTER_PLUGINS}.tmp" "$FLUTTER_PLUGINS"
   fi
 fi
 if [ -f .flutter-plugins-dependencies ]; then
-  if grep -q '"name":"fluttertoast"' .flutter-plugins-dependencies; then
-    echo "  ✅ Removing fluttertoast from .flutter-plugins-dependencies..."
+  if grep -qE '"name":"(fluttertoast|speech_to_text)"' .flutter-plugins-dependencies; then
+    echo "  ✅ Removing fluttertoast and speech_to_text from .flutter-plugins-dependencies..."
     jq '
-      .plugins.android |= map(select(.name != "fluttertoast")) |
-      .plugins.ios |= map(select(.name != "fluttertoast")) |
-      .plugins.web |= map(select(.name != "fluttertoast")) |
-      .plugins.macos |= map(select(.name != "fluttertoast")) |
-      .plugins.linux |= map(select(.name != "fluttertoast")) |
-      .plugins.windows |= map(select(.name != "fluttertoast")) |
-      .dependencyGraph |= map(select(.name != "fluttertoast")) |
-      .dependencyGraph |= map(if .dependencies then .dependencies |= map(select(. != "fluttertoast")) else . end)
+      .plugins.android |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
+      .plugins.ios |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
+      .plugins.web |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
+      .plugins.macos |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
+      .plugins.linux |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
+      .plugins.windows |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
+      .dependencyGraph |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
+      .dependencyGraph |= map(if .dependencies then .dependencies |= map(select(. != "fluttertoast" and . != "speech_to_text")) else . end)
     ' .flutter-plugins-dependencies > .flutter-plugins-dependencies.tmp && mv .flutter-plugins-dependencies.tmp .flutter-plugins-dependencies
-    echo "     fluttertoast excluded (avoids Kotlin compile error)"
+    echo "     fluttertoast and speech_to_text excluded (avoids Kotlin compile errors)"
   fi
 fi
 
