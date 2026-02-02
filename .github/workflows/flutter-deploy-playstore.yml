@@ -118,6 +118,8 @@ jobs:
         env:
           FLUTTER_BUILD_MODE: release
 
+      # Requires: Google Play Android Developer API enabled in the GCP project that owns the service account (see GOOGLE_PLAY_SERVICE_ACCOUNT_JSON).
+      # Enable: https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com (select that project). Billing must be on for the project.
       - name: Upload to Internal Testing
         uses: r0adkll/upload-google-play@v1
         with:
