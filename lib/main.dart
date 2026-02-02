@@ -24,6 +24,7 @@ import 'controllers/utilitycontroller/utilitycontroller.dart';
 import 'controllers/authentication/authenticationcontroller.dart';
 import 'controllers/theme_controller.dart';
 import 'theme/theme.dart';
+import 'pages/update_screen.dart';
 
 /// Check for app updates on startup
 /// This function is called automatically in main() to check for updates
@@ -376,17 +377,17 @@ void _setupErrorHandlers() {
     return true;
   };
 
-  // Show errors in widget via ErrorWidget (no full-screen error page)
+  // For widget build errors only: show AppErrorWidget (error page) instead of default red box
   ErrorWidget.builder = (FlutterErrorDetails details) {
     final errorString = details.exception.toString();
     if (errorString.contains('KeyUpEvent is dispatched') ||
         errorString.contains('_pressedKeys.containsKey') ||
         errorString.contains('HardwareKeyboard') ||
-        (errorString.contains('physical key is not pressed') && 
+        (errorString.contains('physical key is not pressed') &&
          errorString.contains('KeyUpEvent'))) {
       return const SizedBox.shrink();
     }
-    return ErrorWidget(details.exception);
+    return const AppErrorWidget();
   };
 }
 

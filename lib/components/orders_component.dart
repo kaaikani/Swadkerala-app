@@ -204,7 +204,8 @@ class _OrdersComponentState extends State<OrdersComponent> {
 
   Widget _buildOrderCard(dynamic order) {
     final isCancelled = order.state.toLowerCase() == 'cancelled';
-    
+    final isAddingItems = order.state.toLowerCase() == 'addingitems';
+
     return GestureDetector(
       onTap: () => _viewOrderDetails(order),
       child: Container(
@@ -330,8 +331,8 @@ class _OrdersComponentState extends State<OrdersComponent> {
                   ),
                   Row(
                     children: [
-                      // Share Invoice Button - only show for non-cancelled orders
-                   if (!isCancelled)
+                      // Share Invoice Button - hide for cancelled or AddingItems state
+                      if (!isCancelled && !isAddingItems)
                         IconButton(
                           onPressed: () => _shareInvoice(order),
                           icon: Icon(
@@ -343,7 +344,8 @@ class _OrdersComponentState extends State<OrdersComponent> {
                           padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
                           constraints: BoxConstraints(),
                         ),
-                      if (!isCancelled) SizedBox(width: ResponsiveUtils.rp(8)),
+                      if (!isCancelled && !isAddingItems)
+                        SizedBox(width: ResponsiveUtils.rp(8)),
                       // View Details Button
                       TextButton(
                         onPressed: () => _viewOrderDetails(order),

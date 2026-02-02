@@ -336,6 +336,7 @@ class _HomeProductCardState extends State<HomeProductCard>
                     ],
                   ],
                   SizedBox(height: ResponsiveUtils.rp(3)),
+                  // Total row: price on left, stock status on right corner
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -350,22 +351,34 @@ class _HomeProductCardState extends State<HomeProductCard>
                                 fontSize: ResponsiveUtils.sp(15),
                               ),
                             ),
-                            if (widget.shadowPriceText != null) ...[
-                              SizedBox(width: ResponsiveUtils.rp(3)),
-                              Flexible(
-                                child: Text(
-                                  widget.shadowPriceText!,
-                                  style: TextStyle(
-                                    fontSize: ResponsiveUtils.sp(11),
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.textSecondary,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
                           ],
+                        ),
+                      ),
+                      // Stock status on right corner
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(6),
+                          vertical: ResponsiveUtils.rp(3),
+                        ),
+                        decoration: BoxDecoration(
+                          color: widget.isOutOfStock
+                              ? AppColors.error.withValues(alpha: 0.12)
+                              : AppColors.success.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(5)),
+                          border: Border.all(
+                            color: widget.isOutOfStock
+                                ? AppColors.error.withValues(alpha: 0.4)
+                                : AppColors.success.withValues(alpha: 0.4),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          widget.isOutOfStock ? 'Out of Stock' : 'In Stock',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(10),
+                            fontWeight: FontWeight.w600,
+                            color: widget.isOutOfStock ? AppColors.error : AppColors.success,
+                          ),
                         ),
                       ),
                     ],

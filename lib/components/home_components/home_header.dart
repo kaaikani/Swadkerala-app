@@ -80,65 +80,91 @@ class HomeHeader extends StatelessWidget {
                         Center(
                           child: _buildWelcomeSectionIndNonVeg(),
                         ),
-                        // Right side: Profile Icon with error indicator (red dot)
+                        // Right side: Help/Support + Profile Icons
                         Positioned(
                           right: 0,
-                          child: Obx(() {
-                            // Check error conditions:
-                            // 1. Phone number is empty/null -> show red
-                            // 2. Email ends with "@kaikani.com" -> show red
-                            final customer = customerController?.activeCustomer.value;
-                            final hasPhoneError = customer?.phoneNumber == null || 
-                                                 customer!.phoneNumber!.isEmpty;
-                            final hasEmailError = customer?.emailAddress != null && 
-                                                 customer!.emailAddress.isNotEmpty && 
-                                                 customer.emailAddress.endsWith('@kaikani.com');
-                            final hasError = hasPhoneError || hasEmailError;
-                            
-                            return Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                InkWell(
-                                  onTap: () => Get.toNamed('/account'),
-                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                                  child: Container(
-                                    padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.indNonVegBackgroundLight,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: AppColors.indNonVegRed.withValues(alpha: 0.3),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.person_outline_rounded,
-                                      color: AppColors.indNonVegRed,
-                                      size: ResponsiveUtils.rp(26),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                onTap: () => Get.toNamed('/help-support'),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                                child: Container(
+                                  margin: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
+                                  padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.indNonVegBackgroundLight,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.indNonVegRed.withValues(alpha: 0.3),
+                                      width: 1,
                                     ),
                                   ),
+                                  child: Icon(
+                                    Icons.help_outline_rounded,
+                                    color: AppColors.indNonVegRed,
+                                    size: ResponsiveUtils.rp(26),
+                                  ),
                                 ),
-                                // Red dot error indicator
-                                if (hasError)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: ResponsiveUtils.rp(12),
-                                      height: ResponsiveUtils.rp(12),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.error,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 2,
+                              ),
+                              Obx(() {
+                                // Check error conditions:
+                                // 1. Phone number is empty/null -> show red
+                                // 2. Email ends with "@kaikani.com" -> show red
+                                final customer = customerController?.activeCustomer.value;
+                                final hasPhoneError = customer?.phoneNumber == null ||
+                                                     customer!.phoneNumber!.isEmpty;
+                                final hasEmailError = customer?.emailAddress != null &&
+                                                     customer!.emailAddress.isNotEmpty &&
+                                                     customer.emailAddress.endsWith('@kaikani.com');
+                                final hasError = hasPhoneError || hasEmailError;
+
+                                return Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Get.toNamed('/account'),
+                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                                      child: Container(
+                                        padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.indNonVegBackgroundLight,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: AppColors.indNonVegRed.withValues(alpha: 0.3),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.person_outline_rounded,
+                                          color: AppColors.indNonVegRed,
+                                          size: ResponsiveUtils.rp(26),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
-                            );
-                          }),
+                                    // Red dot error indicator
+                                    if (hasError)
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Container(
+                                          width: ResponsiveUtils.rp(12),
+                                          height: ResponsiveUtils.rp(12),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.error,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              }),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -192,65 +218,91 @@ class HomeHeader extends StatelessWidget {
                         Center(
                           child: _buildWelcomeSectionIndSnacks(),
                         ),
-                        // Right side: Profile Icon with error indicator (red dot)
+                        // Right side: Help/Support + Profile Icons
                         Positioned(
                           right: 0,
-                          child: Obx(() {
-                            // Check error conditions:
-                            // 1. Phone number is empty/null -> show red
-                            // 2. Email ends with "@kaikani.com" -> show red
-                            final customer = customerController?.activeCustomer.value;
-                            final hasPhoneError = customer?.phoneNumber == null || 
-                                                 customer!.phoneNumber!.isEmpty;
-                            final hasEmailError = customer?.emailAddress != null && 
-                                                 customer!.emailAddress.isNotEmpty && 
-                                                 customer.emailAddress.endsWith('@kaikani.com');
-                            final hasError = hasPhoneError || hasEmailError;
-                            
-                            return Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                InkWell(
-                                  onTap: () => Get.toNamed('/account'),
-                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                                  child: Container(
-                                    padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.backgroundLight,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: AppColors.border.withValues(alpha: 0.3),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.person_outline_rounded,
-                                      color: AppColors.textPrimary,
-                                      size: ResponsiveUtils.rp(26),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                onTap: () => Get.toNamed('/help-support'),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                                child: Container(
+                                  margin: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
+                                  padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.backgroundLight,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.border.withValues(alpha: 0.3),
+                                      width: 1,
                                     ),
                                   ),
+                                  child: Icon(
+                                    Icons.help_outline_rounded,
+                                    color: AppColors.textPrimary,
+                                    size: ResponsiveUtils.rp(26),
+                                  ),
                                 ),
-                                // Red dot error indicator
-                                if (hasError)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      width: ResponsiveUtils.rp(12),
-                                      height: ResponsiveUtils.rp(12),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.error,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 2,
+                              ),
+                              Obx(() {
+                                // Check error conditions:
+                                // 1. Phone number is empty/null -> show red
+                                // 2. Email ends with "@kaikani.com" -> show red
+                                final customer = customerController?.activeCustomer.value;
+                                final hasPhoneError = customer?.phoneNumber == null ||
+                                                     customer!.phoneNumber!.isEmpty;
+                                final hasEmailError = customer?.emailAddress != null &&
+                                                     customer!.emailAddress.isNotEmpty &&
+                                                     customer.emailAddress.endsWith('@kaikani.com');
+                                final hasError = hasPhoneError || hasEmailError;
+
+                                return Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Get.toNamed('/account'),
+                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                                      child: Container(
+                                        padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.backgroundLight,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: AppColors.border.withValues(alpha: 0.3),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.person_outline_rounded,
+                                          color: AppColors.textPrimary,
+                                          size: ResponsiveUtils.rp(26),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
-                            );
-                          }),
+                                    // Red dot error indicator
+                                    if (hasError)
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Container(
+                                          width: ResponsiveUtils.rp(12),
+                                          height: ResponsiveUtils.rp(12),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.error,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              }),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -445,67 +497,36 @@ class HomeHeader extends StatelessWidget {
               ),
             ),
           ),
-        
-        // Loyalty Points Badge (if authenticated)
-        if (isUserAuthenticated && customerController != null)
-          Obx(() {
-            final loyaltyPoints = customerController!.loyaltyPoints;
-            if (loyaltyPoints <= 0) return SizedBox.shrink();
-            
-            return GestureDetector(
-              onTap: () {
-                // Navigate directly to loyalty points transaction page
-                Get.toNamed('/loyalty-points-transactions');
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(12),
-                  vertical: ResponsiveUtils.rp(8),
-                ),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.button,
-                      AppColors.button.withValues(alpha: 0.85),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.button.withValues(alpha: 0.25),
-                      blurRadius: ResponsiveUtils.rp(8),
-                      offset: Offset(0, ResponsiveUtils.rp(2)),
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.stars_rounded,
-                      color: Colors.white,
-                      size: ResponsiveUtils.rp(20),
-                    ),
-                    SizedBox(width: ResponsiveUtils.rp(5)),
-                    Text(
-                      '$loyaltyPoints',
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(15),
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
+        // Help/Support Icon (near search)
+        InkWell(
+          onTap: () => Get.toNamed('/help-support'),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+          child: Container(
+            margin: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
+            padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+            decoration: BoxDecoration(
+              color: AppColors.backgroundLight,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
               ),
-            );
-          }),
-        
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: ResponsiveUtils.rp(4),
+                  offset: Offset(0, ResponsiveUtils.rp(1)),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.help_outline_rounded,
+              color: AppColors.button,
+              size: ResponsiveUtils.rp(26),
+            ),
+          ),
+        ),
+        // Loyalty points badge not shown on home page
         // Profile Icon with error indicator (red dot)
         Obx(() {
           // Check error conditions:

@@ -165,8 +165,12 @@ class BillGenerator {
     final customer = orderDynamic.customer;
     final firstName = customer?.firstName ?? '';
     final lastName = customer?.lastName ?? '';
-    final emailAddress = customer?.emailAddress ?? '';
-    
+    final rawEmail = customer?.emailAddress ?? '';
+    // Don't show @kaikani.com email in bill print
+    final emailAddress = rawEmail.trim().toLowerCase().endsWith('@kaikani.com')
+        ? ''
+        : rawEmail;
+
     // Get billing address (for phone number)
     final billingAddress = orderDynamic.billingAddress;
     final billingPhone = billingAddress?.phoneNumber ?? '';
@@ -317,6 +321,12 @@ class BillGenerator {
   }
 
   static pw.Widget _buildTotalsSection(Fragment$Cart order) {
+    // Total quantity from order lines
+    final totalQuantity = order.lines.fold<int>(
+      0,
+      (sum, line) => sum + line.quantity,
+    );
+
     // Calculate discount from coupon codes
     double couponDiscount = 0.0;
     if (order.discounts.isNotEmpty) {
@@ -325,19 +335,18 @@ class BillGenerator {
         (sum, discount) => sum + discount.amountWithTax,
       );
     }
-    
-    // Get loyalty points info
-    // Note: Fragment$Cart$customFields doesn't include loyalty points, so we'll use 0
-    // If you need loyalty points, use Query$ActiveOrder$activeOrder instead of Fragment$Cart
-    final loyaltyPointsUsed = 0;
-    final loyaltyPointsEarned = 0;
+
+    // Loyalty points from order customFields
+    final loyaltyPointsUsed = order.customFields?.loyaltyPointsUsed ?? 0;
+    final loyaltyPointsEarned = order.customFields?.loyaltyPointsEarned ?? 0;
     // Assuming 1 point = 1 rupee (adjust as needed)
     final loyaltyDiscount = loyaltyPointsUsed.toDouble();
-    
+
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.end,
       children: [
         _buildTotalRow('Subtotal', order.subTotalWithTax),
+        _buildTotalRow('Total Qty', totalQuantity.toDouble(), isQuantity: true),
         _buildTotalRow('Shipping', order.shippingWithTax),
         // Show coupon codes if applied (show even if discount is 0, as coupon might have other effects)
         if (order.couponCodes.isNotEmpty) ...[
@@ -370,7 +379,7 @@ class BillGenerator {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.end,
             children: [
-              pw.Text('Loyalty Points Used (${loyaltyPointsUsed} pts): ',
+              pw.Text('Points Used (${loyaltyPointsUsed} pts): ',
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.blue700)),
@@ -389,26 +398,19 @@ class BillGenerator {
         // Show loyalty points earned if any
         if (loyaltyPointsEarned > 0) ...[
           pw.SizedBox(height: 8),
-          pw.Container(
-            padding: const pw.EdgeInsets.all(8),
-            decoration: pw.BoxDecoration(
-              color: PdfColors.green50,
-              borderRadius: const pw.BorderRadius.all(pw.Radius.circular(4)),
-            ),
-            child: pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.end,
-              children: [
-                pw.Text('Loyalty Points Earned: ',
-                    style: pw.TextStyle(
-                        fontSize: 12,
-                        color: PdfColors.green700)),
-                pw.Text('${loyaltyPointsEarned} pts',
-                    style: pw.TextStyle(
-                        fontSize: 12,
-                        color: PdfColors.green700,
-                        fontWeight: pw.FontWeight.bold)),
-              ],
-            ),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.end,
+            children: [
+              pw.Text('Points Earned: ',
+                  style: pw.TextStyle(
+                      fontSize: 12,
+                      color: PdfColors.green700)),
+              pw.Text('${loyaltyPointsEarned} pts',
+                  style: pw.TextStyle(
+                      fontSize: 12,
+                      color: PdfColors.green700,
+                      fontWeight: pw.FontWeight.bold)),
+            ],
           ),
         ],
       ],
@@ -416,7 +418,10 @@ class BillGenerator {
   }
 
   static pw.Widget _buildTotalRow(String label, double amount,
-      {bool isBold = false, double fontSize = 12}) {
+      {bool isBold = false, double fontSize = 12, bool isQuantity = false}) {
+    final valueText = isQuantity
+        ? amount.toInt().toString()
+        : BillGenerator.formatPriceForPdf(amount.toInt());
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.end,
       children: [
@@ -424,7 +429,7 @@ class BillGenerator {
             style: pw.TextStyle(
                 fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
                 fontSize: fontSize)),
-        pw.Text(BillGenerator.formatPriceForPdf(amount.toInt()),
+        pw.Text(valueText,
             style: pw.TextStyle(
                 fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
                 fontSize: fontSize)),

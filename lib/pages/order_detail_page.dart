@@ -107,11 +107,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   
-                  // Share Invoice Button - only show for non-cancelled orders
-                  if (order.state.toLowerCase() != 'cancelled')
+                  // Share Invoice Button - hide for cancelled or AddingItems state
+                  if (order.state.toLowerCase() != 'cancelled' &&
+                      order.state.toLowerCase() != 'addingitems')
                     _buildShareInvoiceButton(order),
                   
-                  if (order.state.toLowerCase() != 'cancelled')
+                  if (order.state.toLowerCase() != 'cancelled' &&
+                      order.state.toLowerCase() != 'addingitems')
                     SizedBox(height: ResponsiveUtils.rp(12)),
                   
                   // Products Section
@@ -864,7 +866,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   bool _shouldShowCancelButton(dynamic order) {
     final orderState = order.state.toLowerCase();
-    final isCancellationRequested = orderState.contains('cancel') && 
+    // Don't show for AddingItems state (cart still being built)
+    if (orderState == 'addingitems') return false;
+    final isCancellationRequested = orderState.contains('cancel') &&
                                      orderState.contains('request');
     return orderState != 'cancelled' &&
            orderState != 'fulfilled' &&

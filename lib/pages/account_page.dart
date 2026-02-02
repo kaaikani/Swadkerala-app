@@ -9,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
+import '../services/channel_service.dart';
 import '../controllers/theme_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../services/in_app_update_service.dart';
@@ -57,13 +58,14 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   /// Check and show dialogs for invalid email or missing phone number
+  /// For CITY (and other) channels only; BRAND channels show these dialogs on the home page.
   void _checkAndShowUpdateDialogs() {
-    
     final customer = customerController.activeCustomer.value;
-    if (customer == null) {
-      return;
-    }
+    if (customer == null) return;
 
+    // Only show update email/phone dialogs on account page for non-BRAND (CITY and other) channels
+    final channelType = ChannelService.getChannelType()?.toUpperCase() ?? '';
+    if (channelType.contains('BRAND')) return;
 
     // Check if email is not a valid Gmail
     final isValidEmail = _isValidGmail(customer.emailAddress);
@@ -152,7 +154,7 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                     SizedBox(height: ResponsiveUtils.rp(20)),
                     Text(
-                      'Enter your Gmail address or sign in with Google',
+                      'Sign in with Google to set your email address',
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(14),
                         color: AppColors.textSecondary,
@@ -199,57 +201,7 @@ class _AccountPageState extends State<AccountPage> {
                       return SizedBox.shrink();
                     }),
                     SizedBox(height: ResponsiveUtils.rp(16)),
-                    // Manual Email Input TextField
-                    TextField(
-                      controller: emailController,
-                      enabled: !isLoading,
-                      keyboardType: TextInputType.emailAddress,
-                      onChanged: (value) {
-                        // Clear error when user starts typing
-                        if (customerController.emailUpdateError.value.isNotEmpty) {
-                          customerController.emailUpdateError.value = '';
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Enter Gmail address',
-                        prefixIcon: Icon(Icons.email_outlined),
-                        filled: true,
-                        fillColor: AppColors.inputFill,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                          borderSide: BorderSide(color: AppColors.border),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                          borderSide: BorderSide(color: AppColors.border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                          borderSide: BorderSide(color: AppColors.button, width: 2),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveUtils.rp(16)),
-                    // Divider with "OR" text
-                    Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
-                          child: Text(
-                            'OR',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(12),
-                              color: AppColors.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-                    SizedBox(height: ResponsiveUtils.rp(16)),
-                    // Google Sign-In Button
+                    // Google Sign-In Button (only option)
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
@@ -308,76 +260,6 @@ class _AccountPageState extends State<AccountPage> {
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveUtils.rp(20)),
-                    // Update Email Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : () async {
-                          final email = emailController.text.trim();
-                          
-                          if (email.isEmpty) {
-                            showErrorSnackbar('Please enter an email address');
-                            return;
-                          }
-                          
-                          if (!_isValidGmail(email)) {
-                            showErrorSnackbar('Please enter a valid Gmail address');
-                            return;
-                          }
-
-                          setState(() {
-                            isLoading = true;
-                          });
-
-                          // Clear previous error
-                          customerController.emailUpdateError.value = '';
-                          
-                          // Update email using the dedicated method
-                          final success = await customerController.updateCustomerEmail(email);
-                          
-                          setState(() {
-                            isLoading = false;
-                          });
-
-                          if (success) {
-                            Get.back();
-                            showSuccessSnackbar('Email updated successfully');
-                            // Check for phone number after email is updated
-                            _checkAndShowUpdateDialogs();
-                          } else {
-                            // Error message is already set in controller and will be shown in UI
-                            // Don't show snackbar as error is displayed in dialog
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.button,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                            vertical: ResponsiveUtils.rp(14),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                          ),
-                        ),
-                        child: isLoading
-                            ? SizedBox(
-                                width: ResponsiveUtils.rp(20),
-                                height: ResponsiveUtils.rp(20),
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              )
-                            : Text(
-                                'Update Email',
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(16),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
                       ),
                     ),
                   ],

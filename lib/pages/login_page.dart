@@ -606,7 +606,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.inputFill,
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
         border: Border.all(
           color: hasError
@@ -720,10 +720,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               style: TextStyle(
                 fontSize: ResponsiveUtils.sp(17),
                 fontWeight: FontWeight.w600,
-                color: Colors.black,
+                color: AppColors.textPrimary,
                 letterSpacing: 1.0,
               ),
-              cursorColor: Colors.black,
+              cursorColor: AppColors.textPrimary,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
@@ -737,7 +737,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               decoration: InputDecoration(
                 hintText: '10 Digit number only',
                 hintStyle: TextStyle(
-                  color: Colors.black.withValues(alpha: 0.4),
+                  color: AppColors.textSecondary,
                   fontSize: ResponsiveUtils.sp(17),
                   letterSpacing: 1.0,
                 ),
@@ -869,7 +869,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.inputFill,
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
         border: Border.all(
           color: hasError
@@ -881,7 +881,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: AppColors.shadowMedium,
             blurRadius: ResponsiveUtils.rp(12),
             offset: Offset(0, ResponsiveUtils.rp(4)),
           ),
@@ -924,7 +924,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         decoration: InputDecoration(
           hintText: '○ ○ ○ ○',
           hintStyle: TextStyle(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: AppColors.textSecondary,
             fontSize: ResponsiveUtils.sp(32),
             letterSpacing: ResponsiveUtils.rp(16),
             fontWeight: FontWeight.w300,

@@ -98,6 +98,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBarWidget(
         title: AppStrings.myFavorites,
         actions: [
@@ -175,6 +176,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       physics: const AlwaysScrollableScrollPhysics(),
       child: Container(
         height: screenHeight - appBarHeight - statusBarHeight,
+        color: AppColors.background,
         padding: EdgeInsets.symmetric(
           horizontal: ResponsiveUtils.rp(24),
           vertical: ResponsiveUtils.rp(40),

@@ -611,6 +611,9 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
               screenName: 'Cart',
               callback: () => Get.back(result: false),
             ),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.black,
+            ),
             child: const Text(AppStrings.cancel),
           ),
           TextButton(

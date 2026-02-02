@@ -414,9 +414,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   }
 
   Widget _buildPointsEarnedRow(int points) {
-    // Gold color for points earned
-    final goldColor = Color(0xFFFFD700);
-    
+    // Red color for points earned text
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -425,7 +423,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             Icon(
               Icons.stars_rounded,
               size: ResponsiveUtils.rp(18),
-              color: goldColor,
+              color: AppColors.error,
             ),
             SizedBox(width: ResponsiveUtils.rp(6)),
             Text(
@@ -433,7 +431,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
               style: TextStyle(
                 fontSize: ResponsiveUtils.sp(14),
                 fontWeight: FontWeight.w600,
-                color: goldColor,
+                color: AppColors.error,
               ),
             ),
           ],
@@ -443,7 +441,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(14),
             fontWeight: FontWeight.bold,
-            color: goldColor,
+            color: AppColors.error,
           ),
         ),
       ],

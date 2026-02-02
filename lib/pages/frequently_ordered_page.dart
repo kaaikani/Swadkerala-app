@@ -100,6 +100,8 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
               subtitle: 'Your frequently ordered products will appear here',
               action: AppButton(
                 text: 'Browse Products',
+                backgroundColor: AppColors.button,
+                textColor: Colors.white,
                 onPressed: () async {
                   Get.back();
                 },

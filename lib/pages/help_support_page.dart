@@ -258,9 +258,12 @@ class HelpSupportPage extends StatelessWidget {
       final cleanWhatsAppPhone = AppConfig.whatsappNumber.replaceAll(RegExp(r'[+\s]'), '');
       
       // WhatsApp URL with pre-filled message containing name, phone, and email
-      // Ensure name is not empty, use 'User' as fallback
+      // Don't pass @kaikani.com email to WhatsApp
       final displayName = name.isNotEmpty ? name : 'User';
-      final message = 'Name: $displayName\nPhone: ${phoneNumber.isNotEmpty ? phoneNumber : 'N/A'}\nEmail: ${emailId.isNotEmpty ? emailId : 'N/A'}\n\n';
+      final emailForWhatsApp = emailId.trim().toLowerCase().endsWith('@kaikani.com')
+          ? ''
+          : emailId;
+      final message = 'Name: $displayName\nPhone: ${phoneNumber.isNotEmpty ? phoneNumber : 'N/A'}\nEmail: ${emailForWhatsApp.isNotEmpty ? emailForWhatsApp : 'N/A'}\n\n';
       final encodedMessage = Uri.encodeComponent(message);
       final url = Uri.parse('https://wa.me/$cleanWhatsAppPhone?text=$encodedMessage');
       

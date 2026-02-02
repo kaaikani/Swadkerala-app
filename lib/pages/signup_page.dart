@@ -926,10 +926,10 @@ class ModernTextField extends StatelessWidget {
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(16),
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: AppColors.textPrimary,
             letterSpacing: 0.3,
           ),
-          cursorColor: Colors.black,
+          cursorColor: AppColors.textPrimary,
           validator: validator,
           maxLength: maxLength,
           textCapitalization: TextCapitalization.words,
@@ -940,7 +940,7 @@ class ModernTextField extends StatelessWidget {
             counterText: "",
             hintText: hint,
             hintStyle: TextStyle(
-              color: Colors.black.withValues(alpha: 0.4),
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w400,
               fontSize: ResponsiveUtils.sp(15),
             ),
@@ -966,7 +966,7 @@ class ModernTextField extends StatelessWidget {
                   )
                 : null,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppColors.inputFill,
             contentPadding: EdgeInsets.symmetric(
               vertical: ResponsiveUtils.rp(18),
               horizontal: ResponsiveUtils.rp(20),

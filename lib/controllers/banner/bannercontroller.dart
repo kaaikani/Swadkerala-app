@@ -205,8 +205,14 @@ class BannerController extends BaseController {
       final uniqueProductList = uniqueProducts.values.toList();
 // print('✅ [DEBUG] Unique products: ${uniqueProductList.length} (from ${fetchedItems.length} variants)');
 
-      searchResults.assignAll(uniqueProductList);
-      totalItems.value = uniqueProductList.length;
+      // Don't show products whose name ends with "free" in search UI
+      final filteredList = uniqueProductList.where((item) {
+        final name = item.productName.trim().toLowerCase();
+        return !name.endsWith('free');
+      }).toList();
+
+      searchResults.assignAll(filteredList);
+      totalItems.value = filteredList.length;
 
       // Track search event
       if (term.isNotEmpty) {
