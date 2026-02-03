@@ -11,6 +11,7 @@ import '../widgets/responsive_spacing.dart';
 import '../utils/navigation_helper.dart';
 import '../widgets/shimmers.dart';
 import '../services/speech_recognition_service.dart';
+import '../services/analytics_service.dart';
 
 class SearchComponent extends StatelessWidget {
   const SearchComponent({
@@ -82,6 +83,7 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'Search');
     _controller.addListener(_onTextChanged);
     
     // Initialize speech recognition

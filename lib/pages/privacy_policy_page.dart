@@ -5,12 +5,14 @@ import '../utils/responsive.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/responsive_text.dart';
 import '../widgets/responsive_spacing.dart';
+import '../services/analytics_service.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => AnalyticsService().logScreenView(screenName: 'PrivacyPolicy'));
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import '../services/analytics_service.dart';
 
 class LoyaltyPointsTransactionPage extends StatefulWidget {
   const LoyaltyPointsTransactionPage({super.key});
@@ -24,6 +25,7 @@ class _LoyaltyPointsTransactionPageState
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'LoyaltyPoints');
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_onTabChanged);
     _fetchTransactions();

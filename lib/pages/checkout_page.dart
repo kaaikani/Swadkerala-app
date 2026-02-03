@@ -100,6 +100,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'Checkout');
     WidgetsBinding.instance.addObserver(this);
     _razorpayService = RazorpayService();
     _lastRoute = Get.currentRoute;
@@ -696,7 +697,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     // Transition to ArrangingPayment state
     final transitioned = await orderController.transitionToArrangingPayment();
     if (!transitioned) {
-      showErrorSnackbar('Failed to process order');
       // Reset slider on error
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -949,7 +949,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     // Transition to ArrangingPayment state
     final transitioned = await orderController.transitionToArrangingPayment();
     if (!transitioned) {
-      showErrorSnackbar('Failed to process order');
       // Reset slider on error
       Future.delayed(
         const Duration(milliseconds: 500),

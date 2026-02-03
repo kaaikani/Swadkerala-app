@@ -10,6 +10,7 @@ import '../theme/theme.dart';
 import '../utils/navigation_helper.dart';
 import '../utils/responsive.dart';
 import '../widgets/snackbar.dart';
+import '../services/analytics_service.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -37,6 +38,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'Signup');
     _initializeAnimations();
     _initializeSmsAutofill();
     WidgetsBinding.instance.addPostFrameCallback((_) {

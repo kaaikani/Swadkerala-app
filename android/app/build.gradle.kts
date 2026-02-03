@@ -202,6 +202,8 @@ dependencies {
     // Force newer AndroidX Core to support lStar attribute
     implementation("androidx.core:core:1.15.0")
     implementation("androidx.core:core-ktx:1.15.0")
+    // Meta (Facebook) SDK 4.34+ for codeless event setup and App Events
+    implementation("com.facebook.android:facebook-android-sdk:[4,5)")
 }
 
 // Note: Flutter 2.0+ automatically registers plugins, so GeneratedPluginRegistrant

@@ -181,6 +181,7 @@ type ChannelCustomFields {
 enum ChannelType {
   CITY
   BRAND
+  SERVICE
 }
 
 """Channel type enumeration"""
@@ -903,6 +904,7 @@ type CurrentUser {
   id: ID!
   identifier: String!
   channels: [CurrentUserChannel!]!
+  customerId: ID
 }
 
 type CurrentUserChannel {
@@ -933,7 +935,7 @@ type Customer implements Node {
   orders(options: OrderListOptions): OrderList!
   user: User
   loyaltyPointsTransactions(options: LoyaltyPointsTransactionListOptions): LoyaltyPointsTransactionList!
-  favorites(options: FavoriteListOptions): FavoriteList!
+  favorites(options: FavoriteListOptions, productNameFilter: String): FavoriteList!
   customFields: CustomerCustomFields
 }
 
@@ -1149,6 +1151,7 @@ enum ErrorCode {
   PASSWORD_RESET_TOKEN_EXPIRED_ERROR
   NOT_VERIFIED_ERROR
   CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR
+  QUANTITY_LIMIT_ERROR
 }
 
 interface ErrorResult {
@@ -2534,6 +2537,7 @@ type Order implements Node {
   taxSummary: [OrderTaxSummary!]!
   history(options: HistoryEntryListOptions): HistoryEntryList!
   validationStatus: CartValidationStatus!
+  quantityLimitStatus: QuantityLimitValidationStatus!
   customFields: OrderCustomFields
 }
 
@@ -3427,6 +3431,7 @@ type ProductVariant implements Node {
 
 type ProductVariantCustomFields {
   shadowPrice: Int
+  maxOrderQuantity: Int
 }
 
 input ProductVariantFilterParameter {
@@ -3444,6 +3449,7 @@ input ProductVariantFilterParameter {
   _and: [ProductVariantFilterParameter!]
   _or: [ProductVariantFilterParameter!]
   shadowPrice: NumberOperators
+  maxOrderQuantity: NumberOperators
 }
 
 type ProductVariantList implements PaginatedList {
@@ -3482,6 +3488,7 @@ input ProductVariantSortParameter {
   priceWithTax: SortOrder
   stockLevel: SortOrder
   shadowPrice: SortOrder
+  maxOrderQuantity: SortOrder
 }
 
 type ProductVariantTranslation {
@@ -3546,6 +3553,29 @@ type Province implements Region & Node {
 type ProvinceList implements PaginatedList {
   items: [Province!]!
   totalItems: Int!
+}
+
+type QuantityLimitError implements ErrorResult {
+  errorCode: ErrorCode!
+  message: String!
+  maxQuantity: Int!
+  requestedQuantity: Int!
+}
+
+type QuantityLimitValidationStatus {
+  isValid: Boolean!
+  hasViolations: Boolean!
+  totalViolations: Int!
+  violations: [QuantityLimitViolation!]!
+}
+
+type QuantityLimitViolation {
+  orderLineId: ID!
+  productName: String!
+  variantName: String!
+  currentQuantity: Int!
+  maxQuantity: Int!
+  reason: String!
 }
 
 type Query {
@@ -4126,7 +4156,7 @@ type TextStructFieldConfig implements StructField {
   ui: JSON
 }
 
-union TransitionOrderToStateResult = Order | OrderStateTransitionError | CartContainsUnavailableItemsError
+union TransitionOrderToStateResult = Order | OrderStateTransitionError | CartContainsUnavailableItemsError | QuantityLimitError
 
 type UnavailableCartItem {
   orderLineId: ID!

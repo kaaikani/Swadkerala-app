@@ -12,6 +12,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../utils/responsive.dart';
 import '../utils/bill_generator.dart';
 import '../utils/logger.dart';
+import '../services/analytics_service.dart';
 
 class OrderConfirmationPage extends StatefulWidget {
   final String orderId;
@@ -34,6 +35,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'OrderConfirmation');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadOrderDetails();
     });

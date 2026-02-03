@@ -21,6 +21,7 @@ import '../graphql/Customer.graphql.dart';
 import '../theme/colors.dart';
 import 'orders_page.dart';
 import '../utils/analytics_helper.dart';
+import '../services/analytics_service.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -39,6 +40,7 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'Account');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Only fetch customer data if user is authenticated
       if (_isUserAuthenticated()) {
@@ -871,14 +873,37 @@ class _AccountPageState extends State<AccountPage> {
                   ],
                 ),
               ),
-              // Edit Button
-              IconButton(
-                onPressed: _showEditProfileDialog,
-                icon: Icon(Icons.edit_outlined),
-                color: AppColors.button,
-                iconSize: ResponsiveUtils.rp(24),
-                tooltip: 'Edit Profile',
-              ),
+              // Edit Button with red dot when any profile field is empty
+              Obx(() {
+                final c = customerController.activeCustomer.value;
+                final hasIncomplete = c != null && CustomerController.isProfileIncomplete(c);
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      onPressed: _showEditProfileDialog,
+                      icon: Icon(Icons.edit_outlined),
+                      color: AppColors.button,
+                      iconSize: ResponsiveUtils.rp(24),
+                      tooltip: 'Edit Profile',
+                    ),
+                    if (hasIncomplete)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          width: ResponsiveUtils.rp(10),
+                          height: ResponsiveUtils.rp(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.error,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.surface, width: 1.5),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              }),
             ],
           ),
           SizedBox(height: ResponsiveUtils.rp(16)),
@@ -984,6 +1009,11 @@ class _AccountPageState extends State<AccountPage> {
                   'Delivered', 
                   Colors.blue, 
                   () => Get.toNamed('/orders', arguments: OrderFilter.delivered)),
+              _buildOrderStatusItem(
+                  Icons.pending_actions_outlined, 
+                  'Cancellation Request', 
+                  Colors.orange, 
+                  () => Get.toNamed('/orders', arguments: OrderFilter.cancellationRequest)),
               _buildOrderStatusItem(
                   Icons.cancel_outlined, 
                   'Cancelled', 
@@ -1367,7 +1397,30 @@ class _AccountPageState extends State<AccountPage> {
     final phoneController = TextEditingController(
       text: customer.phoneNumber ?? '',
     );
+    // Title (Mr. / Ms. / Miss) in update customer
+    const List<String> titleOptions = ['Mr.', 'Ms.', 'Miss'];
+    String? selectedTitle;
+    if (customer.title != null && customer.title!.isNotEmpty) {
+      final t = customer.title!.trim();
+      final lower = t.toLowerCase();
+      if (lower == 'male' || lower == 'mr' || lower == 'mr.') {
+        selectedTitle = 'Mr.';
+      } else if (lower == 'female' || lower == 'ms' || lower == 'ms.') {
+        selectedTitle = 'Ms.';
+      } else if (lower == 'miss' || lower == 'others') {
+        selectedTitle = 'Miss';
+      } else if (titleOptions.contains(t)) {
+        selectedTitle = t;
+      } else {
+        selectedTitle = t;
+      }
+    }
     bool isLoading = false;
+    String? titleError;
+    String? firstNameError;
+    String? lastNameError;
+    String? emailError;
+    String? phoneError;
 
     Get.dialog(
       Dialog(
@@ -1448,6 +1501,61 @@ class _AccountPageState extends State<AccountPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Title dropdown (Mr. / Ms. / Miss) - stored as title in GraphQL
+                          Text(
+                            'Title',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(8)),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
+                            decoration: BoxDecoration(
+                              color: AppColors.inputFill,
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                              border: Border.all(color: AppColors.border, width: 1),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedTitle != null && titleOptions.contains(selectedTitle)
+                                    ? selectedTitle
+                                    : null,
+                                isExpanded: true,
+                                hint: Text(
+                                  'Select',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUtils.sp(16),
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textPrimary),
+                                items: titleOptions
+                                    .map((e) => DropdownMenuItem<String>(value: e, child: Text(e)))
+                                    .toList(),
+                                onChanged: isLoading
+                                    ? null
+                                    : (value) {
+                                        selectedTitle = value;
+                                        titleError = null;
+                                        setState(() {});
+                                      },
+                              ),
+                            ),
+                          ),
+                          if (titleError != null) ...[
+                            SizedBox(height: ResponsiveUtils.rp(4)),
+                            Text(
+                              titleError!,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(12),
+                                color: AppColors.error,
+                              ),
+                            ),
+                          ],
+                          SizedBox(height: ResponsiveUtils.rp(20)),
                           // First Name Field
                           Text(
                             'First Name',
@@ -1461,12 +1569,19 @@ class _AccountPageState extends State<AccountPage> {
               TextField(
                 controller: firstNameController,
                             enabled: !isLoading,
+                            onChanged: (_) {
+                              if (firstNameError != null) {
+                                firstNameError = null;
+                                setState(() {});
+                              }
+                            },
                             style: TextStyle(
                               fontSize: ResponsiveUtils.sp(16),
                               color: AppColors.textPrimary,
                             ),
                 decoration: InputDecoration(
                               hintText: 'Enter first name',
+                              errorText: firstNameError,
                               prefixIcon: Icon(
                                 Icons.person_outline,
                                 color: AppColors.button,
@@ -1514,12 +1629,19 @@ class _AccountPageState extends State<AccountPage> {
               TextField(
                 controller: lastNameController,
                             enabled: !isLoading,
+                            onChanged: (_) {
+                              if (lastNameError != null) {
+                                lastNameError = null;
+                                setState(() {});
+                              }
+                            },
                             style: TextStyle(
                               fontSize: ResponsiveUtils.sp(16),
                               color: AppColors.textPrimary,
                             ),
                 decoration: InputDecoration(
                               hintText: 'Enter last name',
+                              errorText: lastNameError,
                               prefixIcon: Icon(
                                 Icons.person_outline,
                                 color: AppColors.button,
@@ -1553,6 +1675,7 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                             ),
                           ),
+                          SizedBox(height: ResponsiveUtils.rp(20)),
                           // Only show email and phone fields if they are NOT valid (can edit them)
                           if (!canEditOnlyName) ...[
                             SizedBox(height: ResponsiveUtils.rp(20)),
@@ -1570,6 +1693,12 @@ class _AccountPageState extends State<AccountPage> {
                               controller: emailController,
                               enabled: !isLoading && !canEditOnlyName,
                               readOnly: canEditOnlyName,
+                              onChanged: (_) {
+                                if (emailError != null) {
+                                  emailError = null;
+                                  setState(() {});
+                                }
+                              },
                               keyboardType: TextInputType.emailAddress,
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
@@ -1577,6 +1706,7 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter email address',
+                                errorText: emailError,
                                 prefixIcon: Icon(
                                   Icons.email_outlined,
                                   color: canEditOnlyName ? AppColors.textSecondary : AppColors.button,
@@ -1680,14 +1810,25 @@ class _AccountPageState extends State<AccountPage> {
                             TextField(
                               controller: phoneController,
                               enabled: !isLoading,
+                              onChanged: (_) {
+                                if (phoneError != null) {
+                                  phoneError = null;
+                                  setState(() {});
+                                }
+                              },
                               keyboardType: TextInputType.phone,
                               maxLength: 10,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(10),
+                              ],
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
                                 color: AppColors.textPrimary,
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter phone number',
+                                errorText: phoneError,
                                 prefixIcon: Icon(
                                   Icons.phone_outlined,
                                   color: AppColors.button,
@@ -1806,6 +1947,10 @@ class _AccountPageState extends State<AccountPage> {
                               enabled: !isLoading,
                               keyboardType: TextInputType.phone,
                               maxLength: 10,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(10),
+                              ],
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(16),
                                 color: AppColors.textPrimary,
@@ -1894,20 +2039,52 @@ class _AccountPageState extends State<AccountPage> {
                               final firstName = firstNameController.text.trim();
                               final lastName = lastNameController.text.trim();
                               final phone = phoneController.text.trim();
+                              final email = emailController.text.trim();
 
-                              if (firstName.isEmpty || lastName.isEmpty) {
-                                showErrorSnackbar('Please fill in first and last name');
-                                return;
+                              // Clear previous errors and validate required fields
+                              titleError = null;
+                              firstNameError = null;
+                              lastNameError = null;
+                              emailError = null;
+                              phoneError = null;
+
+                              bool hasError = false;
+                              if (selectedTitle == null || selectedTitle!.trim().isEmpty) {
+                                titleError = 'Required';
+                                hasError = true;
+                              }
+                              if (firstName.isEmpty) {
+                                firstNameError = 'Required';
+                                hasError = true;
+                              }
+                              if (lastName.isEmpty) {
+                                lastNameError = 'Required';
+                                hasError = true;
+                              }
+                              if (!canEditOnlyName) {
+                                if (email.isEmpty) {
+                                  emailError = 'Required';
+                                  hasError = true;
+                                }
+                                if (phone.isEmpty) {
+                                  phoneError = 'Required';
+                                  hasError = true;
+                                }
                               }
                               if (phone.isNotEmpty) {
                                 if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
-                                  showErrorSnackbar('Phone number must contain only digits');
-                                  return;
+                                  phoneError = 'Phone must be digits only';
+                                  hasError = true;
+                                } else if (phone.length != 10) {
+                                  phoneError = 'Must be exactly 10 digits';
+                                  hasError = true;
                                 }
-                                if (phone.length != 10) {
-                                  showErrorSnackbar('Phone number must be exactly 10 digits');
-                                  return;
-                                }
+                              }
+
+                              if (hasError) {
+                                setState(() {});
+                                showErrorSnackbar('Please fill all required fields');
+                                return;
                               }
 
                               setState(() {
@@ -1917,7 +2094,7 @@ class _AccountPageState extends State<AccountPage> {
                               customerController.firstNameController.text = firstName;
                               customerController.lastNameController.text = lastName;
 
-                              bool success = await customerController.updateCustomer();
+                              bool success = await customerController.updateCustomer(title: selectedTitle);
                               if (success && phone.isNotEmpty && phone != (customer.phoneNumber ?? '')) {
                                 try {
                                   final phoneSuccess = await customerController.updateCustomerPhoneNumber(phone);

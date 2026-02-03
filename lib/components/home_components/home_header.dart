@@ -101,23 +101,15 @@ class HomeHeader extends StatelessWidget {
                                     ),
                                   ),
                                   child: Icon(
-                                    Icons.help_outline_rounded,
+                                    Icons.call,
                                     color: AppColors.indNonVegRed,
                                     size: ResponsiveUtils.rp(26),
                                   ),
                                 ),
                               ),
                               Obx(() {
-                                // Check error conditions:
-                                // 1. Phone number is empty/null -> show red
-                                // 2. Email ends with "@kaikani.com" -> show red
                                 final customer = customerController?.activeCustomer.value;
-                                final hasPhoneError = customer?.phoneNumber == null ||
-                                                     customer!.phoneNumber!.isEmpty;
-                                final hasEmailError = customer?.emailAddress != null &&
-                                                     customer!.emailAddress.isNotEmpty &&
-                                                     customer.emailAddress.endsWith('@kaikani.com');
-                                final hasError = hasPhoneError || hasEmailError;
+                                final hasError = customer != null && CustomerController.isProfileIncomplete(customer);
 
                                 return Stack(
                                   clipBehavior: Clip.none,
@@ -239,23 +231,15 @@ class HomeHeader extends StatelessWidget {
                                     ),
                                   ),
                                   child: Icon(
-                                    Icons.help_outline_rounded,
+                                    Icons.call,
                                     color: AppColors.textPrimary,
                                     size: ResponsiveUtils.rp(26),
                                   ),
                                 ),
                               ),
                               Obx(() {
-                                // Check error conditions:
-                                // 1. Phone number is empty/null -> show red
-                                // 2. Email ends with "@kaikani.com" -> show red
                                 final customer = customerController?.activeCustomer.value;
-                                final hasPhoneError = customer?.phoneNumber == null ||
-                                                     customer!.phoneNumber!.isEmpty;
-                                final hasEmailError = customer?.emailAddress != null &&
-                                                     customer!.emailAddress.isNotEmpty &&
-                                                     customer.emailAddress.endsWith('@kaikani.com');
-                                final hasError = hasPhoneError || hasEmailError;
+                                final hasError = customer != null && CustomerController.isProfileIncomplete(customer);
 
                                 return Stack(
                                   clipBehavior: Clip.none,
@@ -520,26 +504,18 @@ class HomeHeader extends StatelessWidget {
               ],
             ),
             child: Icon(
-              Icons.help_outline_rounded,
+              Icons.call,
               color: AppColors.button,
               size: ResponsiveUtils.rp(26),
             ),
           ),
         ),
         // Loyalty points badge not shown on home page
-        // Profile Icon with error indicator (red dot)
+        // Profile Icon with red dot when any profile field is empty
         Obx(() {
-          // Check error conditions:
-          // 1. Phone number is empty/null -> show red
-          // 2. Email ends with "@kaikani.com" -> show red
           final customer = customerController?.activeCustomer.value;
-          final hasPhoneError = customer?.phoneNumber == null || 
-                               customer!.phoneNumber!.isEmpty;
-          final hasEmailError = customer?.emailAddress != null && 
-                               customer!.emailAddress.isNotEmpty && 
-                               customer.emailAddress.endsWith('@kaikani.com');
-          final hasError = hasPhoneError || hasEmailError;
-          
+          final hasError = customer != null && CustomerController.isProfileIncomplete(customer);
+
           return Stack(
             clipBehavior: Clip.none,
             children: [

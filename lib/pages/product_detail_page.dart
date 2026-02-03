@@ -73,9 +73,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       _fetchProductDetail();
       cartController.getActiveOrder();
       bannerController.getCustomerFavorites();
-      
-      // Track screen view
-      AnalyticsService().logScreenView(screenName: 'ProductDetail');
+      // Product view is tracked once via logViewItem (ViewContent) when data loads - no separate screen_view to avoid duplicate Meta outcome triggers
     });
   }
 

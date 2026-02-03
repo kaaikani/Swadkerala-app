@@ -115,54 +115,36 @@ class _OrdersComponentState extends State<OrdersComponent> {
   }
 
   List<dynamic> _filterOrders(List<dynamic> orders) {
-    List<dynamic> filtered;
-    
-    // First, exclude cancelled orders from all filters
-    final nonCancelledOrders = orders.where((order) {
+    final filtered = orders.where((order) {
       final state = order.state?.toString().toLowerCase() ?? '';
-      return state != 'cancelled';
+      switch (widget.filter) {
+        case OrderFilter.all:
+          return true; // Include all orders including cancelled
+        case OrderFilter.paid:
+          return state == 'paymentsettled';
+        case OrderFilter.paymentAuthorized:
+          return state == 'paymentauthorized';
+        case OrderFilter.delivered:
+          return state == 'fulfilled' ||
+              state == 'delivered' ||
+              state == 'shipped' ||
+              state == 'partiallyfulfilled';
+        case OrderFilter.cancellationRequest:
+          return state.contains('cancel') && state.contains('request');
+        case OrderFilter.cancelled:
+          return state == 'cancelled';
+        default:
+          return true;
+      }
     }).toList();
-    
-    if (widget.filter == OrderFilter.all) {
-      filtered = nonCancelledOrders;
-    } else {
-      filtered = nonCancelledOrders.where((order) {
-        final state = order.state?.toString().toLowerCase() ?? '';
-        
-        switch (widget.filter) {
-          case OrderFilter.paid:
-            // Check for payment settled state only - fully paid orders
-            return state == 'paymentsettled';
-          
-          case OrderFilter.paymentAuthorized:
-            // Check for payment authorized state only - order confirmed but payment not yet settled
-            return state == 'paymentauthorized';
-          
-          case OrderFilter.delivered:
-            // Check for delivered/fulfilled/shipped states
-            return state == 'fulfilled' || 
-                   state == 'delivered' || 
-                   state == 'shipped' ||
-                   state == 'partiallyfulfilled';
-          
-          case OrderFilter.cancelled:
-            // Cancelled orders are already filtered out, so return empty
-            return false;
-          
-          case OrderFilter.all:
-            return true;
-        }
-      }).toList();
-    }
-    
+
     // Sort by orderPlacedAt in descending order (most recent first)
     filtered.sort((a, b) {
       final dateA = a.orderPlacedAt ?? DateTime(1970);
       final dateB = b.orderPlacedAt ?? DateTime(1970);
       return dateB.compareTo(dateA); // Descending order
     });
-    
-    // Return all filtered orders (no limit for lazy loading)
+
     return filtered;
   }
 
@@ -453,6 +435,10 @@ class _OrdersComponentState extends State<OrdersComponent> {
         title = 'No Delivered Orders';
         message = 'You don\'t have any delivered orders yet';
         break;
+      case OrderFilter.cancellationRequest:
+        title = 'No Cancellation Requests';
+        message = 'You don\'t have any orders with cancellation requested';
+        break;
       case OrderFilter.cancelled:
         title = 'No Cancelled Orders';
         message = 'You don\'t have any cancelled orders';
@@ -504,8 +490,10 @@ class _OrdersComponentState extends State<OrdersComponent> {
                 SizedBox(height: ResponsiveUtils.rp(32)),
                 ElevatedButton.icon(
                   onPressed: () {
-                    // Navigate to orders page with all filter, replacing current page
-                    Get.offNamed('/orders', arguments: OrderFilter.all);
+                    // Pop current (filtered) orders page then push orders with All filter
+                    // so GetX builds a fresh page with the new arguments
+                    Get.back();
+                    Get.toNamed('/orders', arguments: OrderFilter.all);
                   },
                   icon: Icon(Icons.list, size: ResponsiveUtils.rp(20)),
                   label: const Text(AppStrings.viewAllOrders),

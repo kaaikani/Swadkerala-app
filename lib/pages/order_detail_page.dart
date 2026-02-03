@@ -17,6 +17,7 @@ import '../graphql/order.graphql.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/responsive_spacing.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import '../services/analytics_service.dart';
 
 class OrderDetailPage extends StatefulWidget {
   final String orderCode;
@@ -39,6 +40,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'OrderDetail');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadOrderDetails();
     });

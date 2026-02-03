@@ -15,6 +15,7 @@ import '../utils/price_formatter.dart';
 import '../utils/responsive.dart';
 import '../widgets/product_card.dart';
 import '../utils/navigation_helper.dart';
+import '../services/analytics_service.dart';
 
 class FrequentlyOrderedPage extends StatefulWidget {
   const FrequentlyOrderedPage({super.key});
@@ -32,6 +33,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'FrequentlyOrdered');
     // Fetch frequently ordered products when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       bannerController.getFrequentlyOrderedProducts();

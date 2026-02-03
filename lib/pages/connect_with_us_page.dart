@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/premium_card.dart';
+import '../services/analytics_service.dart';
 import 'help_support_page.dart';
 
 class ConnectWithUsPage extends StatelessWidget {
@@ -12,6 +13,7 @@ class ConnectWithUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => AnalyticsService().logScreenView(screenName: 'ConnectWithUs'));
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

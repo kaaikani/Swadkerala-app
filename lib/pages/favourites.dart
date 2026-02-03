@@ -17,6 +17,7 @@ import '../widgets/product_card.dart';
 import '../utils/navigation_helper.dart';
 import '../routes.dart';
 import '../services/graphql_client.dart';
+import '../services/analytics_service.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -33,6 +34,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'Favorites');
     // Fetch favorites when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       bannerController.getCustomerFavorites();

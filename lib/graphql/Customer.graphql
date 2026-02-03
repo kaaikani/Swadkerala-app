@@ -1,6 +1,7 @@
 mutation UpdateCustomer($input: UpdateCustomerInput!){
     updateCustomer(input: $input){
         ... on Customer{
+            title
             firstName
             lastName
             phoneNumber
@@ -88,7 +89,7 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
         __typename
         ... on Customer {
             id
-
+            title
             emailAddress
             firstName
             lastName

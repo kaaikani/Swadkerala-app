@@ -51,6 +51,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'CollectionProducts', parameters: <String, Object>{'collection_name': widget.collectionName});
     // Add scroll listener for lazy loading
     _scrollController.addListener(_onScroll);
     
@@ -521,7 +522,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                     ? PriceFormatter.formatPrice(shadowPriceMinor)
                     : null;
 
-                // Check if product is out of stock
+                // In stock / Out of stock from the selected product variant, shown on category product card
                 final stockLevel = selectedVariant.stockLevel.toUpperCase();
                 final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
 

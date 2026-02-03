@@ -10,6 +10,7 @@ import '../widgets/snackbar.dart';
 import '../graphql/Customer.graphql.dart';
 import '../graphql/schema.graphql.dart';
 import '../services/postal_code_service.dart';
+import '../services/analytics_service.dart';
 
 class AddressesPage extends StatefulWidget {
   const AddressesPage({super.key});
@@ -26,6 +27,7 @@ class _AddressesPageState extends State<AddressesPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'Addresses');
     // Refresh customer addresses when page is opened to ensure latest data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {

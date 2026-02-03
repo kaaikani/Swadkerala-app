@@ -5,8 +5,9 @@ import '../controllers/theme_controller.dart';
 import '../components/orders_component.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import '../services/analytics_service.dart';
 
-enum OrderFilter { all, delivered, paid, paymentAuthorized, cancelled }
+enum OrderFilter { all, delivered, paid, paymentAuthorized, cancellationRequest, cancelled }
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key, this.initialFilter});
@@ -23,6 +24,7 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView(screenName: 'Orders');
     _selectedFilter = widget.initialFilter ?? OrderFilter.all;
   }
 
@@ -88,6 +90,8 @@ class _OrdersPageState extends State<OrdersPage> {
             _buildFilterChip('Paid', OrderFilter.paid),
             SizedBox(width: ResponsiveUtils.rp(8)),
             _buildFilterChip('Delivered', OrderFilter.delivered),
+            SizedBox(width: ResponsiveUtils.rp(8)),
+            _buildFilterChip('Cancellation Request', OrderFilter.cancellationRequest),
             SizedBox(width: ResponsiveUtils.rp(8)),
             _buildFilterChip('Cancelled', OrderFilter.cancelled),
           ],

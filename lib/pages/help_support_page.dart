@@ -8,12 +8,14 @@ import '../utils/responsive.dart';
 import '../utils/app_config.dart';
 import '../utils/app_strings.dart';
 import '../widgets/premium_card.dart';
+import '../services/analytics_service.dart';
 
 class HelpSupportPage extends StatelessWidget {
   const HelpSupportPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => AnalyticsService().logScreenView(screenName: 'HelpSupport'));
     final customerController = Get.find<CustomerController>();
     final customer = customerController.activeCustomer.value;
     

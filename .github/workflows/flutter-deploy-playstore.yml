@@ -68,7 +68,7 @@ jobs:
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
       - name: Set build number (versionCode)
-        run: echo "Building versionCode = ${{ github.run_number }}"
+        run: echo "Building versionCode = $(( ${{ github.run_number }} + 100 ))"
 
       # Remove plugins that fail Android Kotlin compile (v1 embedding / Registrar issues).
       # Flutter plugin loader reads .flutter-plugins-dependencies (JSON); also patch .flutter-plugins.
@@ -107,14 +107,14 @@ jobs:
           done
           echo "Removed excluded plugin registrations from GeneratedPluginRegistrant.java"
 
-      # versionCode = github.run_number. --no-pub prevents pub get from regenerating plugin files
+      # versionCode = github.run_number + 100 (avoids "version code already used" when re-running).
       - name: Build App Bundle
-        run: flutter build appbundle --release --no-pub --build-number=${{ github.run_number }}
+        run: flutter build appbundle --release --no-pub --build-number=$(( ${{ github.run_number }} + 100 ))
         env:
           FLUTTER_BUILD_MODE: release
 
       - name: Build APK (for internal testing)
-        run: flutter build apk --release --no-pub --build-number=${{ github.run_number }}
+        run: flutter build apk --release --no-pub --build-number=$(( ${{ github.run_number }} + 100 ))
         env:
           FLUTTER_BUILD_MODE: release
 

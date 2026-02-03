@@ -21,6 +21,10 @@ abstract class BaseController extends GetxController {
           exceptionStr.contains('cache.readQuery')) {
         return true;
       }
+      // Don't show error dialog for timeout – no message in UI
+      if (exceptionStr.contains('TimeoutException')) {
+        return true;
+      }
       
       // Check linkException for cache errors
       if (response.exception?.linkException != null) {
@@ -134,8 +138,15 @@ abstract class BaseController extends GetxController {
       }
     }
 
+    // Don't show dialog for timeout / stream errors (no message in UI)
     final isTimeout = exception is TimeoutException;
-    if (isTimeout) {
+    if (isTimeout) return;
+    final isUnknownTimeout = exception is UnknownException &&
+        exception.originalException is TimeoutException;
+    if (isUnknownTimeout) return;
+    final exceptionStr = exception?.toString() ?? '';
+    if (exceptionStr.contains('TimeoutException') ||
+        exceptionStr.contains('No stream event')) {
       return;
     }
 

@@ -58,6 +58,17 @@
 					<string>kaaikani</string>
 				</array>
 			</dict>
+			<!-- Facebook SDK URL Scheme for App Events / Login -->
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>Facebook</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>fb894049942524354</string>
+				</array>
+			</dict>
 		</array>
 		<!-- Universal Links (Associated Domains) -->
 		<!-- Note: You also need to add Associated Domains capability in Xcode -->
@@ -88,5 +99,12 @@
 		<true/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<!-- Meta (Facebook) App Events - App ID and Client Token from developers.facebook.com -->
+		<key>FacebookAppID</key>
+		<string>894049942524354</string>
+		<key>FacebookClientToken</key>
+		<string>7d618a40da95a992f525bf0b35b55faa</string>
+		<key>FacebookDisplayName</key>
+		<string>Kaaikani</string>
 	</dict>
 </plist>

@@ -278,6 +278,13 @@ const documentNodeMutationUpdateCustomer = DocumentNode(definitions: [
             directives: [],
             selectionSet: SelectionSetNode(selections: [
               FieldNode(
+                name: NameNode(value: 'title'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
                 name: NameNode(value: 'firstName'),
                 alias: null,
                 arguments: [],
@@ -548,6 +555,7 @@ class Mutation$UpdateCustomer$Widget
 
 class Mutation$UpdateCustomer$updateCustomer {
   Mutation$UpdateCustomer$updateCustomer({
+    this.title,
     required this.firstName,
     required this.lastName,
     this.phoneNumber,
@@ -557,12 +565,14 @@ class Mutation$UpdateCustomer$updateCustomer {
 
   factory Mutation$UpdateCustomer$updateCustomer.fromJson(
       Map<String, dynamic> json) {
+    final l$title = json['title'];
     final l$firstName = json['firstName'];
     final l$lastName = json['lastName'];
     final l$phoneNumber = json['phoneNumber'];
     final l$emailAddress = json['emailAddress'];
     final l$$__typename = json['__typename'];
     return Mutation$UpdateCustomer$updateCustomer(
+      title: (l$title as String?),
       firstName: (l$firstName as String),
       lastName: (l$lastName as String),
       phoneNumber: (l$phoneNumber as String?),
@@ -570,6 +580,8 @@ class Mutation$UpdateCustomer$updateCustomer {
       $__typename: (l$$__typename as String),
     );
   }
+
+  final String? title;
 
   final String firstName;
 
@@ -583,6 +595,8 @@ class Mutation$UpdateCustomer$updateCustomer {
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$title = title;
+    _resultData['title'] = l$title;
     final l$firstName = firstName;
     _resultData['firstName'] = l$firstName;
     final l$lastName = lastName;
@@ -598,12 +612,14 @@ class Mutation$UpdateCustomer$updateCustomer {
 
   @override
   int get hashCode {
+    final l$title = title;
     final l$firstName = firstName;
     final l$lastName = lastName;
     final l$phoneNumber = phoneNumber;
     final l$emailAddress = emailAddress;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$title,
       l$firstName,
       l$lastName,
       l$phoneNumber,
@@ -619,6 +635,11 @@ class Mutation$UpdateCustomer$updateCustomer {
     }
     if (other is! Mutation$UpdateCustomer$updateCustomer ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$title = title;
+    final lOther$title = other.title;
+    if (l$title != lOther$title) {
       return false;
     }
     final l$firstName = firstName;
@@ -670,6 +691,7 @@ abstract class CopyWith$Mutation$UpdateCustomer$updateCustomer<TRes> {
       _CopyWithStubImpl$Mutation$UpdateCustomer$updateCustomer;
 
   TRes call({
+    String? title,
     String? firstName,
     String? lastName,
     String? phoneNumber,
@@ -692,6 +714,7 @@ class _CopyWithImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? title = _undefined,
     Object? firstName = _undefined,
     Object? lastName = _undefined,
     Object? phoneNumber = _undefined,
@@ -699,6 +722,7 @@ class _CopyWithImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$UpdateCustomer$updateCustomer(
+        title: title == _undefined ? _instance.title : (title as String?),
         firstName: firstName == _undefined || firstName == null
             ? _instance.firstName
             : (firstName as String),
@@ -724,6 +748,7 @@ class _CopyWithStubImpl$Mutation$UpdateCustomer$updateCustomer<TRes>
   TRes _res;
 
   call({
+    String? title,
     String? firstName,
     String? lastName,
     String? phoneNumber,
@@ -5498,6 +5523,13 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                 selectionSet: null,
               ),
               FieldNode(
+                name: NameNode(value: 'title'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
                 name: NameNode(value: 'emailAddress'),
                 alias: null,
                 arguments: [],
@@ -6373,6 +6405,7 @@ class Query$GetActiveCustomer$activeCustomer {
   Query$GetActiveCustomer$activeCustomer({
     this.$__typename = 'Customer',
     required this.id,
+    this.title,
     required this.emailAddress,
     required this.firstName,
     required this.lastName,
@@ -6386,6 +6419,7 @@ class Query$GetActiveCustomer$activeCustomer {
       Map<String, dynamic> json) {
     final l$$__typename = json['__typename'];
     final l$id = json['id'];
+    final l$title = json['title'];
     final l$emailAddress = json['emailAddress'];
     final l$firstName = json['firstName'];
     final l$lastName = json['lastName'];
@@ -6396,6 +6430,7 @@ class Query$GetActiveCustomer$activeCustomer {
     return Query$GetActiveCustomer$activeCustomer(
       $__typename: (l$$__typename as String),
       id: (l$id as String),
+      title: (l$title as String?),
       emailAddress: (l$emailAddress as String),
       firstName: (l$firstName as String),
       lastName: (l$lastName as String),
@@ -6418,6 +6453,8 @@ class Query$GetActiveCustomer$activeCustomer {
 
   final String id;
 
+  final String? title;
+
   final String emailAddress;
 
   final String firstName;
@@ -6438,6 +6475,8 @@ class Query$GetActiveCustomer$activeCustomer {
     _resultData['__typename'] = l$$__typename;
     final l$id = id;
     _resultData['id'] = l$id;
+    final l$title = title;
+    _resultData['title'] = l$title;
     final l$emailAddress = emailAddress;
     _resultData['emailAddress'] = l$emailAddress;
     final l$firstName = firstName;
@@ -6459,6 +6498,7 @@ class Query$GetActiveCustomer$activeCustomer {
   int get hashCode {
     final l$$__typename = $__typename;
     final l$id = id;
+    final l$title = title;
     final l$emailAddress = emailAddress;
     final l$firstName = firstName;
     final l$lastName = lastName;
@@ -6469,6 +6509,7 @@ class Query$GetActiveCustomer$activeCustomer {
     return Object.hashAll([
       l$$__typename,
       l$id,
+      l$title,
       l$emailAddress,
       l$firstName,
       l$lastName,
@@ -6496,6 +6537,11 @@ class Query$GetActiveCustomer$activeCustomer {
     final l$id = id;
     final lOther$id = other.id;
     if (l$id != lOther$id) {
+      return false;
+    }
+    final l$title = title;
+    final lOther$title = other.title;
+    if (l$title != lOther$title) {
       return false;
     }
     final l$emailAddress = emailAddress;
@@ -6570,6 +6616,7 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> {
   TRes call({
     String? $__typename,
     String? id,
+    String? title,
     String? emailAddress,
     String? firstName,
     String? lastName,
@@ -6605,6 +6652,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
   TRes call({
     Object? $__typename = _undefined,
     Object? id = _undefined,
+    Object? title = _undefined,
     Object? emailAddress = _undefined,
     Object? firstName = _undefined,
     Object? lastName = _undefined,
@@ -6618,6 +6666,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
             ? _instance.$__typename
             : ($__typename as String),
         id: id == _undefined || id == null ? _instance.id : (id as String),
+        title: title == _undefined ? _instance.title : (title as String?),
         emailAddress: emailAddress == _undefined || emailAddress == null
             ? _instance.emailAddress
             : (emailAddress as String),
@@ -6682,6 +6731,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer<TRes>
   call({
     String? $__typename,
     String? id,
+    String? title,
     String? emailAddress,
     String? firstName,
     String? lastName,

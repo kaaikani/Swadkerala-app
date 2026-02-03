@@ -1,7 +1,9 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
-/// Service for Google Analytics tracking
+import 'meta_events_service.dart';
+
+/// Service for analytics (Firebase + Meta/Facebook App Events).
 class AnalyticsService {
   static final AnalyticsService _instance = AnalyticsService._internal();
   factory AnalyticsService() => _instance;
@@ -10,18 +12,18 @@ class AnalyticsService {
   FirebaseAnalytics? _analytics;
   FirebaseAnalyticsObserver? _observer;
 
-  /// Initialize analytics service
+  /// Initialize analytics service (Firebase + Meta).
   Future<void> initialize() async {
     try {
       _analytics = FirebaseAnalytics.instance;
       _observer = FirebaseAnalyticsObserver(analytics: _analytics!);
-      
-      // Set default event parameters
+
       await _analytics!.setDefaultEventParameters({
         'app_version': '2.0.78',
         'platform': defaultTargetPlatform.toString(),
       });
 
+      await MetaEventsService().initialize();
     } catch (e) {
     }
   }
@@ -36,13 +38,14 @@ class AnalyticsService {
     Map<String, Object>? parameters,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logScreenView(
+      if (_analytics != null) {
+        await _analytics!.logScreenView(
         screenName: screenName,
         screenClass: screenClass ?? screenName,
         parameters: parameters,
       );
+      }
+      MetaEventsService().logEvent(name: 'screen_view', parameters: {'screen_name': screenName, if (screenClass != null) 'screen_class': screenClass});
     } catch (e) {
     }
   }
@@ -53,12 +56,13 @@ class AnalyticsService {
     Map<String, Object>? parameters,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logEvent(
+      if (_analytics != null) {
+        await _analytics!.logEvent(
         name: name,
         parameters: parameters,
       );
+      }
+      MetaEventsService().logEvent(name: name, parameters: parameters);
     } catch (e) {
     }
   }
@@ -66,9 +70,10 @@ class AnalyticsService {
   /// Log login event
   Future<void> logLogin({String? loginMethod}) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logLogin(loginMethod: loginMethod ?? 'unknown');
+      if (_analytics != null) {
+        await _analytics!.logLogin(loginMethod: loginMethod ?? 'unknown');
+      }
+      MetaEventsService().logEvent(name: 'Login', parameters: {'method': loginMethod ?? 'unknown'});
     } catch (e) {
     }
   }
@@ -76,9 +81,10 @@ class AnalyticsService {
   /// Log sign up event
   Future<void> logSignUp({String? signUpMethod}) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logSignUp(signUpMethod: signUpMethod ?? 'unknown');
+      if (_analytics != null) {
+        await _analytics!.logSignUp(signUpMethod: signUpMethod ?? 'unknown');
+      }
+      MetaEventsService().logCompletedRegistration(method: signUpMethod ?? 'unknown');
     } catch (e) {
     }
   }
@@ -93,20 +99,28 @@ class AnalyticsService {
     int quantity = 1,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logAddToCart(
+      if (_analytics != null) {
+        await _analytics!.logAddToCart(
+          currency: currency,
+          value: price,
+          items: [
+            AnalyticsEventItem(
+              itemId: itemId,
+              itemName: itemName,
+              itemCategory: itemCategory,
+              price: price,
+              quantity: quantity,
+            ),
+          ],
+        );
+      }
+      MetaEventsService().logAddToCart(
+        itemId: itemId,
+        itemName: itemName,
+        itemCategory: itemCategory,
+        price: price,
         currency: currency,
-        value: price,
-        items: [
-          AnalyticsEventItem(
-            itemId: itemId,
-            itemName: itemName,
-            itemCategory: itemCategory,
-            price: price,
-            quantity: quantity,
-          ),
-        ],
+        quantity: quantity,
       );
     } catch (e) {
     }
@@ -122,9 +136,8 @@ class AnalyticsService {
     int quantity = 1,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logRemoveFromCart(
+      if (_analytics != null) {
+        await _analytics!.logRemoveFromCart(
         currency: currency,
         value: price,
         items: [
@@ -137,6 +150,12 @@ class AnalyticsService {
           ),
         ],
       );
+      }
+      MetaEventsService().logEvent(
+        name: 'RemoveFromCart',
+        parameters: {'content_id': itemId, 'content_type': 'product', 'currency': currency, 'value': price},
+        valueToSum: price,
+      );
     } catch (e) {
     }
   }
@@ -148,13 +167,14 @@ class AnalyticsService {
     List<AnalyticsEventItem>? items,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logBeginCheckout(
-        value: value,
-        currency: currency,
-        items: items,
-      );
+      if (_analytics != null) {
+        await _analytics!.logBeginCheckout(
+          value: value,
+          currency: currency,
+          items: items,
+        );
+      }
+      MetaEventsService().logInitiatedCheckout(value: value, currency: currency);
     } catch (e) {
     }
   }
@@ -168,14 +188,20 @@ class AnalyticsService {
     Map<String, Object>? parameters,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logPurchase(
+      if (_analytics != null) {
+        await _analytics!.logPurchase(
+          transactionId: transactionId,
+          value: value,
+          currency: currency,
+          items: items,
+          parameters: parameters,
+        );
+      }
+      MetaEventsService().logPurchase(
         transactionId: transactionId,
         value: value,
         currency: currency,
-        items: items,
-        parameters: parameters,
+        parameters: parameters != null ? Map<String, dynamic>.from(parameters) : null,
       );
     } catch (e) {
     }
@@ -186,9 +212,10 @@ class AnalyticsService {
     required String searchTerm,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logSearch(searchTerm: searchTerm);
+      if (_analytics != null) {
+        await _analytics!.logSearch(searchTerm: searchTerm);
+      }
+      MetaEventsService().logSearch(searchTerm: searchTerm);
     } catch (e) {
     }
   }
@@ -202,19 +229,26 @@ class AnalyticsService {
     required String currency,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logViewItem(
+      if (_analytics != null) {
+        await _analytics!.logViewItem(
+          currency: currency,
+          value: price,
+          items: [
+            AnalyticsEventItem(
+              itemId: itemId,
+              itemName: itemName,
+              itemCategory: itemCategory,
+              price: price,
+            ),
+          ],
+        );
+      }
+      MetaEventsService().logViewContent(
+        itemId: itemId,
+        itemName: itemName,
+        itemCategory: itemCategory,
+        price: price,
         currency: currency,
-        value: price,
-        items: [
-          AnalyticsEventItem(
-            itemId: itemId,
-            itemName: itemName,
-            itemCategory: itemCategory,
-            price: price,
-          ),
-        ],
       );
     } catch (e) {
     }
@@ -229,19 +263,26 @@ class AnalyticsService {
     required String currency,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logAddToWishlist(
+      if (_analytics != null) {
+        await _analytics!.logAddToWishlist(
+          currency: currency,
+          value: price,
+          items: [
+            AnalyticsEventItem(
+              itemId: itemId,
+              itemName: itemName,
+              itemCategory: itemCategory,
+              price: price,
+            ),
+          ],
+        );
+      }
+      MetaEventsService().logAddToWishlist(
+        itemId: itemId,
+        itemName: itemName,
+        itemCategory: itemCategory,
+        price: price,
         currency: currency,
-        value: price,
-        items: [
-          AnalyticsEventItem(
-            itemId: itemId,
-            itemName: itemName,
-            itemCategory: itemCategory,
-            price: price,
-          ),
-        ],
       );
     } catch (e) {
     }
@@ -255,9 +296,18 @@ class AnalyticsService {
     required String currency,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.logEvent(
+      if (_analytics != null) {
+        await _analytics!.logEvent(
+          name: 'apply_coupon',
+          parameters: {
+            'coupon_name': couponName,
+            'coupon_code': couponCode,
+            'value': value,
+            'currency': currency,
+          },
+        );
+      }
+      MetaEventsService().logEvent(
         name: 'apply_coupon',
         parameters: {
           'coupon_name': couponName,
@@ -265,6 +315,7 @@ class AnalyticsService {
           'value': value,
           'currency': currency,
         },
+        valueToSum: value,
       );
     } catch (e) {
     }
@@ -276,9 +327,9 @@ class AnalyticsService {
     required String? value,
   }) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.setUserProperty(name: name, value: value);
+      if (_analytics != null) {
+        await _analytics!.setUserProperty(name: name, value: value);
+      }
     } catch (e) {
     }
   }
@@ -286,9 +337,10 @@ class AnalyticsService {
   /// Set user ID
   Future<void> setUserId(String? userId) async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.setUserId(id: userId);
+      if (_analytics != null) {
+        await _analytics!.setUserId(id: userId);
+      }
+      MetaEventsService().setUserId(userId);
     } catch (e) {
     }
   }
@@ -296,10 +348,11 @@ class AnalyticsService {
   /// Reset analytics data (on logout)
   Future<void> resetAnalytics() async {
     try {
-      if (_analytics == null) return;
-
-      await _analytics!.resetAnalyticsData();
-      await _analytics!.setUserId(id: null);
+      if (_analytics != null) {
+        await _analytics!.resetAnalyticsData();
+        await _analytics!.setUserId(id: null);
+      }
+      MetaEventsService().clearUserData();
     } catch (e) {
     }
   }
@@ -312,18 +365,15 @@ class AnalyticsService {
     Map<String, Object>? additionalParameters,
   }) async {
     try {
-      if (_analytics == null) return;
-
       final parameters = <String, Object>{
         'button_name': buttonName,
         if (screenName != null) 'screen_name': screenName,
         if (additionalParameters != null) ...additionalParameters,
       };
-
-      await _analytics!.logEvent(
-        name: 'button_click',
-        parameters: parameters,
-      );
+      if (_analytics != null) {
+        await _analytics!.logEvent(name: 'button_click', parameters: parameters);
+      }
+      MetaEventsService().logEvent(name: 'button_click', parameters: parameters);
     } catch (e) {
     }
   }

@@ -45,7 +45,19 @@ class CustomerController extends BaseController {
   OrderFilter? _currentOrderFilter;
 
   RxBool get isLoading => utilityController.isLoadingRx;
-  
+
+  /// True if any profile field is empty (title, firstName, lastName, phone, email) or email is placeholder.
+  static bool isProfileIncomplete(Query$GetActiveCustomer$activeCustomer? c) {
+    if (c == null) return false;
+    if (c.title == null || c.title!.trim().isEmpty) return true;
+    if (c.firstName.trim().isEmpty) return true;
+    if (c.lastName.trim().isEmpty) return true;
+    if (c.phoneNumber == null || c.phoneNumber!.trim().isEmpty) return true;
+    if (c.emailAddress.trim().isEmpty) return true;
+    if (c.emailAddress.endsWith('@kaikani.com')) return true;
+    return false;
+  }
+
   /// Convert OrderFilter to Input$OrderFilterParameter
   Input$OrderFilterParameter? _getOrderStateFilter(OrderFilter? filter) {
     if (filter == null || filter == OrderFilter.all) {
@@ -70,11 +82,16 @@ class CustomerController extends BaseController {
           ),
         );
       
+      case OrderFilter.cancellationRequest:
+        return Input$OrderFilterParameter(
+          state: Input$StringOperators(eq: 'CancellationRequested'),
+        );
+
       case OrderFilter.cancelled:
         return Input$OrderFilterParameter(
           state: Input$StringOperators(eq: 'Cancelled'),
         );
-      
+
       case OrderFilter.all:
         return null;
     }
@@ -195,9 +212,9 @@ class CustomerController extends BaseController {
           return;
         }
 
-        // For network errors, don't show error dialog and don't logout
+        // For network/timeout errors, don't show error dialog, don't show message in UI, don't logout
         if (isNetworkError) {
-          error.value = 'Network error. Please check your connection.';
+          error.value = '';
           return; // Exit early, don't process data or logout
         }
 
@@ -444,14 +461,13 @@ class CustomerController extends BaseController {
     }
   }
 
-  /// Update customer profile
-  Future<bool> updateCustomer() async {
+  /// Update customer profile. [title] is used as gender (Male/Female/Others) when GraphQL has no gender field.
+  Future<bool> updateCustomer({String? title}) async {
     try {
           Logger.logFunction(functionName: 'updateCustomer', mutationName: 'UpdateCustomer');
     utilityController.setLoadingState(true);
-      // Log the input values clearly
-      // Prepare mutation input
       final input = Input$UpdateCustomerInput(
+        title: title,
         firstName: firstNameController.text,
         lastName: lastNameController.text,
       );
@@ -1416,13 +1432,13 @@ class CustomerController extends BaseController {
       if (e.toString().contains('GraphQL') || e.toString().contains('graphql')) {
       }
       
-      // Check if it's a network error
-      if (e.toString().contains('SocketException') || 
+      // For timeout/network errors, don't show error dialog in UI
+      if (e.toString().contains('SocketException') ||
           e.toString().contains('TimeoutException') ||
           e.toString().contains('Connection') ||
           e.toString().contains('Network')) {
+        return [];
       }
-      // Still call handleException for user-facing error dialog
       handleException(e, customErrorMessage: 'Failed to fetch postal codes');
       return [];
     }

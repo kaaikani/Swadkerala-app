@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:recipe.app/pages/error_page.dart';
 import 'package:recipe.app/services/graphql_client.dart';
 import 'package:recipe.app/services/in_app_update_service.dart';
 import 'package:recipe.app/services/notification_service.dart';
@@ -387,7 +388,7 @@ void _setupErrorHandlers() {
          errorString.contains('KeyUpEvent'))) {
       return const SizedBox.shrink();
     }
-    return const AppErrorWidget();
+    return const ErrorPage();
   };
 }
 
