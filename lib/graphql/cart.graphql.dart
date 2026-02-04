@@ -5473,6 +5473,9 @@ class Fragment$ErrorResult {
       case "PaymentFailedError":
         return Fragment$ErrorResult$$PaymentFailedError.fromJson(json);
 
+      case "QuantityLimitError":
+        return Fragment$ErrorResult$$QuantityLimitError.fromJson(json);
+
       case "VerificationTokenExpiredError":
         return Fragment$ErrorResult$$VerificationTokenExpiredError.fromJson(
             json);
@@ -5480,9 +5483,6 @@ class Fragment$ErrorResult {
       case "VerificationTokenInvalidError":
         return Fragment$ErrorResult$$VerificationTokenInvalidError.fromJson(
             json);
-
-      case "QuantityLimitError":
-        return Fragment$ErrorResult$$QuantityLimitError.fromJson(json);
 
       default:
         final l$errorCode = json['errorCode'];
@@ -5619,12 +5619,12 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         paymentDeclinedError,
     required _T Function(Fragment$ErrorResult$$PaymentFailedError)
         paymentFailedError,
+    required _T Function(Fragment$ErrorResult$$QuantityLimitError)
+        quantityLimitError,
     required _T Function(Fragment$ErrorResult$$VerificationTokenExpiredError)
         verificationTokenExpiredError,
     required _T Function(Fragment$ErrorResult$$VerificationTokenInvalidError)
         verificationTokenInvalidError,
-    required _T Function(Fragment$ErrorResult$$QuantityLimitError)
-        quantityLimitError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -5742,6 +5742,10 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         return paymentFailedError(
             this as Fragment$ErrorResult$$PaymentFailedError);
 
+      case "QuantityLimitError":
+        return quantityLimitError(
+            this as Fragment$ErrorResult$$QuantityLimitError);
+
       case "VerificationTokenExpiredError":
         return verificationTokenExpiredError(
             this as Fragment$ErrorResult$$VerificationTokenExpiredError);
@@ -5749,10 +5753,6 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
       case "VerificationTokenInvalidError":
         return verificationTokenInvalidError(
             this as Fragment$ErrorResult$$VerificationTokenInvalidError);
-
-      case "QuantityLimitError":
-        return quantityLimitError(
-            this as Fragment$ErrorResult$$QuantityLimitError);
 
       default:
         return orElse();
@@ -5813,11 +5813,11 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
     _T Function(Fragment$ErrorResult$$PaymentDeclinedError)?
         paymentDeclinedError,
     _T Function(Fragment$ErrorResult$$PaymentFailedError)? paymentFailedError,
+    _T Function(Fragment$ErrorResult$$QuantityLimitError)? quantityLimitError,
     _T Function(Fragment$ErrorResult$$VerificationTokenExpiredError)?
         verificationTokenExpiredError,
     _T Function(Fragment$ErrorResult$$VerificationTokenInvalidError)?
         verificationTokenInvalidError,
-    _T Function(Fragment$ErrorResult$$QuantityLimitError)? quantityLimitError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -6052,6 +6052,14 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
           return orElse();
         }
 
+      case "QuantityLimitError":
+        if (quantityLimitError != null) {
+          return quantityLimitError(
+              this as Fragment$ErrorResult$$QuantityLimitError);
+        } else {
+          return orElse();
+        }
+
       case "VerificationTokenExpiredError":
         if (verificationTokenExpiredError != null) {
           return verificationTokenExpiredError(
@@ -6064,14 +6072,6 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         if (verificationTokenInvalidError != null) {
           return verificationTokenInvalidError(
               this as Fragment$ErrorResult$$VerificationTokenInvalidError);
-        } else {
-          return orElse();
-        }
-
-      case "QuantityLimitError":
-        if (quantityLimitError != null) {
-          return quantityLimitError(
-              this as Fragment$ErrorResult$$QuantityLimitError);
         } else {
           return orElse();
         }
@@ -10564,6 +10564,153 @@ class _CopyWithStubImpl$Fragment$ErrorResult$$PaymentFailedError<TRes>
       _res;
 }
 
+class Fragment$ErrorResult$$QuantityLimitError implements Fragment$ErrorResult {
+  Fragment$ErrorResult$$QuantityLimitError({
+    required this.errorCode,
+    required this.message,
+    this.$__typename = 'QuantityLimitError',
+  });
+
+  factory Fragment$ErrorResult$$QuantityLimitError.fromJson(
+      Map<String, dynamic> json) {
+    final l$errorCode = json['errorCode'];
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Fragment$ErrorResult$$QuantityLimitError(
+      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Enum$ErrorCode errorCode;
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$errorCode = errorCode;
+    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$errorCode = errorCode;
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$errorCode,
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$ErrorResult$$QuantityLimitError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$errorCode = errorCode;
+    final lOther$errorCode = other.errorCode;
+    if (l$errorCode != lOther$errorCode) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$ErrorResult$$QuantityLimitError
+    on Fragment$ErrorResult$$QuantityLimitError {
+  CopyWith$Fragment$ErrorResult$$QuantityLimitError<
+          Fragment$ErrorResult$$QuantityLimitError>
+      get copyWith => CopyWith$Fragment$ErrorResult$$QuantityLimitError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
+  factory CopyWith$Fragment$ErrorResult$$QuantityLimitError(
+    Fragment$ErrorResult$$QuantityLimitError instance,
+    TRes Function(Fragment$ErrorResult$$QuantityLimitError) then,
+  ) = _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError;
+
+  factory CopyWith$Fragment$ErrorResult$$QuantityLimitError.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError;
+
+  TRes call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError<TRes>
+    implements CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
+  _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$ErrorResult$$QuantityLimitError _instance;
+
+  final TRes Function(Fragment$ErrorResult$$QuantityLimitError) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? errorCode = _undefined,
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$ErrorResult$$QuantityLimitError(
+        errorCode: errorCode == _undefined || errorCode == null
+            ? _instance.errorCode
+            : (errorCode as Enum$ErrorCode),
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError<TRes>
+    implements CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
+  _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError(this._res);
+
+  TRes _res;
+
+  call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Fragment$ErrorResult$$VerificationTokenExpiredError
     implements Fragment$ErrorResult {
   Fragment$ErrorResult$$VerificationTokenExpiredError({
@@ -10865,153 +11012,6 @@ class _CopyWithStubImpl$Fragment$ErrorResult$$VerificationTokenInvalidError<
         CopyWith$Fragment$ErrorResult$$VerificationTokenInvalidError<TRes> {
   _CopyWithStubImpl$Fragment$ErrorResult$$VerificationTokenInvalidError(
       this._res);
-
-  TRes _res;
-
-  call({
-    Enum$ErrorCode? errorCode,
-    String? message,
-    String? $__typename,
-  }) =>
-      _res;
-}
-
-class Fragment$ErrorResult$$QuantityLimitError implements Fragment$ErrorResult {
-  Fragment$ErrorResult$$QuantityLimitError({
-    required this.errorCode,
-    required this.message,
-    this.$__typename = 'QuantityLimitError',
-  });
-
-  factory Fragment$ErrorResult$$QuantityLimitError.fromJson(
-      Map<String, dynamic> json) {
-    final l$errorCode = json['errorCode'];
-    final l$message = json['message'];
-    final l$$__typename = json['__typename'];
-    return Fragment$ErrorResult$$QuantityLimitError(
-      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
-      message: (l$message as String),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final Enum$ErrorCode errorCode;
-
-  final String message;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$errorCode = errorCode;
-    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
-    final l$message = message;
-    _resultData['message'] = l$message;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$errorCode = errorCode;
-    final l$message = message;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$errorCode,
-      l$message,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Fragment$ErrorResult$$QuantityLimitError ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$errorCode = errorCode;
-    final lOther$errorCode = other.errorCode;
-    if (l$errorCode != lOther$errorCode) {
-      return false;
-    }
-    final l$message = message;
-    final lOther$message = other.message;
-    if (l$message != lOther$message) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Fragment$ErrorResult$$QuantityLimitError
-    on Fragment$ErrorResult$$QuantityLimitError {
-  CopyWith$Fragment$ErrorResult$$QuantityLimitError<
-          Fragment$ErrorResult$$QuantityLimitError>
-      get copyWith => CopyWith$Fragment$ErrorResult$$QuantityLimitError(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
-  factory CopyWith$Fragment$ErrorResult$$QuantityLimitError(
-    Fragment$ErrorResult$$QuantityLimitError instance,
-    TRes Function(Fragment$ErrorResult$$QuantityLimitError) then,
-  ) = _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError;
-
-  factory CopyWith$Fragment$ErrorResult$$QuantityLimitError.stub(TRes res) =
-      _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError;
-
-  TRes call({
-    Enum$ErrorCode? errorCode,
-    String? message,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError<TRes>
-    implements CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
-  _CopyWithImpl$Fragment$ErrorResult$$QuantityLimitError(
-    this._instance,
-    this._then,
-  );
-
-  final Fragment$ErrorResult$$QuantityLimitError _instance;
-
-  final TRes Function(Fragment$ErrorResult$$QuantityLimitError) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? errorCode = _undefined,
-    Object? message = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Fragment$ErrorResult$$QuantityLimitError(
-        errorCode: errorCode == _undefined || errorCode == null
-            ? _instance.errorCode
-            : (errorCode as Enum$ErrorCode),
-        message: message == _undefined || message == null
-            ? _instance.message
-            : (message as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError<TRes>
-    implements CopyWith$Fragment$ErrorResult$$QuantityLimitError<TRes> {
-  _CopyWithStubImpl$Fragment$ErrorResult$$QuantityLimitError(this._res);
 
   TRes _res;
 

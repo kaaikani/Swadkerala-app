@@ -210,83 +210,56 @@ class HomeHeader extends StatelessWidget {
                         Center(
                           child: _buildWelcomeSectionIndSnacks(),
                         ),
-                        // Right side: Help/Support + Profile Icons
+                        // Right side: Profile only (no call button for Ind-Snacks)
                         Positioned(
                           right: 0,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              InkWell(
-                                onTap: () => Get.toNamed('/help-support'),
-                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                                child: Container(
-                                  margin: EdgeInsets.only(right: ResponsiveUtils.rp(8)),
-                                  padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.backgroundLight,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.border.withValues(alpha: 0.3),
-                                      width: 1,
+                          child: Obx(() {
+                            final customer = customerController?.activeCustomer.value;
+                            final hasError = customer != null && CustomerController.isProfileIncomplete(customer);
+
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                InkWell(
+                                  onTap: () => Get.toNamed('/account'),
+                                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                                  child: Container(
+                                    padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.backgroundLight,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.border.withValues(alpha: 0.3),
+                                        width: 1,
+                                      ),
                                     ),
-                                  ),
-                                  child: Icon(
-                                    Icons.call,
-                                    color: AppColors.textPrimary,
-                                    size: ResponsiveUtils.rp(26),
+                                    child: Icon(
+                                      Icons.person_outline_rounded,
+                                      color: AppColors.textPrimary,
+                                      size: ResponsiveUtils.rp(26),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Obx(() {
-                                final customer = customerController?.activeCustomer.value;
-                                final hasError = customer != null && CustomerController.isProfileIncomplete(customer);
-
-                                return Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    InkWell(
-                                      onTap: () => Get.toNamed('/account'),
-                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-                                      child: Container(
-                                        padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.backgroundLight,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: AppColors.border.withValues(alpha: 0.3),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Icons.person_outline_rounded,
-                                          color: AppColors.textPrimary,
-                                          size: ResponsiveUtils.rp(26),
+                                if (hasError)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      width: ResponsiveUtils.rp(12),
+                                      height: ResponsiveUtils.rp(12),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.error,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2,
                                         ),
                                       ),
                                     ),
-                                    // Red dot error indicator
-                                    if (hasError)
-                                      Positioned(
-                                        right: 0,
-                                        top: 0,
-                                        child: Container(
-                                          width: ResponsiveUtils.rp(12),
-                                          height: ResponsiveUtils.rp(12),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.error,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 2,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                );
-                              }),
-                            ],
-                          ),
+                                  ),
+                              ],
+                            );
+                          }),
                         ),
                       ],
                     ),

@@ -131,14 +131,14 @@ class CheckoutOrderSummarySection extends StatelessWidget {
         }
       }
       
-      // Loyalty Points
+      // Loyalty Points - discount = points / pointsPerRupee (in paise: * 100)
       final loyaltyPointsUsed = bannerController.loyaltyPointsUsed.value;
       final loyaltyPointsApplied = bannerController.loyaltyPointsApplied.value;
       final config = bannerController.loyaltyPointsConfig.value;
-      final rupeesPerPoint = config?.rupeesPerPoint ?? 0;
+      final pointsPerRupee = config?.pointsPerRupee ?? 0;
       
-      final loyaltyDiscountAmount = loyaltyPointsApplied && loyaltyPointsUsed > 0 && rupeesPerPoint > 0
-          ? (loyaltyPointsUsed * rupeesPerPoint)
+      final loyaltyDiscountAmount = loyaltyPointsApplied && loyaltyPointsUsed > 0 && pointsPerRupee > 0
+          ? (loyaltyPointsUsed / pointsPerRupee * 100).toInt()
           : 0;
       
       // Get coupon discount from cart discounts (updated after coupon application)

@@ -164,6 +164,10 @@ class CustomerController extends BaseController {
   /// [skipPostalCodeCheck] - if true, skip postal code/channel check to prevent unnecessary API calls
   Future<void> getActiveCustomer({bool skipPostalCodeCheck = false, OrderFilter? orderFilter}) async {
     try {
+      if (Get.isRegistered<OrderController>() &&
+          (Get.find<OrderController>().skipPostPaymentRefresh)) {
+        return;
+      }
           Logger.logFunction(functionName: 'getActiveCustomer');
     utilityController.setLoadingState(false);
       error.value = '';
@@ -506,6 +510,79 @@ class CustomerController extends BaseController {
     } finally {
       utilityController.setLoadingState(false);
     }
+  }
+
+  /// Update customer location (customFields.location) with channel name. Used after switching channel by postal code.
+  Future<bool> updateCustomerLocation(String channelName) async {
+    final customer = activeCustomer.value;
+    if (customer == null) {
+      debugPrint('[UpdateLocation] updateCustomerLocation skipped: no active customer');
+      return false;
+    }
+    try {
+      Logger.logFunction(functionName: 'updateCustomerLocation', mutationName: 'UpdateCustomer');
+      final input = Input$UpdateCustomerInput(
+        title: customer.title,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        phoneNumber: customer.phoneNumber,
+        customFields: Input$UpdateCustomerCustomFieldsInput(
+          location: channelName,
+          loyaltyPointsAvailable: customer.customFields?.loyaltyPointsAvailable,
+        ),
+      );
+      final response = await GraphqlService.client.value.mutate$UpdateCustomer(
+        Options$Mutation$UpdateCustomer(
+          variables: Variables$Mutation$UpdateCustomer(input: input),
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to update location')) {
+        return false;
+      }
+      if (response.parsedData?.updateCustomer != null) {
+        await getActiveCustomer();
+        debugPrint('[UpdateLocation] updateCustomerLocation success: location=$channelName');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('[UpdateLocation] updateCustomerLocation error: $e');
+      return false;
+    }
+  }
+
+  /// Sync customer location from stored postal code (home page): read postal from GetStorage,
+  /// get channel by postal code, then pass that channel name to updateCustomer (customFields.location).
+  Future<void> syncCustomerLocationFromStoredPostalCode() async {
+    final storedPostalCode = _storage.read('postal_code');
+    if (storedPostalCode == null || storedPostalCode.toString().trim().isEmpty) {
+      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no postal_code in storage');
+      return;
+    }
+    if (activeCustomer.value == null) {
+      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no active customer');
+      return;
+    }
+    final postalCode = storedPostalCode.toString().trim();
+    final channels = await getAvailableChannels(postalCode);
+    if (channels.isEmpty) {
+      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no channels for postalCode=$postalCode');
+      return;
+    }
+    final availableCity = channels
+        .where((c) => c.type == Enum$ChannelType.CITY && c.isAvailable == true)
+        .toList();
+    if (availableCity.isEmpty) {
+      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no available CITY channel');
+      return;
+    }
+    final currentCode = ChannelService.getChannelCode();
+    final selected = currentCode != null
+        ? availableCity.firstWhereOrNull((c) => c.code == currentCode) ?? availableCity.first
+        : availableCity.first;
+    debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: postalCode=$postalCode -> channelName=${selected.name}');
+    await updateCustomerLocation(selected.name);
   }
 
   /// Update customer email address using UpdateProfileEmail mutation
@@ -1108,90 +1185,63 @@ class CustomerController extends BaseController {
   /// If city is found in the channel and is available, use that channel
   /// If not available, show dialog
   Future<bool> switchChannelByPostalCode(String postalCode, {String? city, bool showLoading = true}) async {
+    debugPrint('[UpdateLocation] switchChannelByPostalCode START: postalCode=$postalCode, city=$city, showLoading=$showLoading');
     Logger.logFunction(functionName: 'switchChannelByPostalCode', queryName: 'GetAvailableChannels');
-    
+
     try {
       if (showLoading) {
         LoadingDialog.show(message: 'Checking availability...');
       }
-      // ignore: unused_local_variable
-      final _channelToken = GraphqlService.channelToken;
+      debugPrint('[UpdateLocation] GetAvailableChannels QUERY START');
+      debugPrint('[UpdateLocation]   operationName: GetAvailableChannels');
+      debugPrint('[UpdateLocation]   variables: { postalCode: "$postalCode" }');
       final response = await GraphqlService.client.value.query$GetAvailableChannels(
         Options$Query$GetAvailableChannels(
           variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
         ),
       );
 
-      if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
-        if (showLoading) {
-          LoadingDialog.hide();
+      debugPrint('[UpdateLocation] GetAvailableChannels QUERY RESPONSE');
+      debugPrint('[UpdateLocation]   hasException: ${response.hasException}');
+      final exc = response.exception;
+      if (exc != null) {
+        debugPrint('[UpdateLocation]   exception: $exc');
+        final gqlErrors = exc.graphqlErrors;
+        if (gqlErrors.isNotEmpty) {
+          for (int i = 0; i < gqlErrors.length; i++) {
+            final err = gqlErrors[i];
+            debugPrint('[UpdateLocation]   graphqlError[$i]: message=${err.message}, locations=${err.locations}');
+          }
         }
+        if (exc.linkException != null) {
+          debugPrint('[UpdateLocation]   linkException: ${exc.linkException}');
+        }
+      }
+      debugPrint('[UpdateLocation]   response.data present: ${response.data != null}');
+      if (response.data != null) {
+        debugPrint('[UpdateLocation]   response.data keys: ${response.data!.keys.toList()}');
+        if (response.data!.containsKey('getAvailableChannels')) {
+          final list = response.data!['getAvailableChannels'];
+          debugPrint('[UpdateLocation]   getAvailableChannels type: ${list.runtimeType}, length: ${list is List ? list.length : "n/a"}');
+        }
+      }
+      debugPrint('[UpdateLocation]   parsedData present: ${response.parsedData != null}');
+
+      if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
+        debugPrint('[UpdateLocation] GetAvailableChannels checkResponseForErrors=true, returning false');
+        if (showLoading) LoadingDialog.hide();
         return false;
       }
 
       final channels = response.parsedData?.getAvailableChannels ?? [];
-      if (channels.isEmpty) {
-        if (showLoading) {
-          LoadingDialog.hide();
-          ErrorDialog.show(
-            title: 'Service Not Available',
-            message: 'Service is not available for this location.',
-          );
-        }
-        return false;
-      }
-
-      // Debug: Print all channels received
+      debugPrint('[UpdateLocation] GetAvailableChannels parsed ${channels.length} channel(s)');
       for (int i = 0; i < channels.length; i++) {
-        // ignore: unused_local_variable
-        final _channel = channels[i];
+        final ch = channels[i];
+        debugPrint('[UpdateLocation]   channel[$i]: code=${ch.code}, name=${ch.name}, type=${ch.type}, isAvailable=${ch.isAvailable}, token=${ch.token != null ? "***" : null}');
       }
 
-      // Debug: Check enum comparison
-      // ignore: unused_local_variable
-        final _cityEnum = Enum$ChannelType.CITY;
-      
-      // Filter for CITY type channels
-      final cityChannels = <Query$GetAvailableChannels$getAvailableChannels>[];
-      for (final channel in channels) {
-        if (channel.type == Enum$ChannelType.CITY) {
-          cityChannels.add(channel);
-        } else {
-        }
-      }
-
-      // Debug: Print CITY channels
-      if (cityChannels.isNotEmpty) {
-        for (int i = 0; i < cityChannels.length; i++) {
-          // ignore: unused_local_variable
-        final _channel = cityChannels[i];
-        }
-      }
-
-      // Filter for CITY type channels with isAvailable == true
-      final availableCityChannels = channels.where(
-        (channel) => channel.type == Enum$ChannelType.CITY && 
-                     channel.isAvailable == true,
-      ).toList();
-
-      
-      // Debug: Print available CITY channels
-      if (availableCityChannels.isNotEmpty) {
-        for (int i = 0; i < availableCityChannels.length; i++) {
-          // ignore: unused_local_variable
-        final _channel = availableCityChannels[i];
-        }
-      } else {
-        if (cityChannels.isEmpty) {
-        } else {
-          // ignore: unused_local_variable
-          for (final cityChannel in cityChannels) {
-          }
-        }
-      }
-
-      // Check if there are any available CITY channels at all
-      if (availableCityChannels.isEmpty) {
+      if (channels.isEmpty) {
+        debugPrint('[UpdateLocation] No channels returned, showing error');
         if (showLoading) {
           LoadingDialog.hide();
           ErrorDialog.show(
@@ -1202,28 +1252,45 @@ class CustomerController extends BaseController {
         return false;
       }
 
-      // If city is provided, try to find matching CITY channel
+      final cityChannels = channels.where((c) => c.type == Enum$ChannelType.CITY).toList();
+      debugPrint('[UpdateLocation] CITY-type channels: ${cityChannels.length}');
+
+      final availableCityChannels = channels.where(
+        (channel) => channel.type == Enum$ChannelType.CITY && channel.isAvailable == true,
+      ).toList();
+      debugPrint('[UpdateLocation] Available CITY channels: ${availableCityChannels.length}');
+
+      if (availableCityChannels.isEmpty) {
+        debugPrint('[UpdateLocation] No available CITY channel, showing error');
+        if (showLoading) {
+          LoadingDialog.hide();
+          ErrorDialog.show(
+            title: 'Service Not Available',
+            message: 'Service is not available for this location.',
+          );
+        }
+        return false;
+      }
+
       Query$GetAvailableChannels$getAvailableChannels? selectedChannel;
-      
       if (city != null && city.isNotEmpty) {
-        // Find CITY channel matching the city name
         selectedChannel = availableCityChannels.firstWhereOrNull(
           (channel) => channel.code.toLowerCase().contains(city.toLowerCase()) ||
                        channel.name.toLowerCase().contains(city.toLowerCase()) ||
                        channel.name.toLowerCase() == city.toLowerCase(),
         );
-        
         if (selectedChannel != null) {
+          debugPrint('[UpdateLocation] Selected channel by city match: code=${selectedChannel.code}, name=${selectedChannel.name}');
         } else {
-          // No city match found, but we have available CITY channels, use the first one
           selectedChannel = availableCityChannels.first;
+          debugPrint('[UpdateLocation] No city match, using first available: code=${selectedChannel.code}, name=${selectedChannel.name}');
         }
       } else {
-        // If no city provided, use first available CITY channel
         selectedChannel = availableCityChannels.first;
+        debugPrint('[UpdateLocation] No city provided, using first available: code=${selectedChannel.code}, name=${selectedChannel.name}');
       }
 
-      // Save channel information using ChannelService
+      debugPrint('[UpdateLocation] Calling ChannelService.setChannelInfo: token=***, code=${selectedChannel.code}, name=${selectedChannel.name}, type=${selectedChannel.type}, postalCode=$postalCode');
       await ChannelService.setChannelInfo(
         token: selectedChannel.token ?? '',
         code: selectedChannel.code,
@@ -1231,23 +1298,18 @@ class CustomerController extends BaseController {
         type: selectedChannel.type.toString(),
         postalCode: postalCode,
       );
-      // Refresh all data after channel change
+      debugPrint('[UpdateLocation] setChannelInfo done, calling refreshAllDataAfterChannelChange');
       await refreshAllDataAfterChannelChange();
-      
-      // Force UI refresh by updating reactive variables
-      // This ensures the UI rebuilds when channel token changes
-      await Future.delayed(Duration(milliseconds: 100)); // Small delay to ensure storage is written
-      
-      // Hide loading dialog before returning success
-      if (showLoading) {
-        LoadingDialog.hide();
-      }
-      
+      // Update customer customFields.location with channel name so backend has the selected location
+      await updateCustomerLocation(selectedChannel.name);
+      await Future.delayed(Duration(milliseconds: 100));
+      if (showLoading) LoadingDialog.hide();
+      debugPrint('[UpdateLocation] switchChannelByPostalCode SUCCESS, returning true');
       return true;
-    } catch (e) {
-      if (showLoading) {
-        LoadingDialog.hide();
-      }
+    } catch (e, stack) {
+      debugPrint('[UpdateLocation] switchChannelByPostalCode EXCEPTION: $e');
+      debugPrint('[UpdateLocation] stackTrace: $stack');
+      if (showLoading) LoadingDialog.hide();
       handleException(e, customErrorMessage: 'Failed to switch channel');
       return false;
     }
@@ -1275,38 +1337,46 @@ class CustomerController extends BaseController {
 
   /// Get available channels for a postal code
   Future<List<Query$GetAvailableChannels$getAvailableChannels>> getAvailableChannels(String postalCode) async {
+    debugPrint('[UpdateLocation] getAvailableChannels QUERY START: postalCode=$postalCode');
     Logger.logFunction(functionName: 'getAvailableChannels', queryName: 'GetAvailableChannels');
-    
+
     try {
-      // Check channel token before making query
-      // ignore: unused_local_variable
-      final _channelToken = GraphqlService.channelToken;
       final response = await GraphqlService.client.value.query$GetAvailableChannels(
         Options$Query$GetAvailableChannels(
           variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
         ),
       );
-      if (response.hasException) {
-        if (response.exception?.linkException != null) {
+
+      debugPrint('[UpdateLocation] getAvailableChannels QUERY RESPONSE: hasException=${response.hasException}, dataPresent=${response.data != null}, parsedPresent=${response.parsedData != null}');
+      final exc2 = response.exception;
+      if (exc2 != null) {
+        debugPrint('[UpdateLocation] getAvailableChannels exception: $exc2');
+        final gqlErrors2 = exc2.graphqlErrors;
+        if (gqlErrors2.isNotEmpty) {
+          for (int i = 0; i < gqlErrors2.length; i++) {
+            debugPrint('[UpdateLocation] getAvailableChannels graphqlError[$i]: ${gqlErrors2[i].message}');
+          }
         }
-        if (response.exception?.graphqlErrors != null) {
+        if (exc2.linkException != null) {
+          debugPrint('[UpdateLocation] getAvailableChannels linkException: ${exc2.linkException}');
         }
+      }
+      if (response.data != null && response.data!.containsKey('getAvailableChannels')) {
+        final raw = response.data!['getAvailableChannels'];
+        debugPrint('[UpdateLocation] getAvailableChannels raw list length: ${raw is List ? raw.length : "n/a"}');
       }
 
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
+        debugPrint('[UpdateLocation] getAvailableChannels checkResponseForErrors=true, returning []');
         return [];
       }
 
       final channels = response.parsedData?.getAvailableChannels ?? [];
-      if (channels.isNotEmpty) {
-        for (int i = 0; i < channels.length; i++) {
-          // ignore: unused_local_variable
-        final _channel = channels[i];
-        }
-      } else {
-      }
+      debugPrint('[UpdateLocation] getAvailableChannels returning ${channels.length} channel(s)');
       return channels;
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('[UpdateLocation] getAvailableChannels EXCEPTION: $e');
+      debugPrint('[UpdateLocation] getAvailableChannels stackTrace: $stack');
       handleException(e, customErrorMessage: 'Failed to fetch available channels');
       return [];
     }

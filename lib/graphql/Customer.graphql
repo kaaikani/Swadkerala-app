@@ -97,7 +97,7 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
 
 
             customFields {
-
+                location
                 loyaltyPointsAvailable
             }
             addresses {

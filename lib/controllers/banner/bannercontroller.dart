@@ -557,7 +557,7 @@ class BannerController extends BaseController {
   Future<void> fetchLoyaltyPointsConfig() async {
     try {
           Logger.logFunction(functionName: 'fetchLoyaltyPointsConfig', queryName: 'LoyaltyPointsConfig');
-    utilityController.setLoadingState(true);
+    utilityController.setLoadingState(false);
       final res = await GraphqlService.client.value.query$LoyaltyPointsConfig(
         Options$Query$LoyaltyPointsConfig(),
       );

@@ -535,15 +535,20 @@ class CartController extends BaseController {
     return PriceFormatter.formatPrice(price);
   }
 
-  /// Clear cart
-  Future<void> clearCart() async {
+  /// Clear cart.
+  /// [skipCouponValidation] when true (e.g. after order placed) skips fetching active order
+  /// for coupon validation and only resets in-memory coupon state.
+  Future<void> clearCart({bool skipCouponValidation = false}) async {
     cart.value = null;
     error.value = null;
     _updateAppBadge(); // Update badge when cart is cleared
-    // Remove any applied coupons when cart is cleared
     try {
       final bannerController = Get.find<BannerController>();
-      await bannerController.validateAndRemoveCouponsIfNeeded();
+      if (skipCouponValidation) {
+        bannerController.resetCouponCodes();
+      } else {
+        await bannerController.validateAndRemoveCouponsIfNeeded();
+      }
     } catch (e) {
     }
   }

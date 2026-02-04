@@ -165,14 +165,10 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
                       final pointsUsed = bannerController.loyaltyPointsUsed.value;
                       final config = bannerController.loyaltyPointsConfig.value;
                       
-                      // Calculate discount amount from points using config
+                      // Calculate discount from points: divide by pointsPerRupee only
                       double discountAmountInRupees = 0.0;
                       if (config != null && config.pointsPerRupee > 0) {
                         discountAmountInRupees = pointsUsed / config.pointsPerRupee.toDouble();
-                      } else if (config != null && config.rupeesPerPoint > 0) {
-                        discountAmountInRupees = pointsUsed * config.rupeesPerPoint.toDouble();
-                      } else {
-                        discountAmountInRupees = pointsUsed.toDouble();
                       }
                       
                       final discountAmountInCents = (discountAmountInRupees * 100).toInt();

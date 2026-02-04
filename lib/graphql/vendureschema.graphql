@@ -949,6 +949,7 @@ type CustomerChannel {
 }
 
 type CustomerCustomFields {
+  location: String
   loyaltyPointsAvailable: Int
 }
 
@@ -4189,6 +4190,7 @@ input UpdateAddressInput {
 }
 
 input UpdateCustomerCustomFieldsInput {
+  location: String
   loyaltyPointsAvailable: Int
 }
 

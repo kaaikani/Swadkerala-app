@@ -5,8 +5,10 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import '../graphql/order.graphql.dart';
 import '../services/channel_service.dart';
+import '../controllers/banner/bannercontroller.dart';
 
 class BillGenerator {
   /// Format price for PDF with rupee symbol
@@ -68,6 +70,17 @@ class BillGenerator {
       }
     }
 
+    // Fetch loyalty points config for Points per Rupee (so bill shows discount in Rs)
+    if (Get.isRegistered<BannerController>()) {
+      try {
+        final bannerController = Get.find<BannerController>();
+        await bannerController.fetchLoyaltyPointsConfig();
+      } catch (_) {}
+    }
+    final loyaltyConfig = Get.isRegistered<BannerController>()
+        ? Get.find<BannerController>().loyaltyPointsConfig.value
+        : null;
+
     // Generate PDF efficiently
     final pdf = pw.Document();
     pdf.addPage(
@@ -82,7 +95,7 @@ class BillGenerator {
             _buildItemsTable(order),
             pw.SizedBox(height: 20),
             pw.Divider(),
-            _buildTotalsSection(order),
+            _buildTotalsSection(order, loyaltyConfig),
             pw.SizedBox(height: 40),
             _buildFooter(),
           ];
@@ -321,7 +334,10 @@ class BillGenerator {
     );
   }
 
-  static pw.Widget _buildTotalsSection(Fragment$Cart order) {
+  static pw.Widget _buildTotalsSection(
+    Fragment$Cart order,
+    dynamic loyaltyConfig,
+  ) {
     // Total quantity from order lines
     final totalQuantity = order.lines.fold<int>(
       0,
@@ -337,11 +353,18 @@ class BillGenerator {
       );
     }
 
-    // Loyalty points from order customFields
+    // Loyalty points from order customFields; discount in rupees from fetch loyalty config (Points per Rupee)
     final loyaltyPointsUsed = order.customFields?.loyaltyPointsUsed ?? 0;
     final loyaltyPointsEarned = order.customFields?.loyaltyPointsEarned ?? 0;
-    // Assuming 1 point = 1 rupee (adjust as needed)
-    final loyaltyDiscount = loyaltyPointsUsed.toDouble();
+    double loyaltyDiscountRupees = 0.0;
+    if (loyaltyPointsUsed > 0 && loyaltyConfig != null) {
+      final pointsPerRupee = loyaltyConfig.pointsPerRupee as int?;
+      if (pointsPerRupee != null && pointsPerRupee > 0) {
+        loyaltyDiscountRupees = loyaltyPointsUsed / pointsPerRupee.toDouble();
+      } else {
+        loyaltyDiscountRupees = loyaltyPointsUsed.toDouble();
+      }
+    }
 
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.end,
@@ -384,7 +407,7 @@ class BillGenerator {
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.blue700)),
-              pw.Text('-${BillGenerator.formatPriceForPdf(loyaltyDiscount.toInt())}',
+              pw.Text('-${BillGenerator.formatPriceForPdf((loyaltyDiscountRupees * 100).toInt())}',
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.blue700,
@@ -396,7 +419,7 @@ class BillGenerator {
         pw.Divider(),
         _buildTotalRow('Total', order.totalWithTax,
             isBold: true, fontSize: 16),
-        // Show loyalty points earned if any
+        // Show loyalty points earned if any (with Rs. equivalent from Points per Rupee when config available)
         if (loyaltyPointsEarned > 0) ...[
           pw.SizedBox(height: 8),
           pw.Row(
@@ -406,11 +429,15 @@ class BillGenerator {
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.green700)),
-              pw.Text('${loyaltyPointsEarned} pts',
-                  style: pw.TextStyle(
-                      fontSize: 12,
-                      color: PdfColors.green700,
-                      fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                loyaltyConfig != null &&
+                        (loyaltyConfig.pointsPerRupee as int? ?? 0) > 0
+                    ? '${loyaltyPointsEarned} pts (${BillGenerator.formatPriceForPdf((loyaltyPointsEarned / (loyaltyConfig.pointsPerRupee as int) * 100.0).toInt())})'
+                    : '${loyaltyPointsEarned} pts',
+                style: pw.TextStyle(
+                    fontSize: 12,
+                    color: PdfColors.green700,
+                    fontWeight: pw.FontWeight.bold)),
             ],
           ),
         ],

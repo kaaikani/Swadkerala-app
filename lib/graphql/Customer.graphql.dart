@@ -5564,6 +5564,13 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                 directives: [],
                 selectionSet: SelectionSetNode(selections: [
                   FieldNode(
+                    name: NameNode(value: 'location'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
                     name: NameNode(value: 'loyaltyPointsAvailable'),
                     alias: null,
                     arguments: [],
@@ -6755,19 +6762,24 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer<TRes>
 
 class Query$GetActiveCustomer$activeCustomer$customFields {
   Query$GetActiveCustomer$activeCustomer$customFields({
+    this.location,
     this.loyaltyPointsAvailable,
     this.$__typename = 'CustomerCustomFields',
   });
 
   factory Query$GetActiveCustomer$activeCustomer$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$location = json['location'];
     final l$loyaltyPointsAvailable = json['loyaltyPointsAvailable'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$customFields(
+      location: (l$location as String?),
       loyaltyPointsAvailable: (l$loyaltyPointsAvailable as int?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final String? location;
 
   final int? loyaltyPointsAvailable;
 
@@ -6775,6 +6787,8 @@ class Query$GetActiveCustomer$activeCustomer$customFields {
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$location = location;
+    _resultData['location'] = l$location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     _resultData['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable;
     final l$$__typename = $__typename;
@@ -6784,9 +6798,11 @@ class Query$GetActiveCustomer$activeCustomer$customFields {
 
   @override
   int get hashCode {
+    final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$location,
       l$loyaltyPointsAvailable,
       l$$__typename,
     ]);
@@ -6799,6 +6815,11 @@ class Query$GetActiveCustomer$activeCustomer$customFields {
     }
     if (other is! Query$GetActiveCustomer$activeCustomer$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$location = location;
+    final lOther$location = other.location;
+    if (l$location != lOther$location) {
       return false;
     }
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
@@ -6838,6 +6859,7 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<
       _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$customFields;
 
   TRes call({
+    String? location,
     int? loyaltyPointsAvailable,
     String? $__typename,
   });
@@ -6859,10 +6881,13 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetActiveCustomer$activeCustomer$customFields(
+        location:
+            location == _undefined ? _instance.location : (location as String?),
         loyaltyPointsAvailable: loyaltyPointsAvailable == _undefined
             ? _instance.loyaltyPointsAvailable
             : (loyaltyPointsAvailable as int?),
@@ -6882,6 +6907,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$customFields<
   TRes _res;
 
   call({
+    String? location,
     int? loyaltyPointsAvailable,
     String? $__typename,
   }) =>

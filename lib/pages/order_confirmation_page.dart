@@ -4,7 +4,7 @@ import '../widgets/snackbar.dart';
 import '../widgets/loading_dialog.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
-import '../controllers/customer/customer_controller.dart';
+import '../controllers/banner/bannercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../theme/colors.dart';
 import '../utils/app_strings.dart';
@@ -29,7 +29,7 @@ class OrderConfirmationPage extends StatefulWidget {
 class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   final OrderController orderController = Get.find<OrderController>();
   final CartController cartController = Get.find<CartController>();
-  final CustomerController customerController = Get.find<CustomerController>();
+  final BannerController bannerController = Get.find<BannerController>();
   final UtilityController utilityController = Get.find<UtilityController>();
 
   @override
@@ -41,10 +41,17 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     });
   }
 
+  /// Load order details: getOrderByCode first, then getActiveOrder to sync cart/order state.
+  /// Fetches loyalty points config for Points per Rupee so we can show rupees equivalent.
   Future<void> _loadOrderDetails() async {
     try {
       Logger.logFunction(functionName: '_loadOrderDetails', queryName: 'GetOrderByCode');
-      await orderController.getOrderByCode(widget.orderId);
+      final order = await orderController.getOrderByCode(widget.orderId);
+      await orderController.getActiveOrder(skipLoading: true);
+      if (order != null && mounted) {
+        orderController.currentOrder.value = order;
+      }
+      await bannerController.fetchLoyaltyPointsConfig();
     } catch (e) {
       Logger.logError(functionName: '_loadOrderDetails', error: e);
     }
@@ -54,11 +61,29 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   int _getLoyaltyPointsEarned() {
     final order = orderController.currentOrder.value;
     if (order != null) {
-      // Access customFields using dynamic cast since order is actually Query$GetOrderByCode$orderByCode
-      // which has customFields, but currentOrder is typed as Fragment$Cart?
       final orderDynamic = order as dynamic;
       final customFields = orderDynamic.customFields;
       return customFields?.loyaltyPointsEarned ?? 0;
+    }
+    return 0;
+  }
+
+  /// Get loyalty points used from order customFields
+  int _getLoyaltyPointsUsed() {
+    final order = orderController.currentOrder.value;
+    if (order != null) {
+      final orderDynamic = order as dynamic;
+      final customFields = orderDynamic.customFields;
+      return customFields?.loyaltyPointsUsed ?? 0;
+    }
+    return 0;
+  }
+
+  /// Rupees equivalent for points using loyalty config (Points per Rupee)
+  double _pointsToRupees(int points) {
+    final config = bannerController.loyaltyPointsConfig.value;
+    if (config != null && config.pointsPerRupee > 0) {
+      return points / config.pointsPerRupee.toDouble();
     }
     return 0;
   }
@@ -121,7 +146,11 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
 
         return RefreshIndicator(
           onRefresh: () async {
-            await orderController.getOrderByCode(widget.orderId);
+            final order = await orderController.getOrderByCode(widget.orderId);
+            await orderController.getActiveOrder(skipLoading: true);
+            if (order != null) {
+              orderController.currentOrder.value = order;
+            }
           },
           color: AppColors.refreshIndicator,
           child: SingleChildScrollView(
@@ -240,7 +269,12 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                         SizedBox(height: ResponsiveUtils.rp(8)),
                         _buildCouponCodeRow(order),
                       ],
-                      // Show Points Earned if available
+                      // Show Loyalty Points Used (discount) with rupees if applicable
+                      if (_getLoyaltyPointsUsed() > 0) ...[
+                        SizedBox(height: ResponsiveUtils.rp(8)),
+                        _buildLoyaltyPointsUsedRow(_getLoyaltyPointsUsed()),
+                      ],
+                      // Show Points Earned if available (with rupees from Points per Rupee)
                       if (_getLoyaltyPointsEarned() > 0) ...[
                         SizedBox(height: ResponsiveUtils.rp(8)),
                         _buildPointsEarnedRow(_getLoyaltyPointsEarned()),
@@ -437,8 +471,45 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     );
   }
 
+  Widget _buildLoyaltyPointsUsedRow(int points) {
+    final rupees = _pointsToRupees(points);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.stars_rounded,
+              size: ResponsiveUtils.rp(18),
+              color: AppColors.info,
+            ),
+            SizedBox(width: ResponsiveUtils.rp(6)),
+            Text(
+              'Loyalty Points Used',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                fontWeight: FontWeight.w600,
+                color: AppColors.info,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          rupees > 0
+              ? '$points pts (${cartController.formatPrice((rupees * 100).toInt())})'
+              : '$points pts',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            fontWeight: FontWeight.bold,
+            color: AppColors.success,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildPointsEarnedRow(int points) {
-    // Red color for points earned text
+    final rupees = _pointsToRupees(points);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -461,7 +532,9 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
           ],
         ),
         Text(
-          '$points pts',
+          rupees > 0
+              ? '$points pts (${cartController.formatPrice((rupees * 100).toInt())})'
+              : '$points pts',
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(14),
             fontWeight: FontWeight.bold,

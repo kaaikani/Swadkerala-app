@@ -20,6 +20,10 @@ class OrderController extends BaseController {
   Rx<Fragment$ErrorResult?> error = Rx<Fragment$ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
 
+  /// When true, getEligibleShippingMethods and (via CustomerController) getActiveCustomer
+  /// return early without calling APIs. Set during post-add-payment flow to avoid redundant calls.
+  bool skipPostPaymentRefresh = false;
+
   RxList<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled> shippingMethods = <Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>[].obs;
   RxList<Query$GetEligiblePaymentMethods$eligiblePaymentMethods> paymentMethods = <Query$GetEligiblePaymentMethods$eligiblePaymentMethods>[].obs;
   Rx<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled?> selectedShippingMethod = Rx<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled?>(null);
@@ -206,6 +210,7 @@ class OrderController extends BaseController {
 
   /// Get eligible shipping methods
   Future<bool> getEligibleShippingMethods() async {
+    if (skipPostPaymentRefresh) return false;
     try {
           Logger.logFunction(functionName: 'getEligibleShippingMethods');
     utilityController.setLoadingState(false);

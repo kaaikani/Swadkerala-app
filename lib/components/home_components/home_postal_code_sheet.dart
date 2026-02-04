@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/customer/customer_controller.dart';
 import '../../services/postal_code_service.dart';
+import '../../services/channel_service.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/app_config.dart';
@@ -393,51 +395,40 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                                   style: TextStyle(color: AppColors.textSecondary),
                                 ),
                                 onTap: () async {
-                                  // Show loading indicator in the sheet
+                                  // When postal code data is tapped: get channel by postal code, update location with channel name
+                                  debugPrint('[UpdateLocation] Postal code data tapped: pincode=${result.pincode}, city=${result.city}, district=${result.district}, state=${result.state}');
                                   if (!mounted) return;
-                                  
-                                  // Save navigator reference BEFORE async operation
                                   final navigator = Navigator.of(context, rootNavigator: false);
-                                  
-                                  setState(() {
-                                    isSearching = true;
-                                  });
-                                  
-                                  // Now check service availability when user taps on a postal code
-                                  // Don't show loading dialog - show message in sheet instead
+                                  setState(() => isSearching = true);
+                                  debugPrint('[UpdateLocation] Calling switchChannelByPostalCode(postalCode=${result.pincode}, city=${result.city})');
+
                                   final success = await widget.customerController.switchChannelByPostalCode(
                                     result.pincode,
                                     city: result.city,
-                                    showLoading: false, // Don't show dialog, show in sheet instead
+                                    showLoading: false,
                                   );
-                                  
+
+                                  debugPrint('[UpdateLocation] switchChannelByPostalCode returned success=$success');
                                   if (!mounted) return;
-                                  
-                                  setState(() {
-                                    isSearching = false;
-                                  });
-                                
+                                  setState(() => isSearching = false);
+
                                   if (success) {
-                                    // Service available - close sheet and trigger callback
-                                    // Use a post-frame callback to ensure context is still valid
+                                    final channelName = ChannelService.getChannelName() ?? result.city;
+                                    debugPrint('[UpdateLocation] Success: channelName=$channelName, popping sheet and calling onPostalCodeSelected');
                                     WidgetsBinding.instance.addPostFrameCallback((_) {
                                       if (mounted) {
                                         try {
-                                          if (navigator.canPop()) {
-                                            navigator.pop();
-                                          }
+                                          if (navigator.canPop()) navigator.pop();
                                           widget.onPostalCodeSelected();
+                                          debugPrint('[UpdateLocation] Sheet closed, callback invoked, snackbar shown');
                                         } catch (e) {
-                                          // Navigator already popped or context invalid
+                                          debugPrint('[UpdateLocation] PostFrameCallback error: $e');
                                         }
                                       }
                                     });
                                   } else {
-                                    // Service not available - show error message in the sheet
-                                    // Keep the list visible so user can try another postal code
-                                    setState(() {
-                                      isServiceUnavailable = true;
-                                    });
+                                    debugPrint('[UpdateLocation] Failed: setting isServiceUnavailable=true');
+                                    setState(() => isServiceUnavailable = true);
                                   }
                                 },
                               );

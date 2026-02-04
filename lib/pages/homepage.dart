@@ -82,6 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // Load active order (cart) when home page opens
+    cartController.getActiveOrder();
     // Initialize reactive variables
     _previousChannelToken = GraphqlService.channelToken;
     _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh on initial load
@@ -406,13 +408,16 @@ class _MyHomePageState extends State<MyHomePage> {
       if (hasPostalCode && hasValidAvailableChannel) {
         // Postal code exists and has available CITY channel - fetch all data
         if (_isUserAuthenticated()) {
+          // Sync customer location from stored postal: get channel by postal code, pass channel name to updateCustomer (location)
+          customerController.syncCustomerLocationFromStoredPostalCode();
+
           // Only fetch cart if it's not already loaded or if it's stale
           // This prevents duplicate cart fetches when loyalty points are removed
           if (cartController.cart.value == null) {
             cartController.getActiveOrder();
           }
           bannerController.getCustomerFavorites();
-          
+
           // Check for default shipping address after customer data is loaded
           // Only check if widget is still mounted
           if (mounted) {
@@ -462,8 +467,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final customer = customerController.activeCustomer.value;
     if (customer == null) return;
 
-    // Check if email is not a valid Gmail
-    if (!_isValidGmail(customer.emailAddress)) {
+    final channelCode = ChannelService.getChannelCode()?.toLowerCase() ?? '';
+    final isIndSnacks = channelCode == 'ind-snacks';
+    // Ind-Snacks: only show update email dialog when email is @kaikani.com (placeholder). If not @kaikani.com, skip email dialog.
+    final emailIsPlaceholder = customer.emailAddress.trim().toLowerCase().endsWith('@kaikani.com');
+    final shouldShowEmailDialog = !_isValidGmail(customer.emailAddress) &&
+        (!isIndSnacks || emailIsPlaceholder);
+
+    if (shouldShowEmailDialog) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _showUpdateEmailDialog();

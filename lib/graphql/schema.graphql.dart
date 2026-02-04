@@ -17112,9 +17112,12 @@ class _CopyWithStubImpl$Input$UpdateAddressInput<TRes>
 }
 
 class Input$UpdateCustomerCustomFieldsInput {
-  factory Input$UpdateCustomerCustomFieldsInput(
-          {int? loyaltyPointsAvailable}) =>
+  factory Input$UpdateCustomerCustomFieldsInput({
+    String? location,
+    int? loyaltyPointsAvailable,
+  }) =>
       Input$UpdateCustomerCustomFieldsInput._({
+        if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
       });
@@ -17124,6 +17127,10 @@ class Input$UpdateCustomerCustomFieldsInput {
   factory Input$UpdateCustomerCustomFieldsInput.fromJson(
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
+    if (data.containsKey('location')) {
+      final l$location = data['location'];
+      result$data['location'] = (l$location as String?);
+    }
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
       result$data['loyaltyPointsAvailable'] =
@@ -17134,10 +17141,16 @@ class Input$UpdateCustomerCustomFieldsInput {
 
   Map<String, dynamic> _$data;
 
+  String? get location => (_$data['location'] as String?);
+
   int? get loyaltyPointsAvailable => (_$data['loyaltyPointsAvailable'] as int?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
+    if (_$data.containsKey('location')) {
+      final l$location = location;
+      result$data['location'] = l$location;
+    }
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable;
@@ -17161,6 +17174,15 @@ class Input$UpdateCustomerCustomFieldsInput {
         runtimeType != other.runtimeType) {
       return false;
     }
+    final l$location = location;
+    final lOther$location = other.location;
+    if (_$data.containsKey('location') !=
+        other._$data.containsKey('location')) {
+      return false;
+    }
+    if (l$location != lOther$location) {
+      return false;
+    }
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     final lOther$loyaltyPointsAvailable = other.loyaltyPointsAvailable;
     if (_$data.containsKey('loyaltyPointsAvailable') !=
@@ -17175,11 +17197,13 @@ class Input$UpdateCustomerCustomFieldsInput {
 
   @override
   int get hashCode {
+    final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     return Object.hashAll([
+      _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
-          : const {}
+          : const {},
     ]);
   }
 }
@@ -17193,7 +17217,10 @@ abstract class CopyWith$Input$UpdateCustomerCustomFieldsInput<TRes> {
   factory CopyWith$Input$UpdateCustomerCustomFieldsInput.stub(TRes res) =
       _CopyWithStubImpl$Input$UpdateCustomerCustomFieldsInput;
 
-  TRes call({int? loyaltyPointsAvailable});
+  TRes call({
+    String? location,
+    int? loyaltyPointsAvailable,
+  });
 }
 
 class _CopyWithImpl$Input$UpdateCustomerCustomFieldsInput<TRes>
@@ -17209,9 +17236,13 @@ class _CopyWithImpl$Input$UpdateCustomerCustomFieldsInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? loyaltyPointsAvailable = _undefined}) =>
+  TRes call({
+    Object? location = _undefined,
+    Object? loyaltyPointsAvailable = _undefined,
+  }) =>
       _then(Input$UpdateCustomerCustomFieldsInput._({
         ..._instance._$data,
+        if (location != _undefined) 'location': (location as String?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
       }));
@@ -17223,7 +17254,11 @@ class _CopyWithStubImpl$Input$UpdateCustomerCustomFieldsInput<TRes>
 
   TRes _res;
 
-  call({int? loyaltyPointsAvailable}) => _res;
+  call({
+    String? location,
+    int? loyaltyPointsAvailable,
+  }) =>
+      _res;
 }
 
 class Input$UpdateCustomerInput {
