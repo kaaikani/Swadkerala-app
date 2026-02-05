@@ -67,8 +67,17 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
-      - name: Set build number (versionCode)
-        run: echo "Building versionCode = $(( ${{ github.run_number }} + 100 ))"
+      - name: Get app version from pubspec.yaml
+        id: version
+        run: |
+          VERSION_LINE=$(grep '^version:' pubspec.yaml | head -1)
+          BUILD_NAME=$(echo "$VERSION_LINE" | sed -E 's/version:[[:space:]]*([^+]+)\+.*/\1/' | tr -d ' ')
+          BUILD_NUMBER=$(echo "$VERSION_LINE" | sed -E 's/version:.*\+([0-9]+).*/\1/')
+          if [ -z "$BUILD_NAME" ]; then BUILD_NAME="1.0.0"; fi
+          if [ -z "$BUILD_NUMBER" ]; then BUILD_NUMBER="1"; fi
+          echo "build_name=$BUILD_NAME" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "Using version: $BUILD_NAME+$BUILD_NUMBER"
 
       # Remove plugins that fail Android Kotlin compile (v1 embedding / Registrar issues).
       # Flutter plugin loader reads .flutter-plugins-dependencies (JSON); also patch .flutter-plugins.
@@ -107,14 +116,14 @@ jobs:
           done
           echo "Removed excluded plugin registrations from GeneratedPluginRegistrant.java"
 
-      # versionCode = github.run_number + 100 (avoids "version code already used" when re-running).
+      # versionName from pubspec.yaml; versionCode from pubspec + run_number to avoid Play Store conflicts on re-runs
       - name: Build App Bundle
-        run: flutter build appbundle --release --no-pub --build-number=$(( ${{ github.run_number }} + 100 ))
+        run: flutter build appbundle --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=$(( ${{ github.run_number }} + 100 ))
         env:
           FLUTTER_BUILD_MODE: release
 
       - name: Build APK (for internal testing)
-        run: flutter build apk --release --no-pub --build-number=$(( ${{ github.run_number }} + 100 ))
+        run: flutter build apk --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=$(( ${{ github.run_number }} + 100 ))
         env:
           FLUTTER_BUILD_MODE: release
 
