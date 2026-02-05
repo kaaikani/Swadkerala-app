@@ -53,6 +53,7 @@ class GraphqlService {
     final headers = <String, String>{
       if (_channelToken.isNotEmpty) _channelTokenKey: _channelToken,
       'x-device-medium': 'android',
+      'x-platform': 'Kaaikani',
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Connection': 'keep-alive', // Keep connection alive for reuse

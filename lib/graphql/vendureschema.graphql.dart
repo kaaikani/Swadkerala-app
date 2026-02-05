@@ -1,5 +1,3 @@
-import 'schema.graphql.dart';
-
 class Input$AuthenticationInput {
   factory Input$AuthenticationInput({
     Input$PhoneOtpInput? phoneOtp,

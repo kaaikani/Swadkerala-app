@@ -206,20 +206,20 @@ class _AccountPageState extends State<AccountPage> {
                     // Google Sign-In Button (only option)
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                await _handleGoogleSignInForEmail(context, setState, emailController, () {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                });
-                              },
-                        icon: isLoading
+                      child: AbsorbPointer(
+                        absorbing: isLoading,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            await _handleGoogleSignInForEmail(context, setState, emailController, () {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            });
+                          },
+                          icon: isLoading
                             ? SizedBox(
                                 width: ResponsiveUtils.rp(20),
                                 height: ResponsiveUtils.rp(20),
@@ -263,6 +263,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                         ),
                       ),
+                    ),
                     ),
                   ],
                 ),

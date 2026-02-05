@@ -305,7 +305,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       // Form Content (no card)
                       Obx(() {
                         final isOtpSent = _authController.isOtpSent;
-                        print('[LoginPage] Obx rebuild - isOtpSent: $isOtpSent');
+                        final isLoading = _authController.isLoading;
+                        debugPrint('[LoginPage] Obx(form) rebuild | isOtpSent=$isOtpSent, isLoading=$isLoading');
                         return isOtpSent
                             ? _buildOtpSection()
                             : _buildPhoneSection();
@@ -944,6 +945,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               _authController.otpController.text.length == 4)
           : (_phoneError == null &&
               _authController.phoneNumber.text.length == 10);
+      debugPrint('[LoginPage] Obx(actionButton) | isOtpSent=$isOtpSent, isLoading=$isLoading, isEnabled=$isEnabled');
 
       return Container(
         height: ResponsiveUtils.rp(58),
@@ -1362,35 +1364,43 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Future<void> _handleButtonPress() async {
-    if (_authController.isOtpSent) {
+    final isOtpSent = _authController.isOtpSent;
+    final isLoading = _authController.isLoading;
+    debugPrint('[LoginPage] _handleButtonPress | isOtpSent=$isOtpSent, isLoading=$isLoading, mounted=$mounted');
+    if (isOtpSent) {
+      debugPrint('[LoginPage] _handleButtonPress -> _verifyOtp()');
       await _verifyOtp();
     } else {
+      debugPrint('[LoginPage] _handleButtonPress -> _sendOtp()');
       await _sendOtp();
     }
+    debugPrint('[LoginPage] _handleButtonPress done | isOtpSent=${_authController.isOtpSent}');
   }
 
   Future<void> _sendOtp() async {
+    debugPrint('[LoginPage] _sendOtp ENTRY | isOtpSent=${_authController.isOtpSent}, isLoading=${_authController.isLoading}');
     setState(() => _phoneFieldTouched = true);
     _validatePhone(_authController.phoneNumber.text);
 
     if (_phoneError != null) {
+      debugPrint('[LoginPage] _sendOtp EXIT phoneError=$_phoneError');
       SnackBarWidget.showError(_phoneError!);
       return;
     }
 
     await _startSmsAutofill();
+    debugPrint('[LoginPage] _sendOtp calling startLoginFlow(context)');
     final success = await _authController.startLoginFlow(context);
-    
-    // Force UI rebuild after OTP is sent
+    debugPrint('[LoginPage] _sendOtp startLoginFlow returned success=$success, isOtpSent=${_authController.isOtpSent}');
+
     if (success && _authController.isOtpSent) {
-      print('[LoginPage] OTP sent successfully, forcing UI rebuild');
-      // Force a rebuild by calling setState
+      debugPrint('[LoginPage] _sendOtp OTP sent successfully, forcing UI rebuild | mounted=$mounted');
       if (mounted) {
         setState(() {});
       }
-      // Also ensure Obx rebuilds by accessing the reactive variable
       _authController.isOtpSent; // Access to trigger Obx
     }
+    debugPrint('[LoginPage] _sendOtp EXIT');
   }
 
   Future<void> _verifyOtp() async {

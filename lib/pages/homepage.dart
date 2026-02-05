@@ -588,54 +588,55 @@ class _MyHomePageState extends State<MyHomePage> {
                     SizedBox(height: ResponsiveUtils.rp(16)),
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                setState(() => isLoading = true);
-                                await _handleGoogleSignInForEmail(
-                                  context,
-                                  setState,
-                                  emailController,
-                                  () => setState(() => isLoading = false),
-                                );
-                              },
-                        icon: isLoading
-                            ? SizedBox(
-                                width: ResponsiveUtils.rp(20),
-                                height: ResponsiveUtils.rp(20),
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                      child: AbsorbPointer(
+                        absorbing: isLoading,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            setState(() => isLoading = true);
+                            await _handleGoogleSignInForEmail(
+                              context,
+                              setState,
+                              emailController,
+                              () => setState(() => isLoading = false),
+                            );
+                          },
+                          icon: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveUtils.rp(20),
+                                  height: ResponsiveUtils.rp(20),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                                  ),
+                                )
+                              : Image.asset(
+                                  'assets/images/google_logo.png',
+                                  width: ResponsiveUtils.rp(24),
+                                  height: ResponsiveUtils.rp(24),
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => Icon(
+                                    Icons.login,
+                                    size: ResponsiveUtils.rp(20),
+                                    color: AppColors.button,
+                                  ),
                                 ),
-                              )
-                            : Image.asset(
-                                'assets/images/google_logo.png',
-                                width: ResponsiveUtils.rp(24),
-                                height: ResponsiveUtils.rp(24),
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Icon(
-                                  Icons.login,
-                                  size: ResponsiveUtils.rp(20),
-                                  color: AppColors.button,
-                                ),
-                              ),
-                        label: Text(
-                          'Sign in with Google',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(16),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.button,
+                          label: Text(
+                            'Sign in with Google',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(16),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.button,
+                            ),
                           ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: AppColors.button, width: 1.5),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: ResponsiveUtils.rp(16),
-                            vertical: ResponsiveUtils.rp(14),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: AppColors.button, width: 1.5),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ResponsiveUtils.rp(16),
+                              vertical: ResponsiveUtils.rp(14),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                            ),
                           ),
                         ),
                       ),

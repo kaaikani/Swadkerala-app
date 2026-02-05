@@ -42,18 +42,21 @@ class AuthController extends BaseController {
   bool get isOtpSent => _isOtpSent.value;
   bool get isLoading => utilityController.isLoading;
 
+  /// Debug: dump current controller state for logging
+  String get _debugState => 'AuthController{isOtpSent=${_isOtpSent.value}, isLoading=$isLoading, isLoggedIn=${_isLoggedIn.value}, phoneLength=${phoneNumber.text.length}}';
+
   // Setters
   void setLoggedIn(bool value) => _isLoggedIn.value = value;
   void setOtpSent(bool value) {
-    print('[AuthController] setOtpSent called with: $value, current value: ${_isOtpSent.value}');
+    debugPrint('[AuthController] setOtpSent called with: $value, current: ${_isOtpSent.value} | $_debugState');
     if (_isOtpSent.value != value) {
       _isOtpSent.value = value;
-      print('[AuthController] _isOtpSent.value updated to: ${_isOtpSent.value}');
+      debugPrint('[AuthController] setOtpSent applied | $_debugState');
     } else {
-      print('[AuthController] _isOtpSent.value already $value, forcing update');
-      // Force update even if value is the same
+      debugPrint('[AuthController] setOtpSent value unchanged ($value), forcing Obx refresh');
       _isOtpSent.value = !value;
       _isOtpSent.value = value;
+      debugPrint('[AuthController] setOtpSent after force | $_debugState');
     }
   }
   void setLoading(bool value) => utilityController.setLoadingState(value);
@@ -334,21 +337,22 @@ class AuthController extends BaseController {
 
   /// Step 2: Send OTP after channel verification
   Future<bool> sendOtp(BuildContext? context, {bool isLogin = false}) async {
+    debugPrint('[sendOtp] ENTRY isLogin=$isLogin | $_debugState');
     Logger.logFunction(functionName: 'sendOtp', mutationName: 'SendPhoneOtp');
-    
+
     if (!_isValidPhoneNumber(phoneNumber.text)) {
+      debugPrint('[sendOtp] EXIT invalid phone | $_debugState');
       SnackBarWidget.showError('Please enter a valid phone number');
       return false;
     }
 
-    // CRITICAL: Check channels before sending OTP - if this fails, don't send OTP
-    print('[sendOtp] Checking channels before sending OTP...');
+    debugPrint('[sendOtp] Checking channels before sending OTP...');
     final canProceed = await checkChannelsByPhoneNumber(isLogin: isLogin);
     if (!canProceed) {
-      print('[sendOtp] Channel check failed - NOT sending OTP');
+      debugPrint('[sendOtp] EXIT channel check failed | $_debugState');
       return false;
     }
-    print('[sendOtp] Channel check passed - proceeding to send OTP');
+    debugPrint('[sendOtp] Channel check passed - calling SendPhoneOtp mutation | $_debugState');
 
     setLoading(true);
     try {
@@ -359,48 +363,42 @@ class AuthController extends BaseController {
       );
 
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to send OTP')) {
+        debugPrint('[sendOtp] EXIT checkResponseForErrors | $_debugState');
         setLoading(false);
         return false;
       }
 
-      // Debug: Log the raw response data
       final rawResult = response.parsedData?.sendPhoneOtp;
-
       final success = rawResult != null && rawResult != false && rawResult != "false" && rawResult != 0;
+      debugPrint('[sendOtp] Mutation result: rawResult=$rawResult, success=$success | $_debugState');
 
       if (success) {
-        print('[sendOtp] OTP sent successfully - setting isOtpSent to true');
-        
-        // Set OTP sent flag using setter which includes refresh
+        debugPrint('[sendOtp] OTP sent successfully - calling setOtpSent(true)');
         setOtpSent(true);
-        
-        // Wait for next frame to ensure UI rebuilds
+        debugPrint('[sendOtp] After setOtpSent | $_debugState');
+
         await Future.delayed(Duration(milliseconds: 50));
-        
-        // Verify the value was set
-        print('[sendOtp] After delay - isOtpSent: ${isOtpSent}, _isOtpSent.value: ${_isOtpSent.value}');
-        
-        // Show success message
+        debugPrint('[sendOtp] After 50ms delay | $_debugState');
+
         SnackBarWidget.showSuccess('OTP sent successfully!');
-        
-        // Force a UI update by scheduling on next frame
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          print('[sendOtp] PostFrameCallback - isOtpSent: ${isOtpSent}');
+          debugPrint('[sendOtp] PostFrameCallback | $_debugState');
         });
-        
-        // Ensure UI has time to update and show OTP field
+
         await Future.delayed(Duration(milliseconds: 100));
-        
         setLoading(false);
+        debugPrint('[sendOtp] EXIT success=true | $_debugState');
         return true;
       } else {
         setLoading(false);
+        debugPrint('[sendOtp] EXIT success=false (rawResult) | $_debugState');
         ErrorDialog.showError('Failed to send OTP');
         return false;
       }
-
     } catch (e) {
       setLoading(false);
+      debugPrint('[sendOtp] EXIT exception: $e | $_debugState');
       handleException(e, customErrorMessage: 'Failed to send OTP', functionName: 'sendOtp');
       return false;
     }
@@ -625,6 +623,7 @@ class AuthController extends BaseController {
 
   /// Resend OTP
   Future<bool> resendOtp(BuildContext? context) async {
+    debugPrint('[AuthController] resendOtp ENTRY | $_debugState');
     if (!_isValidPhoneNumber(phoneNumber.text)) {
       SnackBarWidget.showError('Please enter a valid phone number');
       return false;
@@ -645,24 +644,19 @@ class AuthController extends BaseController {
       final rawResult = response.parsedData?.resendPhoneOtp;
       final success = rawResult != null && rawResult != false && rawResult != "false" && rawResult != 0;
       if (success) {
-        // Ensure OTP sent flag is set (in case it was reset)
         setOtpSent(true);
-        
-        // Wait a moment to ensure UI updates
+        debugPrint('[AuthController] resendOtp success | $_debugState');
         await Future.delayed(Duration(milliseconds: 100));
-        
-        // Show success message
         SnackBarWidget.showSuccess('OTP resent successfully!');
-        
-        // Ensure UI has time to update and show OTP field
         await Future.delayed(Duration(milliseconds: 200));
       } else {
         ErrorDialog.showError('Failed to resend OTP');
       }
-
+      debugPrint('[AuthController] resendOtp EXIT success=$success | $_debugState');
       return success;
 
     } catch (e) {
+      debugPrint('[AuthController] resendOtp EXIT exception: $e | $_debugState');
       handleException(e, customErrorMessage: 'Failed to resend OTP');
       return false;
     } finally {
@@ -914,8 +908,10 @@ class AuthController extends BaseController {
 
   /// Complete login flow: check phone -> send OTP
   Future<bool> startLoginFlow(BuildContext? context) async {
-    // Send OTP with login flag - channel check is done inside sendOtp
-    return await sendOtp(context, isLogin: true);
+    debugPrint('[AuthController] startLoginFlow ENTRY | $_debugState');
+    final result = await sendOtp(context, isLogin: true);
+    debugPrint('[AuthController] startLoginFlow EXIT result=$result | $_debugState');
+    return result;
   }
 
   /// Google Sign In and authenticate

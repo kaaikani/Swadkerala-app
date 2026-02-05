@@ -331,16 +331,20 @@ class BannerController extends BaseController {
 
         if (favoritesData != null) {
           final favorites = Query$GetCustomerFavorites$activeCustomer$favorites.fromJson(favoritesData as Map<String, dynamic>);
-          favoritesList.assignAll(favorites.items);
-          favoritesTotalItems.value = favorites.totalItems;
+          // Exclude products whose name ends with "free" (case insensitive) from UI
+          final filteredItems = favorites.items
+              .where((item) => !((item.product?.name ?? '').trim().toLowerCase().endsWith('free')))
+              .toList();
+          favoritesList.assignAll(filteredItems);
+          favoritesTotalItems.value = filteredItems.length;
 
           // Update favorite product IDs set
           favoriteProductIds.clear();
-          final productIds = favorites.items.map((item) => item.product?.id ?? '').where((id) => id.isNotEmpty).toList();
+          final productIds = filteredItems.map((item) => item.product?.id ?? '').where((id) => id.isNotEmpty).toList();
           favoriteProductIds.addAll(productIds);
           // Debug: Log each favorite item
-          for (int i = 0; i < favorites.items.length; i++) {
-            final item = favorites.items[i];
+          for (int i = 0; i < filteredItems.length; i++) {
+            final item = filteredItems[i];
             final product = item.product;
             if (product?.featuredAsset != null) {
             }
@@ -414,9 +418,14 @@ class BannerController extends BaseController {
       }
 
       final products = res.parsedData?.frequentlyOrderedProducts ?? [];
-      if (products.isNotEmpty) {
-        for (int i = 0; i < products.length; i++) {
-          final item = products[i];
+      // Exclude products whose name ends with "free" (case insensitive) from UI
+      final filteredProducts = products
+          .where((item) =>
+              !(item.product.name.trim().toLowerCase().endsWith('free')))
+          .toList();
+      if (filteredProducts.isNotEmpty) {
+        for (int i = 0; i < filteredProducts.length; i++) {
+          final item = filteredProducts[i];
           final product = item.product;
           if (product.variants.isNotEmpty) {
             // ignore: unused_local_variable
@@ -428,7 +437,7 @@ class BannerController extends BaseController {
       } else {
       }
       
-      frequentlyOrderedProducts.assignAll(products);
+      frequentlyOrderedProducts.assignAll(filteredProducts);
       utilityController.setLoadingState(false);
     } catch (e) {
       handleException(e,

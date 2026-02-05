@@ -25,7 +25,6 @@ import 'controllers/utilitycontroller/utilitycontroller.dart';
 import 'controllers/authentication/authenticationcontroller.dart';
 import 'controllers/theme_controller.dart';
 import 'theme/theme.dart';
-import 'pages/update_screen.dart';
 
 /// Check for app updates on startup
 /// This function is called automatically in main() to check for updates
