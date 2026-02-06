@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../widgets/shimmers.dart';
-// import 'package:get/get.dart'; // Commented out - GraphQL query disabled
-// import '../controllers/banner/bannercontroller.dart'; // Commented out - GraphQL query disabled
 import '../services/in_app_update_service.dart';
 import '../utils/responsive.dart';
 import '../theme/colors.dart';
 import 'update_check_wrapper.dart';
+import 'update_screen.dart';
 import 'auth_wrapper.dart';
+import '../routes.dart';
 
 /// Smart initial route that decides whether to check for immediate updates
 /// or proceed directly to authentication based on IMMEDIATE_UPDATE setting
@@ -111,11 +113,16 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
       );
     }
 
-    // Decide which wrapper to use based on IMMEDIATE_UPDATE setting
+    // If main.dart set the flag (update required from startup check), open update screen
+    if (GetStorage().read<bool>('show_update_screen') == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Get.offAllNamed(AppRoutes.update);
+      });
+      return UpdateScreen();
+    }
     if (_shouldCheckImmediateUpdate) {
       return const UpdateCheckWrapper();
-    } else {
-      return const AuthWrapper();
     }
+    return const AuthWrapper();
   }
 }

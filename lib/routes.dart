@@ -24,10 +24,12 @@ import 'pages/signup_page.dart';
 import 'pages/homepage.dart';
 import 'pages/intro_page.dart';
 import 'pages/initial_route_wrapper.dart';
+import 'pages/update_screen.dart';
 import 'middleware/auth_guard.dart';
 
 class AppRoutes {
   static const String initial = '/';
+  static const String update = '/update';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String home = '/home';
@@ -54,6 +56,11 @@ class AppRoutes {
     GetPage(
       name: initial,
       page: () => const InitialRouteWrapper(),
+    ),
+    GetPage(
+      name: update,
+      page: () => UpdateScreen(),
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: login,

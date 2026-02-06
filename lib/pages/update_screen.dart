@@ -1,14 +1,15 @@
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import '../widgets/shimmers.dart';
 import 'package:get/get.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/authentication/authenticationcontroller.dart';
+import '../theme/colors.dart';
+import '../utils/responsive.dart';
 import '../widgets/snackbar.dart';
-import 'auth_wrapper.dart';
+import '../routes.dart';
 
 class UpdateScreen extends StatefulWidget {
   @override
@@ -21,37 +22,25 @@ class _UpdateScreenState extends State<UpdateScreen> {
   final AuthController authController = Get.find<AuthController>();
 
   void _performImmediateUpdate() async {
-    // Platform check: in_app_update only works on Android
     if (!Platform.isAndroid || kIsWeb) {
-      // For iOS, open App Store instead
       await _openAppStoreForUpdate();
       return;
     }
-
-    // Clear cache or perform logout before starting the update
-    /*
- await _clearCacheOrLogout();
-*/
 
     setState(() {
       _updateInProgress = true;
     });
 
     try {
-      // First try to perform immediate update (Android only)
       await InAppUpdate.performImmediateUpdate();
     } catch (e) {
       setState(() {
         _updateInProgress = false;
       });
 
-      // If immediate update fails (e.g., app not from Play Store), open Play Store
-
       try {
         await _openPlayStoreForUpdate();
       } catch (playStoreError) {
-
-        // Show error dialog with only retry option (no bypass)
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -65,26 +54,22 @@ class _UpdateScreenState extends State<UpdateScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    _performImmediateUpdate(); // Retry update
+                    _performImmediateUpdate();
                   },
                   child: Text('Retry Update'),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    _openPlayStoreForUpdate(); // Open Play Store
+                    _openPlayStoreForUpdate();
                   },
                   child: Text('Open Play Store'),
                 ),
-                // Only show skip option after 3 failed attempts
                 if (_retryCount >= 3)
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      // Navigate to login/auth wrapper
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => AuthWrapper()),
-                      );
+                      Get.offAllNamed(AppRoutes.initial);
                     },
                     child: Text('Skip (Not Recommended)',
                         style: TextStyle(color: Colors.red)),
@@ -97,7 +82,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
     }
   }
 
-  /// Open Play Store to update the app (Android)
   Future<void> _openPlayStoreForUpdate() async {
     try {
       const packageName = 'com.kaaikani.kaaikani';
@@ -105,43 +89,33 @@ class _UpdateScreenState extends State<UpdateScreen> {
       final Uri webStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=$packageName');
 
-
-      // Try to open Play Store app
       if (await canLaunchUrl(playStoreUrl)) {
         await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
       } else {
-        // Fallback to web browser
         await launchUrl(webStoreUrl, mode: LaunchMode.externalApplication);
       }
 
-      // Show message that user should return after updating
       SnackBarWidget.showInfo(
         'Please update the app and return to continue',
         duration: const Duration(seconds: 5),
       );
     } catch (e) {
-      rethrow; // Re-throw to be caught by the calling method
+      rethrow;
     }
   }
 
-  /// Open App Store to update the app (iOS)
   Future<void> _openAppStoreForUpdate() async {
     try {
-      // Replace with your actual App Store app ID
-      const appId = 'YOUR_APP_STORE_ID'; // TODO: Replace with actual App Store ID
+      const appId = 'YOUR_APP_STORE_ID';
       final Uri appStoreUrl = Uri.parse('https://apps.apple.com/app/id$appId');
       final Uri itmsUrl = Uri.parse('itms-apps://apps.apple.com/app/id$appId');
 
-
-      // Try to open App Store app
       if (await canLaunchUrl(itmsUrl)) {
         await launchUrl(itmsUrl, mode: LaunchMode.externalApplication);
       } else {
-        // Fallback to web browser
         await launchUrl(appStoreUrl, mode: LaunchMode.externalApplication);
       }
 
-      // Show message that user should return after updating
       SnackBarWidget.showInfo(
         'Please update the app and return to continue',
         duration: const Duration(seconds: 5),
@@ -154,106 +128,117 @@ class _UpdateScreenState extends State<UpdateScreen> {
     }
   }
 
-  /*  Future<void> _clearCacheOrLogout() async {
-    // Example: Log out the user
-    loginPageController.onUserLogout(context);
-
-    // Example: Clear cache (if applicable)
-    // await someCacheClearingFunction();
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.black,
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          Center(
-            child: _updateInProgress
-                ? SizedBox(height: 20, child: Skeletons.smallBox(size: 20))
-                : Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/Update.png', // Replace with your image path
-                          height: 300,
-                        ),
-                        const SizedBox(height: 40),
-                        const Text(
-                          'Update Required!',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        const Text(
-                          'A new version is available and must be installed to continue using the app.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        const Text(
-                          'This update includes important bug fixes, security improvements, and new features.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: _performImmediateUpdate,
-                    icon: Icon(Icons.system_update_alt, color: Colors.white),
-                    label: const Text(
-                      'Update Now',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-                      backgroundColor: Colors.green[700],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
+          // Full-screen image, edge to edge (no white)
+          Image.asset(
+            'assets/images/update_fresh.png',
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+            errorBuilder: (_, __, ___) => Container(
+              color: AppColors.background,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.system_update_alt,
+                        size: 80, color: AppColors.button),
+                    SizedBox(height: ResponsiveUtils.rp(24)),
+                    Text(
+                      'Fresh Update Ready!',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(26),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
-                      elevation: 10,
-                      minimumSize: const Size(double.infinity,
-                          60), // Full width button with more height
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'T&C apply',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveUtils.rp(24)),
+                      child: Text(
+                        "We've cleaned out all the old bugs.\nUpdate now for an even faster and fresher experience.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(16),
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+          ),
+          // Dark gradient at bottom so button is readable on image
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 160,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black54],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Update button overlaid on image at bottom (no white strip below)
+          Positioned(
+            left: ResponsiveUtils.rp(24),
+            right: ResponsiveUtils.rp(24),
+            bottom: ResponsiveUtils.rp(32),
+            child: _updateInProgress
+                ? Center(
+                    child: SizedBox(
+                      width: ResponsiveUtils.rp(32),
+                      height: ResponsiveUtils.rp(32),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    ),
+                  )
+                : SizedBox(
+                    width: double.infinity,
+                    height: ResponsiveUtils.rp(56),
+                    child: ElevatedButton.icon(
+                      onPressed: _performImmediateUpdate,
+                      icon: Icon(Icons.system_update_alt,
+                          color: Colors.black, size: ResponsiveUtils.rp(22)),
+                      label: Text(
+                        'Update Now',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: ResponsiveUtils.sp(17),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(ResponsiveUtils.rp(28)),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
     );
   }
 }
-
