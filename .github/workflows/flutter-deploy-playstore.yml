@@ -67,6 +67,7 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
+      # Version and versionCode come from pubspec.yaml (e.g. version: 2.1.05+188). Bump the + number for each Play Store release.
       - name: Get app version from pubspec.yaml
         id: version
         run: |
@@ -77,7 +78,7 @@ jobs:
           if [ -z "$BUILD_NUMBER" ]; then BUILD_NUMBER="1"; fi
           echo "build_name=$BUILD_NAME" >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-          echo "Using version: $BUILD_NAME+$BUILD_NUMBER"
+          echo "Using version: $BUILD_NAME+$BUILD_NUMBER (versionCode=$BUILD_NUMBER)"
 
       # Remove plugins that fail Android Kotlin compile (v1 embedding / Registrar issues).
       # Flutter plugin loader reads .flutter-plugins-dependencies (JSON); also patch .flutter-plugins.
@@ -116,14 +117,14 @@ jobs:
           done
           echo "Removed excluded plugin registrations from GeneratedPluginRegistrant.java"
 
-      # versionName from pubspec.yaml; versionCode from pubspec + run_number to avoid Play Store conflicts on re-runs
+      # versionName and versionCode both from pubspec.yaml so build matches declared version (avoids "version code already used")
       - name: Build App Bundle
-        run: flutter build appbundle --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=$(( ${{ github.run_number }} + 100 ))
+        run: flutter build appbundle --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
         env:
           FLUTTER_BUILD_MODE: release
 
       - name: Build APK (for internal testing)
-        run: flutter build apk --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=$(( ${{ github.run_number }} + 100 ))
+        run: flutter build apk --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
         env:
           FLUTTER_BUILD_MODE: release
 
