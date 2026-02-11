@@ -582,6 +582,7 @@ class AddressComponent extends StatelessWidget {
                           ),
                           SizedBox(height: ResponsiveUtils.rp(16)),
                           _buildFormField(phoneController, 'Phone', Icons.phone,
+                              required: true,
                               keyboardType: TextInputType.phone,
                               maxLength: 10,
                               inputFormatters: [
@@ -723,9 +724,16 @@ class AddressComponent extends StatelessWidget {
                               if (nameController.text.isEmpty ||
                                   line1Controller.text.isEmpty ||
                                   cityController.text.isEmpty ||
-                                  postalController.text.isEmpty) {
+                                  postalController.text.isEmpty ||
+                                  phoneController.text.trim().isEmpty) {
                                 showErrorSnackbar(
                                     'Please fill all required fields');
+                                return;
+                              }
+                              final phone = phoneController.text.trim();
+                              if (phone.length != 10 || !RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
+                                showErrorSnackbar(
+                                    'Phone number must be exactly 10 digits');
                                 return;
                               }
 
@@ -745,7 +753,7 @@ class AddressComponent extends StatelessWidget {
                                 streetLine2: line2Controller.text.isEmpty ? null : line2Controller.text,
                                 city: cityController.text.isEmpty ? null : cityController.text,
                                 postalCode: postalController.text.isEmpty ? null : postalController.text,
-                                phoneNumber: phoneController.text.isEmpty ? null : phoneController.text,
+                                phoneNumber: phoneController.text.trim().isEmpty ? null : phoneController.text.trim(),
                                 company: null,
                                 defaultShippingAddress: isDefault,
                                 defaultBillingAddress: isDefault,

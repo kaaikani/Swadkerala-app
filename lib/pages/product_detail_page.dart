@@ -43,6 +43,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   Query$GetProductDetail$product? productDetail;
   Query$GetProductDetail$product$variants? selectedVariant;
+  /// Selected option per group (groupName -> optionName). Used for variant resolution when product has option groups.
+  Map<String, String> _selectedOptionsByGroup = {};
   Map<String, dynamic>? _rawProductData; // Store raw JSON data for shadow price
   PageController _imagePageController = PageController();
   int _currentImageIndex = 0;
@@ -121,6 +123,83 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return variant.name;
   }
 
+  /// Build selected-options map from a variant (group key -> option.name); uses inferred key when group is synthetic.
+  Map<String, String> _selectedOptionsFromVariant(Query$GetProductDetail$product$variants variant) {
+    final map = <String, String>{};
+    for (final opt in variant.options) {
+      map[_optionGroupKey(opt)] = opt.name;
+    }
+    return map;
+  }
+
+  /// Key for _selectedOptionsByGroup: use inferred type (Size/Material/Colour) when group is synthetic.
+  String _optionGroupKey(Query$GetProductDetail$product$variants$options opt) {
+    if (!RegExp(r'^Option \d+$').hasMatch(opt.group.name)) return opt.group.name;
+    return _inferGroupFromOptionName(opt.name);
+  }
+
+  /// Option groups derived from variants. When API uses synthetic groups (Option 1, 2, 3), rebuild by inferred type so Size/Material/Colour are correct.
+  List<_OptionGroup> _getOptionGroups() {
+    if (productDetail == null || productDetail!.variants.isEmpty) return [];
+    final order = <String>[];
+    final map = <String, Set<String>>{};
+    for (final v in productDetail!.variants) {
+      for (final opt in v.options) {
+        final gn = opt.group.name;
+        if (!order.contains(gn)) order.add(gn);
+        map.putIfAbsent(gn, () => <String>{}).add(opt.name);
+      }
+    }
+    final allSynthetic = order.every((gn) => RegExp(r'^Option \d+$').hasMatch(gn));
+    if (allSynthetic && order.isNotEmpty) {
+      final inferredOrder = <String>['Size', 'Material', 'Colour', 'Other'];
+      final inferredMap = <String, Set<String>>{};
+      for (final v in productDetail!.variants) {
+        for (final opt in v.options) {
+          final key = _inferGroupFromOptionName(opt.name);
+          inferredMap.putIfAbsent(key, () => <String>{}).add(opt.name);
+        }
+      }
+      return inferredOrder
+          .where((k) => (inferredMap[k] ?? {}).isNotEmpty)
+          .map((k) => _OptionGroup(k, (inferredMap[k] ?? {}).toList()..sort()))
+          .toList();
+    }
+    return order.map((gn) {
+      final names = (map[gn] ?? {}).toList()..sort();
+      return _OptionGroup(gn, names);
+    }).toList();
+  }
+
+
+  /// Find variant that matches current _selectedOptionsByGroup; null if no match.
+  Query$GetProductDetail$product$variants? _findVariantBySelectedOptions() {
+    if (productDetail == null) return null;
+    for (final v in productDetail!.variants) {
+      if (v.options.every((opt) => _selectedOptionsByGroup[_optionGroupKey(opt)] == opt.name)) {
+        return v;
+      }
+    }
+    return null;
+  }
+
+  /// True if choosing [optionName] for [groupName] (keeping other selections) would match an available variant.
+  bool _isOptionAvailable(String groupName, String optionName) {
+    if (productDetail == null) return false;
+    final hypothetical = Map<String, String>.from(_selectedOptionsByGroup)..[groupName] = optionName;
+    for (final v in productDetail!.variants) {
+      if (v.options.every((opt) => hypothetical[_optionGroupKey(opt)] == opt.name)) return true;
+    }
+    return false;
+  }
+
+  /// True if product has option groups (multiple groups or multiple options in any group).
+  bool get _hasOptionGroups {
+    if (productDetail == null || productDetail!.variants.isEmpty) return false;
+    final groups = _getOptionGroups();
+    if (groups.isEmpty) return false;
+    return groups.length > 1 || groups.any((g) => g.optionNames.length > 1);
+  }
 
   /// Calculate discount percentage from shadow price - same logic as category product page
   double? _calculateDiscountPercent(Query$GetProductDetail$product$variants variant) {
@@ -152,45 +231,43 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return value;
   }
 
-  /// Clean product data to remove null values from options arrays and null groups
-  /// This fixes the issue where null options/groups cause parsing errors in generated code
+  /// Clean product data: keep options, inject synthetic group when API omits group
+  /// so option-groups UI (Size / Material / Colour) can show even when backend doesn't return group.
   Map<String, dynamic> _cleanProductData(Map<String, dynamic> data) {
     try {
       final cleaned = Map<String, dynamic>.from(data);
-      
-      // Clean variants -> options to filter out null values and null groups
+
       if (cleaned['variants'] != null && cleaned['variants'] is List) {
         final variants = (cleaned['variants'] as List).map((variant) {
-          if (variant is Map<String, dynamic>) {
-            final cleanedVariant = Map<String, dynamic>.from(variant);
-            
-            // Filter out null options and options with null groups
-            // The generated code expects group to be non-null, so we must filter these out
-            if (cleanedVariant['options'] != null && cleanedVariant['options'] is List) {
-              cleanedVariant['options'] = (cleanedVariant['options'] as List)
-                  .where((option) {
-                    // Filter out null options and options with null groups
-                    if (option == null || option is! Map<String, dynamic>) {
-                      return false;
-                    }
-                    final optionMap = option;
-                    // The generated code requires group to be non-null, so filter out options with null groups
-                    final group = optionMap['group'];
-                    return group != null && group is Map<String, dynamic>;
-                  })
-                  .toList();
+          if (variant is! Map<String, dynamic>) return variant;
+          final cleanedVariant = Map<String, dynamic>.from(variant);
+
+          if (cleanedVariant['options'] != null && cleanedVariant['options'] is List) {
+            final optionsList = (cleanedVariant['options'] as List)
+                .where((o) => o != null && o is Map<String, dynamic>)
+                .cast<Map<String, dynamic>>()
+                .toList();
+            for (var i = 0; i < optionsList.length; i++) {
+              final optionMap = optionsList[i];
+              final group = optionMap['group'];
+              if (group == null || group is! Map<String, dynamic>) {
+                optionMap['group'] = <String, dynamic>{
+                  'name': 'Option ${i + 1}',
+                  '__typename': 'ProductOptionGroup',
+                };
+              }
             }
-            
-            return cleanedVariant;
+            cleanedVariant['options'] = optionsList;
           }
-          return variant;
+
+          return cleanedVariant;
         }).toList();
         cleaned['variants'] = variants;
       }
-      
+
       return cleaned;
     } catch (e) {
-      return data; // Return original data if cleaning fails
+      return data;
     }
   }
 
@@ -274,6 +351,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           
           if (productDetail!.variants.isNotEmpty) {
             selectedVariant = productDetail!.variants.first;
+            _selectedOptionsByGroup = _selectedOptionsFromVariant(productDetail!.variants.first);
           }
         }
       });
@@ -284,32 +362,25 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     if (productDetail == null) return [];
 
     List<String> urls = [];
+    final bool variantHasImage = selectedVariant != null &&
+        (selectedVariant!.featuredAsset != null || selectedVariant!.assets.isNotEmpty);
 
-    // Add variant images first if selected
-    if (selectedVariant != null) {
+    if (variantHasImage) {
       if (selectedVariant!.featuredAsset != null) {
         urls.add(selectedVariant!.featuredAsset!.preview);
       }
       for (var asset in selectedVariant!.assets) {
-        if (!urls.contains(asset.preview)) {
-          urls.add(asset.preview);
-        }
+        if (!urls.contains(asset.preview)) urls.add(asset.preview);
       }
     }
 
-    // Add product featured asset
+    // Product image: primary when variant has no image, else fallback
     if (productDetail!.featuredAsset != null) {
       final preview = productDetail!.featuredAsset!.preview;
-      if (!urls.contains(preview)) {
-        urls.insert(0, preview);
-      }
+      if (!urls.contains(preview)) urls.insert(0, preview);
     }
-
-    // Add other product assets
     for (var asset in productDetail!.assets) {
-      if (!urls.contains(asset.preview)) {
-        urls.add(asset.preview);
-      }
+      if (!urls.contains(asset.preview)) urls.add(asset.preview);
     }
 
     return urls.isEmpty ? [''] : urls;
@@ -490,16 +561,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Product Name
-              if (selectedVariant != null)
-                ResponsiveText(
-                  selectedVariant!.name,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                  letterSpacing: 0.3,
-                ),
-              if (selectedVariant != null) ResponsiveSpacing.vertical(16),
+              // Product / variant name (product name when no variant selected)
+              ResponsiveText(
+                selectedVariant != null ? selectedVariant!.name : productDetail!.name,
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+                letterSpacing: 0.3,
+              ),
+              ResponsiveSpacing.vertical(16),
               if (selectedVariant != null)
                 Builder(
                   builder: (context) {
@@ -629,8 +699,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     );
                   },
                 ),
-              // Stock status badge with Favorite Icon on Right
-              if (selectedVariant != null) ...[
+              // Stock status (and favorite). When no variant selected, show short message in card.
+              if (selectedVariant == null && _hasOptionGroups) ...[
+                Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded, color: AppColors.error, size: ResponsiveUtils.rp(18)),
+                    SizedBox(width: ResponsiveUtils.rp(8)),
+                    ResponsiveText(
+                      'This combination is unavailable',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.error,
+                    ),
+                  ],
+                ),
+              ] else if (selectedVariant != null) ...[
                 ResponsiveSpacing.vertical(12),
                 Builder(
                   builder: (context) {
@@ -764,8 +847,25 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ),
 
-        // Variant Selection - Dropdown
+        // Variant / option selection
         if (productDetail!.variants.length > 1) ...[
+          // X mark above box when combination unavailable (first choose first option, then second, etc.)
+          if (selectedVariant == null && _hasOptionGroups)
+            Padding(
+              padding: EdgeInsets.only(left: ResponsiveUtils.rp(16), bottom: ResponsiveUtils.rp(6)),
+              child: Row(
+                children: [
+                  Icon(Icons.cancel_rounded, color: AppColors.error, size: ResponsiveUtils.rp(22)),
+                  SizedBox(width: ResponsiveUtils.rp(6)),
+                  ResponsiveText(
+                    'This combination is unavailable',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.error,
+                  ),
+                ],
+              ),
+            ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
             padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
@@ -787,79 +887,210 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
-                      decoration: BoxDecoration(
-                        color: AppColors.button.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-                      ),
-                      child: Icon(
-                        Icons.tune_rounded,
-                        color: AppColors.button,
-                        size: ResponsiveUtils.rp(18),
-                      ),
-                    ),
-                    SizedBox(width: ResponsiveUtils.rp(12)),
-                    Expanded(
-                      child: ResponsiveText(
-                        'Select Variant',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                ResponsiveSpacing.vertical(20),
-                // Variant Selection - Chips
-                Wrap(
-                  spacing: ResponsiveUtils.rp(12),
-                  runSpacing: ResponsiveUtils.rp(12),
-                  children: productDetail!.variants.map((variant) {
-                    final displayName = _getVariantDisplayName(variant);
-                    final isSelected = selectedVariant?.id == variant.id;
-                    
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedVariant = variant;
-                          _selectedQuantity = 1; // Reset quantity when variant changes
-                          _isAddedToCart = false; // Reset success state when variant changes
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(16),
-                          vertical: ResponsiveUtils.rp(12),
-                        ),
+                if (_hasOptionGroups) ...[
+                  // Header: "Select Variant" with icon
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
                         decoration: BoxDecoration(
-                          color: isSelected 
-                              ? AppColors.button 
-                              : AppColors.inputFill,
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                          border: Border.all(
-                            color: isSelected 
-                                ? AppColors.button 
-                                : AppColors.border.withValues(alpha: 0.5),
-                            width: isSelected ? 2 : 1.5,
-                          ),
+                          color: AppColors.button.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
                         ),
-                        child: Text(
-                          displayName,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(14),
-                            fontWeight: FontWeight.w600,
-                            color: isSelected 
-                                ? Colors.white 
-                                : AppColors.textPrimary,
-                          ),
+                        child: Icon(
+                          Icons.tune_rounded,
+                          color: AppColors.button,
+                          size: ResponsiveUtils.rp(18),
                         ),
                       ),
-                    );
-                  }).toList(),
-                ),
+                      SizedBox(width: ResponsiveUtils.rp(12)),
+                      Expanded(
+                        child: ResponsiveText(
+                          'Select Variant',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ResponsiveSpacing.vertical(20),
+                  // Option groups: group title then horizontal chips (first choose first option, then second, etc.)
+                  ...() {
+                    final groups = _getOptionGroups();
+                    return groups.asMap().entries.map((entry) {
+                      final group = entry.value;
+                      final isLast = entry.key == groups.length - 1;
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: isLast ? 0 : ResponsiveUtils.rp(20)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ResponsiveText(
+                              group.displayName,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                            ResponsiveSpacing.vertical(10),
+                            Wrap(
+                              spacing: ResponsiveUtils.rp(10),
+                              runSpacing: ResponsiveUtils.rp(10),
+                              children: group.optionNames.map((optionName) {
+                                final isSelected = _selectedOptionsByGroup[group.groupName] == optionName;
+                                final isAvailable = _isOptionAvailable(group.groupName, optionName);
+                                return GestureDetector(
+                                  onTap: isAvailable
+                                      ? () {
+                                          setState(() {
+                                            _selectedOptionsByGroup = Map.from(_selectedOptionsByGroup)
+                                              ..[group.groupName] = optionName;
+                                            selectedVariant = _findVariantBySelectedOptions();
+                                            _selectedQuantity = 1;
+                                            _isAddedToCart = false;
+                                          });
+                                        }
+                                      : null,
+                                  child: !isAvailable
+                                      ? Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: ResponsiveUtils.rp(14),
+                                                vertical: ResponsiveUtils.rp(10),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.inputFill.withValues(alpha: 0.8),
+                                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                                border: Border.all(
+                                                  color: AppColors.border.withValues(alpha: 0.6),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                optionName,
+                                                style: TextStyle(
+                                                  fontSize: ResponsiveUtils.sp(14),
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.textSecondary,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned.fill(
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons.close,
+                                                  size: ResponsiveUtils.rp(28),
+                                                  color: AppColors.textSecondary.withValues(alpha: 0.9),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: ResponsiveUtils.rp(14),
+                                            vertical: ResponsiveUtils.rp(10),
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: isSelected ? AppColors.button : AppColors.inputFill,
+                                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                                            border: Border.all(
+                                              color: isSelected ? AppColors.button : AppColors.border.withValues(alpha: 0.5),
+                                              width: isSelected ? 2 : 1.5,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            optionName,
+                                            style: TextStyle(
+                                              fontSize: ResponsiveUtils.sp(14),
+                                              fontWeight: FontWeight.w600,
+                                              color: isSelected ? Colors.white : AppColors.textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+                  }(),
+                ] else ...[
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+                        decoration: BoxDecoration(
+                          color: AppColors.button.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                        ),
+                        child: Icon(
+                          Icons.tune_rounded,
+                          color: AppColors.button,
+                          size: ResponsiveUtils.rp(18),
+                        ),
+                      ),
+                      SizedBox(width: ResponsiveUtils.rp(12)),
+                      Expanded(
+                        child: ResponsiveText(
+                          'Select Variant',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ResponsiveSpacing.vertical(20),
+                  Wrap(
+                    spacing: ResponsiveUtils.rp(12),
+                    runSpacing: ResponsiveUtils.rp(12),
+                    children: productDetail!.variants.map((variant) {
+                      final displayName = _getVariantDisplayName(variant);
+                      final isSelected = selectedVariant?.id == variant.id;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedVariant = variant;
+                            _selectedQuantity = 1;
+                            _isAddedToCart = false;
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(16),
+                            vertical: ResponsiveUtils.rp(12),
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.button
+                                : AppColors.inputFill,
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.button
+                                  : AppColors.border.withValues(alpha: 0.5),
+                              width: isSelected ? 2 : 1.5,
+                            ),
+                          ),
+                          child: Text(
+                            displayName,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w600,
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ],
             ),
           ),
@@ -1101,7 +1332,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       setState(() {
         _isAddedToCart = false; // Reset on failure
       });
-      showErrorSnackbar(AppStrings.failedToAddToCart);
     }
   }
 
@@ -1750,6 +1980,40 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ],
     );
   }
+}
+
+/// Infer group type from a single option name (for grouping when API uses synthetic Option 1/2/3).
+String _inferGroupFromOptionName(String optionName) {
+  final lower = optionName.toLowerCase();
+  const sizeValues = {'s', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xs', 'xxs'};
+  const materialLike = {'nylon', 'cotton', 'polyster', 'polyester', 'linen', 'silk', 'wool'};
+  const colourLike = {'black', 'blue', 'green', 'white', 'red', 'grey', 'gray', 'navy', 'brown', 'beige', 'yellow', 'pink', 'orange', 'purple', 'cream'};
+  if (sizeValues.contains(lower)) return 'Size';
+  if (materialLike.contains(lower)) return 'Material';
+  if (colourLike.contains(lower)) return 'Colour';
+  return 'Other';
+}
+
+/// When group name is synthetic (Option 1, Option 2), infer a label from option values (Size, Material, Colour).
+String _inferGroupDisplayName(String groupName, List<String> optionNames) {
+  if (optionNames.isEmpty) return groupName;
+  if (!RegExp(r'^Option \d+$').hasMatch(groupName)) return groupName;
+  final lower = optionNames.map((s) => s.toLowerCase()).toSet();
+  const sizeValues = {'s', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xs', 'xxs'};
+  const materialLike = {'nylon', 'cotton', 'polyster', 'polyester', 'linen', 'silk', 'wool'};
+  const colourLike = {'black', 'blue', 'green', 'white', 'red', 'grey', 'gray', 'navy', 'brown', 'beige', 'yellow', 'pink', 'orange', 'purple', 'cream'};
+  if (lower.every((s) => sizeValues.contains(s))) return 'Size';
+  if (lower.any((s) => materialLike.contains(s))) return 'Material';
+  if (lower.any((s) => colourLike.contains(s))) return 'Colour';
+  return groupName;
+}
+
+/// One option group: internal group name and list of option names; displayName used in UI (e.g. Size, Material, Colour).
+class _OptionGroup {
+  final String groupName;
+  final List<String> optionNames;
+  _OptionGroup(this.groupName, this.optionNames);
+  String get displayName => _inferGroupDisplayName(groupName, optionNames);
 }
 
 /// Separate StatefulWidget for quantity dialog to properly manage TextEditingController lifecycle

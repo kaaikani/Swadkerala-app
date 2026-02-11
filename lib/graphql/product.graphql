@@ -30,6 +30,9 @@ query GetProductDetail($id: ID!) {
             stockLevel
             options {
                 ...Options
+                group {
+                    name
+                }
             }
             featuredAsset {
                 ...Asset
@@ -41,13 +44,6 @@ query GetProductDetail($id: ID!) {
             assets {
                 name
                 preview
-            }
-            options {
-                name
-                group {
-                    name
-
-                }
             }
             sku
             __typename

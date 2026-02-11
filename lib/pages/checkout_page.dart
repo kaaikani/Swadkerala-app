@@ -882,9 +882,9 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         orderController.skipPostPaymentRefresh = false;
         Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
       },
-      onPaymentFailure: (response) {
-        showErrorSnackbar('Payment failed: ${response.message}');
-        // Reset slider on error so user can try again
+      onPaymentFailure: (_) {
+        // No snackbar when user comes back from Razorpay (e.g. back/cancel) to avoid "Payment failed: undefined"
+        // Reset slider so user can try again
         Future.delayed(
           const Duration(milliseconds: 500),
           () => _slideActionKey.currentState?.reset(),

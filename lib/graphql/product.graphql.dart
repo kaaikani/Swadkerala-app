@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'order.graphql.dart';
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
@@ -1064,6 +1065,28 @@ const documentNodeQueryGetProductDetail = DocumentNode(definitions: [
                     directives: [],
                   ),
                   FieldNode(
+                    name: NameNode(value: 'group'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
                     name: NameNode(value: '__typename'),
                     alias: null,
                     arguments: [],
@@ -1138,50 +1161,6 @@ const documentNodeQueryGetProductDetail = DocumentNode(definitions: [
                     arguments: [],
                     directives: [],
                     selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: 'options'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  FieldNode(
-                    name: NameNode(value: 'name'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'group'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: SelectionSetNode(selections: [
-                      FieldNode(
-                        name: NameNode(value: 'name'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: '__typename'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                    ]),
                   ),
                   FieldNode(
                     name: NameNode(value: '__typename'),
@@ -2497,6 +2476,141 @@ class _CopyWithStubImpl$Query$GetProductDetail$product$variants$options<TRes>
               _res);
 }
 
+class Query$GetProductDetail$product$variants$options$group {
+  Query$GetProductDetail$product$variants$options$group({
+    required this.name,
+    this.$__typename = 'ProductOptionGroup',
+  });
+
+  factory Query$GetProductDetail$product$variants$options$group.fromJson(
+      Map<String, dynamic> json) {
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$GetProductDetail$product$variants$options$group(
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetProductDetail$product$variants$options$group ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetProductDetail$product$variants$options$group
+    on Query$GetProductDetail$product$variants$options$group {
+  CopyWith$Query$GetProductDetail$product$variants$options$group<
+          Query$GetProductDetail$product$variants$options$group>
+      get copyWith =>
+          CopyWith$Query$GetProductDetail$product$variants$options$group(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetProductDetail$product$variants$options$group<
+    TRes> {
+  factory CopyWith$Query$GetProductDetail$product$variants$options$group(
+    Query$GetProductDetail$product$variants$options$group instance,
+    TRes Function(Query$GetProductDetail$product$variants$options$group) then,
+  ) = _CopyWithImpl$Query$GetProductDetail$product$variants$options$group;
+
+  factory CopyWith$Query$GetProductDetail$product$variants$options$group.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetProductDetail$product$variants$options$group;
+
+  TRes call({
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetProductDetail$product$variants$options$group<TRes>
+    implements
+        CopyWith$Query$GetProductDetail$product$variants$options$group<TRes> {
+  _CopyWithImpl$Query$GetProductDetail$product$variants$options$group(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetProductDetail$product$variants$options$group _instance;
+
+  final TRes Function(Query$GetProductDetail$product$variants$options$group)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetProductDetail$product$variants$options$group(
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetProductDetail$product$variants$options$group<
+        TRes>
+    implements
+        CopyWith$Query$GetProductDetail$product$variants$options$group<TRes> {
+  _CopyWithStubImpl$Query$GetProductDetail$product$variants$options$group(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Query$GetProductDetail$product$variants$assets {
   Query$GetProductDetail$product$variants$assets({
     required this.name,
@@ -2640,141 +2754,6 @@ class _CopyWithStubImpl$Query$GetProductDetail$product$variants$assets<TRes>
   call({
     String? name,
     String? preview,
-    String? $__typename,
-  }) =>
-      _res;
-}
-
-class Query$GetProductDetail$product$variants$options$group {
-  Query$GetProductDetail$product$variants$options$group({
-    required this.name,
-    this.$__typename = 'ProductOptionGroup',
-  });
-
-  factory Query$GetProductDetail$product$variants$options$group.fromJson(
-      Map<String, dynamic> json) {
-    final l$name = json['name'];
-    final l$$__typename = json['__typename'];
-    return Query$GetProductDetail$product$variants$options$group(
-      name: (l$name as String),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String name;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$name = name;
-    _resultData['name'] = l$name;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$name = name;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$name,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Query$GetProductDetail$product$variants$options$group ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$name = name;
-    final lOther$name = other.name;
-    if (l$name != lOther$name) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetProductDetail$product$variants$options$group
-    on Query$GetProductDetail$product$variants$options$group {
-  CopyWith$Query$GetProductDetail$product$variants$options$group<
-          Query$GetProductDetail$product$variants$options$group>
-      get copyWith =>
-          CopyWith$Query$GetProductDetail$product$variants$options$group(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetProductDetail$product$variants$options$group<
-    TRes> {
-  factory CopyWith$Query$GetProductDetail$product$variants$options$group(
-    Query$GetProductDetail$product$variants$options$group instance,
-    TRes Function(Query$GetProductDetail$product$variants$options$group) then,
-  ) = _CopyWithImpl$Query$GetProductDetail$product$variants$options$group;
-
-  factory CopyWith$Query$GetProductDetail$product$variants$options$group.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetProductDetail$product$variants$options$group;
-
-  TRes call({
-    String? name,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Query$GetProductDetail$product$variants$options$group<TRes>
-    implements
-        CopyWith$Query$GetProductDetail$product$variants$options$group<TRes> {
-  _CopyWithImpl$Query$GetProductDetail$product$variants$options$group(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetProductDetail$product$variants$options$group _instance;
-
-  final TRes Function(Query$GetProductDetail$product$variants$options$group)
-      _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? name = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetProductDetail$product$variants$options$group(
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Query$GetProductDetail$product$variants$options$group<
-        TRes>
-    implements
-        CopyWith$Query$GetProductDetail$product$variants$options$group<TRes> {
-  _CopyWithStubImpl$Query$GetProductDetail$product$variants$options$group(
-      this._res);
-
-  TRes _res;
-
-  call({
-    String? name,
     String? $__typename,
   }) =>
       _res;

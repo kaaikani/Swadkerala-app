@@ -415,7 +415,7 @@ class CartCouponBottomSheet {
                                           
                                           if (result['success'] == true) {
                                             // Success message already handled by controller
-                                          } else {
+                                          } else if (result['dialogShown'] != true && result['suppressSnackbar'] != true) {
                                             if (result['rollbackPerformed'] == true) {
                                               showErrorSnackbar(result['message'] ?? 'Failed to apply coupon. Added products have been removed.');
                                             } else {

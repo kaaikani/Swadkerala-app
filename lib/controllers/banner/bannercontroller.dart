@@ -1272,12 +1272,22 @@ class BannerController extends BaseController {
         };
       }
 
-      // Handle error results
+      // Handle API error types (CouponCodeInvalidError, CouponCodeExpiredError, CouponCodeLimitError) – show their message
       utilityController.setLoadingState(false);
       _refreshCartAfterCouponError();
+      String apiMessage = 'Failed to apply coupon code';
+      if (result != null) {
+        if (result is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeInvalidError) {
+          apiMessage = result.message;
+        } else if (result is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeExpiredError) {
+          apiMessage = result.message;
+        } else if (result is Mutation$ApplyCouponCode$applyCouponCode$$CouponCodeLimitError) {
+          apiMessage = result.message;
+        }
+      }
       return {
         'success': false,
-        'message': 'Failed to apply coupon code',
+        'message': apiMessage,
         'error': 'APPLICATION_ERROR'
       };
     } catch (e) {
@@ -2011,6 +2021,7 @@ class BannerController extends BaseController {
           'totalAdded': 0,
           'totalFailed': failedProducts.length,
           'rollbackPerformed': true,
+          'suppressSnackbar': true,
         };
       }
 
@@ -2027,6 +2038,7 @@ class BannerController extends BaseController {
         'failedProducts': failedProducts,
         'totalAdded': addedProducts.length,
         'totalFailed': failedProducts.length,
+        if (!allProductsAdded) 'suppressSnackbar': true,
       };
     } catch (e) {
       handleException(e,
@@ -2082,7 +2094,8 @@ class BannerController extends BaseController {
           'message': minimumAmountValidation['message'],
           'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
           'requiredAmount': minimumAmountValidation['requiredAmount'],
-          'currentAmount': minimumAmountValidation['currentAmount']
+          'currentAmount': minimumAmountValidation['currentAmount'],
+          'dialogShown': true,
         };
       }
       // Step 3: Add coupon products to cart (if coupon has products)
@@ -2098,6 +2111,7 @@ class BannerController extends BaseController {
             'message': 'Failed to add coupon products. ${addResult['message']}',
             'error': 'PRODUCT_ADDITION_FAILED',
             'addResult': addResult,
+            'suppressSnackbar': true,
           };
         }
       }
@@ -2133,24 +2147,16 @@ class BannerController extends BaseController {
           'orderTotal': couponResult['orderTotal'],
         };
       } else {
-        // ROLLBACK: Remove the products that were added since coupon application failed
+        // Coupon apply failed: do NOT remove added products – keep them in cart. Show API error message only.
         final hasProducts = hasCouponProducts(couponCode);
         if (hasProducts && addResult != null && addResult['success'] == true) {
-          final rollbackResult = await _rollbackAddedProducts(couponCode);
-
-          if (rollbackResult['success']) {
-          } else {
-          }
+          // Clear tracking so we don't treat these items as coupon-added; products stay in cart
+          couponAddedProducts.remove(couponCode);
+          originalCartQuantities.remove(couponCode);
         }
 
-        final errorMessage = hasProducts && addResult != null && addResult['success'] == true
-            ? 'Failed to apply coupon: ${couponResult['message']}. Added products have been removed.'
-            : couponResult['message'] as String? ?? 'Failed to apply coupon code';
-        
-        ErrorDialog.showWarning(
-          message: errorMessage,
-        );
-
+        final errorMessage = couponResult['message'] as String? ?? 'Failed to apply coupon code';
+        ErrorDialog.showWarning(message: errorMessage);
         _refreshCartAfterCouponError();
 
         return {
@@ -2159,28 +2165,30 @@ class BannerController extends BaseController {
           'addedProducts': addResult?['addedProducts'] ?? [],
           'couponApplied': false,
           'couponError': couponResult['error'],
-          'rollbackPerformed': hasProducts && addResult != null && addResult['success'] == true,
+          'rollbackPerformed': false,
+          'dialogShown': true,
         };
       }
     } catch (e) {
-      // ROLLBACK: If there's an exception, try to remove any products that might have been added
+      // Do not remove added products – keep them in cart. Clear tracking only.
       try {
-        await _rollbackAddedProducts(couponCode);
+        couponAddedProducts.remove(couponCode);
+        originalCartQuantities.remove(couponCode);
         _refreshCartAfterCouponError();
-      } catch (rollbackError) {
+      } catch (_) {
         _refreshCartAfterCouponError();
       }
-
       return {
         'success': false,
-        'message': 'Error applying coupon: $e. Any added products have been removed.',
+        'message': 'Error applying coupon. Please try again.',
         'error': 'APPLY_COUPON_WITH_PRODUCTS_ERROR',
-        'rollbackPerformed': true,
+        'rollbackPerformed': false,
       };
     }
   }
 
-  /// Rollback added products when coupon application fails
+  /// Rollback added products when coupon application fails (kept for optional use; currently we do not remove products on apply failure).
+  // ignore: unused_element
   Future<Map<String, dynamic>> _rollbackAddedProducts(String couponCode) async {
     try {
       // Check if we have tracked products for this coupon

@@ -904,9 +904,11 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
           if (postalCodeController.text.trim().isEmpty) {
             errors['postalCode'] = 'Postal code is required';
           }
-          if (phoneController.text.isNotEmpty && 
-              phoneController.text.length < 10) {
-            errors['phone'] = 'Please enter a valid phone number';
+          final phone = phoneController.text.trim();
+          if (phone.isEmpty) {
+            errors['phone'] = 'Phone number is required';
+          } else if (phone.length != 10 || !RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
+            errors['phone'] = 'Phone number must be exactly 10 digits';
           }
           setState(() {});
         }
@@ -1009,6 +1011,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                 SizedBox(height: 16),
               ],
               _buildTextField(phoneController, 'Phone', Icons.phone,
+                  required: true,
                   keyboardType: TextInputType.phone,
                   maxLength: 10,
                   inputFormatters: [
@@ -1753,9 +1756,11 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
           if (postalCodeController.text.trim().isEmpty) {
             errors['postalCode'] = 'Postal code is required';
           }
-          if (phoneController.text.isNotEmpty && 
-              phoneController.text.length < 10) {
-            errors['phone'] = 'Please enter a valid phone number';
+          final phone = phoneController.text.trim();
+          if (phone.isEmpty) {
+            errors['phone'] = 'Phone number is required';
+          } else if (phone.length != 10 || !RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
+            errors['phone'] = 'Phone number must be exactly 10 digits';
           }
           setState(() {});
         }
@@ -1858,6 +1863,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                 SizedBox(height: 16),
               ],
               _buildTextField(phoneController, 'Phone', Icons.phone,
+                  required: true,
                   keyboardType: TextInputType.phone,
                   maxLength: 10,
                   inputFormatters: [

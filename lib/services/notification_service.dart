@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../widgets/snackbar.dart';
+import 'channel_service.dart';
 
 class NotificationService {
   NotificationService._();
@@ -14,26 +15,42 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
-  // High importance channel for heads-up notifications (Snapchat-style)
+  // Fallback when no Vendure channel is set
   static const AndroidNotificationChannel _defaultChannel =
       AndroidNotificationChannel(
     'kaaikani_updates',
     'Kaaikani Updates',
     description: 'Order, cart, and promotional updates from Kaaikani',
-    importance: Importance.high, // HIGH IMPORTANCE = Heads-up notifications
+    importance: Importance.high,
     playSound: true,
     enableVibration: true,
     showBadge: true,
   );
 
+  /// Android channel ID from stored Vendure channel code so this device uses a channel-specific notification channel.
+  static String get _currentChannelId {
+    final code = ChannelService.getChannelCode();
+    if (code != null && code.toString().trim().isNotEmpty) {
+      return 'kaaikani_${code.toString().trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9_-]'), '_')}';
+    }
+    return _defaultChannel.id;
+  }
+
+  /// Display name for the Android channel (uses stored channel name when available).
+  static String get _currentChannelName {
+    final name = ChannelService.getChannelName();
+    final code = ChannelService.getChannelCode();
+    if (name != null && name.toString().trim().isNotEmpty) {
+      return name.toString().trim();
+    }
+    if (code != null && code.toString().trim().isNotEmpty) {
+      return 'Kaaikani $code';
+    }
+    return _defaultChannel.name;
+  }
+
   Future<void> initialize() async {
     if (_initialized) return;
-    // Use custom notification icon with green background
-    // Note: User needs to create notification_icon.png in drawable folders
-    // If not found, Android will fallback to ic_launcher
-    // The icon should be white/transparent logo on transparent background
-    // Android will apply the system accent color (green) as background
-    // Fallback to default launcher icon if custom icon doesn't exist
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidSettings);
 
@@ -49,6 +66,37 @@ class NotificationService {
     _initialized = true;
   }
 
+  /// Ensure the channel-specific Android notification channel exists (call before showing).
+  Future<void> _ensureChannelForCurrentStore() async {
+    if (_currentChannelId == _defaultChannel.id) return;
+    final androidPlugin = _localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.createNotificationChannel(AndroidNotificationChannel(
+      _currentChannelId,
+      _currentChannelName,
+      description: 'Notifications for $_currentChannelName',
+      importance: Importance.high,
+      playSound: true,
+      enableVibration: true,
+      showBadge: true,
+    ));
+  }
+
+  /// Only show notification if message is for current channel (payload channel/channelCode matches stored channel).
+  /// If payload has no channel info, show to all (backward compatible).
+  static bool _isNotificationForCurrentChannel(RemoteMessage message) {
+    final data = message.data;
+    if (data.isEmpty) return true;
+    final payloadChannel = data['channel'] ?? data['channelCode'] ?? data['channel_token'];
+    if (payloadChannel == null || payloadChannel.toString().trim().isEmpty) return true;
+    final storedCode = ChannelService.getChannelCode();
+    final storedToken = ChannelService.getChannelToken()?.toString();
+    if (storedCode != null && storedCode.toString().toLowerCase() == payloadChannel.toString().toLowerCase()) return true;
+    if (storedToken != null && storedToken == payloadChannel) return true;
+    return false;
+  }
+
   Future<void> showRemoteNotification(RemoteMessage message) async {
     final notification = message.notification;
     final android = message.notification?.android;
@@ -57,20 +105,26 @@ class NotificationService {
       return;
     }
 
-    // High importance + High priority = Heads-up notification (Snapchat-style)
+    // Only show if this notification is for the channel saved locally (specific channel alone get notification).
+    if (!_isNotificationForCurrentChannel(message)) {
+      return;
+    }
+
+    await _ensureChannelForCurrentStore();
+
     final androidDetails = AndroidNotificationDetails(
-      _defaultChannel.id,
-      _defaultChannel.name,
-      channelDescription: _defaultChannel.description,
-      importance: Importance.high, // HIGH = Shows heads-up banner at top
-      priority: Priority.high, // HIGH = Appears even when app is closed
+      _currentChannelId,
+      _currentChannelName,
+      channelDescription: 'Notifications for $_currentChannelName',
+      importance: Importance.high,
+      priority: Priority.high,
       playSound: true,
       enableVibration: true,
       showWhen: true,
-      icon: '@mipmap/ic_launcher', // Small icon - fallback to launcher if custom icon not found
-      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'), // Large icon - fallback to launcher if custom icon not found
-      color: const Color(0xFF22A45D), // Green color for notification accent (matches AppColors.greenPrimary)
-      colorized: true, // Enable colorization
+      icon: '@mipmap/ic_launcher',
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      color: const Color(0xFF22A45D),
+      colorized: true,
       styleInformation: BigTextStyleInformation(
         notification.body ?? '',
         contentTitle: notification.title ?? 'Kaaikani',

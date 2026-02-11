@@ -612,7 +612,7 @@ class CheckoutCouponBottomSheet {
                                                         'message'] ??
                                                     'Coupon applied successfully with products added!');
                                                 onStateChanged();
-                                              } else {
+                                              } else if (result['dialogShown'] != true && result['suppressSnackbar'] != true) {
                                                 if (result[
                                                         'rollbackPerformed'] ==
                                                     true) {

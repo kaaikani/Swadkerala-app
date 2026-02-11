@@ -24,14 +24,14 @@ class ErrorDialog {
         title: Row(
           children: [
             Icon(
-              Icons.error_outline,
-              color: AppColors.error,
+              Icons.warning_amber_rounded,
+              color: AppColors.button,
               size: ResponsiveUtils.rp(28),
             ),
             SizedBox(width: ResponsiveUtils.rp(12)),
             Expanded(
               child: Text(
-                title ?? 'Error',
+                title ?? 'Warning',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(18),
                   fontWeight: FontWeight.bold,
@@ -77,8 +77,8 @@ class ErrorDialog {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.button,
+              foregroundColor: AppColors.buttonText,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
