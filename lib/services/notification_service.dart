@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,6 +15,9 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
   bool _initialized = false;
+
+  /// Last FCM topic we subscribed to (for unsubscribe when channel switches).
+  static String? _lastSubscribedTopic;
 
   // Fallback when no Vendure channel is set
   static const AndroidNotificationChannel _defaultChannel =
@@ -47,6 +51,70 @@ class NotificationService {
       return 'Kaaikani $code';
     }
     return _defaultChannel.name;
+  }
+
+  /// Build FCM topic from locally saved channel code or name.
+  /// Firebase topic names must match [a-zA-Z0-9-_.~%]+ (spaces → underscore, drop invalid chars).
+  static String? _channelToTopic() {
+    final code = ChannelService.getChannelCode();
+    final name = ChannelService.getChannelName();
+    final raw = (code?.trim().isNotEmpty == true)
+        ? code!.trim()
+        : (name?.trim().isNotEmpty == true)
+            ? name!.trim()
+            : null;
+    if (raw == null || raw.isEmpty) return null;
+    final sanitized = raw
+        .replaceAll(RegExp(r'\s+'), '_')
+        .replaceAll(RegExp(r'[^a-zA-Z0-9_\-\.~%]'), '');
+    return sanitized.isEmpty ? null : sanitized;
+  }
+
+  /// Subscribe to the FCM topic that matches the locally saved channel name/code.
+  /// Call after channel is set or when user switches store so Firebase messages
+  /// sent to that topic are received. Unsubscribes from the previous topic when channel changes.
+  Future<void> subscribeToChannelTopic() async {
+    try {
+      final topic = _channelToTopic();
+      if (topic == null || topic.isEmpty) return;
+
+      final messaging = FirebaseMessaging.instance;
+      if (_lastSubscribedTopic != null && _lastSubscribedTopic != topic) {
+        await messaging.unsubscribeFromTopic(_lastSubscribedTopic!);
+        if (kDebugMode) {
+          debugPrint('[FCM] Unsubscribed from topic: $_lastSubscribedTopic');
+        }
+        _lastSubscribedTopic = null;
+      }
+      if (_lastSubscribedTopic == topic) return;
+
+      await messaging.subscribeToTopic(topic);
+      _lastSubscribedTopic = topic;
+      if (kDebugMode) {
+        debugPrint('[FCM] Subscribed to channel topic: $topic');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[FCM] subscribeToChannelTopic failed: $e');
+      }
+    }
+  }
+
+  /// Unsubscribe from the current channel topic (e.g. on logout / clear channel).
+  Future<void> unsubscribeFromChannelTopic() async {
+    if (_lastSubscribedTopic == null) return;
+    try {
+      await FirebaseMessaging.instance.unsubscribeFromTopic(_lastSubscribedTopic!);
+      if (kDebugMode) {
+        debugPrint('[FCM] Unsubscribed from topic: $_lastSubscribedTopic');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[FCM] unsubscribeFromChannelTopic failed: $e');
+      }
+    } finally {
+      _lastSubscribedTopic = null;
+    }
   }
 
   Future<void> initialize() async {

@@ -11,6 +11,7 @@ import '../../services/graphql_client.dart';
 import '../../pages/orders_page.dart';
 import '../../services/postal_code_service.dart';
 import '../../services/channel_service.dart';
+import '../../services/notification_service.dart';
 import '../../utils/app_strings.dart';
 import '../../widgets/error_dialog.dart';
 import '../../widgets/loading_dialog.dart';
@@ -1300,6 +1301,8 @@ class CustomerController extends BaseController {
       );
       debugPrint('[UpdateLocation] setChannelInfo done, calling refreshAllDataAfterChannelChange');
       await refreshAllDataAfterChannelChange();
+      // Subscribe to FCM topic for this channel so Firebase messages use the channel topic
+      await NotificationService.instance.subscribeToChannelTopic();
       // Update customer customFields.location with channel name so backend has the selected location
       await updateCustomerLocation(selectedChannel.name);
       await Future.delayed(Duration(milliseconds: 100));

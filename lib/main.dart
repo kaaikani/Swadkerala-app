@@ -172,7 +172,12 @@ Future<void> _initializeFirebase() async {
     });
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    
+
+    // Subscribe to FCM topic for locally saved channel (so Firebase messages use that topic)
+    Future.delayed(const Duration(seconds: 3), () {
+      NotificationService.instance.subscribeToChannelTopic();
+    });
+
     // Initialize Analytics
     await AnalyticsService().initialize();
     

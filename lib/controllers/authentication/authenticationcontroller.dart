@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../services/graphql_client.dart';
 import '../../services/channel_service.dart';
+import '../../services/notification_service.dart';
 import '../../theme/colors.dart';
 import '../../widgets/snackbar.dart';
 import '../../widgets/error_dialog.dart';
@@ -185,6 +186,7 @@ class AuthController extends BaseController {
         token: channel.token,
         code: channel.code,
       );
+      await NotificationService.instance.subscribeToChannelTopic();
       // Use GetX snackbar to avoid context issues
 
       return true;

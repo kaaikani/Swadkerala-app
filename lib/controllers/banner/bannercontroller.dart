@@ -205,8 +205,20 @@ class BannerController extends BaseController {
       final uniqueProductList = uniqueProducts.values.toList();
 // print('✅ [DEBUG] Unique products: ${uniqueProductList.length} (from ${fetchedItems.length} variants)');
 
+      // Filter out disabled products: fetch enabled product IDs and keep only those
+      List<Query$Search$search$items> listAfterEnabledFilter = uniqueProductList;
+      final productIds = uniqueProductList.map((e) => e.productId).toSet().toList();
+      if (productIds.isNotEmpty) {
+        final enabledIds = await _fetchEnabledProductIds(productIds);
+        if (enabledIds != null && enabledIds.isNotEmpty) {
+          listAfterEnabledFilter = uniqueProductList
+              .where((item) => enabledIds.contains(item.productId))
+              .toList();
+        }
+      }
+
       // Don't show products whose name ends with "free" in search UI
-      final filteredList = uniqueProductList.where((item) {
+      final filteredList = listAfterEnabledFilter.where((item) {
         final name = item.productName.trim().toLowerCase();
         return !name.endsWith('free');
       }).toList();
@@ -228,6 +240,45 @@ class BannerController extends BaseController {
       searchResults.clear();
       totalItems.value = 0;
       utilityController.setLoadingState(false);
+    }
+  }
+
+  /// Fetches product IDs that are enabled. Returns null on error (caller may skip filtering).
+  Future<Set<String>?> _fetchEnabledProductIds(List<String> productIds) async {
+    if (productIds.isEmpty) return <String>{};
+    try {
+      const query = r'''
+        query GetEnabledProductIds($options: ProductListOptions) {
+          products(options: $options) {
+            items { id }
+          }
+        }
+      ''';
+      final result = await GraphqlService.client.value.query(
+        graphql.QueryOptions(
+          document: gql(query),
+          variables: {
+            'options': {
+              'filter': {
+                'id': {'in': productIds},
+                'enabled': {'eq': true},
+              },
+              'take': productIds.length + 50,
+            },
+          },
+          fetchPolicy: graphql.FetchPolicy.networkOnly,
+        ),
+      );
+      if (result.hasException || result.data == null) return null;
+      final items = result.data!['products']?['items'] as List<dynamic>?;
+      if (items == null) return null;
+      return items
+          .map((e) => (e as Map<String, dynamic>)['id']?.toString())
+          .whereType<String>()
+          .where((id) => id.isNotEmpty)
+          .toSet();
+    } catch (_) {
+      return null;
     }
   }
 
@@ -956,46 +1007,46 @@ class BannerController extends BaseController {
     }
   }
 
-  /// Validate minimum order amount for coupon
+  /// Validate minimum order amount for coupon (checked against cart subtotal, not total)
   Future<Map<String, dynamic>> _validateMinimumOrderAmount(
       Query$GetCouponCodeList$getCouponCodeList$items coupon) async {
     try {
-      // Get current cart total from active order
+      // Get current cart subtotal from active order (subtotal = line items, not total with shipping)
       final orderController = Get.find<OrderController>();
       
       // Try to get from already-loaded order first
-      double? cartTotal = orderController.currentOrder.value?.totalWithTax;
+      double? cartSubTotal = orderController.currentOrder.value?.subTotalWithTax;
       
       // If not available, load active order
-      if (cartTotal == null) {
+      if (cartSubTotal == null) {
         final loaded = await orderController.getActiveOrder(skipLoading: true);
         if (loaded) {
-          cartTotal = orderController.currentOrder.value?.totalWithTax;
+          cartSubTotal = orderController.currentOrder.value?.subTotalWithTax;
         }
       }
 
-      if (cartTotal == null) {
+      if (cartSubTotal == null) {
         return {
           'valid': false,
-          'message': 'Unable to get cart total',
+          'message': 'Unable to get cart subtotal',
           'error': 'CART_TOTAL_ERROR'
         };
       }
-      // Check coupon conditions for minimum order amount
+      // Check coupon conditions for minimum order amount (against subtotal)
       for (final condition in coupon.conditions) {
         if (condition.code == 'minimum_order_amount') {
           for (final arg in condition.args) {
             if (arg.name == 'amount') {
               // arg.value is always String, so parse it directly
               final requiredAmount = double.tryParse(arg.value) ?? 0.0;
-              if (cartTotal < requiredAmount) {
+              if (cartSubTotal < requiredAmount) {
                 return {
                   'valid': false,
                   'message':
-                      'Minimum order amount of ${_formatPrice(requiredAmount.toInt())} required. Current cart total is ${_formatPrice(cartTotal.toInt())}.',
+                      'Minimum order amount of ${_formatPrice(requiredAmount.toInt())} required. Current cart subtotal is ${_formatPrice(cartSubTotal.toInt())}.',
                   'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
                   'requiredAmount': requiredAmount,
-                  'currentAmount': cartTotal
+                  'currentAmount': cartSubTotal
                 };
               }
             }
@@ -1718,19 +1769,19 @@ class BannerController extends BaseController {
         return;
       }
 
-      // Get current cart total from active order (orderController already defined above)
+      // Get current cart subtotal from active order (subtotal = line items, not total with shipping)
       // Try to get from already-loaded order first
-      double? cartTotal = orderController.currentOrder.value?.totalWithTax;
+      double? cartSubTotal = orderController.currentOrder.value?.subTotalWithTax;
       
       // If not available, load active order
-      if (cartTotal == null) {
+      if (cartSubTotal == null) {
         final loaded = await orderController.getActiveOrder(skipLoading: true);
         if (loaded) {
-          cartTotal = orderController.currentOrder.value?.totalWithTax;
+          cartSubTotal = orderController.currentOrder.value?.subTotalWithTax;
         }
       }
       
-      if (cartTotal == null) {
+      if (cartSubTotal == null) {
         return;
       }
       // Check each applied coupon
@@ -1756,8 +1807,8 @@ class BannerController extends BaseController {
           continue;
         }
 
-        // Check if cart total is below minimum
-        if (cartTotal < minimumAmount) {
+        // Check if cart subtotal is below minimum
+        if (cartSubTotal < minimumAmount) {
           couponsToRemove.add(couponCode);
         } else {
         }

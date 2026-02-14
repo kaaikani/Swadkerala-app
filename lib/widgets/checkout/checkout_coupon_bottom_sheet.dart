@@ -210,13 +210,13 @@ class CheckoutCouponBottomSheet {
 
                             SizedBox(height: ResponsiveUtils.rp(8)),
 
-                            // Minimum order amount display
+                            // Minimum order amount display (checked against subtotal)
                             Obx(() {
                               final requiredAmount = bannerController.getRequiredAmount(coupon);
                               if (requiredAmount > 0) {
-                                final currentCartTotal = (orderController.currentOrder.value?.totalWithTax ?? 0).toInt();
-                                final meetsMinimum = currentCartTotal >= requiredAmount;
-                                final difference = requiredAmount - currentCartTotal;
+                                final currentCartSubTotal = (orderController.currentOrder.value?.subTotalWithTax ?? 0).toInt();
+                                final meetsMinimum = currentCartSubTotal >= requiredAmount;
+                                final difference = requiredAmount - currentCartSubTotal;
                                 
                                 return Container(
                                   padding: EdgeInsets.symmetric(
@@ -460,8 +460,8 @@ class CheckoutCouponBottomSheet {
                                 final canRemoveCoupon = appliedCouponCount < 2;
 
                                 final requiredAmount = bannerController.getRequiredAmount(coupon);
-                                final currentCartTotal = (orderController.currentOrder.value?.totalWithTax ?? 0).toInt();
-                                final meetsMinimumAmount = requiredAmount == 0 || currentCartTotal >= requiredAmount;
+                                final currentCartSubTotal = (orderController.currentOrder.value?.subTotalWithTax ?? 0).toInt();
+                                final meetsMinimumAmount = requiredAmount == 0 || currentCartSubTotal >= requiredAmount;
 
                                 return ElevatedButton(
                                   onPressed: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon) || (!isApplied && !meetsMinimumAmount && requiredAmount > 0))

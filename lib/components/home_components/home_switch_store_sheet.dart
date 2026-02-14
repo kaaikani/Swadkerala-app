@@ -3,6 +3,7 @@ import '../../controllers/customer/customer_controller.dart';
 import '../../graphql/Customer.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/channel_service.dart';
+import '../../services/notification_service.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/loading_dialog.dart';
@@ -141,6 +142,7 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
         type: channel.type.toString(),
         postalCode: widget.postalCode,
       );
+      await NotificationService.instance.subscribeToChannelTopic();
       await widget.customerController.refreshAllDataAfterChannelChange();
 
       LoadingDialog.hide();

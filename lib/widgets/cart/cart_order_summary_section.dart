@@ -133,6 +133,31 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
               ],
             ),
             SizedBox(height: ResponsiveUtils.rp(12)),
+            // When collapsed: show Subtotal with Tax and Total with Tax only
+            if (!_isExpanded) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Subtotal with Tax',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    widget.cartController.formatPrice(cart.subTotalWithTax.toInt()),
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(8)),
+            ],
             // Show full breakdown only if expanded
             if (_isExpanded) ...[
               // Subtotal (without tax)
