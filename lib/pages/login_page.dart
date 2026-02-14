@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import '../widgets/shimmers.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -758,7 +759,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Widget? _buildPhoneSuffixIcon(bool hasError, bool isValid) {
-    if (_isDetectingSim) {
+    final isIos = defaultTargetPlatform == TargetPlatform.iOS;
+    if (_isDetectingSim && !isIos) {
       return Padding(
         padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
         child: Skeletons.smallBox(size: ResponsiveUtils.rp(20)),
@@ -775,6 +777,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       );
     }
     if (hasError) {
+      // On iOS don't show SIM icon, only error icon
+      if (isIos) {
+        return Padding(
+          padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+          child: Icon(
+            Icons.error_outline,
+            color: AppColors.error,
+            size: ResponsiveUtils.rp(20),
+          ),
+        );
+      }
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -798,8 +811,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ],
       );
     }
-    // Show SIM button when field is empty or no error
-    if (!_authController.isOtpSent) {
+    // Show SIM button when field is empty or no error (hidden on iOS)
+    if (!_authController.isOtpSent && !isIos) {
       return Padding(
         padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
         child: IconButton(

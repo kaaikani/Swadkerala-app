@@ -191,7 +191,10 @@ class RazorpayService {
       },
       'external': {
         'wallets': ['paytm', 'phonepe', 'googlepay']
-      }
+      },
+      // Suppress "SDK Compatibility Status" dialog (Razorpay shows it on simulator/test key only; these may disable it)
+      'show_sdk_update_alert': false,
+      'ios.show_sdk_update_alert': false,
     };
 
     try {

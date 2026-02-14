@@ -150,20 +150,63 @@ Future<void> _initializeFirebase() async {
     // Initialize Firebase Messaging
     await NotificationService.instance.initialize();
 
+    // Don't request notification permission here: on iOS the system dialog often
+    // doesn't show if requested before the app window is visible. Permission is
+    // requested in InitialRouteWrapper after the first frame (see _requestNotificationPermissionWhenReady).
     final messaging = FirebaseMessaging.instance;
-    await messaging.requestPermission();
 
-    // Get and print FCM token
+    // iOS: show notifications when app is in foreground (alert, badge, sound).
+    // Without this, FCM messages on iOS are not displayed while the app is open.
+    await messaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    // Get and print FCM token (for push notification debugging)
     try {
       final token = await messaging.getToken();
+      final isIos = defaultTargetPlatform == TargetPlatform.iOS;
       if (token != null) {
+        final platform = isIos ? 'iOS' : (defaultTargetPlatform == TargetPlatform.android ? 'Android' : 'other');
+        debugPrint('[FCM] Token ($platform): $token');
+        if (isIos) {
+          debugPrint('[FCM] Use this token in Firebase Console → Messaging → Send to single device');
+        }
       } else {
+        debugPrint('[FCM] Token is null (e.g. permission denied or not yet granted)');
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          debugPrint('[FCM] iOS: Allow notifications when prompted, then restart app or wait for "[FCM] Token (after permission)"');
+          debugPrint('[FCM] iOS: Upload APNs .p8 key in Firebase → Project settings → Cloud Messaging → Apple app config');
+        }
       }
     } catch (e) {
+      if (e.toString().contains('apns-token-not-set')) {
+        debugPrint('[FCM] iOS: FCM token will appear after you allow notifications on a physical device (simulator has no APNS).');
+        debugPrint('[FCM] iOS: Upload APNs key in Firebase Console → Project settings → Cloud Messaging');
+      } else {
+        debugPrint('[FCM] getToken error: $e');
+      }
+    }
+
+    // iOS: retry getToken after delay (user may allow notifications after first frame; token then appears)
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      Future.delayed(const Duration(seconds: 5), () async {
+        try {
+          final token = await messaging.getToken();
+          if (token != null && kDebugMode) {
+            debugPrint('[FCM] Token (iOS, after delay): $token');
+          }
+        } catch (_) {}
+      });
     }
 
     // Listen for token refresh
     messaging.onTokenRefresh.listen((newToken) {
+      final platform = defaultTargetPlatform == TargetPlatform.iOS
+          ? 'iOS'
+          : (defaultTargetPlatform == TargetPlatform.android ? 'Android' : 'other');
+      debugPrint('[FCM] Token refreshed ($platform): $newToken');
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

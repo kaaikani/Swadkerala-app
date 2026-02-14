@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:get/get.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
@@ -186,15 +187,16 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Microphone icon
-                IconButton(
-                  icon: Icon(
-                    _isListening ? Icons.mic : Icons.mic_none,
-                    color: _isListening ? Colors.red : AppColors.textSecondary,
+                // Microphone icon (hidden on iOS — no voice search)
+                if (defaultTargetPlatform != TargetPlatform.iOS)
+                  IconButton(
+                    icon: Icon(
+                      _isListening ? Icons.mic : Icons.mic_none,
+                      color: _isListening ? Colors.red : AppColors.textSecondary,
+                    ),
+                    onPressed: _startSpeechRecognition,
+                    tooltip: _isListening ? 'Stop listening' : 'Start voice search',
                   ),
-                  onPressed: _startSpeechRecognition,
-                  tooltip: _isListening ? 'Stop listening' : 'Start voice search',
-                ),
                 // Clear icon (if text exists)
                 if (_controller.text.isNotEmpty)
                   IconButton(
@@ -560,7 +562,29 @@ class _VoiceSearchDialogState extends State<VoiceSearchDialog>
               ),
             ),
             SizedBox(height: ResponsiveUtils.rp(20)),
-            
+            // Mic button - tappable so user can start/stop listening (fixes iOS: text was shown but no mic)
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _toggleListening,
+                customBorder: const CircleBorder(),
+                child: Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _isListening
+                        ? AppColors.success.withValues(alpha: 0.15)
+                        : AppColors.button.withValues(alpha: 0.15),
+                  ),
+                  child: Icon(
+                    _isListening ? Icons.mic : Icons.mic_none,
+                    size: ResponsiveUtils.rp(48),
+                    color: _isListening ? AppColors.success : AppColors.button,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(20)),
             // Recognized text display
             if (_recognizedText.isNotEmpty) ...[
               Container(

@@ -13,6 +13,7 @@ class AnalyticsService {
   FirebaseAnalyticsObserver? _observer;
 
   /// Initialize analytics service (Firebase + Meta).
+  /// Meta (Facebook) init runs in background with timeout so SDK timeouts don't block startup.
   Future<void> initialize() async {
     try {
       _analytics = FirebaseAnalytics.instance;
@@ -23,7 +24,14 @@ class AnalyticsService {
         'platform': defaultTargetPlatform.toString(),
       });
 
-      await MetaEventsService().initialize();
+      // Delay Meta (Facebook) init so SDK network calls (ep2.facebook.com) don't run at startup.
+      // This reduces nw_resolver/nw_connection log spam and avoids startup timeouts.
+      Future.delayed(const Duration(seconds: 4), () {
+        MetaEventsService().initialize().timeout(
+          const Duration(seconds: 5),
+          onTimeout: () {},
+        ).catchError((_) {});
+      });
     } catch (e) {
     }
   }

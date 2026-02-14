@@ -23,6 +23,27 @@ class GraphqlService {
   // Reactive channel token observable for UI updates
   static final RxString channelTokenRx = ''.obs;
 
+  /// Current platform for API header (android, ios, web, windows, macos, linux).
+  static String get _deviceMedium {
+    if (kIsWeb) return 'web';
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return 'android';
+      case TargetPlatform.iOS:
+        return 'ios';
+      case TargetPlatform.windows:
+        return 'windows';
+      case TargetPlatform.macOS:
+        return 'macos';
+      case TargetPlatform.linux:
+        return 'linux';
+      case TargetPlatform.fuchsia:
+        return 'fuchsia';
+      default:
+        return 'unknown';
+    }
+  }
+
   static ValueNotifier<GraphQLClient> get client {
     _client ??= ValueNotifier(_createClient());
 // print("📦 GraphQL Client created with channelToken: $_channelToken");
@@ -49,10 +70,10 @@ class GraphqlService {
     
     final httpClient = http_io.IOClient(httpClientInstance);
     
-    // Prepare headers
+    // Prepare headers - use actual platform where app is running
     final headers = <String, String>{
       if (_channelToken.isNotEmpty) _channelTokenKey: _channelToken,
-      'x-device-medium': 'android',
+      'x-device-medium': _deviceMedium,
       'x-platform': 'Kaaikani',
       'Content-Type': 'application/json',
       'Accept': 'application/json',

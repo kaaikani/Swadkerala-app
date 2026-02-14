@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:get_storage/get_storage.dart';
@@ -22,6 +22,7 @@ import '../../services/analytics_service.dart';
 import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/Customer.graphql.dart';
 import '../../utils/logger.dart';
+import '../../utils/google_auth_env.dart';
 
 class AuthController extends BaseController {
   // Controllers
@@ -920,18 +921,21 @@ class AuthController extends BaseController {
   Future<bool> signInWithGoogle(BuildContext context) async {
     setLoading(true);
     try {
-      // Get Google Client ID from .env
-      final googleClientId = dotenv.env['GOOGLE_CLIENT_ID'];
+      // Google Auth: read from .env via GoogleAuthEnv
+      final googleClientId = GoogleAuthEnv.googleClientId;
       if (googleClientId == null || googleClientId.isEmpty) {
         ErrorDialog.showError('Google Client ID not configured');
         return false;
       }
-      // Initialize Google Sign In
-      // serverClientId is required to get ID token for backend verification
-      // This should be a Web OAuth client ID from the same Google Cloud project
+      if (!GoogleAuthEnv.isIosConfigValid) {
+        ErrorDialog.showError(
+            'On iOS, set GOOGLE_CLIENT_ID_IOS in .env (iOS OAuth client ID). '
+            'Web client is not allowed with custom URL scheme. See docs/GOOGLE_AUTH_SETUP.md.');
+        return false;
+      }
       final GoogleSignIn googleSignIn = GoogleSignIn(
-        serverClientId: googleClientId, // Web OAuth client ID for ID token
-        // Android OAuth client (with SHA-1) is used automatically from google-services.json
+        serverClientId: googleClientId,
+        clientId: GoogleAuthEnv.clientIdForPlatform,
       );
 
       // Sign out any existing Google account to force account selection
@@ -1142,6 +1146,25 @@ class AuthController extends BaseController {
                 '   7B:87:2E:43:7B:68:07:28:A6:D2:7F:BE:28:C2:94:52:58:B7:E1:71\n\n'
                 '5. Verify package name: com.kaaikani.kaaikani\n\n'
                 '6. For release builds, add your release keystore SHA-1 as well'
+        );
+        return false;
+      }
+
+      // "Access blocked" / OAuth consent: app in Testing and user not in Test users
+      final isAccessBlocked = errorStr.contains('access') &&
+          (errorStr.contains('block') ||
+              errorStr.contains('denied') ||
+              errorStr.contains('unauthorized') ||
+              errorStr.contains('invalid_request') ||
+              errorStr.contains('redirect'));
+      if (isAccessBlocked) {
+        ErrorDialog.showError(
+            'Google sign-in was blocked.\n\n'
+                'If you saw "Access blocked" in the browser:\n'
+                '1. Open Google Cloud Console → APIs & Services → OAuth consent screen\n'
+                '2. Under "Test users", click + ADD USERS\n'
+                '3. Add your Gmail address and save\n'
+                '4. Try again'
         );
         return false;
       }
