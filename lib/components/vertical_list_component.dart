@@ -46,9 +46,22 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= 
-        _scrollController.position.maxScrollExtent * 0.8) {
-      // Load more when user scrolls to 80% of the list
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (position.maxScrollExtent <= 0) return;
+    if (position.pixels >= position.maxScrollExtent * 0.8) {
+      _loadMoreCollections();
+    }
+  }
+
+  /// Called when horizontal scroll notification is received (reliable when nested in vertical scroll).
+  void _onScrollNotification(ScrollNotification notification) {
+    final metrics = notification.metrics;
+    // Only react to horizontal scroll (category list), not vertical (main page).
+    if (metrics.axisDirection != AxisDirection.left &&
+        metrics.axisDirection != AxisDirection.right) return;
+    if (metrics.maxScrollExtent <= 0) return;
+    if (metrics.pixels >= metrics.maxScrollExtent * 0.8) {
       _loadMoreCollections();
     }
   }
@@ -120,13 +133,21 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
               height: ResponsiveUtils.rp(140) + 4.5,
               child: displayItems.isEmpty
                   ? const SizedBox.shrink()
-                  : ListView.separated(
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: displayItems.length + (collectionsController.hasMoreCollections ? 1 : 0),
-                      separatorBuilder: (_, __) => ResponsiveSpacing.horizontal(12),
-                itemBuilder: (_, index) {
+                  : NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification notification) {
+                        if (notification is ScrollUpdateNotification ||
+                            notification is ScrollEndNotification) {
+                          _onScrollNotification(notification);
+                        }
+                        return false;
+                      },
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: displayItems.length + (collectionsController.hasMoreCollections ? 1 : 0),
+                        separatorBuilder: (_, __) => ResponsiveSpacing.horizontal(12),
+                        itemBuilder: (_, index) {
                   // Show loading indicator at the end if there are more items
                   if (index >= displayItems.length) {
                     return Container(
@@ -219,8 +240,9 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
                       ),
                     ),
                   );
-                },
-              ),
+                        },
+                      ),
+                    ),
             ),
           ],
         ),

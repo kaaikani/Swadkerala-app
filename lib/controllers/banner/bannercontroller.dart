@@ -1452,8 +1452,9 @@ class BannerController extends BaseController {
         }
       }
 
-      // Clear the tracked products for this coupon
+      // Clear the tracked products and original quantities for this coupon
       couponAddedProducts.remove(couponCode);
+      originalCartQuantities.remove(couponCode);
       return removedCount > 0;
     } catch (e) {
           Logger.logFunction(functionName: '_removeOrderLineById', mutationName: 'RemoveOrderLine');
@@ -2198,17 +2199,22 @@ class BannerController extends BaseController {
           'orderTotal': couponResult['orderTotal'],
         };
       } else {
-        // Coupon apply failed: do NOT remove added products – keep them in cart. Show API error message only.
+        // Coupon apply failed: reverse by removing coupon-added products from cart and clearing coupon state.
         final hasProducts = hasCouponProducts(couponCode);
-        if (hasProducts && addResult != null && addResult['success'] == true) {
-          // Clear tracking so we don't treat these items as coupon-added; products stay in cart
-          couponAddedProducts.remove(couponCode);
-          originalCartQuantities.remove(couponCode);
+        bool rollbackPerformed = false;
+        if (hasProducts && addResult != null && addResult['success'] == true &&
+            couponAddedProducts.containsKey(couponCode)) {
+          rollbackPerformed = await removeCouponProducts(couponCode);
         }
+        originalCartQuantities.remove(couponCode);
 
         final errorMessage = couponResult['message'] as String? ?? 'Failed to apply coupon code';
-        ErrorDialog.showWarning(message: errorMessage);
-        _refreshCartAfterCouponError();
+        ErrorDialog.showWarning(
+          message: rollbackPerformed
+              ? '$errorMessage '
+              : errorMessage,
+        );
+        await _refreshCartAfterCouponError();
 
         return {
           'success': false,
@@ -2216,24 +2222,29 @@ class BannerController extends BaseController {
           'addedProducts': addResult?['addedProducts'] ?? [],
           'couponApplied': false,
           'couponError': couponResult['error'],
-          'rollbackPerformed': false,
+          'rollbackPerformed': rollbackPerformed,
           'dialogShown': true,
         };
       }
     } catch (e) {
-      // Do not remove added products – keep them in cart. Clear tracking only.
+      // On error: remove coupon-added products from cart so cart is consistent.
+      bool rollbackPerformed = false;
       try {
-        couponAddedProducts.remove(couponCode);
+        if (couponAddedProducts.containsKey(couponCode)) {
+          rollbackPerformed = await removeCouponProducts(couponCode);
+        }
         originalCartQuantities.remove(couponCode);
-        _refreshCartAfterCouponError();
+        await _refreshCartAfterCouponError();
       } catch (_) {
-        _refreshCartAfterCouponError();
+        await _refreshCartAfterCouponError();
       }
       return {
         'success': false,
-        'message': 'Error applying coupon. Please try again.',
+        'message': rollbackPerformed
+            ? 'Error applying coupon. '
+            : 'Error applying coupon. Please try again.',
         'error': 'APPLY_COUPON_WITH_PRODUCTS_ERROR',
-        'rollbackPerformed': false,
+        'rollbackPerformed': rollbackPerformed,
       };
     }
   }
