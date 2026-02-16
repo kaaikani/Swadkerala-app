@@ -59,7 +59,7 @@ dependencies:
   slide_to_act: ^2.0.2
   flutter_dynamic_icon: ^2.1.0
   flutter_app_badger: ^1.5.0
-  google_sign_in: ^6.2.1
+  google_sign_in: 6.1.6
   carousel_slider: ^5.0.0
   speech_to_text: 6.6.0
   font_awesome_flutter: ^10.7.0
@@ -76,6 +76,8 @@ dev_dependencies:
   graphql_codegen: ^1.1.0
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.4.1
+  google_sign_in_ios: 5.7.6
+
 
 flutter:
   uses-material-design: true
@@ -83,6 +85,7 @@ flutter:
   assets:
     - .env
     - assets/images/
+    - assets/fonts/
     - assets/images/onboarding_1.jpeg
     - assets/images/onboarding_2.jpeg
     - assets/images/onboarding_3.jpeg

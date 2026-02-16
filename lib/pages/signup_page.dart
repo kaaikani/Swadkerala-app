@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -488,7 +489,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
             inputType: TextInputType.phone,
             prefixText: '+91 ',
             maxLength: 10,
-            onSimTap: _showSimSelectionDialog,
+            onSimTap: defaultTargetPlatform == TargetPlatform.iOS ? null : _showSimSelectionDialog,
             validator: (v) {
               if (v == null || v.trim().isEmpty) return 'Phone number is required';
               if (v.length != 10) return 'Enter valid 10-digit number';

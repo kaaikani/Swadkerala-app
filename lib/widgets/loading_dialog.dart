@@ -114,14 +114,12 @@ class LoadingDialog {
     });
   }
 
-  /// Hide loading dialog
+  /// Hide loading dialog. Always clears state and closes the dialog so it never stays stuck (e.g. on iOS).
   static void hide() {
-    if (_isShowing) {
-      final isDialogOpen = Get.isDialogOpen;
-      if (isDialogOpen == true) {
-        _isShowing = false;
-        Get.back();
-      }
+    if (!_isShowing) return;
+    _isShowing = false;
+    if (Get.isDialogOpen == true) {
+      Get.back();
     }
   }
 }

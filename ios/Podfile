@@ -1,7 +1,5 @@
-# Uncomment this line to define a global platform for your project
 platform :ios, '13.0'
 
-# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
@@ -11,65 +9,104 @@ project 'Runner', {
 }
 
 def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  generated_xcode_build_settings_path = File.expand_path(
+    File.join('..', 'Flutter', 'Generated.xcconfig'),
+    __FILE__
+  )
   unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+    raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get first."
   end
 
   File.foreach(generated_xcode_build_settings_path) do |line|
     matches = line.match(/FLUTTER_ROOT\=(.*)/)
     return matches[1].strip if matches
   end
-  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+
+  raise "FLUTTER_ROOT not found"
 end
 
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+require File.expand_path(
+  File.join('packages', 'flutter_tools', 'bin', 'podhelper'),
+  flutter_root
+)
 
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
-  use_modular_headers!
+  # ✅ STATIC frameworks (Firebase compatible)
+  use_frameworks! :linkage => :static
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  
-  # Razorpay iOS SDK (if needed)
-  # pod 'razorpay-pod', '~> 1.3.7'
-  
+
   target 'RunnerTests' do
     inherit! :search_paths
   end
 end
 
 post_install do |installer|
+  # Allow non-modular includes (required for Firebase with static frameworks + Xcode 16+)
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+  end
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-    
-    # Set minimum iOS deployment target
+
+    # geocoding_ios: PrivacyInfo.xcprivacy is wrongly in Compile Sources (causes "no rule to process" warning)
+    if target.name == 'geocoding_ios'
+      target.source_build_phase.files.reject! do |f|
+        f.file_ref && f.file_ref.path && f.file_ref.path.include?('PrivacyInfo.xcprivacy')
+      end
+    end
+
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      # Suppress Firebase/third-party warnings we can't fix
+      if target.name == 'FirebaseRemoteConfig'
+        config.build_settings['GCC_WARN_STRICT_ENUM_COMPARE'] = 'NO'
+      end
+      if target.name == 'FirebaseSessions'
+        config.build_settings['SWIFT_SUPPRESS_WARNINGS'] = 'YES'
+      end
     end
   end
+
+  # Inject CLANG_ALLOW_NON_MODULAR_INCLUDES into pod xcconfig so it applies at build time (Xcode 16+)
+  support_dir = File.join(installer.sandbox.root, 'Target Support Files')
+  Dir.glob(File.join(support_dir, '*', '*.xcconfig')).each do |xcconfig_path|
+    next if xcconfig_path.include?('Pods-Runner') || xcconfig_path.include?('Pods-RunnerTests')
+    content = File.read(xcconfig_path)
+    next if content.include?('CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES')
+    File.open(xcconfig_path, 'a') { |f| f << "\nCLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES\n" }
+  end
+
+  # Fix firebase_messaging: ensure FIRMessaging types are visible (Xcode 16+ / static frameworks).
+  # Patch both .symlinks (CLI build) and pub-cache (Xcode GUI build uses pub-cache paths).
+  [
+    File.join(__dir__, '.symlinks', 'plugins', 'firebase_messaging', 'ios', 'Classes', 'FLTFirebaseMessagingPlugin.h'),
+    *Dir.glob(File.join(ENV['PUB_CACHE'] || File.join(Dir.home, '.pub-cache'), 'hosted', 'pub.dev', 'firebase_messaging-*', 'ios', 'Classes', 'FLTFirebaseMessagingPlugin.h'))
+  ].each do |plugin_header|
+    next unless File.exist?(plugin_header)
+    content = File.read(plugin_header)
+    next if content.include?('#import <FirebaseMessaging/FirebaseMessaging.h>')
+    content.sub!(/(#import <firebase_core\/FLTFirebasePlugin.h>)/, "\\1\n#import <FirebaseMessaging/FirebaseMessaging.h>")
+    File.write(plugin_header, content)
+  end
+
+  # Fix firebase_crashlytics: use modular header to avoid "Include of non-modular header" (Xcode 16+).
+  # Patch both .symlinks and pub-cache; replace <Firebase/Firebase.h> with <FirebaseCrashlytics/FirebaseCrashlytics.h>.
+  crashlytics_headers = [
+    File.join(__dir__, '.symlinks', 'plugins', 'firebase_crashlytics', 'ios', 'Classes', 'ExceptionModel_Platform.h'),
+    File.join(__dir__, '.symlinks', 'plugins', 'firebase_crashlytics', 'ios', 'Classes', 'Crashlytics_Platform.h'),
+    *Dir.glob(File.join(ENV['PUB_CACHE'] || File.join(Dir.home, '.pub-cache'), 'hosted', 'pub.dev', 'firebase_crashlytics-*', 'ios', 'Classes', 'ExceptionModel_Platform.h')),
+    *Dir.glob(File.join(ENV['PUB_CACHE'] || File.join(Dir.home, '.pub-cache'), 'hosted', 'pub.dev', 'firebase_crashlytics-*', 'ios', 'Classes', 'Crashlytics_Platform.h'))
+  ].uniq
+  crashlytics_headers.each do |path|
+    next unless File.exist?(path)
+    content = File.read(path)
+    next unless content.include?('#import <Firebase/Firebase.h>')
+    content.sub!('#import <Firebase/Firebase.h>', '#import <FirebaseCrashlytics/FirebaseCrashlytics.h>')
+    File.write(path, content)
+  end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

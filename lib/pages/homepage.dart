@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_storage/get_storage.dart';
 import '../components/collectioncomponent.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
@@ -18,6 +17,7 @@ import '../controllers/customer/customer_controller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import '../utils/google_auth_env.dart';
 import '../widgets/responsive_spacing.dart';
 import '../components/bottomnavigationbar.dart';
 import '../components/home_components/home_delivery_address_header.dart';
@@ -160,9 +160,10 @@ class _MyHomePageState extends State<MyHomePage> {
       final now = DateTime.now().millisecondsSinceEpoch;
       
       // Show dialog if:
-      // 1. Permission is denied (not granted, not permanently denied)
+      // 1. Permission is denied, restricted, or not yet determined (not granted, not permanently denied)
       // 2. We haven't shown it before, OR it's been more than 7 days since last shown
-      if (status.isDenied && mounted) {
+      final needsPrompt = status.isDenied || status.isRestricted;
+      if (needsPrompt && mounted) {
         final shouldShow = !hasShownDialog || 
                           (lastShownTime != null && (now - lastShownTime) > (7 * 24 * 60 * 60 * 1000));
         
@@ -661,7 +662,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ) async {
     setState(() => customerController.emailUpdateError.value = '');
     try {
-      final googleClientId = dotenv.env['GOOGLE_CLIENT_ID'];
+      final googleClientId = GoogleAuthEnv.googleClientId;
       if (googleClientId == null || googleClientId.isEmpty) {
         setState(() {
           customerController.emailUpdateError.value = 'Google Client ID not configured';
@@ -669,8 +670,17 @@ class _MyHomePageState extends State<MyHomePage> {
         onComplete();
         return;
       }
+      if (!GoogleAuthEnv.isIosConfigValid) {
+        setState(() {
+          customerController.emailUpdateError.value =
+              'Set GOOGLE_CLIENT_ID_IOS in .env for iOS (iOS OAuth client). See docs/GOOGLE_AUTH_SETUP.md.';
+        });
+        onComplete();
+        return;
+      }
       final GoogleSignIn googleSignIn = GoogleSignIn(
         serverClientId: googleClientId,
+        clientId: GoogleAuthEnv.clientIdForPlatform,
         scopes: ['email'],
       );
       try {

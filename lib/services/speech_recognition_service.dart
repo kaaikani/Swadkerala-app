@@ -1,4 +1,4 @@
-// import 'package:flutter/material.dart'; // Unused import removed
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 
@@ -12,8 +12,12 @@ class SpeechRecognitionService {
   bool _isAvailable = false;
   String _lastWords = '';
 
-  /// Initialize speech recognition
+  /// Initialize speech recognition. On iOS we disable voice search (no mic permission or UI).
   Future<bool> initialize() async {
+    if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS) {
+      _isAvailable = false;
+      return false;
+    }
     try {
       _isAvailable = await _speech.initialize(
         onError: (error) {
@@ -36,8 +40,9 @@ class SpeechRecognitionService {
     }
   }
 
-  /// Check and request microphone permission
+  /// Check and request microphone permission. Not used on iOS (voice search disabled).
   Future<bool> checkAndRequestPermission() async {
+    if (kIsWeb || defaultTargetPlatform == TargetPlatform.iOS) return false;
     try {
       final status = await Permission.microphone.status;
       if (status.isGranted) {

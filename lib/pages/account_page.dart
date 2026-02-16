@@ -5,7 +5,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
@@ -16,6 +15,7 @@ import '../services/in_app_update_service.dart';
 import '../widgets/snackbar.dart';
 import '../theme/theme.dart';
 import '../utils/responsive.dart';
+import '../utils/google_auth_env.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../graphql/Customer.graphql.dart';
 import '../theme/colors.dart';
@@ -289,8 +289,8 @@ class _AccountPageState extends State<AccountPage> {
     });
 
     try {
-      // Get Google Client ID from .env
-      final googleClientId = dotenv.env['GOOGLE_CLIENT_ID'];
+      // Google Auth: from .env via GoogleAuthEnv
+      final googleClientId = GoogleAuthEnv.googleClientId;
       if (googleClientId == null || googleClientId.isEmpty) {
         setState(() {
           customerController.emailUpdateError.value = 'Google Client ID not configured';
@@ -298,13 +298,18 @@ class _AccountPageState extends State<AccountPage> {
         onComplete();
         return;
       }
-
-      // Initialize Google Sign In with email scope only
-      // scopes: ['email'] - only requests email address
-      // serverClientId is required to get ID token for backend verification
+      if (!GoogleAuthEnv.isIosConfigValid) {
+        setState(() {
+          customerController.emailUpdateError.value =
+              'Set GOOGLE_CLIENT_ID_IOS in .env for iOS (iOS OAuth client). See docs/GOOGLE_AUTH_SETUP.md.';
+        });
+        onComplete();
+        return;
+      }
       final GoogleSignIn googleSignIn = GoogleSignIn(
         serverClientId: googleClientId,
-        scopes: ['email'], // Only request email scope
+        clientId: GoogleAuthEnv.clientIdForPlatform,
+        scopes: ['email'],
       );
 
       // Sign out any existing Google account to force account selection

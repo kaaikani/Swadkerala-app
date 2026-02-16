@@ -1,16 +1,31 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui' show Rect;
+import 'package:flutter/services.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../graphql/order.graphql.dart';
 import '../services/channel_service.dart';
 import '../controllers/banner/bannercontroller.dart';
+import '../widgets/loading_dialog.dart';
 
 class BillGenerator {
+  /// Sanitize string for PDF to avoid FormatException (Unfinished UTF-8 octet sequence).
+  static String _safeString(String? s) {
+    if (s == null || s.isEmpty) return '';
+    try {
+      return utf8.decode(utf8.encode(s), allowMalformed: true);
+    } catch (_) {
+      return s.replaceAll(RegExp(r'[^\x20-\x7E\u00A0-\u024F\u0400-\u04FF]'), '?');
+    }
+  }
+
   /// Format price for PDF with rupee symbol
   /// Converts paise to rupees and adds ₹ symbol
   static String formatPriceForPdf(int priceInPaise) {
@@ -28,7 +43,18 @@ class BillGenerator {
         isWholeNumber ? priceInRupees.toInt().toString() : priceInRupees.toStringAsFixed(2);
     return 'Rs. $value';
   }
-  static Future<void> generateAndShare(Fragment$Cart order) async {
+  /// [sharePositionOrigin] Optional rect for iOS/iPadOS share sheet popover.
+  /// Required on iOS 26+ (must be non-zero). Callers can pass e.g. the share button bounds.
+  static Future<void> generateAndShare(Fragment$Cart order, {Rect? sharePositionOrigin}) async {
+    try {
+      await _generateAndShareImpl(order, sharePositionOrigin);
+    } catch (e) {
+      LoadingDialog.hide();
+      rethrow;
+    }
+  }
+
+  static Future<void> _generateAndShareImpl(Fragment$Cart order, Rect? sharePositionOrigin) async {
     // Pre-load logo image asynchronously to avoid blocking
     final channelType = ChannelService.getChannelType() ?? '';
     final isCityChannel = channelType.contains('CITY');
@@ -70,69 +96,130 @@ class BillGenerator {
       }
     }
 
-    // Fetch loyalty points config for Points per Rupee (so bill shows discount in Rs)
+    // Fetch loyalty points config only if not already loaded (avoids slow network call every share)
     if (Get.isRegistered<BannerController>()) {
-      try {
-        final bannerController = Get.find<BannerController>();
-        await bannerController.fetchLoyaltyPointsConfig();
-      } catch (_) {}
+      final bannerController = Get.find<BannerController>();
+      if (bannerController.loyaltyPointsConfig.value == null) {
+        try {
+          await bannerController.fetchLoyaltyPointsConfig();
+        } catch (_) {}
+      }
     }
     final loyaltyConfig = Get.isRegistered<BannerController>()
         ? Get.find<BannerController>().loyaltyPointsConfig.value
         : null;
 
-    // Generate PDF efficiently
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return [
-            _buildHeader(order, logoImage),
-            pw.SizedBox(height: 20),
-            _buildInfoSection(order),
-            pw.SizedBox(height: 20),
-            _buildItemsTable(order),
-            pw.SizedBox(height: 20),
-            pw.Divider(),
-            _buildTotalsSection(order, loyaltyConfig),
-            pw.SizedBox(height: 40),
-            _buildFooter(),
-          ];
-        },
-      ),
-    );
+    // Use Unicode-capable fonts when possible. On some platforms (e.g. iOS) loading TTF can
+    // cause FormatException (Unfinished UTF-8 at offset 4), so we try with theme first and
+    // fall back to no theme so the invoice always generates.
+    pw.ThemeData? pdfTheme;
+    try {
+      final baseData = await rootBundle.load('assets/fonts/OpenSans-Regular.ttf');
+      final boldData = await rootBundle.load('assets/fonts/OpenSans-Bold.ttf');
+      pdfTheme = pw.ThemeData.withFont(
+        base: pw.Font.ttf(baseData),
+        bold: pw.Font.ttf(boldData),
+      );
+    } catch (_) {
+      pdfTheme = null;
+    }
 
-    // Save PDF to temporary file
-    final bytes = await pdf.save();
+    Uint8List bytes;
+    try {
+      final pdf = pdfTheme != null
+          ? pw.Document(theme: pdfTheme)
+          : pw.Document();
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return [
+              _buildHeader(order, logoImage),
+              pw.SizedBox(height: 20),
+              _buildInfoSection(order),
+              pw.SizedBox(height: 20),
+              _buildItemsTable(order),
+              pw.SizedBox(height: 20),
+              pw.Divider(),
+              _buildTotalsSection(order, loyaltyConfig),
+              pw.SizedBox(height: 40),
+              _buildFooter(),
+            ];
+          },
+        ),
+      );
+      bytes = await pdf.save();
+    } on FormatException {
+      // TTF/font can throw "Unfinished UTF-8 at offset 4" on some platforms (e.g. iOS). Retry without theme so the invoice still generates.
+      final pdf = pw.Document();
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return [
+              _buildHeader(order, logoImage),
+              pw.SizedBox(height: 20),
+              _buildInfoSection(order),
+              pw.SizedBox(height: 20),
+              _buildItemsTable(order),
+              pw.SizedBox(height: 20),
+              pw.Divider(),
+              _buildTotalsSection(order, loyaltyConfig),
+              pw.SizedBox(height: 40),
+              _buildFooter(),
+            ];
+          },
+        ),
+      );
+      bytes = await pdf.save();
+    }
+    // Use app tmp only (never Cache). On iOS/Simulator, Cache causes "error fetching item for URL".
     Directory output;
     try {
       output = await getTemporaryDirectory();
     } catch (e) {
-      // Fallback to cache directory if temporary directory fails
-      try {
-        output = await getApplicationCacheDirectory();
-      } catch (e2) {
-        // Last resort: use system temp
-        output = Directory.systemTemp;
-      }
+      output = Directory.systemTemp;
     }
-    final file = File('${output.path}/invoice_${order.code}.pdf');
+    if (Platform.isIOS && output.path.toLowerCase().contains('caches')) {
+      output = Directory.systemTemp;
+    }
+    final shareDir = Directory('${output.path}/kaaikani_share');
+    if (!await shareDir.exists()) await shareDir.create(recursive: true);
+    final file = File('${shareDir.path}/invoice_${order.code}.pdf');
     await file.writeAsBytes(bytes);
-    
-    // Share the PDF file
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text: 'Invoice for Order #${order.code}',
-      subject: 'Invoice - Order #${order.code}',
-    );
+
+    final filePath = file.absolute.path;
+    if (!await file.exists()) {
+      throw Exception('PDF file was not written');
+    }
+
+    LoadingDialog.hide();
+    final origin = sharePositionOrigin ?? const Rect.fromLTWH(95, 372, 200, 100);
+
+    // On iOS, a short delay after writing ensures the file is visible to the share extension (avoids "Failed to request default share mode" / "error fetching item for URL").
+    final isIOS = Platform.isIOS;
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      try {
+        if (isIOS) {
+          await Future<void>.delayed(const Duration(milliseconds: 150));
+        }
+        await Share.shareXFiles(
+          [XFile(filePath)],
+          subject: 'Invoice - Order #${order.code}',
+          sharePositionOrigin: origin,
+        );
+      } catch (e) {
+        LoadingDialog.hide();
+        if (Get.isSnackbarOpen) Get.back();
+        Get.snackbar('Share failed', 'Could not open share sheet. Try again.', snackPosition: SnackPosition.BOTTOM);
+      }
+    });
   }
 
   static pw.Widget _buildHeader(Fragment$Cart order, pw.Image? logoImage) {
-    // Get channel name
-    final channelName = ChannelService.getChannelName()?.toString() ?? 
-                       ChannelService.getChannelCode()?.toString() ?? 
-                       'Kaaikani';
+    // Get channel name (sanitized for PDF UTF-8)
+    final channelName = _safeString(ChannelService.getChannelName()?.toString() ?? 
+        ChannelService.getChannelCode()?.toString() ?? 'Kaaikani');
     
     // Determine logo widget
     pw.Widget logoWidget;
@@ -159,7 +246,7 @@ class BillGenerator {
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 4),
-            pw.Text('Order #${order.code}',
+            pw.Text('Order #${_safeString(order.code)}',
                 style: pw.TextStyle(
                     fontSize: 14,
                     color: PdfColors.grey700)),
@@ -174,11 +261,11 @@ class BillGenerator {
     // Access order as dynamic to get extended fields (Query$GetOrderByCode$orderByCode)
     final orderDynamic = order as dynamic;
     
-    // Get customer information
+    // Get customer information (sanitize for PDF to avoid FormatException)
     final customer = orderDynamic.customer;
-    final firstName = customer?.firstName ?? '';
-    final lastName = customer?.lastName ?? '';
-    final rawEmail = customer?.emailAddress ?? '';
+    final firstName = _safeString(customer?.firstName ?? '');
+    final lastName = _safeString(customer?.lastName ?? '');
+    final rawEmail = _safeString(customer?.emailAddress ?? '');
     // Don't show @kaikani.com email in bill print
     final emailAddress = rawEmail.trim().toLowerCase().endsWith('@kaikani.com')
         ? ''
@@ -186,7 +273,7 @@ class BillGenerator {
 
     // Get billing address (for phone number)
     final billingAddress = orderDynamic.billingAddress;
-    final billingPhone = billingAddress?.phoneNumber ?? '';
+    final billingPhone = _safeString(billingAddress?.phoneNumber ?? '');
     
     // Get shipping address
     final shippingAddress = orderDynamic.shippingAddress;
@@ -202,7 +289,7 @@ class BillGenerator {
     String paymentMethod = 'N/A';
     if (payments != null && payments.isNotEmpty) {
       final payment = payments.first;
-      paymentMethod = payment.method ?? 'N/A';
+      paymentMethod = _safeString(payment.method ?? 'N/A');
     }
     final isOnlinePayment = paymentMethod.toLowerCase().contains('razorpay') ||
         paymentMethod.toLowerCase().contains('online') ||
@@ -266,36 +353,36 @@ class BillGenerator {
                       fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 4),
               if (shippingAddress.fullName != null)
-                pw.Text(shippingAddress.fullName),
+                pw.Text(_safeString(shippingAddress.fullName)),
               if (shippingAddress.streetLine1 != null) ...[
                 pw.SizedBox(height: 2),
-                pw.Text(shippingAddress.streetLine1,
+                pw.Text(_safeString(shippingAddress.streetLine1),
                     style: pw.TextStyle(fontSize: 10)),
               ],
               if (shippingAddress.streetLine2 != null && shippingAddress.streetLine2.isNotEmpty) ...[
                 pw.SizedBox(height: 2),
-                pw.Text(shippingAddress.streetLine2,
+                pw.Text(_safeString(shippingAddress.streetLine2),
                     style: pw.TextStyle(fontSize: 10)),
               ],
               pw.SizedBox(height: 2),
               pw.Text(
-                [
+                _safeString([
                   if (shippingAddress.city != null) shippingAddress.city,
                   if (shippingAddress.province != null) shippingAddress.province,
                   if (shippingAddress.postalCode != null) shippingAddress.postalCode,
-                ].where((e) => e != null && e.isNotEmpty).join(', '),
+                ].where((e) => e != null && e.isNotEmpty).join(', ')),
                 style: pw.TextStyle(fontSize: 10),
               ),
               if (shippingAddress.country != null) ...[
                 pw.SizedBox(height: 2),
                 pw.Text(
-                  shippingAddress.country.toString(),
+                  _safeString(shippingAddress.country.toString()),
                   style: pw.TextStyle(fontSize: 10),
                 ),
               ],
               if (shippingAddress.phoneNumber != null) ...[
                 pw.SizedBox(height: 2),
-                pw.Text(shippingAddress.phoneNumber,
+                pw.Text(_safeString(shippingAddress.phoneNumber),
                     style: pw.TextStyle(fontSize: 10)),
               ],
             ],
@@ -310,7 +397,7 @@ class BillGenerator {
     final data = order.lines.map((line) {
       final isFree = line.discountedLinePriceWithTax == 0 || line.linePriceWithTax == 0;
       return [
-        line.productVariant.name,
+        _safeString(line.productVariant.name),
         '${line.quantity}',
         isFree ? 'Free' : BillGenerator.formatPriceForPdf(line.unitPriceWithTax.toInt()),
         isFree ? 'Free' : BillGenerator.formatPriceForPdf(line.linePriceWithTax.toInt()),
@@ -378,7 +465,7 @@ class BillGenerator {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.end,
             children: [
-              pw.Text('Coupon (${order.couponCodes.join(", ")}): ',
+              pw.Text('Coupon (${_safeString(order.couponCodes.join(", "))}): ',
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.green700)),

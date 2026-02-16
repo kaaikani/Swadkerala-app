@@ -10,19 +10,24 @@ After cloning the repository, follow these steps:
 # 1. Install dependencies
 flutter pub get
 
-# 2. Generate GraphQL files
+# 2. Firebase: add config files (required for push, Crashlytics, Remote Config)
+#    - Android: download google-services.json from Firebase Console → place at android/app/google-services.json
+#    - iOS:     download GoogleService-Info.plist from Firebase Console → place at ios/Runner/GoogleService-Info.plist
+#    Then add GoogleService-Info.plist to the Xcode project: open ios/Runner.xcworkspace, right-click Runner → Add Files to "Runner" → select ios/Runner/GoogleService-Info.plist
+
+# 3. Generate GraphQL files
 dart run build_runner build --delete-conflicting-outputs
 
-# 3. Generate splash screen
+# 4. Generate splash screen
 dart run flutter_native_splash:create
 
-# 4. Generate launcher icons
+# 5. Generate launcher icons
 dart run flutter_launcher_icons
 
-# 5. Run the app
+# 6. Run the app
 flutter run
 
-# 6. Build APK
+# 7. Build APK
 flutter build apk --release
 ```
 
@@ -36,6 +41,8 @@ For detailed documentation including:
 - Build and deployment guide
 
 See: **[COMPLETE_APP_DOCUMENTATION.md](./COMPLETE_APP_DOCUMENTATION.md)**
+
+**Google Sign-In (env-only):** Bundle ID, App Store ID, Team ID and `.env` setup: **[docs/GOOGLE_AUTH_SETUP.md](./docs/GOOGLE_AUTH_SETUP.md)**
 
 ## Technical Specifications
 
