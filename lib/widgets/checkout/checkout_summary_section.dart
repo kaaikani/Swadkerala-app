@@ -6,6 +6,7 @@ import '../../controllers/banner/bannercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../graphql/cart.graphql.dart';
+import '../cached_app_image.dart';
 
 class CheckoutSummarySection extends StatefulWidget {
   final CartController cartController;
@@ -344,10 +345,12 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
             child: line.featuredAsset != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      line.featuredAsset!.preview,
+                    child: CachedAppImage(
+                      imageUrl: line.featuredAsset!.preview,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Icon(
+                      cacheWidth: 120,
+                      cacheHeight: 120,
+                      errorWidget: Icon(
                         Icons.image_not_supported,
                         color: AppColors.textSecondary,
                         size: ResponsiveUtils.rp(20),

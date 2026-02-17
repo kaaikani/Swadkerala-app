@@ -8,6 +8,7 @@ import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/loading_dialog.dart';
 import '../../widgets/snackbar.dart';
+import '../../widgets/cached_app_image.dart';
 
 class HomeSwitchStoreSheet extends StatefulWidget {
   final String postalCode;
@@ -511,205 +512,49 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
               },
             );
           } else {
-            // Fallback is a network URL, use network image
-            return Image.network(
-              fallbackPath,
+            // Fallback is a network URL, use cached image
+            return CachedAppImage(
+              imageUrl: fallbackPath,
               width: double.infinity,
               height: double.infinity,
               fit: BoxFit.cover,
-              headers: {
-                'Accept': 'image/*',
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return _buildPlaceholder(channelKey: channelKey);
-              },
+              httpHeaders: {'Accept': 'image/*'},
+              cacheWidth: 600,
+              cacheHeight: 400,
+              errorWidget: _buildPlaceholder(channelKey: channelKey),
             );
           }
         },
       );
     }
     
-    // Otherwise, use network image
-    return Image.network(
-      primaryPath,
+    // Otherwise, use cached network image
+    return CachedAppImage(
+      imageUrl: primaryPath,
       width: double.infinity,
       height: double.infinity,
-      fit: BoxFit.cover, // Use cover to fill the card properly for banner images
-      headers: {
-        'Accept': 'image/*',
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) {
-          debugPrint('✅ [SwitchStore] Image loaded successfully: $primaryPath');
-          return child;
-        }
-        debugPrint('⏳ [SwitchStore] Loading image: $primaryPath');
-        debugPrint('   - Progress: ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes}');
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.border.withValues(alpha: 0.1),
-            ),
-          child: Center(
-            child: SizedBox(
-              width: ResponsiveUtils.rp(24),
-              height: ResponsiveUtils.rp(24),
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-                color: Colors.white,
-              ),
+      fit: BoxFit.cover,
+      httpHeaders: {'Accept': 'image/*'},
+      cacheWidth: 600,
+      cacheHeight: 400,
+      placeholder: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.border.withValues(alpha: 0.1),
+        ),
+        child: Center(
+          child: SizedBox(
+            width: ResponsiveUtils.rp(24),
+            height: ResponsiveUtils.rp(24),
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: Colors.white,
             ),
           ),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        debugPrint('❌ [SwitchStore] Primary image failed to load: $primaryPath');
-        debugPrint('   - Error: $error');
-        debugPrint('   - StackTrace: $stackTrace');
-        
-        // Try URL-encoded version if original URL has + character
-        String? encodedUrl;
-        if (primaryPath.contains('+') && !primaryPath.contains('%2B')) {
-          encodedUrl = primaryPath.replaceAll('+', '%2B');
-          debugPrint('🔄 [SwitchStore] Trying URL-encoded version: $encodedUrl');
-        }
-        
-        // Try encoded URL first if available, otherwise use fallback
-        final pathToTry = encodedUrl ?? fallbackPath;
-        debugPrint('🔄 [SwitchStore] Trying fallback path: $pathToTry');
-        
-        // Check if fallback is an asset
-        if (pathToTry.startsWith('assets/')) {
-          return Image.asset(
-            pathToTry,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              debugPrint('❌ [SwitchStore] Fallback asset also failed: $pathToTry');
-              return _buildPlaceholder();
-            },
-          );
-        }
-        
-        return Image.network(
-          pathToTry,
-          width: double.infinity,
-          height: double.infinity,
-          fit: BoxFit.cover, // Use cover to fill the card properly for banner images
-          headers: {
-            'Accept': 'image/*',
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.border.withValues(alpha: 0.1),
-            ),
-              child: Center(
-                child: SizedBox(
-                  width: ResponsiveUtils.rp(24),
-                  height: ResponsiveUtils.rp(24),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            debugPrint('❌ [SwitchStore] Fallback image also failed: $pathToTry');
-            debugPrint('   - Error: $error');
-            
-            // If encoded URL failed and we haven't tried fallback yet, try fallback
-            if (encodedUrl != null && pathToTry == encodedUrl) {
-              debugPrint('🔄 [SwitchStore] Trying original fallback path: $fallbackPath');
-              
-              // Check if fallback is an asset
-              if (fallbackPath.startsWith('assets/')) {
-                return Image.asset(
-                  fallbackPath,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return _buildPlaceholder(channelKey: channelKey);
-                  },
-                );
-              }
-              
-              return Image.network(
-                fallbackPath,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                headers: {
-                  'Accept': 'image/*',
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  debugPrint('❌ [SwitchStore] All image URLs failed for channel: $channelKey');
-                  // Mark image as failed for this channel
-                  if (channelKey != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) {
-                        setState(() {
-                          _imageLoadFailed[channelKey] = true;
-                        });
-                      }
-                    });
-                  }
-                  return Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.button.withValues(alpha: 0.4),
-                          AppColors.button.withValues(alpha: 0.2),
-                        ],
-                      ),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.store_rounded,
-                        color: Colors.white.withValues(alpha: 0.8),
-                        size: ResponsiveUtils.rp(48),
-                      ),
-                    ),
-                  );
-                },
-              );
-            }
-            
-            // Mark image as failed for this channel
-            debugPrint('❌ [SwitchStore] All image attempts failed for channel: $channelKey');
-            if (channelKey != null) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  setState(() {
-                    _imageLoadFailed[channelKey] = true;
-                  });
-                }
-              });
-            }
-            return _buildPlaceholder(channelKey: channelKey);
-          },
-        );
-      },
+        ),
+      ),
+      errorWidget: _buildPlaceholder(channelKey: channelKey),
     );
   }
 

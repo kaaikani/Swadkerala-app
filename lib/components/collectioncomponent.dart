@@ -12,6 +12,7 @@ import '../widgets/responsive_text.dart';
 import '../widgets/responsive_spacing.dart';
 import '../widgets/responsive_icon.dart';
 import '../widgets/responsive_container.dart';
+import '../widgets/cached_app_image.dart';
 
 class CollectionGrid extends StatefulWidget {
   final Function(Query$Collections$collections$items) onCollectionTap;
@@ -135,36 +136,18 @@ class CollectionCard extends StatelessWidget {
                   children: [
                     collection.featuredAsset != null
                         ? Positioned.fill(
-                            child: Image.network(
-                              collection.featuredAsset!.preview,
+                            child: CachedAppImage(
+                              imageUrl: collection.featuredAsset!.preview,
                               fit: BoxFit.cover,
                               cacheWidth: 500,
                               cacheHeight: 500,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                    color: AppColors.zomatoRed,
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Center(
-                                  child: ResponsiveIcon(
-                                    Icons.broken_image_rounded,
-                                    size: ResponsiveUtils.rp(52),
-                                    color: AppColors.textTertiary,
-                                  ),
-                                );
-                              },
+                              errorWidget: Center(
+                                child: ResponsiveIcon(
+                                  Icons.broken_image_rounded,
+                                  size: ResponsiveUtils.rp(52),
+                                  color: AppColors.textTertiary,
+                                ),
+                              ),
                             ),
                           )
                         : Center(

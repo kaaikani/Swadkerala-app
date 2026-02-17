@@ -11,6 +11,7 @@ import '../utils/app_strings.dart';
 import '../pages/orders_page.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/loading_dialog.dart';
+import '../widgets/cached_app_image.dart';
 
 class OrdersComponent extends StatefulWidget {
   final CustomerController customerController;
@@ -380,17 +381,17 @@ class _OrdersComponentState extends State<OrdersComponent> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: firstLine.featuredAsset?.preview != null
-                ? Image.network(
-                    firstLine.featuredAsset!.preview,
+                ? CachedAppImage(
+                    imageUrl: firstLine.featuredAsset!.preview,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppColors.inputFill,
-                        child: Icon(Icons.image,
-                            color: AppColors.iconLight,
-                            size: ResponsiveUtils.rp(18)),
-                      );
-                    },
+                    cacheWidth: 90,
+                    cacheHeight: 90,
+                    errorWidget: Container(
+                      color: AppColors.inputFill,
+                      child: Icon(Icons.image,
+                          color: AppColors.iconLight,
+                          size: ResponsiveUtils.rp(18)),
+                    ),
                   )
                 : Container(
                     color: AppColors.inputFill,

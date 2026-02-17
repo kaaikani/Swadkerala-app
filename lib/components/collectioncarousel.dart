@@ -7,6 +7,7 @@ import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../graphql/product.graphql.dart';
 import '../theme/sizes.dart';
 import '../widgets/card.dart';
+import '../widgets/cached_app_image.dart';
 
 class CollectionCarousel extends StatefulWidget {
   final Function(Query$Collections$collections$items) onCollectionTap;
@@ -189,9 +190,11 @@ class CollectionCard extends StatelessWidget {
                   ? ClipRRect(
                       borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(AppSizes.cardRadius * 0.5)),
-                      child: Image.network(
-                        collection.featuredAsset!.preview,
+                      child: CachedAppImage(
+                        imageUrl: collection.featuredAsset!.preview,
                         fit: BoxFit.cover,
+                        cacheWidth: 400,
+                        cacheHeight: 300,
                       ),
                     )
                   : Center(

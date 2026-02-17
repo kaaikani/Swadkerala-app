@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
+import 'cached_app_image.dart';
 import '../utils/responsive.dart';
 
 /// Premium banner carousel with dots and smooth animations
@@ -140,10 +141,12 @@ class _BannerCarouselStatefulState extends State<_BannerCarouselStateful> {
                   fit: StackFit.expand,
                   children: [
                     // Image
-                    Image.network(
-                      widget.imageUrls[index],
+                    CachedAppImage(
+                      imageUrl: widget.imageUrls[index],
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+                      cacheWidth: 800,
+                      cacheHeight: 400,
+                      errorWidget: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,

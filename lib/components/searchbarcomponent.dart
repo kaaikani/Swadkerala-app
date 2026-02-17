@@ -11,6 +11,7 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/responsive_spacing.dart';
 import '../utils/navigation_helper.dart';
 import '../widgets/shimmers.dart';
+import '../widgets/cached_app_image.dart';
 import '../services/speech_recognition_service.dart';
 import '../services/analytics_service.dart';
 
@@ -389,30 +390,13 @@ class _FullScreenSearchPageState extends State<FullScreenSearchPage> {
     return SizedBox(
       width: imageSize,
       height: imageSize,
-      child: Image.network(
-        imageUrl,
+      child: CachedAppImage(
+        imageUrl: imageUrl,
         width: imageSize,
         height: imageSize,
         fit: BoxFit.cover,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          }
-          // Show shimmer while loading
-          return Skeletons.imageRect(
-            height: imageSize,
-            width: imageSize,
-            radius: 8,
-          );
-        },
-        errorBuilder: (context, error, stackTrace) {
-          // Show shimmer on error instead of error message
-          return Skeletons.imageRect(
-            height: imageSize,
-            width: imageSize,
-            radius: 8,
-          );
-        },
+        cacheWidth: 200,
+        cacheHeight: 200,
       ),
     );
   }

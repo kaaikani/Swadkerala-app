@@ -5,6 +5,7 @@ import '../utils/responsive.dart';
 import 'responsive_text.dart';
 import 'responsive_spacing.dart';
 import 'responsive_icon.dart';
+import 'cached_app_image.dart';
 
 /// Premium cart item card like Amazon/Flipkart
 class CartItemCardPremium extends StatelessWidget {
@@ -65,13 +66,14 @@ class CartItemCardPremium extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
                 child: imageUrl != null
-                    ? Image.network(
-                        imageUrl!,
+                    ? CachedAppImage(
+                        imageUrl: imageUrl!,
                         width: ResponsiveUtils.rp(70),
                         height: ResponsiveUtils.rp(70),
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            _buildPlaceholder(),
+                        cacheWidth: 140,
+                        cacheHeight: 140,
+                        errorWidget: _buildPlaceholder(),
                       )
                     : _buildPlaceholder(),
               ),

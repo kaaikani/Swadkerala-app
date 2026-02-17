@@ -61,6 +61,7 @@ dependencies:
   flutter_app_badger: ^1.5.0
   google_sign_in: 6.1.6
   carousel_slider: ^5.0.0
+  cached_network_image: ^3.3.1
   speech_to_text: 6.6.0
   font_awesome_flutter: ^10.7.0
   facebook_app_events: ^0.24.0

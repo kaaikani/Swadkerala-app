@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
+import 'cached_app_image.dart';
 import '../utils/responsive.dart';
 import 'premium_card.dart';
 import 'responsive_text.dart';
@@ -60,13 +61,14 @@ class ProductCardPremium extends StatelessWidget {
                     topRight: Radius.circular(ResponsiveUtils.rp(16)),
                   ),
                   child: imageUrl != null
-                      ? Image.network(
-                          imageUrl!,
+                      ? CachedAppImage(
+                          imageUrl: imageUrl!,
                           height: imageHeight ?? ResponsiveUtils.rp(140),
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              _buildPlaceholder(),
+                          cacheWidth: 400,
+                          cacheHeight: 280,
+                          errorWidget: _buildPlaceholder(),
                         )
                       : _buildPlaceholder(),
                 ),

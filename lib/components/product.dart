@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../context/context.dart';
 import '../theme/colors.dart';
+import '../widgets/cached_app_image.dart';
 import '../theme/sizes.dart';
 import '../widgets/snackbar.dart';
 
@@ -47,19 +48,19 @@ class _ProductComponentState extends State<ProductComponent> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppSizes.cardRadius),
-                  child: Image.network(
-                    widget.imageUrl,
+                  child: CachedAppImage(
+                    imageUrl: widget.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[300],
-                        child: const Icon(
-                          Icons.image,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
+                    cacheWidth: 400,
+                    cacheHeight: 300,
+                    errorWidget: Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                 ),
               ),

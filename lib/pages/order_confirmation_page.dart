@@ -13,6 +13,7 @@ import '../utils/responsive.dart';
 import '../utils/bill_generator.dart';
 import '../utils/logger.dart';
 import '../services/analytics_service.dart';
+import '../widgets/cached_app_image.dart';
 
 class OrderConfirmationPage extends StatefulWidget {
   final String orderId;
@@ -327,11 +328,12 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             child: line.featuredAsset?.preview != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      line.featuredAsset!.preview,
+                    child: CachedAppImage(
+                      imageUrl: line.featuredAsset!.preview,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.image, color: AppColors.textSecondary),
+                      cacheWidth: 100,
+                      cacheHeight: 100,
+                      errorWidget: Icon(Icons.image, color: AppColors.textSecondary),
                     ),
                   )
                 : Icon(Icons.image, color: AppColors.textSecondary),

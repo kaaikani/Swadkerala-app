@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import 'cached_app_image.dart';
 import 'premium_card.dart';
 import 'responsive_text.dart';
 import 'responsive_spacing.dart';
@@ -48,10 +49,12 @@ class CategoryCardPremium extends StatelessWidget {
             ),
             child: imageUrl != null
                 ? ClipOval(
-                    child: Image.network(
-                      imageUrl!,
+                    child: CachedAppImage(
+                      imageUrl: imageUrl!,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Icon(
+                      cacheWidth: 112,
+                      cacheHeight: 112,
+                      errorWidget: Icon(
                         icon ?? Icons.category,
                         size: ResponsiveUtils.rp(28),
                         color: iconColor ?? AppColors.button,

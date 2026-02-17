@@ -203,6 +203,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				640F4D716362AE0BF6737D0A /* [CP] Embed Pods Frameworks */,
+				RAZORPAYDSYM0012345678901234 /* Generate Razorpay dSYM */,
 				501F6B7908718462F2F852C5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -385,6 +386,22 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		RAZORPAYDSYM0012345678901234 /* Generate Razorpay dSYM */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Razorpay dSYM";
+			outputPaths = (
+				"${BUILT_PRODUCTS_DIR}/Razorpay.framework.dSYM",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Generate dSYM for Razorpay.framework so App Store upload accepts the archive (UUID 4432B2C4-574B-331D-8065-332D939C8513)\nif [ \"${PLATFORM_NAME}\" != \"iphoneos\" ]; then\n  exit 0\nfi\n# Use SRCROOT so path works when building from Xcode or Flutter\nRAZORPAY_BINARY=\"${SRCROOT}/Pods/razorpay-core-pod/Pod/core/Razorpay.xcframework/ios-arm64/Razorpay.framework/Razorpay\"\nif [ ! -f \"${RAZORPAY_BINARY}\" ]; then\n  RAZORPAY_BINARY=\"${PODS_ROOT}/razorpay-core-pod/Pod/core/Razorpay.xcframework/ios-arm64/Razorpay.framework/Razorpay\"\nfi\nif [ ! -f \"${RAZORPAY_BINARY}\" ]; then\n  echo \"warning: Razorpay binary not found; skipping dSYM\"\n  exit 0\nfi\necho \"Generating Razorpay.framework.dSYM...\"\nxcrun dsymutil -o \"${BUILT_PRODUCTS_DIR}/Razorpay.framework.dSYM\" \"${RAZORPAY_BINARY}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -519,8 +536,10 @@
 			baseConfigurationReference = AC6DC3998660CD51F698CDBE /* Pods-RunnerTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F987349LN6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.untitled2.RunnerTests;
@@ -537,8 +556,10 @@
 			baseConfigurationReference = 3B692033B6BA7030313FFF67 /* Pods-RunnerTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F987349LN6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.untitled2.RunnerTests;
@@ -553,8 +574,10 @@
 			baseConfigurationReference = 848EDAD48CBDF30FF22A5CF5 /* Pods-RunnerTests.profile.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = F987349LN6;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.untitled2.RunnerTests;

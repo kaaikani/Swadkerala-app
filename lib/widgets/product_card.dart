@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/shimmers.dart';
+import '../widgets/cached_app_image.dart';
 import '../services/graphql_client.dart';
 
 /// Unified product card widget used across all pages
@@ -87,17 +88,14 @@ class ProductCard extends StatelessWidget {
                                 if (imageUrl != null && imageUrl!.isNotEmpty)
                                   Opacity(
                                     opacity: 0.3,
-                                    child: Image.network(
-                                      imageUrl!,
+                                    child: CachedAppImage(
+                                      imageUrl: imageUrl!,
                                       fit: BoxFit.contain,
                                       width: double.infinity,
                                       height: double.infinity,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        // If image fails to load, show placeholder background
-                                        return Container(
-                                          color: AppColors.backgroundLight,
-                                        );
-                                      },
+                                      cacheWidth: 300,
+                                      cacheHeight: 300,
+                                      errorWidget: Container(color: AppColors.backgroundLight),
                                     ),
                                   )
                                 else
@@ -132,28 +130,13 @@ class ProductCard extends StatelessWidget {
                               ],
                             )
                           : (imageUrl != null && imageUrl!.isNotEmpty
-                          ? Image.network(
-                              imageUrl!,
+                          ? CachedAppImage(
+                              imageUrl: imageUrl!,
                               fit: BoxFit.contain,
                               width: double.infinity,
                               height: double.infinity,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                // Show shimmer while loading
-                                return Skeletons.imageRect(
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  radius: 0,
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                // Show shimmer on error instead of empty container
-                                return Skeletons.imageRect(
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  radius: 0,
-                                );
-                              },
+                              cacheWidth: 300,
+                              cacheHeight: 300,
                             )
                           : Skeletons.imageRect(
                               height: double.infinity,

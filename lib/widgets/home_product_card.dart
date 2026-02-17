@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/shimmers.dart';
+import 'cached_app_image.dart';
 
 /// Smaller product card widget specifically for home page (favorites, frequently ordered)
 /// Same concept as ProductCard but in smaller size with attractive animations
@@ -145,8 +146,8 @@ class _HomeProductCardState extends State<HomeProductCard>
                                 if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
                                   Opacity(
                                     opacity: 0.3,
-                                    child: Image.network(
-                                      widget.imageUrl!,
+                                    child: CachedAppImage(
+                                      imageUrl: widget.imageUrl!,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
                                       height: double.infinity,
@@ -447,28 +448,13 @@ class _AnimatedProductImageState extends State<_AnimatedProductImage>
           opacity: _fadeAnimation,
           child: Transform.scale(
             scale: _scaleAnimation.value,
-            child: Image.network(
-              widget.imageUrl,
+            child: CachedAppImage(
+              imageUrl: widget.imageUrl,
               fit: BoxFit.cover,
               width: double.infinity,
               height: double.infinity,
               cacheWidth: 300,
               cacheHeight: 300,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Skeletons.imageRect(
-                  height: double.infinity,
-                  width: double.infinity,
-                  radius: 0,
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Skeletons.imageRect(
-                  height: double.infinity,
-                  width: double.infinity,
-                  radius: 0,
-                );
-              },
             ),
           ),
         );

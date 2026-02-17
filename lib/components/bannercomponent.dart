@@ -10,6 +10,7 @@ import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/responsive_icon.dart';
 import '../graphql/banner.graphql.dart';
+import '../widgets/cached_app_image.dart';
 
 class BannerComponent extends StatefulWidget {
   const BannerComponent({super.key});
@@ -239,46 +240,29 @@ class _BannerComponentState extends State<BannerComponent> {
                     child: GestureDetector(
                       onTap: () => _handleBannerTap(banner),
                       child: imageUrl.isNotEmpty
-                          ? Image.network(
-                              imageUrl,
+                          ? CachedAppImage(
+                              imageUrl: imageUrl,
                               fit: BoxFit.contain,
                               width: double.infinity,
-                              alignment: Alignment.center,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Container(
-                                  color: AppColors.grey200,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes!
-                                          : null,
-                                      color: AppColors.button,
-                                    ),
+                              cacheWidth: 800,
+                              cacheHeight: 400,
+                              errorWidget: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      AppColors.grey200,
+                                      AppColors.grey300,
+                                    ],
                                   ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        AppColors.grey200,
-                                        AppColors.grey300,
-                                      ],
-                                    ),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    size: ResponsiveUtils.rp(50),
+                                    color: AppColors.textSecondary,
                                   ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      size: ResponsiveUtils.rp(50),
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                );
-                              },
+                                ),
+                              ),
                             )
                           : Container(
                               width: double.infinity,

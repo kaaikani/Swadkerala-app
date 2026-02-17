@@ -715,6 +715,8 @@ class AuthController extends BaseController {
   /// Clear all app data and cache
   Future<void> _clearAllAppData() async {
     try {
+      // Unsubscribe from channel FCM topic so user doesn't get channel notifications until next login
+      await NotificationService.instance.unsubscribeFromChannelTopic();
       // Clear GraphQL tokens (this also recreates the client)
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');

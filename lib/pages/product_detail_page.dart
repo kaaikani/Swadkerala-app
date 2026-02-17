@@ -20,6 +20,7 @@ import '../widgets/responsive_icon.dart';
 import '../widgets/shimmers.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/cart_button_with_badge.dart';
+import '../widgets/cached_app_image.dart';
 import '../services/analytics_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -464,17 +465,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       });
                     },
                     itemBuilder: (context, index) {
-                      return Image.network(
-                        images[index],
+                      return CachedAppImage(
+                        imageUrl: images[index],
                         fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Skeletons.imageRect(
-                            height: ResponsiveUtils.rp(300),
-                            width: double.infinity,
-                          );
-                        },
-                        errorBuilder: (_, __, ___) => Container(
+                        height: ResponsiveUtils.rp(300),
+                        width: double.infinity,
+                        cacheWidth: 800,
+                        cacheHeight: 600,
+                        errorWidget: Container(
                           color: AppColors.grey200,
                           child: Center(
                             child: Icon(Icons.image,

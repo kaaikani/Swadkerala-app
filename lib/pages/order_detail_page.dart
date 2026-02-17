@@ -18,6 +18,7 @@ import '../widgets/premium_card.dart';
 import '../widgets/responsive_spacing.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../services/analytics_service.dart';
+import '../widgets/cached_app_image.dart';
 
 class OrderDetailPage extends StatefulWidget {
   final String orderCode;
@@ -372,17 +373,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
             child: line.featuredAsset?.preview != null
-                ? Image.network(
-                    line.featuredAsset!.preview,
+                ? CachedAppImage(
+                    imageUrl: line.featuredAsset!.preview,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppColors.inputFill,
-                        child: Icon(Icons.image_outlined,
-                            color: AppColors.iconLight,
-                            size: ResponsiveUtils.rp(28)),
-                      );
-                    },
+                    cacheWidth: 140,
+                    cacheHeight: 140,
+                    errorWidget: Container(
+                      color: AppColors.inputFill,
+                      child: Icon(Icons.image_outlined,
+                          color: AppColors.iconLight,
+                          size: ResponsiveUtils.rp(28)),
+                    ),
                   )
                 : Container(
                     color: AppColors.inputFill,

@@ -13,12 +13,12 @@ PODS:
   - facebook_app_events (0.24.0):
     - FBSDKCoreKit (~> 18.0)
     - Flutter
-  - FBAEMKit (18.0.2):
-    - FBSDKCoreKit_Basics (= 18.0.2)
-  - FBSDKCoreKit (18.0.2):
-    - FBAEMKit (= 18.0.2)
-    - FBSDKCoreKit_Basics (= 18.0.2)
-  - FBSDKCoreKit_Basics (18.0.2)
+  - FBAEMKit (18.0.3):
+    - FBSDKCoreKit_Basics (= 18.0.3)
+  - FBSDKCoreKit (18.0.3):
+    - FBAEMKit (= 18.0.3)
+    - FBSDKCoreKit_Basics (= 18.0.3)
+  - FBSDKCoreKit_Basics (18.0.3)
   - Firebase/Analytics (10.25.0):
     - Firebase/Core
   - Firebase/Core (10.25.0):
@@ -242,6 +242,9 @@ PODS:
   - speech_to_text (0.0.1):
     - Flutter
     - Try
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
   - Toast (4.1.1)
   - Try (2.1.1)
   - url_launcher_ios (0.0.1):
@@ -273,6 +276,7 @@ DEPENDENCIES:
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - sms_autofill (from `.symlinks/plugins/sms_autofill/ios`)
   - speech_to_text (from `.symlinks/plugins/speech_to_text/ios`)
+  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
@@ -360,6 +364,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sms_autofill/ios"
   speech_to_text:
     :path: ".symlinks/plugins/speech_to_text/ios"
+  sqflite_darwin:
+    :path: ".symlinks/plugins/sqflite_darwin/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
@@ -368,9 +374,9 @@ SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   connectivity_plus: 481668c94744c30c53b8895afb39159d1e619bdf
   facebook_app_events: 58a1b62fd50f6009907bd167fc26b3d043e97197
-  FBAEMKit: 56a4f5a9607957b547b6458b17a98c5bb2736367
-  FBSDKCoreKit: 54f1240567e16862ab71c53c33dc347db5c524c5
-  FBSDKCoreKit_Basics: eb530cd6a79030dbb11df460aafb2767bcad9028
+  FBAEMKit: 2a6b529993713c185b02bc36f8c91129bf78dfb0
+  FBSDKCoreKit: 65d7f7a7d6fcc3aa6eb6e093ec737a4184fc6049
+  FBSDKCoreKit_Basics: 7bc9d8fde8f70985fba2ed7c1d07e319f969a991
   Firebase: 0312a2352584f782ea56f66d91606891d4607f06
   firebase_analytics: e7280be84e7ff1c1e5859bd8e48de410b07e0b73
   firebase_core: 3b49a055ff54114cae400581c13671fe53936c36
@@ -418,10 +424,11 @@ SPEC CHECKSUMS:
   share_plus: de6030e33b4e106470e09322d87cf2a4258d2d1d
   sms_autofill: b36b2147535657fea83d7f3898d7831de70bd8e4
   speech_to_text: ae2abc312e619ff1c53e675a9fc4d785a15c03bb
+  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
   Try: 5ef669ae832617b3cee58cb2c6f99fb767a4ff96
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
-PODFILE CHECKSUM: 6aac1adb8be188b3c0054b61e0242c3501c757ac
+PODFILE CHECKSUM: fd4f4e70d55b6a51182e18db46c1fac6e0e8516f
 
 COCOAPODS: 1.16.2

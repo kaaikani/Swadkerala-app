@@ -11,6 +11,7 @@ import '../widgets/responsive_container.dart';
 import '../widgets/responsive_text.dart';
 import '../widgets/responsive_spacing.dart';
 import '../widgets/responsive_icon.dart';
+import '../widgets/cached_app_image.dart';
 
 class VerticalListComponent extends StatefulWidget {
   final String title;
@@ -204,11 +205,12 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
                               borderRadius:
                                   BorderRadius.circular(ResponsiveUtils.rp(16)),
                               child: hasValidAsset
-                                  ? Image.network(
-                                      asset.preview,
+                                  ? CachedAppImage(
+                                      imageUrl: asset.preview,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) =>
-                                          _buildCategoryPlaceholder(imageSize),
+                                      cacheWidth: 400,
+                                      cacheHeight: 400,
+                                      errorWidget: _buildCategoryPlaceholder(imageSize),
                                     )
                                   : _buildCategoryPlaceholder(imageSize),
                             ),
