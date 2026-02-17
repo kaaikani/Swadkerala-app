@@ -58,8 +58,7 @@ class _VerticalListComponentState extends State<VerticalListComponent> {
   void _onScrollNotification(ScrollNotification notification) {
     final metrics = notification.metrics;
     // Only react to horizontal scroll (category list), not vertical (main page).
-    if (metrics.axisDirection != AxisDirection.left &&
-        metrics.axisDirection != AxisDirection.right) return;
+    if (metrics.axis != Axis.horizontal) return;
     if (metrics.maxScrollExtent <= 0) return;
     if (metrics.pixels >= metrics.maxScrollExtent * 0.8) {
       _loadMoreCollections();

@@ -79,6 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // Track previous postal code to prevent false positives during refresh
   String _previousPostalCode = '';
 
+  final ScrollController _mainScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -127,6 +129,26 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       });
     });
+    _mainScrollController.addListener(_onMainScroll);
+  }
+
+  @override
+  void dispose() {
+    _mainScrollController.removeListener(_onMainScroll);
+    _mainScrollController.dispose();
+    super.dispose();
+  }
+
+  void _onMainScroll() {
+    if (!_mainScrollController.hasClients) return;
+    final position = _mainScrollController.position;
+    if (position.maxScrollExtent <= 0) return;
+    if (position.pixels >= position.maxScrollExtent * 0.8) {
+      if (collectionController.hasMoreCollections &&
+          !collectionController.isLoadingMoreCollections) {
+        collectionController.loadMoreCollections();
+      }
+    }
   }
 
   /// Check if user is authenticated
@@ -1301,6 +1323,7 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, constraints) {
                 // Use LayoutBuilder instead of OrientationBuilder to avoid layout callback issues
                 return CustomScrollView(
+                  controller: _mainScrollController,
                   physics: const BouncingScrollPhysics(),
                   slivers: [
                     // ==================== HEADER ====================
