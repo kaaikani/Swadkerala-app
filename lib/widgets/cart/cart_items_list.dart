@@ -252,23 +252,22 @@ class _CartItemsListState extends State<CartItemsList> {
           }
           
           final stockLevel = variant.stockLevel.toUpperCase();
-          final isLowStock = stockLevel == 'LOW_STOCK';
           final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-          final isStockUnavailable = isLowStock || isOutOfStock;
           
           final isProductDisabled = variant.product.enabled == false;
           final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true;
           final isProductDisabledAny = isProductDisabled || isDisabledByReason;
           
-          final isUnavailable = !line.isAvailable || isStockUnavailable || isProductDisabledAny;
+          // Only OUT_OF_STOCK blocks checkout; LOW_STOCK shows badge but allows proceed
+          final isUnavailable = !line.isAvailable || isOutOfStock || isProductDisabledAny;
           
           String statusMessage;
-          if (isStockUnavailable || isProductDisabledAny) {
+          if (isOutOfStock || isProductDisabledAny) {
             statusMessage = 'OUT OF STOCK - Please remove from cart';
           } else if (line.unavailableReason?.isNotEmpty == true) {
             statusMessage = 'OUT OF STOCK - Please remove from cart';
           } else {
-            statusMessage = 'OUT OF STOCK - Please remove from cart';
+            statusMessage = '';
           }
 
           final isRemoving = widget.removingItemId == line.id;
@@ -291,6 +290,7 @@ class _CartItemsListState extends State<CartItemsList> {
                         imageUrl: imageUrl,
                         productName: variant.name,
                         variantName: 'Included with coupon: $couponCode',
+                        stockLevel: variant.stockLevel,
                         unitPrice: 'FREE',
                         totalPrice: 'FREE',
                         quantity: displayQuantity,
@@ -329,7 +329,8 @@ class _CartItemsListState extends State<CartItemsList> {
               child: CartItemCardPremium(
                 imageUrl: imageUrl,
                 productName: variant.name,
-                      variantName: isVirtual ? '(Regular quantity)' : null,
+                variantName: isVirtual ? '(Regular quantity)' : null,
+                stockLevel: variant.stockLevel,
                 unitPrice: widget.cartController.formatPrice(unitPriceInt),
                       totalPrice: widget.cartController.formatPrice(linePriceForDisplay),
                       quantity: displayQuantity,

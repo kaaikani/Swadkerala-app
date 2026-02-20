@@ -42,12 +42,12 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
       final cart = cartController.cart.value;
       final total = cart?.totalWithTax ?? 0;
 
+      // LOW_STOCK does not block checkout; only OUT_OF_STOCK does
       final hasOutOfStockItems = cart?.lines.any((line) {
         final stockLevel = line.productVariant.stockLevel.toUpperCase();
-        final isLowStock = stockLevel == 'LOW_STOCK';
         final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
         final isProductDisabled = line.productVariant.product.enabled == false;
-        return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
+        return !line.isAvailable || isOutOfStock || isProductDisabled;
       }) ?? false;
 
       return Container(

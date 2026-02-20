@@ -7,6 +7,11 @@ import '../utils/responsive.dart';
 
 class NotificationPermissionDialog {
   static Future<void> show(BuildContext context) async {
+    // Don't show if permission already granted (or provisional on iOS)
+    final status = await Permission.notification.status;
+    if (status.isGranted || status.isProvisional) {
+      return;
+    }
     return Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(

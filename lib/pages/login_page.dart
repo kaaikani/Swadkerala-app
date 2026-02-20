@@ -256,22 +256,25 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ? _buildFloatingConnectButton()
           : const SizedBox.shrink()),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.button.withValues(alpha: 0.08),
-              AppColors.background,
-              AppColors.button.withValues(alpha: 0.03),
-            ],
-            stops: [0.0, 0.4, 1.0],
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.button.withValues(alpha: 0.08),
+                AppColors.background,
+                AppColors.button.withValues(alpha: 0.03),
+              ],
+              stops: [0.0, 0.4, 1.0],
+            ),
           ),
-        ),
-        child: SafeArea(
+          child: SafeArea(
           bottom: false,
           child: FadeTransition(
             opacity: _fadeAnimation,
@@ -349,6 +352,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               ),
             ),
           ),
+        ),
         ),
       ),
     );
@@ -881,71 +885,87 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         _otpError == null &&
         _authController.otpController.text.length == 4;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-        border: Border.all(
-          color: hasError
-              ? AppColors.error
-              : isValid
-                  ? AppColors.success
-                  : AppColors.border.withValues(alpha: 0.3),
-          width: hasError || isValid ? 2 : 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            blurRadius: ResponsiveUtils.rp(12),
-            offset: Offset(0, ResponsiveUtils.rp(4)),
-          ),
-          if (hasError || isValid)
-            BoxShadow(
-              color: (hasError ? AppColors.error : AppColors.success)
-                  .withValues(alpha: 0.15),
-              blurRadius: ResponsiveUtils.rp(12),
-              offset: Offset(0, ResponsiveUtils.rp(4)),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Scale OTP font and letter-spacing to fit available width (avoids overflow on small screens)
+        final hPadding = ResponsiveUtils.rp(24) * 2;
+        final availableWidth = (constraints.maxWidth - hPadding).clamp(120.0, double.infinity);
+        const baseFontSize = 32.0;
+        const baseLetterSpacing = 16.0;
+        // Approx width for "○ ○ ○ ○": 4 chars + 3 gaps
+        final estimatedWidth = 4 * baseFontSize * 0.65 + 3 * baseLetterSpacing;
+        final scale = (availableWidth / estimatedWidth).clamp(0.5, 1.0);
+        final fontSize = ResponsiveUtils.sp(baseFontSize * scale);
+        final letterSpacing = ResponsiveUtils.rp(baseLetterSpacing * scale);
+
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.inputFill,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+            border: Border.all(
+              color: hasError
+                  ? AppColors.error
+                  : isValid
+                      ? AppColors.success
+                      : AppColors.border.withValues(alpha: 0.3),
+              width: hasError || isValid ? 2 : 1.5,
             ),
-        ],
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUtils.rp(24),
-        vertical: ResponsiveUtils.rp(24),
-      ),
-      child: TextField(
-        controller: _authController.otpController,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: ResponsiveUtils.sp(32),
-          fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
-          letterSpacing: ResponsiveUtils.rp(16),
-        ),
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(4),
-        ],
-        onChanged: (value) {
-          if (!_otpFieldTouched) {
-            setState(() => _otpFieldTouched = true);
-          }
-          _validateOtp(value);
-          if (value.length == 4 && _otpError == null) {
-            _verifyOtp();
-          }
-        },
-        decoration: InputDecoration(
-          hintText: '○ ○ ○ ○',
-          hintStyle: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: ResponsiveUtils.sp(32),
-            letterSpacing: ResponsiveUtils.rp(16),
-            fontWeight: FontWeight.w300,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowMedium,
+                blurRadius: ResponsiveUtils.rp(12),
+                offset: Offset(0, ResponsiveUtils.rp(4)),
+              ),
+              if (hasError || isValid)
+                BoxShadow(
+                  color: (hasError ? AppColors.error : AppColors.success)
+                      .withValues(alpha: 0.15),
+                  blurRadius: ResponsiveUtils.rp(12),
+                  offset: Offset(0, ResponsiveUtils.rp(4)),
+                ),
+            ],
           ),
-          border: InputBorder.none,
-        ),
-      ),
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUtils.rp(24),
+            vertical: ResponsiveUtils.rp(24),
+          ),
+          child: TextField(
+            controller: _authController.otpController,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+              letterSpacing: letterSpacing,
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(4),
+            ],
+            onChanged: (value) {
+              if (!_otpFieldTouched) {
+                setState(() => _otpFieldTouched = true);
+              }
+              _validateOtp(value);
+              if (value.length == 4 && _otpError == null) {
+                _verifyOtp();
+              }
+            },
+            decoration: InputDecoration(
+              hintText: '○ ○ ○ ○',
+              hintStyle: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: fontSize,
+                letterSpacing: letterSpacing,
+                fontWeight: FontWeight.w300,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+        );
+      },
     );
   }
 

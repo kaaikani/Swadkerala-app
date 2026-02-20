@@ -3,6 +3,7 @@ import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/shimmers.dart';
 import 'cached_app_image.dart';
+import 'stock_level_label.dart';
 
 /// Smaller product card widget specifically for home page (favorites, frequently ordered)
 /// Same concept as ProductCard but in smaller size with attractive animations
@@ -24,6 +25,7 @@ class HomeProductCard extends StatefulWidget {
     this.shadowPriceText,
     this.orderCount,
     this.isOutOfStock = false,
+    this.stockLevel,
     this.groupName,
     this.hasMultipleVariants = false,
   });
@@ -43,6 +45,8 @@ class HomeProductCard extends StatefulWidget {
   final Future<bool> Function()? onAddToCart;
   final int? orderCount;
   final bool isOutOfStock;
+  /// Raw stock level (IN_STOCK, LOW_STOCK, OUT_OF_STOCK). When set, StockLevelLabel is shown.
+  final String? stockLevel;
   final String? groupName;
   final bool hasMultipleVariants;
 
@@ -356,32 +360,37 @@ class _HomeProductCardState extends State<HomeProductCard>
                         ),
                       ),
                       // Stock status on right corner
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(6),
-                          vertical: ResponsiveUtils.rp(3),
-                        ),
-                        decoration: BoxDecoration(
-                          color: widget.isOutOfStock
-                              ? AppColors.error.withValues(alpha: 0.12)
-                              : AppColors.success.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(5)),
-                          border: Border.all(
-                            color: widget.isOutOfStock
-                                ? AppColors.error.withValues(alpha: 0.4)
-                                : AppColors.success.withValues(alpha: 0.4),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          widget.isOutOfStock ? 'Out of Stock' : 'In Stock',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(10),
-                            fontWeight: FontWeight.w600,
-                            color: widget.isOutOfStock ? AppColors.error : AppColors.success,
-                          ),
-                        ),
-                      ),
+                      widget.stockLevel != null
+                          ? StockLevelLabel(
+                              stockLevel: widget.stockLevel!,
+                              compact: true,
+                            )
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(6),
+                                vertical: ResponsiveUtils.rp(3),
+                              ),
+                              decoration: BoxDecoration(
+                                color: widget.isOutOfStock
+                                    ? AppColors.error.withValues(alpha: 0.12)
+                                    : AppColors.success.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(5)),
+                                border: Border.all(
+                                  color: widget.isOutOfStock
+                                      ? AppColors.error.withValues(alpha: 0.4)
+                                      : AppColors.success.withValues(alpha: 0.4),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                widget.isOutOfStock ? 'Out of Stock' : 'In Stock',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(10),
+                                  fontWeight: FontWeight.w600,
+                                  color: widget.isOutOfStock ? AppColors.error : AppColors.success,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ],

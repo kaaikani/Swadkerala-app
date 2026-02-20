@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import 'responsive_text.dart';
+import 'stock_level_label.dart';
 import 'responsive_spacing.dart';
 import 'responsive_icon.dart';
 import 'cached_app_image.dart';
@@ -21,6 +22,7 @@ class CartItemCardPremium extends StatelessWidget {
   final bool isLoading;
   final bool isUnavailable;
   final String? statusMessage;
+  final String? stockLevel;
   final int? maxQuantity;
   final bool hasQuantityLimitViolation;
 
@@ -38,6 +40,7 @@ class CartItemCardPremium extends StatelessWidget {
     this.isLoading = false,
     this.isUnavailable = false,
     this.statusMessage,
+    this.stockLevel,
     this.maxQuantity,
     this.hasQuantityLimitViolation = false,
   }) : super(key: key);
@@ -98,6 +101,10 @@ class CartItemCardPremium extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                    ],
+                    if (stockLevel != null && stockLevel!.isNotEmpty) ...[
+                      SizedBox(height: ResponsiveUtils.rp(4)),
+                      StockLevelLabel(stockLevel: stockLevel!, compact: true),
                     ],
                     SizedBox(height: ResponsiveUtils.rp(4)),
                     ResponsiveText(

@@ -35,6 +35,7 @@ import '../controllers/theme_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../widgets/notification_permission_dialog.dart';
 import '../services/channel_service.dart';
+import '../routes.dart';
 import '../graphql/schema.graphql.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -169,8 +170,8 @@ class _MyHomePageState extends State<MyHomePage> {
       final status = await Permission.notification.status;
       
       
-      // If permission is granted, reset the dialog shown flag (in case user granted it from settings)
-      if (status.isGranted) {
+      // If permission is granted (or provisional on iOS = "deliver quietly"), don't show dialog
+      if (status.isGranted || status.isProvisional) {
         await box.remove('notification_permission_dialog_shown');
         await box.remove('notification_settings_dialog_shown');
         return;
@@ -427,8 +428,13 @@ class _MyHomePageState extends State<MyHomePage> {
         hasValidAvailableChannel = await customerController.hasValidPostalCode(storedPostalCode.toString());
       }
       
-      // STEP 4: Only fetch collections, banners, and other data if postal code exists AND has available channel
-      if (hasPostalCode && hasValidAvailableChannel) {
+      // STEP 3b: BRAND channels (e.g. ind-snacks) may have channel token set without CITY channel
+      // Allow fetch when channel token is set so banners/collections load for BRAND channels
+      final hasChannelToken = (ChannelService.getChannelToken() ?? '').toString().isNotEmpty;
+      final shouldFetchData = (hasPostalCode && hasValidAvailableChannel) || hasChannelToken;
+      
+      // STEP 4: Fetch collections, banners, and other data when we have valid channel (CITY or BRAND)
+      if (shouldFetchData) {
         // Postal code exists and has available CITY channel - fetch all data
         if (_isUserAuthenticated()) {
           // Sync customer location from stored postal: get channel by postal code, pass channel name to updateCustomer (location)
@@ -1304,6 +1310,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // Create list of futures based on authentication status
               List<Future> futures = [
                 collectionController.fetchAllCollections(),
+                bannerController.getBannersForChannel(),
                 bannerController.getFrequentlyOrderedProducts(),
               ];
               
@@ -1412,15 +1419,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // All Products Section
         CollectionGrid(
-          onCollectionTap: (Query$Collections$collections$items collection) {
-            Get.toNamed('/collection-products', arguments: {
-              'collectionId': collection.id,
-              'collectionName': collection.name,
-              'collectionSlug': collection.slug,
-              'collectionImage': collection.featuredAsset?.preview ?? '',
-              'totalItems': collection.productVariants.totalItems,
-            });
-          },
+        onCollectionTap: (Query$Collections$collections$items collection) {
+          Get.toNamed(AppRoutes.collectionProducts, arguments: {
+            'collectionId': collection.id,
+            'collectionName': collection.name,
+            'slug': collection.slug,
+            'collectionImage': collection.featuredAsset?.preview ?? '',
+            'totalItems': collection.productVariants.totalItems,
+          });
+        },
         ),
         ResponsiveSpacing.vertical(40),
         // Frequently Ordered Section
@@ -1461,9 +1468,10 @@ class _MyHomePageState extends State<MyHomePage> {
       return VerticalListComponent(
         title: '',
         onTap: (collection) {
-          Get.toNamed('/collection-products', arguments: {
+          Get.toNamed(AppRoutes.collectionProducts, arguments: {
             'collectionId': collection.id,
             'collectionName': collection.name,
+            'slug': collection.slug,
           });
         },
       );

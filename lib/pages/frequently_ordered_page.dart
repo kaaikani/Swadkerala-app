@@ -315,7 +315,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
     final hasMultipleVariants = variantsForProduct.length > 1;
     final showVariantSelector = groupName != null && hasMultipleVariants;
 
-    // Stock level not available in this GraphQL query - default to false
+    // Stock level not in GetFrequentlyOrderedProducts GraphQL - use isOutOfStock only
     final isOutOfStock = false;
 
     // Build variant selector if needed

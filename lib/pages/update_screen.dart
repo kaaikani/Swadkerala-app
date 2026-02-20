@@ -1,8 +1,10 @@
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/authentication/authenticationcontroller.dart';
@@ -10,6 +12,7 @@ import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/snackbar.dart';
 import '../routes.dart';
+import '../services/remote_config_service.dart';
 
 class UpdateScreen extends StatefulWidget {
   @override
@@ -17,7 +20,29 @@ class UpdateScreen extends StatefulWidget {
 }
 
 class _UpdateScreenState extends State<UpdateScreen> {
+  /// Mandatory = cannot dismiss (current < min_version from Remote Config)
+  bool get _isMandatory => GetStorage().read<bool>('update_mandatory') ?? true;
   bool _updateInProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kDebugMode) {
+      PackageInfo.fromPlatform().then((info) {
+        final current = '${info.version}.${info.buildNumber}';
+        String minV = 'N/A';
+        String latestV = 'N/A';
+        try {
+          final rc = Get.find<RemoteConfigService>();
+          minV = rc.getMinVersion();
+          latestV = rc.getLatestVersion();
+        } catch (_) {}
+        debugPrint('[UpdateScreen] App version: ${info.version} (${info.buildNumber}) → $current');
+        debugPrint('[UpdateScreen] Firebase: min_version=$minV, latest_version=$latestV');
+        debugPrint('[UpdateScreen] Mandatory update: $_isMandatory (from Firebase Remote Config)');
+      });
+    }
+  }
   int _retryCount = 0;
   final AuthController authController = Get.find<AuthController>();
 
@@ -43,7 +68,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
       } catch (playStoreError) {
         showDialog(
           context: context,
-          barrierDismissible: false,
+          barrierDismissible: !_isMandatory,
           builder: (BuildContext context) {
             _retryCount++;
             return AlertDialog(
@@ -65,11 +90,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
                   },
                   child: Text('Open Play Store'),
                 ),
-                if (_retryCount >= 3)
+                if (_retryCount >= 3 && !_isMandatory)
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Get.offAllNamed(AppRoutes.initial);
+                      _dismissOptionalUpdate();
                     },
                     child: Text('Skip (Not Recommended)',
                         style: TextStyle(color: Colors.red)),
@@ -104,9 +129,15 @@ class _UpdateScreenState extends State<UpdateScreen> {
     }
   }
 
+  void _dismissOptionalUpdate() {
+    GetStorage().remove('show_update_screen');
+    GetStorage().remove('update_mandatory');
+    Get.offAllNamed(AppRoutes.initial);
+  }
+
   Future<void> _openAppStoreForUpdate() async {
     try {
-      const appId = 'YOUR_APP_STORE_ID';
+      const appId = '6759081528';
       final Uri appStoreUrl = Uri.parse('https://apps.apple.com/app/id$appId');
       final Uri itmsUrl = Uri.parse('itms-apps://apps.apple.com/app/id$appId');
 
@@ -130,7 +161,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: !_isMandatory,
+      child: Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
@@ -210,35 +243,54 @@ class _UpdateScreenState extends State<UpdateScreen> {
                       ),
                     ),
                   )
-                : SizedBox(
-                    width: double.infinity,
-                    height: ResponsiveUtils.rp(56),
-                    child: ElevatedButton.icon(
-                      onPressed: _performImmediateUpdate,
-                      icon: Icon(Icons.system_update_alt,
-                          color: Colors.black, size: ResponsiveUtils.rp(22)),
-                      label: Text(
-                        'Update Now',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: ResponsiveUtils.sp(17),
-                          fontWeight: FontWeight.w600,
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: ResponsiveUtils.rp(56),
+                        child: ElevatedButton.icon(
+                          onPressed: _performImmediateUpdate,
+                          icon: Icon(Icons.system_update_alt,
+                              color: Colors.black, size: ResponsiveUtils.rp(22)),
+                          label: Text(
+                            _isMandatory ? 'Update Now' : 'Update',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: ResponsiveUtils.sp(17),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(ResponsiveUtils.rp(28)),
+                            ),
+                            elevation: 2,
+                          ),
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(ResponsiveUtils.rp(28)),
+                      if (!_isMandatory) ...[
+                        SizedBox(height: ResponsiveUtils.rp(12)),
+                        TextButton(
+                          onPressed: _dismissOptionalUpdate,
+                          child: Text(
+                            'Later',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: ResponsiveUtils.sp(16),
+                            ),
+                          ),
                         ),
-                        elevation: 2,
-                      ),
-                    ),
+                      ],
+                    ],
                   ),
           ),
         ],
       ),
+    ),
     );
   }
 }

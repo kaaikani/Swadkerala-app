@@ -3,6 +3,7 @@ import UIKit
 import UserNotifications
 import FirebaseCore
 import FirebaseMessaging
+import FBSDKCoreKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -28,6 +29,19 @@ import FirebaseMessaging
     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
   ) {
     Messaging.messaging().apnsToken = deviceToken
+  }
+
+  // MARK: - Aggregated Event Measurement (AEM) / Facebook SDK
+  // Required for AEM: measure app events from iOS 14.5+ users who opted out of app tracking.
+  // Pass Universal Links from app ads to Facebook SDK for attribution and deep linking.
+  override func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
+    // Pass Universal Link to Facebook SDK for AEM and ad attribution (SDK v14.0.0+)
+    ApplicationDelegate.shared.application(application, continue: userActivity)
+    return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
   }
 }
 

@@ -36,6 +36,7 @@ target 'Runner' do
   # ✅ STATIC frameworks (Firebase compatible)
   use_frameworks! :linkage => :static
 
+  # FBSDKCoreKit ~> 18.0 comes via facebook_app_events (Meta iOS 14+ compliant)
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
   target 'RunnerTests' do

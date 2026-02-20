@@ -21,6 +21,7 @@ import '../widgets/shimmers.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/cart_button_with_badge.dart';
 import '../widgets/cached_app_image.dart';
+import '../widgets/stock_level_label.dart';
 import '../services/analytics_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -715,36 +716,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ResponsiveSpacing.vertical(12),
                 Builder(
                   builder: (context) {
-                    final stockLevel = selectedVariant!.stockLevel.toUpperCase();
-                    final isOutOfStock = stockLevel == 'OUT_OF_STOCK' || stockLevel == 'LOW_STOCK';
-                    if (!isOutOfStock) {
-                      return Row(
+                    return Row(
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(10),
-                          vertical: ResponsiveUtils.rp(6),
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check_circle,
-                                color: AppColors.success,
-                                size: ResponsiveUtils.rp(14)),
-                            SizedBox(width: ResponsiveUtils.rp(4)),
-                            ResponsiveText(
-                              'In Stock',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.success,
-                            ),
-                          ],
-                        ),
-                      ),
+                      StockLevelLabel(stockLevel: selectedVariant!.stockLevel),
                       Spacer(),
                       // Favorite Button at right end
                       Obx(() {
@@ -777,67 +751,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       }),
                     ],
                   );
-                    } else {
-                      return Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: ResponsiveUtils.rp(10),
-                              vertical: ResponsiveUtils.rp(6),
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.error.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.cancel,
-                                    color: AppColors.error,
-                                    size: ResponsiveUtils.rp(14)),
-                                SizedBox(width: ResponsiveUtils.rp(4)),
-                                ResponsiveText(
-                                  'Out of Stock',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.error,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Spacer(),
-                          // Favorite Button at right end
-                          Obx(() {
-                            final isFavorite =
-                                bannerController.isFavorite(productDetail?.id ?? '');
-                            return GestureDetector(
-                              onTap: () async {
-                                if (productDetail != null) {
-                                  await bannerController.toggleFavorite(
-                                      productId: productDetail!.id);
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                                decoration: BoxDecoration(
-                                  color: isFavorite
-                                      ? AppColors.error.withValues(alpha: 0.1)
-                                      : AppColors.inputFill,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  isFavorite
-                                      ? Icons.favorite_rounded
-                                      : Icons.favorite_border_rounded,
-                                  color: isFavorite ? AppColors.error : AppColors.textSecondary,
-                                  size: ResponsiveUtils.rp(28),
-                                ),
-                              ),
-                            );
-                          }),
-                        ],
-                      );
-                    }
                   },
                 ),
               ],
@@ -1364,7 +1277,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     final cartQuantity = _getCartQuantity();
     final stockLevel = selectedVariant!.stockLevel.toUpperCase();
-    final isOutOfStock = stockLevel == 'OUT_OF_STOCK' || stockLevel == 'LOW_STOCK';
+    final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
 
     return Container(
       decoration: BoxDecoration(

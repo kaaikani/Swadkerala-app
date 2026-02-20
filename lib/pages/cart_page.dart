@@ -428,15 +428,13 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       }
     }
 
-    // Also check for out of stock, low stock, or disabled product items from line data
+    // Also check for out of stock or disabled product items (LOW_STOCK does not block checkout)
     if (cart != null) {
       final unavailableItems = <int>[];
       for (int i = 0; i < cart.lines.length; i++) {
         final line = cart.lines[i];
         final stockLevel = line.productVariant.stockLevel.toUpperCase();
-        final isLowStock = stockLevel == 'LOW_STOCK';
         final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-        final isStockUnavailable = isLowStock || isOutOfStock;
         
         // Check if product is disabled (multiple ways to detect)
         final isProductDisabled = line.productVariant.product.enabled == false;
@@ -444,8 +442,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                                    line.unavailableReason?.toLowerCase().contains('no longer available') == true;
         final isProductDisabledAny = isProductDisabled || isDisabledByReason;
         
-        // Item is unavailable if: isAvailable is false OR stock level is LOW_STOCK/OUT_OF_STOCK OR product is disabled
-        final isUnavailable = !line.isAvailable || isStockUnavailable || isProductDisabledAny;
+        // Item blocks checkout only if: isAvailable is false OR OUT_OF_STOCK OR product is disabled (not LOW_STOCK)
+        final isUnavailable = !line.isAvailable || isOutOfStock || isProductDisabledAny;
         
         if (isUnavailable) {
           unavailableItems.add(i);
@@ -457,21 +455,17 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         // ignore: unused_local_variable
         int outOfStockCount = 0;
         // ignore: unused_local_variable
-        int lowStockCount = 0;
-        // ignore: unused_local_variable
         int disabledCount = 0;
         for (int i = 0; i < cart.lines.length; i++) {
           if (unavailableItems.contains(i)) {
             final line = cart.lines[i];
             final stockLevel = line.productVariant.stockLevel.toUpperCase();
-            final isLowStock = stockLevel == 'LOW_STOCK';
             final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
             final isProductDisabled = line.productVariant.product.enabled == false;
             final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true ||
                                        line.unavailableReason?.toLowerCase().contains('no longer available') == true;
             
             if (isOutOfStock) outOfStockCount++;
-            if (isLowStock) lowStockCount++;
             if (isProductDisabled || isDisabledByReason) disabledCount++;
           }
         }
@@ -952,25 +946,32 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
               _refreshData();
             }
           },
-          child: Scaffold(
+          child: Obx(() {
+            final cart = cartController.cart.value;
+            final hasItems = cart != null && cart.lines.isNotEmpty;
+            return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBarWidget(
         title: 'Shopping Cart',
-        actions: [  IconButton(
-          icon: Icon(
-            Icons.delete_outline,
-            color: AppColors.error,
-            size: ResponsiveUtils.rp(20),
-          ),
-          tooltip: 'Clear Cart',
-          onPressed: AnalyticsHelper.trackButton(
-            'Clear Cart - Icon',
-            screenName: 'Cart',
-            callback: _handleClearCart,
-          ),
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints(),
-        ),],
+        actions: hasItems
+            ? [
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: AppColors.error,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                  tooltip: 'Clear Cart',
+                  onPressed: AnalyticsHelper.trackButton(
+                    'Clear Cart - Icon',
+                    screenName: 'Cart',
+                    callback: _handleClearCart,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                ),
+              ]
+            : null,
       ),
       body: GetBuilder<UtilityController>(
         builder: (utilityCtrl) {
@@ -1179,13 +1180,12 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                 return SizedBox.shrink();
               }
 
-              // Check for out of stock items
+              // Check for out of stock items (LOW_STOCK does not block - coupon can still apply)
               final hasOutOfStockItems = cart.lines.any((line) {
                 final stockLevel = line.productVariant.stockLevel.toUpperCase();
-                final isLowStock = stockLevel == 'LOW_STOCK';
                 final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
                 final isProductDisabled = line.productVariant.product.enabled == false;
-                return !line.isAvailable || isLowStock || isOutOfStock || isProductDisabled;
+                return !line.isAvailable || isOutOfStock || isProductDisabled;
               });
 
               if (hasOutOfStockItems) return SizedBox.shrink();
@@ -1299,12 +1299,12 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
               ),
             ),
           ],
-      );
-    });
+        );
+      });
         },
       ),
-        ),
-      );
+            );
+          }));
       },
     );
   }

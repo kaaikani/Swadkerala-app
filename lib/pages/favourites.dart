@@ -382,6 +382,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       variantLabel: _getVariantLabel(variant),
       priceText: priceText,
       shadowPriceText: null,
+      isOutOfStock: false,
       onAddToCart: () => _handleAddToCart(name, variant?.id),
     );
   }

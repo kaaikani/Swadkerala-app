@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.1.05+190
+version: 1.0.0+11
 environment:
   sdk: ">=2.17.6 <4.0.0"
 
@@ -72,6 +72,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  image: ^4.5.0
   flutter_lints: ^5.0.0
   build_runner: ^2.4.6
   graphql_codegen: ^1.1.0
@@ -94,10 +95,12 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/kklogo.png"
+  # Use same logo as splash screen for consistent branding
+  image_path: "assets/images/kklogo_padded.png"
+  # iOS: use icon with green background (avoids black from remove_alpha)
+  image_path_ios: "assets/images/kklogo_icon_ios.png"
   adaptive_icon_background: "#4CB150"
-  adaptive_icon_foreground: "assets/images/kklogo_padded.png"  # Using padded version (65% size) with built-in transparent space
-  # Logo is resized to 65% and centered with transparent padding to prevent cut-off
+  adaptive_icon_foreground: "assets/images/kklogo_foreground_large.png"
   remove_alpha_ios: true
 
 flutter_native_splash:
@@ -106,6 +109,8 @@ flutter_native_splash:
   fullscreen: true
   android: true
   ios: true
+  # Scale splash image to fit screen on iOS so logo appears larger
+  ios_content_mode: scaleAspectFit
   image_dark: "assets/images/kklogo_padded.png"
   color_dark: "#4CB150"
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -1119,7 +1120,7 @@ class _AccountPageState extends State<AccountPage> {
             Icons.star_outline,
             'Rate Our App',
             Icons.arrow_forward_ios,
-            onTap: _openPlayStore,
+            onTap: _openStoreForRating,
           ),
           _buildDivider(),
           _buildListTile(
@@ -1386,6 +1387,33 @@ class _AccountPageState extends State<AccountPage> {
     return '$firstInitial$lastInitial';
   }
 
+  /// Label with optional small red dot when field is unfilled
+  Widget _buildFieldLabel(String label, bool isEmpty) {
+    return Row(
+      children: [
+        if (isEmpty) ...[
+          Container(
+            width: 6,
+            height: 6,
+            margin: EdgeInsets.only(right: ResponsiveUtils.rp(6)),
+            decoration: BoxDecoration(
+              color: AppColors.error,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ],
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
   void _showEditProfileDialog() {
     final customer = customerController.activeCustomer.value;
     if (customer == null) return;
@@ -1508,14 +1536,7 @@ class _AccountPageState extends State<AccountPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Title dropdown (Mr. / Ms. / Miss) - stored as title in GraphQL
-                          Text(
-                            'Title',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(14),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
+                          _buildFieldLabel('Title', selectedTitle?.isEmpty ?? true),
                           SizedBox(height: ResponsiveUtils.rp(8)),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(12)),
@@ -1563,14 +1584,7 @@ class _AccountPageState extends State<AccountPage> {
                           ],
                           SizedBox(height: ResponsiveUtils.rp(20)),
                           // First Name Field
-                          Text(
-                            'First Name',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(14),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
+                          _buildFieldLabel('First Name', firstNameController.text.trim().isEmpty),
                           SizedBox(height: ResponsiveUtils.rp(8)),
               TextField(
                 controller: firstNameController,
@@ -1623,14 +1637,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           SizedBox(height: ResponsiveUtils.rp(20)),
                           // Last Name Field
-                          Text(
-                            'Last Name',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(14),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
+                          _buildFieldLabel('Last Name', lastNameController.text.trim().isEmpty),
                           SizedBox(height: ResponsiveUtils.rp(8)),
               TextField(
                 controller: lastNameController,
@@ -1686,14 +1693,7 @@ class _AccountPageState extends State<AccountPage> {
                           if (!canEditOnlyName) ...[
                             SizedBox(height: ResponsiveUtils.rp(20)),
                             // Email Field
-                            Text(
-                              'Email',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(14),
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
+                            _buildFieldLabel('Email', emailController.text.trim().isEmpty),
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             TextField(
                               controller: emailController,
@@ -1804,14 +1804,7 @@ class _AccountPageState extends State<AccountPage> {
                             ],
                             SizedBox(height: ResponsiveUtils.rp(20)),
                             // Phone Number Field (always editable)
-                            Text(
-                              'Phone Number',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(14),
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
+                            _buildFieldLabel('Phone Number', phoneController.text.trim().isEmpty),
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             TextField(
                               controller: phoneController,
@@ -1872,14 +1865,7 @@ class _AccountPageState extends State<AccountPage> {
                           ] else ...[
                             // Email: show email with Edit button (opens email dialog)
                             SizedBox(height: ResponsiveUtils.rp(20)),
-                            Text(
-                              'Email',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(14),
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
+                            _buildFieldLabel('Email', customer.emailAddress.isEmpty),
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             Container(
                               padding: EdgeInsets.symmetric(
@@ -1939,14 +1925,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             SizedBox(height: ResponsiveUtils.rp(20)),
                             // Phone Number Field (always editable)
-                            Text(
-                              'Phone Number',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(14),
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
+                            _buildFieldLabel('Phone Number', phoneController.text.trim().isEmpty),
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             TextField(
                               controller: phoneController,
@@ -2436,35 +2415,68 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+  /// App Store ID for iOS (from App Store Connect).
+  static const String _appStoreId = '6759081528';
+
+  bool get _isIOS =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  bool get _isAndroid =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
   Future<void> _shareApp() async {
     try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      final packageName = packageInfo.packageName;
-      final appLink = 'https://play.google.com/store/apps/details?id=$packageName';
-
+      String appLink;
+      if (_isIOS) {
+        appLink = 'https://apps.apple.com/app/id$_appStoreId';
+      } else if (_isAndroid) {
+        final packageInfo = await PackageInfo.fromPlatform();
+        appLink =
+            'https://play.google.com/store/apps/details?id=${packageInfo.packageName}';
+      } else {
+        // Web/desktop: use Play Store link as fallback or a generic message
+        final packageInfo = await PackageInfo.fromPlatform();
+        appLink =
+            'https://play.google.com/store/apps/details?id=${packageInfo.packageName}';
+      }
       await Share.share(appLink);
     } catch (e) {
       showErrorSnackbar('Could not share app');
     }
   }
 
-  Future<void> _openPlayStore() async {
+  /// Opens App Store on iOS or Play Store on Android for rating the app.
+  Future<void> _openStoreForRating() async {
     try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      final packageName = packageInfo.packageName;
-
-      final playStoreUrl = Uri.parse('market://details?id=$packageName');
-      final webStoreUrl = Uri.parse(
-          'https://play.google.com/store/apps/details?id=$packageName');
-
-
-      if (await canLaunchUrl(playStoreUrl)) {
-        await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+      if (_isIOS) {
+        final appStoreUrl =
+            Uri.parse('https://apps.apple.com/app/id$_appStoreId');
+        final itmsUrl =
+            Uri.parse('itms-apps://apps.apple.com/app/id$_appStoreId');
+        if (await canLaunchUrl(itmsUrl)) {
+          await launchUrl(itmsUrl, mode: LaunchMode.externalApplication);
+        } else {
+          await launchUrl(appStoreUrl, mode: LaunchMode.externalApplication);
+        }
+      } else if (_isAndroid) {
+        final packageInfo = await PackageInfo.fromPlatform();
+        final packageName = packageInfo.packageName;
+        final playStoreUrl = Uri.parse('market://details?id=$packageName');
+        final webStoreUrl = Uri.parse(
+            'https://play.google.com/store/apps/details?id=$packageName');
+        if (await canLaunchUrl(playStoreUrl)) {
+          await launchUrl(playStoreUrl, mode: LaunchMode.externalApplication);
+        } else {
+          await launchUrl(webStoreUrl, mode: LaunchMode.externalApplication);
+        }
       } else {
-        await launchUrl(webStoreUrl, mode: LaunchMode.externalApplication);
+        showErrorSnackbar('Please open the app on a phone to rate us.');
       }
     } catch (e) {
-      showErrorSnackbar('Could not open Play Store: $e');
+      showErrorSnackbar(
+        _isIOS
+            ? 'Could not open App Store: $e'
+            : 'Could not open Play Store: $e',
+      );
     }
   }
 

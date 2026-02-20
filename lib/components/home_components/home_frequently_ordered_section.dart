@@ -367,6 +367,7 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
                       priceText: priceText,
                       shadowPriceText: null,
                       orderCount: item.orderCount,
+                      isOutOfStock: false,
                       groupName: selectedVariant.options.isNotEmpty
                           ? selectedVariant.options.first.group.name
                           : null,

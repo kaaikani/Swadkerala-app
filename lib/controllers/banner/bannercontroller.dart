@@ -10,6 +10,7 @@ import '../../graphql/cart.graphql.dart' as cart_graphql;
 import '../../graphql/order.graphql.dart';
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
+import '../../services/channel_service.dart';
 // import '../../utils/html_utils.dart'; // Unused import
 import '../../utils/price_formatter.dart';
 import '../../services/in_app_update_service.dart';
@@ -102,7 +103,11 @@ class BannerController extends BaseController {
     try {
       utilityController.setLoadingState(false); // ✅ Set shared loading state
 
+      // Use GraphQL token; fallback to ChannelService (e.g. right after channel switch)
       String channelToken = GraphqlService.channelToken;
+      if (channelToken.isEmpty) {
+        channelToken = ChannelService.getChannelToken()?.toString() ?? '';
+      }
 
       if (channelToken.isEmpty) {
         utilityController.setLoadingState(false);
@@ -2109,7 +2114,9 @@ class BannerController extends BaseController {
     }
   }
 
-  /// Apply coupon code with products (check minimum first, add products if needed, then apply coupon)
+  /// Apply coupon code with products: apply coupon first, then add products.
+  /// If coupon apply fails, return error (nothing to rollback).
+  /// If products add fails, remove the applied coupon and return error.
   Future<Map<String, dynamic>> applyCouponCodeWithProducts(
       String couponCode) async {
     Logger.logFunction(functionName: 'applyCouponCodeWithProducts', mutationName: 'ApplyCouponCode');
@@ -2134,13 +2141,11 @@ class BannerController extends BaseController {
       
       Map<String, dynamic>? addResult;
       
-      // Step 2: If minimum not met, show dialog and return (don't add products or apply coupon)
+      // Step 2: If minimum not met, show dialog and return (don't apply coupon or add products)
       if (!minimumAmountValidation['valid']) {
-        // Show dialog box and return error - don't add products or apply coupon
         ErrorDialog.showWarning(
           message: minimumAmountValidation['message'] as String,
         );
-        
         return {
           'success': false,
           'message': minimumAmountValidation['message'],
@@ -2150,86 +2155,81 @@ class BannerController extends BaseController {
           'dialogShown': true,
         };
       }
-      // Step 3: Add coupon products to cart (if coupon has products)
-      final hasProducts = hasCouponProducts(couponCode);
-      if (hasProducts) {
-        addResult = await addCouponProductsToCart(couponCode);
 
-        // If adding products fails, don't apply coupon
-        if (!addResult['success']) {
-          _refreshCartAfterCouponError();
-          return {
-            'success': false,
-            'message': 'Failed to add coupon products. ${addResult['message']}',
-            'error': 'PRODUCT_ADDITION_FAILED',
-            'addResult': addResult,
-            'suppressSnackbar': true,
-          };
-        }
-      }
-      
-      // Step 3: Apply coupon code
-      // Call internal method to apply coupon without minimum validation (already validated)
+      // Step 3: Apply coupon code FIRST (before adding products)
       final couponResult = await _applyCouponCodeWithoutMinimumCheck(couponCode);
 
-      if (couponResult['success']) {
-        final hasProducts = hasCouponProducts(couponCode);
-        
-        // Ensure cart is refreshed first to get latest state
-        try {
-          final cartController = Get.find<CartController>();
-          await cartController.getActiveOrder();
-        } catch (e) {
-        }
-        
-        // Restore coupon tracking to ensure UI updates immediately
-        // This ensures free products show at the top without needing pull-to-refresh
-        try {
-          await restoreCouponTrackingFromCart();
-        } catch (e) {
-        }
-        
-        return {
-          'success': true,
-          'message': hasProducts 
-              ? 'Coupon products added and coupon applied successfully'
-              : 'Coupon applied successfully',
-          'addedProducts': addResult?['addedProducts'] ?? [],
-          'couponApplied': true,
-          'orderTotal': couponResult['orderTotal'],
-        };
-      } else {
-        // Coupon apply failed: reverse by removing coupon-added products from cart and clearing coupon state.
-        final hasProducts = hasCouponProducts(couponCode);
-        bool rollbackPerformed = false;
-        if (hasProducts && addResult != null && addResult['success'] == true &&
-            couponAddedProducts.containsKey(couponCode)) {
-          rollbackPerformed = await removeCouponProducts(couponCode);
-        }
-        originalCartQuantities.remove(couponCode);
-
+      if (!couponResult['success']) {
+        // Coupon apply failed - nothing to rollback (no products added yet)
         final errorMessage = couponResult['message'] as String? ?? 'Failed to apply coupon code';
-        ErrorDialog.showWarning(
-          message: rollbackPerformed
-              ? '$errorMessage '
-              : errorMessage,
-        );
+        ErrorDialog.showWarning(message: errorMessage);
         await _refreshCartAfterCouponError();
-
         return {
           'success': false,
           'message': errorMessage,
-          'addedProducts': addResult?['addedProducts'] ?? [],
           'couponApplied': false,
           'couponError': couponResult['error'],
-          'rollbackPerformed': rollbackPerformed,
           'dialogShown': true,
         };
       }
+
+      // Step 4: Coupon applied successfully - now add coupon products (if any)
+      final hasProducts = hasCouponProducts(couponCode);
+      if (hasProducts) {
+        addResult = await addCouponProductsToCart(couponCode);
+        if (!addResult['success']) {
+          // Adding products failed - remove the coupon we just applied
+          await removeCouponCode(couponCode);
+          _refreshCartAfterCouponError();
+          String errorMsg = addResult['message'] as String? ?? 'Failed to add coupon products to cart.';
+          final failedProducts = addResult['failedProducts'] as List<dynamic>? ?? [];
+          if (failedProducts.isNotEmpty) {
+            final details = failedProducts.map((f) {
+              final p = f as Map<String, dynamic>?;
+              final name = p?['product'] ?? 'Product';
+              final err = p?['error'] ?? 'Unknown error';
+              return '$name: $err';
+            }).join('\n');
+            if (details.isNotEmpty) errorMsg = '$errorMsg\n\n$details';
+          }
+          ErrorDialog.showWarning(
+            message: '$errorMsg\n\nCoupon has been removed.',
+          );
+          return {
+            'success': false,
+            'message': errorMsg,
+            'error': 'PRODUCT_ADDITION_FAILED',
+            'addResult': addResult,
+            'couponRemoved': true,
+            'dialogShown': true,
+          };
+        }
+      }
+
+      // Success: coupon applied and products added (if any)
+      try {
+        final cartController = Get.find<CartController>();
+        await cartController.getActiveOrder();
+      } catch (e) {
+      }
+      try {
+        await restoreCouponTrackingFromCart();
+      } catch (e) {
+      }
+      return {
+        'success': true,
+        'message': hasProducts
+            ? 'Coupon products added and coupon applied successfully'
+            : 'Coupon applied successfully',
+        'addedProducts': addResult?['addedProducts'] ?? [],
+        'couponApplied': true,
+        'orderTotal': couponResult['orderTotal'],
+      };
     } catch (e) {
-      // On error: remove coupon-added products from cart so cart is consistent.
+      // On error: remove coupon if applied, and any coupon-added products
       bool rollbackPerformed = false;
       try {
+        await removeCouponCode(couponCode);
         if (couponAddedProducts.containsKey(couponCode)) {
           rollbackPerformed = await removeCouponProducts(couponCode);
         }
@@ -2240,9 +2240,7 @@ class BannerController extends BaseController {
       }
       return {
         'success': false,
-        'message': rollbackPerformed
-            ? 'Error applying coupon. '
-            : 'Error applying coupon. Please try again.',
+        'message': 'Error applying coupon. Please try again.',
         'error': 'APPLY_COUPON_WITH_PRODUCTS_ERROR',
         'rollbackPerformed': rollbackPerformed,
       };

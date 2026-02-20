@@ -1,118 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>Kaaikani</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>Kaaikani</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0.0</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.kaaikani.kaaikani</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>kaaikani</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>Google Sign-In</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.349081914352-3uu12ipvimkp3ptdbbqq4kou9cf1latf</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>Facebook</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb894049942524354</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>1</string>
-	<key>FacebookAppID</key>
-	<string>894049942524354</string>
-	<key>FacebookClientToken</key>
-	<string>7d618a40da95a992f525bf0b35b55faa</string>
-	<key>FacebookAdvertiserIDCollectionEnabled</key>
-	<false/>
-	<key>FacebookDisplayName</key>
-	<string>Kaaikani</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Used only when running the app from a computer for debugging and hot reload. This prompt does not appear in the release app.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We use location to show delivery areas, nearby stores, and to improve your experience. You can choose "When In Use" or "Always" in system settings.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need location access to provide location-based services</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow microphone access for voice search (speech to text)</string>
-	<key>NSPhoneNumberUsageDescription</key>
-	<string>We need access to your phone number for account verification and faster login</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need photo library access to save and share images</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Allow speech recognition so you can use voice search</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>We use this to improve your experience and provide personalized content</string>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UIStatusBarHidden</key>
-	<true/>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:kaaikani.co.in</string>
-	</array>
-</dict>
+	<dict>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleDisplayName</key>
+		<string>Kaaikani</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>Kaaikani</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>com.kaaikani.kaaikani</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>kaaikani</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>Google Sign-In</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.349081914352-3uu12ipvimkp3ptdbbqq4kou9cf1latf</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>Facebook</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>fb894049942524354</string>
+				</array>
+			</dict>
+		</array>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>FacebookAppID</key>
+		<string>894049942524354</string>
+		<key>FacebookClientToken</key>
+		<string>7d618a40da95a992f525bf0b35b55faa</string>
+		<key>FacebookAdvertiserIDCollectionEnabled</key>
+		<true/>
+		<key>FacebookDisplayName</key>
+		<string>Kaaikani</string>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>Used only when running the app from a computer for debugging and hot reload. This prompt does not appear in the release app.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>We use location to show delivery areas, nearby stores, and to improve your experience. You can choose "When In Use" or "Always" in system settings.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>We need location access to provide location-based services</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Allow microphone access for voice search (speech to text)</string>
+		<key>NSPhoneNumberUsageDescription</key>
+		<string>We need access to your phone number for account verification and faster login</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>We need photo library access to save and share images</string>
+		<key>NSSpeechRecognitionUsageDescription</key>
+		<string>Allow speech recognition so you can use voice search</string>
+		<key>NSUserTrackingUsageDescription</key>
+		<string>We use this to improve your experience and provide personalized content</string>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+		</array>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UIStatusBarHidden</key>
+		<true/>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
+		<key>com.apple.developer.associated-domains</key>
+		<array>
+			<string>applinks:kaaikani.co.in</string>
+		</array>
+	</dict>
 </plist>

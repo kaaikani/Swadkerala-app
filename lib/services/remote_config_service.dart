@@ -18,20 +18,27 @@ class RemoteConfigService extends GetxController {
     try {
       _remoteConfig = FirebaseRemoteConfig.instance;
 
-      // Set default values
+      // Debug: fetch every time. Release: cache 1 hour.
       await _remoteConfig!.setConfigSettings(RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 10),
-        minimumFetchInterval: const Duration(hours: 1),
+        minimumFetchInterval: kDebugMode ? Duration.zero : const Duration(hours: 1),
       ));
 
-      // Set defaults
+      // Set defaults (app update: min_version = force update, latest_version = optional)
       await _remoteConfig!.setDefaults({
         'shipping_ticker_text': '',
+        'min_version': '0.0.0',
+        'latest_version': '0.0.0',
       });
 
       // Fetch and activate
-      await _remoteConfig!.fetchAndActivate();
-      
+      final updated = await _remoteConfig!.fetchAndActivate();
+      if (kDebugMode) {
+        final minV = _remoteConfig!.getString('min_version').trim();
+        final latestV = _remoteConfig!.getString('latest_version').trim();
+        debugPrint('[RemoteConfig] Fetched: updated=$updated, min_version="$minV", latest_version="$latestV"');
+      }
+
       // Load shipping ticker text
       await _loadShippingTickerText();
       
@@ -93,6 +100,20 @@ class RemoteConfigService extends GetxController {
   /// Check if shipping ticker text is available
   bool hasShippingTickerText() {
     return shippingTickerText.value.isNotEmpty;
+  }
+
+  /// Get min required version (below this = mandatory update, cannot use app)
+  String getMinVersion() {
+    if (_remoteConfig == null) return '0.0.0';
+    final v = _remoteConfig!.getString('min_version').trim();
+    return v.isEmpty ? '0.0.0' : v;
+  }
+
+  /// Get latest available version (below this = optional update prompt)
+  String getLatestVersion() {
+    if (_remoteConfig == null) return '0.0.0';
+    final v = _remoteConfig!.getString('latest_version').trim();
+    return v.isEmpty ? '0.0.0' : v;
   }
 }
 

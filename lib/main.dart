@@ -16,6 +16,7 @@ import 'package:recipe.app/services/deep_link_service.dart';
 import 'package:recipe.app/services/crashlytics_service.dart';
 import 'package:recipe.app/services/analytics_service.dart';
 import 'package:recipe.app/services/remote_config_service.dart';
+import 'package:recipe.app/services/app_update_check_service.dart';
 import 'controllers/customer/customer_controller.dart';
 // import 'controllers/banner/bannercontroller.dart'; // Commented out - GraphQL query disabled
 import '../controllers/cart/Cartcontroller.dart';
@@ -29,28 +30,38 @@ import 'theme/theme.dart';
 /// Key used to signal that the update screen should be shown from the initial route (set by checkAppUpdate).
 const String _kShowUpdateScreenKey = 'show_update_screen';
 
+/// Key for mandatory update (cannot dismiss; current < min_version from Remote Config).
+const String _kUpdateMandatoryKey = 'update_mandatory';
+
 /// Check for app updates on startup
 /// This function is called automatically in main() to check for updates
 /// when the app starts
 Future<void> checkAppUpdate() async {
   try {
-    
-    // COMMENTED OUT: GraphQL query for update info (now using Play Store only)
-    // Initialize BannerController for GraphQL calls
-    // final bannerController = Get.put(BannerController());
-    // 
-    // // Try to fetch update info from GraphQL
-    // try {
-    //   await bannerController.getAppUpdateInfo();
-    //   debugPrint('[Main] GraphQL update info fetched successfully');
-    // } catch (e) {
-    //   debugPrint('[Main] GraphQL update info fetch failed: $e');
-    // }
-    
-    // Get the update service
+    // STEP 1: Check Firebase Remote Config (min_version, latest_version)
+    try {
+      final result = await AppUpdateCheckService().checkForUpdate();
+
+      if (result.needsMandatoryUpdate) {
+        // current < min_version → blocking popup, cannot dismiss
+        GetStorage().write(_kShowUpdateScreenKey, true);
+        GetStorage().write(_kUpdateMandatoryKey, true);
+        return;
+      }
+
+      if (result.needsOptionalUpdate) {
+        // current < latest_version → optional update (dismissible)
+        GetStorage().write(_kShowUpdateScreenKey, true);
+        GetStorage().write(_kUpdateMandatoryKey, false);
+        return;
+      }
+    } catch (e) {
+      // Remote Config check failed, fall through to Play Store
+    }
+
+    // STEP 2: Fallback - Play Store (Android only)
+    GetStorage().remove(_kUpdateMandatoryKey);
     final updateService = InAppUpdateService();
-    
-    // Check Play Store for updates directly (GraphQL query disabled)
     try {
       await updateService.checkForUpdatesAndDetermineType();
       if (updateService.isImmediateUpdateEnabled && updateService.isUpdateAvailable) {
@@ -59,12 +70,10 @@ Future<void> checkAppUpdate() async {
         GetStorage().remove(_kShowUpdateScreenKey);
       }
     } catch (e) {
-        if (e.toString().contains('ERROR_APP_NOT_OWNED')) {
-        }
+      if (e.toString().contains('ERROR_APP_NOT_OWNED')) {}
+      GetStorage().remove(_kShowUpdateScreenKey);
     }
-    
-  } catch (e) {
-  }
+  } catch (e) {}
 }
 
 /// Comprehensive app update check function that can be called from anywhere
@@ -464,6 +473,7 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.initial, // Start with initial route wrapper
       getPages: AppRoutes.routes,
       navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
+      scrollBehavior: ScrollBehavior().copyWith(scrollbars: false),
       );
     });
   }

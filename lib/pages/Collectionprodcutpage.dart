@@ -522,9 +522,9 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                     ? PriceFormatter.formatPrice(shadowPriceMinor)
                     : null;
 
-                // In stock / Out of stock from the selected product variant, shown on category product card
-                final stockLevel = selectedVariant.stockLevel.toUpperCase();
-                final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
+                // Stock level from the selected product variant (IN_STOCK, LOW_STOCK, OUT_OF_STOCK)
+                final stockLevelStr = selectedVariant.stockLevel;
+                final isOutOfStock = stockLevelStr.toUpperCase() == 'OUT_OF_STOCK';
 
                 // Get group name for display
                 final groupName = product.optionGroups.isNotEmpty
@@ -559,6 +559,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                   priceText: priceText,
                   shadowPriceText: shadowPriceText,
                   isOutOfStock: isOutOfStock,
+                  stockLevel: stockLevelStr,
                   groupName: groupName,
                   hasMultipleVariants: hasMultipleVariants,
                   onAddToCart: () => _handleAddToCart(

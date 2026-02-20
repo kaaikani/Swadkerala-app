@@ -578,57 +578,72 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   }
 
   Widget _buildOtpField() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: ResponsiveUtils.rp(12),
-            offset: Offset(0, ResponsiveUtils.rp(4)),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Scale OTP font and letter-spacing to fit available width (avoids overflow on small screens)
+        final hPadding = ResponsiveUtils.rp(24) * 2;
+        final availableWidth = (constraints.maxWidth - hPadding).clamp(120.0, double.infinity);
+        const baseFontSize = 32.0;
+        const baseLetterSpacing = 16.0;
+        final estimatedWidth = 4 * baseFontSize * 0.65 + 3 * baseLetterSpacing;
+        final scale = (availableWidth / estimatedWidth).clamp(0.5, 1.0);
+        final fontSize = ResponsiveUtils.sp(baseFontSize * scale);
+        final letterSpacing = ResponsiveUtils.rp(baseLetterSpacing * scale);
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: ResponsiveUtils.rp(12),
+                offset: Offset(0, ResponsiveUtils.rp(4)),
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveUtils.rp(24),
-        vertical: ResponsiveUtils.rp(24),
-      ),
-      child: TextFormField(
-        controller: _authController.otpController,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: ResponsiveUtils.sp(32),
-          fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
-          letterSpacing: ResponsiveUtils.rp(16),
-        ),
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(4),
-        ],
-        onChanged: (value) {
-          if (value.length == 4) {
-            _handleFinalSubmit();
-          }
-        },
-        validator: (v) => (v?.length ?? 0) < 4 ? "" : null,
-        decoration: InputDecoration(
-          hintText: '○ ○ ○ ○',
-          hintStyle: TextStyle(
-            color: Colors.black.withValues(alpha: 0.3),
-            fontSize: ResponsiveUtils.sp(32),
-            letterSpacing: ResponsiveUtils.rp(16),
-            fontWeight: FontWeight.w300,
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUtils.rp(24),
+            vertical: ResponsiveUtils.rp(24),
           ),
-          border: InputBorder.none,
-        ),
-      ),
+          child: TextFormField(
+            controller: _authController.otpController,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+              letterSpacing: letterSpacing,
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(4),
+            ],
+            onChanged: (value) {
+              if (value.length == 4) {
+                _handleFinalSubmit();
+              }
+            },
+            validator: (v) => (v?.length ?? 0) < 4 ? "" : null,
+            decoration: InputDecoration(
+              hintText: '○ ○ ○ ○',
+              hintStyle: TextStyle(
+                color: Colors.black.withValues(alpha: 0.3),
+                fontSize: fontSize,
+                letterSpacing: letterSpacing,
+                fontWeight: FontWeight.w300,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+        );
+      },
     );
   }
 

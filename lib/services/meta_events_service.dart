@@ -28,6 +28,15 @@ class MetaEventsService {
     }
   }
 
+  /// Set Advertiser Tracking Enabled (iOS 14+ ATT compliance).
+  /// Call after user responds to App Tracking Transparency prompt.
+  Future<void> setAdvertiserTracking({required bool enabled}) async {
+    if (!_enabled) return;
+    try {
+      await _fb.setAdvertiserTracking(enabled: enabled, collectId: enabled);
+    } catch (_) {}
+  }
+
   Future<void> _guard(Future<void> Function() fn) async {
     if (!_enabled) return;
     try {

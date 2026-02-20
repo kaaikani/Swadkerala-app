@@ -149,11 +149,21 @@ class AppRoutes {
     ),
     GetPage(
       name: collectionProducts,
-      page: () => CollectionProductsPage(
-        collectionId: (Get.arguments as Map<String, dynamic>)['collectionId'] as String,
-        collectionName: (Get.arguments as Map<String, dynamic>)['collectionName'] as String,
-        slug: (Get.arguments as Map<String, dynamic>)['slug'] as String?,
-      ),
+      page: () {
+        final args = Get.arguments as Map<String, dynamic>? ?? {};
+        final collectionId = args['collectionId']?.toString().trim() ?? '';
+        final collectionName = args['collectionName']?.toString().trim() ?? 'Collection';
+        final slug = args['slug']?.toString().trim() ?? args['collectionSlug']?.toString().trim();
+        if (collectionId.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => Get.offAllNamed(AppRoutes.home));
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        return CollectionProductsPage(
+          collectionId: collectionId,
+          collectionName: collectionName,
+          slug: slug != null && slug.isNotEmpty ? slug : null,
+        );
+      },
       transition: Transition.rightToLeft,
     ),
     GetPage(

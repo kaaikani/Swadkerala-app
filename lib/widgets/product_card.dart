@@ -4,6 +4,7 @@ import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/shimmers.dart';
 import '../widgets/cached_app_image.dart';
+import '../widgets/stock_level_label.dart';
 import '../services/graphql_client.dart';
 
 /// Unified product card widget used across all pages
@@ -26,6 +27,7 @@ class ProductCard extends StatelessWidget {
     this.shadowPriceText,
     this.orderCount,
     this.isOutOfStock = false,
+    this.stockLevel,
     this.groupName,
     this.hasMultipleVariants = false,
   });
@@ -45,6 +47,8 @@ class ProductCard extends StatelessWidget {
   final Future<bool> Function()? onAddToCart;
   final int? orderCount;
   final bool isOutOfStock;
+  /// Raw stock level (IN_STOCK, LOW_STOCK, OUT_OF_STOCK). When set, StockLevelLabel is shown.
+  final String? stockLevel;
   final String? groupName;
   final bool hasMultipleVariants;
 
@@ -343,32 +347,37 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                       // Stock status on right corner
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(8),
-                          vertical: ResponsiveUtils.rp(4),
-                        ),
-                        decoration: BoxDecoration(
-                          color: isOutOfStock
-                              ? AppColors.error.withValues(alpha: 0.12)
-                              : AppColors.success.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                          border: Border.all(
-                            color: isOutOfStock
-                                ? AppColors.error.withValues(alpha: 0.4)
-                                : AppColors.success.withValues(alpha: 0.4),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          isOutOfStock ? 'Out of Stock' : 'In Stock',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(11),
-                            fontWeight: FontWeight.w600,
-                            color: isOutOfStock ? AppColors.error : AppColors.success,
-                          ),
-                        ),
-                      ),
+                      stockLevel != null
+                          ? StockLevelLabel(
+                              stockLevel: stockLevel!,
+                              compact: true,
+                            )
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(8),
+                                vertical: ResponsiveUtils.rp(4),
+                              ),
+                              decoration: BoxDecoration(
+                                color: isOutOfStock
+                                    ? AppColors.error.withValues(alpha: 0.12)
+                                    : AppColors.success.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                border: Border.all(
+                                  color: isOutOfStock
+                                      ? AppColors.error.withValues(alpha: 0.4)
+                                      : AppColors.success.withValues(alpha: 0.4),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                isOutOfStock ? 'Out of Stock' : 'In Stock',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(11),
+                                  fontWeight: FontWeight.w600,
+                                  color: isOutOfStock ? AppColors.error : AppColors.success,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ],
