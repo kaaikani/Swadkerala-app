@@ -22,6 +22,7 @@ import '../graphql/Customer.graphql.dart';
 import '../theme/colors.dart';
 import 'orders_page.dart';
 import '../utils/analytics_helper.dart';
+import '../utils/app_config.dart';
 import '../services/analytics_service.dart';
 
 class AccountPage extends StatefulWidget {
@@ -1128,6 +1129,13 @@ class _AccountPageState extends State<AccountPage> {
             'Share App',
             Icons.arrow_forward_ios,
             onTap: _shareApp,
+          ),
+          _buildDivider(),
+          _buildListTile(
+            Icons.delete_outline,
+            'Account Deletion',
+            Icons.arrow_forward_ios,
+            onTap: _showAccountDeletionDialog,
           ),
           _buildDivider(),
           _buildListTile(
@@ -2374,6 +2382,68 @@ class _AccountPageState extends State<AccountPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showAccountDeletionDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.delete_outline, color: AppColors.button, size: ResponsiveUtils.rp(24)),
+            SizedBox(width: ResponsiveUtils.rp(12)),
+            Text(
+              'Account Deletion',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(18),
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Kindly call customer care to delete the account.',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              Get.back();
+              try {
+                final cleanPhone = AppConfig.phoneNumber.replaceAll(' ', '');
+                final uri = Uri.parse('tel:$cleanPhone');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                } else {
+                  showErrorSnackbar('Could not make phone call');
+                }
+              } catch (e) {
+                showErrorSnackbar('Could not make phone call');
+              }
+            },
+            icon: Icon(Icons.phone, size: ResponsiveUtils.rp(18), color: Colors.white),
+            label: Text('Call'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.button,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
