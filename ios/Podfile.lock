@@ -237,6 +237,8 @@ PODS:
   - ReachabilitySwift (5.2.4)
   - share_plus (0.0.1):
     - Flutter
+  - sign_in_with_apple (0.0.1):
+    - Flutter
   - sms_autofill (0.0.1):
     - Flutter
   - speech_to_text (0.0.1):
@@ -274,6 +276,7 @@ DEPENDENCIES:
   - printing (from `.symlinks/plugins/printing/ios`)
   - razorpay_flutter (from `.symlinks/plugins/razorpay_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
+  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sms_autofill (from `.symlinks/plugins/sms_autofill/ios`)
   - speech_to_text (from `.symlinks/plugins/speech_to_text/ios`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
@@ -360,6 +363,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/razorpay_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
+  sign_in_with_apple:
+    :path: ".symlinks/plugins/sign_in_with_apple/ios"
   sms_autofill:
     :path: ".symlinks/plugins/sms_autofill/ios"
   speech_to_text:
@@ -422,6 +427,7 @@ SPEC CHECKSUMS:
   razorpay_flutter: 0e98e4fcaae27ad50e011d85f66d85e0a008754a
   ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   share_plus: de6030e33b4e106470e09322d87cf2a4258d2d1d
+  sign_in_with_apple: c5dcc141574c8c54d5ac99dd2163c0c72ad22418
   sms_autofill: b36b2147535657fea83d7f3898d7831de70bd8e4
   speech_to_text: ae2abc312e619ff1c53e675a9fc4d785a15c03bb
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0

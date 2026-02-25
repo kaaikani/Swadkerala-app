@@ -1,15 +1,204 @@
 import 'schema.graphql.dart';
 
+class Input$AppleAuthInput {
+  factory Input$AppleAuthInput({
+    required String token,
+    String? email,
+    String? firstName,
+    String? lastName,
+  }) =>
+      Input$AppleAuthInput._({
+        r'token': token,
+        if (email != null) r'email': email,
+        if (firstName != null) r'firstName': firstName,
+        if (lastName != null) r'lastName': lastName,
+      });
+
+  Input$AppleAuthInput._(this._$data);
+
+  factory Input$AppleAuthInput.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$token = data['token'];
+    result$data['token'] = (l$token as String);
+    if (data.containsKey('email')) {
+      final l$email = data['email'];
+      result$data['email'] = (l$email as String?);
+    }
+    if (data.containsKey('firstName')) {
+      final l$firstName = data['firstName'];
+      result$data['firstName'] = (l$firstName as String?);
+    }
+    if (data.containsKey('lastName')) {
+      final l$lastName = data['lastName'];
+      result$data['lastName'] = (l$lastName as String?);
+    }
+    return Input$AppleAuthInput._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get token => (_$data['token'] as String);
+
+  String? get email => (_$data['email'] as String?);
+
+  String? get firstName => (_$data['firstName'] as String?);
+
+  String? get lastName => (_$data['lastName'] as String?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$token = token;
+    result$data['token'] = l$token;
+    if (_$data.containsKey('email')) {
+      final l$email = email;
+      result$data['email'] = l$email;
+    }
+    if (_$data.containsKey('firstName')) {
+      final l$firstName = firstName;
+      result$data['firstName'] = l$firstName;
+    }
+    if (_$data.containsKey('lastName')) {
+      final l$lastName = lastName;
+      result$data['lastName'] = l$lastName;
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$AppleAuthInput<Input$AppleAuthInput> get copyWith =>
+      CopyWith$Input$AppleAuthInput(
+        this,
+        (i) => i,
+      );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$AppleAuthInput || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    final l$email = email;
+    final lOther$email = other.email;
+    if (_$data.containsKey('email') != other._$data.containsKey('email')) {
+      return false;
+    }
+    if (l$email != lOther$email) {
+      return false;
+    }
+    final l$firstName = firstName;
+    final lOther$firstName = other.firstName;
+    if (_$data.containsKey('firstName') !=
+        other._$data.containsKey('firstName')) {
+      return false;
+    }
+    if (l$firstName != lOther$firstName) {
+      return false;
+    }
+    final l$lastName = lastName;
+    final lOther$lastName = other.lastName;
+    if (_$data.containsKey('lastName') !=
+        other._$data.containsKey('lastName')) {
+      return false;
+    }
+    if (l$lastName != lOther$lastName) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$token = token;
+    final l$email = email;
+    final l$firstName = firstName;
+    final l$lastName = lastName;
+    return Object.hashAll([
+      l$token,
+      _$data.containsKey('email') ? l$email : const {},
+      _$data.containsKey('firstName') ? l$firstName : const {},
+      _$data.containsKey('lastName') ? l$lastName : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Input$AppleAuthInput<TRes> {
+  factory CopyWith$Input$AppleAuthInput(
+    Input$AppleAuthInput instance,
+    TRes Function(Input$AppleAuthInput) then,
+  ) = _CopyWithImpl$Input$AppleAuthInput;
+
+  factory CopyWith$Input$AppleAuthInput.stub(TRes res) =
+      _CopyWithStubImpl$Input$AppleAuthInput;
+
+  TRes call({
+    String? token,
+    String? email,
+    String? firstName,
+    String? lastName,
+  });
+}
+
+class _CopyWithImpl$Input$AppleAuthInput<TRes>
+    implements CopyWith$Input$AppleAuthInput<TRes> {
+  _CopyWithImpl$Input$AppleAuthInput(
+    this._instance,
+    this._then,
+  );
+
+  final Input$AppleAuthInput _instance;
+
+  final TRes Function(Input$AppleAuthInput) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? token = _undefined,
+    Object? email = _undefined,
+    Object? firstName = _undefined,
+    Object? lastName = _undefined,
+  }) =>
+      _then(Input$AppleAuthInput._({
+        ..._instance._$data,
+        if (token != _undefined && token != null) 'token': (token as String),
+        if (email != _undefined) 'email': (email as String?),
+        if (firstName != _undefined) 'firstName': (firstName as String?),
+        if (lastName != _undefined) 'lastName': (lastName as String?),
+      }));
+}
+
+class _CopyWithStubImpl$Input$AppleAuthInput<TRes>
+    implements CopyWith$Input$AppleAuthInput<TRes> {
+  _CopyWithStubImpl$Input$AppleAuthInput(this._res);
+
+  TRes _res;
+
+  call({
+    String? token,
+    String? email,
+    String? firstName,
+    String? lastName,
+  }) =>
+      _res;
+}
+
 class Input$AuthenticationInput {
   factory Input$AuthenticationInput({
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
+    Input$AppleAuthInput? apple,
   }) =>
       Input$AuthenticationInput._({
         if (phoneOtp != null) r'phoneOtp': phoneOtp,
         if (native != null) r'native': native,
         if (google != null) r'google': google,
+        if (apple != null) r'apple': apple,
       });
 
   Input$AuthenticationInput._(this._$data);
@@ -34,6 +223,12 @@ class Input$AuthenticationInput {
           ? null
           : Input$GoogleAuthInput.fromJson((l$google as Map<String, dynamic>));
     }
+    if (data.containsKey('apple')) {
+      final l$apple = data['apple'];
+      result$data['apple'] = l$apple == null
+          ? null
+          : Input$AppleAuthInput.fromJson((l$apple as Map<String, dynamic>));
+    }
     return Input$AuthenticationInput._(result$data);
   }
 
@@ -48,6 +243,8 @@ class Input$AuthenticationInput {
   Input$GoogleAuthInput? get google =>
       (_$data['google'] as Input$GoogleAuthInput?);
 
+  Input$AppleAuthInput? get apple => (_$data['apple'] as Input$AppleAuthInput?);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     if (_$data.containsKey('phoneOtp')) {
@@ -61,6 +258,10 @@ class Input$AuthenticationInput {
     if (_$data.containsKey('google')) {
       final l$google = google;
       result$data['google'] = l$google?.toJson();
+    }
+    if (_$data.containsKey('apple')) {
+      final l$apple = apple;
+      result$data['apple'] = l$apple?.toJson();
     }
     return result$data;
   }
@@ -105,6 +306,14 @@ class Input$AuthenticationInput {
     if (l$google != lOther$google) {
       return false;
     }
+    final l$apple = apple;
+    final lOther$apple = other.apple;
+    if (_$data.containsKey('apple') != other._$data.containsKey('apple')) {
+      return false;
+    }
+    if (l$apple != lOther$apple) {
+      return false;
+    }
     return true;
   }
 
@@ -113,10 +322,12 @@ class Input$AuthenticationInput {
     final l$phoneOtp = phoneOtp;
     final l$native = native;
     final l$google = google;
+    final l$apple = apple;
     return Object.hashAll([
       _$data.containsKey('phoneOtp') ? l$phoneOtp : const {},
       _$data.containsKey('native') ? l$native : const {},
       _$data.containsKey('google') ? l$google : const {},
+      _$data.containsKey('apple') ? l$apple : const {},
     ]);
   }
 }
@@ -134,10 +345,12 @@ abstract class CopyWith$Input$AuthenticationInput<TRes> {
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
+    Input$AppleAuthInput? apple,
   });
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp;
   CopyWith$Input$NativeAuthInput<TRes> get native;
   CopyWith$Input$GoogleAuthInput<TRes> get google;
+  CopyWith$Input$AppleAuthInput<TRes> get apple;
 }
 
 class _CopyWithImpl$Input$AuthenticationInput<TRes>
@@ -157,6 +370,7 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
     Object? phoneOtp = _undefined,
     Object? native = _undefined,
     Object? google = _undefined,
+    Object? apple = _undefined,
   }) =>
       _then(Input$AuthenticationInput._({
         ..._instance._$data,
@@ -164,6 +378,7 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
           'phoneOtp': (phoneOtp as Input$PhoneOtpInput?),
         if (native != _undefined) 'native': (native as Input$NativeAuthInput?),
         if (google != _undefined) 'google': (google as Input$GoogleAuthInput?),
+        if (apple != _undefined) 'apple': (apple as Input$AppleAuthInput?),
       }));
 
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp {
@@ -187,6 +402,13 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
         ? CopyWith$Input$GoogleAuthInput.stub(_then(_instance))
         : CopyWith$Input$GoogleAuthInput(local$google, (e) => call(google: e));
   }
+
+  CopyWith$Input$AppleAuthInput<TRes> get apple {
+    final local$apple = _instance.apple;
+    return local$apple == null
+        ? CopyWith$Input$AppleAuthInput.stub(_then(_instance))
+        : CopyWith$Input$AppleAuthInput(local$apple, (e) => call(apple: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
@@ -199,6 +421,7 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
+    Input$AppleAuthInput? apple,
   }) =>
       _res;
 
@@ -210,6 +433,9 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
 
   CopyWith$Input$GoogleAuthInput<TRes> get google =>
       CopyWith$Input$GoogleAuthInput.stub(_res);
+
+  CopyWith$Input$AppleAuthInput<TRes> get apple =>
+      CopyWith$Input$AppleAuthInput.stub(_res);
 }
 
 class Input$BooleanListOperators {
@@ -2351,9 +2577,12 @@ class _CopyWithStubImpl$Input$CreateAddressInput<TRes>
 }
 
 class Input$CreateCustomerCustomFieldsInput {
-  factory Input$CreateCustomerCustomFieldsInput(
-          {int? loyaltyPointsAvailable}) =>
+  factory Input$CreateCustomerCustomFieldsInput({
+    String? location,
+    int? loyaltyPointsAvailable,
+  }) =>
       Input$CreateCustomerCustomFieldsInput._({
+        if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
       });
@@ -2363,6 +2592,10 @@ class Input$CreateCustomerCustomFieldsInput {
   factory Input$CreateCustomerCustomFieldsInput.fromJson(
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
+    if (data.containsKey('location')) {
+      final l$location = data['location'];
+      result$data['location'] = (l$location as String?);
+    }
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
       result$data['loyaltyPointsAvailable'] =
@@ -2373,10 +2606,16 @@ class Input$CreateCustomerCustomFieldsInput {
 
   Map<String, dynamic> _$data;
 
+  String? get location => (_$data['location'] as String?);
+
   int? get loyaltyPointsAvailable => (_$data['loyaltyPointsAvailable'] as int?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
+    if (_$data.containsKey('location')) {
+      final l$location = location;
+      result$data['location'] = l$location;
+    }
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable;
@@ -2400,6 +2639,15 @@ class Input$CreateCustomerCustomFieldsInput {
         runtimeType != other.runtimeType) {
       return false;
     }
+    final l$location = location;
+    final lOther$location = other.location;
+    if (_$data.containsKey('location') !=
+        other._$data.containsKey('location')) {
+      return false;
+    }
+    if (l$location != lOther$location) {
+      return false;
+    }
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     final lOther$loyaltyPointsAvailable = other.loyaltyPointsAvailable;
     if (_$data.containsKey('loyaltyPointsAvailable') !=
@@ -2414,11 +2662,13 @@ class Input$CreateCustomerCustomFieldsInput {
 
   @override
   int get hashCode {
+    final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     return Object.hashAll([
+      _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
-          : const {}
+          : const {},
     ]);
   }
 }
@@ -2432,7 +2682,10 @@ abstract class CopyWith$Input$CreateCustomerCustomFieldsInput<TRes> {
   factory CopyWith$Input$CreateCustomerCustomFieldsInput.stub(TRes res) =
       _CopyWithStubImpl$Input$CreateCustomerCustomFieldsInput;
 
-  TRes call({int? loyaltyPointsAvailable});
+  TRes call({
+    String? location,
+    int? loyaltyPointsAvailable,
+  });
 }
 
 class _CopyWithImpl$Input$CreateCustomerCustomFieldsInput<TRes>
@@ -2448,9 +2701,13 @@ class _CopyWithImpl$Input$CreateCustomerCustomFieldsInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? loyaltyPointsAvailable = _undefined}) =>
+  TRes call({
+    Object? location = _undefined,
+    Object? loyaltyPointsAvailable = _undefined,
+  }) =>
       _then(Input$CreateCustomerCustomFieldsInput._({
         ..._instance._$data,
+        if (location != _undefined) 'location': (location as String?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
       }));
@@ -2462,7 +2719,11 @@ class _CopyWithStubImpl$Input$CreateCustomerCustomFieldsInput<TRes>
 
   TRes _res;
 
-  call({int? loyaltyPointsAvailable}) => _res;
+  call({
+    String? location,
+    int? loyaltyPointsAvailable,
+  }) =>
+      _res;
 }
 
 class Input$CreateCustomerInput {
@@ -2724,6 +2985,7 @@ class Input$CustomerFilterParameter {
     Input$StringOperators? emailAddress,
     List<Input$CustomerFilterParameter>? $_and,
     List<Input$CustomerFilterParameter>? $_or,
+    Input$StringOperators? location,
     Input$NumberOperators? loyaltyPointsAvailable,
   }) =>
       Input$CustomerFilterParameter._({
@@ -2737,6 +2999,7 @@ class Input$CustomerFilterParameter {
         if (emailAddress != null) r'emailAddress': emailAddress,
         if ($_and != null) r'_and': $_and,
         if ($_or != null) r'_or': $_or,
+        if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
       });
@@ -2811,6 +3074,13 @@ class Input$CustomerFilterParameter {
               (e as Map<String, dynamic>)))
           .toList();
     }
+    if (data.containsKey('location')) {
+      final l$location = data['location'];
+      result$data['location'] = l$location == null
+          ? null
+          : Input$StringOperators.fromJson(
+              (l$location as Map<String, dynamic>));
+    }
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable == null
@@ -2851,6 +3121,9 @@ class Input$CustomerFilterParameter {
 
   List<Input$CustomerFilterParameter>? get $_or =>
       (_$data['_or'] as List<Input$CustomerFilterParameter>?);
+
+  Input$StringOperators? get location =>
+      (_$data['location'] as Input$StringOperators?);
 
   Input$NumberOperators? get loyaltyPointsAvailable =>
       (_$data['loyaltyPointsAvailable'] as Input$NumberOperators?);
@@ -2896,6 +3169,10 @@ class Input$CustomerFilterParameter {
     if (_$data.containsKey('_or')) {
       final l$$_or = $_or;
       result$data['_or'] = l$$_or?.map((e) => e.toJson()).toList();
+    }
+    if (_$data.containsKey('location')) {
+      final l$location = location;
+      result$data['location'] = l$location?.toJson();
     }
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
@@ -3028,6 +3305,15 @@ class Input$CustomerFilterParameter {
     } else if (l$$_or != lOther$$_or) {
       return false;
     }
+    final l$location = location;
+    final lOther$location = other.location;
+    if (_$data.containsKey('location') !=
+        other._$data.containsKey('location')) {
+      return false;
+    }
+    if (l$location != lOther$location) {
+      return false;
+    }
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     final lOther$loyaltyPointsAvailable = other.loyaltyPointsAvailable;
     if (_$data.containsKey('loyaltyPointsAvailable') !=
@@ -3052,6 +3338,7 @@ class Input$CustomerFilterParameter {
     final l$emailAddress = emailAddress;
     final l$$_and = $_and;
     final l$$_or = $_or;
+    final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
@@ -3072,6 +3359,7 @@ class Input$CustomerFilterParameter {
               ? null
               : Object.hashAll(l$$_or.map((v) => v))
           : const {},
+      _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
           : const {},
@@ -3099,6 +3387,7 @@ abstract class CopyWith$Input$CustomerFilterParameter<TRes> {
     Input$StringOperators? emailAddress,
     List<Input$CustomerFilterParameter>? $_and,
     List<Input$CustomerFilterParameter>? $_or,
+    Input$StringOperators? location,
     Input$NumberOperators? loyaltyPointsAvailable,
   });
   CopyWith$Input$IDOperators<TRes> get id;
@@ -3121,6 +3410,7 @@ abstract class CopyWith$Input$CustomerFilterParameter<TRes> {
                   CopyWith$Input$CustomerFilterParameter<
                       Input$CustomerFilterParameter>>?)
           _fn);
+  CopyWith$Input$StringOperators<TRes> get location;
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsAvailable;
 }
 
@@ -3148,6 +3438,7 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     Object? emailAddress = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
+    Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
   }) =>
       _then(Input$CustomerFilterParameter._({
@@ -3170,6 +3461,8 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
           '_and': ($_and as List<Input$CustomerFilterParameter>?),
         if ($_or != _undefined)
           '_or': ($_or as List<Input$CustomerFilterParameter>?),
+        if (location != _undefined)
+          'location': (location as Input$StringOperators?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable':
               (loyaltyPointsAvailable as Input$NumberOperators?),
@@ -3263,6 +3556,14 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
                     (i) => i,
                   )))?.toList());
 
+  CopyWith$Input$StringOperators<TRes> get location {
+    final local$location = _instance.location;
+    return local$location == null
+        ? CopyWith$Input$StringOperators.stub(_then(_instance))
+        : CopyWith$Input$StringOperators(
+            local$location, (e) => call(location: e));
+  }
+
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsAvailable {
     final local$loyaltyPointsAvailable = _instance.loyaltyPointsAvailable;
     return local$loyaltyPointsAvailable == null
@@ -3289,6 +3590,7 @@ class _CopyWithStubImpl$Input$CustomerFilterParameter<TRes>
     Input$StringOperators? emailAddress,
     List<Input$CustomerFilterParameter>? $_and,
     List<Input$CustomerFilterParameter>? $_or,
+    Input$StringOperators? location,
     Input$NumberOperators? loyaltyPointsAvailable,
   }) =>
       _res;
@@ -3320,6 +3622,9 @@ class _CopyWithStubImpl$Input$CustomerFilterParameter<TRes>
   $_and(_fn) => _res;
 
   $_or(_fn) => _res;
+
+  CopyWith$Input$StringOperators<TRes> get location =>
+      CopyWith$Input$StringOperators.stub(_res);
 
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsAvailable =>
       CopyWith$Input$NumberOperators.stub(_res);
@@ -3594,6 +3899,7 @@ class Input$CustomerSortParameter {
     Enum$SortOrder? lastName,
     Enum$SortOrder? phoneNumber,
     Enum$SortOrder? emailAddress,
+    Enum$SortOrder? location,
     Enum$SortOrder? loyaltyPointsAvailable,
   }) =>
       Input$CustomerSortParameter._({
@@ -3605,6 +3911,7 @@ class Input$CustomerSortParameter {
         if (lastName != null) r'lastName': lastName,
         if (phoneNumber != null) r'phoneNumber': phoneNumber,
         if (emailAddress != null) r'emailAddress': emailAddress,
+        if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
       });
@@ -3659,6 +3966,12 @@ class Input$CustomerSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$emailAddress as String));
     }
+    if (data.containsKey('location')) {
+      final l$location = data['location'];
+      result$data['location'] = l$location == null
+          ? null
+          : fromJson$Enum$SortOrder((l$location as String));
+    }
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable == null
@@ -3686,6 +3999,8 @@ class Input$CustomerSortParameter {
 
   Enum$SortOrder? get emailAddress =>
       (_$data['emailAddress'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get location => (_$data['location'] as Enum$SortOrder?);
 
   Enum$SortOrder? get loyaltyPointsAvailable =>
       (_$data['loyaltyPointsAvailable'] as Enum$SortOrder?);
@@ -3730,6 +4045,11 @@ class Input$CustomerSortParameter {
       final l$emailAddress = emailAddress;
       result$data['emailAddress'] =
           l$emailAddress == null ? null : toJson$Enum$SortOrder(l$emailAddress);
+    }
+    if (_$data.containsKey('location')) {
+      final l$location = location;
+      result$data['location'] =
+          l$location == null ? null : toJson$Enum$SortOrder(l$location);
     }
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
@@ -3825,6 +4145,15 @@ class Input$CustomerSortParameter {
     if (l$emailAddress != lOther$emailAddress) {
       return false;
     }
+    final l$location = location;
+    final lOther$location = other.location;
+    if (_$data.containsKey('location') !=
+        other._$data.containsKey('location')) {
+      return false;
+    }
+    if (l$location != lOther$location) {
+      return false;
+    }
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     final lOther$loyaltyPointsAvailable = other.loyaltyPointsAvailable;
     if (_$data.containsKey('loyaltyPointsAvailable') !=
@@ -3847,6 +4176,7 @@ class Input$CustomerSortParameter {
     final l$lastName = lastName;
     final l$phoneNumber = phoneNumber;
     final l$emailAddress = emailAddress;
+    final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
@@ -3857,6 +4187,7 @@ class Input$CustomerSortParameter {
       _$data.containsKey('lastName') ? l$lastName : const {},
       _$data.containsKey('phoneNumber') ? l$phoneNumber : const {},
       _$data.containsKey('emailAddress') ? l$emailAddress : const {},
+      _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
           : const {},
@@ -3882,6 +4213,7 @@ abstract class CopyWith$Input$CustomerSortParameter<TRes> {
     Enum$SortOrder? lastName,
     Enum$SortOrder? phoneNumber,
     Enum$SortOrder? emailAddress,
+    Enum$SortOrder? location,
     Enum$SortOrder? loyaltyPointsAvailable,
   });
 }
@@ -3908,6 +4240,7 @@ class _CopyWithImpl$Input$CustomerSortParameter<TRes>
     Object? lastName = _undefined,
     Object? phoneNumber = _undefined,
     Object? emailAddress = _undefined,
+    Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
   }) =>
       _then(Input$CustomerSortParameter._({
@@ -3925,6 +4258,7 @@ class _CopyWithImpl$Input$CustomerSortParameter<TRes>
           'phoneNumber': (phoneNumber as Enum$SortOrder?),
         if (emailAddress != _undefined)
           'emailAddress': (emailAddress as Enum$SortOrder?),
+        if (location != _undefined) 'location': (location as Enum$SortOrder?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as Enum$SortOrder?),
       }));
@@ -3945,6 +4279,7 @@ class _CopyWithStubImpl$Input$CustomerSortParameter<TRes>
     Enum$SortOrder? lastName,
     Enum$SortOrder? phoneNumber,
     Enum$SortOrder? emailAddress,
+    Enum$SortOrder? location,
     Enum$SortOrder? loyaltyPointsAvailable,
   }) =>
       _res;
@@ -10232,6 +10567,7 @@ class Input$OrderFilterParameter {
     Input$NumberOperators? totalWithTax,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
+    Input$StringOperators? platform,
     Input$StringOperators? deviceMedium,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
@@ -10256,6 +10592,7 @@ class Input$OrderFilterParameter {
         if (totalWithTax != null) r'totalWithTax': totalWithTax,
         if ($_and != null) r'_and': $_and,
         if ($_or != null) r'_or': $_or,
+        if (platform != null) r'platform': platform,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
         if (otherInstructions != null) r'otherInstructions': otherInstructions,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
@@ -10385,6 +10722,13 @@ class Input$OrderFilterParameter {
               Input$OrderFilterParameter.fromJson((e as Map<String, dynamic>)))
           .toList();
     }
+    if (data.containsKey('platform')) {
+      final l$platform = data['platform'];
+      result$data['platform'] = l$platform == null
+          ? null
+          : Input$StringOperators.fromJson(
+              (l$platform as Map<String, dynamic>));
+    }
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
       result$data['deviceMedium'] = l$deviceMedium == null
@@ -10468,6 +10812,9 @@ class Input$OrderFilterParameter {
 
   List<Input$OrderFilterParameter>? get $_or =>
       (_$data['_or'] as List<Input$OrderFilterParameter>?);
+
+  Input$StringOperators? get platform =>
+      (_$data['platform'] as Input$StringOperators?);
 
   Input$StringOperators? get deviceMedium =>
       (_$data['deviceMedium'] as Input$StringOperators?);
@@ -10554,6 +10901,10 @@ class Input$OrderFilterParameter {
     if (_$data.containsKey('_or')) {
       final l$$_or = $_or;
       result$data['_or'] = l$$_or?.map((e) => e.toJson()).toList();
+    }
+    if (_$data.containsKey('platform')) {
+      final l$platform = platform;
+      result$data['platform'] = l$platform?.toJson();
     }
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
@@ -10765,6 +11116,15 @@ class Input$OrderFilterParameter {
     } else if (l$$_or != lOther$$_or) {
       return false;
     }
+    final l$platform = platform;
+    final lOther$platform = other.platform;
+    if (_$data.containsKey('platform') !=
+        other._$data.containsKey('platform')) {
+      return false;
+    }
+    if (l$platform != lOther$platform) {
+      return false;
+    }
     final l$deviceMedium = deviceMedium;
     final lOther$deviceMedium = other.deviceMedium;
     if (_$data.containsKey('deviceMedium') !=
@@ -10824,6 +11184,7 @@ class Input$OrderFilterParameter {
     final l$totalWithTax = totalWithTax;
     final l$$_and = $_and;
     final l$$_or = $_or;
+    final l$platform = platform;
     final l$deviceMedium = deviceMedium;
     final l$otherInstructions = otherInstructions;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -10855,6 +11216,7 @@ class Input$OrderFilterParameter {
               ? null
               : Object.hashAll(l$$_or.map((v) => v))
           : const {},
+      _$data.containsKey('platform') ? l$platform : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
       _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
@@ -10893,6 +11255,7 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
     Input$NumberOperators? totalWithTax,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
+    Input$StringOperators? platform,
     Input$StringOperators? deviceMedium,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
@@ -10926,6 +11289,7 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
                   CopyWith$Input$OrderFilterParameter<
                       Input$OrderFilterParameter>>?)
           _fn);
+  CopyWith$Input$StringOperators<TRes> get platform;
   CopyWith$Input$StringOperators<TRes> get deviceMedium;
   CopyWith$Input$StringOperators<TRes> get otherInstructions;
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsUsed;
@@ -10964,6 +11328,7 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     Object? totalWithTax = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
+    Object? platform = _undefined,
     Object? deviceMedium = _undefined,
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
@@ -11001,6 +11366,8 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
           '_and': ($_and as List<Input$OrderFilterParameter>?),
         if ($_or != _undefined)
           '_or': ($_or as List<Input$OrderFilterParameter>?),
+        if (platform != _undefined)
+          'platform': (platform as Input$StringOperators?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as Input$StringOperators?),
         if (otherInstructions != _undefined)
@@ -11160,6 +11527,14 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
                     (i) => i,
                   )))?.toList());
 
+  CopyWith$Input$StringOperators<TRes> get platform {
+    final local$platform = _instance.platform;
+    return local$platform == null
+        ? CopyWith$Input$StringOperators.stub(_then(_instance))
+        : CopyWith$Input$StringOperators(
+            local$platform, (e) => call(platform: e));
+  }
+
   CopyWith$Input$StringOperators<TRes> get deviceMedium {
     final local$deviceMedium = _instance.deviceMedium;
     return local$deviceMedium == null
@@ -11218,6 +11593,7 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
     Input$NumberOperators? totalWithTax,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
+    Input$StringOperators? platform,
     Input$StringOperators? deviceMedium,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
@@ -11276,6 +11652,9 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
   $_and(_fn) => _res;
 
   $_or(_fn) => _res;
+
+  CopyWith$Input$StringOperators<TRes> get platform =>
+      CopyWith$Input$StringOperators.stub(_res);
 
   CopyWith$Input$StringOperators<TRes> get deviceMedium =>
       CopyWith$Input$StringOperators.stub(_res);
@@ -11561,6 +11940,7 @@ class Input$OrderSortParameter {
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
+    Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
@@ -11580,6 +11960,7 @@ class Input$OrderSortParameter {
         if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
         if (total != null) r'total': total,
         if (totalWithTax != null) r'totalWithTax': totalWithTax,
+        if (platform != null) r'platform': platform,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
         if (otherInstructions != null) r'otherInstructions': otherInstructions,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
@@ -11665,6 +12046,12 @@ class Input$OrderSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$totalWithTax as String));
     }
+    if (data.containsKey('platform')) {
+      final l$platform = data['platform'];
+      result$data['platform'] = l$platform == null
+          ? null
+          : fromJson$Enum$SortOrder((l$platform as String));
+    }
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
       result$data['deviceMedium'] = l$deviceMedium == null
@@ -11724,6 +12111,8 @@ class Input$OrderSortParameter {
 
   Enum$SortOrder? get totalWithTax =>
       (_$data['totalWithTax'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get platform => (_$data['platform'] as Enum$SortOrder?);
 
   Enum$SortOrder? get deviceMedium =>
       (_$data['deviceMedium'] as Enum$SortOrder?);
@@ -11806,6 +12195,11 @@ class Input$OrderSortParameter {
       final l$totalWithTax = totalWithTax;
       result$data['totalWithTax'] =
           l$totalWithTax == null ? null : toJson$Enum$SortOrder(l$totalWithTax);
+    }
+    if (_$data.containsKey('platform')) {
+      final l$platform = platform;
+      result$data['platform'] =
+          l$platform == null ? null : toJson$Enum$SortOrder(l$platform);
     }
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
@@ -11961,6 +12355,15 @@ class Input$OrderSortParameter {
     if (l$totalWithTax != lOther$totalWithTax) {
       return false;
     }
+    final l$platform = platform;
+    final lOther$platform = other.platform;
+    if (_$data.containsKey('platform') !=
+        other._$data.containsKey('platform')) {
+      return false;
+    }
+    if (l$platform != lOther$platform) {
+      return false;
+    }
     final l$deviceMedium = deviceMedium;
     final lOther$deviceMedium = other.deviceMedium;
     if (_$data.containsKey('deviceMedium') !=
@@ -12015,6 +12418,7 @@ class Input$OrderSortParameter {
     final l$shippingWithTax = shippingWithTax;
     final l$total = total;
     final l$totalWithTax = totalWithTax;
+    final l$platform = platform;
     final l$deviceMedium = deviceMedium;
     final l$otherInstructions = otherInstructions;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -12033,6 +12437,7 @@ class Input$OrderSortParameter {
       _$data.containsKey('shippingWithTax') ? l$shippingWithTax : const {},
       _$data.containsKey('total') ? l$total : const {},
       _$data.containsKey('totalWithTax') ? l$totalWithTax : const {},
+      _$data.containsKey('platform') ? l$platform : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
       _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
@@ -12066,6 +12471,7 @@ abstract class CopyWith$Input$OrderSortParameter<TRes> {
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
+    Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
@@ -12100,6 +12506,7 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
     Object? shippingWithTax = _undefined,
     Object? total = _undefined,
     Object? totalWithTax = _undefined,
+    Object? platform = _undefined,
     Object? deviceMedium = _undefined,
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
@@ -12127,6 +12534,7 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
         if (total != _undefined) 'total': (total as Enum$SortOrder?),
         if (totalWithTax != _undefined)
           'totalWithTax': (totalWithTax as Enum$SortOrder?),
+        if (platform != _undefined) 'platform': (platform as Enum$SortOrder?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as Enum$SortOrder?),
         if (otherInstructions != _undefined)
@@ -12158,6 +12566,7 @@ class _CopyWithStubImpl$Input$OrderSortParameter<TRes>
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
+    Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
@@ -13672,6 +14081,7 @@ class Input$ProductVariantFilterParameter {
     List<Input$ProductVariantFilterParameter>? $_or,
     Input$NumberOperators? shadowPrice,
     Input$NumberOperators? maxOrderQuantity,
+    Input$DateOperators? maxQuantityStartDate,
   }) =>
       Input$ProductVariantFilterParameter._({
         if (id != null) r'id': id,
@@ -13689,6 +14099,8 @@ class Input$ProductVariantFilterParameter {
         if ($_or != null) r'_or': $_or,
         if (shadowPrice != null) r'shadowPrice': shadowPrice,
         if (maxOrderQuantity != null) r'maxOrderQuantity': maxOrderQuantity,
+        if (maxQuantityStartDate != null)
+          r'maxQuantityStartDate': maxQuantityStartDate,
       });
 
   Input$ProductVariantFilterParameter._(this._$data);
@@ -13794,6 +14206,13 @@ class Input$ProductVariantFilterParameter {
           : Input$NumberOperators.fromJson(
               (l$maxOrderQuantity as Map<String, dynamic>));
     }
+    if (data.containsKey('maxQuantityStartDate')) {
+      final l$maxQuantityStartDate = data['maxQuantityStartDate'];
+      result$data['maxQuantityStartDate'] = l$maxQuantityStartDate == null
+          ? null
+          : Input$DateOperators.fromJson(
+              (l$maxQuantityStartDate as Map<String, dynamic>));
+    }
     return Input$ProductVariantFilterParameter._(result$data);
   }
 
@@ -13840,6 +14259,9 @@ class Input$ProductVariantFilterParameter {
 
   Input$NumberOperators? get maxOrderQuantity =>
       (_$data['maxOrderQuantity'] as Input$NumberOperators?);
+
+  Input$DateOperators? get maxQuantityStartDate =>
+      (_$data['maxQuantityStartDate'] as Input$DateOperators?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -13902,6 +14324,10 @@ class Input$ProductVariantFilterParameter {
     if (_$data.containsKey('maxOrderQuantity')) {
       final l$maxOrderQuantity = maxOrderQuantity;
       result$data['maxOrderQuantity'] = l$maxOrderQuantity?.toJson();
+    }
+    if (_$data.containsKey('maxQuantityStartDate')) {
+      final l$maxQuantityStartDate = maxQuantityStartDate;
+      result$data['maxQuantityStartDate'] = l$maxQuantityStartDate?.toJson();
     }
     return result$data;
   }
@@ -14073,6 +14499,15 @@ class Input$ProductVariantFilterParameter {
     if (l$maxOrderQuantity != lOther$maxOrderQuantity) {
       return false;
     }
+    final l$maxQuantityStartDate = maxQuantityStartDate;
+    final lOther$maxQuantityStartDate = other.maxQuantityStartDate;
+    if (_$data.containsKey('maxQuantityStartDate') !=
+        other._$data.containsKey('maxQuantityStartDate')) {
+      return false;
+    }
+    if (l$maxQuantityStartDate != lOther$maxQuantityStartDate) {
+      return false;
+    }
     return true;
   }
 
@@ -14093,6 +14528,7 @@ class Input$ProductVariantFilterParameter {
     final l$$_or = $_or;
     final l$shadowPrice = shadowPrice;
     final l$maxOrderQuantity = maxOrderQuantity;
+    final l$maxQuantityStartDate = maxQuantityStartDate;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -14117,6 +14553,9 @@ class Input$ProductVariantFilterParameter {
           : const {},
       _$data.containsKey('shadowPrice') ? l$shadowPrice : const {},
       _$data.containsKey('maxOrderQuantity') ? l$maxOrderQuantity : const {},
+      _$data.containsKey('maxQuantityStartDate')
+          ? l$maxQuantityStartDate
+          : const {},
     ]);
   }
 }
@@ -14146,6 +14585,7 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
     List<Input$ProductVariantFilterParameter>? $_or,
     Input$NumberOperators? shadowPrice,
     Input$NumberOperators? maxOrderQuantity,
+    Input$DateOperators? maxQuantityStartDate,
   });
   CopyWith$Input$IDOperators<TRes> get id;
   CopyWith$Input$IDOperators<TRes> get productId;
@@ -14172,6 +14612,7 @@ abstract class CopyWith$Input$ProductVariantFilterParameter<TRes> {
           _fn);
   CopyWith$Input$NumberOperators<TRes> get shadowPrice;
   CopyWith$Input$NumberOperators<TRes> get maxOrderQuantity;
+  CopyWith$Input$DateOperators<TRes> get maxQuantityStartDate;
 }
 
 class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
@@ -14203,6 +14644,7 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
     Object? $_or = _undefined,
     Object? shadowPrice = _undefined,
     Object? maxOrderQuantity = _undefined,
+    Object? maxQuantityStartDate = _undefined,
   }) =>
       _then(Input$ProductVariantFilterParameter._({
         ..._instance._$data,
@@ -14232,6 +14674,9 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
           'shadowPrice': (shadowPrice as Input$NumberOperators?),
         if (maxOrderQuantity != _undefined)
           'maxOrderQuantity': (maxOrderQuantity as Input$NumberOperators?),
+        if (maxQuantityStartDate != _undefined)
+          'maxQuantityStartDate':
+              (maxQuantityStartDate as Input$DateOperators?),
       }));
 
   CopyWith$Input$IDOperators<TRes> get id {
@@ -14359,6 +14804,14 @@ class _CopyWithImpl$Input$ProductVariantFilterParameter<TRes>
         : CopyWith$Input$NumberOperators(
             local$maxOrderQuantity, (e) => call(maxOrderQuantity: e));
   }
+
+  CopyWith$Input$DateOperators<TRes> get maxQuantityStartDate {
+    final local$maxQuantityStartDate = _instance.maxQuantityStartDate;
+    return local$maxQuantityStartDate == null
+        ? CopyWith$Input$DateOperators.stub(_then(_instance))
+        : CopyWith$Input$DateOperators(
+            local$maxQuantityStartDate, (e) => call(maxQuantityStartDate: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
@@ -14383,6 +14836,7 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
     List<Input$ProductVariantFilterParameter>? $_or,
     Input$NumberOperators? shadowPrice,
     Input$NumberOperators? maxOrderQuantity,
+    Input$DateOperators? maxQuantityStartDate,
   }) =>
       _res;
 
@@ -14428,6 +14882,9 @@ class _CopyWithStubImpl$Input$ProductVariantFilterParameter<TRes>
 
   CopyWith$Input$NumberOperators<TRes> get maxOrderQuantity =>
       CopyWith$Input$NumberOperators.stub(_res);
+
+  CopyWith$Input$DateOperators<TRes> get maxQuantityStartDate =>
+      CopyWith$Input$DateOperators.stub(_res);
 }
 
 class Input$ProductVariantListOptions {
@@ -14703,6 +15160,7 @@ class Input$ProductVariantSortParameter {
     Enum$SortOrder? stockLevel,
     Enum$SortOrder? shadowPrice,
     Enum$SortOrder? maxOrderQuantity,
+    Enum$SortOrder? maxQuantityStartDate,
   }) =>
       Input$ProductVariantSortParameter._({
         if (id != null) r'id': id,
@@ -14716,6 +15174,8 @@ class Input$ProductVariantSortParameter {
         if (stockLevel != null) r'stockLevel': stockLevel,
         if (shadowPrice != null) r'shadowPrice': shadowPrice,
         if (maxOrderQuantity != null) r'maxOrderQuantity': maxOrderQuantity,
+        if (maxQuantityStartDate != null)
+          r'maxQuantityStartDate': maxQuantityStartDate,
       });
 
   Input$ProductVariantSortParameter._(this._$data);
@@ -14785,6 +15245,12 @@ class Input$ProductVariantSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$maxOrderQuantity as String));
     }
+    if (data.containsKey('maxQuantityStartDate')) {
+      final l$maxQuantityStartDate = data['maxQuantityStartDate'];
+      result$data['maxQuantityStartDate'] = l$maxQuantityStartDate == null
+          ? null
+          : fromJson$Enum$SortOrder((l$maxQuantityStartDate as String));
+    }
     return Input$ProductVariantSortParameter._(result$data);
   }
 
@@ -14813,6 +15279,9 @@ class Input$ProductVariantSortParameter {
 
   Enum$SortOrder? get maxOrderQuantity =>
       (_$data['maxOrderQuantity'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get maxQuantityStartDate =>
+      (_$data['maxQuantityStartDate'] as Enum$SortOrder?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -14869,6 +15338,12 @@ class Input$ProductVariantSortParameter {
       result$data['maxOrderQuantity'] = l$maxOrderQuantity == null
           ? null
           : toJson$Enum$SortOrder(l$maxOrderQuantity);
+    }
+    if (_$data.containsKey('maxQuantityStartDate')) {
+      final l$maxQuantityStartDate = maxQuantityStartDate;
+      result$data['maxQuantityStartDate'] = l$maxQuantityStartDate == null
+          ? null
+          : toJson$Enum$SortOrder(l$maxQuantityStartDate);
     }
     return result$data;
   }
@@ -14983,6 +15458,15 @@ class Input$ProductVariantSortParameter {
     if (l$maxOrderQuantity != lOther$maxOrderQuantity) {
       return false;
     }
+    final l$maxQuantityStartDate = maxQuantityStartDate;
+    final lOther$maxQuantityStartDate = other.maxQuantityStartDate;
+    if (_$data.containsKey('maxQuantityStartDate') !=
+        other._$data.containsKey('maxQuantityStartDate')) {
+      return false;
+    }
+    if (l$maxQuantityStartDate != lOther$maxQuantityStartDate) {
+      return false;
+    }
     return true;
   }
 
@@ -14999,6 +15483,7 @@ class Input$ProductVariantSortParameter {
     final l$stockLevel = stockLevel;
     final l$shadowPrice = shadowPrice;
     final l$maxOrderQuantity = maxOrderQuantity;
+    final l$maxQuantityStartDate = maxQuantityStartDate;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('productId') ? l$productId : const {},
@@ -15011,6 +15496,9 @@ class Input$ProductVariantSortParameter {
       _$data.containsKey('stockLevel') ? l$stockLevel : const {},
       _$data.containsKey('shadowPrice') ? l$shadowPrice : const {},
       _$data.containsKey('maxOrderQuantity') ? l$maxOrderQuantity : const {},
+      _$data.containsKey('maxQuantityStartDate')
+          ? l$maxQuantityStartDate
+          : const {},
     ]);
   }
 }
@@ -15036,6 +15524,7 @@ abstract class CopyWith$Input$ProductVariantSortParameter<TRes> {
     Enum$SortOrder? stockLevel,
     Enum$SortOrder? shadowPrice,
     Enum$SortOrder? maxOrderQuantity,
+    Enum$SortOrder? maxQuantityStartDate,
   });
 }
 
@@ -15064,6 +15553,7 @@ class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
     Object? stockLevel = _undefined,
     Object? shadowPrice = _undefined,
     Object? maxOrderQuantity = _undefined,
+    Object? maxQuantityStartDate = _undefined,
   }) =>
       _then(Input$ProductVariantSortParameter._({
         ..._instance._$data,
@@ -15085,6 +15575,8 @@ class _CopyWithImpl$Input$ProductVariantSortParameter<TRes>
           'shadowPrice': (shadowPrice as Enum$SortOrder?),
         if (maxOrderQuantity != _undefined)
           'maxOrderQuantity': (maxOrderQuantity as Enum$SortOrder?),
+        if (maxQuantityStartDate != _undefined)
+          'maxQuantityStartDate': (maxQuantityStartDate as Enum$SortOrder?),
       }));
 }
 
@@ -15106,14 +15598,18 @@ class _CopyWithStubImpl$Input$ProductVariantSortParameter<TRes>
     Enum$SortOrder? stockLevel,
     Enum$SortOrder? shadowPrice,
     Enum$SortOrder? maxOrderQuantity,
+    Enum$SortOrder? maxQuantityStartDate,
   }) =>
       _res;
 }
 
 class Input$RegisterCustomerCustomFieldsInput {
-  factory Input$RegisterCustomerCustomFieldsInput(
-          {int? loyaltyPointsAvailable}) =>
+  factory Input$RegisterCustomerCustomFieldsInput({
+    String? location,
+    int? loyaltyPointsAvailable,
+  }) =>
       Input$RegisterCustomerCustomFieldsInput._({
+        if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
       });
@@ -15123,6 +15619,10 @@ class Input$RegisterCustomerCustomFieldsInput {
   factory Input$RegisterCustomerCustomFieldsInput.fromJson(
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
+    if (data.containsKey('location')) {
+      final l$location = data['location'];
+      result$data['location'] = (l$location as String?);
+    }
     if (data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = data['loyaltyPointsAvailable'];
       result$data['loyaltyPointsAvailable'] =
@@ -15133,10 +15633,16 @@ class Input$RegisterCustomerCustomFieldsInput {
 
   Map<String, dynamic> _$data;
 
+  String? get location => (_$data['location'] as String?);
+
   int? get loyaltyPointsAvailable => (_$data['loyaltyPointsAvailable'] as int?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
+    if (_$data.containsKey('location')) {
+      final l$location = location;
+      result$data['location'] = l$location;
+    }
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable;
@@ -15160,6 +15666,15 @@ class Input$RegisterCustomerCustomFieldsInput {
         runtimeType != other.runtimeType) {
       return false;
     }
+    final l$location = location;
+    final lOther$location = other.location;
+    if (_$data.containsKey('location') !=
+        other._$data.containsKey('location')) {
+      return false;
+    }
+    if (l$location != lOther$location) {
+      return false;
+    }
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     final lOther$loyaltyPointsAvailable = other.loyaltyPointsAvailable;
     if (_$data.containsKey('loyaltyPointsAvailable') !=
@@ -15174,11 +15689,13 @@ class Input$RegisterCustomerCustomFieldsInput {
 
   @override
   int get hashCode {
+    final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
     return Object.hashAll([
+      _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
-          : const {}
+          : const {},
     ]);
   }
 }
@@ -15192,7 +15709,10 @@ abstract class CopyWith$Input$RegisterCustomerCustomFieldsInput<TRes> {
   factory CopyWith$Input$RegisterCustomerCustomFieldsInput.stub(TRes res) =
       _CopyWithStubImpl$Input$RegisterCustomerCustomFieldsInput;
 
-  TRes call({int? loyaltyPointsAvailable});
+  TRes call({
+    String? location,
+    int? loyaltyPointsAvailable,
+  });
 }
 
 class _CopyWithImpl$Input$RegisterCustomerCustomFieldsInput<TRes>
@@ -15208,9 +15728,13 @@ class _CopyWithImpl$Input$RegisterCustomerCustomFieldsInput<TRes>
 
   static const _undefined = <dynamic, dynamic>{};
 
-  TRes call({Object? loyaltyPointsAvailable = _undefined}) =>
+  TRes call({
+    Object? location = _undefined,
+    Object? loyaltyPointsAvailable = _undefined,
+  }) =>
       _then(Input$RegisterCustomerCustomFieldsInput._({
         ..._instance._$data,
+        if (location != _undefined) 'location': (location as String?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
       }));
@@ -15222,7 +15746,11 @@ class _CopyWithStubImpl$Input$RegisterCustomerCustomFieldsInput<TRes>
 
   TRes _res;
 
-  call({int? loyaltyPointsAvailable}) => _res;
+  call({
+    String? location,
+    int? loyaltyPointsAvailable,
+  }) =>
+      _res;
 }
 
 class Input$RegisterCustomerInput {
@@ -17506,11 +18034,13 @@ class _CopyWithStubImpl$Input$UpdateCustomerInput<TRes>
 
 class Input$UpdateOrderCustomFieldsInput {
   factory Input$UpdateOrderCustomFieldsInput({
+    String? platform,
     String? deviceMedium,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
   }) =>
       Input$UpdateOrderCustomFieldsInput._({
+        if (platform != null) r'platform': platform,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
         if (loyaltyPointsEarned != null)
@@ -17522,6 +18052,10 @@ class Input$UpdateOrderCustomFieldsInput {
   factory Input$UpdateOrderCustomFieldsInput.fromJson(
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
+    if (data.containsKey('platform')) {
+      final l$platform = data['platform'];
+      result$data['platform'] = (l$platform as String?);
+    }
     if (data.containsKey('deviceMedium')) {
       final l$deviceMedium = data['deviceMedium'];
       result$data['deviceMedium'] = (l$deviceMedium as String?);
@@ -17539,6 +18073,8 @@ class Input$UpdateOrderCustomFieldsInput {
 
   Map<String, dynamic> _$data;
 
+  String? get platform => (_$data['platform'] as String?);
+
   String? get deviceMedium => (_$data['deviceMedium'] as String?);
 
   int? get loyaltyPointsUsed => (_$data['loyaltyPointsUsed'] as int?);
@@ -17547,6 +18083,10 @@ class Input$UpdateOrderCustomFieldsInput {
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
+    if (_$data.containsKey('platform')) {
+      final l$platform = platform;
+      result$data['platform'] = l$platform;
+    }
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
       result$data['deviceMedium'] = l$deviceMedium;
@@ -17576,6 +18116,15 @@ class Input$UpdateOrderCustomFieldsInput {
     }
     if (other is! Input$UpdateOrderCustomFieldsInput ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$platform = platform;
+    final lOther$platform = other.platform;
+    if (_$data.containsKey('platform') !=
+        other._$data.containsKey('platform')) {
+      return false;
+    }
+    if (l$platform != lOther$platform) {
       return false;
     }
     final l$deviceMedium = deviceMedium;
@@ -17610,10 +18159,12 @@ class Input$UpdateOrderCustomFieldsInput {
 
   @override
   int get hashCode {
+    final l$platform = platform;
     final l$deviceMedium = deviceMedium;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     return Object.hashAll([
+      _$data.containsKey('platform') ? l$platform : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
       _$data.containsKey('loyaltyPointsEarned')
@@ -17633,6 +18184,7 @@ abstract class CopyWith$Input$UpdateOrderCustomFieldsInput<TRes> {
       _CopyWithStubImpl$Input$UpdateOrderCustomFieldsInput;
 
   TRes call({
+    String? platform,
     String? deviceMedium,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
@@ -17653,12 +18205,14 @@ class _CopyWithImpl$Input$UpdateOrderCustomFieldsInput<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? platform = _undefined,
     Object? deviceMedium = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
   }) =>
       _then(Input$UpdateOrderCustomFieldsInput._({
         ..._instance._$data,
+        if (platform != _undefined) 'platform': (platform as String?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as String?),
         if (loyaltyPointsUsed != _undefined)
@@ -17675,6 +18229,7 @@ class _CopyWithStubImpl$Input$UpdateOrderCustomFieldsInput<TRes>
   TRes _res;
 
   call({
+    String? platform,
     String? deviceMedium,
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
@@ -17922,6 +18477,7 @@ Enum$ChannelType fromJson$Enum$ChannelType(String value) {
 enum Enum$ChannelTypeEnum {
   CITY,
   BRAND,
+  SERVICE,
   $unknown;
 
   factory Enum$ChannelTypeEnum.fromJson(String value) =>
@@ -17936,6 +18492,8 @@ String toJson$Enum$ChannelTypeEnum(Enum$ChannelTypeEnum e) {
       return r'CITY';
     case Enum$ChannelTypeEnum.BRAND:
       return r'BRAND';
+    case Enum$ChannelTypeEnum.SERVICE:
+      return r'SERVICE';
     case Enum$ChannelTypeEnum.$unknown:
       return r'$unknown';
   }
@@ -17947,6 +18505,8 @@ Enum$ChannelTypeEnum fromJson$Enum$ChannelTypeEnum(String value) {
       return Enum$ChannelTypeEnum.CITY;
     case r'BRAND':
       return Enum$ChannelTypeEnum.BRAND;
+    case r'SERVICE':
+      return Enum$ChannelTypeEnum.SERVICE;
     default:
       return Enum$ChannelTypeEnum.$unknown;
   }

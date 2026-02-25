@@ -330,10 +330,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       
                       SizedBox(height: ResponsiveUtils.rp(24)),
                       
-                      // Google Sign In
-                      Obx(() => !_authController.isOtpSent
-                          ? _buildGoogleSignInButton()
-                          : const SizedBox.shrink()),
+                      // Apple & Google Sign In (Apple above Google per Apple guidelines)
+                      Obx(() => _authController.isOtpSent
+                          ? const SizedBox.shrink()
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildAppleSignInButton(),
+                                SizedBox(height: ResponsiveUtils.rp(12)),
+                                _buildGoogleSignInButton(),
+                              ],
+                            )),
                       
                       SizedBox(height: ResponsiveUtils.rp(16)),
                       
@@ -1116,6 +1123,64 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildAppleSignInButton() {
+    return Obx(() {
+      final isLoading = _authController.isLoading;
+      return Container(
+        height: ResponsiveUtils.rp(58),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: ResponsiveUtils.rp(20),
+              offset: Offset(0, ResponsiveUtils.rp(4)),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: isLoading ? null : _handleAppleSignIn,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+            child: Center(
+              child: isLoading
+                  ? SizedBox(
+                      width: ResponsiveUtils.rp(24),
+                      height: ResponsiveUtils.rp(24),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.apple,
+                          color: Colors.white,
+                          size: ResponsiveUtils.rp(28),
+                        ),
+                        SizedBox(width: ResponsiveUtils.rp(14)),
+                        Text(
+                          'Continue with Apple',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: ResponsiveUtils.sp(16),
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
   Widget _buildGoogleSignInButton() {
     return Obx(() {
       final isLoading = _authController.isLoading;
@@ -1462,6 +1527,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       await AnalyticsService().logLogin(loginMethod: 'Google');
       await NavigationHelper.redirectToIntendedRoute();
     }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    debugPrint('[LoginPage] _handleAppleSignIn ENTRY | isLoading=${_authController.isLoading}');
+    final success = await _authController.signInWithApple(context);
+    debugPrint('[LoginPage] _handleAppleSignIn signInWithApple returned success=$success');
+    if (success) {
+      await AnalyticsService().logLogin(loginMethod: 'Apple');
+      debugPrint('[LoginPage] _handleAppleSignIn redirecting to intended route');
+      await NavigationHelper.redirectToIntendedRoute();
+    }
+    debugPrint('[LoginPage] _handleAppleSignIn EXIT success=$success');
   }
 
   @override

@@ -48,6 +48,13 @@ type AlreadyLoggedInError implements ErrorResult {
   message: String!
 }
 
+input AppleAuthInput {
+  token: String!
+  email: String
+  firstName: String
+  lastName: String
+}
+
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
 
 type Asset implements Node {
@@ -82,6 +89,7 @@ input AuthenticationInput {
   phoneOtp: PhoneOtpInput
   native: NativeAuthInput
   google: GoogleAuthInput
+  apple: AppleAuthInput
 }
 
 type AuthenticationMethod implements Node {
@@ -188,6 +196,7 @@ enum ChannelType {
 enum ChannelTypeEnum {
   CITY
   BRAND
+  SERVICE
 }
 
 type Collection implements Node {
@@ -409,6 +418,7 @@ input CreateAddressInput {
 }
 
 input CreateCustomerCustomFieldsInput {
+  location: String
   loyaltyPointsAvailable: Int
 }
 
@@ -964,6 +974,7 @@ input CustomerFilterParameter {
   emailAddress: StringOperators
   _and: [CustomerFilterParameter!]
   _or: [CustomerFilterParameter!]
+  location: StringOperators
   loyaltyPointsAvailable: NumberOperators
 }
 
@@ -1010,6 +1021,7 @@ input CustomerSortParameter {
   lastName: SortOrder
   phoneNumber: SortOrder
   emailAddress: SortOrder
+  location: SortOrder
   loyaltyPointsAvailable: SortOrder
 }
 
@@ -2557,6 +2569,7 @@ type OrderAddress {
 }
 
 type OrderCustomFields {
+  platform: String
   deviceMedium: String
   otherInstructions: String
   loyaltyPointsUsed: Int
@@ -2582,6 +2595,7 @@ input OrderFilterParameter {
   totalWithTax: NumberOperators
   _and: [OrderFilterParameter!]
   _or: [OrderFilterParameter!]
+  platform: StringOperators
   deviceMedium: StringOperators
   otherInstructions: StringOperators
   loyaltyPointsUsed: NumberOperators
@@ -2745,6 +2759,7 @@ input OrderSortParameter {
   shippingWithTax: SortOrder
   total: SortOrder
   totalWithTax: SortOrder
+  platform: SortOrder
   deviceMedium: SortOrder
   otherInstructions: SortOrder
   loyaltyPointsUsed: SortOrder
@@ -3433,6 +3448,7 @@ type ProductVariant implements Node {
 type ProductVariantCustomFields {
   shadowPrice: Int
   maxOrderQuantity: Int
+  maxQuantityStartDate: DateTime
 }
 
 input ProductVariantFilterParameter {
@@ -3451,6 +3467,7 @@ input ProductVariantFilterParameter {
   _or: [ProductVariantFilterParameter!]
   shadowPrice: NumberOperators
   maxOrderQuantity: NumberOperators
+  maxQuantityStartDate: DateOperators
 }
 
 type ProductVariantList implements PaginatedList {
@@ -3490,6 +3507,7 @@ input ProductVariantSortParameter {
   stockLevel: SortOrder
   shadowPrice: SortOrder
   maxOrderQuantity: SortOrder
+  maxQuantityStartDate: SortOrder
 }
 
 type ProductVariantTranslation {
@@ -3577,6 +3595,7 @@ type QuantityLimitViolation {
   currentQuantity: Int!
   maxQuantity: Int!
   reason: String!
+  limitStartDate: String
 }
 
 type Query {
@@ -3776,6 +3795,7 @@ type RegionTranslation {
 union RegisterCustomerAccountResult = Success | MissingPasswordError | PasswordValidationError | NativeAuthStrategyError
 
 input RegisterCustomerCustomFieldsInput {
+  location: String
   loyaltyPointsAvailable: Int
 }
 
@@ -4207,6 +4227,7 @@ input UpdateCustomerInput {
 union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | PasswordValidationError | NativeAuthStrategyError
 
 input UpdateOrderCustomFieldsInput {
+  platform: String
   deviceMedium: String
   loyaltyPointsUsed: Int
   loyaltyPointsEarned: Int

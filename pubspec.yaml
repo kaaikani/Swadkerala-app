@@ -60,6 +60,7 @@ dependencies:
   flutter_dynamic_icon: ^2.1.0
   flutter_app_badger: ^1.5.0
   google_sign_in: 6.1.6
+  sign_in_with_apple: ^6.1.0
   carousel_slider: ^5.0.0
   cached_network_image: ^3.3.1
   speech_to_text: 6.6.0
