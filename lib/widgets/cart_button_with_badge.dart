@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
+import '../utils/navigation_helper.dart';
 
 /// Reusable cart button with quantity badge and glitter animation
 class CartButtonWithBadge extends StatefulWidget {
@@ -109,16 +110,14 @@ class _CartButtonWithBadgeState extends State<CartButtonWithBadge>
                     );
                   },
                 ),
-                onPressed: () {
-                  Get.toNamed('/cart');
-                },
+                onPressed: () => NavigationHelper.navigateToCart(),
               ),
               if (currentQuantity > 0)
                 Positioned(
                   right: ResponsiveUtils.rp(2),
                   top: ResponsiveUtils.rp(2),
                   child: GestureDetector(
-                    onTap: () => Get.toNamed('/cart'),
+                    onTap: () => NavigationHelper.navigateToCart(),
                     behavior: HitTestBehavior.opaque,
                     child: AnimatedBuilder(
                       animation: _glitterAnimation,
@@ -189,9 +188,7 @@ class _CartButtonWithBadgeState extends State<CartButtonWithBadge>
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(ResponsiveUtils.rp(24)),
-                    onTap: () {
-                      Get.toNamed('/cart');
-                    },
+                    onTap: () => NavigationHelper.navigateToCart(),
                     child: AnimatedBuilder(
                       animation: _glitterAnimation,
                       builder: (context, child) {
@@ -228,7 +225,7 @@ class _CartButtonWithBadgeState extends State<CartButtonWithBadge>
                   right: ResponsiveUtils.rp(2),
                   top: ResponsiveUtils.rp(2),
                   child: GestureDetector(
-                    onTap: () => Get.toNamed('/cart'),
+                    onTap: () => NavigationHelper.navigateToCart(),
                     behavior: HitTestBehavior.opaque,
                     child: AnimatedBuilder(
                       animation: _glitterAnimation,

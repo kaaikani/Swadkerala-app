@@ -37,18 +37,11 @@ abstract class BaseController extends GetxController {
       
       String errorMessage = customErrorMessage ?? 'An error occurred';
       
-      // Try to extract meaningful error message from GraphQL errors
+      // Prefer actual API error message from GraphQL errors (e.g. "No customer found for current user")
       if (response.exception?.graphqlErrors.isNotEmpty == true) {
         final graphQLError = response.exception!.graphqlErrors.first;
-        errorMessage = graphQLError.message;
-        
-        // Handle special error cases
-        if (errorMessage.toLowerCase().contains('user not found') ||
-            errorMessage.toLowerCase().contains('unauthorized') ||
-            errorMessage.toLowerCase().contains('authentication')) {
-          // Don't show dialog for auth errors, let specific controllers handle it
-          return false;
-        }
+        errorMessage = graphQLError.message.trim();
+        if (errorMessage.isEmpty) errorMessage = customErrorMessage ?? 'An error occurred';
       } else if (response.exception?.linkException != null) {
         final linkException = response.exception!.linkException;
 
@@ -125,12 +118,19 @@ abstract class BaseController extends GetxController {
     String errorMessage = customErrorMessage ?? 'An unexpected error occurred';
     
     if (exception != null) {
-      errorMessage = exception.toString();
+      // Prefer GraphQL API error message when exception carries graphqlErrors (e.g. "No customer found for current user")
+      if (exception is OperationException &&
+          exception.graphqlErrors.isNotEmpty) {
+        errorMessage = exception.graphqlErrors.first.message.trim();
+      } else {
+        errorMessage = exception.toString();
+      }
       
       // Clean up common exception patterns
       errorMessage = errorMessage
           .replaceAll('Exception:', '')
           .replaceAll('Error:', '')
+          .replaceAll('GraphQLException:', '')
           .trim();
 
       if (errorMessage.isEmpty) {
@@ -150,8 +150,8 @@ abstract class BaseController extends GetxController {
       return;
     }
 
-    // Show error dialog
-    ErrorDialog.showException(errorMessage);
+    // Show error dialog with actual message (use showWarning for consistency with other dialogs)
+    ErrorDialog.showWarning(message: errorMessage);
   }
 
   /// Handle GraphQL response with automatic error handling

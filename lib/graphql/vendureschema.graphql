@@ -2307,6 +2307,9 @@ type Mutation {
   """
   setCustomerForOrder(input: CreateCustomerInput!): SetCustomerForOrderResult!
 
+  """Claim a guest order and link it to the current authenticated customer (custom)"""
+  claimGuestOrder(guestOrderCode: String!): Order
+
   """
   Authenticates the user using the native authentication strategy. This mutation
   is an alias for authenticate({ native: { ... }})

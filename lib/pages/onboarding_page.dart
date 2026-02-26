@@ -44,6 +44,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _storage.write('intro_shown', true); // Also mark intro as shown for compatibility
   }
 
+  void _navigateToHome() {
+    _markOnboardingComplete();
+    Get.offAllNamed('/home');
+  }
+
   void _navigateToLogin() {
     _markOnboardingComplete();
     Get.offAllNamed('/login');
@@ -84,10 +89,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: Padding(
                       padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
                       child: TextButton(
-                        onPressed: () {
-                          _markOnboardingComplete();
-                          Get.offAllNamed('/login');
-                        },
+                        onPressed: _navigateToHome,
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.black.withValues(alpha: 0.3),
                           padding: EdgeInsets.symmetric(
@@ -224,48 +226,71 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildActionButtons() {
-    return Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        // Register Button
-        Expanded(
-          child: OutlinedButton(
-            onPressed: _navigateToSignup,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.button,
-              side: BorderSide(color: AppColors.button, width: 2),
-              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        // Register and Login row
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _navigateToSignup,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.button,
+                  side: BorderSide(color: AppColors.button, width: 2),
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  ),
+                ),
+                child: Text(
+                  'Register',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(16),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
-            child: Text(
-              'Register',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(16),
-                fontWeight: FontWeight.w600,
+            SizedBox(width: ResponsiveUtils.rp(16)),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _navigateToLogin,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.button,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  ),
+                  elevation: 2,
+                ),
+                child: Text(
+                  'Login',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(16),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
-        SizedBox(width: ResponsiveUtils.rp(16)),
-        // Login Button
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _navigateToLogin,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.button,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-              ),
-              elevation: 2,
+        SizedBox(height: ResponsiveUtils.rp(12)),
+        // Go as guest
+        SizedBox(
+          width: double.infinity,
+          child: TextButton(
+            onPressed: _navigateToHome,
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.textSecondary,
+              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
             ),
             child: Text(
-              'Login',
+              'Continue as Guest',
               style: TextStyle(
-                fontSize: ResponsiveUtils.sp(16),
-                fontWeight: FontWeight.w600,
+                fontSize: ResponsiveUtils.sp(15),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),

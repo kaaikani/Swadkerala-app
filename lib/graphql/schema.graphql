@@ -50,9 +50,9 @@ type AlreadyLoggedInError implements ErrorResult {
 
 input AppleAuthInput {
   token: String!
-  email: String
   firstName: String
   lastName: String
+  email: String
 }
 
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
@@ -2395,6 +2395,13 @@ type Mutation {
 
   """Resets a Customer's password based on the provided token"""
   resetPassword(token: String!, password: String!): ResetPasswordResult!
+
+  """
+  Claims an anonymous guest order and assigns it to the currently logged-in customer.
+  Call this after login, passing the guest order code obtained before login.
+  If the customer already has an active order, items from the guest order are merged into it.
+  """
+  claimGuestOrder(guestOrderCode: String!): Order
   sendPhoneOtp(phoneNumber: String!): String
   resendPhoneOtp(phoneNumber: String!): String
   updateProfileEmail(email: String!): Customer

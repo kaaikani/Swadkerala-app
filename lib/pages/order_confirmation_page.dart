@@ -14,6 +14,7 @@ import '../utils/bill_generator.dart';
 import '../utils/logger.dart';
 import '../services/analytics_service.dart';
 import '../widgets/cached_app_image.dart';
+import '../routes.dart';
 
 class OrderConfirmationPage extends StatefulWidget {
   final String orderId;
@@ -115,7 +116,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.close, color: AppColors.textPrimary),
-          onPressed: () => Get.offAllNamed('/home'),
+          onPressed: () => Get.offAllNamed(AppRoutes.home),
         ),
           title: Text(
           AppStrings.orderConfirmation,
@@ -291,7 +292,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () => Get.offAllNamed('/home'),
+                    onPressed: () => Get.offAllNamed(AppRoutes.home),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
                       side: BorderSide(color: AppColors.border),

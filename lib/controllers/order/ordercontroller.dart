@@ -49,7 +49,9 @@ class OrderController extends BaseController {
 
       final orderData = response.parsedData?.activeOrder;
       if (orderData != null) {
-        // Debug: Print all order data
+        if (kDebugMode) {
+          debugPrint('[OrderController] getActiveOrder: hasOrder=true, code=${orderData.code}, state=${orderData.state}, linesCount=${orderData.lines.length}');
+        }
         final orderJson = orderData.toJson();
         // Validation Status
         if (orderJson['validationStatus'] != null) {
@@ -114,7 +116,9 @@ class OrderController extends BaseController {
         currentOrder.value = newOrder;
         return true;
       } else {
-        // No active order, clear selected shipping method
+        if (kDebugMode) {
+          debugPrint('[OrderController] getActiveOrder: hasOrder=false (no active order)');
+        }
         if (selectedShippingMethod.value != null) {
           selectedShippingMethod.value = null;
         }
@@ -368,12 +372,20 @@ class OrderController extends BaseController {
     bool skipLoading = false,
   }) async {
     Logger.logFunction(functionName: 'setShippingAddress', mutationName: 'SetShippingAddress');
-    
+    final order = currentOrder.value;
+    if (order == null) {
+      if (kDebugMode) debugPrint('[OrderController] setShippingAddress: SKIP (no currentOrder) -> return true');
+      return true;
+    }
+    final state = order.state.toLowerCase();
+    if (state != 'addingitems' && state != 'arrangingpayment') {
+      if (kDebugMode) debugPrint('[OrderController] setShippingAddress: SKIP (state=$state, not AddingItems/ArrangingPayment) -> return true');
+      return true;
+    }
     // Debug: Log input parameters
     if (kDebugMode) {
       debugPrint('[setShippingAddress] Input Data: {fullName: $fullName, streetLine1: $streetLine1, streetLine2: $streetLine2, city: $city, postalCode: $postalCode, countryCode: $countryCode, phoneNumber: $phoneNumber, province: $province}');
     }
-    
     try {
       // Show loading dialog for shipping address
       if (!skipLoading) {
@@ -410,8 +422,9 @@ class OrderController extends BaseController {
       }
       // Detailed error logging before checking for errors
       if (response.hasException) {
-        // Log GraphQL errors
         if (response.exception?.graphqlErrors.isNotEmpty == true) {
+          final msg = response.exception!.graphqlErrors.first.message;
+          if (kDebugMode) debugPrint('[OrderController] setShippingAddress: API error (dialog will show): $msg');
           for (int i = 0; i < response.exception!.graphqlErrors.length; i++) {
             final error = response.exception!.graphqlErrors[i];
             if (error.locations != null && error.locations!.isNotEmpty) {
@@ -833,7 +846,10 @@ class OrderController extends BaseController {
     Map<String, dynamic>? metadata,
   }) async {
     Logger.logFunction(functionName: 'addPayment', mutationName: 'AddPayment');
-    
+    if (kDebugMode) {
+      final order = currentOrder.value;
+      debugPrint('[OrderController] addPayment: method=$method, currentOrder.code=${order?.code}, currentOrder.state=${order?.state}, orderId=${order?.id}');
+    }
     try {
       utilityController.setLoadingState(true);
       // For online payments (Razorpay), pass metadata with:
@@ -864,18 +880,25 @@ class OrderController extends BaseController {
         // Check if it's an error result
         final resultJson = result.toJson();
         if (resultJson.containsKey('errorCode')) {
-          // Extract error message
           final errorMessage = _readOrderMutationMessage(result) ?? 
                               resultJson['message']?.toString() ?? 
                               'Payment failed';
+          if (kDebugMode) {
+            debugPrint('[OrderController] addPayment: success=false, errorCode=${resultJson['errorCode']}, message=$errorMessage');
+          }
           return {'success': false, 'errorMessage': errorMessage};
         }
 
-        // If it's an Order, update current order
         if (result is Mutation$AddPayment$addPaymentToOrder$$Order) {
           currentOrder.value = result;
+          if (kDebugMode) {
+            debugPrint('[OrderController] addPayment: success=true, result.code=${result.code}, result.state=${result.state}');
+          }
           return {'success': true, 'errorMessage': null};
         }
+      }
+      if (kDebugMode) {
+        debugPrint('[OrderController] addPayment: success=false, unknown result');
       }
       return {'success': false, 'errorMessage': 'Unknown error occurred'};
     } catch (e) {

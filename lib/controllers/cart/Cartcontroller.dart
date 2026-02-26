@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:graphql/client.dart' as graphql;
-// import 'package:flutter/foundation.dart'; // Unused import removed
 import '../../graphql/cart.graphql.dart' as cart_graphql; // Generated GraphQL queries/mutations
 import '../../graphql/order.graphql.dart';
 import '../../services/graphql_client.dart';
@@ -30,7 +30,7 @@ class CartController extends BaseController {
   Future<bool> addToCart(
       {required int productVariantId, int quantity = 1}) async {
     Logger.logFunction(functionName: 'addToCart', mutationName: 'AddToCart');
-    
+
     try {
       // Check if order exists and is in a state that prevents adding items
       final currentCart = cart.value;
@@ -91,6 +91,8 @@ class CartController extends BaseController {
         ),
       );
 
+      await GraphqlService.captureGuestTokenFromResponse(response);
+
       // Check for OrderInterceptorError specifically before general error check
       final addItemResult = response.parsedData?.addItemToOrder;
       if (addItemResult != null && 
@@ -116,6 +118,9 @@ class CartController extends BaseController {
       }
 
       cart.value = addItemResult;
+      if (GraphqlService.authToken.isEmpty && addItemResult.code.isNotEmpty) {
+        await GraphqlService.setGuestOrderCode(addItemResult.code);
+      }
 
       if (!await _ensureOrderConsistency()) {
         return false;
@@ -164,8 +169,16 @@ class CartController extends BaseController {
         return false;
       }
 
+      await GraphqlService.captureGuestTokenFromResponse(response);
+
       final orderData = response.parsedData?.activeOrder;
       if (orderData != null) {
+        if (kDebugMode) {
+          debugPrint('[CartController] getActiveOrder: hasOrder=true, code=${orderData.code}, linesCount=${orderData.lines.length}, totalQuantity=${orderData.totalQuantity}');
+        }
+        if (GraphqlService.authToken.isEmpty && orderData.code.isNotEmpty) {
+          await GraphqlService.setGuestOrderCode(orderData.code);
+        }
         final orderJson = orderData.toJson();
         
         // Debug: Print all order data
@@ -267,9 +280,11 @@ class CartController extends BaseController {
           
           return true;
         } else {
-          // Cart is empty - clear it so UI updates properly
+          if (kDebugMode) {
+            debugPrint('[CartController] getActiveOrder: order has no lines/total, clearing cart');
+          }
           cart.value = null;
-          _updateAppBadge(); // Update badge when cart is empty
+          _updateAppBadge();
           // Remove any applied coupons when cart is empty
           try {
             final bannerController = Get.find<BannerController>();
@@ -281,9 +296,11 @@ class CartController extends BaseController {
         }
       }
 
-      // If orderData is null, clear the cart
+      if (kDebugMode) {
+        debugPrint('[CartController] getActiveOrder: hasOrder=false (activeOrder null), clearing cart');
+      }
       cart.value = null;
-      _updateAppBadge(); // Update badge when no order found
+      _updateAppBadge();
       return true;
     } catch (e) {
       handleException(e, customErrorMessage: 'Failed to load cart', functionName: 'getActiveOrder');

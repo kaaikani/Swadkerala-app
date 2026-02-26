@@ -20,6 +20,15 @@ class DeepLinkService {
   StreamSubscription<Uri>? _linkSubscription;
   StreamSubscription<Uri>? _initialLinkSubscription;
 
+  /// Navigate to login page.
+  Future<void> _navigateToLoginPage({Map<String, dynamic>? arguments, bool replace = false}) async {
+    if (replace) {
+      Get.offAllNamed(AppRoutes.login, arguments: arguments);
+    } else {
+      Get.toNamed(AppRoutes.login, arguments: arguments);
+    }
+  }
+
   /// Check if user is authenticated
   bool _isUserAuthenticated() {
     // Primary check: tokens in GraphqlService (most reliable)
@@ -181,22 +190,7 @@ class DeepLinkService {
         
         switch (page) {
           case 'cart':
-            // Check authentication before navigating to protected cart page
-            if (!_isUserAuthenticated()) {
-              if (isInitialLink) {
-                Get.offAllNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.cart,
-                  'intendedArguments': null,
-                });
-              } else {
-                Get.toNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.cart,
-                  'intendedArguments': null,
-                });
-              }
-              return;
-            }
-            
+            // Cart is open to guests (login required only at checkout)
             try {
               await NavigationHelper.navigateToCart(isInitialLink: isInitialLink);
               return;
@@ -206,17 +200,10 @@ class DeepLinkService {
           case 'checkout':
             // Check authentication before navigating to protected checkout page
             if (!_isUserAuthenticated()) {
-              if (isInitialLink) {
-                Get.offAllNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.checkout,
-                  'intendedArguments': null,
-                });
-              } else {
-                Get.toNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.checkout,
-                  'intendedArguments': null,
-                });
-              }
+              await _navigateToLoginPage(
+                arguments: {'intendedRoute': AppRoutes.checkout, 'intendedArguments': null},
+                replace: isInitialLink,
+              );
               return;
             }
             
@@ -229,17 +216,10 @@ class DeepLinkService {
           case 'account':
             // Check authentication before navigating to protected account page
             if (!_isUserAuthenticated()) {
-              if (isInitialLink) {
-                Get.offAllNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.account,
-                  'intendedArguments': null,
-                });
-              } else {
-                Get.toNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.account,
-                  'intendedArguments': null,
-                });
-              }
+              await _navigateToLoginPage(
+                arguments: {'intendedRoute': AppRoutes.account, 'intendedArguments': null},
+                replace: isInitialLink,
+              );
               return;
             }
             
@@ -254,17 +234,10 @@ class DeepLinkService {
           case 'addresses':
             // Check authentication before navigating to protected addresses page
             if (!_isUserAuthenticated()) {
-              if (isInitialLink) {
-                Get.offAllNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.addresses,
-                  'intendedArguments': null,
-                });
-              } else {
-                Get.toNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.addresses,
-                  'intendedArguments': null,
-                });
-              }
+              await _navigateToLoginPage(
+                arguments: {'intendedRoute': AppRoutes.addresses, 'intendedArguments': null},
+                replace: isInitialLink,
+              );
               return;
             }
             
@@ -279,17 +252,10 @@ class DeepLinkService {
           case 'orders':
             // Check authentication before navigating to protected orders page
             if (!_isUserAuthenticated()) {
-              if (isInitialLink) {
-                Get.offAllNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.orders,
-                  'intendedArguments': null,
-                });
-              } else {
-                Get.toNamed(AppRoutes.login, arguments: {
-                  'intendedRoute': AppRoutes.orders,
-                  'intendedArguments': null,
-                });
-              }
+              await _navigateToLoginPage(
+                arguments: {'intendedRoute': AppRoutes.orders, 'intendedArguments': null},
+                replace: isInitialLink,
+              );
               return;
             }
             
@@ -350,23 +316,16 @@ class DeepLinkService {
               // Check authentication before navigating to protected product detail page
               if (!_isUserAuthenticated()) {
                 // Store the intended route and arguments for post-login redirection
-                if (isInitialLink) {
-                  Get.offAllNamed(AppRoutes.login, arguments: {
+                await _navigateToLoginPage(
+                  arguments: {
                     'intendedRoute': AppRoutes.productDetail,
                     'intendedArguments': {
                       'productId': productId,
                       'productName': productName,
                     },
-                  });
-                } else {
-                  Get.toNamed(AppRoutes.login, arguments: {
-                    'intendedRoute': AppRoutes.productDetail,
-                    'intendedArguments': {
-                      'productId': productId,
-                      'productName': productName,
-                    },
-                  });
-                }
+                  },
+                  replace: isInitialLink,
+                );
                 return;
               }
               
@@ -492,11 +451,7 @@ class DeepLinkService {
           break;
 
         case 'login':
-          if (isInitialLink) {
-            Get.offAllNamed(AppRoutes.login);
-          } else {
-            Get.toNamed(AppRoutes.login);
-          }
+          await _navigateToLoginPage(replace: isInitialLink);
           break;
 
         case 'signup':

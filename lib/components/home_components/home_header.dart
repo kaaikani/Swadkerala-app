@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/app_strings.dart';
+import '../../utils/navigation_helper.dart';
 import '../../components/searchbarcomponent.dart';
 import '../../controllers/banner/bannercontroller.dart';
 import '../../controllers/customer/customer_controller.dart';
@@ -16,6 +17,9 @@ class HomeHeader extends StatelessWidget {
   final BannerController bannerController;
   final String channelName;
   final CustomerController? customerController;
+  /// Shown next to "Welcome to [channel]" when provided. When [onWelcomeTap] is set, the welcome area is tappable to open the postal code sheet.
+  final String? postalCode;
+  final VoidCallback? onWelcomeTap;
 
   const HomeHeader({
     Key? key,
@@ -25,6 +29,8 @@ class HomeHeader extends StatelessWidget {
     required this.bannerController,
     required this.channelName,
     this.customerController,
+    this.postalCode,
+    this.onWelcomeTap,
   }) : super(key: key);
 
   @override
@@ -115,7 +121,7 @@ class HomeHeader extends StatelessWidget {
                                   clipBehavior: Clip.none,
                                   children: [
                                     InkWell(
-                                      onTap: () => Get.toNamed('/account'),
+                                      onTap: () => NavigationHelper.navigateToAccount(),
                                       borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
                                       child: Container(
                                         padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
@@ -221,7 +227,7 @@ class HomeHeader extends StatelessWidget {
                               clipBehavior: Clip.none,
                               children: [
                                 InkWell(
-                                  onTap: () => Get.toNamed('/account'),
+                                  onTap: () => NavigationHelper.navigateToAccount(),
                                   borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
                                   child: Container(
                                     padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
@@ -313,9 +319,9 @@ class HomeHeader extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Welcome/Address Section
+                    // Welcome/Address Section — show delivery address for both guest and logged-in
                     Expanded(
-                      child: isUserAuthenticated && !isBrandChannel
+                      child: !isBrandChannel
                           ? deliveryAddressHeader
                           : _buildWelcomeSection(),
                     ),
@@ -391,9 +397,14 @@ class HomeHeader extends StatelessWidget {
   }
     
   Widget _buildWelcomeSection() {
-    // Default layout for other channels
-    return Column(
+    // Default layout for other channels; show postal code when available; tappable to open postal code sheet
+    final displayPostalCode = (postalCode ?? '').trim();
+    final hasPostalCode = displayPostalCode.isNotEmpty;
+    final isTappable = onWelcomeTap != null;
+
+    Widget content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           "Welcome to",
@@ -413,8 +424,34 @@ class HomeHeader extends StatelessWidget {
             letterSpacing: -0.5,
           ),
         ),
+        if (hasPostalCode) ...[
+          SizedBox(height: ResponsiveUtils.rp(2)),
+          Text(
+            displayPostalCode,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(12),
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
+
+    if (isTappable) {
+      return InkWell(
+        onTap: onWelcomeTap,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: ResponsiveUtils.rp(4),
+            horizontal: ResponsiveUtils.rp(2),
+          ),
+          child: content,
+        ),
+      );
+    }
+    return content;
   }
 
   Widget _buildActionButtons() {
@@ -493,7 +530,7 @@ class HomeHeader extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               InkWell(
-                onTap: () => Get.toNamed('/account'),
+                onTap: () => NavigationHelper.navigateToAccount(),
                 borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
                 child: Container(
                   padding: EdgeInsets.all(ResponsiveUtils.rp(10)),

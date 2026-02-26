@@ -18,6 +18,7 @@ import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../utils/app_config.dart';
 import '../utils/app_strings.dart';
+import '../routes.dart';
 import '../widgets/checkout/checkout_payment_section.dart';
 import '../widgets/checkout/checkout_app_bar.dart';
 import '../widgets/checkout/checkout_order_summary_section.dart';
@@ -26,6 +27,7 @@ import '../widgets/checkout/checkout_place_order_button.dart';
 import '../widgets/checkout/checkout_shimmer_loading.dart';
 import '../widgets/checkout/slide_to_pay_button.dart';
 import '../widgets/error_dialog.dart';
+import '../widgets/cart/cart_loyalty_points_section.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -114,6 +116,22 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       }
       // Load shipping address first (at the top)
       await _loadCustomerAddresses();
+      // If no active order / empty cart, retry once after short delay (handles "first order after login" when claim just finished)
+      bool hasItems = _checkoutHasItems();
+      if (!hasItems && mounted) {
+        await Future.delayed(const Duration(milliseconds: 600));
+        if (!mounted) return;
+        await cartController.getActiveOrder();
+        if (!mounted) return;
+        hasItems = _checkoutHasItems();
+      }
+      if (!hasItems && mounted) {
+        showErrorSnackbar('Your cart is empty. Add items before checkout.');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) Get.back();
+        });
+        return;
+      }
       // Then load other data in parallel (including loyalty config for Points per Rupee / discount display)
       await Future.wait([
         _loadShippingMethods(),
@@ -196,6 +214,13 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         stillAvailable ?? eligibleMethods.first;
   }
 
+  bool _checkoutHasItems() {
+    final cart = cartController.cart.value;
+    final order = orderController.currentOrder.value;
+    return (cart != null && (cart.lines.isNotEmpty || (cart.totalQuantity ?? 0) > 0)) ||
+        (order != null && (order.lines.isNotEmpty || (order.totalQuantity ?? 0) > 0));
+  }
+
   Future<void> _loadCustomerAddresses() async {
     // First, check if active order has a shipping address
     await orderController.getActiveOrder(skipLoading: true);
@@ -263,7 +288,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   /// Set shipping address from currently selected address
   Future<void> _setShippingAddressFromSelected() async {
     if (_selectedAddress == null) return;
-    
+    if (_orderPlacedSuccessfully) return;
     try {
       final addressSet = await orderController.setShippingAddress(
         fullName: _selectedAddress!.fullName ?? '',
@@ -531,26 +556,36 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   }
 
   Future<void> _handlePayment() async {
+    debugPrint('[Checkout] _handlePayment: START');
     if (orderController.selectedPaymentMethod.value == null) {
       showErrorSnackbar(AppStrings.pleaseSelectPaymentMethod);
       return;
     }
-
     final paymentMethod = orderController.selectedPaymentMethod.value!;
     final paymentCode = paymentMethod.code.toLowerCase();
-
-    // Check if it's online payment (Razorpay)
     if (paymentCode.contains('razorpay') || paymentCode.contains('online')) {
+      debugPrint('[Checkout] _handlePayment: branch RAZORPAY -> _handleRazorpayPayment');
       await _handleRazorpayPayment();
+      debugPrint('[Checkout] _handlePayment: _handleRazorpayPayment returned');
     } else {
-      // Cash on Delivery or other methods
+      debugPrint('[Checkout] _handlePayment: branch COD -> _handleCODPayment');
       await _handleCODPayment();
+      debugPrint('[Checkout] _handlePayment: _handleCODPayment returned');
     }
   }
 
+  void _navigateToOrderConfirmation(String orderCode) {
+    debugPrint('[Checkout] _navigateToOrderConfirmation: orderCode=$orderCode (next frame)');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugPrint('[Checkout] _navigateToOrderConfirmation: Get.offAllNamed(${AppRoutes.orderConfirmation})');
+      Get.offAllNamed(AppRoutes.orderConfirmation, arguments: orderCode);
+    });
+  }
+
   Future<void> _onPlaceOrder() async {
-    // Check if address is missing and trigger blink
+    debugPrint('[Checkout] _onPlaceOrder: START (Slide to Pay triggered)');
     if (_selectedAddress == null) {
+      debugPrint('[Checkout] _onPlaceOrder: ABORT - no address selected');
       _triggerAddressBlink();
       showErrorSnackbar('Please select a delivery address');
       // Reset slider on error
@@ -561,9 +596,8 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       return;
     }
     
-    // Validate checkout before proceeding
     if (!_validateCheckout()) {
-      // Reset slider on validation error
+      debugPrint('[Checkout] _onPlaceOrder: ABORT - _validateCheckout failed');
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),
@@ -571,8 +605,8 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       return;
     }
     
-    // Validate payment method
     if (orderController.selectedPaymentMethod.value == null) {
+      debugPrint('[Checkout] _onPlaceOrder: ABORT - no payment method selected');
       showErrorSnackbar(AppStrings.pleaseSelectPaymentMethod);
       // Reset slider on error
       Future.delayed(
@@ -582,22 +616,22 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       return;
     }
 
-    // Set shipping address when placing order
     if (_selectedAddress != null) {
+      debugPrint('[Checkout] _onPlaceOrder: calling setShippingAddress (currentOrder.code=${orderController.currentOrder.value?.code}, state=${orderController.currentOrder.value?.state})');
       final addressSet = await orderController.setShippingAddress(
         fullName: _selectedAddress!.fullName ?? '',
         phoneNumber: _selectedAddress!.phoneNumber ?? '',
         streetLine1: _selectedAddress!.streetLine1,
         streetLine2: _selectedAddress!.streetLine2 ?? '',
         city: _selectedAddress!.city ?? '',
-        province: null, // Province not available in GraphQL query
+        province: null,
         postalCode: _selectedAddress!.postalCode ?? '',
         countryCode: _selectedAddress!.country.code,
         skipLoading: true,
       );
-      
-      // If shipping address failed to set, don't proceed to payment
+      debugPrint('[Checkout] _onPlaceOrder: setShippingAddress returned addressSet=$addressSet');
       if (!addressSet) {
+        debugPrint('[Checkout] _onPlaceOrder: ABORT - setShippingAddress failed (may show "not authorized" if no active order)');
         showErrorSnackbar(AppStrings.failedToSetShippingAddress);
         // Reset slider on error
         Future.delayed(
@@ -608,8 +642,9 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       }
     }
 
-    // Then proceed to payment (shipping method should already be set)
+    debugPrint('[Checkout] _onPlaceOrder: all validations passed, calling _handlePayment');
     await _handlePayment();
+    debugPrint('[Checkout] _onPlaceOrder: _handlePayment returned');
   }
   
   /// Track payment analytics (helper method to reduce callback complexity)
@@ -691,13 +726,12 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     });
   }
 
-  /// Handle Razorpay online payment
   Future<void> _handleRazorpayPayment() async {
-    // final currentOrderBeforeTransition = orderController.currentOrder.value; // Unused variable
-    // Transition to ArrangingPayment state
+    debugPrint('[Checkout] _handleRazorpayPayment: START');
     final transitioned = await orderController.transitionToArrangingPayment();
+    debugPrint('[Checkout] _handleRazorpayPayment: transitionToArrangingPayment=$transitioned');
     if (!transitioned) {
-      // Reset slider on error
+      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - transition failed');
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),
@@ -736,8 +770,8 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     final orderCode = currentOrderFromController?.code ?? cartOrder?.code;
     
     if (orderId == null) {
+      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - orderId=null (currentOrder=${currentOrderFromController?.code}, cart=${cartOrder?.code})');
       showErrorSnackbar('Order not found');
-      // Reset slider on error
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),
@@ -755,11 +789,10 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     final razorpayOrder =
         await orderController.generateRazorpayOrderId(orderId);
 
-    if (razorpayOrder == null || 
-        razorpayOrder.razorpayOrderId == null || 
+    if (razorpayOrder == null ||
+        razorpayOrder.razorpayOrderId == null ||
         razorpayOrder.keyId == null) {
-      // Error message is already shown by the controller's error handling
-      // Reset slider on error
+      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - razorpayOrder invalid');
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),
@@ -797,8 +830,8 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       }
     }
 
-    // Validate phone number before proceeding
     if (customerPhone.isEmpty) {
+      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - no customer phone');
       showErrorSnackbar('Phone number is required for payment. Please add a phone number to your address or profile.');
       // Reset slider on error
       Future.delayed(
@@ -814,7 +847,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     // Use amount from response if available, otherwise use calculated amount
     final paymentAmount = razorpayOrder.amount ?? amount.toInt();
 
-    // Open Razorpay payment gateway with backend-generated order ID
+    debugPrint('[Checkout] _handleRazorpayPayment: opening Razorpay gateway, orderCode=$orderCode');
     _razorpayService.openPaymentGateway(
       razorpayOrderId: razorpayOrder.razorpayOrderId!,
       razorpayKeyId: razorpayOrder.keyId!,
@@ -825,23 +858,28 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       customerPhone: customerPhone,
       description: 'Order #${orderCode ?? orderId}',
       onPaymentSuccess: (response) async {
-        // Mark order as placed immediately to prevent UI flickering
-        _orderPlacedSuccessfully = true;
+        debugPrint('[Checkout] Razorpay onPaymentSuccess: START (orderCode=$orderCode, orderId=$orderId)');
+        try {
+          _orderPlacedSuccessfully = true;
 
-        final hasActiveOrder = await orderController.getActiveOrder(skipLoading: true);
+          debugPrint('[Checkout] Razorpay onPaymentSuccess: calling getActiveOrder...');
+          final hasActiveOrder = await orderController.getActiveOrder(skipLoading: true);
+        debugPrint('[Checkout] Razorpay after getActiveOrder: hasActiveOrder=$hasActiveOrder, currentOrder.code=${orderController.currentOrder.value?.code}, cart.code=${cartController.cart.value?.code}');
 
         if (!hasActiveOrder) {
-          // No active order (order already placed / cart empty) -> go to confirmation
-          final finalOrderCode = orderCode ?? orderId;
-          Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
+          final finalOrderCode = (orderCode ?? orderId ?? '').toString();
+          debugPrint('[Checkout] Razorpay no active order: finalOrderCode=$finalOrderCode, willNavigate=${finalOrderCode.isNotEmpty}');
+          if (finalOrderCode.isNotEmpty) {
+            _navigateToOrderConfirmation(finalOrderCode);
+          }
           return;
         }
 
-        // Active order exists -> add payment to order
         final orderModel = orderController.currentOrder.value;
         final cartOrder = cartController.cart.value;
         final finalOrderCode = orderModel?.code ?? cartOrder?.code ?? orderCode ?? orderId;
         final isStillArrangingPayment = orderModel?.state == 'ArrangingPayment';
+        debugPrint('[Checkout] Razorpay active order: orderModel.code=${orderModel?.code}, orderModel.state=${orderModel?.state}, cartOrder.code=${cartOrder?.code}, finalOrderCode=$finalOrderCode, isStillArrangingPayment=$isStillArrangingPayment');
 
         if (isStillArrangingPayment) {
           orderController.skipPostPaymentRefresh = true; // Avoid getActiveCustomer / getEligibleShippingMethods after addPayment
@@ -859,6 +897,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
             _trackPaymentAnalytics(response, orderModel, cartOrder),
           ]);
           final paymentResult = results[0] as Map<String, dynamic>;
+          debugPrint('[Checkout] Razorpay addPayment result: success=${paymentResult['success']}, errorMessage=${paymentResult['errorMessage']}');
           if (paymentResult['success'] != true) {
             orderController.skipPostPaymentRefresh = false;
             final errorMessage = paymentResult['errorMessage'] as String? ?? 'Payment failed';
@@ -874,15 +913,31 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
             );
             return;
           }
-          await orderController.transitionToNextState();
+          final code = (finalOrderCode ?? '').toString();
+          debugPrint('[Checkout] Razorpay post-addPayment: code=$code, navigating=${code.isNotEmpty}');
+          if (code.isNotEmpty) {
+            _navigateToOrderConfirmation(code);
+          }
+          orderController.skipPostPaymentRefresh = false;
+          try {
+            await orderController.transitionToNextState();
+          } catch (_) {}
         } else {
+          debugPrint('[Checkout] Razorpay order not in ArrangingPayment, tracking analytics and navigating with code=$finalOrderCode');
           await _trackPaymentAnalytics(response, orderModel, cartOrder);
+          final code = (finalOrderCode ?? '').toString();
+          if (code.isNotEmpty) {
+            _navigateToOrderConfirmation(code);
+          }
+          orderController.skipPostPaymentRefresh = false;
         }
-
-        orderController.skipPostPaymentRefresh = false;
-        Get.offAllNamed('/order-confirmation', arguments: finalOrderCode);
+        } catch (e, st) {
+          debugPrint('[Checkout] Razorpay onPaymentSuccess: EXCEPTION - $e');
+          debugPrint('[Checkout] Razorpay onPaymentSuccess: stackTrace - $st');
+        }
       },
       onPaymentFailure: (_) {
+        debugPrint('[Checkout] Razorpay onPaymentFailure: user cancelled or payment failed');
         // No snackbar when user comes back from Razorpay (e.g. back/cancel) to avoid "Payment failed: undefined"
         // Reset slider so user can try again
         Future.delayed(
@@ -893,20 +948,19 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     );
   }
 
-  /// Handle Cash on Delivery payment
   Future<void> _handleCODPayment() async {
-    // final currentOrderBeforeTransition = orderController.currentOrder.value; // Unused variable
-    // Transition to ArrangingPayment state
+    debugPrint('[Checkout] _handleCODPayment: START');
     final transitioned = await orderController.transitionToArrangingPayment();
+    debugPrint('[Checkout] _handleCODPayment: transitionToArrangingPayment=$transitioned');
     if (!transitioned) {
-      // Reset slider on error
+      debugPrint('[Checkout] _handleCODPayment: ABORT - transition failed');
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),
       );
       return;
     }
-    // Refresh order to get latest state from server
+    debugPrint('[Checkout] _handleCODPayment: refreshing order and cart...');
     await orderController.getActiveOrder(skipLoading: true);
     
     // Add a small delay to ensure server has processed the transition
@@ -948,6 +1002,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     final finalTotal = orderTotal + shippingCost;
     final paymentMethod = orderController.selectedPaymentMethod.value!;
     
+    debugPrint('[Checkout] _handleCODPayment: calling addPayment (orderCode=${orderModel?.code ?? cartOrder?.code})');
     final paymentResult = await orderController.addPayment(
       method: paymentMethod.code,
       metadata: {
@@ -956,6 +1011,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         'transaction_id': transactionId ?? 'N/A',
       },
     );
+    debugPrint('[Checkout] _handleCODPayment: addPayment result success=${paymentResult['success']}, errorMessage=${paymentResult['errorMessage']}');
 
     if (paymentResult['success'] != true) {
       // Payment failed - show error dialog and stay on checkout page
@@ -975,7 +1031,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     }
 
     if (paymentResult['success'] == true) {
-      // Track purchase event for COD
+      debugPrint('[Checkout] COD addPayment success: orderCode=${orderController.currentOrder.value?.code}, cartCode=${cartController.cart.value?.code}');
       final cart = cartController.cart.value;
       if (cart != null) {
         final items = cart.lines.map((line) {
@@ -1001,18 +1057,23 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       
       // Mark order as placed successfully - don't reset slider
       _orderPlacedSuccessfully = true;
-      
+
       // Reset loyalty points state after order placement (for next order)
       bannerController.resetLoyaltyPoints();
-      
-      // Clear cart after successful order placement
-      cartController.clearCart();
-      // Navigate to order confirmation page
-      if (cart != null) {
-        Get.offAllNamed('/order-confirmation', arguments: cart.code);
+
+      final orderCodeForConfirmation = cart?.code ??
+          orderController.currentOrder.value?.code ??
+          '';
+      debugPrint('[Checkout] COD navigate: orderCodeForConfirmation=$orderCodeForConfirmation, willGoToConfirmation=${orderCodeForConfirmation.isNotEmpty}');
+      if (orderCodeForConfirmation.isNotEmpty) {
+        _navigateToOrderConfirmation(orderCodeForConfirmation);
       } else {
-        Get.offAllNamed('/home');
+        debugPrint('[Checkout] COD no order code, navigating to home');
+        Get.offAllNamed(AppRoutes.home);
       }
+      Future.delayed(const Duration(milliseconds: 500), () {
+        cartController.clearCart();
+      });
     } else {
       showErrorSnackbar('Payment failed');
       // Reset slider on error so user can try again
@@ -1112,6 +1173,58 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                                     utilityController: utilityController,
                                     bannerController: bannerController,
                                   ),
+                                  
+                                  SizedBox(height: ResponsiveUtils.rp(16)),
+                                  // Loyalty Points Section
+                                  Obx(() {
+                                    final availablePoints = customerController.loyaltyPoints;
+                                    final config = bannerController.loyaltyPointsConfig.value;
+                                    final minimumPoints = config?.pointsPerRupee ?? 0;
+                                    final isApplied = bannerController.loyaltyPointsApplied.value;
+                                    if (minimumPoints > 0 && availablePoints < minimumPoints && !isApplied) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return CartLoyaltyPointsSection(
+                                      bannerController: bannerController,
+                                      customerController: customerController,
+                                      onApplyLoyaltyPoints: (pointsText) async {
+                                        if (pointsText.isEmpty) {
+                                          showErrorSnackbar('Please enter loyalty points amount');
+                                          return;
+                                        }
+                                        final points = int.tryParse(pointsText);
+                                        if (points == null || points <= 0) {
+                                          showErrorSnackbar('Please enter a valid loyalty points amount');
+                                          return;
+                                        }
+                                        final available = customerController.loyaltyPoints;
+                                        if (points > available) {
+                                          showErrorSnackbar('Insufficient loyalty points! You have $available points available.');
+                                          return;
+                                        }
+                                        final cfg = bannerController.loyaltyPointsConfig.value;
+                                        if (cfg != null && points < cfg.pointsPerRupee) {
+                                          showErrorSnackbar('Minimum loyalty points required: ${cfg.pointsPerRupee} points.');
+                                          return;
+                                        }
+                                        final success = await bannerController.applyLoyaltyPoints(points);
+                                        if (success) {
+                                          showSuccessSnackbar('Loyalty points applied successfully');
+                                        } else {
+                                          showErrorSnackbar('Failed to apply loyalty points');
+                                        }
+                                      },
+                                      onRemoveLoyaltyPoints: () async {
+                                        final success = await bannerController.removeLoyaltyPoints();
+                                        if (success) {
+                                          showSuccessSnackbar('Loyalty points removed successfully');
+                                        } else {
+                                          showErrorSnackbar('Failed to remove loyalty points');
+                                        }
+                                      },
+                                    );
+                                  }),
+                                  SizedBox(height: ResponsiveUtils.rp(16)),
                                   
                                   Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
                                   

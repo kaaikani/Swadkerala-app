@@ -18,6 +18,7 @@ import '../../widgets/loading_dialog.dart';
 import '../../services/analytics_service.dart';
 import '../base_controller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
+import '../authentication/authenticationcontroller.dart';
 import '../banner/bannercontroller.dart';
 import '../collection controller/collectioncontroller.dart';
 import '../cart/Cartcontroller.dart';
@@ -25,6 +26,7 @@ import '../order/ordercontroller.dart';
 import '../../utils/logger.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
+import '../../routes.dart';
 
 class CustomerController extends BaseController {
   // Observable variables
@@ -169,6 +171,24 @@ class CustomerController extends BaseController {
           (Get.find<OrderController>().skipPostPaymentRefresh)) {
         return;
       }
+      // Guest user (no auth token): set empty customer state but still load coupon codes for cart page
+      if (GraphqlService.authToken.isEmpty) {
+        utilityController.setLoadingState(false);
+        activeCustomer.value = null;
+        addresses.value = [];
+        orders.value = [];
+        totalOrdersCount.value = 0;
+        hasMoreOrders.value = false;
+        error.value = '';
+        if (Get.isRegistered<BannerController>()) {
+          final bannerController = Get.find<BannerController>();
+          Future.wait([
+            bannerController.getCouponCodeList(),
+            bannerController.fetchLoyaltyPointsConfig(),
+          ], eagerError: false).catchError((_) {});
+        }
+        return;
+      }
           Logger.logFunction(functionName: 'getActiveCustomer');
     utilityController.setLoadingState(false);
       error.value = '';
@@ -207,13 +227,15 @@ class CustomerController extends BaseController {
             linkExceptionStr.contains('ClientException') ||
             linkExceptionStr.contains('ServerException');
 
-        // Check if error contains "User not found"
+        // Only redirect to login for "User not found" when we had auth (session expired)
         if (exceptionString.toLowerCase().contains('user not found') ||
             exceptionString.toLowerCase().contains('user not found with this email')) {
-          error.value = 'User not found. Please login again.';
-
-          // Trigger logout and redirect to login
-          await _handleUserNotFoundError();
+          if (GraphqlService.authToken.isNotEmpty) {
+            error.value = 'User not found. Please login again.';
+            await _handleUserNotFoundError();
+          } else {
+            error.value = '';
+          }
           return;
         }
 
@@ -281,24 +303,27 @@ class CustomerController extends BaseController {
         totalOrdersCount.value = 0;
         hasMoreOrders.value = false;
         error.value = 'No customer data found';
-        // Only logout if it's NOT a network error
-        // Network errors should not trigger logout as they're temporary connection issues
-        if (!isNetworkError) {
-          // Clear cache and logout when customer data is null (only if not a network error)
+        // Only redirect to login when we had auth (logged-in user) but got no customer (session expired)
+        // Do NOT redirect for network errors or when token was already empty (guest)
+        if (!isNetworkError && GraphqlService.authToken.isNotEmpty) {
           await handleCustomerDataNotFound();
-        } else {
+        } else if (isNetworkError) {
           error.value = 'Network error. Please check your connection and try again.';
+        } else {
+          error.value = '';
         }
       }
     } catch (e) {
-      // Check if error contains "User not found"
+      // Only redirect for "User not found" when we had auth (session expired)
       final errorString = e.toString().toLowerCase();
       if (errorString.contains('user not found') ||
           errorString.contains('user not found with this email')) {
-        error.value = 'User not found. Please login again.';
-
-        // Trigger logout and redirect to login
-        await _handleUserNotFoundError();
+        if (GraphqlService.authToken.isNotEmpty) {
+          error.value = 'User not found. Please login again.';
+          await _handleUserNotFoundError();
+        } else {
+          error.value = '';
+        }
         return;
       }
 
@@ -1078,6 +1103,7 @@ class CustomerController extends BaseController {
 
   /// Handle user not found error - logout and redirect
   Future<void> _handleUserNotFoundError() async {
+    if (AuthController.isLoggingOut) return;
     try {
       // Clear local data immediately
       activeCustomer.value = null;
@@ -1095,17 +1121,25 @@ class CustomerController extends BaseController {
         message: AppStrings.userNotFoundLoginAgain,
       );
 
-      // Navigate to login page
-      Get.offAllNamed('/login');
+      // Navigate to login page (or home if logout in progress)
+      if (AuthController.isLoggingOut) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.login);
+      }
     } catch (e) {
-      // Still navigate to login even if cleanup fails
-      Get.offAllNamed('/login');
+      if (AuthController.isLoggingOut) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.login);
+      }
     }
   }
 
   /// Handle customer data not found - clear cache and logout
   /// This method is public so other controllers can call it
   Future<void> handleCustomerDataNotFound() async {
+    if (AuthController.isLoggingOut) return;
     try {
       // Clear local data immediately
       activeCustomer.value = null;
@@ -1123,17 +1157,24 @@ class CustomerController extends BaseController {
         message: AppStrings.noCustomerDataLoginAgain,
       );
 
-      // Navigate to login page
-      Get.offAllNamed('/login');
+      if (AuthController.isLoggingOut) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.login);
+      }
     } catch (e) {
           Logger.logFunction(functionName: 'logout', mutationName: 'LogoutUser');
-    // Still navigate to login even if cleanup fails
-      Get.offAllNamed('/login');
+      if (AuthController.isLoggingOut) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.login);
+      }
     }
   }
 
   /// Logout customer
   Future<void> logout() async {
+    if (AuthController.isLoggingOut) return;
     try {
       final response = await GraphqlService.client.value.mutate$LogoutUser(
         Options$Mutation$LogoutUser(),
@@ -1153,11 +1194,10 @@ class CustomerController extends BaseController {
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
 
-      // Navigate to login
-      Get.offAllNamed('/login');
+      // Navigate to home after logout (AuthController also navigates to home)
+      Get.offAllNamed(AppRoutes.home);
     } catch (e) {
-      // Still navigate to login even if logout fails
-      Get.offAllNamed('/login');
+      if (!AuthController.isLoggingOut) Get.offAllNamed(AppRoutes.home);
     }
   }
 
@@ -1416,8 +1456,8 @@ class CustomerController extends BaseController {
         await bannerController.getFrequentlyOrderedProducts();
       }
       
-      // Refresh cart (if user is logged in)
-      if (cartController != null && _isUserAuthenticated()) {
+      // Refresh active order for new channel (guest and logged-in) so cart shows correctly when switching A→B and back B→A
+      if (cartController != null) {
         await cartController.getActiveOrder();
       }
       

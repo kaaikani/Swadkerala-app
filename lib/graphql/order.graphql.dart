@@ -60046,6 +60046,513 @@ class Query$NextOrderStates$Widget
         );
 }
 
+class Variables$Mutation$ClaimGuestOrder {
+  factory Variables$Mutation$ClaimGuestOrder(
+          {required String guestOrderCode}) =>
+      Variables$Mutation$ClaimGuestOrder._({
+        r'guestOrderCode': guestOrderCode,
+      });
+
+  Variables$Mutation$ClaimGuestOrder._(this._$data);
+
+  factory Variables$Mutation$ClaimGuestOrder.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$guestOrderCode = data['guestOrderCode'];
+    result$data['guestOrderCode'] = (l$guestOrderCode as String);
+    return Variables$Mutation$ClaimGuestOrder._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get guestOrderCode => (_$data['guestOrderCode'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$guestOrderCode = guestOrderCode;
+    result$data['guestOrderCode'] = l$guestOrderCode;
+    return result$data;
+  }
+
+  CopyWith$Variables$Mutation$ClaimGuestOrder<
+          Variables$Mutation$ClaimGuestOrder>
+      get copyWith => CopyWith$Variables$Mutation$ClaimGuestOrder(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Mutation$ClaimGuestOrder ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$guestOrderCode = guestOrderCode;
+    final lOther$guestOrderCode = other.guestOrderCode;
+    if (l$guestOrderCode != lOther$guestOrderCode) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$guestOrderCode = guestOrderCode;
+    return Object.hashAll([l$guestOrderCode]);
+  }
+}
+
+abstract class CopyWith$Variables$Mutation$ClaimGuestOrder<TRes> {
+  factory CopyWith$Variables$Mutation$ClaimGuestOrder(
+    Variables$Mutation$ClaimGuestOrder instance,
+    TRes Function(Variables$Mutation$ClaimGuestOrder) then,
+  ) = _CopyWithImpl$Variables$Mutation$ClaimGuestOrder;
+
+  factory CopyWith$Variables$Mutation$ClaimGuestOrder.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Mutation$ClaimGuestOrder;
+
+  TRes call({String? guestOrderCode});
+}
+
+class _CopyWithImpl$Variables$Mutation$ClaimGuestOrder<TRes>
+    implements CopyWith$Variables$Mutation$ClaimGuestOrder<TRes> {
+  _CopyWithImpl$Variables$Mutation$ClaimGuestOrder(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Mutation$ClaimGuestOrder _instance;
+
+  final TRes Function(Variables$Mutation$ClaimGuestOrder) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? guestOrderCode = _undefined}) =>
+      _then(Variables$Mutation$ClaimGuestOrder._({
+        ..._instance._$data,
+        if (guestOrderCode != _undefined && guestOrderCode != null)
+          'guestOrderCode': (guestOrderCode as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Mutation$ClaimGuestOrder<TRes>
+    implements CopyWith$Variables$Mutation$ClaimGuestOrder<TRes> {
+  _CopyWithStubImpl$Variables$Mutation$ClaimGuestOrder(this._res);
+
+  TRes _res;
+
+  call({String? guestOrderCode}) => _res;
+}
+
+class Mutation$ClaimGuestOrder {
+  Mutation$ClaimGuestOrder({
+    this.claimGuestOrder,
+    this.$__typename = 'Mutation',
+  });
+
+  factory Mutation$ClaimGuestOrder.fromJson(Map<String, dynamic> json) {
+    final l$claimGuestOrder = json['claimGuestOrder'];
+    final l$$__typename = json['__typename'];
+    return Mutation$ClaimGuestOrder(
+      claimGuestOrder: l$claimGuestOrder == null
+          ? null
+          : Fragment$Cart.fromJson((l$claimGuestOrder as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Fragment$Cart? claimGuestOrder;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$claimGuestOrder = claimGuestOrder;
+    _resultData['claimGuestOrder'] = l$claimGuestOrder?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$claimGuestOrder = claimGuestOrder;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$claimGuestOrder,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Mutation$ClaimGuestOrder ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$claimGuestOrder = claimGuestOrder;
+    final lOther$claimGuestOrder = other.claimGuestOrder;
+    if (l$claimGuestOrder != lOther$claimGuestOrder) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$ClaimGuestOrder
+    on Mutation$ClaimGuestOrder {
+  CopyWith$Mutation$ClaimGuestOrder<Mutation$ClaimGuestOrder> get copyWith =>
+      CopyWith$Mutation$ClaimGuestOrder(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Mutation$ClaimGuestOrder<TRes> {
+  factory CopyWith$Mutation$ClaimGuestOrder(
+    Mutation$ClaimGuestOrder instance,
+    TRes Function(Mutation$ClaimGuestOrder) then,
+  ) = _CopyWithImpl$Mutation$ClaimGuestOrder;
+
+  factory CopyWith$Mutation$ClaimGuestOrder.stub(TRes res) =
+      _CopyWithStubImpl$Mutation$ClaimGuestOrder;
+
+  TRes call({
+    Fragment$Cart? claimGuestOrder,
+    String? $__typename,
+  });
+  CopyWith$Fragment$Cart<TRes> get claimGuestOrder;
+}
+
+class _CopyWithImpl$Mutation$ClaimGuestOrder<TRes>
+    implements CopyWith$Mutation$ClaimGuestOrder<TRes> {
+  _CopyWithImpl$Mutation$ClaimGuestOrder(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$ClaimGuestOrder _instance;
+
+  final TRes Function(Mutation$ClaimGuestOrder) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? claimGuestOrder = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$ClaimGuestOrder(
+        claimGuestOrder: claimGuestOrder == _undefined
+            ? _instance.claimGuestOrder
+            : (claimGuestOrder as Fragment$Cart?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Fragment$Cart<TRes> get claimGuestOrder {
+    final local$claimGuestOrder = _instance.claimGuestOrder;
+    return local$claimGuestOrder == null
+        ? CopyWith$Fragment$Cart.stub(_then(_instance))
+        : CopyWith$Fragment$Cart(
+            local$claimGuestOrder, (e) => call(claimGuestOrder: e));
+  }
+}
+
+class _CopyWithStubImpl$Mutation$ClaimGuestOrder<TRes>
+    implements CopyWith$Mutation$ClaimGuestOrder<TRes> {
+  _CopyWithStubImpl$Mutation$ClaimGuestOrder(this._res);
+
+  TRes _res;
+
+  call({
+    Fragment$Cart? claimGuestOrder,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Fragment$Cart<TRes> get claimGuestOrder =>
+      CopyWith$Fragment$Cart.stub(_res);
+}
+
+const documentNodeMutationClaimGuestOrder = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.mutation,
+    name: NameNode(value: 'ClaimGuestOrder'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'guestOrderCode')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'claimGuestOrder'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'guestOrderCode'),
+            value: VariableNode(name: NameNode(value: 'guestOrderCode')),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FragmentSpreadNode(
+            name: NameNode(value: 'Cart'),
+            directives: [],
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+  fragmentDefinitionCart,
+  fragmentDefinitionAsset,
+]);
+Mutation$ClaimGuestOrder _parserFn$Mutation$ClaimGuestOrder(
+        Map<String, dynamic> data) =>
+    Mutation$ClaimGuestOrder.fromJson(data);
+typedef OnMutationCompleted$Mutation$ClaimGuestOrder = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Mutation$ClaimGuestOrder?,
+);
+
+class Options$Mutation$ClaimGuestOrder
+    extends graphql.MutationOptions<Mutation$ClaimGuestOrder> {
+  Options$Mutation$ClaimGuestOrder({
+    String? operationName,
+    required Variables$Mutation$ClaimGuestOrder variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$ClaimGuestOrder? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$ClaimGuestOrder? onCompleted,
+    graphql.OnMutationUpdate<Mutation$ClaimGuestOrder>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$ClaimGuestOrder(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationClaimGuestOrder,
+          parserFn: _parserFn$Mutation$ClaimGuestOrder,
+        );
+
+  final OnMutationCompleted$Mutation$ClaimGuestOrder? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+class WatchOptions$Mutation$ClaimGuestOrder
+    extends graphql.WatchQueryOptions<Mutation$ClaimGuestOrder> {
+  WatchOptions$Mutation$ClaimGuestOrder({
+    String? operationName,
+    required Variables$Mutation$ClaimGuestOrder variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$ClaimGuestOrder? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeMutationClaimGuestOrder,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Mutation$ClaimGuestOrder,
+        );
+}
+
+extension ClientExtension$Mutation$ClaimGuestOrder on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Mutation$ClaimGuestOrder>> mutate$ClaimGuestOrder(
+          Options$Mutation$ClaimGuestOrder options) async =>
+      await this.mutate(options);
+  graphql.ObservableQuery<Mutation$ClaimGuestOrder>
+      watchMutation$ClaimGuestOrder(
+              WatchOptions$Mutation$ClaimGuestOrder options) =>
+          this.watchMutation(options);
+}
+
+class Mutation$ClaimGuestOrder$HookResult {
+  Mutation$ClaimGuestOrder$HookResult(
+    this.runMutation,
+    this.result,
+  );
+
+  final RunMutation$Mutation$ClaimGuestOrder runMutation;
+
+  final graphql.QueryResult<Mutation$ClaimGuestOrder> result;
+}
+
+Mutation$ClaimGuestOrder$HookResult useMutation$ClaimGuestOrder(
+    [WidgetOptions$Mutation$ClaimGuestOrder? options]) {
+  final result = graphql_flutter
+      .useMutation(options ?? WidgetOptions$Mutation$ClaimGuestOrder());
+  return Mutation$ClaimGuestOrder$HookResult(
+    (variables, {optimisticResult, typedOptimisticResult}) =>
+        result.runMutation(
+      variables.toJson(),
+      optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+    ),
+    result.result,
+  );
+}
+
+graphql.ObservableQuery<Mutation$ClaimGuestOrder>
+    useWatchMutation$ClaimGuestOrder(
+            WatchOptions$Mutation$ClaimGuestOrder options) =>
+        graphql_flutter.useWatchMutation(options);
+
+class WidgetOptions$Mutation$ClaimGuestOrder
+    extends graphql.MutationOptions<Mutation$ClaimGuestOrder> {
+  WidgetOptions$Mutation$ClaimGuestOrder({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Mutation$ClaimGuestOrder? typedOptimisticResult,
+    graphql.Context? context,
+    OnMutationCompleted$Mutation$ClaimGuestOrder? onCompleted,
+    graphql.OnMutationUpdate<Mutation$ClaimGuestOrder>? update,
+    graphql.OnError? onError,
+  })  : onCompletedWithParsed = onCompleted,
+        super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          onCompleted: onCompleted == null
+              ? null
+              : (data) => onCompleted(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Mutation$ClaimGuestOrder(data),
+                  ),
+          update: update,
+          onError: onError,
+          document: documentNodeMutationClaimGuestOrder,
+          parserFn: _parserFn$Mutation$ClaimGuestOrder,
+        );
+
+  final OnMutationCompleted$Mutation$ClaimGuestOrder? onCompletedWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onCompleted == null
+            ? super.properties
+            : super.properties.where((property) => property != onCompleted),
+        onCompletedWithParsed,
+      ];
+}
+
+typedef RunMutation$Mutation$ClaimGuestOrder
+    = graphql.MultiSourceResult<Mutation$ClaimGuestOrder> Function(
+  Variables$Mutation$ClaimGuestOrder, {
+  Object? optimisticResult,
+  Mutation$ClaimGuestOrder? typedOptimisticResult,
+});
+typedef Builder$Mutation$ClaimGuestOrder = widgets.Widget Function(
+  RunMutation$Mutation$ClaimGuestOrder,
+  graphql.QueryResult<Mutation$ClaimGuestOrder>?,
+);
+
+class Mutation$ClaimGuestOrder$Widget
+    extends graphql_flutter.Mutation<Mutation$ClaimGuestOrder> {
+  Mutation$ClaimGuestOrder$Widget({
+    widgets.Key? key,
+    WidgetOptions$Mutation$ClaimGuestOrder? options,
+    required Builder$Mutation$ClaimGuestOrder builder,
+  }) : super(
+          key: key,
+          options: options ?? WidgetOptions$Mutation$ClaimGuestOrder(),
+          builder: (
+            run,
+            result,
+          ) =>
+              builder(
+            (
+              variables, {
+              optimisticResult,
+              typedOptimisticResult,
+            }) =>
+                run(
+              variables.toJson(),
+              optimisticResult:
+                  optimisticResult ?? typedOptimisticResult?.toJson(),
+            ),
+            result,
+          ),
+        );
+}
+
 class Variables$Mutation$TransitionOrderToState {
   factory Variables$Mutation$TransitionOrderToState({required String state}) =>
       Variables$Mutation$TransitionOrderToState._({

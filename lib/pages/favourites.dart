@@ -64,10 +64,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
     await Future.delayed(const Duration(milliseconds: 100));
 
     final success = await bannerController.toggleFavorite(productId: productId);
-
-    if (success) {
-    } else {
-      showErrorSnackbar('Failed to remove from favorites');
+    // On failure, the error dialog already shows the API message (e.g. "No customer found for current user") — do not show a second static message.
+    if (success && mounted) {
+      setState(() {});
     }
   }
 

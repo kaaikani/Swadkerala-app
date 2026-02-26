@@ -435,14 +435,19 @@ class _MyHomePageState extends State<MyHomePage> {
       
       // STEP 4: Fetch collections, banners, and other data when we have valid channel (CITY or BRAND)
       if (shouldFetchData) {
+        // Load active order for current channel so cart persists across app close/reopen (guest and logged-in)
+        if (forceRefresh) {
+          await cartController.getActiveOrder();
+        } else if (cartController.cart.value == null) {
+          // Initial load or reopen: fetch cart so guest sees previously added items (guest token restored in GraphqlService.initialize())
+          await cartController.getActiveOrder();
+        }
         // Postal code exists and has available CITY channel - fetch all data
         if (_isUserAuthenticated()) {
           // Sync customer location from stored postal: get channel by postal code, pass channel name to updateCustomer (location)
           customerController.syncCustomerLocationFromStoredPostalCode();
 
-          // Only fetch cart if it's not already loaded or if it's stale
-          // This prevents duplicate cart fetches when loyalty points are removed
-          if (cartController.cart.value == null) {
+          if (!forceRefresh && cartController.cart.value == null) {
             cartController.getActiveOrder();
           }
           bannerController.getCustomerFavorites();
@@ -1339,10 +1344,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       isBrandChannel: _isBrandChannel(),
                       deliveryAddressHeader: _buildDeliveryAddressHeader(),
                       bannerController: bannerController,
-                      channelName: _channelName.value.isNotEmpty 
-                          ? _channelName.value 
+                      channelName: _channelName.value.isNotEmpty
+                          ? _channelName.value
                           : (ChannelService.getChannelName()?.toString() ?? ChannelService.getChannelCode()?.toString() ?? 'Kaaikani'),
                       customerController: customerController,
+                      postalCode: _postalCode.value.isNotEmpty ? _postalCode.value : (ChannelService.getPostalCode()?.toString()),
+                      onWelcomeTap: _showPostalCodeBottomSheet,
                     ),
 
                     // ==================== MAIN CONTENT ====================
@@ -1356,7 +1363,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           bottomNavigationBar: Obx(() => BottomNavComponent(
             cartCount: cartController.cartItemCount,
-            onSwitchStoreTap: _isUserAuthenticated() ? _showSwitchStoreBottomSheet : null,
+            onSwitchStoreTap: _showSwitchStoreBottomSheet,
           )),
         );
       }),

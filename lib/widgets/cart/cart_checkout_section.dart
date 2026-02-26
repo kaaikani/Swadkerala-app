@@ -12,6 +12,8 @@ class CartCheckoutSection extends StatelessWidget {
   final OrderController orderController;
   final UtilityController utilityController;
   final VoidCallback onProceedToCheckout;
+  /// When not logged in, show this label (e.g. "Login or Sign up to Checkout") and use callback to go to login.
+  final String checkoutButtonLabel;
 
   const CartCheckoutSection({
     super.key,
@@ -19,6 +21,7 @@ class CartCheckoutSection extends StatelessWidget {
     required this.orderController,
     required this.utilityController,
     required this.onProceedToCheckout,
+    this.checkoutButtonLabel = 'Proceed to Checkout',
   });
 
   @override
@@ -77,7 +80,7 @@ class CartCheckoutSection extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: isButtonEnabled && !isLoading 
                         ? AnalyticsHelper.trackButton(
-                            'Proceed to Checkout',
+                            checkoutButtonLabel,
                             screenName: 'Cart',
                             callback: onProceedToCheckout,
                           )
@@ -104,7 +107,7 @@ class CartCheckoutSection extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Proceed to Checkout',
+                                checkoutButtonLabel,
                                 style: TextStyle(
                                   fontSize: ResponsiveUtils.sp(16),
                                   fontWeight: FontWeight.w600,

@@ -399,7 +399,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Generate dSYM for Razorpay.framework so App Store upload accepts the archive (UUID 4432B2C4-574B-331D-8065-332D939C8513)\nif [ \"${PLATFORM_NAME}\" != \"iphoneos\" ]; then\n  exit 0\nfi\n# Use SRCROOT so path works when building from Xcode or Flutter\nRAZORPAY_BINARY=\"${SRCROOT}/Pods/razorpay-core-pod/Pod/core/Razorpay.xcframework/ios-arm64/Razorpay.framework/Razorpay\"\nif [ ! -f \"${RAZORPAY_BINARY}\" ]; then\n  RAZORPAY_BINARY=\"${PODS_ROOT}/razorpay-core-pod/Pod/core/Razorpay.xcframework/ios-arm64/Razorpay.framework/Razorpay\"\nfi\nif [ ! -f \"${RAZORPAY_BINARY}\" ]; then\n  echo \"warning: Razorpay binary not found; skipping dSYM\"\n  exit 0\nfi\necho \"Generating Razorpay.framework.dSYM...\"\nxcrun dsymutil -o \"${BUILT_PRODUCTS_DIR}/Razorpay.framework.dSYM\" \"${RAZORPAY_BINARY}\"\n";
+			shellScript = "# Generate dSYM for Razorpay.framework so App Store upload accepts the archive\nif [ \"${PLATFORM_NAME}\" != \"iphoneos\" ]; then\n  exit 0\nfi\nRAZORPAY_BINARY=\"${SRCROOT}/Pods/razorpay-core-pod/Pod/core/Razorpay.xcframework/ios-arm64/Razorpay.framework/Razorpay\"\nif [ ! -f \"${RAZORPAY_BINARY}\" ]; then\n  RAZORPAY_BINARY=\"${PODS_ROOT}/razorpay-core-pod/Pod/core/Razorpay.xcframework/ios-arm64/Razorpay.framework/Razorpay\"\nfi\nif [ ! -f \"${RAZORPAY_BINARY}\" ]; then\n  echo \"warning: Razorpay binary not found; skipping dSYM\"\n  exit 0\nfi\necho \"Generating Razorpay.framework.dSYM...\"\nxcrun dsymutil -o \"${BUILT_PRODUCTS_DIR}/Razorpay.framework.dSYM\" \"${RAZORPAY_BINARY}\" || exit 0\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

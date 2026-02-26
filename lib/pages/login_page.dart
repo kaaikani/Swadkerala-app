@@ -49,12 +49,27 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   bool _phoneFieldTouched = false;
   bool _otpFieldTouched = false;
 
+  // Per-button loading so only the clicked button shows spinner, others are disabled
+  bool _isLoadingPhone = false;
+  bool _isLoadingGoogle = false;
+  bool _isLoadingApple = false;
+  bool get _isAnyLoginLoading => _isLoadingPhone || _isLoadingGoogle || _isLoadingApple;
+
+  // Intended route after login (captured when page opens so it is not lost after async login)
+  String? _intendedRoute;
+  dynamic _intendedArguments;
+
+  static const String _keyIntendedRoute = 'login_intended_route';
+  static const String _keyIntendedArguments = 'login_intended_arguments';
+  final GetStorage _storage = GetStorage();
+
   @override
   void initState() {
     super.initState();
-    
+    _captureIntendedRoute();
     // Track screen view
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _captureIntendedRoute(); // Capture again after first frame in case Get.arguments set on route push
       AnalyticsService().logScreenView(screenName: 'Login');
     });
     _initializeAnimations();
@@ -66,6 +81,38 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         _autoFillPhoneNumber();
       });
     });
+  }
+
+  void _captureIntendedRoute() {
+    final args = Get.arguments is Map ? Get.arguments as Map : null;
+    if (args != null) {
+      final route = args['intendedRoute']?.toString();
+      if (route != null && route.isNotEmpty) {
+        _intendedRoute = route;
+        _intendedArguments = args['intendedArguments'];
+        _storage.write(_keyIntendedRoute, route);
+        if (args['intendedArguments'] != null) {
+          _storage.write(_keyIntendedArguments, args['intendedArguments']);
+        } else {
+          _storage.remove(_keyIntendedArguments);
+        }
+      }
+    }
+  }
+
+  String? _getIntendedRouteForRedirect() {
+    final route = _intendedRoute ?? _storage.read(_keyIntendedRoute)?.toString();
+    return (route != null && route.isNotEmpty) ? route : null;
+  }
+
+  dynamic _getIntendedArgumentsForRedirect() {
+    if (_intendedArguments != null) return _intendedArguments;
+    return _storage.read(_keyIntendedArguments);
+  }
+
+  void _clearStoredIntendedRoute() {
+    _storage.remove(_keyIntendedRoute);
+    _storage.remove(_keyIntendedArguments);
   }
 
   void _initializeAnimations() {
@@ -101,21 +148,23 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   Future<void> _clearAllCache() async {
     try {
       await GraphqlService.clearToken('auth');
-      await GraphqlService.clearToken('channel');
+      // Do not clear channel token: Send OTP / Verify OTP must send vendure-token so the
+      // shop API can associate login with the same channel and merge guest cart.
       final storage = GetStorage();
-      
+
       // Preserve onboarding flags - user should not see onboarding again after first install
       final preservedOnboardingComplete = storage.read('onboarding_complete');
       final preservedIntroShown = storage.read('intro_shown');
-      
+
       // Preserve landing page cache keys for better user experience
       final preservedPostalCode = storage.read('postal_code');
       final preservedChannelCode = storage.read('channel_code');
       final preservedChannelName = storage.read('channel_name');
       final preservedChannelType = storage.read('channel_type');
-      
+      final preservedChannelToken = storage.read('channel_token')?.toString();
+
       await storage.erase();
-      
+
       // Restore onboarding flags if they existed
       if (preservedOnboardingComplete != null) {
         await storage.write('onboarding_complete', preservedOnboardingComplete);
@@ -123,7 +172,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       if (preservedIntroShown != null) {
         await storage.write('intro_shown', preservedIntroShown);
       }
-      
+
       // Restore landing page cache if they existed
       if (preservedPostalCode != null) {
         await storage.write('postal_code', preservedPostalCode);
@@ -137,7 +186,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       if (preservedChannelType != null) {
         await storage.write('channel_type', preservedChannelType);
       }
-      
+      if (preservedChannelToken != null && preservedChannelToken.isNotEmpty) {
+        await storage.write('channel_token', preservedChannelToken);
+      }
+
       _authController.setLoggedIn(false);
       _authController.setOtpSent(false);
     } catch (e) {
@@ -978,14 +1030,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Widget _buildActionButton() {
     return Obx(() {
-      final isLoading = _authController.isLoading;
       final isOtpSent = _authController.isOtpSent;
       final bool isEnabled = isOtpSent
           ? (_otpError == null &&
               _authController.otpController.text.length == 4)
           : (_phoneError == null &&
               _authController.phoneNumber.text.length == 10);
-      debugPrint('[LoginPage] Obx(actionButton) | isOtpSent=$isOtpSent, isLoading=$isLoading, isEnabled=$isEnabled');
+      final disabled = _isAnyLoginLoading || !isEnabled;
 
       return Container(
         height: ResponsiveUtils.rp(58),
@@ -1019,10 +1070,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: (isLoading || !isEnabled) ? null : _handleButtonPress,
+            onTap: disabled ? null : _handleButtonPress,
             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
             child: Center(
-              child: isLoading
+              child: _isLoadingPhone
                   ? SizedBox(
                       width: ResponsiveUtils.rp(26),
                       height: ResponsiveUtils.rp(26),
@@ -1047,7 +1098,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         Container(
                           padding: EdgeInsets.all(ResponsiveUtils.rp(4)),
                           decoration: BoxDecoration(
-                            color: isEnabled 
+                            color: isEnabled
                                 ? Colors.white.withValues(alpha: 0.2)
                                 : AppColors.border.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
@@ -1079,7 +1130,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
         SizedBox(height: ResponsiveUtils.rp(8)),
         TextButton(
-          onPressed: _authController.isLoading ? null : _handleResendOtp,
+          onPressed: _isAnyLoginLoading ? null : _handleResendOtp,
           child: Text(
             'Resend OTP',
             style: TextStyle(
@@ -1124,37 +1175,35 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Widget _buildAppleSignInButton() {
-    return Obx(() {
-      final isLoading = _authController.isLoading;
-      return Container(
-        height: ResponsiveUtils.rp(58),
-        decoration: BoxDecoration(
-          color: Colors.black,
+    return Container(
+      height: ResponsiveUtils.rp(58),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: ResponsiveUtils.rp(20),
+            offset: Offset(0, ResponsiveUtils.rp(4)),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isAnyLoginLoading ? null : _handleAppleSignIn,
           borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: ResponsiveUtils.rp(20),
-              offset: Offset(0, ResponsiveUtils.rp(4)),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: isLoading ? null : _handleAppleSignIn,
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-            child: Center(
-              child: isLoading
-                  ? SizedBox(
-                      width: ResponsiveUtils.rp(24),
-                      height: ResponsiveUtils.rp(24),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                  : Row(
+          child: Center(
+            child: _isLoadingApple
+                ? SizedBox(
+                    width: ResponsiveUtils.rp(24),
+                    height: ResponsiveUtils.rp(24),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
@@ -1178,46 +1227,42 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ),
       );
-    });
   }
 
   Widget _buildGoogleSignInButton() {
-    return Obx(() {
-      final isLoading = _authController.isLoading;
-      
-      return Container(
-        height: ResponsiveUtils.rp(58),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-          border: Border.all(
-            color: AppColors.border.withValues(alpha: 0.3),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: ResponsiveUtils.rp(20),
-              offset: Offset(0, ResponsiveUtils.rp(4)),
-            ),
-          ],
+    return Container(
+      height: ResponsiveUtils.rp(58),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.3),
+          width: 1.5,
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: isLoading ? null : _handleGoogleSignIn,
-            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-            child: Center(
-              child: isLoading
-                  ? SizedBox(
-                      width: ResponsiveUtils.rp(24),
-                      height: ResponsiveUtils.rp(24),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
-                      ),
-                    )
-                  : Row(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: ResponsiveUtils.rp(20),
+            offset: Offset(0, ResponsiveUtils.rp(4)),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isAnyLoginLoading ? null : _handleGoogleSignIn,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
+          child: Center(
+            child: _isLoadingGoogle
+                ? SizedBox(
+                    width: ResponsiveUtils.rp(24),
+                    height: ResponsiveUtils.rp(24),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                    ),
+                  )
+                : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
@@ -1249,7 +1294,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ),
       );
-    });
   }
 
   Widget _buildFloatingConnectButton() {
@@ -1413,7 +1457,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ),
         GestureDetector(
-          onTap: () => Get.toNamed('/signup'),
+          onTap: () {
+            _captureIntendedRoute();
+            Get.toNamed('/signup', arguments: {
+              'intendedRoute': _intendedRoute,
+              'intendedArguments': _intendedArguments,
+            });
+          },
           child: Text(
             'Sign Up',
             style: TextStyle(
@@ -1462,17 +1512,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Future<void> _handleButtonPress() async {
-    final isOtpSent = _authController.isOtpSent;
-    final isLoading = _authController.isLoading;
-    debugPrint('[LoginPage] _handleButtonPress | isOtpSent=$isOtpSent, isLoading=$isLoading, mounted=$mounted');
-    if (isOtpSent) {
-      debugPrint('[LoginPage] _handleButtonPress -> _verifyOtp()');
-      await _verifyOtp();
-    } else {
-      debugPrint('[LoginPage] _handleButtonPress -> _sendOtp()');
-      await _sendOtp();
+    if (_isAnyLoginLoading) return;
+    setState(() => _isLoadingPhone = true);
+    try {
+      final isOtpSent = _authController.isOtpSent;
+      if (isOtpSent) {
+        await _verifyOtp();
+      } else {
+        await _sendOtp();
+      }
+    } finally {
+      if (mounted) setState(() => _isLoadingPhone = false);
     }
-    debugPrint('[LoginPage] _handleButtonPress done | isOtpSent=${_authController.isOtpSent}');
   }
 
   Future<void> _sendOtp() async {
@@ -1513,7 +1564,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     final success = await _authController.verifyOtpForLogin(context);
     if (success) {
       await AnalyticsService().logLogin(loginMethod: 'OTP');
-      await NavigationHelper.redirectToIntendedRoute();
+      _captureIntendedRoute();
+      final route = _getIntendedRouteForRedirect();
+      final args = _getIntendedArgumentsForRedirect();
+      await NavigationHelper.redirectToIntendedRoute(intendedRoute: route, intendedArguments: args);
+      _clearStoredIntendedRoute();
     }
   }
 
@@ -1522,23 +1577,41 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Future<void> _handleGoogleSignIn() async {
-    final success = await _authController.signInWithGoogle(context);
-    if (success) {
-      await AnalyticsService().logLogin(loginMethod: 'Google');
-      await NavigationHelper.redirectToIntendedRoute();
+    if (_isAnyLoginLoading) return;
+    setState(() => _isLoadingGoogle = true);
+    try {
+      final success = await _authController.signInWithGoogle(context);
+      if (success) {
+        await AnalyticsService().logLogin(loginMethod: 'Google');
+        _captureIntendedRoute();
+        await NavigationHelper.redirectToIntendedRoute(
+          intendedRoute: _getIntendedRouteForRedirect(),
+          intendedArguments: _getIntendedArgumentsForRedirect(),
+        );
+        _clearStoredIntendedRoute();
+      }
+    } finally {
+      if (mounted) setState(() => _isLoadingGoogle = false);
     }
   }
 
   Future<void> _handleAppleSignIn() async {
-    debugPrint('[LoginPage] _handleAppleSignIn ENTRY | isLoading=${_authController.isLoading}');
-    final success = await _authController.signInWithApple(context);
-    debugPrint('[LoginPage] _handleAppleSignIn signInWithApple returned success=$success');
-    if (success) {
-      await AnalyticsService().logLogin(loginMethod: 'Apple');
-      debugPrint('[LoginPage] _handleAppleSignIn redirecting to intended route');
-      await NavigationHelper.redirectToIntendedRoute();
+    if (_isAnyLoginLoading) return;
+    setState(() => _isLoadingApple = true);
+    try {
+      final success = await _authController.signInWithApple(context);
+      if (success) {
+        await AnalyticsService().logLogin(loginMethod: 'Apple');
+        _captureIntendedRoute();
+        await NavigationHelper.redirectToIntendedRoute(
+          intendedRoute: _getIntendedRouteForRedirect(),
+          intendedArguments: _getIntendedArgumentsForRedirect(),
+        );
+        _clearStoredIntendedRoute();
+      }
+    } finally {
+      if (mounted) setState(() => _isLoadingApple = false);
     }
-    debugPrint('[LoginPage] _handleAppleSignIn EXIT success=$success');
   }
 
   @override

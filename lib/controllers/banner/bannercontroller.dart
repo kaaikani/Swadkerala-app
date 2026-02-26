@@ -20,8 +20,11 @@ import '../utilitycontroller/utilitycontroller.dart';
 import '../base_controller.dart';
 import '../cart/Cartcontroller.dart';
 import '../order/ordercontroller.dart';
+import '../authentication/authenticationcontroller.dart';
 import '../customer/customer_controller.dart';
 import '../../utils/logger.dart';
+import '../../routes.dart';
+import '../../utils/navigation_helper.dart';
 
 class BannerController extends BaseController {
   // ============================================================================
@@ -292,6 +295,14 @@ class BannerController extends BaseController {
   // ============================================================================
   /// Toggle favorite for a product
   Future<bool> toggleFavorite({required String productId}) async {
+    if (GraphqlService.authToken.isEmpty) {
+      NavigationHelper.showLoginRequiredDialog(
+        title: 'Login required',
+        message: 'Kindly login to like products.',
+        intendedRoute: AppRoutes.favourite,
+      );
+      return false;
+    }
     try {
       
           Logger.logFunction(functionName: 'toggleFavorite');
@@ -412,24 +423,10 @@ class BannerController extends BaseController {
           favoriteProductIds.clear();
         }
       } else {
-        // Customer not logged in or not a Customer type, clear favorites
+        // Customer not logged in or no customer in response (e.g. guest) - just clear favorites, do NOT logout
         favoritesList.clear();
         favoritesTotalItems.value = 0;
         favoriteProductIds.clear();
-        
-        // Only logout if it's NOT a network error
-        // Network errors should not trigger logout as they're temporary connection issues
-        if (!isNetworkError) {
-          // Clear cache and logout when customer data is null (only if not a network error)
-          try {
-            final customerController = Get.find<CustomerController>();
-            await customerController.handleCustomerDataNotFound();
-          } catch (e) {
-            // If CustomerController is not found, handle logout directly
-            await _handleCustomerDataNotFound();
-          }
-        } else {
-        }
       }
 
       utilityController.setLoadingState(false);
@@ -2481,6 +2478,7 @@ class BannerController extends BaseController {
 
   /// Handle customer data not found - clear cache and logout (fallback method)
   Future<void> _handleCustomerDataNotFound() async {
+    if (AuthController.isLoggingOut) return;
     try {
       // Clear authentication tokens
       await GraphqlService.clearToken('auth');
@@ -2492,11 +2490,17 @@ class BannerController extends BaseController {
         message: 'No customer data found. Please login again.',
       );
 
-      // Navigate to login page
-      Get.offAllNamed('/login');
+      if (AuthController.isLoggingOut) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.login);
+      }
     } catch (e) {
-      // Still navigate to login even if cleanup fails
-      Get.offAllNamed('/login');
+      if (AuthController.isLoggingOut) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.login);
+      }
     }
   }
 }

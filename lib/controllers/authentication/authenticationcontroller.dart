@@ -23,8 +23,10 @@ import '../base_controller.dart';
 import '../../services/analytics_service.dart';
 import '../../graphql/authenticate.graphql.dart';
 import '../../graphql/Customer.graphql.dart';
+import '../../graphql/order.graphql.dart';
 import '../../utils/logger.dart';
 import '../../utils/google_auth_env.dart';
+import '../../routes.dart';
 
 class AuthController extends BaseController {
   // Controllers
@@ -40,6 +42,8 @@ class AuthController extends BaseController {
   // State variables
   final RxBool _isLoggedIn = false.obs;
   final RxBool _isOtpSent = false.obs;
+  /// True while logout is in progress; other controllers should not redirect to login.
+  static bool isLoggingOut = false;
 
   // Getters
   bool get isLoggedIn => _isLoggedIn.value;
@@ -427,7 +431,9 @@ class AuthController extends BaseController {
     setLoading(true);
 
     try {
-      // Perform OTP verification mutation for login (no firstName/lastName)
+      // Ensure guest token is sent with authenticate so server can merge guest cart (no ClaimGuestOrder).
+      await GraphqlService.ensureGuestSessionForLogin();
+      // Perform OTP verification mutation for login (no firstName/lastName).
       final response = await GraphqlService.client.value.mutate$LoginWithPhoneOtp(
         Options$Mutation$LoginWithPhoneOtp(
           variables: Variables$Mutation$LoginWithPhoneOtp(
@@ -523,7 +529,7 @@ class AuthController extends BaseController {
       }
       // Perform OTP verification mutation for registration (with firstName/lastName)
       Logger.logFunction(functionName: 'verifyOtpForRegister', mutationName: 'Authenticate');
-      
+      await GraphqlService.ensureGuestSessionForLogin();
       final response = await GraphqlService.client.value.mutate$Authenticate(
         Options$Mutation$Authenticate(
           variables: Variables$Mutation$Authenticate(
@@ -603,10 +609,43 @@ class AuthController extends BaseController {
       // 3️⃣ Mark user as logged in and reset form
       setLoggedIn(true);
       resetFormField();
+
+      // 4️⃣ Claim guest cart if any, then refresh cart and customer
+      await _claimGuestOrderIfAny();
+      await _refreshCartAndCustomerAfterLogin();
+
       return true;
     } else {
       return false;
     }
+  }
+
+  /// Claim guest cart to logged-in customer so guest-added items appear after login.
+  /// Call after setToken('auth') and before _refreshCartAndCustomerAfterLogin().
+  Future<void> _claimGuestOrderIfAny() async {
+    final code = GraphqlService.guestOrderCode;
+    if (code.isEmpty) return;
+    try {
+      final response = await GraphqlService.client.value.mutate$ClaimGuestOrder(
+        Options$Mutation$ClaimGuestOrder(
+          variables: Variables$Mutation$ClaimGuestOrder(guestOrderCode: code),
+        ),
+      );
+      if (!response.hasException && response.parsedData?.claimGuestOrder != null) {
+        await GraphqlService.clearGuestOrderCode();
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _refreshCartAndCustomerAfterLogin() async {
+    try {
+      if (Get.isRegistered<CartController>()) {
+        await Get.find<CartController>().getActiveOrder();
+      }
+      if (Get.isRegistered<CustomerController>()) {
+        await Get.find<CustomerController>().getActiveCustomer(skipPostalCodeCheck: true);
+      }
+    } catch (_) {}
   }
 
   /// Step 3: Verify OTP (deprecated - use verifyOtpForLogin or verifyOtpForRegistration)
@@ -672,6 +711,7 @@ class AuthController extends BaseController {
 
   /// Logout user
   Future<void> logout(BuildContext context) async {
+    isLoggingOut = true;
     setLoading(true);
     try {
       final response = await GraphqlService.client.value.mutate$LogoutUser(
@@ -694,9 +734,13 @@ class AuthController extends BaseController {
       setOtpSent(false);
       resetFormField();
       SnackBarWidget.showSuccess('Logged out successfully');
-      // Navigate to login page
-      Future.microtask(() {
-        Get.offAllNamed('/login');
+      // Navigate to home page (not login) after this frame so no other controller can redirect to login first
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.offAllNamed(AppRoutes.home);
+        // Keep isLoggingOut true briefly so any session-expiry logic on home still redirects to home, not login
+        Future.delayed(const Duration(milliseconds: 800), () {
+          isLoggingOut = false;
+        });
       });
     } catch (e) {
       // Don't show error dialog for logout - just log it
@@ -706,8 +750,14 @@ class AuthController extends BaseController {
         setLoggedIn(false);
         setOtpSent(false);
         resetFormField();
-        Future.microtask(() => Get.offAllNamed('/login'));
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.offAllNamed(AppRoutes.home);
+          Future.delayed(const Duration(milliseconds: 800), () {
+            isLoggingOut = false;
+          });
+        });
       } catch (cleanupError) {
+        isLoggingOut = false;
       }
     } finally {
       setLoading(false);
@@ -719,7 +769,7 @@ class AuthController extends BaseController {
     try {
       // Unsubscribe from channel FCM topic so user doesn't get channel notifications until next login
       await NotificationService.instance.unsubscribeFromChannelTopic();
-      // Clear GraphQL tokens (this also recreates the client)
+      // Clear auth and channel tokens so user starts fresh after logout
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
       // Clear Flutter image cache
@@ -729,17 +779,13 @@ class AuthController extends BaseController {
       } catch (e) {
       }
 
-      // Clear all storage data (preserve landing page cache: postal_code, channel_code, channel_name, channel_type)
-      // Preserve landing page cache keys for better user experience
-      final preservedPostalCode = _storage.read('postal_code');
-      final preservedChannelCode = _storage.read('channel_code');
-      final preservedChannelName = _storage.read('channel_name');
-      final preservedChannelType = _storage.read('channel_type');
-      
+      // Clear all storage data including channel and postal info so user starts fresh
       await _storage.remove('auth_token');
       await _storage.remove('channel_token');
-      // Keep channel_code for landing page
-      // await _storage.remove('channel_code');
+      await _storage.remove('channel_code');
+      await _storage.remove('channel_name');
+      await _storage.remove('channel_type');
+      await _storage.remove('postal_code');
       await _storage.remove('user_data');
       await _storage.remove('customer_data');
       await _storage.remove('cart_data');
@@ -785,8 +831,6 @@ class AuthController extends BaseController {
       await _storage.remove('country');
       await _storage.remove('region');
       await _storage.remove('city');
-      // Keep postal_code for landing page
-      // await _storage.remove('postal_code');
       await _storage.remove('phone_verified');
       await _storage.remove('email_verified');
       await _storage.remove('profile_complete');
@@ -842,21 +886,7 @@ class AuthController extends BaseController {
       await _storage.remove('whole_storage');
       await _storage.remove('all_storage');
       await _storage.remove('everything_storage');
-      // Don't use erase() - preserve landing page cache
-      // Instead, manually remove all keys except preserved ones
-      // Restore preserved landing page cache if they existed
-      if (preservedPostalCode != null) {
-        await _storage.write('postal_code', preservedPostalCode);
-      }
-      if (preservedChannelCode != null) {
-        await _storage.write('channel_code', preservedChannelCode);
-      }
-      if (preservedChannelName != null) {
-        await _storage.write('channel_name', preservedChannelName);
-      }
-      if (preservedChannelType != null) {
-        await _storage.write('channel_type', preservedChannelType);
-      }
+      // Channel, postal code, and related data are already cleared above
       // Clear any GetX controllers that might have cached data
       try {
         // Clear customer controller data
@@ -1012,8 +1042,7 @@ class AuthController extends BaseController {
       // Step 3: Flutter sends idToken to backend
       // Step 4: Backend verifies token using Google public keys (backend logic)
       // Step 5: Backend creates its own session / JWT
-
-      // Authenticate with backend using the ID token
+      await GraphqlService.ensureGuestSessionForLogin();
       final response = await GraphqlService.client.value.mutate$LoginWithGoogle(
         Options$Mutation$LoginWithGoogle(
           variables: Variables$Mutation$LoginWithGoogle(token: idToken),
@@ -1089,9 +1118,11 @@ class AuthController extends BaseController {
             return false;
           }
 
-          // 3️⃣ Mark user as logged in
+          // 3️⃣ Claim guest cart if any, then mark logged in and refresh
+          await _claimGuestOrderIfAny();
           setLoggedIn(true);
           resetFormField();
+          await _refreshCartAndCustomerAfterLogin();
           return true;
         } else {
           ErrorDialog.showError('Authentication token not received from server');
@@ -1253,6 +1284,7 @@ class AuthController extends BaseController {
         debugPrint('[Apple Sign In] 4. Why empty: Apple only sends givenName/familyName on FIRST sign-in; on later sign-ins they are null (so we pass "").');
       }
       _appleLog('4. Mutation', {'action': 'sending LoginWithApple', 'email': email.isEmpty ? '(empty)' : email, 'firstName': firstName.isEmpty ? '(empty)' : firstName, 'lastName': lastName.isEmpty ? '(empty)' : lastName});
+      await GraphqlService.ensureGuestSessionForLogin();
       final response = await GraphqlService.client.value.mutate$LoginWithApple(
         Options$Mutation$LoginWithApple(
           variables: Variables$Mutation$LoginWithApple(
@@ -1330,8 +1362,10 @@ class AuthController extends BaseController {
           }
           _appleLog('5. Result', {'outcome': 'success'});
           _appleLog('═══ END ═══');
+          await _claimGuestOrderIfAny();
           setLoggedIn(true);
           resetFormField();
+          await _refreshCartAndCustomerAfterLogin();
           return true;
         } else {
           _appleLog('EXIT', {'reason': 'authToken not received from server'});

@@ -1,15 +1,15 @@
 class Input$AppleAuthInput {
   factory Input$AppleAuthInput({
     required String token,
-    String? email,
     String? firstName,
     String? lastName,
+    String? email,
   }) =>
       Input$AppleAuthInput._({
         r'token': token,
-        if (email != null) r'email': email,
         if (firstName != null) r'firstName': firstName,
         if (lastName != null) r'lastName': lastName,
+        if (email != null) r'email': email,
       });
 
   Input$AppleAuthInput._(this._$data);
@@ -18,10 +18,6 @@ class Input$AppleAuthInput {
     final result$data = <String, dynamic>{};
     final l$token = data['token'];
     result$data['token'] = (l$token as String);
-    if (data.containsKey('email')) {
-      final l$email = data['email'];
-      result$data['email'] = (l$email as String?);
-    }
     if (data.containsKey('firstName')) {
       final l$firstName = data['firstName'];
       result$data['firstName'] = (l$firstName as String?);
@@ -30,6 +26,10 @@ class Input$AppleAuthInput {
       final l$lastName = data['lastName'];
       result$data['lastName'] = (l$lastName as String?);
     }
+    if (data.containsKey('email')) {
+      final l$email = data['email'];
+      result$data['email'] = (l$email as String?);
+    }
     return Input$AppleAuthInput._(result$data);
   }
 
@@ -37,20 +37,16 @@ class Input$AppleAuthInput {
 
   String get token => (_$data['token'] as String);
 
-  String? get email => (_$data['email'] as String?);
-
   String? get firstName => (_$data['firstName'] as String?);
 
   String? get lastName => (_$data['lastName'] as String?);
+
+  String? get email => (_$data['email'] as String?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$token = token;
     result$data['token'] = l$token;
-    if (_$data.containsKey('email')) {
-      final l$email = email;
-      result$data['email'] = l$email;
-    }
     if (_$data.containsKey('firstName')) {
       final l$firstName = firstName;
       result$data['firstName'] = l$firstName;
@@ -58,6 +54,10 @@ class Input$AppleAuthInput {
     if (_$data.containsKey('lastName')) {
       final l$lastName = lastName;
       result$data['lastName'] = l$lastName;
+    }
+    if (_$data.containsKey('email')) {
+      final l$email = email;
+      result$data['email'] = l$email;
     }
     return result$data;
   }
@@ -81,14 +81,6 @@ class Input$AppleAuthInput {
     if (l$token != lOther$token) {
       return false;
     }
-    final l$email = email;
-    final lOther$email = other.email;
-    if (_$data.containsKey('email') != other._$data.containsKey('email')) {
-      return false;
-    }
-    if (l$email != lOther$email) {
-      return false;
-    }
     final l$firstName = firstName;
     final lOther$firstName = other.firstName;
     if (_$data.containsKey('firstName') !=
@@ -107,20 +99,28 @@ class Input$AppleAuthInput {
     if (l$lastName != lOther$lastName) {
       return false;
     }
+    final l$email = email;
+    final lOther$email = other.email;
+    if (_$data.containsKey('email') != other._$data.containsKey('email')) {
+      return false;
+    }
+    if (l$email != lOther$email) {
+      return false;
+    }
     return true;
   }
 
   @override
   int get hashCode {
     final l$token = token;
-    final l$email = email;
     final l$firstName = firstName;
     final l$lastName = lastName;
+    final l$email = email;
     return Object.hashAll([
       l$token,
-      _$data.containsKey('email') ? l$email : const {},
       _$data.containsKey('firstName') ? l$firstName : const {},
       _$data.containsKey('lastName') ? l$lastName : const {},
+      _$data.containsKey('email') ? l$email : const {},
     ]);
   }
 }
@@ -136,9 +136,9 @@ abstract class CopyWith$Input$AppleAuthInput<TRes> {
 
   TRes call({
     String? token,
-    String? email,
     String? firstName,
     String? lastName,
+    String? email,
   });
 }
 
@@ -157,16 +157,16 @@ class _CopyWithImpl$Input$AppleAuthInput<TRes>
 
   TRes call({
     Object? token = _undefined,
-    Object? email = _undefined,
     Object? firstName = _undefined,
     Object? lastName = _undefined,
+    Object? email = _undefined,
   }) =>
       _then(Input$AppleAuthInput._({
         ..._instance._$data,
         if (token != _undefined && token != null) 'token': (token as String),
-        if (email != _undefined) 'email': (email as String?),
         if (firstName != _undefined) 'firstName': (firstName as String?),
         if (lastName != _undefined) 'lastName': (lastName as String?),
+        if (email != _undefined) 'email': (email as String?),
       }));
 }
 
@@ -178,9 +178,9 @@ class _CopyWithStubImpl$Input$AppleAuthInput<TRes>
 
   call({
     String? token,
-    String? email,
     String? firstName,
     String? lastName,
+    String? email,
   }) =>
       _res;
 }

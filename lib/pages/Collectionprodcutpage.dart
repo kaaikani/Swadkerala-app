@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import '../controllers/authentication/authenticationcontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
@@ -709,27 +708,11 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
     );
   }
 
-  /// Handle collection not found error - redirect based on authentication status
+  /// Handle collection not found / load error - redirect to home (browsing categories does not require login)
   void _handleCollectionNotFound() {
     try {
-      // Check authentication status
-      final authController = Get.find<AuthController>();
-      final authToken = GraphqlService.authToken;
-      final channelToken = GraphqlService.channelToken;
-      
-      final isAuthenticated = authController.isLoggedIn && 
-                             authToken.isNotEmpty && 
-                             channelToken.isNotEmpty;
-      
-      
-      if (isAuthenticated) {
-        Get.offAllNamed(AppRoutes.home);
-      } else {
-        Get.offAllNamed(AppRoutes.login);
-      }
-      
+      Get.offAllNamed(AppRoutes.home);
     } catch (e) {
-      // Fallback to home page if there's any error
       Get.offAllNamed(AppRoutes.home);
     }
   }

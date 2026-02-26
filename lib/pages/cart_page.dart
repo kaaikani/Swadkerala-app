@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/customer/customer_controller.dart';
+import '../controllers/authentication/authenticationcontroller.dart';
+import '../routes.dart';
 import '../widgets/appbar.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/cart/cart_empty_state.dart';
@@ -16,7 +19,6 @@ import '../widgets/cart/cart_shipping_section.dart';
 import '../widgets/cart/cart_coupon_section.dart';
 import '../widgets/cart/cart_order_summary_section.dart';
 import '../widgets/cart/cart_checkout_section.dart';
-import '../widgets/cart/cart_loyalty_points_section.dart';
 import '../widgets/cart/cart_other_instructions_section.dart';
 import '../widgets/cart/cart_coupon_bottom_sheet.dart';
 import '../utils/responsive.dart';
@@ -42,8 +44,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   final UtilityController utilityController = Get.find<UtilityController>();
   final BannerController bannerController = Get.find<BannerController>();
   final CustomerController customerController = Get.find<CustomerController>();
-
-  // Loyalty Points - moved to CartLoyaltyPointsSection component
 
   // Scroll controller and keys
   final ScrollController _scrollController = ScrollController();
@@ -133,7 +133,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         // No need to fetch again - just load existing data from controllers
         _loadExistingShippingMethod();
         _loadExistingCouponCodes();
-        _loadExistingLoyaltyPoints();
         _loadExistingInstructions();
         
         // Mark refresh as complete
@@ -767,75 +766,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     }
   }
 
-  /// Toggle loyalty points
-  // ignore: unused_element
-  Future<void> _toggleLoyaltyPoints() async {
-    final isApplied = bannerController.loyaltyPointsApplied.value;
-    
-    if (isApplied) {
-      // Remove loyalty points
-      final success = await bannerController.removeLoyaltyPoints();
-      if (success) {
-        showSuccessSnackbar('Loyalty points removed');
-        // Cart is already updated in removeLoyaltyPoints(), no need to fetch again
-      } else {
-        showErrorSnackbar('Failed to remove loyalty points');
-      }
-    } else {
-      // Apply loyalty points
-      final loyaltyPointsUsed = bannerController.loyaltyPointsUsed.value;
-      if (loyaltyPointsUsed > 0) {
-        final success = await bannerController.applyLoyaltyPoints(loyaltyPointsUsed);
-        if (success) {
-          showSuccessSnackbar('Loyalty points applied');
-          // Cart is already updated in applyLoyaltyPoints(), no need to fetch again
-        } else {
-          showErrorSnackbar('Failed to apply loyalty points');
-        }
-      }
-    }
-  }
-
-  // Loyalty Points Methods - moved to CartLoyaltyPointsSection component
-
-  Future<void> _loadExistingLoyaltyPoints() async {
-    try {
-      
-      // Loyalty points are now extracted directly in cartController.getActiveOrder()
-      // This function is kept as a fallback, but the main extraction happens in CartController
-      // Check if loyalty points are already set (from getActiveOrder)
-      final isApplied = bannerController.loyaltyPointsApplied.value;
-      final pointsUsed = bannerController.loyaltyPointsUsed.value;
-      
-      if (isApplied && pointsUsed > 0) {
-        return;
-      }
-      
-      // Fallback: Try to get from order if not already loaded
-      // Note: This is unlikely to work since orderController.currentOrder is Fragment$Cart
-      // which doesn't have customFields, but kept as a safety check
-      final order = orderController.currentOrder.value;
-      if (order != null) {
-        try {
-          // Try to access customFields if available (for Query$ActiveOrder$activeOrder type)
-          // Fragment$Cart doesn't have customFields, so this will fail gracefully
-          if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
-        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
-        final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
-        if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-          bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
-          bannerController.loyaltyPointsApplied.value = true;
-            }
-          } else {
-          }
-        } catch (e) {
-          // Fragment$Cart doesn't have customFields, that's okay
-        }
-      }
-    } catch (e) {
-    }
-  }
-
   Future<void> _loadExistingInstructions() async {
     try {
       // Use already-loaded order data instead of fetching again
@@ -1078,72 +1008,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                       ),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       
-                      // Loyalty Points Section
-                      Obx(() {
-                        final availablePoints = customerController.loyaltyPoints;
-                        final config = bannerController.loyaltyPointsConfig.value;
-                        final minimumPoints = config?.pointsPerRupee ?? 0;
-                        final isApplied = bannerController.loyaltyPointsApplied.value;
-                        
-                        // If minimum points required and available points less than minimum, hide section
-                        // BUT if points are already applied, show UI anyway
-                        if (minimumPoints > 0 && availablePoints < minimumPoints && !isApplied) {
-                          return SizedBox.shrink();
-                        }
-                        
-                        // Always show apply UI if points are applied (regardless of remaining points)
-                        // Also show UI if points not applied and available >= minimum
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                          child: CartLoyaltyPointsSection(
-                            bannerController: bannerController,
-                            customerController: customerController,
-                            onApplyLoyaltyPoints: (pointsText) async {
-                              if (pointsText.isEmpty) {
-                                showErrorSnackbar('Please enter loyalty points amount');
-                                return;
-                              }
-
-                              final points = int.tryParse(pointsText);
-                              if (points == null || points <= 0) {
-                                showErrorSnackbar('Please enter a valid loyalty points amount');
-                                return;
-                              }
-
-                              final availablePoints = customerController.loyaltyPoints;
-                              if (points > availablePoints) {
-                                showErrorSnackbar('Insufficient loyalty points! You have $availablePoints points available.');
-                                return;
-                              }
-
-                              final config = bannerController.loyaltyPointsConfig.value;
-                              if (config != null && points < config.pointsPerRupee) {
-                                showErrorSnackbar('Minimum loyalty points required: ${config.pointsPerRupee} points.');
-                                return;
-                              }
-
-                              final success = await bannerController.applyLoyaltyPoints(points);
-                              if (success) {
-                                showSuccessSnackbar('Loyalty points applied successfully');
-                                // Cart is already updated in applyLoyaltyPoints(), no need to fetch again
-                              } else {
-                                showErrorSnackbar('Failed to apply loyalty points');
-                              }
-                            },
-                            onRemoveLoyaltyPoints: () async {
-                              final success = await bannerController.removeLoyaltyPoints();
-                              if (success) {
-                                showSuccessSnackbar('Loyalty points removed successfully');
-                                // Cart is already updated in removeLoyaltyPoints(), no need to fetch again
-                              } else {
-                                showErrorSnackbar('Failed to remove loyalty points');
-                              }
-                            },
-                          ),
-                        );
-                      }),
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-                      
                       // Other Instructions Section (Small)
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
@@ -1290,12 +1154,67 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                     ),
                   ],
                 ),
-                child: CartCheckoutSection(
-            cartController: cartController,
-                  orderController: orderController,
-            utilityController: utilityController,
-                  onProceedToCheckout: _proceedToCheckout,
-                ),
+                child: Obx(() {
+                  final authController = Get.find<AuthController>();
+                  final isLoggedIn = authController.isLoggedIn;
+                  return CartCheckoutSection(
+                    cartController: cartController,
+                    orderController: orderController,
+                    utilityController: utilityController,
+                    checkoutButtonLabel: isLoggedIn ? 'Proceed to Checkout' : 'Kindly login',
+                    onProceedToCheckout: isLoggedIn
+                        ? _proceedToCheckout
+                        : () {
+                            // Validate shipping method before sending guest to login
+                            if (orderController.shippingMethods.isEmpty) {
+                              showErrorSnackbar('No shipping methods available. Please contact support.');
+                              return;
+                            }
+                            final selectedMethod = orderController.selectedShippingMethod.value;
+                            final currentOrder = orderController.currentOrder.value;
+                            final isMethodSelected = selectedMethod != null &&
+                                selectedMethod.id.isNotEmpty &&
+                                selectedMethod.name.isNotEmpty &&
+                                selectedMethod.id != '0' &&
+                                selectedMethod.id != 'null';
+                            final isMethodApplied = currentOrder != null &&
+                                currentOrder.shippingLines.isNotEmpty &&
+                                currentOrder.shippingLines.any((line) =>
+                                    line.shippingMethod.id == selectedMethod?.id);
+                            if (!isMethodSelected || !isMethodApplied) {
+                              if (isMethodSelected && !isMethodApplied) {
+                                orderController.selectedShippingMethod.value = null;
+                              }
+                              showErrorSnackbar('Kindly choose a shipping method to proceed');
+                              // Scroll to shipping section and blink
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                final ctx = _shippingSectionKey.currentContext;
+                                if (ctx != null) {
+                                  Scrollable.ensureVisible(
+                                    ctx,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
+                              });
+                              if (mounted) {
+                                _blinkAnimationController.reset();
+                                _blinkAnimationController.repeat(reverse: true);
+                                Future.delayed(const Duration(seconds: 3), () {
+                                  if (mounted) {
+                                    _blinkAnimationController.stop();
+                                    _blinkAnimationController.reset();
+                                  }
+                                });
+                              }
+                              return;
+                            }
+                            const key = 'login_intended_route';
+                            GetStorage().write(key, AppRoutes.checkout);
+                            Get.toNamed(AppRoutes.login, arguments: {'intendedRoute': AppRoutes.checkout});
+                          },
+                  );
+                }),
               ),
             ),
           ],

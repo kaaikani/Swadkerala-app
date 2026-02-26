@@ -101,7 +101,6 @@ class AppRoutes {
       name: cart,
       page: () => const CartPage(),
       transition: Transition.rightToLeft,
-      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: checkout,
@@ -133,9 +132,10 @@ class AppRoutes {
     ),
     GetPage(
       name: orderConfirmation,
-      page: () => OrderConfirmationPage(
-        orderId: Get.arguments as String,
-      ),
+      page: () {
+        final orderId = Get.arguments is String ? Get.arguments as String : (Get.arguments?.toString() ?? '');
+        return OrderConfirmationPage(orderId: orderId);
+      },
       transition: Transition.fadeIn,
       middlewares: [AuthGuard()],
     ),
@@ -188,7 +188,6 @@ class AppRoutes {
           productName: arguments?['productName'] as String?,
         );
       },
-      middlewares: [AuthGuard()],
       transition: Transition.rightToLeft,
     ),
     GetPage(
