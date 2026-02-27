@@ -16,6 +16,7 @@ import '../widgets/cart/cart_empty_state.dart';
 import '../widgets/cart/cart_shimmer_loading.dart';
 import '../widgets/cart/cart_items_list.dart';
 import '../widgets/cart/cart_shipping_section.dart';
+import '../widgets/cart/cart_loyalty_points_section.dart';
 import '../widgets/cart/cart_coupon_section.dart';
 import '../widgets/cart/cart_order_summary_section.dart';
 import '../widgets/cart/cart_checkout_section.dart';
@@ -988,6 +989,60 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                           },
                         ),
                       ),
+                      SizedBox(height: ResponsiveUtils.rp(8)),
+                      
+                      // Loyalty Points Section (below shipping method)
+                      Obx(() {
+                        final availablePoints = customerController.loyaltyPoints;
+                        final config = bannerController.loyaltyPointsConfig.value;
+                        final minimumPoints = config?.pointsPerRupee ?? 0;
+                        final isApplied = bannerController.loyaltyPointsApplied.value;
+                        if (minimumPoints > 0 && availablePoints < minimumPoints && !isApplied) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+                          child: CartLoyaltyPointsSection(
+                            bannerController: bannerController,
+                            customerController: customerController,
+                            onApplyLoyaltyPoints: (pointsText) async {
+                              if (pointsText.isEmpty) {
+                                showErrorSnackbar(AppStrings.pleaseEnterLoyaltyPoints);
+                                return;
+                              }
+                              final points = int.tryParse(pointsText);
+                              if (points == null || points <= 0) {
+                                showErrorSnackbar(AppStrings.pleaseEnterValidLoyaltyPoints);
+                                return;
+                              }
+                              final available = customerController.loyaltyPoints;
+                              if (points > available) {
+                                showErrorSnackbar('Insufficient loyalty points! You have $available points available.');
+                                return;
+                              }
+                              final cfg = bannerController.loyaltyPointsConfig.value;
+                              if (cfg != null && points < cfg.pointsPerRupee) {
+                                showErrorSnackbar('Minimum loyalty points required: ${cfg.pointsPerRupee} points.');
+                                return;
+                              }
+                              final success = await bannerController.applyLoyaltyPoints(points);
+                              if (success) {
+                                showSuccessSnackbar(AppStrings.loyaltyPointsAppliedSuccessfully);
+                              } else {
+                                showErrorSnackbar(AppStrings.failedToApplyLoyaltyPoints);
+                              }
+                            },
+                            onRemoveLoyaltyPoints: () async {
+                              final success = await bannerController.removeLoyaltyPoints();
+                              if (success) {
+                                showSuccessSnackbar(AppStrings.loyaltyPointsRemovedSuccessfully);
+                              } else {
+                                showErrorSnackbar(AppStrings.failedToRemoveLoyaltyPoints);
+                              }
+                            },
+                          ),
+                        );
+                      }),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       
                       // Coupon Section

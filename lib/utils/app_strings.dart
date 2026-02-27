@@ -106,6 +106,12 @@ class AppStrings {
   static const String useLoyaltyPoints = 'Use Loyalty Points';
   static const String enterPointsManually = 'Enter points manually';
   static const String pointsBalance = 'Points Balance';
+  static const String pleaseEnterLoyaltyPoints = 'Please enter loyalty points';
+  static const String pleaseEnterValidLoyaltyPoints = 'Please enter valid loyalty points';
+  static const String loyaltyPointsAppliedSuccessfully = 'Loyalty points applied successfully';
+  static const String failedToApplyLoyaltyPoints = 'Failed to apply loyalty points';
+  static const String loyaltyPointsRemovedSuccessfully = 'Loyalty points removed successfully';
+  static const String failedToRemoveLoyaltyPoints = 'Failed to remove loyalty points';
 
   // ==================== ORDER RELATED ====================
   static const String myOrders = 'My Orders';

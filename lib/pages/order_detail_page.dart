@@ -107,9 +107,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   
                   // Order Status Header Card
                   _buildStatusHeader(order),
-                  
+
                   SizedBox(height: ResponsiveUtils.rp(12)),
-                  
+
+                  // Order Tracking Stepper
+                  _buildOrderTracker(order.state),
+
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+
                   // Share Invoice Button - hide for cancelled or AddingItems state
                   if (order.state.toLowerCase() != 'cancelled' &&
                       order.state.toLowerCase() != 'addingitems')
@@ -982,14 +987,154 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     }
   }
 
+  /// Returns the current step index (0-3) for the order tracking stepper.
+  int _getTrackingStepIndex(String state) {
+    final s = state.toLowerCase();
+    if (s == 'cancelled' || (s.contains('cancel') && s.contains('request'))) return -2;
+    if (s == 'addingitems') return -1;
+    if (s == 'arrangingpayment') return 0;
+    if (s == 'paymentauthorized' || s == 'paymentsettled') return 1;
+    if (s == 'shipped' || s == 'partiallyshipped') return 2;
+    if (s == 'fulfilled' || s == 'delivered' || s == 'partiallyfulfilled') return 3;
+    return 0;
+  }
+
+  Widget _buildOrderTracker(String state) {
+    final stepIndex = _getTrackingStepIndex(state);
+    final isCancelled = stepIndex == -2;
+
+    const steps = ['Placed', 'Confirmed', 'Shipped', 'Delivered'];
+    const completedColor = Color(0xFF00B761);
+    final upcomingColor = AppColors.border;
+
+    if (isCancelled) {
+      final stateLower = state.toLowerCase();
+      final isCancellationRequested = stateLower.contains('cancel') && stateLower.contains('request');
+      return PremiumCard(
+        padding: ResponsiveSpacing.padding(all: 16),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        child: Row(
+          children: [
+            Icon(
+              isCancellationRequested ? Icons.pending_outlined : Icons.cancel_outlined,
+              color: isCancellationRequested ? Colors.orange : AppColors.grey600,
+              size: ResponsiveUtils.rp(22),
+            ),
+            SizedBox(width: ResponsiveUtils.rp(10)),
+            Text(
+              isCancellationRequested ? 'Cancellation Requested' : 'Order Cancelled',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(15),
+                fontWeight: FontWeight.w600,
+                color: isCancellationRequested ? Colors.orange : AppColors.grey600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return PremiumCard(
+      padding: ResponsiveSpacing.padding(horizontal: 12, vertical: 16),
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.local_shipping_outlined,
+                  color: AppColors.button, size: ResponsiveUtils.rp(20)),
+              SizedBox(width: ResponsiveUtils.rp(8)),
+              Text(
+                'Order Tracking',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveUtils.rp(20)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(4)),
+            child: Row(
+              children: List.generate(steps.length * 2 - 1, (i) {
+                if (i.isOdd) {
+                  final lineStepIndex = i ~/ 2;
+                  final isCompleted = lineStepIndex < stepIndex;
+                  return Expanded(
+                    child: Container(
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: isCompleted ? completedColor : upcomingColor,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  );
+                }
+                final idx = i ~/ 2;
+                final isCompleted = idx < stepIndex;
+                final isCurrent = idx == stepIndex;
+                final circleColor = isCompleted || isCurrent ? completedColor : upcomingColor;
+                final circleSize = isCurrent ? 26.0 : 22.0;
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: ResponsiveUtils.rp(circleSize),
+                      height: ResponsiveUtils.rp(circleSize),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isCompleted || isCurrent ? circleColor : Colors.transparent,
+                        border: Border.all(
+                          color: circleColor,
+                          width: isCurrent ? 3 : 2,
+                        ),
+                      ),
+                      child: isCompleted
+                          ? Icon(Icons.check, size: ResponsiveUtils.rp(14), color: Colors.white)
+                          : isCurrent
+                              ? Center(
+                                  child: Container(
+                                    width: ResponsiveUtils.rp(10),
+                                    height: ResponsiveUtils.rp(10),
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(6)),
+                    Text(
+                      steps[idx],
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(11),
+                        fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
+                        color: isCompleted || isCurrent ? completedColor : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Color _getStatusColor(String state) {
     final stateLower = state.toLowerCase();
-    
+
     // Check for cancellation request first
     if (stateLower.contains('cancel') && stateLower.contains('request')) {
       return Colors.orange; // Use orange for cancellation requested
     }
-    
+
     switch (stateLower) {
       case 'paymentsettled':
       case 'paymentauthorized':

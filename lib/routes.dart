@@ -112,7 +112,6 @@ class AppRoutes {
       name: account,
       page: () => const AccountPage(),
       transition: Transition.rightToLeft,
-      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: addresses,

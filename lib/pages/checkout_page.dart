@@ -27,8 +27,6 @@ import '../widgets/checkout/checkout_place_order_button.dart';
 import '../widgets/checkout/checkout_shimmer_loading.dart';
 import '../widgets/checkout/slide_to_pay_button.dart';
 import '../widgets/error_dialog.dart';
-import '../widgets/cart/cart_loyalty_points_section.dart';
-
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
 
@@ -1174,56 +1172,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                                     bannerController: bannerController,
                                   ),
                                   
-                                  SizedBox(height: ResponsiveUtils.rp(16)),
-                                  // Loyalty Points Section
-                                  Obx(() {
-                                    final availablePoints = customerController.loyaltyPoints;
-                                    final config = bannerController.loyaltyPointsConfig.value;
-                                    final minimumPoints = config?.pointsPerRupee ?? 0;
-                                    final isApplied = bannerController.loyaltyPointsApplied.value;
-                                    if (minimumPoints > 0 && availablePoints < minimumPoints && !isApplied) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    return CartLoyaltyPointsSection(
-                                      bannerController: bannerController,
-                                      customerController: customerController,
-                                      onApplyLoyaltyPoints: (pointsText) async {
-                                        if (pointsText.isEmpty) {
-                                          showErrorSnackbar('Please enter loyalty points amount');
-                                          return;
-                                        }
-                                        final points = int.tryParse(pointsText);
-                                        if (points == null || points <= 0) {
-                                          showErrorSnackbar('Please enter a valid loyalty points amount');
-                                          return;
-                                        }
-                                        final available = customerController.loyaltyPoints;
-                                        if (points > available) {
-                                          showErrorSnackbar('Insufficient loyalty points! You have $available points available.');
-                                          return;
-                                        }
-                                        final cfg = bannerController.loyaltyPointsConfig.value;
-                                        if (cfg != null && points < cfg.pointsPerRupee) {
-                                          showErrorSnackbar('Minimum loyalty points required: ${cfg.pointsPerRupee} points.');
-                                          return;
-                                        }
-                                        final success = await bannerController.applyLoyaltyPoints(points);
-                                        if (success) {
-                                          showSuccessSnackbar('Loyalty points applied successfully');
-                                        } else {
-                                          showErrorSnackbar('Failed to apply loyalty points');
-                                        }
-                                      },
-                                      onRemoveLoyaltyPoints: () async {
-                                        final success = await bannerController.removeLoyaltyPoints();
-                                        if (success) {
-                                          showSuccessSnackbar('Loyalty points removed successfully');
-                                        } else {
-                                          showErrorSnackbar('Failed to remove loyalty points');
-                                        }
-                                      },
-                                    );
-                                  }),
                                   SizedBox(height: ResponsiveUtils.rp(16)),
                                   
                                   Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),

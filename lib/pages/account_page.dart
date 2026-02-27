@@ -24,6 +24,7 @@ import 'orders_page.dart';
 import '../utils/analytics_helper.dart';
 import '../utils/app_config.dart';
 import '../services/analytics_service.dart';
+import '../routes.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -739,14 +740,6 @@ class _AccountPageState extends State<AccountPage> {
         }
 
         final customer = customerController.activeCustomer.value;
-        if (customer == null) {
-          return Center(
-            child: Text(
-              'Unable to load account',
-              style: AppTextStyles.bodyLarge,
-            ),
-          );
-        }
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -759,26 +752,31 @@ class _AccountPageState extends State<AccountPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // Profile Header Card
-                _buildProfileCard(customer),
+                // Profile Header Card, guest card, or error/retry card
+                customer != null
+                    ? _buildProfileCard(customer)
+                    : _isUserAuthenticated()
+                        ? _buildProfileErrorCard()
+                        : _buildGuestProfileCard(),
 
-                // Orders Section
-                _buildOrdersSection(),
-
-                SizedBox(height: ResponsiveUtils.rp(8)),
+                // Orders Section (hide for guest)
+                if (_isUserAuthenticated()) ...[
+                  _buildOrdersSection(),
+                  SizedBox(height: ResponsiveUtils.rp(8)),
+                ],
 
                 // Account Options
-                _buildAccountOptions(),
+                _buildAccountOptions(isGuest: !_isUserAuthenticated()),
 
                 SizedBox(height: ResponsiveUtils.rp(8)),
 
                 // Support Section
-                _buildSupportSection(),
+                _buildSupportSection(isGuest: !_isUserAuthenticated()),
 
                 SizedBox(height: ResponsiveUtils.rp(16)),
 
-                // App Version & Logout
-                _buildFooter(),
+                // App Version & Logout/Login
+                _buildFooter(isGuest: !_isUserAuthenticated()),
               ],
             ),
           ),
@@ -786,6 +784,123 @@ class _AccountPageState extends State<AccountPage> {
       }),
     );
     });
+  }
+
+  /// Guest profile card — Your Account centered at top, Sign Up and Login buttons
+  Widget _buildGuestProfileCard() {
+    return Container(
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+      padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: ResponsiveUtils.rp(8),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Center(
+            child: Text(
+              'Your Account',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(24),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(20)),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Get.toNamed(AppRoutes.signup),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.button,
+                    side: BorderSide(color: AppColors.button),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                    ),
+                  ),
+                  child: Text('Sign Up'),
+                ),
+              ),
+              SizedBox(width: ResponsiveUtils.rp(12)),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => Get.toNamed(AppRoutes.login),
+                  icon: Icon(Icons.login, size: ResponsiveUtils.rp(18)),
+                  label: Text('Login'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Compact error card when customer data fails to load — keeps rest of page visible
+  Widget _buildProfileErrorCard() {
+    return Container(
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(12)),
+      padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: ResponsiveUtils.rp(8),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.person_outline,
+            size: ResponsiveUtils.rp(40),
+            color: AppColors.textSecondary,
+          ),
+          SizedBox(width: ResponsiveUtils.rp(16)),
+          Expanded(
+            child: Text(
+              'Unable to load profile',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          TextButton.icon(
+            onPressed: () async {
+              if (_isUserAuthenticated()) {
+                await customerController.getActiveCustomer();
+              }
+            },
+            icon: Icon(Icons.refresh, size: ResponsiveUtils.rp(18), color: AppColors.button),
+            label: Text('Retry', style: TextStyle(color: AppColors.button, fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildProfileCard(Query$GetActiveCustomer$activeCustomer customer) {
@@ -1063,42 +1178,44 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildAccountOptions() {
+  Widget _buildAccountOptions({bool isGuest = false}) {
     final addressesCount = customerController.addresses.length;
 
     return Container(
       color: AppColors.surface,
       child: Column(
         children: [
-          _buildListTile(
-            Icons.location_on_outlined,
-            'Saved Addresses',
-            Icons.arrow_forward_ios,
-            subtitle: '$addressesCount addresses',
-            onTap: () => Get.toNamed('/addresses'),
-          ),
-          _buildDivider(),
-          _buildListTile(
-            Icons.favorite_outline,
-            'Wishlist',
-            Icons.arrow_forward_ios,
-            onTap: () => Get.toNamed('/favourite'),
-          ),
-          _buildDivider(),
-          _buildListTile(
-            Icons.shopping_bag_outlined,
-            'Preferred Items',
-            Icons.arrow_forward_ios,
-            onTap: () => Get.toNamed('/frequently-ordered'),
-          ),
-          _buildDivider(),
+          if (!isGuest) ...[
+            _buildListTile(
+              Icons.location_on_outlined,
+              'Saved Addresses',
+              Icons.arrow_forward_ios,
+              subtitle: '$addressesCount addresses',
+              onTap: () => Get.toNamed('/addresses'),
+            ),
+            _buildDivider(),
+            _buildListTile(
+              Icons.favorite_outline,
+              'Wishlist',
+              Icons.arrow_forward_ios,
+              onTap: () => Get.toNamed('/favourite'),
+            ),
+            _buildDivider(),
+            _buildListTile(
+              Icons.shopping_bag_outlined,
+              'Preferred Items',
+              Icons.arrow_forward_ios,
+              onTap: () => Get.toNamed('/frequently-ordered'),
+            ),
+            _buildDivider(),
+          ],
           _buildDarkModeTile(),
         ],
       ),
     );
   }
 
-  Widget _buildSupportSection() {
+  Widget _buildSupportSection({bool isGuest = false}) {
     return Container(
       color: AppColors.surface,
       child: Column(
@@ -1130,13 +1247,15 @@ class _AccountPageState extends State<AccountPage> {
             Icons.arrow_forward_ios,
             onTap: _shareApp,
           ),
-          _buildDivider(),
-          _buildListTile(
-            Icons.delete_outline,
-            'Account Deletion',
-            Icons.arrow_forward_ios,
-            onTap: _showAccountDeletionDialog,
-          ),
+          if (!isGuest) ...[
+            _buildDivider(),
+            _buildListTile(
+              Icons.delete_outline,
+              'Account Deletion',
+              Icons.arrow_forward_ios,
+              onTap: _showAccountDeletionDialog,
+            ),
+          ],
           _buildDivider(),
           _buildListTile(
             Icons.privacy_tip_outlined,
@@ -1243,7 +1362,7 @@ class _AccountPageState extends State<AccountPage> {
     return Divider(height: 1, indent: 60, endIndent: 16);
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter({bool isGuest = false}) {
     return Column(
       children: [
         // Company Information
@@ -1346,26 +1465,40 @@ class _AccountPageState extends State<AccountPage> {
         Container(
           width: double.infinity,
           margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          child: OutlinedButton(
-            onPressed: () {
-              _showLogoutDialog();
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
-              side: BorderSide(color: Colors.red),
-              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-              ),
-            ),
-            child: Text(
-              'Logout',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.red,
-              ),
-            ),
-          ),
+          child: isGuest
+              ? ElevatedButton.icon(
+                  onPressed: () => Get.toNamed(AppRoutes.login),
+                  icon: Icon(Icons.login, size: ResponsiveUtils.rp(20)),
+                  label: Text('Login'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                    ),
+                  ),
+                )
+              : OutlinedButton(
+                  onPressed: () {
+                    _showLogoutDialog();
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: BorderSide(color: Colors.red),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                    ),
+                  ),
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
         ),
         SizedBox(height: ResponsiveUtils.rp(16)),
         FutureBuilder<PackageInfo>(

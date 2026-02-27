@@ -283,7 +283,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
                     ),
                   ),
                 ],
-                SizedBox(height: ResponsiveUtils.rp(12)),
+                SizedBox(height: ResponsiveUtils.rp(8)),
               ],
 
               // Order Footer - Compact

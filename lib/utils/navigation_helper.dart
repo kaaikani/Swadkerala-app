@@ -78,16 +78,8 @@ class NavigationHelper {
     );
   }
 
-  /// Navigate to account page. If guest, show dialog "To view account page, kindly login" with Login/Cancel.
+  /// Navigate to account page. Guests can view account page (shows guest UI with Login button).
   static Future<void> navigateToAccount() async {
-    if (!_isLoggedIn) {
-      showLoginRequiredDialog(
-        title: 'Login required',
-        message: 'To view account page, kindly login.',
-        intendedRoute: AppRoutes.account,
-      );
-      return;
-    }
     Get.toNamed(AppRoutes.account);
   }
 

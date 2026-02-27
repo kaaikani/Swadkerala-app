@@ -49,6 +49,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   bool _phoneFieldTouched = false;
   bool _otpFieldTouched = false;
 
+  // Whether the user has chosen "Sign in with Phone" from the method selection screen.
+  // null = show method selection, true = show phone/OTP input.
+  bool _phoneMethodSelected = false;
+
   // Per-button loading so only the clicked button shows spinner, others are disabled
   bool _isLoadingPhone = false;
   bool _isLoadingGoogle = false;
@@ -304,7 +308,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: Obx(() => !_authController.isOtpSent
+      floatingActionButton: Obx(() => !_authController.isOtpSent || !_phoneMethodSelected
           ? _buildFloatingConnectButton()
           : const SizedBox.shrink()),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -344,69 +348,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   constraints: BoxConstraints(
                     maxWidth: 420,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Header without logo
-                      _buildSimpleHeader(),
-                      
-                      SizedBox(height: ResponsiveUtils.rp(48)),
-                      
-                      // Progress Indicator
-                      _buildProgressIndicator(),
-                      
-                      SizedBox(height: ResponsiveUtils.rp(40)),
-                      
-                      // Form Content (no card)
-                      Obx(() {
-                        final isOtpSent = _authController.isOtpSent;
-                        final isLoading = _authController.isLoading;
-                        debugPrint('[LoginPage] Obx(form) rebuild | isOtpSent=$isOtpSent, isLoading=$isLoading');
-                        return isOtpSent
-                            ? _buildOtpSection()
-                            : _buildPhoneSection();
-                      }),
-                      
-                      SizedBox(height: ResponsiveUtils.rp(32)),
-                      
-                      // Action Button
-                      _buildActionButton(),
-                      
-                      SizedBox(height: ResponsiveUtils.rp(24)),
-                      
-                      // Divider
-                      Obx(() => !_authController.isOtpSent
-                          ? _buildDivider()
-                          : const SizedBox.shrink()),
-                      
-                      SizedBox(height: ResponsiveUtils.rp(24)),
-                      
-                      // Apple & Google Sign In (Apple above Google per Apple guidelines)
-                      Obx(() => _authController.isOtpSent
-                          ? const SizedBox.shrink()
-                          : Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildAppleSignInButton(),
-                                SizedBox(height: ResponsiveUtils.rp(12)),
-                                _buildGoogleSignInButton(),
-                              ],
-                            )),
-                      
-                      SizedBox(height: ResponsiveUtils.rp(16)),
-                      
-                      // Resend OTP
-                      Obx(() => _authController.isOtpSent
-                          ? _buildResendSection()
-                          : const SizedBox.shrink()),
-                      
-                      SizedBox(height: ResponsiveUtils.rp(12)),
-                      
-                      // Sign Up Link
-                      _buildSignUpLink(),
-                    ],
-                  ),
+                  child: _phoneMethodSelected
+                      ? _buildPhoneLoginFlow()
+                      : _buildMethodSelection(),
                 ),
               ),
             ),
@@ -417,6 +361,295 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
+
+  /// Method selection screen: 3 options (Phone, Google, Apple)
+  Widget _buildMethodSelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Logo image at top
+        Center(
+          child: Image.asset(
+            'assets/images/kklogo_foreground_large.png',
+            width: ResponsiveUtils.rp(160),
+            height: ResponsiveUtils.rp(160),
+            fit: BoxFit.contain,
+          ),
+        ),
+
+        SizedBox(height: ResponsiveUtils.rp(24)),
+
+        // Header
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Sign In',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(32),
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+                letterSpacing: -1.0,
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            Text(
+              'Choose how you want to sign in',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(16),
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+
+        SizedBox(height: ResponsiveUtils.rp(32)),
+
+        // Phone number option
+        _buildMethodOption(
+          icon: Icons.phone_android_rounded,
+          title: 'Sign in with Phone',
+          subtitle: 'We\'ll send you a verification code',
+          onTap: () {
+            setState(() => _phoneMethodSelected = true);
+            _autoFillTimer?.cancel();
+            _autoFillTimer = Timer(const Duration(milliseconds: 300), () {
+              _autoFillPhoneNumber();
+            });
+          },
+          color: AppColors.button,
+          backgroundColor: AppColors.button.withValues(alpha: 0.08),
+        ),
+
+        SizedBox(height: ResponsiveUtils.rp(12)),
+
+        // Google option
+        _buildMethodOption(
+          icon: null,
+          title: 'Sign in with Google',
+          subtitle: 'Use your Google account',
+          onTap: _isAnyLoginLoading ? null : _handleGoogleSignIn,
+          color: Colors.blue.shade700,
+          backgroundColor: Colors.blue.withValues(alpha: 0.06),
+          isLoading: _isLoadingGoogle,
+          customIcon: Image.asset(
+            'assets/images/google_logo.png',
+            width: ResponsiveUtils.rp(24),
+            height: ResponsiveUtils.rp(24),
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return FaIcon(
+                FontAwesomeIcons.google,
+                size: ResponsiveUtils.rp(22),
+                color: Colors.blue.shade700,
+              );
+            },
+          ),
+        ),
+
+        SizedBox(height: ResponsiveUtils.rp(12)),
+
+        // Apple option
+        _buildMethodOption(
+          icon: Icons.apple,
+          title: 'Sign in with Apple',
+          subtitle: 'Use your Apple ID',
+          onTap: _isAnyLoginLoading ? null : _handleAppleSignIn,
+          color: Colors.black,
+          backgroundColor: Colors.black.withValues(alpha: 0.06),
+          isLoading: _isLoadingApple,
+          iconSize: 28,
+        ),
+
+        SizedBox(height: ResponsiveUtils.rp(32)),
+
+        // Sign Up Link
+        _buildSignUpLink(),
+      ],
+    );
+  }
+
+  Widget _buildMethodOption({
+    IconData? icon,
+    required String title,
+    required String subtitle,
+    VoidCallback? onTap,
+    required Color color,
+    required Color backgroundColor,
+    bool isLoading = false,
+    Widget? customIcon,
+    double iconSize = 24,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUtils.rp(20),
+            vertical: ResponsiveUtils.rp(18),
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.2),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: ResponsiveUtils.rp(12),
+                offset: Offset(0, ResponsiveUtils.rp(4)),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: ResponsiveUtils.rp(48),
+                height: ResponsiveUtils.rp(48),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                ),
+                child: Center(
+                  child: isLoading
+                      ? SizedBox(
+                          width: ResponsiveUtils.rp(22),
+                          height: ResponsiveUtils.rp(22),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(color),
+                          ),
+                        )
+                      : customIcon ??
+                          Icon(
+                            icon,
+                            color: color,
+                            size: ResponsiveUtils.rp(iconSize),
+                          ),
+                ),
+              ),
+              SizedBox(width: ResponsiveUtils.rp(16)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(16),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(2)),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(13),
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary,
+                size: ResponsiveUtils.rp(24),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Phone login flow: Welcome Back header → phone/OTP input → action button (no Google/Apple)
+  Widget _buildPhoneLoginFlow() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Back button row
+        Align(
+          alignment: Alignment.centerLeft,
+          child: GestureDetector(
+            onTap: () {
+              // If OTP is sent, go back to phone input; otherwise go back to method selection
+              if (_authController.isOtpSent) {
+                setState(() {
+                  _authController.setOtpSent(false);
+                  _authController.otpController.clear();
+                  _otpFieldTouched = false;
+                  _otpError = null;
+                });
+              } else {
+                setState(() => _phoneMethodSelected = false);
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
+              decoration: BoxDecoration(
+                color: AppColors.button.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              ),
+              child: Icon(
+                Icons.arrow_back_rounded,
+                color: AppColors.button,
+                size: ResponsiveUtils.rp(22),
+              ),
+            ),
+          ),
+        ),
+
+        SizedBox(height: ResponsiveUtils.rp(24)),
+
+        // Header
+        _buildSimpleHeader(),
+
+        SizedBox(height: ResponsiveUtils.rp(48)),
+
+        // Progress Indicator
+        _buildProgressIndicator(),
+
+        SizedBox(height: ResponsiveUtils.rp(40)),
+
+        // Form Content
+        Obx(() {
+          final isOtpSent = _authController.isOtpSent;
+          final isLoading = _authController.isLoading;
+          debugPrint('[LoginPage] Obx(form) rebuild | isOtpSent=$isOtpSent, isLoading=$isLoading');
+          return isOtpSent
+              ? _buildOtpSection()
+              : _buildPhoneSection();
+        }),
+
+        SizedBox(height: ResponsiveUtils.rp(32)),
+
+        // Action Button
+        _buildActionButton(),
+
+        SizedBox(height: ResponsiveUtils.rp(16)),
+
+        // Resend OTP
+        Obx(() => _authController.isOtpSent
+            ? _buildResendSection()
+            : const SizedBox.shrink()),
+
+        SizedBox(height: ResponsiveUtils.rp(12)),
+
+        // Sign Up Link
+        _buildSignUpLink(),
+      ],
+    );
+  }
 
   Widget _buildSimpleHeader() {
     return Column(
@@ -1144,157 +1377,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        Expanded(
-          child: Divider(
-            color: AppColors.border.withValues(alpha: 0.3),
-            thickness: 1,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          child: Text(
-            'OR',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: ResponsiveUtils.sp(13),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Divider(
-            color: AppColors.border.withValues(alpha: 0.3),
-            thickness: 1,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAppleSignInButton() {
-    return Container(
-      height: ResponsiveUtils.rp(58),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: ResponsiveUtils.rp(20),
-            offset: Offset(0, ResponsiveUtils.rp(4)),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _isAnyLoginLoading ? null : _handleAppleSignIn,
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-          child: Center(
-            child: _isLoadingApple
-                ? SizedBox(
-                    width: ResponsiveUtils.rp(24),
-                    height: ResponsiveUtils.rp(24),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.apple,
-                          color: Colors.white,
-                          size: ResponsiveUtils.rp(28),
-                        ),
-                        SizedBox(width: ResponsiveUtils.rp(14)),
-                        Text(
-                          'Continue with Apple',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: ResponsiveUtils.sp(16),
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        ),
-      );
-  }
-
-  Widget _buildGoogleSignInButton() {
-    return Container(
-      height: ResponsiveUtils.rp(58),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: ResponsiveUtils.rp(20),
-            offset: Offset(0, ResponsiveUtils.rp(4)),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _isAnyLoginLoading ? null : _handleGoogleSignIn,
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-          child: Center(
-            child: _isLoadingGoogle
-                ? SizedBox(
-                    width: ResponsiveUtils.rp(24),
-                    height: ResponsiveUtils.rp(24),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
-                    ),
-                  )
-                : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/google_logo.png',
-                          width: ResponsiveUtils.rp(24),
-                          height: ResponsiveUtils.rp(24),
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return FaIcon(
-                              FontAwesomeIcons.google,
-                              size: ResponsiveUtils.rp(24),
-                              color: Colors.blue.shade700,
-                            );
-                          },
-                        ),
-                        SizedBox(width: ResponsiveUtils.rp(14)),
-                        Text(
-                          'Continue with Google',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: ResponsiveUtils.sp(16),
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        ),
-      );
-  }
 
   Widget _buildFloatingConnectButton() {
     return FloatingActionButton(
