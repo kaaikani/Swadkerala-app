@@ -1161,7 +1161,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                     cartController: cartController,
                     orderController: orderController,
                     utilityController: utilityController,
-                    checkoutButtonLabel: isLoggedIn ? 'Proceed to Checkout' : 'Kindly login',
+                    isGuest: !isLoggedIn,
+                    checkoutButtonLabel: isLoggedIn ? 'Proceed to Checkout' : 'Login to Continue',
                     onProceedToCheckout: isLoggedIn
                         ? _proceedToCheckout
                         : () {
@@ -1210,8 +1211,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                               return;
                             }
                             const key = 'login_intended_route';
-                            GetStorage().write(key, AppRoutes.checkout);
-                            Get.toNamed(AppRoutes.login, arguments: {'intendedRoute': AppRoutes.checkout});
+                            GetStorage().write(key, AppRoutes.cart);
+                            Get.toNamed(AppRoutes.login, arguments: {'intendedRoute': AppRoutes.cart});
                           },
                   );
                 }),

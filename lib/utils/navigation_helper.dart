@@ -130,12 +130,11 @@ class NavigationHelper {
 
     if (route != null && route.isNotEmpty) {
       try {
-        // Replace the login page with the intended route in a single
-        // atomic operation. This keeps home underneath in the stack so
-        // the back button works correctly, and avoids the race condition
-        // of offAllNamed(home) + toNamed(route) where the second
-        // navigation can get dropped during route transitions.
-        if (args != null) {
+        // If the intended route is already in the stack below (e.g. Cart → Login → back to Cart),
+        // pop back to it instead of creating a duplicate page.
+        if (Get.previousRoute == route) {
+          Get.back();
+        } else if (args != null) {
           Get.offNamed(route, arguments: args);
         } else {
           Get.offNamed(route);

@@ -237,6 +237,15 @@ class GraphqlService {
   }
   static Future<void> clearGuestOrderCode() async => _storage.remove(_guestOrderCodeKey);
 
+  /// Clear all guest session data (token + order code + per-channel tokens).
+  /// Call on logout to ensure no stale guest state remains.
+  static Future<void> clearGuestSession() async {
+    _guestToken = '';
+    await _storage.remove(_guestTokensByChannelKey);
+    await clearGuestOrderCode();
+    _client?.value = _createClient();
+  }
+
   // Getters
   static String get authToken => _authToken;
   /// Channel token (in-memory, or from storage so guest requests use it after location selection).

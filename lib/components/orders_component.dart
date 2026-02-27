@@ -124,7 +124,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
         case OrderFilter.paid:
           return state == 'paymentsettled';
         case OrderFilter.paymentAuthorized:
-          return state == 'paymentauthorized';
+          return state == 'paymentauthorized' || state == 'paymentsettled';
         case OrderFilter.delivered:
           return state == 'fulfilled' ||
               state == 'delivered' ||
@@ -420,36 +420,6 @@ class _OrdersComponentState extends State<OrdersComponent> {
   }
 
   Widget _buildEmptyOrdersState(OrderFilter currentFilter) {
-    String title;
-    String message;
-    
-    switch (currentFilter) {
-      case OrderFilter.paid:
-        title = 'No Paid Orders';
-        message = 'You don\'t have any paid orders yet';
-        break;
-      case OrderFilter.paymentAuthorized:
-        title = 'No Order Confirmed';
-        message = 'You don\'t have any confirmed orders yet';
-        break;
-      case OrderFilter.delivered:
-        title = 'No Delivered Orders';
-        message = 'You don\'t have any delivered orders yet';
-        break;
-      case OrderFilter.cancellationRequest:
-        title = 'No Cancellation Requests';
-        message = 'You don\'t have any orders with cancellation requested';
-        break;
-      case OrderFilter.cancelled:
-        title = 'No Cancelled Orders';
-        message = 'You don\'t have any cancelled orders';
-        break;
-      case OrderFilter.all:
-        title = 'No Orders Yet';
-        message = 'Start shopping to see your orders here';
-        break;
-    }
-
     return Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -471,7 +441,7 @@ class _OrdersComponentState extends State<OrdersComponent> {
               ),
               SizedBox(height: ResponsiveUtils.rp(24)),
               Text(
-                title,
+                'No Orders Yet',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(20),
                   fontWeight: FontWeight.bold,
@@ -480,53 +450,29 @@ class _OrdersComponentState extends State<OrdersComponent> {
               ),
               SizedBox(height: ResponsiveUtils.rp(8)),
               Text(
-                message,
+                'Start shopping to see your orders here',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.sp(14),
                   color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
-              if (currentFilter != OrderFilter.all) ...[
-                SizedBox(height: ResponsiveUtils.rp(32)),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Pop current (filtered) orders page then push orders with All filter
-                    // so GetX builds a fresh page with the new arguments
-                    Get.back();
-                    Get.toNamed('/orders', arguments: OrderFilter.all);
-                  },
-                  icon: Icon(Icons.list, size: ResponsiveUtils.rp(20)),
-                  label: const Text(AppStrings.viewAllOrders),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.button,
-                    foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
+              SizedBox(height: ResponsiveUtils.rp(32)),
+              ElevatedButton.icon(
+                onPressed: () => Get.toNamed('/home'),
+                icon: Icon(Icons.shopping_cart, size: ResponsiveUtils.rp(20)),
+                label: const Text(AppStrings.startShopping),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.button,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  elevation: 0,
                 ),
-              ] else ...[
-                SizedBox(height: ResponsiveUtils.rp(32)),
-                ElevatedButton.icon(
-                  onPressed: () => Get.toNamed('/home'),
-                  icon: Icon(Icons.shopping_cart, size: ResponsiveUtils.rp(20)),
-                  label: const Text(AppStrings.startShopping),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.button,
-                    foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
-                  ),
-                ),
-              ],
+              ),
             ],
           ),
         ),
@@ -535,7 +481,14 @@ class _OrdersComponentState extends State<OrdersComponent> {
   }
 
   Color _getStatusColor(String state) {
-    switch (state.toLowerCase()) {
+    final stateLower = state.toLowerCase();
+
+    // Check for cancellation request first
+    if (stateLower.contains('cancel') && stateLower.contains('request')) {
+      return Colors.orange;
+    }
+
+    switch (stateLower) {
       case 'paymentauthorized':
       case 'paymentsettled':
         return const Color(0xFF00B761); // Green
@@ -543,20 +496,42 @@ class _OrdersComponentState extends State<OrdersComponent> {
         return Colors.orange;
       case 'cancelled':
         return AppColors.grey600; // Grey instead of red
+      case 'fulfilled':
+      case 'delivered':
+      case 'shipped':
+      case 'partiallyfulfilled':
+      case 'partiallyshipped':
+        return Colors.blue;
       default:
         return Colors.blue;
     }
   }
 
   String _formatOrderStatus(String state) {
-    switch (state.toLowerCase()) {
-      case 'paymentauthorized':
+    final stateLower = state.toLowerCase();
+
+    // Check for cancellation request first (before checking cancelled)
+    if (stateLower.contains('cancel') && stateLower.contains('request')) {
+      return 'Cancellation Requested';
+    }
+
+    switch (stateLower) {
       case 'paymentsettled':
-        return 'Confirmed';
+        return 'Paid';
+      case 'paymentauthorized':
+        return 'Order Confirmed';
       case 'arrangingpayment':
         return 'Pending';
       case 'cancelled':
         return 'Cancelled';
+      case 'fulfilled':
+      case 'delivered':
+        return 'Delivered';
+      case 'shipped':
+        return 'Shipped';
+      case 'partiallyfulfilled':
+      case 'partiallyshipped':
+        return 'Partially Shipped';
       default:
         return state;
     }

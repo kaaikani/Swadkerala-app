@@ -157,6 +157,11 @@ class CartController extends BaseController {
     
     _isFetchingActiveOrder = true;
     try {
+      // Restore guest token from storage before fetch (ensures cart persists across app restart)
+      if (GraphqlService.authToken.isEmpty) {
+        await GraphqlService.ensureGuestSessionForLogin();
+      }
+      
       final response = await GraphqlService.client.value.query$ActiveOrder(
         Options$Query$ActiveOrder(
           fetchPolicy: graphql.FetchPolicy.networkOnly,

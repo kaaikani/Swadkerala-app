@@ -12,8 +12,10 @@ class CartCheckoutSection extends StatelessWidget {
   final OrderController orderController;
   final UtilityController utilityController;
   final VoidCallback onProceedToCheckout;
-  /// When not logged in, show this label (e.g. "Login or Sign up to Checkout") and use callback to go to login.
+  /// When not logged in, show this label (e.g. "Login to Checkout") and use callback to go to login.
   final String checkoutButtonLabel;
+  /// Whether the user is a guest (not logged in).
+  final bool isGuest;
 
   const CartCheckoutSection({
     super.key,
@@ -22,6 +24,7 @@ class CartCheckoutSection extends StatelessWidget {
     required this.utilityController,
     required this.onProceedToCheckout,
     this.checkoutButtonLabel = 'Proceed to Checkout',
+    this.isGuest = false,
   });
 
   @override
@@ -30,15 +33,15 @@ class CartCheckoutSection extends StatelessWidget {
       final cart = cartController.cart.value;
       final order = orderController.currentOrder.value;
       if (cart == null) return const SizedBox.shrink();
-      
+
       // Get total with tax - use order.totalWithTax if available, otherwise cart.totalWithTax
-      final finalTotal = order?.totalWithTax != null 
-          ? order!.totalWithTax.toInt() 
+      final finalTotal = order?.totalWithTax != null
+          ? order!.totalWithTax.toInt()
           : cart.totalWithTax.toInt();
-      
+
       // Check for quantity limit violations
       final hasQuantityLimitViolations = cart.quantityLimitStatus.hasViolations;
-      
+
       // Button is enabled if cart has items AND no quantity limit violations
       final isButtonEnabled = cartController.cartItemCount > 0 && !hasQuantityLimitViolations;
       final isLoading = utilityController.isLoadingRx.value;
@@ -46,6 +49,44 @@ class CartCheckoutSection extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Guest login prompt banner
+          if (isGuest) ...[
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(12),
+                vertical: ResponsiveUtils.rp(10),
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.button.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                border: Border.all(
+                  color: AppColors.button.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    color: AppColors.button,
+                    size: ResponsiveUtils.rp(18),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Expanded(
+                    child: Text(
+                      'Sign in to place your order',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(13),
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.button,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(10)),
+          ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -73,12 +114,12 @@ class CartCheckoutSection extends StatelessWidget {
                   ),
                 ],
               ),
-              // Checkout button on right
+              // Checkout / Login button on right
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(left: ResponsiveUtils.rp(16)),
                   child: ElevatedButton(
-                    onPressed: isButtonEnabled && !isLoading 
+                    onPressed: isButtonEnabled && !isLoading
                         ? AnalyticsHelper.trackButton(
                             checkoutButtonLabel,
                             screenName: 'Cart',
@@ -106,6 +147,13 @@ class CartCheckoutSection extends StatelessWidget {
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              if (isGuest) ...[
+                                Icon(
+                                  Icons.login_rounded,
+                                  size: ResponsiveUtils.rp(18),
+                                ),
+                                SizedBox(width: ResponsiveUtils.rp(8)),
+                              ],
                               Text(
                                 checkoutButtonLabel,
                                 style: TextStyle(
@@ -113,11 +161,13 @@ class CartCheckoutSection extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              SizedBox(width: ResponsiveUtils.rp(8)),
-                              Icon(
-                                Icons.arrow_forward,
-                                size: ResponsiveUtils.rp(18),
-                              ),
+                              if (!isGuest) ...[
+                                SizedBox(width: ResponsiveUtils.rp(8)),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  size: ResponsiveUtils.rp(18),
+                                ),
+                              ],
                             ],
                           ),
                   ),
@@ -166,7 +216,7 @@ class CartCheckoutSection extends StatelessWidget {
                             color: AppColors.textSecondary,
                           ),
                         ),
-                    
+
                       ],
                     ),
                   ),
@@ -179,4 +229,3 @@ class CartCheckoutSection extends StatelessWidget {
     });
   }
 }
-

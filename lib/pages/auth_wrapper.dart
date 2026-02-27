@@ -160,30 +160,111 @@ class _GuestOrSignupGateState extends State<_GuestOrSignupGate> {
 
   void _showGuestOrSignupDialog() {
     if (!mounted) return;
-    showDialog<void>(
+    showModalBottomSheet<void>(
       context: context,
-      barrierDismissible: false,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
       builder: (BuildContext ctx) {
-        return AlertDialog(
-          title: const Text('Welcome'),
-          content: const Text(
-            'Continue as guest to browse and add to cart. You will need to sign in at checkout.',
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          actions: [
-            // Primary: Continue as Guest (no login required)
-            ElevatedButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.button),
-              child: const Text('Continue as Guest'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                Get.toNamed(AppRoutes.signup);
-              },
-              child: const Text('Sign up'),
-            ),
-          ],
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Icon
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.button.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 40,
+                  color: AppColors.button,
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Title
+              Text(
+                'Welcome!',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Subtitle
+              Text(
+                'Browse products and add to cart.\nSign in when you\'re ready to checkout.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 28),
+              // Sign up button (primary)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    Get.toNamed(AppRoutes.signup);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Continue as guest button (secondary)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.textPrimary,
+                    side: BorderSide(color: AppColors.border),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Continue as Guest',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

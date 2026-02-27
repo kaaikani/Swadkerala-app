@@ -1114,6 +1114,7 @@ class CustomerController extends BaseController {
       // Clear authentication tokens
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
+      await _storage.remove('preserve_guest_channel');
 
       // Show message to user
       ErrorDialog.show(
@@ -1150,6 +1151,7 @@ class CustomerController extends BaseController {
       // Clear authentication tokens
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
+      await _storage.remove('preserve_guest_channel');
 
       // Show message to user
       ErrorDialog.show(
@@ -1193,6 +1195,9 @@ class CustomerController extends BaseController {
       // Clear authentication tokens
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
+
+      // Clear guest channel preservation flag
+      await _storage.remove('preserve_guest_channel');
 
       // Navigate to home after logout (AuthController also navigates to home)
       Get.offAllNamed(AppRoutes.home);
@@ -1340,6 +1345,8 @@ class CustomerController extends BaseController {
         postalCode: postalCode,
       );
       debugPrint('[UpdateLocation] setChannelInfo done, calling refreshAllDataAfterChannelChange');
+      // Clear guest channel preservation flag since user is explicitly changing location
+      await _storage.remove('preserve_guest_channel');
       await refreshAllDataAfterChannelChange();
       // Subscribe to FCM topic for this channel so Firebase messages use the channel topic
       await NotificationService.instance.subscribeToChannelTopic();
@@ -1558,8 +1565,15 @@ class CustomerController extends BaseController {
   }
 
   /// Check if postal code is in local storage, if not get from shipping address and fetch channel
+  /// Skips when preserve_guest_channel is set (guest cart claimed at login) so guest's channel stays.
   Future<void> checkAndSetPostalCodeFromShippingAddress() async {
     try {
+      final preserveGuestChannel = _storage.read('preserve_guest_channel') == true;
+      if (preserveGuestChannel) {
+        debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: SKIP (guest cart claimed, preserve channel)');
+        return;
+      }
+
       // Check if postal code exists in local storage
       final storedPostalCode = _storage.read('postal_code');
       if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {

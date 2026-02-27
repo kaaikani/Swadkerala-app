@@ -585,26 +585,11 @@ class AuthController extends BaseController {
 
       // 1️⃣ Save auth token
       await GraphqlService.setToken(key: 'auth', token: authToken);
-      // 2️⃣ Fetch channels for this user using email (only for login, not registration)
-      if (!isRegistration) {
-        // For login: Fetch channels for this user using email
-        // For new registrations, channels might not be immediately available, so skip
-        bool channelFetched = false;
-        for (int i = 0; i < 3; i++) {
-          channelFetched = await checkEmailAndGetChannel(context);
-          if (channelFetched) break;
-          if (i < 2) {
-            // Wait before retry (only for first 2 attempts)
-            await Future.delayed(Duration(milliseconds: 500));
-          }
-        }
 
-        if (!channelFetched) {
-          ErrorDialog.showError('Login successful, but there was an issue loading your account. Please try again.');
-          return false;
-        }
-      } else {
-      }
+      // 2️⃣ Do not change channel on login — preserve the current (or guest) channel and postal code.
+      // Previously we called checkEmailAndGetChannel() here, which overwrote the channel with the
+      // first channel from GetChannelList (e.g. Madurai) and caused guest cart to disappear.
+      // We no longer fetch/set channel on login so the user stays in the same channel they were in.
 
       // 3️⃣ Mark user as logged in and reset form
       setLoggedIn(true);
@@ -620,6 +605,10 @@ class AuthController extends BaseController {
     }
   }
 
+  /// Preserve guest channel key: when set, checkAndSetPostalCodeFromShippingAddress skips channel switch
+  /// so guest cart items (in guest's channel) stay visible after login.
+  static const String _preserveGuestChannelKey = 'preserve_guest_channel';
+
   /// Claim guest cart to logged-in customer so guest-added items appear after login.
   /// Call after setToken('auth') and before _refreshCartAndCustomerAfterLogin().
   Future<void> _claimGuestOrderIfAny() async {
@@ -633,6 +622,7 @@ class AuthController extends BaseController {
       );
       if (!response.hasException && response.parsedData?.claimGuestOrder != null) {
         await GraphqlService.clearGuestOrderCode();
+        await _storage.write(_preserveGuestChannelKey, true);
       }
     } catch (_) {}
   }
@@ -769,9 +759,11 @@ class AuthController extends BaseController {
     try {
       // Unsubscribe from channel FCM topic so user doesn't get channel notifications until next login
       await NotificationService.instance.unsubscribeFromChannelTopic();
-      // Clear auth and channel tokens so user starts fresh after logout
+      // Clear auth and channel tokens from GraphqlService in-memory state
       await GraphqlService.clearToken('auth');
       await GraphqlService.clearToken('channel');
+      // Clear guest session (in-memory guest token + per-channel guest tokens + guest order code)
+      await GraphqlService.clearGuestSession();
       // Clear Flutter image cache
       try {
         imageCache.clear();
@@ -779,154 +771,51 @@ class AuthController extends BaseController {
       } catch (e) {
       }
 
-      // Clear all storage data including channel and postal info so user starts fresh
-      await _storage.remove('auth_token');
-      await _storage.remove('channel_token');
-      await _storage.remove('channel_code');
-      await _storage.remove('channel_name');
-      await _storage.remove('channel_type');
-      await _storage.remove('postal_code');
-      await _storage.remove('user_data');
-      await _storage.remove('customer_data');
-      await _storage.remove('cart_data');
-      await _storage.remove('favorites_data');
-      await _storage.remove('order_data');
-      await _storage.remove('loyalty_points');
-      await _storage.remove('app_settings');
-      // Don't remove intro_shown on logout - user should not see onboarding again
-      // await _storage.remove('intro_shown');
-      await _storage.remove('active_customer');
-      await _storage.remove('customer_addresses');
-      await _storage.remove('customer_orders');
-      await _storage.remove('coupon_codes');
-      await _storage.remove('banner_data');
-      await _storage.remove('collection_data');
-      await _storage.remove('product_data');
-      await _storage.remove('search_history');
-      await _storage.remove('notification_data');
-      await _storage.remove('preferences');
-      await _storage.remove('session_data');
-      await _storage.remove('temp_data');
-      await _storage.remove('cache_data');
-      await _storage.remove('offline_data');
-      await _storage.remove('sync_data');
-      await _storage.remove('analytics_data');
-      await _storage.remove('debug_data');
-      await _storage.remove('error_logs');
-      await _storage.remove('performance_data');
-      await _storage.remove('user_activity');
-      await _storage.remove('device_info');
-      await _storage.remove('app_version');
-      await _storage.remove('last_sync');
-      await _storage.remove('background_sync');
-      await _storage.remove('push_tokens');
-      await _storage.remove('location_data');
-      await _storage.remove('permissions');
-      await _storage.remove('settings');
-      await _storage.remove('theme_data');
-      await _storage.remove('language');
-      await _storage.remove('currency');
-      await _storage.remove('timezone');
-      await _storage.remove('locale');
-      await _storage.remove('country');
-      await _storage.remove('region');
-      await _storage.remove('city');
-      await _storage.remove('phone_verified');
-      await _storage.remove('email_verified');
-      await _storage.remove('profile_complete');
-      // Don't remove onboarding_complete on logout - user should not see onboarding again
-      // await _storage.remove('onboarding_complete');
-      await _storage.remove('tutorial_shown');
-      await _storage.remove('help_shown');
-      await _storage.remove('tips_shown');
-      await _storage.remove('updates_shown');
-      await _storage.remove('news_shown');
-      await _storage.remove('promotions_shown');
-      await _storage.remove('offers_shown');
-      await _storage.remove('deals_shown');
-      await _storage.remove('sales_shown');
-      await _storage.remove('events_shown');
-      await _storage.remove('announcements_shown');
-      await _storage.remove('notifications_shown');
-      await _storage.remove('alerts_shown');
-      await _storage.remove('warnings_shown');
-      await _storage.remove('errors_shown');
-      await _storage.remove('success_shown');
-      await _storage.remove('info_shown');
-      await _storage.remove('debug_shown');
-      await _storage.remove('trace_shown');
-      await _storage.remove('verbose_shown');
-      await _storage.remove('detailed_shown');
-      await _storage.remove('comprehensive_shown');
-      await _storage.remove('complete_shown');
-      await _storage.remove('full_shown');
-      await _storage.remove('total_shown');
-      await _storage.remove('entire_shown');
-      await _storage.remove('whole_shown');
-      await _storage.remove('all_shown');
-      await _storage.remove('everything_shown');
-      await _storage.remove('complete_data');
-      await _storage.remove('full_data');
-      await _storage.remove('total_data');
-      await _storage.remove('entire_data');
-      await _storage.remove('whole_data');
-      await _storage.remove('all_data');
-      await _storage.remove('everything_data');
-      await _storage.remove('complete_cache');
-      await _storage.remove('full_cache');
-      await _storage.remove('total_cache');
-      await _storage.remove('entire_cache');
-      await _storage.remove('whole_cache');
-      await _storage.remove('all_cache');
-      await _storage.remove('everything_cache');
-      await _storage.remove('complete_storage');
-      await _storage.remove('full_storage');
-      await _storage.remove('total_storage');
-      await _storage.remove('entire_storage');
-      await _storage.remove('whole_storage');
-      await _storage.remove('all_storage');
-      await _storage.remove('everything_storage');
-      // Channel, postal code, and related data are already cleared above
+      // Preserve onboarding and theme state before erasing all storage
+      final preservedOnboardingComplete = _storage.read('onboarding_complete');
+      final preservedIntroShown = _storage.read('intro_shown');
+      final preservedIsDarkMode = _storage.read('isDarkMode');
+
+      // Erase ALL storage data at once — catches every key including any new ones
+      await _storage.erase();
+
+      // Restore onboarding and theme state so user doesn't see onboarding again
+      if (preservedOnboardingComplete != null) {
+        await _storage.write('onboarding_complete', preservedOnboardingComplete);
+      }
+      if (preservedIntroShown != null) {
+        await _storage.write('intro_shown', preservedIntroShown);
+      }
+      if (preservedIsDarkMode != null) {
+        await _storage.write('isDarkMode', preservedIsDarkMode);
+      }
+
       // Clear any GetX controllers that might have cached data
       try {
-        // Clear customer controller data
         if (Get.isRegistered<CustomerController>()) {
           final customerController = Get.find<CustomerController>();
           customerController.activeCustomer.value = null;
           customerController.addresses.clear();
           customerController.orders.clear();
           customerController.isEditingProfile.value = false;
-        } else {
         }
 
-        // Clear cart controller data
         if (Get.isRegistered<CartController>()) {
           final cartController = Get.find<CartController>();
           cartController.clearCart();
-        } else {
         }
 
-        // Clear banner controller data
         if (Get.isRegistered<BannerController>()) {
           final bannerController = Get.find<BannerController>();
           bannerController.availableCouponCodes.clear();
           bannerController.couponCodesLoaded.value = false;
           bannerController.appliedCouponCodes.clear();
-        } else {
         }
 
-        // Clear order controller data
-        if (Get.isRegistered<OrderController>()) {
-        } else {
-        }
-
-        // Clear utility controller data
         if (Get.isRegistered<UtilityController>()) {
           final utilityController = Get.find<UtilityController>();
           utilityController.setLoadingState(false);
-        } else {
         }
-
       } catch (controllerError) {
       }
     } catch (e) {
