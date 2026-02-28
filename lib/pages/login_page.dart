@@ -449,19 +449,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ),
 
-        SizedBox(height: ResponsiveUtils.rp(12)),
-
-        // Apple option
-        _buildMethodOption(
-          icon: Icons.apple,
-          title: 'Sign in with Apple',
-          subtitle: 'Use your Apple ID',
-          onTap: _isAnyLoginLoading ? null : _handleAppleSignIn,
-          color: Colors.black,
-          backgroundColor: Colors.black.withValues(alpha: 0.06),
-          isLoading: _isLoadingApple,
-          iconSize: 28,
-        ),
+        // Apple option - iOS only
+        if (defaultTargetPlatform == TargetPlatform.iOS) ...[
+          SizedBox(height: ResponsiveUtils.rp(12)),
+          _buildMethodOption(
+            icon: Icons.apple,
+            title: 'Sign in with Apple',
+            subtitle: 'Use your Apple ID',
+            onTap: _isAnyLoginLoading ? null : _handleAppleSignIn,
+            color: Colors.black,
+            backgroundColor: Colors.black.withValues(alpha: 0.06),
+            isLoading: _isLoadingApple,
+            iconSize: 28,
+          ),
+        ],
 
         SizedBox(height: ResponsiveUtils.rp(32)),
 

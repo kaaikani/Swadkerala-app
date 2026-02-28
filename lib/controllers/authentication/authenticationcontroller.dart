@@ -962,50 +962,10 @@ class AuthController extends BaseController {
         if (authToken != null && authToken.isNotEmpty) {
           // Save backend JWT session token
           await GraphqlService.setToken(key: 'auth', token: authToken);
-          // 2️⃣ Fetch channels for this user
-          bool channelFetched = false;
-          for (int i = 0; i < 3; i++) {
-            try {
-              final channelResponse = await GraphqlService.client.value.query$GetChannelList(
-                Options$Query$GetChannelList(),
-              );
-              if (checkResponseForErrors(channelResponse, customErrorMessage: 'Failed to get channels')) {
-                if (i < 2) {
-                  await Future.delayed(Duration(milliseconds: 500));
-                  continue;
-                }
-                break;
-              }
 
-              final modelResponse = channelResponse.parsedData;
-              final channels = modelResponse?.getChannelList ?? [];
-              if (channels.isNotEmpty) {
-                final channel = channels.first;
-                await _storage.write('channel_code', channel.code);
-                await _storage.write('channel_token', channel.token);
-                await GraphqlService.setToken(key: 'channel', token: channel.token);
-                channelFetched = true;
-                break;
-              } else {
-                if (i < 2) {
-                  await Future.delayed(Duration(milliseconds: 500));
-                  continue;
-                }
-              }
-            } catch (e) {
-              if (i < 2) {
-                await Future.delayed(Duration(milliseconds: 500));
-                continue;
-              }
-            }
-          }
-
-          if (!channelFetched) {
-            ErrorDialog.showError(
-              'Authentication successful, but there was an issue setting up your account. Please try again.',
-            );
-            return false;
-          }
+          // 2️⃣ Do not change channel on login — preserve the current (or guest) channel and postal code.
+          // Previously we fetched GetChannelList and overwrote with channels.first, which switched away
+          // from the guest's channel and caused guest cart to disappear (same fix as phone login).
 
           // 3️⃣ Claim guest cart if any, then mark logged in and refresh
           await _claimGuestOrderIfAny();
@@ -1214,41 +1174,11 @@ class AuthController extends BaseController {
         _appleLog('5. Result', {'authTokenReceived': authToken != null && authToken.isNotEmpty});
         if (authToken != null && authToken.isNotEmpty) {
           await GraphqlService.setToken(key: 'auth', token: authToken);
-          bool channelFetched = false;
-          for (int i = 0; i < 3; i++) {
-            try {
-              final channelResponse = await GraphqlService.client.value.query$GetChannelList(
-                Options$Query$GetChannelList(),
-              );
-              if (checkResponseForErrors(channelResponse, customErrorMessage: 'Failed to get channels')) {
-                if (i < 2) {
-                  await Future.delayed(Duration(milliseconds: 500));
-                  continue;
-                }
-                break;
-              }
-              final channels = channelResponse.parsedData?.getChannelList ?? [];
-              if (channels.isNotEmpty) {
-                final channel = channels.first;
-                await _storage.write('channel_code', channel.code);
-                await _storage.write('channel_token', channel.token);
-                await GraphqlService.setToken(key: 'channel', token: channel.token);
-                channelFetched = true;
-                break;
-              }
-              if (i < 2) await Future.delayed(Duration(milliseconds: 500));
-            } catch (e) {
-              if (i < 2) await Future.delayed(Duration(milliseconds: 500));
-            }
-          }
-          if (!channelFetched) {
-            _appleLog('EXIT', {'reason': 'channel not fetched'});
-            _appleLog('═══ END ═══');
-            ErrorDialog.showError(
-              'Authentication successful, but there was an issue setting up your account. Please try again.',
-            );
-            return false;
-          }
+
+          // Do not change channel on login — preserve the current (or guest) channel and postal code.
+          // Previously we fetched GetChannelList and overwrote with channels.first, which switched away
+          // from the guest's channel and caused guest cart to disappear (same fix as phone login).
+
           _appleLog('5. Result', {'outcome': 'success'});
           _appleLog('═══ END ═══');
           await _claimGuestOrderIfAny();
