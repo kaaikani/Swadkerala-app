@@ -42,8 +42,21 @@ class CartCheckoutSection extends StatelessWidget {
       // Check for quantity limit violations
       final hasQuantityLimitViolations = cart.quantityLimitStatus.hasViolations;
 
-      // Button is enabled if cart has items AND no quantity limit violations
-      final isButtonEnabled = cartController.cartItemCount > 0 && !hasQuantityLimitViolations;
+      // Check for insufficient stock (items where quantity exceeds available stock)
+      final hasInsufficientStockItems = cart.validationStatus.hasUnavailableItems ||
+          cart.lines.any((line) {
+            final stockLevelRaw = line.productVariant.stockLevel.trim();
+            final stockLevel = stockLevelRaw.toUpperCase();
+            final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
+            final isProductDisabled = line.productVariant.product.enabled == false;
+            // Parse numeric stock level (e.g., "2", "10") and compare with quantity
+            final numericStock = int.tryParse(stockLevelRaw);
+            final exceedsStock = numericStock != null && line.quantity > numericStock;
+            return !line.isAvailable || isOutOfStock || isProductDisabled || exceedsStock;
+          });
+
+      // Button is enabled if cart has items AND no quantity limit violations AND no insufficient stock
+      final isButtonEnabled = cartController.cartItemCount > 0 && !hasQuantityLimitViolations && !hasInsufficientStockItems;
       final isLoading = utilityController.isLoadingRx.value;
 
       return Column(
@@ -86,6 +99,95 @@ class CartCheckoutSection extends StatelessWidget {
               ),
             ),
             SizedBox(height: ResponsiveUtils.rp(10)),
+          ],
+          // Show quantity limit violation message above checkout button
+          if (hasQuantityLimitViolations) ...[
+            Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                border: Border.all(
+                  color: AppColors.error.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: AppColors.error,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Quantity limit exceeded',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(13),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.error,
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(4)),
+                        Text(
+                          'Please decrease the quantity to proceed to checkout',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(12),
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
+          ],
+          // Show insufficient stock warning above checkout button
+          if (hasInsufficientStockItems && !hasQuantityLimitViolations) ...[
+            Container(
+              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                border: Border.all(
+                  color: AppColors.warning.withValues(alpha: 0.4),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    color: AppColors.warning,
+                    size: ResponsiveUtils.rp(20),
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(8)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                       
+                        SizedBox(height: ResponsiveUtils.rp(4)),
+                        Text(
+                          'Some products are not in stock, kindly check',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(12),
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(8)),
           ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -175,55 +277,6 @@ class CartCheckoutSection extends StatelessWidget {
               ),
             ],
           ),
-          // Show quantity limit violation message
-          if (hasQuantityLimitViolations) ...[
-            SizedBox(height: ResponsiveUtils.rp(8)),
-            Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                border: Border.all(
-                  color: AppColors.error.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.warning_amber_rounded,
-                    color: AppColors.error,
-                    size: ResponsiveUtils.rp(20),
-                  ),
-                  SizedBox(width: ResponsiveUtils.rp(8)),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Quantity limit exceeded',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(13),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.error,
-                          ),
-                        ),
-                        SizedBox(height: ResponsiveUtils.rp(4)),
-                        Text(
-                          'Please decrease the quantity to proceed to checkout',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(12),
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ],
       );
     });

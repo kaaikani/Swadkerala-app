@@ -48,13 +48,6 @@ type AlreadyLoggedInError implements ErrorResult {
   message: String!
 }
 
-input AppleAuthInput {
-  token: String!
-  firstName: String
-  lastName: String
-  email: String
-}
-
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
 
 type Asset implements Node {
@@ -89,7 +82,6 @@ input AuthenticationInput {
   phoneOtp: PhoneOtpInput
   native: NativeAuthInput
   google: GoogleAuthInput
-  apple: AppleAuthInput
 }
 
 type AuthenticationMethod implements Node {
@@ -1113,6 +1105,11 @@ enum DeletionResult {
 
   """Deletion did not take place, reason given in message"""
   NOT_DELETED
+}
+
+type RequestAccountDeletionResponse {
+  success: Boolean!
+  message: String
 }
 
 type Discount {
@@ -2395,13 +2392,6 @@ type Mutation {
 
   """Resets a Customer's password based on the provided token"""
   resetPassword(token: String!, password: String!): ResetPasswordResult!
-
-  """
-  Claims an anonymous guest order and assigns it to the currently logged-in customer.
-  Call this after login, passing the guest order code obtained before login.
-  If the customer already has an active order, items from the guest order are merged into it.
-  """
-  claimGuestOrder(guestOrderCode: String!): Order
   sendPhoneOtp(phoneNumber: String!): String
   resendPhoneOtp(phoneNumber: String!): String
   updateProfileEmail(email: String!): Customer
@@ -2419,6 +2409,8 @@ type Mutation {
   applyLoyaltyPointsToActiveOrder(amount: Int!): Order!
   removeLoyaltyPointsFromActiveOrder: Order
   toggleFavorite(productId: ID!, options: FavoriteListOptions = null): FavoriteList!
+  deleteAccount: DeletionResponse!
+  requestAccountDeletion(reason: String): RequestAccountDeletionResponse!
 }
 
 union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError | NativeAuthStrategyError

@@ -78,75 +78,37 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    color: Color(0xFFF6F6F6),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(ResponsiveUtils.rp(10)),
-                        topRight: Radius.circular(ResponsiveUtils.rp(10)),
+                  ColorFiltered(
+                    colorFilter: isOutOfStock
+                        ? const ColorFilter.matrix(<double>[
+                            0.2126, 0.7152, 0.0722, 0, 0,
+                            0.2126, 0.7152, 0.0722, 0, 0,
+                            0.2126, 0.7152, 0.0722, 0, 0,
+                            0, 0, 0, 1, 0,
+                          ])
+                        : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
+                    child: Container(
+                      color: Color(0xFFF6F6F6),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(ResponsiveUtils.rp(10)),
+                          topRight: Radius.circular(ResponsiveUtils.rp(10)),
+                        ),
+                        child: (imageUrl != null && imageUrl!.isNotEmpty
+                            ? CachedAppImage(
+                                imageUrl: imageUrl!,
+                                fit: BoxFit.contain,
+                                width: double.infinity,
+                                height: double.infinity,
+                                cacheWidth: 300,
+                                cacheHeight: 300,
+                              )
+                            : Skeletons.imageRect(
+                                height: double.infinity,
+                                width: double.infinity,
+                                radius: 0,
+                                  )),
                       ),
-                      child: isOutOfStock
-                          ? Stack(
-                              children: [
-                                // Show product image in background (dimmed) if available
-                                if (imageUrl != null && imageUrl!.isNotEmpty)
-                                  Opacity(
-                                    opacity: 0.3,
-                                    child: CachedAppImage(
-                                      imageUrl: imageUrl!,
-                                      fit: BoxFit.contain,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      cacheWidth: 300,
-                                      cacheHeight: 300,
-                                      errorWidget: Container(color: AppColors.backgroundLight),
-                                    ),
-                                  )
-                                else
-                                  // If no image URL, show placeholder background
-                                  Container(
-                                    color: AppColors.backgroundLight,
-                                  ),
-                                // Show "Out of Stock" text in the center of the image
-                                Positioned.fill(
-                                  child: Center(
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: ResponsiveUtils.rp(12),
-                                        vertical: ResponsiveUtils.rp(8),
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red.withValues(alpha: 0.9),
-                                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                                      ),
-                                      child: Text(
-                                        'Out of Stock',
-                                        style: TextStyle(
-                                          fontSize: ResponsiveUtils.sp(14),
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : (imageUrl != null && imageUrl!.isNotEmpty
-                          ? CachedAppImage(
-                              imageUrl: imageUrl!,
-                              fit: BoxFit.contain,
-                              width: double.infinity,
-                              height: double.infinity,
-                              cacheWidth: 300,
-                              cacheHeight: 300,
-                            )
-                          : Skeletons.imageRect(
-                              height: double.infinity,
-                              width: double.infinity,
-                              radius: 0,
-                                )),
                     ),
                   ),
                   // Order count badge (top-left)

@@ -94,7 +94,7 @@ class AppStrings {
   static const String couponCode = 'Coupon Code';
   static const String applyCoupon = 'Apply Coupon';
   static const String removeCoupon = 'Remove Coupon';
-  static const String browseCoupons = 'Browse Coupons';
+  static const String browseCoupons = 'Apply Coupon Code';
   static const String minOrder = 'Min order {amount}';
   static const String spendMoreToUnlockCoupon = 'Add {amount} more to unlock coupon \'{code}\'';
   static const String spendMoreToApplyCoupon = 'Spend {amount} more to Apply {code}';

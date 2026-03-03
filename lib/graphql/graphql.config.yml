@@ -3,7 +3,7 @@ extensions:
 
   endpoints:
     Vendure GraphQL Endpoint:
-      url: http://192.168.31.194:80/shop-api
+      url: http://192.168.31.36/shop-api
 
       headers:
         user-agent: JS GraphQL

@@ -5,7 +5,12 @@ import '../utils/responsive.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/responsive_text.dart';
 import '../widgets/responsive_spacing.dart';
+import '../widgets/snackbar.dart';
 import '../services/analytics_service.dart';
+import '../services/graphql_client.dart';
+import '../graphql/Customer.graphql.dart';
+import '../controllers/authentication/authenticationcontroller.dart';
+import '../routes.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
@@ -112,10 +117,171 @@ class PrivacyPolicyPage extends StatelessWidget {
               icon: Icons.local_offer_outlined,
               iconColor: AppColors.warning,
             ),
-            
+
+            ResponsiveSpacing.vertical(16),
+
+            // Account Deletion Policy Section
+            _buildSection(
+              title: 'Account Deletion',
+              content: 'If you request account deletion, your account will be deleted within 3 days. You may submit a request using the button below. Once the request is submitted, you will be signed out and your account will be processed for deletion within 3 business days.',
+              icon: Icons.delete_outline,
+              iconColor: AppColors.error,
+            ),
+
+            ResponsiveSpacing.vertical(16),
+
+            // Request account deletion button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _showRequestAccountDeletionDialog(context),
+                icon: Icon(Icons.delete_outline, size: ResponsiveUtils.rp(20), color: AppColors.error),
+                label: Text(
+                  'Request account deletion',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(15),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.error,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.error),
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  ),
+                ),
+              ),
+            ),
+
             ResponsiveSpacing.vertical(24),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showRequestAccountDeletionDialog(BuildContext context) {
+    final reasonController = TextEditingController();
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.delete_outline, color: AppColors.error, size: ResponsiveUtils.rp(24)),
+            SizedBox(width: ResponsiveUtils.rp(8)),
+            Expanded(
+              child: Text(
+                'Request account deletion',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(18),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your account will be deleted within 3 days. Please provide a reason (required).',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(16)),
+              TextField(
+                controller: reasonController,
+                decoration: InputDecoration(
+                  hintText: 'Reason (required)',
+                  hintStyle: TextStyle(color: AppColors.textTertiary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.rp(12),
+                    vertical: ResponsiveUtils.rp(12),
+                  ),
+                ),
+                maxLines: 3,
+                style: TextStyle(fontSize: ResponsiveUtils.sp(14), color: AppColors.textPrimary),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                reasonController.dispose();
+              });
+            },
+            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final reasonText = reasonController.text.trim();
+              if (reasonText.isEmpty) {
+                showErrorSnackbar('Please enter a reason for account deletion');
+                return;
+              }
+              Get.back();
+              // Dispose after dialog is fully closed to avoid "used after dispose" error
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                reasonController.dispose();
+              });
+              try {
+                final response = await GraphqlService.client.value.mutate$RequestAccountDeletion(
+                  Options$Mutation$RequestAccountDeletion(
+                    variables: Variables$Mutation$RequestAccountDeletion(reason: reasonText),
+                  ),
+                );
+                if (response.hasException) {
+                  final msg = response.exception?.graphqlErrors.firstOrNull?.message ??
+                      response.exception?.linkException?.toString() ??
+                      'Failed to request account deletion';
+                  showErrorSnackbar(msg.toString().replaceAll('Exception:', '').trim());
+                  return;
+                }
+                final data = response.parsedData?.requestAccountDeletion;
+                if (data == null) {
+                  showErrorSnackbar('Failed to request account deletion');
+                  return;
+                }
+                if (data.success) {
+                  SnackBarWidget.showSuccess(data.message ?? 'Account deletion requested. You will be signed out.');
+                  final authController = Get.find<AuthController>();
+                  final ctx = Get.context;
+                  if (ctx != null) {
+                    await authController.logout(ctx);
+                  } else {
+                    await GraphqlService.clearToken('auth');
+                    await GraphqlService.clearToken('channel');
+                    await GraphqlService.clearGuestSession();
+                    Get.offAllNamed(AppRoutes.home);
+                  }
+                } else {
+                  showErrorSnackbar(data.message ?? 'Could not request account deletion');
+                }
+              } catch (e) {
+                showErrorSnackbar('Failed to request account deletion. Please try again.');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Request'),
+          ),
+        ],
       ),
     );
   }

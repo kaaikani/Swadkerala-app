@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+// import 'package:sign_in_with_apple/sign_in_with_apple.dart';  // Apple login - commented out
 
 import '../../services/graphql_client.dart';
 import '../../services/channel_service.dart';
@@ -283,9 +283,13 @@ class AuthController extends BaseController {
               setLoading(false);
               return true;
             } else {
-              // For login, "customer not registered" means account doesn't exist - show error
+              // For login, "customer not registered" means account doesn't exist
+              // Redirect to signup page with the phone number pre-filled
               setLoading(false);
-              ErrorDialog.showError('No account found with this phone number. Please register first.');
+              final phone = phoneNumber.text;
+              debugPrint('[AuthController] Customer not registered - redirecting to signup with phone=$phone');
+              SnackBarWidget.showError('No account found. Please sign up first.');
+              Get.toNamed(AppRoutes.signup, arguments: {'phoneNumber': phone});
               return false;
             }
           } else {
@@ -320,7 +324,10 @@ class AuthController extends BaseController {
         // For login: channel must exist
         if (channels.isEmpty) {
           setLoading(false);
-          ErrorDialog.showError('No account found with this phone number. Please register first.');
+          final phone = phoneNumber.text;
+          debugPrint('[AuthController] No channels found for login - redirecting to signup with phone=$phone');
+          SnackBarWidget.showError('No account found. Please sign up first.');
+          Get.toNamed(AppRoutes.signup, arguments: {'phoneNumber': phone});
           return false;
         }
         // Channel exists, proceed with OTP
@@ -611,20 +618,23 @@ class AuthController extends BaseController {
 
   /// Claim guest cart to logged-in customer so guest-added items appear after login.
   /// Call after setToken('auth') and before _refreshCartAndCustomerAfterLogin().
+  /// NOTE: claimGuestOrder is not in live API schema (https://kaaikani.co.in/shop-api) — stub no-op.
   Future<void> _claimGuestOrderIfAny() async {
-    final code = GraphqlService.guestOrderCode;
-    if (code.isEmpty) return;
-    try {
-      final response = await GraphqlService.client.value.mutate$ClaimGuestOrder(
-        Options$Mutation$ClaimGuestOrder(
-          variables: Variables$Mutation$ClaimGuestOrder(guestOrderCode: code),
-        ),
-      );
-      if (!response.hasException && response.parsedData?.claimGuestOrder != null) {
-        await GraphqlService.clearGuestOrderCode();
-        await _storage.write(_preserveGuestChannelKey, true);
-      }
-    } catch (_) {}
+    // claimGuestOrder mutation removed from order.graphql (not in live schema)
+    return;
+    // final code = GraphqlService.guestOrderCode;
+    // if (code.isEmpty) return;
+    // try {
+    //   final response = await GraphqlService.client.value.mutate$ClaimGuestOrder(
+    //     Options$Mutation$ClaimGuestOrder(
+    //       variables: Variables$Mutation$ClaimGuestOrder(guestOrderCode: code),
+    //     ),
+    //   );
+    //   if (!response.hasException && response.parsedData?.claimGuestOrder != null) {
+    //     await GraphqlService.clearGuestOrderCode();
+    //     await _storage.write(_preserveGuestChannelKey, true);
+    //   }
+    // } catch (_) {}
   }
 
   Future<void> _refreshCartAndCustomerAfterLogin() async {
@@ -633,7 +643,9 @@ class AuthController extends BaseController {
         await Get.find<CartController>().getActiveOrder();
       }
       if (Get.isRegistered<CustomerController>()) {
-        await Get.find<CustomerController>().getActiveCustomer(skipPostalCodeCheck: true);
+        // skipPostalCodeCheck: false → extract postal code from shipping address
+        // and set channel if not already set (prevents mandatory postal code sheet after login)
+        await Get.find<CustomerController>().getActiveCustomer(skipPostalCodeCheck: false);
       }
     } catch (_) {}
   }
@@ -1061,175 +1073,175 @@ class AuthController extends BaseController {
     }
   }
 
-  /// Structured debug for Apple Sign In — one tag, clear phases, easy to grep.
-  void _appleLog(String phase, [Map<String, Object?>? kv]) {
-    const tag = '[Apple Sign In]';
-    if (kv != null && kv.isNotEmpty) {
-      for (final e in kv.entries) {
-        debugPrint('$tag $phase | ${e.key}=${e.value}');
-      }
-    } else {
-      debugPrint('$tag $phase');
-    }
-  }
+  /// Structured debug for Apple Sign In — commented out with Apple login
+  // void _appleLog(String phase, [Map<String, Object?>? kv]) {
+  //   const tag = '[Apple Sign In]';
+  //   if (kv != null && kv.isNotEmpty) {
+  //     for (final e in kv.entries) {
+  //       debugPrint('$tag $phase | ${e.key}=${e.value}');
+  //     }
+  //   } else {
+  //     debugPrint('$tag $phase');
+  //   }
+  // }
 
-  /// Apple Sign In and authenticate
-  Future<bool> signInWithApple(BuildContext context) async {
-    _appleLog('═══ START ═══');
-    _appleLog('1. Request', {'scopes': 'email, fullName', 'state': _debugState});
-    Logger.logFunction(functionName: 'signInWithApple', mutationName: 'LoginWithApple');
-    setLoading(true);
-    try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      final givenNamePresent = credential.givenName != null && credential.givenName!.isNotEmpty;
-      final familyNamePresent = credential.familyName != null && credential.familyName!.isNotEmpty;
-      _appleLog('2. Credential', {
-        'userIdentifier': credential.userIdentifier ?? 'null',
-        'emailPresent': credential.email != null && credential.email!.isNotEmpty,
-        'givenNamePresent': givenNamePresent,
-        'familyNamePresent': familyNamePresent,
-      });
-      debugPrint('[Apple Sign In] 2. Debug name | givenName=${credential.givenName ?? "null"} | familyName=${credential.familyName ?? "null"} | givenNamePresent=$givenNamePresent | familyNamePresent=$familyNamePresent');
-
-      final String? identityToken = credential.identityToken;
-      if (identityToken == null || identityToken.isEmpty) {
-        _appleLog('EXIT', {'reason': 'identityToken null/empty'});
-        _appleLog('═══ END ═══');
-        ErrorDialog.showError('Failed to get Apple ID token');
-        return false;
-      }
-
-      _appleLog('3. Token', {
-        'length': identityToken.length,
-        'prefix': identityToken.length >= 30 ? '${identityToken.substring(0, 30)}...' : identityToken,
-      });
-      _appleLog('3. Token.full', {'token': identityToken});
-      String? emailFromToken;
-      try {
-        final parts = identityToken.split('.');
-        if (parts.length >= 2) {
-          final payload = parts[1];
-          final padded = payload + List.filled((4 - payload.length % 4) % 4, '=').join();
-          final decoded = utf8.decode(base64Url.decode(padded));
-          _appleLog('3. Token.payload (claims)', {'json': decoded});
-          final map = jsonDecode(decoded) as Map<String, dynamic>?;
-          emailFromToken = map?['email'] as String?;
-        }
-      } catch (_) {
-        _appleLog('3. Token.payload', {'decode': 'skipped'});
-      }
-
-      final email = (credential.email?.trim().isNotEmpty == true ? credential.email!.trim() : emailFromToken?.trim()) ?? '';
-      final firstName = credential.givenName?.trim() ?? '';
-      final lastName = credential.familyName?.trim() ?? '';
-      debugPrint('[Apple Sign In] 4. Debug email=$email | firstName=$firstName | lastName=$lastName | firstNameEmpty=${firstName.isEmpty} | lastNameEmpty=${lastName.isEmpty}');
-      if (firstName.isEmpty && lastName.isEmpty) {
-        debugPrint('[Apple Sign In] 4. Why empty: Apple only sends givenName/familyName on FIRST sign-in; on later sign-ins they are null (so we pass "").');
-      }
-      _appleLog('4. Mutation', {'action': 'sending LoginWithApple', 'email': email.isEmpty ? '(empty)' : email, 'firstName': firstName.isEmpty ? '(empty)' : firstName, 'lastName': lastName.isEmpty ? '(empty)' : lastName});
-      await GraphqlService.ensureGuestSessionForLogin();
-      final response = await GraphqlService.client.value.mutate$LoginWithApple(
-        Options$Mutation$LoginWithApple(
-          variables: Variables$Mutation$LoginWithApple(
-            token: identityToken,
-            email: email,
-            firstName: firstName,
-            lastName: lastName,
-          ),
-        ),
-      );
-
-      _appleLog('4. Mutation', {'hasException': response.hasException});
-      if (response.hasException) {
-        _appleLog('4. Mutation.exception', {'raw': response.exception.toString()});
-        if (response.exception?.graphqlErrors != null && response.exception!.graphqlErrors.isNotEmpty) {
-          for (final e in response.exception!.graphqlErrors) {
-            _appleLog('4. Mutation.graphqlError', {'message': e.message});
-            if (e.extensions != null) _appleLog('4. Mutation.extensions', {'data': e.extensions.toString()});
-          }
-        }
-        if (response.exception?.linkException != null) {
-          _appleLog('4. Mutation.linkException', {'raw': response.exception!.linkException.toString()});
-        }
-      }
-
-      if (checkResponseForErrors(response, customErrorMessage: 'Apple authentication failed')) {
-        _appleLog('EXIT', {'reason': 'checkResponseForErrors failed'});
-        _appleLog('═══ END ═══');
-        return false;
-      }
-
-      final data = response.parsedData?.authenticate;
-      _appleLog('5. Result', {'parsedType': data.runtimeType.toString()});
-
-      if (data is Mutation$LoginWithApple$authenticate$$CurrentUser) {
-        final responseContext = response.context.entry<HttpLinkResponseContext>();
-        final authToken = responseContext?.headers?['vendure-auth-token'];
-        _appleLog('5. Result', {'authTokenReceived': authToken != null && authToken.isNotEmpty});
-        if (authToken != null && authToken.isNotEmpty) {
-          await GraphqlService.setToken(key: 'auth', token: authToken);
-
-          // Do not change channel on login — preserve the current (or guest) channel and postal code.
-          // Previously we fetched GetChannelList and overwrote with channels.first, which switched away
-          // from the guest's channel and caused guest cart to disappear (same fix as phone login).
-
-          _appleLog('5. Result', {'outcome': 'success'});
-          _appleLog('═══ END ═══');
-          await _claimGuestOrderIfAny();
-          setLoggedIn(true);
-          resetFormField();
-          await _refreshCartAndCustomerAfterLogin();
-          return true;
-        } else {
-          _appleLog('EXIT', {'reason': 'authToken not received from server'});
-          _appleLog('═══ END ═══');
-          ErrorDialog.showError('Authentication token not received from server');
-          return false;
-        }
-      }
-      if (data is Mutation$LoginWithApple$authenticate$$InvalidCredentialsError) {
-        _appleLog('5. Result', {'outcome': 'InvalidCredentialsError', 'message': data.message});
-        _appleLog('═══ END ═══');
-        ErrorDialog.showError(data.message);
-        return false;
-      }
-      if (data is Mutation$LoginWithApple$authenticate$$NotVerifiedError) {
-        _appleLog('5. Result', {'outcome': 'NotVerifiedError', 'message': data.message});
-        _appleLog('═══ END ═══');
-        ErrorDialog.showError(data.message);
-        return false;
-      }
-      _appleLog('EXIT', {'reason': 'fallback error'});
-      _appleLog('═══ END ═══');
-      ErrorDialog.showError('Apple authentication failed');
-      return false;
-    } on SignInWithAppleAuthorizationException catch (e) {
-      _appleLog('EXIT', {'reason': 'SignInWithAppleAuthorizationException', 'code': e.code.toString(), 'message': e.message});
-      if (e.code == AuthorizationErrorCode.canceled ||
-          e.code == AuthorizationErrorCode.notHandled) {
-        _appleLog('═══ END ═══ (user canceled)');
-        return false;
-      }
-      _appleLog('═══ END ═══');
-      ErrorDialog.showError(e.message);
-      return false;
-    } catch (e, stack) {
-      _appleLog('EXIT', {'reason': 'exception', 'error': e.toString()});
-      _appleLog('5. Result', {'stackTrace': stack.toString().split('\n').take(3).join(' | ')});
-      _appleLog('═══ END ═══');
-      handleException(e, customErrorMessage: 'Apple sign in failed');
-      return false;
-    } finally {
-      setLoading(false);
-      _appleLog('finally', {'state': _debugState});
-    }
-  }
+  /// Apple Sign In and authenticate - commented out
+  // Future<bool> signInWithApple(BuildContext context) async {
+  //   _appleLog('═══ START ═══');
+  //   _appleLog('1. Request', {'scopes': 'email, fullName', 'state': _debugState});
+  //   Logger.logFunction(functionName: 'signInWithApple', mutationName: 'LoginWithApple');
+  //   setLoading(true);
+  //   try {
+  //     final credential = await SignInWithApple.getAppleIDCredential(
+  //       scopes: [
+  //         AppleIDAuthorizationScopes.email,
+  //         AppleIDAuthorizationScopes.fullName,
+  //       ],
+  //     );
+  //
+  //     final givenNamePresent = credential.givenName != null && credential.givenName!.isNotEmpty;
+  //     final familyNamePresent = credential.familyName != null && credential.familyName!.isNotEmpty;
+  //     _appleLog('2. Credential', {
+  //       'userIdentifier': credential.userIdentifier ?? 'null',
+  //       'emailPresent': credential.email != null && credential.email!.isNotEmpty,
+  //       'givenNamePresent': givenNamePresent,
+  //       'familyNamePresent': familyNamePresent,
+  //     });
+  //     debugPrint('[Apple Sign In] 2. Debug name | givenName=${credential.givenName ?? "null"} | familyName=${credential.familyName ?? "null"} | givenNamePresent=$givenNamePresent | familyNamePresent=$familyNamePresent');
+  //
+  //     final String? identityToken = credential.identityToken;
+  //     if (identityToken == null || identityToken.isEmpty) {
+  //       _appleLog('EXIT', {'reason': 'identityToken null/empty'});
+  //       _appleLog('═══ END ═══');
+  //       ErrorDialog.showError('Failed to get Apple ID token');
+  //       return false;
+  //     }
+  //
+  //     _appleLog('3. Token', {
+  //       'length': identityToken.length,
+  //       'prefix': identityToken.length >= 30 ? '${identityToken.substring(0, 30)}...' : identityToken,
+  //     });
+  //     _appleLog('3. Token.full', {'token': identityToken});
+  //     String? emailFromToken;
+  //     try {
+  //       final parts = identityToken.split('.');
+  //       if (parts.length >= 2) {
+  //         final payload = parts[1];
+  //         final padded = payload + List.filled((4 - payload.length % 4) % 4, '=').join();
+  //         final decoded = utf8.decode(base64Url.decode(padded));
+  //         _appleLog('3. Token.payload (claims)', {'json': decoded});
+  //         final map = jsonDecode(decoded) as Map<String, dynamic>?;
+  //         emailFromToken = map?['email'] as String?;
+  //       }
+  //     } catch (_) {
+  //       _appleLog('3. Token.payload', {'decode': 'skipped'});
+  //     }
+  //
+  //     final email = (credential.email?.trim().isNotEmpty == true ? credential.email!.trim() : emailFromToken?.trim()) ?? '';
+  //     final firstName = credential.givenName?.trim() ?? '';
+  //     final lastName = credential.familyName?.trim() ?? '';
+  //     debugPrint('[Apple Sign In] 4. Debug email=$email | firstName=$firstName | lastName=$lastName | firstNameEmpty=${firstName.isEmpty} | lastNameEmpty=${lastName.isEmpty}');
+  //     if (firstName.isEmpty && lastName.isEmpty) {
+  //       debugPrint('[Apple Sign In] 4. Why empty: Apple only sends givenName/familyName on FIRST sign-in; on later sign-ins they are null (so we pass "").');
+  //     }
+  //     _appleLog('4. Mutation', {'action': 'sending LoginWithApple', 'email': email.isEmpty ? '(empty)' : email, 'firstName': firstName.isEmpty ? '(empty)' : firstName, 'lastName': lastName.isEmpty ? '(empty)' : lastName});
+  //     await GraphqlService.ensureGuestSessionForLogin();
+  //     final response = await GraphqlService.client.value.mutate$LoginWithApple(
+  //       Options$Mutation$LoginWithApple(
+  //         variables: Variables$Mutation$LoginWithApple(
+  //           token: identityToken,
+  //           email: email,
+  //           firstName: firstName,
+  //           lastName: lastName,
+  //         ),
+  //       ),
+  //     );
+  //
+  //     _appleLog('4. Mutation', {'hasException': response.hasException});
+  //     if (response.hasException) {
+  //       _appleLog('4. Mutation.exception', {'raw': response.exception.toString()});
+  //       if (response.exception?.graphqlErrors != null && response.exception!.graphqlErrors.isNotEmpty) {
+  //         for (final e in response.exception!.graphqlErrors) {
+  //           _appleLog('4. Mutation.graphqlError', {'message': e.message});
+  //           if (e.extensions != null) _appleLog('4. Mutation.extensions', {'data': e.extensions.toString()});
+  //         }
+  //       }
+  //       if (response.exception?.linkException != null) {
+  //         _appleLog('4. Mutation.linkException', {'raw': response.exception!.linkException.toString()});
+  //       }
+  //     }
+  //
+  //     if (checkResponseForErrors(response, customErrorMessage: 'Apple authentication failed')) {
+  //       _appleLog('EXIT', {'reason': 'checkResponseForErrors failed'});
+  //       _appleLog('═══ END ═══');
+  //       return false;
+  //     }
+  //
+  //     final data = response.parsedData?.authenticate;
+  //     _appleLog('5. Result', {'parsedType': data.runtimeType.toString()});
+  //
+  //     if (data is Mutation$LoginWithApple$authenticate$$CurrentUser) {
+  //       final responseContext = response.context.entry<HttpLinkResponseContext>();
+  //       final authToken = responseContext?.headers?['vendure-auth-token'];
+  //       _appleLog('5. Result', {'authTokenReceived': authToken != null && authToken.isNotEmpty});
+  //       if (authToken != null && authToken.isNotEmpty) {
+  //         await GraphqlService.setToken(key: 'auth', token: authToken);
+  //
+  //         // Do not change channel on login — preserve the current (or guest) channel and postal code.
+  //         // Previously we fetched GetChannelList and overwrote with channels.first, which switched away
+  //         // from the guest's channel and caused guest cart to disappear (same fix as phone login).
+  //
+  //         _appleLog('5. Result', {'outcome': 'success'});
+  //         _appleLog('═══ END ═══');
+  //         await _claimGuestOrderIfAny();
+  //         setLoggedIn(true);
+  //         resetFormField();
+  //         await _refreshCartAndCustomerAfterLogin();
+  //         return true;
+  //       } else {
+  //         _appleLog('EXIT', {'reason': 'authToken not received from server'});
+  //         _appleLog('═══ END ═══');
+  //         ErrorDialog.showError('Authentication token not received from server');
+  //         return false;
+  //       }
+  //     }
+  //     if (data is Mutation$LoginWithApple$authenticate$$InvalidCredentialsError) {
+  //       _appleLog('5. Result', {'outcome': 'InvalidCredentialsError', 'message': data.message});
+  //       _appleLog('═══ END ═══');
+  //       ErrorDialog.showError(data.message);
+  //       return false;
+  //     }
+  //     if (data is Mutation$LoginWithApple$authenticate$$NotVerifiedError) {
+  //       _appleLog('5. Result', {'outcome': 'NotVerifiedError', 'message': data.message});
+  //       _appleLog('═══ END ═══');
+  //       ErrorDialog.showError(data.message);
+  //       return false;
+  //     }
+  //     _appleLog('EXIT', {'reason': 'fallback error'});
+  //     _appleLog('═══ END ═══');
+  //     ErrorDialog.showError('Apple authentication failed');
+  //     return false;
+  //   } on SignInWithAppleAuthorizationException catch (e) {
+  //     _appleLog('EXIT', {'reason': 'SignInWithAppleAuthorizationException', 'code': e.code.toString(), 'message': e.message});
+  //     if (e.code == AuthorizationErrorCode.canceled ||
+  //         e.code == AuthorizationErrorCode.notHandled) {
+  //       _appleLog('═══ END ═══ (user canceled)');
+  //       return false;
+  //     }
+  //     _appleLog('═══ END ═══');
+  //     ErrorDialog.showError(e.message);
+  //     return false;
+  //   } catch (e, stack) {
+  //     _appleLog('EXIT', {'reason': 'exception', 'error': e.toString()});
+  //     _appleLog('5. Result', {'stackTrace': stack.toString().split('\n').take(3).join(' | ')});
+  //     _appleLog('═══ END ═══');
+  //     handleException(e, customErrorMessage: 'Apple sign in failed');
+  //     return false;
+  //   } finally {
+  //     setLoading(false);
+  //     _appleLog('finally', {'state': _debugState});
+  //   }
+  // }
 
   @override
   void onClose() {

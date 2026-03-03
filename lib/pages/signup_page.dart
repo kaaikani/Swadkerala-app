@@ -44,6 +44,12 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     _initializeSmsAutofill();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _authController.resetFormField();
+      // Pre-fill phone number if passed from login page (customer not registered)
+      final args = Get.arguments is Map ? Get.arguments as Map : null;
+      final passedPhone = args?['phoneNumber']?.toString();
+      if (passedPhone != null && passedPhone.isNotEmpty) {
+        _authController.phoneNumber.text = passedPhone;
+      }
     });
   }
 

@@ -199,12 +199,13 @@ query NextOrderStates{
     nextOrderStates
 }
 
-mutation ClaimGuestOrder($guestOrderCode: String!) {
-    claimGuestOrder(guestOrderCode: $guestOrderCode) {
-        ...Cart
-        __typename
-    }
-}
+# claimGuestOrder not in live API schema - commented out
+# mutation ClaimGuestOrder($guestOrderCode: String!) {
+#     claimGuestOrder(guestOrderCode: $guestOrderCode) {
+#         ...Cart
+#         __typename
+#     }
+# }
 
 mutation TransitionOrderToState($state: String!){
     transitionOrderToState(state: $state){

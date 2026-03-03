@@ -136,78 +136,32 @@ class _HomeProductCardState extends State<HomeProductCard>
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    color: Color(0xFFF6F6F6),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(ResponsiveUtils.rp(8)),
-                        topRight: Radius.circular(ResponsiveUtils.rp(8)),
-                      ),
-                      child: widget.isOutOfStock
-                          ? Stack(
-                              children: [
-                                // Show product image in background (dimmed)
-                                if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
-                                  Opacity(
-                                    opacity: 0.3,
-                                    child: CachedAppImage(
-                                      imageUrl: widget.imageUrl!,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      cacheWidth: 300,
-                                      cacheHeight: 300,
-                                    ),
+                  ColorFiltered(
+                    colorFilter: widget.isOutOfStock
+                        ? const ColorFilter.matrix(<double>[
+                            0.2126, 0.7152, 0.0722, 0, 0,
+                            0.2126, 0.7152, 0.0722, 0, 0,
+                            0.2126, 0.7152, 0.0722, 0, 0,
+                            0, 0, 0, 1, 0,
+                          ])
+                        : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
+                    child: Container(
+                      color: Color(0xFFF6F6F6),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(ResponsiveUtils.rp(8)),
+                          topRight: Radius.circular(ResponsiveUtils.rp(8)),
+                        ),
+                        child: (widget.imageUrl != null && widget.imageUrl!.isNotEmpty
+                                ? _AnimatedProductImage(
+                                    imageUrl: widget.imageUrl!,
                                   )
-                                else
-                                  Container(
-                                    color: AppColors.backgroundLight,
-                                  ),
-                                // Show X icon and "Out of Stock" text at the top
-                                Positioned(
-                                  top: ResponsiveUtils.rp(6),
-                                  left: 0,
-                                  right: 0,
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.close_rounded,
-                                        size: ResponsiveUtils.rp(24),
-                                        color: Colors.red,
-                                      ),
-                                      SizedBox(height: ResponsiveUtils.rp(3)),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: ResponsiveUtils.rp(6),
-                                          vertical: ResponsiveUtils.rp(3),
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withValues(alpha: 0.9),
-                                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(5)),
-                                        ),
-                                        child: Text(
-                                          'Out of Stock',
-                                          style: TextStyle(
-                                            fontSize: ResponsiveUtils.sp(9),
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )
-                          : (widget.imageUrl != null && widget.imageUrl!.isNotEmpty
-                              ? _AnimatedProductImage(
-                                  imageUrl: widget.imageUrl!,
-                                )
-                              : Skeletons.imageRect(
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  radius: 0,
-                                )),
+                                : Skeletons.imageRect(
+                                    height: double.infinity,
+                                    width: double.infinity,
+                                    radius: 0,
+                                  )),
+                      ),
                     ),
                   ),
                   if (widget.orderCount != null && widget.orderCount! > 0)

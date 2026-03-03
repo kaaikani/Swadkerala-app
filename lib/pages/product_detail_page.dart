@@ -229,7 +229,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     final amount = priceInPaise / 100;
     final bool isWholeNumber = (amount % 1).abs() < 0.0001;
     final String value =
-        isWholeNumber ? amount.toInt().toString() : amount.toStringAsFixed(2);
+        isWholeNumber ? PriceFormatter.addCommas(amount.toInt().toString()) : PriceFormatter.addCommas(amount.toStringAsFixed(2));
     return value;
   }
 

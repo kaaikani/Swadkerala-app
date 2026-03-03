@@ -16,7 +16,20 @@ class PriceFormatter {
   static String _format(double amount) {
     final bool isWholeNumber = (amount % 1).abs() < 0.0001;
     final String value =
-        isWholeNumber ? amount.toInt().toString() : amount.toStringAsFixed(2);
+        isWholeNumber ? _addCommas(amount.toInt().toString()) : _addCommas(amount.toStringAsFixed(2));
     return '₹ $value';
   }
+
+  /// Adds comma separators to a number string (e.g. 1000 -> 1,000, 20000 -> 20,000)
+  static String _addCommas(String number) {
+    final parts = number.split('.');
+    final intPart = parts[0].replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]},',
+    );
+    return parts.length > 1 ? '$intPart.${parts[1]}' : intPart;
+  }
+
+  /// Public helper to add commas to any number string
+  static String addCommas(String number) => _addCommas(number);
 }

@@ -1577,6 +1577,23 @@ class CustomerController extends BaseController {
       // Check if postal code exists in local storage
       final storedPostalCode = _storage.read('postal_code');
       if (storedPostalCode != null && storedPostalCode.toString().isNotEmpty) {
+        // Postal code exists, but check if channel token is also set
+        // If channel token is missing (e.g., after login), we need to set it from the postal code
+        final channelToken = ChannelService.getChannelToken();
+        if (channelToken != null && channelToken.toString().isNotEmpty) {
+          debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: postal code and channel already set, skipping');
+          return;
+        }
+        // Postal code exists but no channel token - switch channel using stored postal code
+        debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: postal code exists ($storedPostalCode) but no channel token, switching channel');
+        final defaultAddr = addresses.firstWhereOrNull(
+          (address) => address.defaultShippingAddress == true,
+        );
+        await switchChannelByPostalCode(
+          storedPostalCode.toString(),
+          city: defaultAddr?.city,
+          showLoading: false,
+        );
         return;
       }
 

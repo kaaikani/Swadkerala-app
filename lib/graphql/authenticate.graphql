@@ -59,28 +59,29 @@ mutation LoginWithGoogle($token: String!) {
     }
 }
 
-mutation LoginWithApple($token: String!, $email: String, $firstName: String!, $lastName: String!) {
-    authenticate(input: {
-        apple: {
-            token: $token
-            email: $email
-            firstName: $firstName
-            lastName: $lastName
-        }
-    }) {
-        __typename
-        ... on CurrentUser {
-            id
-            identifier
-        }
-        ... on InvalidCredentialsError {
-            message
-        }
-        ... on NotVerifiedError {
-            message
-        }
-    }
-}
+# Apple login - commented out
+# mutation LoginWithApple($token: String!, $email: String, $firstName: String!, $lastName: String!) {
+#     authenticate(input: {
+#         apple: {
+#             token: $token
+#             email: $email
+#             firstName: $firstName
+#             lastName: $lastName
+#         }
+#     }) {
+#         __typename
+#         ... on CurrentUser {
+#             id
+#             identifier
+#         }
+#         ... on InvalidCredentialsError {
+#             message
+#         }
+#         ... on NotVerifiedError {
+#             message
+#         }
+#     }
+# }
 
 mutation SendPhoneOtp($phoneNumber: String!) {
     sendPhoneOtp(phoneNumber: $phoneNumber)

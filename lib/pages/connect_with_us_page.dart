@@ -78,6 +78,14 @@ class ConnectWithUsPage extends StatelessWidget {
                   ),
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   _buildSocialTile(
+                    icon: FontAwesomeIcons.whatsapp,
+                    title: 'WhatsApp Channel',
+                    subtitle: 'Join our WhatsApp channel for updates',
+                    color: Color(0xFF25D366),
+                    onTap: () => _launchSocialMedia('https://whatsapp.com/channel/0029Vb6vJSxAInPiYw1Nom1q'),
+                  ),
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+                  _buildSocialTile(
                     icon: FontAwesomeIcons.linkedin,
                     title: 'LinkedIn',
                     subtitle: 'Connect with us on LinkedIn',

@@ -24,6 +24,10 @@ class OrderController extends BaseController {
   /// return early without calling APIs. Set during post-add-payment flow to avoid redundant calls.
   bool skipPostPaymentRefresh = false;
 
+  /// Callback invoked when user returns from addresses page after address mismatch dialog.
+  /// Set by checkout page to refresh data when user comes back.
+  VoidCallback? onAddressMismatchReturn;
+
   RxList<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled> shippingMethods = <Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>[].obs;
   RxList<Query$GetEligiblePaymentMethods$eligiblePaymentMethods> paymentMethods = <Query$GetEligiblePaymentMethods$eligiblePaymentMethods>[].obs;
   Rx<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled?> selectedShippingMethod = Rx<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled?>(null);
@@ -623,9 +627,10 @@ class OrderController extends BaseController {
                   ),
                   SizedBox(width: ResponsiveUtils.rp(12)),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Get.back();
-                      Get.toNamed('/addresses');
+                      await Get.toNamed('/addresses');
+                      onAddressMismatchReturn?.call();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.button,
@@ -732,12 +737,16 @@ class OrderController extends BaseController {
   /// Transition order to a specific state
   Future<bool> transitionToState(String targetState, {bool skipLoading = false}) async {
     Logger.logFunction(functionName: 'transitionToState', mutationName: 'TransitionOrderToState');
-    
+
+    debugPrint('[OrderController] transitionToState: START | targetState=$targetState | skipLoading=$skipLoading');
+    debugPrint('[OrderController] transitionToState: currentOrder BEFORE transition | code=${currentOrder.value?.code} | state=${currentOrder.value?.state} | id=${currentOrder.value?.id}');
+
     try {
       if (!skipLoading) {
         utilityController.setLoadingState(true);
       }
 
+      debugPrint('[OrderController] transitionToState: sending GraphQL mutation TransitionOrderToState(state: "$targetState")');
       final response =
           await GraphqlService.client.value.mutate$TransitionOrderToState(
         Options$Mutation$TransitionOrderToState(
@@ -747,31 +756,78 @@ class OrderController extends BaseController {
         ),
       );
 
+      debugPrint('[OrderController] transitionToState: response received | hasException=${response.hasException} | parsedData=${response.parsedData != null ? "exists" : "null"}');
+
+      // Log raw response data
+      if (response.data != null) {
+        debugPrint('[OrderController] transitionToState: response.data keys=${response.data!.keys.toList()}');
+        final transitionData = response.data!['transitionOrderToState'];
+        if (transitionData is Map) {
+          debugPrint('[OrderController] transitionToState: response __typename=${transitionData['__typename']}');
+          debugPrint('[OrderController] transitionToState: response state=${transitionData['state']}');
+          debugPrint('[OrderController] transitionToState: response code=${transitionData['code']}');
+          debugPrint('[OrderController] transitionToState: response id=${transitionData['id']}');
+          if (transitionData.containsKey('errorCode')) {
+            debugPrint('[OrderController] transitionToState: response errorCode=${transitionData['errorCode']}');
+            debugPrint('[OrderController] transitionToState: response message=${transitionData['message']}');
+          }
+          if (transitionData.containsKey('transitionError')) {
+            debugPrint('[OrderController] transitionToState: response transitionError=${transitionData['transitionError']}');
+          }
+        } else {
+          debugPrint('[OrderController] transitionToState: transitionOrderToState data=$transitionData');
+        }
+      } else {
+        debugPrint('[OrderController] transitionToState: response.data is NULL');
+      }
+
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to transition order')) {
+        debugPrint('[OrderController] transitionToState: checkResponseForErrors=true (FAILED) | targetState=$targetState | currentOrder.state=${currentOrder.value?.state}');
+        if (response.hasException) {
+          debugPrint('[OrderController] transitionToState: exception=${response.exception}');
+          for (final e in response.exception?.graphqlErrors ?? []) {
+            debugPrint('[OrderController] transitionToState: graphqlError message=${e.message} path=${e.path} extensions=${e.extensions}');
+          }
+          if (response.exception?.linkException != null) {
+            debugPrint('[OrderController] transitionToState: linkException=${response.exception!.linkException}');
+          }
+        }
         return false;
       }
 
       final result = response.parsedData?.transitionOrderToState;
+      debugPrint('[OrderController] transitionToState: parsedData result type=${result?.runtimeType} | __typename=${result?.$__typename}');
+
       if (result != null) {
         final resultJson = result.toJson();
+        debugPrint('[OrderController] transitionToState: resultJson keys=${resultJson.keys.toList()}');
         // Check if it's an error result
         if (resultJson.containsKey('errorCode')) {
+          debugPrint('[OrderController] transitionToState: RESULT IS ERROR | targetState=$targetState | errorCode=${resultJson['errorCode']} | message=${resultJson['message']}');
+          if (resultJson.containsKey('transitionError')) {
+            debugPrint('[OrderController] transitionToState: transitionError=${resultJson['transitionError']}');
+          }
           return false;
         }
 
         // If it's an Order, update current order
         if (result is Mutation$TransitionOrderToState$transitionOrderToState$$Order) {
+          debugPrint('[OrderController] transitionToState: SUCCESS - result is Order | newState=${result.state} | code=${result.code} | id=${result.id}');
           currentOrder.value = result;
           return true;
         }
       }
 
+      debugPrint('[OrderController] transitionToState: UNEXPECTED result (not Order, not error) | targetState=$targetState | parsedData type=${result?.runtimeType}');
       return false;
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('[OrderController] transitionToState: CATCH ERROR | e=$e');
+      debugPrint('[OrderController] transitionToState: stackTrace=${st.toString().split("\n").take(8).join("\n")}');
       handleException(e, customErrorMessage: 'Failed to transition order');
       return false;
     } finally {
+      debugPrint('[OrderController] transitionToState: FINALLY | currentOrder.state=${currentOrder.value?.state} | targetState=$targetState');
       if (!skipLoading) {
         utilityController.setLoadingState(false);
       }
@@ -781,26 +837,66 @@ class OrderController extends BaseController {
   /// Transition to ArrangingPayment state
   /// Handles cases where order might be in "AddingItems" state
   Future<bool> transitionToArrangingPayment() async {
+    debugPrint('[OrderController] transitionToArrangingPayment: START');
+    debugPrint('[OrderController] transitionToArrangingPayment: currentOrder BEFORE | code=${currentOrder.value?.code} | state=${currentOrder.value?.state} | id=${currentOrder.value?.id} | total=${currentOrder.value?.totalWithTax}');
+
     try {
       // First, refresh to get current state
+      debugPrint('[OrderController] transitionToArrangingPayment: refreshing active order to get current state...');
       await getActiveOrder(skipLoading: true);
-      
+
       final currentState = currentOrder.value?.state;
+      debugPrint('[OrderController] transitionToArrangingPayment: after refresh | state=$currentState | code=${currentOrder.value?.code} | id=${currentOrder.value?.id}');
+
+      // Log order lines for debugging
+      final order = currentOrder.value;
+      if (order != null) {
+        debugPrint('[OrderController] transitionToArrangingPayment: order lines count=${order.lines.length} | totalQuantity=${order.totalQuantity} | totalWithTax=${order.totalWithTax} | shippingWithTax=${order.shippingWithTax}');
+        for (int i = 0; i < order.lines.length; i++) {
+          final line = order.lines[i];
+          debugPrint('[OrderController] transitionToArrangingPayment: line[$i] id=${line.id} | variant=${line.productVariant.name} | qty=${line.quantity} | stockLevel=${line.productVariant.stockLevel} | isAvailable=${line.isAvailable} | unitPriceWithTax=${line.unitPriceWithTax} | linePriceWithTax=${line.linePriceWithTax}');
+          if (line.unavailableReason != null) {
+            debugPrint('[OrderController] transitionToArrangingPayment: line[$i] unavailableReason=${line.unavailableReason}');
+          }
+        }
+        debugPrint('[OrderController] transitionToArrangingPayment: shippingLines count=${order.shippingLines.length}');
+        for (final sl in order.shippingLines) {
+          debugPrint('[OrderController] transitionToArrangingPayment: shippingLine method=${sl.shippingMethod.name} (${sl.shippingMethod.id}) | priceWithTax=${sl.priceWithTax}');
+        }
+        debugPrint('[OrderController] transitionToArrangingPayment: validationStatus isValid=${order.validationStatus.isValid} | hasUnavailableItems=${order.validationStatus.hasUnavailableItems} | totalUnavailableItems=${order.validationStatus.totalUnavailableItems}');
+        if (order.validationStatus.hasUnavailableItems) {
+          for (final item in order.validationStatus.unavailableItems) {
+            debugPrint('[OrderController] transitionToArrangingPayment: unavailableItem lineId=${item.orderLineId} | product=${item.productName} | variant=${item.variantName} | reason=${item.reason}');
+          }
+        }
+        debugPrint('[OrderController] transitionToArrangingPayment: quantityLimitStatus hasViolations=${order.quantityLimitStatus.hasViolations} | totalViolations=${order.quantityLimitStatus.totalViolations}');
+        if (order.quantityLimitStatus.hasViolations) {
+          for (final v in order.quantityLimitStatus.violations) {
+            debugPrint('[OrderController] transitionToArrangingPayment: violation lineId=${v.orderLineId} | product=${v.productName} | currentQty=${v.currentQuantity} | maxQty=${v.maxQuantity} | reason=${v.reason}');
+          }
+        }
+      }
+
       // If already in ArrangingPayment, no need to transition
       if (currentState == 'ArrangingPayment') {
+        debugPrint('[OrderController] transitionToArrangingPayment: ALREADY in ArrangingPayment, returning true');
         return true;
       }
-      
+
       // If in AddingItems, transition directly to ArrangingPayment (no Draft needed)
       if (currentState == 'AddingItems') {
-        // Use the generic transition method to go directly to ArrangingPayment
+        debugPrint('[OrderController] transitionToArrangingPayment: currentState=AddingItems, calling transitionToState(ArrangingPayment)');
         final directTransitioned = await transitionToState('ArrangingPayment', skipLoading: true);
+        debugPrint('[OrderController] transitionToArrangingPayment: transitionToState returned=$directTransitioned | currentOrder.state after=${currentOrder.value?.state}');
         if (directTransitioned) {
           return true;
         } else {
+          debugPrint('[OrderController] transitionToArrangingPayment: FAILED from AddingItems -> ArrangingPayment (see transitionToState logs above)');
           return false;
         }
       }
+
+      debugPrint('[OrderController] transitionToArrangingPayment: state=$currentState is not AddingItems, using dedicated TransitionToArrangingPayment mutation');
 
       // For other states, use the standard transition to ArrangingPayment
       utilityController.setLoadingState(true);
@@ -810,31 +906,73 @@ class OrderController extends BaseController {
         Options$Mutation$TransitionToArrangingPayment(),
       );
 
+      debugPrint('[OrderController] transitionToArrangingPayment: mutation response | hasException=${response.hasException} | parsedData=${response.parsedData != null ? "exists" : "null"}');
+
+      // Log raw response data
+      if (response.data != null) {
+        final transitionData = response.data!['transitionOrderToState'];
+        if (transitionData is Map) {
+          debugPrint('[OrderController] transitionToArrangingPayment: response __typename=${transitionData['__typename']} | state=${transitionData['state']} | code=${transitionData['code']} | id=${transitionData['id']}');
+          if (transitionData.containsKey('errorCode')) {
+            debugPrint('[OrderController] transitionToArrangingPayment: response errorCode=${transitionData['errorCode']} | message=${transitionData['message']}');
+          }
+          if (transitionData.containsKey('transitionError')) {
+            debugPrint('[OrderController] transitionToArrangingPayment: response transitionError=${transitionData['transitionError']}');
+          }
+        } else {
+          debugPrint('[OrderController] transitionToArrangingPayment: raw transitionOrderToState=$transitionData');
+        }
+      } else {
+        debugPrint('[OrderController] transitionToArrangingPayment: response.data is NULL');
+      }
+
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to transition order')) {
+        debugPrint('[OrderController] transitionToArrangingPayment: checkResponseForErrors=true (FAILED) | currentOrder.state=${currentOrder.value?.state}');
+        if (response.hasException) {
+          debugPrint('[OrderController] transitionToArrangingPayment: exception=${response.exception}');
+          for (final e in response.exception?.graphqlErrors ?? []) {
+            debugPrint('[OrderController] transitionToArrangingPayment: graphqlError message=${e.message} | extensions=${e.extensions}');
+          }
+          if (response.exception?.linkException != null) {
+            debugPrint('[OrderController] transitionToArrangingPayment: linkException=${response.exception!.linkException}');
+          }
+        }
         return false;
       }
 
       final result = response.parsedData?.transitionOrderToState;
+      debugPrint('[OrderController] transitionToArrangingPayment: parsedData result type=${result?.runtimeType} | __typename=${result?.$__typename}');
+
       if (result != null) {
         final resultJson = result.toJson();
+        debugPrint('[OrderController] transitionToArrangingPayment: resultJson keys=${resultJson.keys.toList()}');
         // Check if it's an error result
         if (resultJson.containsKey('errorCode')) {
+          debugPrint('[OrderController] transitionToArrangingPayment: RESULT IS ERROR | errorCode=${resultJson['errorCode']} | message=${resultJson['message']}');
+          if (resultJson.containsKey('transitionError')) {
+            debugPrint('[OrderController] transitionToArrangingPayment: transitionError=${resultJson['transitionError']}');
+          }
           return false;
         }
 
         // If it's an Order, update current order
         if (result is Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order) {
+          debugPrint('[OrderController] transitionToArrangingPayment: SUCCESS - result is Order | newState=${result.state} | code=${result.code} | id=${result.id}');
           currentOrder.value = result;
           return true;
         }
       }
 
+      debugPrint('[OrderController] transitionToArrangingPayment: UNEXPECTED result | currentOrder.state=${currentOrder.value?.state} | parsedData type=${result?.runtimeType}');
       return false;
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('[OrderController] transitionToArrangingPayment: CATCH ERROR | e=$e');
+      debugPrint('[OrderController] transitionToArrangingPayment: stackTrace=${st.toString().split("\n").take(8).join("\n")}');
       handleException(e, customErrorMessage: 'Failed to transition order');
       return false;
     } finally {
+      debugPrint('[OrderController] transitionToArrangingPayment: FINALLY | currentOrder.state=${currentOrder.value?.state}');
       utilityController.setLoadingState(false);
     }
   }

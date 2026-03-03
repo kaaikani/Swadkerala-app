@@ -220,28 +220,52 @@ class _GuestOrSignupGateState extends State<_GuestOrSignupGate> {
                 ),
               ),
               const SizedBox(height: 28),
-              // Sign up button (primary)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    Get.toNamed(AppRoutes.signup);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.button,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              // Sign up and Sign in in a row
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        Get.toNamed(AppRoutes.signup);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.button,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Sign up',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     ),
-                    elevation: 0,
                   ),
-                  child: const Text(
-                    'Sign up',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        Get.toNamed(AppRoutes.login);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.button,
+                        side: BorderSide(color: AppColors.button),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Sign in',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 12),
               // Continue as guest button (secondary)

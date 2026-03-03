@@ -367,7 +367,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_isRefreshingData) {
       return;
     }
-    
+
     // If this is not a forced refresh and we're not on initial load,
     // check if channel token actually changed to prevent unnecessary refreshes
     if (!forceRefresh && !_isInitialLoad) {
@@ -376,115 +376,120 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
     }
-    
+
     _isRefreshingData = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Check if we're still on HomePage - if not, abort refresh
-      if (!mounted) {
+      await _doRefresh(forceRefresh: forceRefresh);
+    });
+  }
+
+  /// Core refresh logic - awaitable, used by both _refreshData and RefreshIndicator
+  Future<void> _doRefresh({bool forceRefresh = false}) async {
+    // Check if we're still on HomePage - if not, abort refresh
+    if (!mounted) {
+      _isRefreshingData = false;
+      return;
+    }
+
+    // Check current route - if we're not on HomePage, abort refresh
+    try {
+      final currentRoute = Get.currentRoute;
+      if (currentRoute != '/home' && currentRoute != '/') {
         _isRefreshingData = false;
         return;
       }
-      
-      // Check current route - if we're not on HomePage, abort refresh
-      try {
-        final currentRoute = Get.currentRoute;
-        if (currentRoute != '/home' && currentRoute != '/') {
-          _isRefreshingData = false;
-          return;
-        }
-      } catch (e) {
+    } catch (e) {
+    }
+
+    // Double-check: If channel token hasn't changed and this is not initial load or forced refresh, skip
+    if (!forceRefresh && !_isInitialLoad) {
+      final currentToken = GraphqlService.channelToken;
+      if (currentToken == _previousChannelToken) {
+        _isRefreshingData = false;
+        return;
       }
-      
-      // Double-check: If channel token hasn't changed and this is not initial load or forced refresh, skip
-      if (!forceRefresh && !_isInitialLoad) {
-        final currentToken = GraphqlService.channelToken;
-        if (currentToken == _previousChannelToken) {
-          _isRefreshingData = false;
-          return;
-        }
+    }
+
+
+    // STEP 1: Get customer data if authenticated
+    // This internally calls checkAndSetPostalCodeFromShippingAddress() to extract postal code from address
+    if (_isUserAuthenticated()) {
+      await customerController.getActiveCustomer();
+    }
+
+    // STEP 2: Check if postal code is saved in local storage
+    // Only fetch collections, banners, and other data if postal code exists AND has available CITY channel
+    final storedPostalCode = ChannelService.getPostalCode();
+    final hasPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty;
+
+    // Always update UI display after checking postal code/channel (ensures UI is in sync)
+    // Add small delay to ensure storage is written before reading
+    await Future.delayed(Duration(milliseconds: 100));
+    _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh trigger since we're already in refresh
+
+    // STEP 3: Check if postal code has valid available CITY channel
+    bool hasValidAvailableChannel = false;
+    if (hasPostalCode) {
+      // Check if postal code has available CITY channel (isAvailable == true)
+      hasValidAvailableChannel = await customerController.hasValidPostalCode(storedPostalCode.toString());
+    }
+
+    // STEP 3b: BRAND channels (e.g. ind-snacks) may have channel token set without CITY channel
+    // Allow fetch when channel token is set so banners/collections load for BRAND channels
+    final hasChannelToken = (ChannelService.getChannelToken() ?? '').toString().isNotEmpty;
+    final shouldFetchData = (hasPostalCode && hasValidAvailableChannel) || hasChannelToken;
+
+    // STEP 4: Fetch collections, banners, and other data when we have valid channel (CITY or BRAND)
+    if (shouldFetchData) {
+      // Load active order for current channel so cart persists across app close/reopen (guest and logged-in)
+      if (forceRefresh) {
+        await cartController.getActiveOrder();
+      } else if (cartController.cart.value == null) {
+        // Initial load or reopen: fetch cart so guest sees previously added items (guest token restored in GraphqlService.initialize())
+        await cartController.getActiveOrder();
       }
-      
-      
-      // STEP 1: Get customer data if authenticated
-      // This internally calls checkAndSetPostalCodeFromShippingAddress() to extract postal code from address
+      // Postal code exists and has available CITY channel - fetch all data
       if (_isUserAuthenticated()) {
-        await customerController.getActiveCustomer();
-      }
-      
-      // STEP 2: Check if postal code is saved in local storage
-      // Only fetch collections, banners, and other data if postal code exists AND has available CITY channel
-      final storedPostalCode = ChannelService.getPostalCode();
-      final hasPostalCode = storedPostalCode != null && storedPostalCode.toString().isNotEmpty;
-      
-      // Always update UI display after checking postal code/channel (ensures UI is in sync)
-      // Add small delay to ensure storage is written before reading
-      await Future.delayed(Duration(milliseconds: 100));
-      _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh trigger since we're already in refresh
-      
-      // STEP 3: Check if postal code has valid available CITY channel
-      bool hasValidAvailableChannel = false;
-      if (hasPostalCode) {
-        // Check if postal code has available CITY channel (isAvailable == true)
-        hasValidAvailableChannel = await customerController.hasValidPostalCode(storedPostalCode.toString());
-      }
-      
-      // STEP 3b: BRAND channels (e.g. ind-snacks) may have channel token set without CITY channel
-      // Allow fetch when channel token is set so banners/collections load for BRAND channels
-      final hasChannelToken = (ChannelService.getChannelToken() ?? '').toString().isNotEmpty;
-      final shouldFetchData = (hasPostalCode && hasValidAvailableChannel) || hasChannelToken;
-      
-      // STEP 4: Fetch collections, banners, and other data when we have valid channel (CITY or BRAND)
-      if (shouldFetchData) {
-        // Load active order for current channel so cart persists across app close/reopen (guest and logged-in)
-        if (forceRefresh) {
-          await cartController.getActiveOrder();
-        } else if (cartController.cart.value == null) {
-          // Initial load or reopen: fetch cart so guest sees previously added items (guest token restored in GraphqlService.initialize())
-          await cartController.getActiveOrder();
+        // Sync customer location from stored postal: get channel by postal code, pass channel name to updateCustomer (location)
+        customerController.syncCustomerLocationFromStoredPostalCode();
+
+        if (!forceRefresh && cartController.cart.value == null) {
+          cartController.getActiveOrder();
         }
-        // Postal code exists and has available CITY channel - fetch all data
-        if (_isUserAuthenticated()) {
-          // Sync customer location from stored postal: get channel by postal code, pass channel name to updateCustomer (location)
-          customerController.syncCustomerLocationFromStoredPostalCode();
+        bannerController.getCustomerFavorites();
 
-          if (!forceRefresh && cartController.cart.value == null) {
-            cartController.getActiveOrder();
-          }
-          bannerController.getCustomerFavorites();
-
-          // Check for default shipping address after customer data is loaded
-          // Only check if widget is still mounted
-          if (mounted) {
-            _checkAndShowShippingAddressDialog();
-            // For BRAND channels only: show update email/phone dialogs on home page
-            if (_isBrandChannel()) {
-              _checkAndShowUpdateDialogs();
-            }
+        // Check for default shipping address after customer data is loaded
+        // Only check if widget is still mounted
+        if (mounted) {
+          _checkAndShowShippingAddressDialog();
+          // For BRAND channels only: show update email/phone dialogs on home page
+          if (_isBrandChannel()) {
+            _checkAndShowUpdateDialogs();
           }
         }
-
-        // Fetch collections and banners (only if postal code exists and has available channel)
-        await Future.wait([
-          collectionController.fetchAllCollections(),
-          bannerController.getBannersForChannel(),
-          bannerController.getFrequentlyOrderedProducts(),
-        ], eagerError: false);
-      } else {
-        // No postal code OR no available channel - show dialog but don't fetch collections/banners
-        // Check for postal code dialog if still needed
-        // Only check if dialog is not already showing
-        if (mounted && !_isPostalCodeDialogShowing) {
-          _checkAndShowPostalCodeDialog();
-        }
       }
-      
-      
-      // Track screen view
-      AnalyticsService().logScreenView(screenName: 'Home');
-      
-      // Reset refresh flag
-      _isRefreshingData = false;
-    });
+
+      // Fetch collections and banners (only if postal code exists and has available channel)
+      await Future.wait([
+        collectionController.fetchAllCollections(),
+        bannerController.getBannersForChannel(),
+        bannerController.getFrequentlyOrderedProducts(),
+      ], eagerError: false);
+    } else {
+      // No postal code OR no available channel - show dialog but don't fetch collections/banners
+      // Check for postal code dialog if still needed
+      // Only check if dialog is not already showing
+      if (mounted && !_isPostalCodeDialogShowing) {
+        _checkAndShowPostalCodeDialog();
+      }
+    }
+
+
+    // Track screen view
+    AnalyticsService().logScreenView(screenName: 'Home');
+
+    // Reset refresh flag
+    _isRefreshingData = false;
   }
 
   /// Check if email is a valid Gmail address
@@ -1312,23 +1317,8 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: AppColors.background,
           body: RefreshIndicator(
             onRefresh: () async {
-              // Create list of futures based on authentication status
-              List<Future> futures = [
-                collectionController.fetchAllCollections(),
-                bannerController.getBannersForChannel(),
-                bannerController.getFrequentlyOrderedProducts(),
-              ];
-              
-              // Only add authenticated requests if user is logged in
-              if (_isUserAuthenticated()) {
-                futures.addAll([
-                  cartController.getActiveOrder(),
-                  customerController.getActiveCustomer(),
-                  bannerController.getCustomerFavorites(),
-                ]);
-              }
-              
-              await Future.wait(futures);
+              _isRefreshingData = false; // Reset flag so _doRefresh can run
+              await _doRefresh(forceRefresh: true);
             },
             color: AppColors.refreshIndicator,
             child: LayoutBuilder(
@@ -1336,7 +1326,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Use LayoutBuilder instead of OrientationBuilder to avoid layout callback issues
                 return CustomScrollView(
                   controller: _mainScrollController,
-                  physics: const BouncingScrollPhysics(),
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                   slivers: [
                     // ==================== HEADER ====================
                     HomeHeader(

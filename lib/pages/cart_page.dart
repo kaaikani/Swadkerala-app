@@ -10,6 +10,7 @@ import '../controllers/banner/bannercontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../routes.dart';
+import '../utils/price_formatter.dart';
 import '../widgets/appbar.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/cart/cart_empty_state.dart';
@@ -380,6 +381,48 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
         }
         
         // CRITICAL: Return early to prevent checkout navigation
+        return;
+      }
+
+      // Check numeric stock: Vendure may return stockLevel as "2", "10" etc. (or backend sets !isAvailable when quantity > stock)
+      int? firstExceededIndex;
+      String? firstExceededProductName;
+      int? firstExceededStock;
+      int? firstExceededQuantity;
+      for (int i = 0; i < cart.lines.length; i++) {
+        final line = cart.lines[i];
+        final stockLevelRaw = line.productVariant.stockLevel.trim();
+        final numericStock = int.tryParse(stockLevelRaw);
+        // Quantity exceeds available stock (numeric), or backend marked unavailable and we have a numeric stock level
+        final exceedsNumericStock = numericStock != null && line.quantity > numericStock;
+        final unavailableWithNumericStock = !line.isAvailable && numericStock != null && line.quantity > numericStock;
+        if (exceedsNumericStock || unavailableWithNumericStock) {
+          firstExceededIndex = i;
+          firstExceededProductName = line.productVariant.name;
+          firstExceededStock = numericStock;
+          firstExceededQuantity = line.quantity;
+          break;
+        }
+      }
+      if (firstExceededIndex != null &&
+          firstExceededProductName != null &&
+          firstExceededStock != null &&
+          firstExceededQuantity != null) {
+        SnackBarWidget.showError(
+          '$firstExceededProductName: Only $firstExceededStock in stock (cart has $firstExceededQuantity). Please decrease quantity to proceed.',
+          title: 'Stock limit',
+          duration: const Duration(seconds: 4),
+        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            final estimatedPosition = (firstExceededIndex! * 150.0).clamp(0.0, _scrollController.position.maxScrollExtent);
+            _scrollController.animateTo(
+              estimatedPosition,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
+          }
+        });
         return;
       }
 
@@ -933,31 +976,19 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                   controller: _scrollController,
                   child: Column(
                     children: [
-                      // Products in one card
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.card,
-                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                            border: Border.all(
-                              color: AppColors.border.withValues(alpha: 0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: CartItemsList(
-                            removingItemId: _removingItemId,
-                            isClearingCart: _isClearingCart,
-                            adjustingOrderLineIds: _adjustingOrderLineIds,
-                            key: _cartItemsListKey,
-                            cart: cart,
-                            cartController: cartController,
-                            utilityController: utilityController,
-                            onQuantityChange: _handleQuantityChange,
-                            onRemoveItem: _handleRemoveItem,
-                            scrollController: _scrollController,
-                          ),
-                        ),
+                      // Each cart line in its own card, no left/right padding
+                      CartItemsList(
+                        removingItemId: _removingItemId,
+                        isClearingCart: _isClearingCart,
+                        adjustingOrderLineIds: _adjustingOrderLineIds,
+                        key: _cartItemsListKey,
+                        cart: cart,
+                        cartController: cartController,
+                        utilityController: utilityController,
+                        onQuantityChange: _handleQuantityChange,
+                        onRemoveItem: _handleRemoveItem,
+                        scrollController: _scrollController,
+                        expandIfHasUnavailableItems: cart.lines.any((l) => !l.isAvailable),
                       ),
                       SizedBox(height: ResponsiveUtils.rp(8)),
 
@@ -1045,22 +1076,26 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                       }),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       
-                      // Coupon Section
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                        child: CartCouponSection(
-                          bannerController: bannerController,
-                          cartController: cartController,
-                          orderController: orderController,
-                          onShowCouponBottomSheet: () {
-                            CartCouponBottomSheet.show(
-                              context: context,
-                              bannerController: bannerController,
-                              cartController: cartController,
-                            );
-                          },
-                        ),
-                      ),
+                      // Coupon Section - hide for guest
+                      Obx(() {
+                        final authController = Get.find<AuthController>();
+                        if (!authController.isLoggedIn) return const SizedBox.shrink();
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+                          child: CartCouponSection(
+                            bannerController: bannerController,
+                            cartController: cartController,
+                            orderController: orderController,
+                            onShowCouponBottomSheet: () {
+                              CartCouponBottomSheet.show(
+                                context: context,
+                                bannerController: bannerController,
+                                cartController: cartController,
+                              );
+                            },
+                          ),
+                        );
+                      }),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       
                       // Other Instructions Section (Small)
@@ -1089,14 +1124,16 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
               ),
             ),
 
-            // Amount to apply coupon code section (above bottom navigation bar)
+            // Amount to apply coupon code section (above bottom navigation bar) - hide for guest
             Obx(() {
+              final authController = Get.find<AuthController>();
+              if (!authController.isLoggedIn) return const SizedBox.shrink();
               final cart = cartController.cart.value;
-              if (cart == null) return SizedBox.shrink();
+              if (cart == null) return const SizedBox.shrink();
 
               // Hide banner if coupon is already applied
               if (bannerController.appliedCouponCodes.isNotEmpty) {
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               }
 
               // Check for out of stock items (LOW_STOCK does not block - coupon can still apply)
@@ -1171,7 +1208,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                           ),
                           children: [
                             TextSpan(
-                              text: 'Add ₹${differenceInRupees.toStringAsFixed(2)} more to unlock ',
+                              text: 'Add ₹${PriceFormatter.addCommas(differenceInRupees.toStringAsFixed(2))} more to unlock ',
                             ),
                             TextSpan(
                               text: coupon.couponCode ?? '',

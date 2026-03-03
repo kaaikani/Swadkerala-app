@@ -1,202 +1,13 @@
-class Input$AppleAuthInput {
-  factory Input$AppleAuthInput({
-    required String token,
-    String? firstName,
-    String? lastName,
-    String? email,
-  }) =>
-      Input$AppleAuthInput._({
-        r'token': token,
-        if (firstName != null) r'firstName': firstName,
-        if (lastName != null) r'lastName': lastName,
-        if (email != null) r'email': email,
-      });
-
-  Input$AppleAuthInput._(this._$data);
-
-  factory Input$AppleAuthInput.fromJson(Map<String, dynamic> data) {
-    final result$data = <String, dynamic>{};
-    final l$token = data['token'];
-    result$data['token'] = (l$token as String);
-    if (data.containsKey('firstName')) {
-      final l$firstName = data['firstName'];
-      result$data['firstName'] = (l$firstName as String?);
-    }
-    if (data.containsKey('lastName')) {
-      final l$lastName = data['lastName'];
-      result$data['lastName'] = (l$lastName as String?);
-    }
-    if (data.containsKey('email')) {
-      final l$email = data['email'];
-      result$data['email'] = (l$email as String?);
-    }
-    return Input$AppleAuthInput._(result$data);
-  }
-
-  Map<String, dynamic> _$data;
-
-  String get token => (_$data['token'] as String);
-
-  String? get firstName => (_$data['firstName'] as String?);
-
-  String? get lastName => (_$data['lastName'] as String?);
-
-  String? get email => (_$data['email'] as String?);
-
-  Map<String, dynamic> toJson() {
-    final result$data = <String, dynamic>{};
-    final l$token = token;
-    result$data['token'] = l$token;
-    if (_$data.containsKey('firstName')) {
-      final l$firstName = firstName;
-      result$data['firstName'] = l$firstName;
-    }
-    if (_$data.containsKey('lastName')) {
-      final l$lastName = lastName;
-      result$data['lastName'] = l$lastName;
-    }
-    if (_$data.containsKey('email')) {
-      final l$email = email;
-      result$data['email'] = l$email;
-    }
-    return result$data;
-  }
-
-  CopyWith$Input$AppleAuthInput<Input$AppleAuthInput> get copyWith =>
-      CopyWith$Input$AppleAuthInput(
-        this,
-        (i) => i,
-      );
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Input$AppleAuthInput || runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$token = token;
-    final lOther$token = other.token;
-    if (l$token != lOther$token) {
-      return false;
-    }
-    final l$firstName = firstName;
-    final lOther$firstName = other.firstName;
-    if (_$data.containsKey('firstName') !=
-        other._$data.containsKey('firstName')) {
-      return false;
-    }
-    if (l$firstName != lOther$firstName) {
-      return false;
-    }
-    final l$lastName = lastName;
-    final lOther$lastName = other.lastName;
-    if (_$data.containsKey('lastName') !=
-        other._$data.containsKey('lastName')) {
-      return false;
-    }
-    if (l$lastName != lOther$lastName) {
-      return false;
-    }
-    final l$email = email;
-    final lOther$email = other.email;
-    if (_$data.containsKey('email') != other._$data.containsKey('email')) {
-      return false;
-    }
-    if (l$email != lOther$email) {
-      return false;
-    }
-    return true;
-  }
-
-  @override
-  int get hashCode {
-    final l$token = token;
-    final l$firstName = firstName;
-    final l$lastName = lastName;
-    final l$email = email;
-    return Object.hashAll([
-      l$token,
-      _$data.containsKey('firstName') ? l$firstName : const {},
-      _$data.containsKey('lastName') ? l$lastName : const {},
-      _$data.containsKey('email') ? l$email : const {},
-    ]);
-  }
-}
-
-abstract class CopyWith$Input$AppleAuthInput<TRes> {
-  factory CopyWith$Input$AppleAuthInput(
-    Input$AppleAuthInput instance,
-    TRes Function(Input$AppleAuthInput) then,
-  ) = _CopyWithImpl$Input$AppleAuthInput;
-
-  factory CopyWith$Input$AppleAuthInput.stub(TRes res) =
-      _CopyWithStubImpl$Input$AppleAuthInput;
-
-  TRes call({
-    String? token,
-    String? firstName,
-    String? lastName,
-    String? email,
-  });
-}
-
-class _CopyWithImpl$Input$AppleAuthInput<TRes>
-    implements CopyWith$Input$AppleAuthInput<TRes> {
-  _CopyWithImpl$Input$AppleAuthInput(
-    this._instance,
-    this._then,
-  );
-
-  final Input$AppleAuthInput _instance;
-
-  final TRes Function(Input$AppleAuthInput) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? token = _undefined,
-    Object? firstName = _undefined,
-    Object? lastName = _undefined,
-    Object? email = _undefined,
-  }) =>
-      _then(Input$AppleAuthInput._({
-        ..._instance._$data,
-        if (token != _undefined && token != null) 'token': (token as String),
-        if (firstName != _undefined) 'firstName': (firstName as String?),
-        if (lastName != _undefined) 'lastName': (lastName as String?),
-        if (email != _undefined) 'email': (email as String?),
-      }));
-}
-
-class _CopyWithStubImpl$Input$AppleAuthInput<TRes>
-    implements CopyWith$Input$AppleAuthInput<TRes> {
-  _CopyWithStubImpl$Input$AppleAuthInput(this._res);
-
-  TRes _res;
-
-  call({
-    String? token,
-    String? firstName,
-    String? lastName,
-    String? email,
-  }) =>
-      _res;
-}
-
 class Input$AuthenticationInput {
   factory Input$AuthenticationInput({
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
-    Input$AppleAuthInput? apple,
   }) =>
       Input$AuthenticationInput._({
         if (phoneOtp != null) r'phoneOtp': phoneOtp,
         if (native != null) r'native': native,
         if (google != null) r'google': google,
-        if (apple != null) r'apple': apple,
       });
 
   Input$AuthenticationInput._(this._$data);
@@ -221,12 +32,6 @@ class Input$AuthenticationInput {
           ? null
           : Input$GoogleAuthInput.fromJson((l$google as Map<String, dynamic>));
     }
-    if (data.containsKey('apple')) {
-      final l$apple = data['apple'];
-      result$data['apple'] = l$apple == null
-          ? null
-          : Input$AppleAuthInput.fromJson((l$apple as Map<String, dynamic>));
-    }
     return Input$AuthenticationInput._(result$data);
   }
 
@@ -241,8 +46,6 @@ class Input$AuthenticationInput {
   Input$GoogleAuthInput? get google =>
       (_$data['google'] as Input$GoogleAuthInput?);
 
-  Input$AppleAuthInput? get apple => (_$data['apple'] as Input$AppleAuthInput?);
-
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     if (_$data.containsKey('phoneOtp')) {
@@ -256,10 +59,6 @@ class Input$AuthenticationInput {
     if (_$data.containsKey('google')) {
       final l$google = google;
       result$data['google'] = l$google?.toJson();
-    }
-    if (_$data.containsKey('apple')) {
-      final l$apple = apple;
-      result$data['apple'] = l$apple?.toJson();
     }
     return result$data;
   }
@@ -304,14 +103,6 @@ class Input$AuthenticationInput {
     if (l$google != lOther$google) {
       return false;
     }
-    final l$apple = apple;
-    final lOther$apple = other.apple;
-    if (_$data.containsKey('apple') != other._$data.containsKey('apple')) {
-      return false;
-    }
-    if (l$apple != lOther$apple) {
-      return false;
-    }
     return true;
   }
 
@@ -320,12 +111,10 @@ class Input$AuthenticationInput {
     final l$phoneOtp = phoneOtp;
     final l$native = native;
     final l$google = google;
-    final l$apple = apple;
     return Object.hashAll([
       _$data.containsKey('phoneOtp') ? l$phoneOtp : const {},
       _$data.containsKey('native') ? l$native : const {},
       _$data.containsKey('google') ? l$google : const {},
-      _$data.containsKey('apple') ? l$apple : const {},
     ]);
   }
 }
@@ -343,12 +132,10 @@ abstract class CopyWith$Input$AuthenticationInput<TRes> {
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
-    Input$AppleAuthInput? apple,
   });
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp;
   CopyWith$Input$NativeAuthInput<TRes> get native;
   CopyWith$Input$GoogleAuthInput<TRes> get google;
-  CopyWith$Input$AppleAuthInput<TRes> get apple;
 }
 
 class _CopyWithImpl$Input$AuthenticationInput<TRes>
@@ -368,7 +155,6 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
     Object? phoneOtp = _undefined,
     Object? native = _undefined,
     Object? google = _undefined,
-    Object? apple = _undefined,
   }) =>
       _then(Input$AuthenticationInput._({
         ..._instance._$data,
@@ -376,7 +162,6 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
           'phoneOtp': (phoneOtp as Input$PhoneOtpInput?),
         if (native != _undefined) 'native': (native as Input$NativeAuthInput?),
         if (google != _undefined) 'google': (google as Input$GoogleAuthInput?),
-        if (apple != _undefined) 'apple': (apple as Input$AppleAuthInput?),
       }));
 
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp {
@@ -400,13 +185,6 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
         ? CopyWith$Input$GoogleAuthInput.stub(_then(_instance))
         : CopyWith$Input$GoogleAuthInput(local$google, (e) => call(google: e));
   }
-
-  CopyWith$Input$AppleAuthInput<TRes> get apple {
-    final local$apple = _instance.apple;
-    return local$apple == null
-        ? CopyWith$Input$AppleAuthInput.stub(_then(_instance))
-        : CopyWith$Input$AppleAuthInput(local$apple, (e) => call(apple: e));
-  }
 }
 
 class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
@@ -419,7 +197,6 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
-    Input$AppleAuthInput? apple,
   }) =>
       _res;
 
@@ -431,9 +208,6 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
 
   CopyWith$Input$GoogleAuthInput<TRes> get google =>
       CopyWith$Input$GoogleAuthInput.stub(_res);
-
-  CopyWith$Input$AppleAuthInput<TRes> get apple =>
-      CopyWith$Input$AppleAuthInput.stub(_res);
 }
 
 class Input$BooleanListOperators {

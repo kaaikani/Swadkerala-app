@@ -25,6 +25,8 @@ class CartItemCardPremium extends StatelessWidget {
   final String? stockLevel;
   final int? maxQuantity;
   final bool hasQuantityLimitViolation;
+  final bool hasInsufficientStock;
+  final String? insufficientStockMessage;
 
   const CartItemCardPremium({
     Key? key,
@@ -43,22 +45,40 @@ class CartItemCardPremium extends StatelessWidget {
     this.stockLevel,
     this.maxQuantity,
     this.hasQuantityLimitViolation = false,
+    this.hasInsufficientStock = false,
+    this.insufficientStockMessage,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final canAdjust = !isUnavailable && !isLoading;
+    // When line is grey (e.g. isAvailable false), minus button stays normal if user can decrease
+    final canDecrease = onDecreaseQuantity != null && quantity > 1;
+    final showMinusInNormalColor = canDecrease && isUnavailable && hasInsufficientStock;
 
     final card = Container(
       padding: ResponsiveSpacing.padding(all: 10),
       margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
+        color: null,
+        border: hasInsufficientStock
+            ? Border(
+                left: BorderSide(
+                  color: AppColors.warning,
+                  width: 3,
+                ),
+                bottom: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              )
+            : Border(
+                bottom: BorderSide(
+                  color: AppColors.border.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+        borderRadius: null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,16 +122,21 @@ class CartItemCardPremium extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    if (stockLevel != null && stockLevel!.isNotEmpty) ...[
-                      SizedBox(height: ResponsiveUtils.rp(4)),
-                      StockLevelLabel(stockLevel: stockLevel!, compact: true),
-                    ],
                     SizedBox(height: ResponsiveUtils.rp(4)),
-                    ResponsiveText(
-                      unitPrice == 'FREE' ? 'Price: FREE' : 'Unit: $unitPrice',
-                      fontSize: 12,
-                      color: unitPrice == 'FREE' ? AppColors.success : AppColors.textSecondary,
-                      fontWeight: unitPrice == 'FREE' ? FontWeight.w600 : FontWeight.normal,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (stockLevel != null && stockLevel!.isNotEmpty) ...[
+                          StockLevelLabel(stockLevel: stockLevel!, compact: true),
+                          SizedBox(width: ResponsiveUtils.rp(8)),
+                        ],
+                        ResponsiveText(
+                          unitPrice == 'FREE' ? 'Price: FREE' : 'Unit: $unitPrice',
+                          fontSize: 12,
+                          color: unitPrice == 'FREE' ? AppColors.success : AppColors.textSecondary,
+                          fontWeight: unitPrice == 'FREE' ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ],
                     ),
                     SizedBox(height: ResponsiveUtils.rp(8)),
                     Row(
@@ -132,7 +157,7 @@ class CartItemCardPremium extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               InkWell(
-                                  onTap: canAdjust && onDecreaseQuantity != null && quantity > 1
+                                  onTap: canDecrease
                                     ? () {
                                         onDecreaseQuantity!();
                                       }
@@ -143,9 +168,11 @@ class CartItemCardPremium extends StatelessWidget {
                                   child: Icon(
                                     Icons.remove,
                                     size: ResponsiveUtils.rp(18),
-                                      color: (!canAdjust || quantity <= 1 || onDecreaseQuantity == null)
-                                        ? AppColors.textTertiary
-                                        : AppColors.textPrimary,
+                                    color: showMinusInNormalColor
+                                        ? AppColors.textPrimary
+                                        : (!canAdjust || quantity <= 1 || onDecreaseQuantity == null)
+                                            ? AppColors.textTertiary
+                                            : AppColors.textPrimary,
                                   ),
                                 ),
                               ),
@@ -269,6 +296,42 @@ class CartItemCardPremium extends StatelessWidget {
               ),
             ),
           ],
+          // Show insufficient stock warning (compact row with icon)
+          if (hasInsufficientStock && insufficientStockMessage != null) ...[
+            SizedBox(height: ResponsiveUtils.rp(8)),
+            Container(
+              padding: ResponsiveSpacing.padding(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.warning.withValues(alpha: 0.35),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    size: ResponsiveUtils.rp(16),
+                    color: AppColors.warning,
+                  ),
+                  SizedBox(width: ResponsiveUtils.rp(6)),
+                  Expanded(
+                    child: ResponsiveText(
+                      insufficientStockMessage!,
+                      fontSize: 12,
+                      color: AppColors.warning,
+                      fontWeight: FontWeight.w500,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           if (statusMessage?.isNotEmpty ?? false) ...[
             SizedBox(height: ResponsiveUtils.rp(12)),
             Container(
@@ -307,9 +370,11 @@ class CartItemCardPremium extends StatelessWidget {
       ),
     );
 
+    // When only insufficient stock (user can decrease), keep full opacity so minus button stays normal
+    final dimCard = isUnavailable && !hasInsufficientStock;
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
-      opacity: isUnavailable ? 0.65 : 1,
+      opacity: dimCard ? 0.65 : 1,
       child: card,
     );
   }

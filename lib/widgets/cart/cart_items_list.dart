@@ -18,6 +18,8 @@ class CartItemsList extends StatefulWidget {
   final String? removingItemId;
   final bool isClearingCart;
   final Set<String> adjustingOrderLineIds;
+  /// When true, auto-expand to show all items (used when any item has isAvailable false)
+  final bool expandIfHasUnavailableItems;
 
   const CartItemsList({
     super.key,
@@ -30,6 +32,7 @@ class CartItemsList extends StatefulWidget {
     this.removingItemId,
     this.isClearingCart = false,
     required this.adjustingOrderLineIds,
+    this.expandIfHasUnavailableItems = false,
   });
 
   @override
@@ -39,8 +42,56 @@ class CartItemsList extends StatefulWidget {
 class _CartItemsListState extends State<CartItemsList> {
   bool _showAllItems = false;
 
+  Widget _wrapItemCard({
+    required BuildContext context,
+    required bool isRemoving,
+    required bool isFadingOut,
+    required Widget child,
+  }) {
+    return AnimatedOpacity(
+      opacity: isRemoving || isFadingOut ? 0.0 : 1.0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        transform: isRemoving
+            ? Matrix4.translationValues(MediaQuery.of(context).size.width, 0, 0)
+            : Matrix4.identity(),
+        margin: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+          border: Border.all(
+            color: AppColors.border.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: child,
+      ),
+    );
+  }
+
   void expandList() {
     if (!_showAllItems) {
+      setState(() {
+        _showAllItems = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.expandIfHasUnavailableItems) {
+      _showAllItems = true;
+    }
+  }
+
+  @override
+  void didUpdateWidget(CartItemsList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.expandIfHasUnavailableItems && !_showAllItems) {
       setState(() {
         _showAllItems = true;
       });
@@ -141,7 +192,10 @@ class _CartItemsListState extends State<CartItemsList> {
             ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+        padding: EdgeInsets.only(
+          top: ResponsiveUtils.rp(8),
+          bottom: ResponsiveUtils.rp(12),
+        ),
         itemCount: itemsToShow.length + 
             (hasMoreItems && !_showAllItems ? 1 : 0) +
             (hasMoreItems && _showAllItems ? 1 : 0),
@@ -251,20 +305,59 @@ class _CartItemsListState extends State<CartItemsList> {
             }
           }
           
-          final stockLevel = variant.stockLevel.toUpperCase();
+          final stockLevelRaw = variant.stockLevel.trim();
+          final stockLevel = stockLevelRaw.toUpperCase();
           final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-          
+
           final isProductDisabled = variant.product.enabled == false;
           final isDisabledByReason = line.unavailableReason?.toLowerCase().contains('disabled') == true;
           final isProductDisabledAny = isProductDisabled || isDisabledByReason;
-          
-          // Only OUT_OF_STOCK blocks checkout; LOW_STOCK shows badge but allows proceed
-          final isUnavailable = !line.isAvailable || isOutOfStock || isProductDisabledAny;
-          
+
+          // Parse numeric stock level (Vendure may return "2", "10", etc.; trim so " 2 " parses)
+          final numericStock = int.tryParse(stockLevelRaw);
+
+          // Detect insufficient stock (user can fix by decreasing qty):
+          // Exclude "out of stock" / "no longer available" - those require removal, not quantity decrease
+          final reason = line.unavailableReason?.toLowerCase() ?? '';
+          final isMustRemoveNotDecrease = reason.contains('no longer available') ||
+              reason.contains('out of stock') ||
+              reason.contains('currently out of stock');
+          final hasInsufficientStock = (numericStock != null && numericStock > 0 && line.quantity > numericStock) ||
+              (!line.isAvailable && !isOutOfStock && !isProductDisabledAny && !isMustRemoveNotDecrease);
+
+          // Build the insufficient stock message with actual numbers when available
+          String? insufficientStockMessage;
+          if (hasInsufficientStock) {
+            // First try the line's own unavailableReason from the backend (e.g. "Only 10 available, but 20 requested")
+            final lineReason = line.unavailableReason;
+            if (lineReason != null && lineReason.toString().isNotEmpty && !lineReason.toString().toLowerCase().contains('disabled')) {
+              insufficientStockMessage = '$lineReason - to checkout';
+            } else if (numericStock != null && line.quantity > numericStock) {
+              insufficientStockMessage = 'Only $numericStock in stock - $numericStock to checkout';
+            } else {
+              // Try to get reason from validationStatus
+              if (cart != null && cart.validationStatus.hasUnavailableItems) {
+                try {
+                  final unavailableItem = cart.validationStatus.unavailableItems.firstWhere(
+                    (item) => item.orderLineId == line.id,
+                  );
+                  insufficientStockMessage = unavailableItem.reason;
+                } catch (_) {}
+              }
+              insufficientStockMessage ??= 'Insufficient stock - Please decrease quantity to checkout';
+            }
+          }
+
+          // Grey/disabled when: OUT_OF_STOCK, product disabled, or isAvailable false (e.g. "This variant is no longer available")
+          final isUnavailable = isOutOfStock || isProductDisabledAny || !line.isAvailable;
+
           String statusMessage;
-          if (isOutOfStock || isProductDisabledAny) {
+          if (hasInsufficientStock) {
+            // "Only X available, kindly decrease quantity" - show insufficient stock banner only, not "remove from cart"
+            statusMessage = '';
+          } else if (isOutOfStock || isProductDisabledAny) {
             statusMessage = 'OUT OF STOCK - Please remove from cart';
-          } else if (line.unavailableReason?.isNotEmpty == true) {
+          } else if (!line.isAvailable) {
             statusMessage = 'OUT OF STOCK - Please remove from cart';
           } else {
             statusMessage = '';
@@ -275,34 +368,26 @@ class _CartItemsListState extends State<CartItemsList> {
 
                 // Handle coupon products differently (shown first at top)
                 if (isCouponProduct && couponCode != null) {
-                  return AnimatedOpacity(
-                    opacity: isRemoving || isFadingOut ? 0.0 : 1.0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      transform: isRemoving
-                          ? Matrix4.translationValues(
-                              MediaQuery.of(context).size.width, 0, 0)
-                          : Matrix4.identity(),
-                      child: CartItemCardPremium(
-                        imageUrl: imageUrl,
-                        productName: variant.name,
-                        variantName: 'Included with coupon: $couponCode',
-                        stockLevel: variant.stockLevel,
-                        unitPrice: 'FREE',
-                        totalPrice: 'FREE',
-                        quantity: displayQuantity,
-                        onIncreaseQuantity: null, // No quantity controls for coupon products
-                        onDecreaseQuantity: null, // No quantity controls for coupon products
-                        onRemove: null, // Cannot delete coupon products
-                        isLoading: isLoading,
-                        isUnavailable: isUnavailable,
-                        statusMessage: '',
-                        maxQuantity: maxQuantityForLine,
-                        hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
-                      ),
+                  return _wrapItemCard(
+                    context: context,
+                    isRemoving: isRemoving,
+                    isFadingOut: isFadingOut,
+                    child: CartItemCardPremium(
+                      imageUrl: imageUrl,
+                      productName: variant.name,
+                      variantName: 'Included with coupon: $couponCode',
+                      stockLevel: line.isAvailable ? variant.stockLevel : null,
+                      unitPrice: 'FREE',
+                      totalPrice: 'FREE',
+                      quantity: displayQuantity,
+                      onIncreaseQuantity: null,
+                      onDecreaseQuantity: null,
+                      onRemove: null,
+                      isLoading: isLoading,
+                      isUnavailable: isUnavailable,
+                      statusMessage: isUnavailable ? statusMessage : '',
+                      maxQuantity: maxQuantityForLine,
+                      hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
                     ),
                   );
                 }
@@ -315,78 +400,46 @@ class _CartItemsListState extends State<CartItemsList> {
                     ? (unitPriceInt * displayQuantity)  // Proportional price for virtual split items
                     : line.linePriceWithTax.toInt();
 
-          return AnimatedOpacity(
-            opacity: isRemoving || isFadingOut ? 0.0 : 1.0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              transform: isRemoving
-                  ? Matrix4.translationValues(
-                      MediaQuery.of(context).size.width, 0, 0)
-                  : Matrix4.identity(),
-              child: CartItemCardPremium(
-                imageUrl: imageUrl,
-                productName: variant.name,
-                variantName: isVirtual ? '(Regular quantity)' : null,
-                stockLevel: variant.stockLevel,
-                unitPrice: widget.cartController.formatPrice(unitPriceInt),
-                      totalPrice: widget.cartController.formatPrice(linePriceForDisplay),
-                      quantity: displayQuantity,
-                      // Allow quantity changes even for virtual (split) items
-                      // This will update the total quantity, and the display will automatically adjust
-                      // because we calculate regularQty = line.quantity - couponAddedQty
-                      onIncreaseQuantity: !isUnavailable && !hasQuantityLimitViolationForLine
-                          ? () {
-                              // Increase total quantity (which includes both regular and coupon quantities)
-                              widget.onQuantityChange(line.id, line.quantity + 1);
-                            }
-                          : null,
-                      onDecreaseQuantity: !isUnavailable && displayQuantity > 1
-                          ? () {
-                              // Double-check: prevent decreasing if displayQuantity is 1 or less
-                              if (displayQuantity <= 1) {
-                                return;
-                              }
-                              
-                              // For virtual items (split display), check if we can decrease without going below coupon quantity
-                              if (isVirtual) {
-                                final couponCodeForProduct = bannerController.isCouponAddedProduct(variant.id);
-                                if (couponCodeForProduct != null) {
-                                  final couponQty = bannerController.getCouponAddedQuantity(variant.id, couponCodeForProduct);
-                                  final newTotal = line.quantity - 1;
-                                  // Only decrease if new total is greater than coupon quantity (so regular quantity stays > 0)
-                                  // newTotal > couponQty ensures regularQty = newTotal - couponQty > 0
-                                  if (newTotal > couponQty) {
-                                    widget.onQuantityChange(line.id, newTotal);
-                                  } else {
-                                  }
-                                } else {
-                                  // Fallback: allow decrease only if displayQuantity > 1
-                                  if (displayQuantity > 1) {
-                                    widget.onQuantityChange(line.id, line.quantity - 1);
-                                  }
-                                }
-                              } else {
-                                // Regular non-virtual item: decrease normally only if displayQuantity > 1
-                                if (displayQuantity > 1) {
-                                  widget.onQuantityChange(line.id, line.quantity - 1);
-                                }
-                              }
-                            }
-                          : null,
-                      onRemove: !isVirtual
-                          ? () => widget.onRemoveItem(line.id, variant.name)
-                          : null,
-                isLoading: isLoading,
-                isUnavailable: isUnavailable,
-                      statusMessage: isVirtual 
-                          ? ''
-                          : (isUnavailable ? statusMessage : null),
-                      maxQuantity: maxQuantityForLine,
-                      hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
-              ),
+          return _wrapItemCard(
+            context: context,
+            isRemoving: isRemoving,
+            isFadingOut: isFadingOut,
+            child: CartItemCardPremium(
+              imageUrl: imageUrl,
+              productName: variant.name,
+              variantName: isVirtual ? '(Regular quantity)' : null,
+              stockLevel: line.isAvailable ? variant.stockLevel : null,
+              unitPrice: widget.cartController.formatPrice(unitPriceInt),
+              totalPrice: widget.cartController.formatPrice(linePriceForDisplay),
+              quantity: displayQuantity,
+              hasInsufficientStock: hasInsufficientStock,
+              insufficientStockMessage: insufficientStockMessage,
+              onIncreaseQuantity: !isUnavailable && !hasQuantityLimitViolationForLine && !hasInsufficientStock
+                  ? () => widget.onQuantityChange(line.id, line.quantity + 1)
+                  : null,
+              onDecreaseQuantity: displayQuantity > 1 && (!isUnavailable || hasInsufficientStock)
+                  ? () {
+                      if (displayQuantity <= 1) return;
+                      if (isVirtual) {
+                        final couponCodeForProduct = bannerController.isCouponAddedProduct(variant.id);
+                        if (couponCodeForProduct != null) {
+                          final couponQty = bannerController.getCouponAddedQuantity(variant.id, couponCodeForProduct);
+                          final newTotal = line.quantity - 1;
+                          if (newTotal > couponQty) widget.onQuantityChange(line.id, newTotal);
+                        } else if (displayQuantity > 1) {
+                          widget.onQuantityChange(line.id, line.quantity - 1);
+                        }
+                      } else if (displayQuantity > 1) {
+                        widget.onQuantityChange(line.id, line.quantity - 1);
+                      }
+                    }
+                  : null,
+              onRemove: !isVirtual ? () => widget.onRemoveItem(line.id, variant.name) : null,
+              isLoading: isLoading,
+              isUnavailable: isUnavailable,
+              statusMessage: isVirtual ? '' : (isUnavailable ? statusMessage : null),
+              maxQuantity: maxQuantityForLine,
+              hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
             ),
           );
         },

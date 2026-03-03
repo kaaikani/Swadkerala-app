@@ -31,6 +31,17 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
   void initState() {
     super.initState();
     bannerController = Get.find<BannerController>();
+    // Auto-expand if any item is unavailable (isAvailable false, out of stock, or disabled)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cart = widget.cartController.cart.value;
+      if (cart != null &&
+          cart.lines.any((l) {
+            final stock = l.productVariant.stockLevel.toUpperCase();
+            return !l.isAvailable || stock == 'OUT_OF_STOCK' || l.productVariant.product.enabled == false;
+          })) {
+        if (mounted) setState(() => _showAllProducts = true);
+      }
+    });
   }
 
   @override
@@ -319,6 +330,12 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
     // Check if product was added via coupon code
     final variantId = line.productVariant.id;
     final isCouponProduct = _isProductAddedByCoupon(variantId);
+
+    // Check if product is unavailable (out of stock or disabled)
+    final stockLevel = line.productVariant.stockLevel.toUpperCase();
+    final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
+    final isProductDisabled = line.productVariant.product.enabled == false;
+    final isUnavailable = !line.isAvailable || isOutOfStock || isProductDisabled;
     
     // If product was added via coupon, ALWAYS treat it as free and disable controls
     // Otherwise, check if product is free (discounted price is 0)
@@ -397,6 +414,28 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
                         fontSize: ResponsiveUtils.sp(10),
                         fontWeight: FontWeight.bold,
                         color: AppColors.success,
+                      ),
+                    ),
+                  ),
+                ],
+                if (isUnavailable) ...[
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(6),
+                      vertical: ResponsiveUtils.rp(4),
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      'Out of stock - kindly remove from cart',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(11),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.error,
                       ),
                     ),
                   ),

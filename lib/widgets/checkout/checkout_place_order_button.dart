@@ -88,7 +88,7 @@ class CheckoutPlaceOrderButton extends StatelessWidget {
                       SizedBox(width: ResponsiveUtils.rp(8)),
                       Expanded(
                         child: Text(
-                          'Some items are out of stock. Please remove them to proceed.',
+                          'Out of stock - kindly remove from cart',
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(12),
                             color: AppColors.error,

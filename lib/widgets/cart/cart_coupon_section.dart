@@ -191,17 +191,17 @@ class CartCouponSection extends StatelessWidget {
                 );
               }
               
-              // Show browse coupons button when no coupon is applied
+              // Show apply coupon code button when no coupon is applied
               return SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: AnalyticsHelper.trackButton(
-                    'Browse Coupons',
+                    'Apply Coupon Code',
                     screenName: 'Cart',
                     callback: onShowCouponBottomSheet,
                   ),
                   icon: Icon(Icons.local_offer, size: ResponsiveUtils.rp(20)),
-                  label: const Text('Browse Coupons'),
+                  label: const Text('Apply Coupon Code'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button,
                     foregroundColor: Colors.white,

@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/customer/customer_controller.dart';
-import '../controllers/cart/Cartcontroller.dart';
 import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
 import '../graphql/Customer.graphql.dart';
@@ -539,11 +538,8 @@ class _AddressesPageState extends State<AddressesPage> {
       
       if (allSuccess) {
         // Refresh customer data once after both updates complete
-        // (First update skipped refresh, second one will refresh)
         if (mounted) {
-          // Refresh active order after address change
-          final cartController = Get.find<CartController>();
-          await cartController.getActiveOrder();
+          customerController.refreshAddresses();
         }
       } else {
         
@@ -1241,9 +1237,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                         if (success) {
                           widget.onSuccess();
                           widget.customerController.refreshAddresses();
-                          // Refresh active order after adding address
-                          final cartController = Get.find<CartController>();
-                          await cartController.getActiveOrder();
                         } else {
                           showErrorSnackbar('Failed to add address');
                         }
@@ -2095,9 +2088,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                         if (success) {
                           widget.onSuccess();
                           widget.customerController.refreshAddresses();
-                          // Refresh active order after updating address
-                          final cartController = Get.find<CartController>();
-                          await cartController.getActiveOrder();
                         } else {
                           showErrorSnackbar('Failed to update address');
                         }

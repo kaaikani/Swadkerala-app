@@ -317,3 +317,10 @@ query PostalCodes {
         isAnywhere
     }
 }
+
+mutation RequestAccountDeletion($reason: String) {
+    requestAccountDeletion(reason: $reason) {
+        success
+        message
+    }
+}

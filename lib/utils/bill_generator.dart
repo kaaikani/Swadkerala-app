@@ -14,6 +14,7 @@ import '../graphql/order.graphql.dart';
 import '../services/channel_service.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../widgets/loading_dialog.dart';
+import 'price_formatter.dart';
 
 class BillGenerator {
   /// Sanitize string for PDF to avoid FormatException (Unfinished UTF-8 octet sequence).
@@ -32,15 +33,15 @@ class BillGenerator {
     final amount = priceInPaise / 100;
     final bool isWholeNumber = (amount % 1).abs() < 0.0001;
     final String value =
-        isWholeNumber ? amount.toInt().toString() : amount.toStringAsFixed(2);
+        isWholeNumber ? PriceFormatter.addCommas(amount.toInt().toString()) : PriceFormatter.addCommas(amount.toStringAsFixed(2));
     return 'Rs. $value';
   }
-  
+
   /// Format price for PDF from double (already in rupees)
   static String formatPriceForPdfFromDouble(double priceInRupees) {
     final bool isWholeNumber = (priceInRupees % 1).abs() < 0.0001;
     final String value =
-        isWholeNumber ? priceInRupees.toInt().toString() : priceInRupees.toStringAsFixed(2);
+        isWholeNumber ? PriceFormatter.addCommas(priceInRupees.toInt().toString()) : PriceFormatter.addCommas(priceInRupees.toStringAsFixed(2));
     return 'Rs. $value';
   }
   /// [sharePositionOrigin] Optional rect for iOS/iPadOS share sheet popover.
