@@ -2061,6 +2061,12 @@ class _AccountPageState extends State<AccountPage> {
                             TextField(
                               controller: phoneController,
                               enabled: !isLoading,
+                              onChanged: (_) {
+                                if (phoneError != null) {
+                                  phoneError = null;
+                                  setState(() {});
+                                }
+                              },
                               keyboardType: TextInputType.phone,
                               maxLength: 10,
                               inputFormatters: [
@@ -2073,6 +2079,7 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter phone number',
+                                errorText: phoneError,
                                 prefixIcon: Icon(
                                   Icons.phone_outlined,
                                   color: AppColors.button,
@@ -2272,7 +2279,7 @@ class _AccountPageState extends State<AccountPage> {
           },
         ),
       ),
-      barrierDismissible: true,
+      barrierDismissible: false,
     );
   }
 

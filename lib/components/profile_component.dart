@@ -74,6 +74,7 @@ class ProfileComponent extends StatelessWidget {
               hint: 'First Name',
               enabled: customerController.isEditingProfile.value,
               icon: Icons.person_outline,
+              errorText: customerController.firstNameError.value,
             ),
             SizedBox(height: ResponsiveUtils.rp(16)),
             _buildModernTextField(
@@ -81,6 +82,7 @@ class ProfileComponent extends StatelessWidget {
               hint: 'Last Name',
               enabled: customerController.isEditingProfile.value,
               icon: Icons.person_outline,
+              errorText: customerController.lastNameError.value,
             ),
             SizedBox(height: ResponsiveUtils.rp(24)),
 
@@ -97,6 +99,7 @@ class ProfileComponent extends StatelessWidget {
                         : Icons.edit,
                     onPressed: customerController.isEditingProfile.value
                         ? () async {
+                            if (!customerController.validateProfile()) return;
                             final success =
                                 await customerController.updateCustomer();
                             if (success) {
@@ -133,34 +136,56 @@ class ProfileComponent extends StatelessWidget {
     required String hint,
     required bool enabled,
     required IconData icon,
+    String? errorText,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: enabled ? Colors.grey[50] : Colors.grey[100],
-        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-        border: Border.all(
-          color: enabled
-              ? AppColors.primary.withValues(alpha: 0.3)
-              : Colors.grey[300]!,
-          width: 1,
+    final hasError = errorText != null && errorText.isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: enabled ? Colors.grey[50] : Colors.grey[100],
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+            border: Border.all(
+              color: hasError
+                  ? AppColors.error
+                  : enabled
+                      ? AppColors.primary.withValues(alpha: 0.3)
+                      : Colors.grey[300]!,
+              width: hasError ? 1.5 : 1,
+            ),
+          ),
+          child: TextFormField(
+            controller: controller,
+            enabled: enabled,
+            style: TextStyle(
+              color: enabled ? Colors.black87 : Colors.grey[600],
+              fontSize: ResponsiveUtils.sp(16),
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              prefixIcon: Icon(icon, color: hasError ? AppColors.error : AppColors.primary, size: ResponsiveUtils.rp(20)),
+              border: InputBorder.none,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16), vertical: ResponsiveUtils.rp(16)),
+            ),
+          ),
         ),
-      ),
-      child: TextFormField(
-        controller: controller,
-        enabled: enabled,
-        style: TextStyle(
-          color: enabled ? Colors.black87 : Colors.grey[600],
-          fontSize: ResponsiveUtils.sp(16),
-        ),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey[500]),
-          prefixIcon: Icon(icon, color: AppColors.primary, size: ResponsiveUtils.rp(20)),
-          border: InputBorder.none,
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16), vertical: ResponsiveUtils.rp(16)),
-        ),
-      ),
+        if (hasError) ...[
+          SizedBox(height: ResponsiveUtils.rp(4)),
+          Padding(
+            padding: EdgeInsets.only(left: ResponsiveUtils.rp(12)),
+            child: Text(
+              errorText,
+              style: TextStyle(
+                color: AppColors.error,
+                fontSize: ResponsiveUtils.sp(12),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

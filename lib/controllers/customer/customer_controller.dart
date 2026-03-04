@@ -103,6 +103,8 @@ class CustomerController extends BaseController {
   // Profile editing controllers
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
+  final RxnString firstNameError = RxnString(null);
+  final RxnString lastNameError = RxnString(null);
 
   @override
   void onInit() {
@@ -492,7 +494,26 @@ class CustomerController extends BaseController {
   }
 
   /// Update customer profile. [title] is used as gender (Male/Female/Others) when GraphQL has no gender field.
+  /// Validate profile fields and set error messages. Returns true if valid.
+  bool validateProfile() {
+    bool isValid = true;
+    if (firstNameController.text.trim().isEmpty) {
+      firstNameError.value = 'First name is required';
+      isValid = false;
+    } else {
+      firstNameError.value = null;
+    }
+    if (lastNameController.text.trim().isEmpty) {
+      lastNameError.value = 'Last name is required';
+      isValid = false;
+    } else {
+      lastNameError.value = null;
+    }
+    return isValid;
+  }
+
   Future<bool> updateCustomer({String? title}) async {
+    if (!validateProfile()) return false;
     try {
           Logger.logFunction(functionName: 'updateCustomer', mutationName: 'UpdateCustomer');
     utilityController.setLoadingState(true);
@@ -1079,6 +1100,8 @@ class CustomerController extends BaseController {
   /// Toggle profile editing mode
   Future<void> toggleEditProfile() async {
     isEditingProfile.value = !isEditingProfile.value;
+    firstNameError.value = null;
+    lastNameError.value = null;
     if (isEditingProfile.value) {
       _initializeProfileFields();
     }
