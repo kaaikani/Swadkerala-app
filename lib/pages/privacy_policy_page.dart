@@ -130,29 +130,32 @@ class PrivacyPolicyPage extends StatelessWidget {
 
             ResponsiveSpacing.vertical(16),
 
-            // Request account deletion button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => _showRequestAccountDeletionDialog(context),
-                icon: Icon(Icons.delete_outline, size: ResponsiveUtils.rp(20), color: AppColors.error),
-                label: Text(
-                  'Request account deletion',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(15),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.error,
+            // Request account deletion button (only when logged in, not for guest)
+            if (Get.find<AuthController>().isLoggedIn) ...[
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => _showRequestAccountDeletionDialog(context),
+                  icon: Icon(Icons.delete_outline, size: ResponsiveUtils.rp(20), color: AppColors.error),
+                  label: Text(
+                    'Request account deletion',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(15),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.error,
+                    ),
                   ),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.error),
-                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.error),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                    ),
                   ),
                 ),
               ),
-            ),
+              ResponsiveSpacing.vertical(16),
+            ],
 
             ResponsiveSpacing.vertical(24),
           ],

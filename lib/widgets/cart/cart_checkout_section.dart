@@ -175,7 +175,7 @@ class CartCheckoutSection extends StatelessWidget {
                        
                         SizedBox(height: ResponsiveUtils.rp(4)),
                         Text(
-                          'Some products are not in stock, kindly check',
+                          'Some products are out of stock',
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(12),
                             color: AppColors.textSecondary,
