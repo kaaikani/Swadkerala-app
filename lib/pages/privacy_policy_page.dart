@@ -123,7 +123,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             // Account Deletion Policy Section
             _buildSection(
               title: 'Account Deletion',
-              content: 'If you request account deletion, your account will be deleted within 3 days. You may submit a request using the button below. Once the request is submitted, you will be signed out and your account will be processed for deletion within 3 business days.',
+              content: 'If you request account deletion, your account will be deleted within 3 days. You may submit a request using the button below. Once the request is submitted, you will be signed out and your account will be processed for deletion within 3 business days.\n\nIf you log in within 3 days, your account deletion request will be revoked.',
               icon: Icons.delete_outline,
               iconColor: AppColors.error,
             ),
