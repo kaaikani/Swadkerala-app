@@ -25,6 +25,7 @@ class CartItemCardPremium extends StatelessWidget {
   final String? stockLevel;
   final int? maxQuantity;
   final bool hasQuantityLimitViolation;
+  final String? quantityLimitReason;
   final bool hasInsufficientStock;
   final String? insufficientStockMessage;
 
@@ -45,9 +46,23 @@ class CartItemCardPremium extends StatelessWidget {
     this.stockLevel,
     this.maxQuantity,
     this.hasQuantityLimitViolation = false,
+    this.quantityLimitReason,
     this.hasInsufficientStock = false,
     this.insufficientStockMessage,
   }) : super(key: key);
+
+  String _quantityLimitMessage() {
+    if (quantityLimitReason != null && quantityLimitReason!.trim().isNotEmpty) {
+      final match = RegExp(r'Your cart can only have \d+ of this item\.?')
+          .firstMatch(quantityLimitReason!);
+      if (match != null) {
+        final part = match.group(0)!.trim();
+        return part.endsWith('.') ? '$part Kindly decrease quantity.' : '$part. Kindly decrease quantity.';
+      }
+      return quantityLimitReason!;
+    }
+    return 'Max $maxQuantity quantity allowed. Decrease quantity to continue.';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -285,7 +300,7 @@ class CartItemCardPremium extends StatelessWidget {
                   SizedBox(width: ResponsiveUtils.rp(6)),
                   Expanded(
                     child: ResponsiveText(
-                      'Max $maxQuantity quantity allowed decrease quanity',
+                      _quantityLimitMessage(),
                       fontSize: 12,
                       color: AppColors.error,
                       fontWeight: FontWeight.w500,

@@ -293,6 +293,7 @@ class _CartItemsListState extends State<CartItemsList> {
           final cart = widget.cartController.cart.value;
           int? maxQuantityForLine;
           bool hasQuantityLimitViolationForLine = false;
+          String? quantityLimitReasonForLine;
           if (cart != null && cart.quantityLimitStatus.hasViolations) {
             try {
               final violation = cart.quantityLimitStatus.violations.firstWhere(
@@ -300,6 +301,7 @@ class _CartItemsListState extends State<CartItemsList> {
               );
               maxQuantityForLine = violation.maxQuantity;
               hasQuantityLimitViolationForLine = true;
+              quantityLimitReasonForLine = violation.reason;
             } catch (e) {
               // No violation found for this line
             }
@@ -388,6 +390,7 @@ class _CartItemsListState extends State<CartItemsList> {
                       statusMessage: isUnavailable ? statusMessage : '',
                       maxQuantity: maxQuantityForLine,
                       hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
+                      quantityLimitReason: quantityLimitReasonForLine,
                     ),
                   );
                 }
@@ -440,6 +443,7 @@ class _CartItemsListState extends State<CartItemsList> {
               statusMessage: isVirtual ? '' : (isUnavailable ? statusMessage : null),
               maxQuantity: maxQuantityForLine,
               hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
+              quantityLimitReason: quantityLimitReasonForLine,
             ),
           );
         },
