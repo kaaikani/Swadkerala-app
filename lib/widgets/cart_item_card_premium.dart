@@ -258,8 +258,8 @@ class CartItemCardPremium extends StatelessWidget {
               ),
             ],
           ),
-          // Show quantity limit violation message
-          if (hasQuantityLimitViolation && maxQuantity != null) ...[
+          // Show quantity limit violation message (hide when out of stock - show only out of stock)
+          if (hasQuantityLimitViolation && maxQuantity != null && (statusMessage == null || statusMessage!.isEmpty)) ...[
             SizedBox(height: ResponsiveUtils.rp(8)),
             Container(
               padding: ResponsiveSpacing.padding(
@@ -285,7 +285,7 @@ class CartItemCardPremium extends StatelessWidget {
                   SizedBox(width: ResponsiveUtils.rp(6)),
                   Expanded(
                     child: ResponsiveText(
-                      'Max $maxQuantity quantity allowed',
+                      'Max $maxQuantity quantity allowed decrease quanity',
                       fontSize: 12,
                       color: AppColors.error,
                       fontWeight: FontWeight.w500,
