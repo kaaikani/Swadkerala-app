@@ -445,6 +445,9 @@ class Fragment$ErrorResult {
         return Fragment$ErrorResult$$CartContainsUnavailableItemsError.fromJson(
             json);
 
+      case "CartInsufficientStockError":
+        return Fragment$ErrorResult$$CartInsufficientStockError.fromJson(json);
+
       case "CouponCodeExpiredError":
         return Fragment$ErrorResult$$CouponCodeExpiredError.fromJson(json);
 
@@ -623,6 +626,8 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
     required _T Function(
             Fragment$ErrorResult$$CartContainsUnavailableItemsError)
         cartContainsUnavailableItemsError,
+    required _T Function(Fragment$ErrorResult$$CartInsufficientStockError)
+        cartInsufficientStockError,
     required _T Function(Fragment$ErrorResult$$CouponCodeExpiredError)
         couponCodeExpiredError,
     required _T Function(Fragment$ErrorResult$$CouponCodeInvalidError)
@@ -694,6 +699,10 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
       case "CartContainsUnavailableItemsError":
         return cartContainsUnavailableItemsError(
             this as Fragment$ErrorResult$$CartContainsUnavailableItemsError);
+
+      case "CartInsufficientStockError":
+        return cartInsufficientStockError(
+            this as Fragment$ErrorResult$$CartInsufficientStockError);
 
       case "CouponCodeExpiredError":
         return couponCodeExpiredError(
@@ -823,6 +832,8 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         alreadyLoggedInError,
     _T Function(Fragment$ErrorResult$$CartContainsUnavailableItemsError)?
         cartContainsUnavailableItemsError,
+    _T Function(Fragment$ErrorResult$$CartInsufficientStockError)?
+        cartInsufficientStockError,
     _T Function(Fragment$ErrorResult$$CouponCodeExpiredError)?
         couponCodeExpiredError,
     _T Function(Fragment$ErrorResult$$CouponCodeInvalidError)?
@@ -892,6 +903,14 @@ extension UtilityExtension$Fragment$ErrorResult on Fragment$ErrorResult {
         if (cartContainsUnavailableItemsError != null) {
           return cartContainsUnavailableItemsError(
               this as Fragment$ErrorResult$$CartContainsUnavailableItemsError);
+        } else {
+          return orElse();
+        }
+
+      case "CartInsufficientStockError":
+        if (cartInsufficientStockError != null) {
+          return cartInsufficientStockError(
+              this as Fragment$ErrorResult$$CartInsufficientStockError);
         } else {
           return orElse();
         }
@@ -1567,6 +1586,155 @@ class _CopyWithStubImpl$Fragment$ErrorResult$$CartContainsUnavailableItemsError<
         CopyWith$Fragment$ErrorResult$$CartContainsUnavailableItemsError<TRes> {
   _CopyWithStubImpl$Fragment$ErrorResult$$CartContainsUnavailableItemsError(
       this._res);
+
+  TRes _res;
+
+  call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Fragment$ErrorResult$$CartInsufficientStockError
+    implements Fragment$ErrorResult {
+  Fragment$ErrorResult$$CartInsufficientStockError({
+    required this.errorCode,
+    required this.message,
+    this.$__typename = 'CartInsufficientStockError',
+  });
+
+  factory Fragment$ErrorResult$$CartInsufficientStockError.fromJson(
+      Map<String, dynamic> json) {
+    final l$errorCode = json['errorCode'];
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Fragment$ErrorResult$$CartInsufficientStockError(
+      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Enum$ErrorCode errorCode;
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$errorCode = errorCode;
+    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$errorCode = errorCode;
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$errorCode,
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$ErrorResult$$CartInsufficientStockError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$errorCode = errorCode;
+    final lOther$errorCode = other.errorCode;
+    if (l$errorCode != lOther$errorCode) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$ErrorResult$$CartInsufficientStockError
+    on Fragment$ErrorResult$$CartInsufficientStockError {
+  CopyWith$Fragment$ErrorResult$$CartInsufficientStockError<
+          Fragment$ErrorResult$$CartInsufficientStockError>
+      get copyWith => CopyWith$Fragment$ErrorResult$$CartInsufficientStockError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$ErrorResult$$CartInsufficientStockError<TRes> {
+  factory CopyWith$Fragment$ErrorResult$$CartInsufficientStockError(
+    Fragment$ErrorResult$$CartInsufficientStockError instance,
+    TRes Function(Fragment$ErrorResult$$CartInsufficientStockError) then,
+  ) = _CopyWithImpl$Fragment$ErrorResult$$CartInsufficientStockError;
+
+  factory CopyWith$Fragment$ErrorResult$$CartInsufficientStockError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Fragment$ErrorResult$$CartInsufficientStockError;
+
+  TRes call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$ErrorResult$$CartInsufficientStockError<TRes>
+    implements CopyWith$Fragment$ErrorResult$$CartInsufficientStockError<TRes> {
+  _CopyWithImpl$Fragment$ErrorResult$$CartInsufficientStockError(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$ErrorResult$$CartInsufficientStockError _instance;
+
+  final TRes Function(Fragment$ErrorResult$$CartInsufficientStockError) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? errorCode = _undefined,
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$ErrorResult$$CartInsufficientStockError(
+        errorCode: errorCode == _undefined || errorCode == null
+            ? _instance.errorCode
+            : (errorCode as Enum$ErrorCode),
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$ErrorResult$$CartInsufficientStockError<TRes>
+    implements CopyWith$Fragment$ErrorResult$$CartInsufficientStockError<TRes> {
+  _CopyWithStubImpl$Fragment$ErrorResult$$CartInsufficientStockError(this._res);
 
   TRes _res;
 
@@ -60595,6 +60763,10 @@ class Mutation$TransitionOrderToState$transitionOrderToState {
         return Mutation$TransitionOrderToState$transitionOrderToState$$QuantityLimitError
             .fromJson(json);
 
+      case "CartInsufficientStockError":
+        return Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError
+            .fromJson(json);
+
       default:
         final l$$__typename = json['__typename'];
         return Mutation$TransitionOrderToState$transitionOrderToState(
@@ -60657,6 +60829,9 @@ extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToStat
     required _T Function(
             Mutation$TransitionOrderToState$transitionOrderToState$$QuantityLimitError)
         quantityLimitError,
+    required _T Function(
+            Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError)
+        cartInsufficientStockError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -60676,6 +60851,10 @@ extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToStat
         return quantityLimitError(this
             as Mutation$TransitionOrderToState$transitionOrderToState$$QuantityLimitError);
 
+      case "CartInsufficientStockError":
+        return cartInsufficientStockError(this
+            as Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError);
+
       default:
         return orElse();
     }
@@ -60693,6 +60872,9 @@ extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToStat
     _T Function(
             Mutation$TransitionOrderToState$transitionOrderToState$$QuantityLimitError)?
         quantityLimitError,
+    _T Function(
+            Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError)?
+        cartInsufficientStockError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -60724,6 +60906,14 @@ extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToStat
         if (quantityLimitError != null) {
           return quantityLimitError(this
               as Mutation$TransitionOrderToState$transitionOrderToState$$QuantityLimitError);
+        } else {
+          return orElse();
+        }
+
+      case "CartInsufficientStockError":
+        if (cartInsufficientStockError != null) {
+          return cartInsufficientStockError(this
+              as Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError);
         } else {
           return orElse();
         }
@@ -65838,6 +66028,174 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
       _res;
 }
 
+class Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError
+    implements
+        Fragment$ErrorResult$$CartInsufficientStockError,
+        Mutation$TransitionOrderToState$transitionOrderToState {
+  Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError({
+    required this.errorCode,
+    required this.message,
+    this.$__typename = 'CartInsufficientStockError',
+  });
+
+  factory Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError.fromJson(
+      Map<String, dynamic> json) {
+    final l$errorCode = json['errorCode'];
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError(
+      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Enum$ErrorCode errorCode;
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$errorCode = errorCode;
+    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$errorCode = errorCode;
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$errorCode,
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$errorCode = errorCode;
+    final lOther$errorCode = other.errorCode;
+    if (l$errorCode != lOther$errorCode) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError
+    on Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError {
+  CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError<
+          Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError>
+      get copyWith =>
+          CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError<
+    TRes> {
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError(
+    Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError
+        instance,
+    TRes Function(
+            Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError;
+
+  factory CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError;
+
+  TRes call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? errorCode = _undefined,
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError(
+        errorCode: errorCode == _undefined || errorCode == null
+            ? _instance.errorCode
+            : (errorCode as Enum$ErrorCode),
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$CartInsufficientStockError(
+      this._res);
+
+  TRes _res;
+
+  call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Mutation$TransitionToArrangingPayment {
   Mutation$TransitionToArrangingPayment({
     this.transitionOrderToState,
@@ -66284,6 +66642,10 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState {
         return Mutation$TransitionToArrangingPayment$transitionOrderToState$$QuantityLimitError
             .fromJson(json);
 
+      case "CartInsufficientStockError":
+        return Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError
+            .fromJson(json);
+
       default:
         final l$$__typename = json['__typename'];
         return Mutation$TransitionToArrangingPayment$transitionOrderToState(
@@ -66347,6 +66709,9 @@ extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrder
     required _T Function(
             Mutation$TransitionToArrangingPayment$transitionOrderToState$$QuantityLimitError)
         quantityLimitError,
+    required _T Function(
+            Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError)
+        cartInsufficientStockError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -66366,6 +66731,10 @@ extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrder
         return quantityLimitError(this
             as Mutation$TransitionToArrangingPayment$transitionOrderToState$$QuantityLimitError);
 
+      case "CartInsufficientStockError":
+        return cartInsufficientStockError(this
+            as Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError);
+
       default:
         return orElse();
     }
@@ -66384,6 +66753,9 @@ extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrder
     _T Function(
             Mutation$TransitionToArrangingPayment$transitionOrderToState$$QuantityLimitError)?
         quantityLimitError,
+    _T Function(
+            Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError)?
+        cartInsufficientStockError,
     required _T Function() orElse,
   }) {
     switch ($__typename) {
@@ -66415,6 +66787,14 @@ extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrder
         if (quantityLimitError != null) {
           return quantityLimitError(this
               as Mutation$TransitionToArrangingPayment$transitionOrderToState$$QuantityLimitError);
+        } else {
+          return orElse();
+        }
+
+      case "CartInsufficientStockError":
+        if (cartInsufficientStockError != null) {
+          return cartInsufficientStockError(this
+              as Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError);
         } else {
           return orElse();
         }
@@ -71526,6 +71906,174 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
         CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$QuantityLimitError<
             TRes> {
   _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$QuantityLimitError(
+      this._res);
+
+  TRes _res;
+
+  call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError
+    implements
+        Fragment$ErrorResult$$CartInsufficientStockError,
+        Mutation$TransitionToArrangingPayment$transitionOrderToState {
+  Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError({
+    required this.errorCode,
+    required this.message,
+    this.$__typename = 'CartInsufficientStockError',
+  });
+
+  factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError.fromJson(
+      Map<String, dynamic> json) {
+    final l$errorCode = json['errorCode'];
+    final l$message = json['message'];
+    final l$$__typename = json['__typename'];
+    return Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError(
+      errorCode: fromJson$Enum$ErrorCode((l$errorCode as String)),
+      message: (l$message as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Enum$ErrorCode errorCode;
+
+  final String message;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$errorCode = errorCode;
+    _resultData['errorCode'] = toJson$Enum$ErrorCode(l$errorCode);
+    final l$message = message;
+    _resultData['message'] = l$message;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$errorCode = errorCode;
+    final l$message = message;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$errorCode,
+      l$message,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$errorCode = errorCode;
+    final lOther$errorCode = other.errorCode;
+    if (l$errorCode != lOther$errorCode) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError
+    on Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError {
+  CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError<
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError>
+      get copyWith =>
+          CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError<
+    TRes> {
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError(
+    Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError
+        instance,
+    TRes Function(
+            Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError)
+        then,
+  ) = _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError;
+
+  factory CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError;
+
+  TRes call({
+    Enum$ErrorCode? errorCode,
+    String? message,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError<
+            TRes> {
+  _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError
+      _instance;
+
+  final TRes Function(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? errorCode = _undefined,
+    Object? message = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError(
+        errorCode: errorCode == _undefined || errorCode == null
+            ? _instance.errorCode
+            : (errorCode as Enum$ErrorCode),
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError<
+        TRes>
+    implements
+        CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError<
+            TRes> {
+  _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$CartInsufficientStockError(
       this._res);
 
   TRes _res;

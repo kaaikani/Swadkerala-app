@@ -2404,6 +2404,9 @@ class BannerController extends BaseController {
               stockLevel
               options {
                 ...Options
+                group {
+                  name
+                }
               }
               featuredAsset {
                 ...Asset
@@ -2430,6 +2433,10 @@ class BannerController extends BaseController {
             assets {
               ...Asset
               __typename
+            }
+            optionGroups {
+              id
+              name
             }
             collections {
               id

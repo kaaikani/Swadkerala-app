@@ -134,13 +134,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return map;
   }
 
-  /// Key for _selectedOptionsByGroup: use inferred type (Size/Material/Colour) when group is synthetic.
+  /// Key for _selectedOptionsByGroup: use the group name from the API.
   String _optionGroupKey(Query$GetProductDetail$product$variants$options opt) {
-    if (!RegExp(r'^Option \d+$').hasMatch(opt.group.name)) return opt.group.name;
-    return _inferGroupFromOptionName(opt.name);
+    return opt.group.name;
   }
 
-  /// Option groups derived from variants. When API uses synthetic groups (Option 1, 2, 3), rebuild by inferred type so Size/Material/Colour are correct.
+  /// Option groups derived from variants, using group names from the API.
   List<_OptionGroup> _getOptionGroups() {
     if (productDetail == null || productDetail!.variants.isEmpty) return [];
     final order = <String>[];
@@ -151,21 +150,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         if (!order.contains(gn)) order.add(gn);
         map.putIfAbsent(gn, () => <String>{}).add(opt.name);
       }
-    }
-    final allSynthetic = order.every((gn) => RegExp(r'^Option \d+$').hasMatch(gn));
-    if (allSynthetic && order.isNotEmpty) {
-      final inferredOrder = <String>['Size', 'Material', 'Colour', 'Other'];
-      final inferredMap = <String, Set<String>>{};
-      for (final v in productDetail!.variants) {
-        for (final opt in v.options) {
-          final key = _inferGroupFromOptionName(opt.name);
-          inferredMap.putIfAbsent(key, () => <String>{}).add(opt.name);
-        }
-      }
-      return inferredOrder
-          .where((k) => (inferredMap[k] ?? {}).isNotEmpty)
-          .map((k) => _OptionGroup(k, (inferredMap[k] ?? {}).toList()..sort()))
-          .toList();
     }
     return order.map((gn) {
       final names = (map[gn] ?? {}).toList()..sort();
@@ -233,11 +217,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return value;
   }
 
-  /// Clean product data: keep options, inject synthetic group when API omits group
-  /// so option-groups UI (Size / Material / Colour) can show even when backend doesn't return group.
+  /// Clean product data: keep options, inject group from product-level optionGroups when API omits group on an option.
   Map<String, dynamic> _cleanProductData(Map<String, dynamic> data) {
     try {
       final cleaned = Map<String, dynamic>.from(data);
+
+      // Build lookup from product-level optionGroups for fallback
+      final optionGroups = (cleaned['optionGroups'] as List?)
+          ?.whereType<Map<String, dynamic>>()
+          .toList() ?? [];
 
       if (cleaned['variants'] != null && cleaned['variants'] is List) {
         final variants = (cleaned['variants'] as List).map((variant) {
@@ -253,8 +241,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               final optionMap = optionsList[i];
               final group = optionMap['group'];
               if (group == null || group is! Map<String, dynamic>) {
+                // Use product-level optionGroups name if available, otherwise fallback
+                final groupName = (i < optionGroups.length)
+                    ? (optionGroups[i]['name'] as String? ?? 'Option ${i + 1}')
+                    : 'Option ${i + 1}';
                 optionMap['group'] = <String, dynamic>{
-                  'name': 'Option ${i + 1}',
+                  'name': groupName,
                   '__typename': 'ProductOptionGroup',
                 };
               }
@@ -1893,38 +1885,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 }
 
-/// Infer group type from a single option name (for grouping when API uses synthetic Option 1/2/3).
-String _inferGroupFromOptionName(String optionName) {
-  final lower = optionName.toLowerCase();
-  const sizeValues = {'s', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xs', 'xxs'};
-  const materialLike = {'nylon', 'cotton', 'polyster', 'polyester', 'linen', 'silk', 'wool'};
-  const colourLike = {'black', 'blue', 'green', 'white', 'red', 'grey', 'gray', 'navy', 'brown', 'beige', 'yellow', 'pink', 'orange', 'purple', 'cream'};
-  if (sizeValues.contains(lower)) return 'Size';
-  if (materialLike.contains(lower)) return 'Material';
-  if (colourLike.contains(lower)) return 'Colour';
-  return 'Other';
-}
-
-/// When group name is synthetic (Option 1, Option 2), infer a label from option values (Size, Material, Colour).
-String _inferGroupDisplayName(String groupName, List<String> optionNames) {
-  if (optionNames.isEmpty) return groupName;
-  if (!RegExp(r'^Option \d+$').hasMatch(groupName)) return groupName;
-  final lower = optionNames.map((s) => s.toLowerCase()).toSet();
-  const sizeValues = {'s', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xs', 'xxs'};
-  const materialLike = {'nylon', 'cotton', 'polyster', 'polyester', 'linen', 'silk', 'wool'};
-  const colourLike = {'black', 'blue', 'green', 'white', 'red', 'grey', 'gray', 'navy', 'brown', 'beige', 'yellow', 'pink', 'orange', 'purple', 'cream'};
-  if (lower.every((s) => sizeValues.contains(s))) return 'Size';
-  if (lower.any((s) => materialLike.contains(s))) return 'Material';
-  if (lower.any((s) => colourLike.contains(s))) return 'Colour';
-  return groupName;
-}
-
-/// One option group: internal group name and list of option names; displayName used in UI (e.g. Size, Material, Colour).
+/// One option group: group name from the API and list of option names.
 class _OptionGroup {
   final String groupName;
   final List<String> optionNames;
   _OptionGroup(this.groupName, this.optionNames);
-  String get displayName => _inferGroupDisplayName(groupName, optionNames);
+  String get displayName => groupName;
 }
 
 /// Separate StatefulWidget for quantity dialog to properly manage TextEditingController lifecycle

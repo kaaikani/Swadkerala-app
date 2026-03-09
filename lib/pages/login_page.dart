@@ -56,8 +56,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   // Per-button loading so only the clicked button shows spinner, others are disabled
   bool _isLoadingPhone = false;
   bool _isLoadingGoogle = false;
-  // bool _isLoadingApple = false;  // Apple login - commented out
-  bool get _isAnyLoginLoading => _isLoadingPhone || _isLoadingGoogle; // || _isLoadingApple
+  bool _isLoadingApple = false;
+  bool get _isAnyLoginLoading => _isLoadingPhone || _isLoadingGoogle || _isLoadingApple;
 
   // Intended route after login (captured when page opens so it is not lost after async login)
   String? _intendedRoute;
@@ -362,7 +362,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
 
-  /// Method selection screen: 2 options (Phone, Google) — Apple login commented out
+  /// Method selection screen: 3 options (Phone, Google, Apple)
   Widget _buildMethodSelection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -449,20 +449,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           ),
         ),
 
-        // Apple option - iOS only (commented out)
-        // if (defaultTargetPlatform == TargetPlatform.iOS) ...[
-        //   SizedBox(height: ResponsiveUtils.rp(12)),
-        //   _buildMethodOption(
-        //     icon: Icons.apple,
-        //     title: 'Sign in with Apple',
-        //     subtitle: 'Use your Apple ID',
-        //     onTap: _isAnyLoginLoading ? null : _handleAppleSignIn,
-        //     color: Colors.black,
-        //     backgroundColor: Colors.black.withValues(alpha: 0.06),
-        //     isLoading: _isLoadingApple,
-        //     iconSize: 28,
-        //   ),
-        // ],
+        // Apple option - iOS only
+        if (defaultTargetPlatform == TargetPlatform.iOS) ...[
+          SizedBox(height: ResponsiveUtils.rp(12)),
+          _buildMethodOption(
+            icon: Icons.apple,
+            title: 'Sign in with Apple',
+            subtitle: 'Use your Apple ID',
+            onTap: _isAnyLoginLoading ? null : _handleAppleSignIn,
+            color: Colors.black,
+            backgroundColor: Colors.black.withValues(alpha: 0.06),
+            isLoading: _isLoadingApple,
+            iconSize: 28,
+          ),
+        ],
 
         SizedBox(height: ResponsiveUtils.rp(32)),
 
@@ -572,7 +572,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  /// Phone login flow: Welcome Back header → phone/OTP input → action button (no Google/Apple)
+  /// Phone login flow: Welcome Back header → phone/OTP input → action button
   Widget _buildPhoneLoginFlow() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1678,25 +1678,24 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
   }
 
-  // Apple login - commented out
-  // Future<void> _handleAppleSignIn() async {
-  //   if (_isAnyLoginLoading) return;
-  //   setState(() => _isLoadingApple = true);
-  //   try {
-  //     final success = await _authController.signInWithApple(context);
-  //     if (success) {
-  //       await AnalyticsService().logLogin(loginMethod: 'Apple');
-  //       _captureIntendedRoute();
-  //       await NavigationHelper.redirectToIntendedRoute(
-  //         intendedRoute: _getIntendedRouteForRedirect(),
-  //         intendedArguments: _getIntendedArgumentsForRedirect(),
-  //       );
-  //       _clearStoredIntendedRoute();
-  //     }
-  //   } finally {
-  //     if (mounted) setState(() => _isLoadingApple = false);
-  //   }
-  // }
+  Future<void> _handleAppleSignIn() async {
+    if (_isAnyLoginLoading) return;
+    setState(() => _isLoadingApple = true);
+    try {
+      final success = await _authController.signInWithApple(context);
+      if (success) {
+        await AnalyticsService().logLogin(loginMethod: 'Apple');
+        _captureIntendedRoute();
+        await NavigationHelper.redirectToIntendedRoute(
+          intendedRoute: _getIntendedRouteForRedirect(),
+          intendedArguments: _getIntendedArgumentsForRedirect(),
+        );
+        _clearStoredIntendedRoute();
+      }
+    } finally {
+      if (mounted) setState(() => _isLoadingApple = false);
+    }
+  }
 
   @override
   void dispose() {

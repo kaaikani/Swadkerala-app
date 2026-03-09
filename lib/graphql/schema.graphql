@@ -4,6 +4,16 @@ directive @specifiedBy(
   url: String!
 ) on SCALAR
 
+type AccountDeletionResponse {
+  success: Boolean!
+  message: String!
+}
+
+type AccountDeletionStatus {
+  isDeletionRequested: Boolean!
+  reason: String
+}
+
 union ActiveOrderResult = Order | NoActiveOrderError
 
 union AddPaymentToOrderResult = Order | OrderPaymentStateError | IneligiblePaymentMethodError | PaymentFailedError | PaymentDeclinedError | OrderStateTransitionError | NoActiveOrderError
@@ -48,6 +58,13 @@ type AlreadyLoggedInError implements ErrorResult {
   message: String!
 }
 
+input AppleAuthInput {
+  token: String!
+  firstName: String
+  lastName: String
+  email: String
+}
+
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
 
 type Asset implements Node {
@@ -82,6 +99,7 @@ input AuthenticationInput {
   phoneOtp: PhoneOtpInput
   native: NativeAuthInput
   google: GoogleAuthInput
+  apple: AppleAuthInput
 }
 
 type AuthenticationMethod implements Node {
@@ -130,6 +148,11 @@ type CartContainsUnavailableItemsError implements ErrorResult {
   errorCode: ErrorCode!
   message: String!
   unavailableItems: [UnavailableCartItem!]!
+}
+
+type CartInsufficientStockError implements ErrorResult {
+  errorCode: ErrorCode!
+  message: String!
 }
 
 type CartValidationStatus {
@@ -412,6 +435,8 @@ input CreateAddressInput {
 input CreateCustomerCustomFieldsInput {
   location: String
   loyaltyPointsAvailable: Int
+  isDeletionRequested: Boolean
+  deletionRequestReason: String
 }
 
 input CreateCustomerInput {
@@ -953,6 +978,8 @@ type CustomerChannel {
 type CustomerCustomFields {
   location: String
   loyaltyPointsAvailable: Int
+  isDeletionRequested: Boolean
+  deletionRequestReason: String
 }
 
 input CustomerFilterParameter {
@@ -968,6 +995,8 @@ input CustomerFilterParameter {
   _or: [CustomerFilterParameter!]
   location: StringOperators
   loyaltyPointsAvailable: NumberOperators
+  isDeletionRequested: BooleanOperators
+  deletionRequestReason: StringOperators
 }
 
 type CustomerGroup implements Node {
@@ -1015,6 +1044,8 @@ input CustomerSortParameter {
   emailAddress: SortOrder
   location: SortOrder
   loyaltyPointsAvailable: SortOrder
+  isDeletionRequested: SortOrder
+  deletionRequestReason: SortOrder
 }
 
 interface CustomField {
@@ -1107,11 +1138,6 @@ enum DeletionResult {
   NOT_DELETED
 }
 
-type RequestAccountDeletionResponse {
-  success: Boolean!
-  message: String
-}
-
 type Discount {
   adjustmentSource: String!
   type: AdjustmentType!
@@ -1162,6 +1188,7 @@ enum ErrorCode {
   NOT_VERIFIED_ERROR
   CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR
   QUANTITY_LIMIT_ERROR
+  CART_INSUFFICIENT_STOCK_ERROR
 }
 
 interface ErrorResult {
@@ -2409,8 +2436,8 @@ type Mutation {
   applyLoyaltyPointsToActiveOrder(amount: Int!): Order!
   removeLoyaltyPointsFromActiveOrder: Order
   toggleFavorite(productId: ID!, options: FavoriteListOptions = null): FavoriteList!
-  deleteAccount: DeletionResponse!
-  requestAccountDeletion(reason: String): RequestAccountDeletionResponse!
+  requestAccountDeletion(reason: String): AccountDeletionResponse!
+  cancelAccountDeletion: AccountDeletionResponse!
 }
 
 union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError | NativeAuthStrategyError
@@ -2550,6 +2577,8 @@ type Order implements Node {
   history(options: HistoryEntryListOptions): HistoryEntryList!
   validationStatus: CartValidationStatus!
   quantityLimitStatus: QuantityLimitValidationStatus!
+  isAvailable: Boolean!
+  unavailableReason: String
   customFields: OrderCustomFields
 }
 
@@ -2592,6 +2621,8 @@ input OrderFilterParameter {
   shippingWithTax: NumberOperators
   total: NumberOperators
   totalWithTax: NumberOperators
+  isAvailable: BooleanOperators
+  unavailableReason: StringOperators
   _and: [OrderFilterParameter!]
   _or: [OrderFilterParameter!]
   platform: StringOperators
@@ -2758,6 +2789,7 @@ input OrderSortParameter {
   shippingWithTax: SortOrder
   total: SortOrder
   totalWithTax: SortOrder
+  unavailableReason: SortOrder
   platform: SortOrder
   deviceMedium: SortOrder
   otherInstructions: SortOrder
@@ -3593,6 +3625,7 @@ type QuantityLimitViolation {
   variantName: String!
   currentQuantity: Int!
   maxQuantity: Int!
+  maxAllowedInCart: Int!
   reason: String!
   limitStartDate: String
 }
@@ -3721,6 +3754,7 @@ type Query {
   Replaces the standard eligibleShippingMethods for filtering disabled methods.
   """
   eligibleShippingMethodsEnabled: [ShippingMethod!]!
+  accountDeletionStatus: AccountDeletionStatus
 }
 
 type RazorpayOrderStatus {
@@ -3796,6 +3830,8 @@ union RegisterCustomerAccountResult = Success | MissingPasswordError | PasswordV
 input RegisterCustomerCustomFieldsInput {
   location: String
   loyaltyPointsAvailable: Int
+  isDeletionRequested: Boolean
+  deletionRequestReason: String
 }
 
 input RegisterCustomerInput {
@@ -4176,7 +4212,7 @@ type TextStructFieldConfig implements StructField {
   ui: JSON
 }
 
-union TransitionOrderToStateResult = Order | OrderStateTransitionError | CartContainsUnavailableItemsError | QuantityLimitError
+union TransitionOrderToStateResult = Order | OrderStateTransitionError | CartContainsUnavailableItemsError | QuantityLimitError | CartInsufficientStockError
 
 type UnavailableCartItem {
   orderLineId: ID!
@@ -4211,6 +4247,8 @@ input UpdateAddressInput {
 input UpdateCustomerCustomFieldsInput {
   location: String
   loyaltyPointsAvailable: Int
+  isDeletionRequested: Boolean
+  deletionRequestReason: String
 }
 
 union UpdateCustomerEmailAddressResult = Success | IdentifierChangeTokenInvalidError | IdentifierChangeTokenExpiredError | NativeAuthStrategyError

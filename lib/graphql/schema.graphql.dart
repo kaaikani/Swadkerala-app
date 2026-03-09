@@ -1,13 +1,202 @@
+class Input$AppleAuthInput {
+  factory Input$AppleAuthInput({
+    required String token,
+    String? firstName,
+    String? lastName,
+    String? email,
+  }) =>
+      Input$AppleAuthInput._({
+        r'token': token,
+        if (firstName != null) r'firstName': firstName,
+        if (lastName != null) r'lastName': lastName,
+        if (email != null) r'email': email,
+      });
+
+  Input$AppleAuthInput._(this._$data);
+
+  factory Input$AppleAuthInput.fromJson(Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$token = data['token'];
+    result$data['token'] = (l$token as String);
+    if (data.containsKey('firstName')) {
+      final l$firstName = data['firstName'];
+      result$data['firstName'] = (l$firstName as String?);
+    }
+    if (data.containsKey('lastName')) {
+      final l$lastName = data['lastName'];
+      result$data['lastName'] = (l$lastName as String?);
+    }
+    if (data.containsKey('email')) {
+      final l$email = data['email'];
+      result$data['email'] = (l$email as String?);
+    }
+    return Input$AppleAuthInput._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get token => (_$data['token'] as String);
+
+  String? get firstName => (_$data['firstName'] as String?);
+
+  String? get lastName => (_$data['lastName'] as String?);
+
+  String? get email => (_$data['email'] as String?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$token = token;
+    result$data['token'] = l$token;
+    if (_$data.containsKey('firstName')) {
+      final l$firstName = firstName;
+      result$data['firstName'] = l$firstName;
+    }
+    if (_$data.containsKey('lastName')) {
+      final l$lastName = lastName;
+      result$data['lastName'] = l$lastName;
+    }
+    if (_$data.containsKey('email')) {
+      final l$email = email;
+      result$data['email'] = l$email;
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$AppleAuthInput<Input$AppleAuthInput> get copyWith =>
+      CopyWith$Input$AppleAuthInput(
+        this,
+        (i) => i,
+      );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$AppleAuthInput || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$token = token;
+    final lOther$token = other.token;
+    if (l$token != lOther$token) {
+      return false;
+    }
+    final l$firstName = firstName;
+    final lOther$firstName = other.firstName;
+    if (_$data.containsKey('firstName') !=
+        other._$data.containsKey('firstName')) {
+      return false;
+    }
+    if (l$firstName != lOther$firstName) {
+      return false;
+    }
+    final l$lastName = lastName;
+    final lOther$lastName = other.lastName;
+    if (_$data.containsKey('lastName') !=
+        other._$data.containsKey('lastName')) {
+      return false;
+    }
+    if (l$lastName != lOther$lastName) {
+      return false;
+    }
+    final l$email = email;
+    final lOther$email = other.email;
+    if (_$data.containsKey('email') != other._$data.containsKey('email')) {
+      return false;
+    }
+    if (l$email != lOther$email) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$token = token;
+    final l$firstName = firstName;
+    final l$lastName = lastName;
+    final l$email = email;
+    return Object.hashAll([
+      l$token,
+      _$data.containsKey('firstName') ? l$firstName : const {},
+      _$data.containsKey('lastName') ? l$lastName : const {},
+      _$data.containsKey('email') ? l$email : const {},
+    ]);
+  }
+}
+
+abstract class CopyWith$Input$AppleAuthInput<TRes> {
+  factory CopyWith$Input$AppleAuthInput(
+    Input$AppleAuthInput instance,
+    TRes Function(Input$AppleAuthInput) then,
+  ) = _CopyWithImpl$Input$AppleAuthInput;
+
+  factory CopyWith$Input$AppleAuthInput.stub(TRes res) =
+      _CopyWithStubImpl$Input$AppleAuthInput;
+
+  TRes call({
+    String? token,
+    String? firstName,
+    String? lastName,
+    String? email,
+  });
+}
+
+class _CopyWithImpl$Input$AppleAuthInput<TRes>
+    implements CopyWith$Input$AppleAuthInput<TRes> {
+  _CopyWithImpl$Input$AppleAuthInput(
+    this._instance,
+    this._then,
+  );
+
+  final Input$AppleAuthInput _instance;
+
+  final TRes Function(Input$AppleAuthInput) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? token = _undefined,
+    Object? firstName = _undefined,
+    Object? lastName = _undefined,
+    Object? email = _undefined,
+  }) =>
+      _then(Input$AppleAuthInput._({
+        ..._instance._$data,
+        if (token != _undefined && token != null) 'token': (token as String),
+        if (firstName != _undefined) 'firstName': (firstName as String?),
+        if (lastName != _undefined) 'lastName': (lastName as String?),
+        if (email != _undefined) 'email': (email as String?),
+      }));
+}
+
+class _CopyWithStubImpl$Input$AppleAuthInput<TRes>
+    implements CopyWith$Input$AppleAuthInput<TRes> {
+  _CopyWithStubImpl$Input$AppleAuthInput(this._res);
+
+  TRes _res;
+
+  call({
+    String? token,
+    String? firstName,
+    String? lastName,
+    String? email,
+  }) =>
+      _res;
+}
+
 class Input$AuthenticationInput {
   factory Input$AuthenticationInput({
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
+    Input$AppleAuthInput? apple,
   }) =>
       Input$AuthenticationInput._({
         if (phoneOtp != null) r'phoneOtp': phoneOtp,
         if (native != null) r'native': native,
         if (google != null) r'google': google,
+        if (apple != null) r'apple': apple,
       });
 
   Input$AuthenticationInput._(this._$data);
@@ -32,6 +221,12 @@ class Input$AuthenticationInput {
           ? null
           : Input$GoogleAuthInput.fromJson((l$google as Map<String, dynamic>));
     }
+    if (data.containsKey('apple')) {
+      final l$apple = data['apple'];
+      result$data['apple'] = l$apple == null
+          ? null
+          : Input$AppleAuthInput.fromJson((l$apple as Map<String, dynamic>));
+    }
     return Input$AuthenticationInput._(result$data);
   }
 
@@ -46,6 +241,8 @@ class Input$AuthenticationInput {
   Input$GoogleAuthInput? get google =>
       (_$data['google'] as Input$GoogleAuthInput?);
 
+  Input$AppleAuthInput? get apple => (_$data['apple'] as Input$AppleAuthInput?);
+
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     if (_$data.containsKey('phoneOtp')) {
@@ -59,6 +256,10 @@ class Input$AuthenticationInput {
     if (_$data.containsKey('google')) {
       final l$google = google;
       result$data['google'] = l$google?.toJson();
+    }
+    if (_$data.containsKey('apple')) {
+      final l$apple = apple;
+      result$data['apple'] = l$apple?.toJson();
     }
     return result$data;
   }
@@ -103,6 +304,14 @@ class Input$AuthenticationInput {
     if (l$google != lOther$google) {
       return false;
     }
+    final l$apple = apple;
+    final lOther$apple = other.apple;
+    if (_$data.containsKey('apple') != other._$data.containsKey('apple')) {
+      return false;
+    }
+    if (l$apple != lOther$apple) {
+      return false;
+    }
     return true;
   }
 
@@ -111,10 +320,12 @@ class Input$AuthenticationInput {
     final l$phoneOtp = phoneOtp;
     final l$native = native;
     final l$google = google;
+    final l$apple = apple;
     return Object.hashAll([
       _$data.containsKey('phoneOtp') ? l$phoneOtp : const {},
       _$data.containsKey('native') ? l$native : const {},
       _$data.containsKey('google') ? l$google : const {},
+      _$data.containsKey('apple') ? l$apple : const {},
     ]);
   }
 }
@@ -132,10 +343,12 @@ abstract class CopyWith$Input$AuthenticationInput<TRes> {
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
+    Input$AppleAuthInput? apple,
   });
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp;
   CopyWith$Input$NativeAuthInput<TRes> get native;
   CopyWith$Input$GoogleAuthInput<TRes> get google;
+  CopyWith$Input$AppleAuthInput<TRes> get apple;
 }
 
 class _CopyWithImpl$Input$AuthenticationInput<TRes>
@@ -155,6 +368,7 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
     Object? phoneOtp = _undefined,
     Object? native = _undefined,
     Object? google = _undefined,
+    Object? apple = _undefined,
   }) =>
       _then(Input$AuthenticationInput._({
         ..._instance._$data,
@@ -162,6 +376,7 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
           'phoneOtp': (phoneOtp as Input$PhoneOtpInput?),
         if (native != _undefined) 'native': (native as Input$NativeAuthInput?),
         if (google != _undefined) 'google': (google as Input$GoogleAuthInput?),
+        if (apple != _undefined) 'apple': (apple as Input$AppleAuthInput?),
       }));
 
   CopyWith$Input$PhoneOtpInput<TRes> get phoneOtp {
@@ -185,6 +400,13 @@ class _CopyWithImpl$Input$AuthenticationInput<TRes>
         ? CopyWith$Input$GoogleAuthInput.stub(_then(_instance))
         : CopyWith$Input$GoogleAuthInput(local$google, (e) => call(google: e));
   }
+
+  CopyWith$Input$AppleAuthInput<TRes> get apple {
+    final local$apple = _instance.apple;
+    return local$apple == null
+        ? CopyWith$Input$AppleAuthInput.stub(_then(_instance))
+        : CopyWith$Input$AppleAuthInput(local$apple, (e) => call(apple: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
@@ -197,6 +419,7 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
     Input$PhoneOtpInput? phoneOtp,
     Input$NativeAuthInput? native,
     Input$GoogleAuthInput? google,
+    Input$AppleAuthInput? apple,
   }) =>
       _res;
 
@@ -208,6 +431,9 @@ class _CopyWithStubImpl$Input$AuthenticationInput<TRes>
 
   CopyWith$Input$GoogleAuthInput<TRes> get google =>
       CopyWith$Input$GoogleAuthInput.stub(_res);
+
+  CopyWith$Input$AppleAuthInput<TRes> get apple =>
+      CopyWith$Input$AppleAuthInput.stub(_res);
 }
 
 class Input$BooleanListOperators {
@@ -2352,11 +2578,17 @@ class Input$CreateCustomerCustomFieldsInput {
   factory Input$CreateCustomerCustomFieldsInput({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   }) =>
       Input$CreateCustomerCustomFieldsInput._({
         if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+        if (isDeletionRequested != null)
+          r'isDeletionRequested': isDeletionRequested,
+        if (deletionRequestReason != null)
+          r'deletionRequestReason': deletionRequestReason,
       });
 
   Input$CreateCustomerCustomFieldsInput._(this._$data);
@@ -2373,6 +2605,15 @@ class Input$CreateCustomerCustomFieldsInput {
       result$data['loyaltyPointsAvailable'] =
           (l$loyaltyPointsAvailable as int?);
     }
+    if (data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = data['isDeletionRequested'];
+      result$data['isDeletionRequested'] = (l$isDeletionRequested as bool?);
+    }
+    if (data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = data['deletionRequestReason'];
+      result$data['deletionRequestReason'] =
+          (l$deletionRequestReason as String?);
+    }
     return Input$CreateCustomerCustomFieldsInput._(result$data);
   }
 
@@ -2381,6 +2622,11 @@ class Input$CreateCustomerCustomFieldsInput {
   String? get location => (_$data['location'] as String?);
 
   int? get loyaltyPointsAvailable => (_$data['loyaltyPointsAvailable'] as int?);
+
+  bool? get isDeletionRequested => (_$data['isDeletionRequested'] as bool?);
+
+  String? get deletionRequestReason =>
+      (_$data['deletionRequestReason'] as String?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -2391,6 +2637,14 @@ class Input$CreateCustomerCustomFieldsInput {
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable;
+    }
+    if (_$data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = isDeletionRequested;
+      result$data['isDeletionRequested'] = l$isDeletionRequested;
+    }
+    if (_$data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = deletionRequestReason;
+      result$data['deletionRequestReason'] = l$deletionRequestReason;
     }
     return result$data;
   }
@@ -2429,6 +2683,24 @@ class Input$CreateCustomerCustomFieldsInput {
     if (l$loyaltyPointsAvailable != lOther$loyaltyPointsAvailable) {
       return false;
     }
+    final l$isDeletionRequested = isDeletionRequested;
+    final lOther$isDeletionRequested = other.isDeletionRequested;
+    if (_$data.containsKey('isDeletionRequested') !=
+        other._$data.containsKey('isDeletionRequested')) {
+      return false;
+    }
+    if (l$isDeletionRequested != lOther$isDeletionRequested) {
+      return false;
+    }
+    final l$deletionRequestReason = deletionRequestReason;
+    final lOther$deletionRequestReason = other.deletionRequestReason;
+    if (_$data.containsKey('deletionRequestReason') !=
+        other._$data.containsKey('deletionRequestReason')) {
+      return false;
+    }
+    if (l$deletionRequestReason != lOther$deletionRequestReason) {
+      return false;
+    }
     return true;
   }
 
@@ -2436,10 +2708,18 @@ class Input$CreateCustomerCustomFieldsInput {
   int get hashCode {
     final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
+    final l$isDeletionRequested = isDeletionRequested;
+    final l$deletionRequestReason = deletionRequestReason;
     return Object.hashAll([
       _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
+          : const {},
+      _$data.containsKey('isDeletionRequested')
+          ? l$isDeletionRequested
+          : const {},
+      _$data.containsKey('deletionRequestReason')
+          ? l$deletionRequestReason
           : const {},
     ]);
   }
@@ -2457,6 +2737,8 @@ abstract class CopyWith$Input$CreateCustomerCustomFieldsInput<TRes> {
   TRes call({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   });
 }
 
@@ -2476,12 +2758,18 @@ class _CopyWithImpl$Input$CreateCustomerCustomFieldsInput<TRes>
   TRes call({
     Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
+    Object? isDeletionRequested = _undefined,
+    Object? deletionRequestReason = _undefined,
   }) =>
       _then(Input$CreateCustomerCustomFieldsInput._({
         ..._instance._$data,
         if (location != _undefined) 'location': (location as String?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
+        if (isDeletionRequested != _undefined)
+          'isDeletionRequested': (isDeletionRequested as bool?),
+        if (deletionRequestReason != _undefined)
+          'deletionRequestReason': (deletionRequestReason as String?),
       }));
 }
 
@@ -2494,6 +2782,8 @@ class _CopyWithStubImpl$Input$CreateCustomerCustomFieldsInput<TRes>
   call({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   }) =>
       _res;
 }
@@ -2759,6 +3049,8 @@ class Input$CustomerFilterParameter {
     List<Input$CustomerFilterParameter>? $_or,
     Input$StringOperators? location,
     Input$NumberOperators? loyaltyPointsAvailable,
+    Input$BooleanOperators? isDeletionRequested,
+    Input$StringOperators? deletionRequestReason,
   }) =>
       Input$CustomerFilterParameter._({
         if (id != null) r'id': id,
@@ -2774,6 +3066,10 @@ class Input$CustomerFilterParameter {
         if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+        if (isDeletionRequested != null)
+          r'isDeletionRequested': isDeletionRequested,
+        if (deletionRequestReason != null)
+          r'deletionRequestReason': deletionRequestReason,
       });
 
   Input$CustomerFilterParameter._(this._$data);
@@ -2860,6 +3156,20 @@ class Input$CustomerFilterParameter {
           : Input$NumberOperators.fromJson(
               (l$loyaltyPointsAvailable as Map<String, dynamic>));
     }
+    if (data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = data['isDeletionRequested'];
+      result$data['isDeletionRequested'] = l$isDeletionRequested == null
+          ? null
+          : Input$BooleanOperators.fromJson(
+              (l$isDeletionRequested as Map<String, dynamic>));
+    }
+    if (data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = data['deletionRequestReason'];
+      result$data['deletionRequestReason'] = l$deletionRequestReason == null
+          ? null
+          : Input$StringOperators.fromJson(
+              (l$deletionRequestReason as Map<String, dynamic>));
+    }
     return Input$CustomerFilterParameter._(result$data);
   }
 
@@ -2899,6 +3209,12 @@ class Input$CustomerFilterParameter {
 
   Input$NumberOperators? get loyaltyPointsAvailable =>
       (_$data['loyaltyPointsAvailable'] as Input$NumberOperators?);
+
+  Input$BooleanOperators? get isDeletionRequested =>
+      (_$data['isDeletionRequested'] as Input$BooleanOperators?);
+
+  Input$StringOperators? get deletionRequestReason =>
+      (_$data['deletionRequestReason'] as Input$StringOperators?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -2950,6 +3266,14 @@ class Input$CustomerFilterParameter {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
       result$data['loyaltyPointsAvailable'] =
           l$loyaltyPointsAvailable?.toJson();
+    }
+    if (_$data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = isDeletionRequested;
+      result$data['isDeletionRequested'] = l$isDeletionRequested?.toJson();
+    }
+    if (_$data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = deletionRequestReason;
+      result$data['deletionRequestReason'] = l$deletionRequestReason?.toJson();
     }
     return result$data;
   }
@@ -3095,6 +3419,24 @@ class Input$CustomerFilterParameter {
     if (l$loyaltyPointsAvailable != lOther$loyaltyPointsAvailable) {
       return false;
     }
+    final l$isDeletionRequested = isDeletionRequested;
+    final lOther$isDeletionRequested = other.isDeletionRequested;
+    if (_$data.containsKey('isDeletionRequested') !=
+        other._$data.containsKey('isDeletionRequested')) {
+      return false;
+    }
+    if (l$isDeletionRequested != lOther$isDeletionRequested) {
+      return false;
+    }
+    final l$deletionRequestReason = deletionRequestReason;
+    final lOther$deletionRequestReason = other.deletionRequestReason;
+    if (_$data.containsKey('deletionRequestReason') !=
+        other._$data.containsKey('deletionRequestReason')) {
+      return false;
+    }
+    if (l$deletionRequestReason != lOther$deletionRequestReason) {
+      return false;
+    }
     return true;
   }
 
@@ -3112,6 +3454,8 @@ class Input$CustomerFilterParameter {
     final l$$_or = $_or;
     final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
+    final l$isDeletionRequested = isDeletionRequested;
+    final l$deletionRequestReason = deletionRequestReason;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('createdAt') ? l$createdAt : const {},
@@ -3134,6 +3478,12 @@ class Input$CustomerFilterParameter {
       _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
+          : const {},
+      _$data.containsKey('isDeletionRequested')
+          ? l$isDeletionRequested
+          : const {},
+      _$data.containsKey('deletionRequestReason')
+          ? l$deletionRequestReason
           : const {},
     ]);
   }
@@ -3161,6 +3511,8 @@ abstract class CopyWith$Input$CustomerFilterParameter<TRes> {
     List<Input$CustomerFilterParameter>? $_or,
     Input$StringOperators? location,
     Input$NumberOperators? loyaltyPointsAvailable,
+    Input$BooleanOperators? isDeletionRequested,
+    Input$StringOperators? deletionRequestReason,
   });
   CopyWith$Input$IDOperators<TRes> get id;
   CopyWith$Input$DateOperators<TRes> get createdAt;
@@ -3184,6 +3536,8 @@ abstract class CopyWith$Input$CustomerFilterParameter<TRes> {
           _fn);
   CopyWith$Input$StringOperators<TRes> get location;
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsAvailable;
+  CopyWith$Input$BooleanOperators<TRes> get isDeletionRequested;
+  CopyWith$Input$StringOperators<TRes> get deletionRequestReason;
 }
 
 class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
@@ -3212,6 +3566,8 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
     Object? $_or = _undefined,
     Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
+    Object? isDeletionRequested = _undefined,
+    Object? deletionRequestReason = _undefined,
   }) =>
       _then(Input$CustomerFilterParameter._({
         ..._instance._$data,
@@ -3238,6 +3594,12 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable':
               (loyaltyPointsAvailable as Input$NumberOperators?),
+        if (isDeletionRequested != _undefined)
+          'isDeletionRequested':
+              (isDeletionRequested as Input$BooleanOperators?),
+        if (deletionRequestReason != _undefined)
+          'deletionRequestReason':
+              (deletionRequestReason as Input$StringOperators?),
       }));
 
   CopyWith$Input$IDOperators<TRes> get id {
@@ -3343,6 +3705,22 @@ class _CopyWithImpl$Input$CustomerFilterParameter<TRes>
         : CopyWith$Input$NumberOperators(local$loyaltyPointsAvailable,
             (e) => call(loyaltyPointsAvailable: e));
   }
+
+  CopyWith$Input$BooleanOperators<TRes> get isDeletionRequested {
+    final local$isDeletionRequested = _instance.isDeletionRequested;
+    return local$isDeletionRequested == null
+        ? CopyWith$Input$BooleanOperators.stub(_then(_instance))
+        : CopyWith$Input$BooleanOperators(
+            local$isDeletionRequested, (e) => call(isDeletionRequested: e));
+  }
+
+  CopyWith$Input$StringOperators<TRes> get deletionRequestReason {
+    final local$deletionRequestReason = _instance.deletionRequestReason;
+    return local$deletionRequestReason == null
+        ? CopyWith$Input$StringOperators.stub(_then(_instance))
+        : CopyWith$Input$StringOperators(
+            local$deletionRequestReason, (e) => call(deletionRequestReason: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$CustomerFilterParameter<TRes>
@@ -3364,6 +3742,8 @@ class _CopyWithStubImpl$Input$CustomerFilterParameter<TRes>
     List<Input$CustomerFilterParameter>? $_or,
     Input$StringOperators? location,
     Input$NumberOperators? loyaltyPointsAvailable,
+    Input$BooleanOperators? isDeletionRequested,
+    Input$StringOperators? deletionRequestReason,
   }) =>
       _res;
 
@@ -3400,6 +3780,12 @@ class _CopyWithStubImpl$Input$CustomerFilterParameter<TRes>
 
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsAvailable =>
       CopyWith$Input$NumberOperators.stub(_res);
+
+  CopyWith$Input$BooleanOperators<TRes> get isDeletionRequested =>
+      CopyWith$Input$BooleanOperators.stub(_res);
+
+  CopyWith$Input$StringOperators<TRes> get deletionRequestReason =>
+      CopyWith$Input$StringOperators.stub(_res);
 }
 
 class Input$CustomerListOptions {
@@ -3673,6 +4059,8 @@ class Input$CustomerSortParameter {
     Enum$SortOrder? emailAddress,
     Enum$SortOrder? location,
     Enum$SortOrder? loyaltyPointsAvailable,
+    Enum$SortOrder? isDeletionRequested,
+    Enum$SortOrder? deletionRequestReason,
   }) =>
       Input$CustomerSortParameter._({
         if (id != null) r'id': id,
@@ -3686,6 +4074,10 @@ class Input$CustomerSortParameter {
         if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+        if (isDeletionRequested != null)
+          r'isDeletionRequested': isDeletionRequested,
+        if (deletionRequestReason != null)
+          r'deletionRequestReason': deletionRequestReason,
       });
 
   Input$CustomerSortParameter._(this._$data);
@@ -3750,6 +4142,18 @@ class Input$CustomerSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$loyaltyPointsAvailable as String));
     }
+    if (data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = data['isDeletionRequested'];
+      result$data['isDeletionRequested'] = l$isDeletionRequested == null
+          ? null
+          : fromJson$Enum$SortOrder((l$isDeletionRequested as String));
+    }
+    if (data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = data['deletionRequestReason'];
+      result$data['deletionRequestReason'] = l$deletionRequestReason == null
+          ? null
+          : fromJson$Enum$SortOrder((l$deletionRequestReason as String));
+    }
     return Input$CustomerSortParameter._(result$data);
   }
 
@@ -3776,6 +4180,12 @@ class Input$CustomerSortParameter {
 
   Enum$SortOrder? get loyaltyPointsAvailable =>
       (_$data['loyaltyPointsAvailable'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get isDeletionRequested =>
+      (_$data['isDeletionRequested'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get deletionRequestReason =>
+      (_$data['deletionRequestReason'] as Enum$SortOrder?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -3828,6 +4238,18 @@ class Input$CustomerSortParameter {
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable == null
           ? null
           : toJson$Enum$SortOrder(l$loyaltyPointsAvailable);
+    }
+    if (_$data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = isDeletionRequested;
+      result$data['isDeletionRequested'] = l$isDeletionRequested == null
+          ? null
+          : toJson$Enum$SortOrder(l$isDeletionRequested);
+    }
+    if (_$data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = deletionRequestReason;
+      result$data['deletionRequestReason'] = l$deletionRequestReason == null
+          ? null
+          : toJson$Enum$SortOrder(l$deletionRequestReason);
     }
     return result$data;
   }
@@ -3935,6 +4357,24 @@ class Input$CustomerSortParameter {
     if (l$loyaltyPointsAvailable != lOther$loyaltyPointsAvailable) {
       return false;
     }
+    final l$isDeletionRequested = isDeletionRequested;
+    final lOther$isDeletionRequested = other.isDeletionRequested;
+    if (_$data.containsKey('isDeletionRequested') !=
+        other._$data.containsKey('isDeletionRequested')) {
+      return false;
+    }
+    if (l$isDeletionRequested != lOther$isDeletionRequested) {
+      return false;
+    }
+    final l$deletionRequestReason = deletionRequestReason;
+    final lOther$deletionRequestReason = other.deletionRequestReason;
+    if (_$data.containsKey('deletionRequestReason') !=
+        other._$data.containsKey('deletionRequestReason')) {
+      return false;
+    }
+    if (l$deletionRequestReason != lOther$deletionRequestReason) {
+      return false;
+    }
     return true;
   }
 
@@ -3950,6 +4390,8 @@ class Input$CustomerSortParameter {
     final l$emailAddress = emailAddress;
     final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
+    final l$isDeletionRequested = isDeletionRequested;
+    final l$deletionRequestReason = deletionRequestReason;
     return Object.hashAll([
       _$data.containsKey('id') ? l$id : const {},
       _$data.containsKey('createdAt') ? l$createdAt : const {},
@@ -3962,6 +4404,12 @@ class Input$CustomerSortParameter {
       _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
+          : const {},
+      _$data.containsKey('isDeletionRequested')
+          ? l$isDeletionRequested
+          : const {},
+      _$data.containsKey('deletionRequestReason')
+          ? l$deletionRequestReason
           : const {},
     ]);
   }
@@ -3987,6 +4435,8 @@ abstract class CopyWith$Input$CustomerSortParameter<TRes> {
     Enum$SortOrder? emailAddress,
     Enum$SortOrder? location,
     Enum$SortOrder? loyaltyPointsAvailable,
+    Enum$SortOrder? isDeletionRequested,
+    Enum$SortOrder? deletionRequestReason,
   });
 }
 
@@ -4014,6 +4464,8 @@ class _CopyWithImpl$Input$CustomerSortParameter<TRes>
     Object? emailAddress = _undefined,
     Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
+    Object? isDeletionRequested = _undefined,
+    Object? deletionRequestReason = _undefined,
   }) =>
       _then(Input$CustomerSortParameter._({
         ..._instance._$data,
@@ -4033,6 +4485,10 @@ class _CopyWithImpl$Input$CustomerSortParameter<TRes>
         if (location != _undefined) 'location': (location as Enum$SortOrder?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as Enum$SortOrder?),
+        if (isDeletionRequested != _undefined)
+          'isDeletionRequested': (isDeletionRequested as Enum$SortOrder?),
+        if (deletionRequestReason != _undefined)
+          'deletionRequestReason': (deletionRequestReason as Enum$SortOrder?),
       }));
 }
 
@@ -4053,6 +4509,8 @@ class _CopyWithStubImpl$Input$CustomerSortParameter<TRes>
     Enum$SortOrder? emailAddress,
     Enum$SortOrder? location,
     Enum$SortOrder? loyaltyPointsAvailable,
+    Enum$SortOrder? isDeletionRequested,
+    Enum$SortOrder? deletionRequestReason,
   }) =>
       _res;
 }
@@ -10337,6 +10795,8 @@ class Input$OrderFilterParameter {
     Input$NumberOperators? shippingWithTax,
     Input$NumberOperators? total,
     Input$NumberOperators? totalWithTax,
+    Input$BooleanOperators? isAvailable,
+    Input$StringOperators? unavailableReason,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
     Input$StringOperators? platform,
@@ -10362,6 +10822,8 @@ class Input$OrderFilterParameter {
         if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
         if (total != null) r'total': total,
         if (totalWithTax != null) r'totalWithTax': totalWithTax,
+        if (isAvailable != null) r'isAvailable': isAvailable,
+        if (unavailableReason != null) r'unavailableReason': unavailableReason,
         if ($_and != null) r'_and': $_and,
         if ($_or != null) r'_or': $_or,
         if (platform != null) r'platform': platform,
@@ -10480,6 +10942,20 @@ class Input$OrderFilterParameter {
           : Input$NumberOperators.fromJson(
               (l$totalWithTax as Map<String, dynamic>));
     }
+    if (data.containsKey('isAvailable')) {
+      final l$isAvailable = data['isAvailable'];
+      result$data['isAvailable'] = l$isAvailable == null
+          ? null
+          : Input$BooleanOperators.fromJson(
+              (l$isAvailable as Map<String, dynamic>));
+    }
+    if (data.containsKey('unavailableReason')) {
+      final l$unavailableReason = data['unavailableReason'];
+      result$data['unavailableReason'] = l$unavailableReason == null
+          ? null
+          : Input$StringOperators.fromJson(
+              (l$unavailableReason as Map<String, dynamic>));
+    }
     if (data.containsKey('_and')) {
       final l$$_and = data['_and'];
       result$data['_and'] = (l$$_and as List<dynamic>?)
@@ -10579,6 +11055,12 @@ class Input$OrderFilterParameter {
   Input$NumberOperators? get totalWithTax =>
       (_$data['totalWithTax'] as Input$NumberOperators?);
 
+  Input$BooleanOperators? get isAvailable =>
+      (_$data['isAvailable'] as Input$BooleanOperators?);
+
+  Input$StringOperators? get unavailableReason =>
+      (_$data['unavailableReason'] as Input$StringOperators?);
+
   List<Input$OrderFilterParameter>? get $_and =>
       (_$data['_and'] as List<Input$OrderFilterParameter>?);
 
@@ -10665,6 +11147,14 @@ class Input$OrderFilterParameter {
     if (_$data.containsKey('totalWithTax')) {
       final l$totalWithTax = totalWithTax;
       result$data['totalWithTax'] = l$totalWithTax?.toJson();
+    }
+    if (_$data.containsKey('isAvailable')) {
+      final l$isAvailable = isAvailable;
+      result$data['isAvailable'] = l$isAvailable?.toJson();
+    }
+    if (_$data.containsKey('unavailableReason')) {
+      final l$unavailableReason = unavailableReason;
+      result$data['unavailableReason'] = l$unavailableReason?.toJson();
     }
     if (_$data.containsKey('_and')) {
       final l$$_and = $_and;
@@ -10850,6 +11340,24 @@ class Input$OrderFilterParameter {
     if (l$totalWithTax != lOther$totalWithTax) {
       return false;
     }
+    final l$isAvailable = isAvailable;
+    final lOther$isAvailable = other.isAvailable;
+    if (_$data.containsKey('isAvailable') !=
+        other._$data.containsKey('isAvailable')) {
+      return false;
+    }
+    if (l$isAvailable != lOther$isAvailable) {
+      return false;
+    }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (_$data.containsKey('unavailableReason') !=
+        other._$data.containsKey('unavailableReason')) {
+      return false;
+    }
+    if (l$unavailableReason != lOther$unavailableReason) {
+      return false;
+    }
     final l$$_and = $_and;
     final lOther$$_and = other.$_and;
     if (_$data.containsKey('_and') != other._$data.containsKey('_and')) {
@@ -10954,6 +11462,8 @@ class Input$OrderFilterParameter {
     final l$shippingWithTax = shippingWithTax;
     final l$total = total;
     final l$totalWithTax = totalWithTax;
+    final l$isAvailable = isAvailable;
+    final l$unavailableReason = unavailableReason;
     final l$$_and = $_and;
     final l$$_or = $_or;
     final l$platform = platform;
@@ -10978,6 +11488,8 @@ class Input$OrderFilterParameter {
       _$data.containsKey('shippingWithTax') ? l$shippingWithTax : const {},
       _$data.containsKey('total') ? l$total : const {},
       _$data.containsKey('totalWithTax') ? l$totalWithTax : const {},
+      _$data.containsKey('isAvailable') ? l$isAvailable : const {},
+      _$data.containsKey('unavailableReason') ? l$unavailableReason : const {},
       _$data.containsKey('_and')
           ? l$$_and == null
               ? null
@@ -11025,6 +11537,8 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
     Input$NumberOperators? shippingWithTax,
     Input$NumberOperators? total,
     Input$NumberOperators? totalWithTax,
+    Input$BooleanOperators? isAvailable,
+    Input$StringOperators? unavailableReason,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
     Input$StringOperators? platform,
@@ -11049,6 +11563,8 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
   CopyWith$Input$NumberOperators<TRes> get shippingWithTax;
   CopyWith$Input$NumberOperators<TRes> get total;
   CopyWith$Input$NumberOperators<TRes> get totalWithTax;
+  CopyWith$Input$BooleanOperators<TRes> get isAvailable;
+  CopyWith$Input$StringOperators<TRes> get unavailableReason;
   TRes $_and(
       Iterable<Input$OrderFilterParameter>? Function(
               Iterable<
@@ -11098,6 +11614,8 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     Object? shippingWithTax = _undefined,
     Object? total = _undefined,
     Object? totalWithTax = _undefined,
+    Object? isAvailable = _undefined,
+    Object? unavailableReason = _undefined,
     Object? $_and = _undefined,
     Object? $_or = _undefined,
     Object? platform = _undefined,
@@ -11134,6 +11652,10 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
         if (total != _undefined) 'total': (total as Input$NumberOperators?),
         if (totalWithTax != _undefined)
           'totalWithTax': (totalWithTax as Input$NumberOperators?),
+        if (isAvailable != _undefined)
+          'isAvailable': (isAvailable as Input$BooleanOperators?),
+        if (unavailableReason != _undefined)
+          'unavailableReason': (unavailableReason as Input$StringOperators?),
         if ($_and != _undefined)
           '_and': ($_and as List<Input$OrderFilterParameter>?),
         if ($_or != _undefined)
@@ -11273,6 +11795,22 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
             local$totalWithTax, (e) => call(totalWithTax: e));
   }
 
+  CopyWith$Input$BooleanOperators<TRes> get isAvailable {
+    final local$isAvailable = _instance.isAvailable;
+    return local$isAvailable == null
+        ? CopyWith$Input$BooleanOperators.stub(_then(_instance))
+        : CopyWith$Input$BooleanOperators(
+            local$isAvailable, (e) => call(isAvailable: e));
+  }
+
+  CopyWith$Input$StringOperators<TRes> get unavailableReason {
+    final local$unavailableReason = _instance.unavailableReason;
+    return local$unavailableReason == null
+        ? CopyWith$Input$StringOperators.stub(_then(_instance))
+        : CopyWith$Input$StringOperators(
+            local$unavailableReason, (e) => call(unavailableReason: e));
+  }
+
   TRes $_and(
           Iterable<Input$OrderFilterParameter>? Function(
                   Iterable<
@@ -11363,6 +11901,8 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
     Input$NumberOperators? shippingWithTax,
     Input$NumberOperators? total,
     Input$NumberOperators? totalWithTax,
+    Input$BooleanOperators? isAvailable,
+    Input$StringOperators? unavailableReason,
     List<Input$OrderFilterParameter>? $_and,
     List<Input$OrderFilterParameter>? $_or,
     Input$StringOperators? platform,
@@ -11420,6 +11960,12 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
 
   CopyWith$Input$NumberOperators<TRes> get totalWithTax =>
       CopyWith$Input$NumberOperators.stub(_res);
+
+  CopyWith$Input$BooleanOperators<TRes> get isAvailable =>
+      CopyWith$Input$BooleanOperators.stub(_res);
+
+  CopyWith$Input$StringOperators<TRes> get unavailableReason =>
+      CopyWith$Input$StringOperators.stub(_res);
 
   $_and(_fn) => _res;
 
@@ -11712,6 +12258,7 @@ class Input$OrderSortParameter {
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
+    Enum$SortOrder? unavailableReason,
     Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
     Enum$SortOrder? otherInstructions,
@@ -11732,6 +12279,7 @@ class Input$OrderSortParameter {
         if (shippingWithTax != null) r'shippingWithTax': shippingWithTax,
         if (total != null) r'total': total,
         if (totalWithTax != null) r'totalWithTax': totalWithTax,
+        if (unavailableReason != null) r'unavailableReason': unavailableReason,
         if (platform != null) r'platform': platform,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
         if (otherInstructions != null) r'otherInstructions': otherInstructions,
@@ -11818,6 +12366,12 @@ class Input$OrderSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$totalWithTax as String));
     }
+    if (data.containsKey('unavailableReason')) {
+      final l$unavailableReason = data['unavailableReason'];
+      result$data['unavailableReason'] = l$unavailableReason == null
+          ? null
+          : fromJson$Enum$SortOrder((l$unavailableReason as String));
+    }
     if (data.containsKey('platform')) {
       final l$platform = data['platform'];
       result$data['platform'] = l$platform == null
@@ -11883,6 +12437,9 @@ class Input$OrderSortParameter {
 
   Enum$SortOrder? get totalWithTax =>
       (_$data['totalWithTax'] as Enum$SortOrder?);
+
+  Enum$SortOrder? get unavailableReason =>
+      (_$data['unavailableReason'] as Enum$SortOrder?);
 
   Enum$SortOrder? get platform => (_$data['platform'] as Enum$SortOrder?);
 
@@ -11967,6 +12524,12 @@ class Input$OrderSortParameter {
       final l$totalWithTax = totalWithTax;
       result$data['totalWithTax'] =
           l$totalWithTax == null ? null : toJson$Enum$SortOrder(l$totalWithTax);
+    }
+    if (_$data.containsKey('unavailableReason')) {
+      final l$unavailableReason = unavailableReason;
+      result$data['unavailableReason'] = l$unavailableReason == null
+          ? null
+          : toJson$Enum$SortOrder(l$unavailableReason);
     }
     if (_$data.containsKey('platform')) {
       final l$platform = platform;
@@ -12127,6 +12690,15 @@ class Input$OrderSortParameter {
     if (l$totalWithTax != lOther$totalWithTax) {
       return false;
     }
+    final l$unavailableReason = unavailableReason;
+    final lOther$unavailableReason = other.unavailableReason;
+    if (_$data.containsKey('unavailableReason') !=
+        other._$data.containsKey('unavailableReason')) {
+      return false;
+    }
+    if (l$unavailableReason != lOther$unavailableReason) {
+      return false;
+    }
     final l$platform = platform;
     final lOther$platform = other.platform;
     if (_$data.containsKey('platform') !=
@@ -12190,6 +12762,7 @@ class Input$OrderSortParameter {
     final l$shippingWithTax = shippingWithTax;
     final l$total = total;
     final l$totalWithTax = totalWithTax;
+    final l$unavailableReason = unavailableReason;
     final l$platform = platform;
     final l$deviceMedium = deviceMedium;
     final l$otherInstructions = otherInstructions;
@@ -12209,6 +12782,7 @@ class Input$OrderSortParameter {
       _$data.containsKey('shippingWithTax') ? l$shippingWithTax : const {},
       _$data.containsKey('total') ? l$total : const {},
       _$data.containsKey('totalWithTax') ? l$totalWithTax : const {},
+      _$data.containsKey('unavailableReason') ? l$unavailableReason : const {},
       _$data.containsKey('platform') ? l$platform : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
       _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
@@ -12243,6 +12817,7 @@ abstract class CopyWith$Input$OrderSortParameter<TRes> {
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
+    Enum$SortOrder? unavailableReason,
     Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
     Enum$SortOrder? otherInstructions,
@@ -12278,6 +12853,7 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
     Object? shippingWithTax = _undefined,
     Object? total = _undefined,
     Object? totalWithTax = _undefined,
+    Object? unavailableReason = _undefined,
     Object? platform = _undefined,
     Object? deviceMedium = _undefined,
     Object? otherInstructions = _undefined,
@@ -12306,6 +12882,8 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
         if (total != _undefined) 'total': (total as Enum$SortOrder?),
         if (totalWithTax != _undefined)
           'totalWithTax': (totalWithTax as Enum$SortOrder?),
+        if (unavailableReason != _undefined)
+          'unavailableReason': (unavailableReason as Enum$SortOrder?),
         if (platform != _undefined) 'platform': (platform as Enum$SortOrder?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as Enum$SortOrder?),
@@ -12338,6 +12916,7 @@ class _CopyWithStubImpl$Input$OrderSortParameter<TRes>
     Enum$SortOrder? shippingWithTax,
     Enum$SortOrder? total,
     Enum$SortOrder? totalWithTax,
+    Enum$SortOrder? unavailableReason,
     Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
     Enum$SortOrder? otherInstructions,
@@ -15379,11 +15958,17 @@ class Input$RegisterCustomerCustomFieldsInput {
   factory Input$RegisterCustomerCustomFieldsInput({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   }) =>
       Input$RegisterCustomerCustomFieldsInput._({
         if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+        if (isDeletionRequested != null)
+          r'isDeletionRequested': isDeletionRequested,
+        if (deletionRequestReason != null)
+          r'deletionRequestReason': deletionRequestReason,
       });
 
   Input$RegisterCustomerCustomFieldsInput._(this._$data);
@@ -15400,6 +15985,15 @@ class Input$RegisterCustomerCustomFieldsInput {
       result$data['loyaltyPointsAvailable'] =
           (l$loyaltyPointsAvailable as int?);
     }
+    if (data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = data['isDeletionRequested'];
+      result$data['isDeletionRequested'] = (l$isDeletionRequested as bool?);
+    }
+    if (data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = data['deletionRequestReason'];
+      result$data['deletionRequestReason'] =
+          (l$deletionRequestReason as String?);
+    }
     return Input$RegisterCustomerCustomFieldsInput._(result$data);
   }
 
@@ -15408,6 +16002,11 @@ class Input$RegisterCustomerCustomFieldsInput {
   String? get location => (_$data['location'] as String?);
 
   int? get loyaltyPointsAvailable => (_$data['loyaltyPointsAvailable'] as int?);
+
+  bool? get isDeletionRequested => (_$data['isDeletionRequested'] as bool?);
+
+  String? get deletionRequestReason =>
+      (_$data['deletionRequestReason'] as String?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -15418,6 +16017,14 @@ class Input$RegisterCustomerCustomFieldsInput {
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable;
+    }
+    if (_$data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = isDeletionRequested;
+      result$data['isDeletionRequested'] = l$isDeletionRequested;
+    }
+    if (_$data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = deletionRequestReason;
+      result$data['deletionRequestReason'] = l$deletionRequestReason;
     }
     return result$data;
   }
@@ -15456,6 +16063,24 @@ class Input$RegisterCustomerCustomFieldsInput {
     if (l$loyaltyPointsAvailable != lOther$loyaltyPointsAvailable) {
       return false;
     }
+    final l$isDeletionRequested = isDeletionRequested;
+    final lOther$isDeletionRequested = other.isDeletionRequested;
+    if (_$data.containsKey('isDeletionRequested') !=
+        other._$data.containsKey('isDeletionRequested')) {
+      return false;
+    }
+    if (l$isDeletionRequested != lOther$isDeletionRequested) {
+      return false;
+    }
+    final l$deletionRequestReason = deletionRequestReason;
+    final lOther$deletionRequestReason = other.deletionRequestReason;
+    if (_$data.containsKey('deletionRequestReason') !=
+        other._$data.containsKey('deletionRequestReason')) {
+      return false;
+    }
+    if (l$deletionRequestReason != lOther$deletionRequestReason) {
+      return false;
+    }
     return true;
   }
 
@@ -15463,10 +16088,18 @@ class Input$RegisterCustomerCustomFieldsInput {
   int get hashCode {
     final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
+    final l$isDeletionRequested = isDeletionRequested;
+    final l$deletionRequestReason = deletionRequestReason;
     return Object.hashAll([
       _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
+          : const {},
+      _$data.containsKey('isDeletionRequested')
+          ? l$isDeletionRequested
+          : const {},
+      _$data.containsKey('deletionRequestReason')
+          ? l$deletionRequestReason
           : const {},
     ]);
   }
@@ -15484,6 +16117,8 @@ abstract class CopyWith$Input$RegisterCustomerCustomFieldsInput<TRes> {
   TRes call({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   });
 }
 
@@ -15503,12 +16138,18 @@ class _CopyWithImpl$Input$RegisterCustomerCustomFieldsInput<TRes>
   TRes call({
     Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
+    Object? isDeletionRequested = _undefined,
+    Object? deletionRequestReason = _undefined,
   }) =>
       _then(Input$RegisterCustomerCustomFieldsInput._({
         ..._instance._$data,
         if (location != _undefined) 'location': (location as String?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
+        if (isDeletionRequested != _undefined)
+          'isDeletionRequested': (isDeletionRequested as bool?),
+        if (deletionRequestReason != _undefined)
+          'deletionRequestReason': (deletionRequestReason as String?),
       }));
 }
 
@@ -15521,6 +16162,8 @@ class _CopyWithStubImpl$Input$RegisterCustomerCustomFieldsInput<TRes>
   call({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   }) =>
       _res;
 }
@@ -17417,11 +18060,17 @@ class Input$UpdateCustomerCustomFieldsInput {
   factory Input$UpdateCustomerCustomFieldsInput({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   }) =>
       Input$UpdateCustomerCustomFieldsInput._({
         if (location != null) r'location': location,
         if (loyaltyPointsAvailable != null)
           r'loyaltyPointsAvailable': loyaltyPointsAvailable,
+        if (isDeletionRequested != null)
+          r'isDeletionRequested': isDeletionRequested,
+        if (deletionRequestReason != null)
+          r'deletionRequestReason': deletionRequestReason,
       });
 
   Input$UpdateCustomerCustomFieldsInput._(this._$data);
@@ -17438,6 +18087,15 @@ class Input$UpdateCustomerCustomFieldsInput {
       result$data['loyaltyPointsAvailable'] =
           (l$loyaltyPointsAvailable as int?);
     }
+    if (data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = data['isDeletionRequested'];
+      result$data['isDeletionRequested'] = (l$isDeletionRequested as bool?);
+    }
+    if (data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = data['deletionRequestReason'];
+      result$data['deletionRequestReason'] =
+          (l$deletionRequestReason as String?);
+    }
     return Input$UpdateCustomerCustomFieldsInput._(result$data);
   }
 
@@ -17446,6 +18104,11 @@ class Input$UpdateCustomerCustomFieldsInput {
   String? get location => (_$data['location'] as String?);
 
   int? get loyaltyPointsAvailable => (_$data['loyaltyPointsAvailable'] as int?);
+
+  bool? get isDeletionRequested => (_$data['isDeletionRequested'] as bool?);
+
+  String? get deletionRequestReason =>
+      (_$data['deletionRequestReason'] as String?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -17456,6 +18119,14 @@ class Input$UpdateCustomerCustomFieldsInput {
     if (_$data.containsKey('loyaltyPointsAvailable')) {
       final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
       result$data['loyaltyPointsAvailable'] = l$loyaltyPointsAvailable;
+    }
+    if (_$data.containsKey('isDeletionRequested')) {
+      final l$isDeletionRequested = isDeletionRequested;
+      result$data['isDeletionRequested'] = l$isDeletionRequested;
+    }
+    if (_$data.containsKey('deletionRequestReason')) {
+      final l$deletionRequestReason = deletionRequestReason;
+      result$data['deletionRequestReason'] = l$deletionRequestReason;
     }
     return result$data;
   }
@@ -17494,6 +18165,24 @@ class Input$UpdateCustomerCustomFieldsInput {
     if (l$loyaltyPointsAvailable != lOther$loyaltyPointsAvailable) {
       return false;
     }
+    final l$isDeletionRequested = isDeletionRequested;
+    final lOther$isDeletionRequested = other.isDeletionRequested;
+    if (_$data.containsKey('isDeletionRequested') !=
+        other._$data.containsKey('isDeletionRequested')) {
+      return false;
+    }
+    if (l$isDeletionRequested != lOther$isDeletionRequested) {
+      return false;
+    }
+    final l$deletionRequestReason = deletionRequestReason;
+    final lOther$deletionRequestReason = other.deletionRequestReason;
+    if (_$data.containsKey('deletionRequestReason') !=
+        other._$data.containsKey('deletionRequestReason')) {
+      return false;
+    }
+    if (l$deletionRequestReason != lOther$deletionRequestReason) {
+      return false;
+    }
     return true;
   }
 
@@ -17501,10 +18190,18 @@ class Input$UpdateCustomerCustomFieldsInput {
   int get hashCode {
     final l$location = location;
     final l$loyaltyPointsAvailable = loyaltyPointsAvailable;
+    final l$isDeletionRequested = isDeletionRequested;
+    final l$deletionRequestReason = deletionRequestReason;
     return Object.hashAll([
       _$data.containsKey('location') ? l$location : const {},
       _$data.containsKey('loyaltyPointsAvailable')
           ? l$loyaltyPointsAvailable
+          : const {},
+      _$data.containsKey('isDeletionRequested')
+          ? l$isDeletionRequested
+          : const {},
+      _$data.containsKey('deletionRequestReason')
+          ? l$deletionRequestReason
           : const {},
     ]);
   }
@@ -17522,6 +18219,8 @@ abstract class CopyWith$Input$UpdateCustomerCustomFieldsInput<TRes> {
   TRes call({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   });
 }
 
@@ -17541,12 +18240,18 @@ class _CopyWithImpl$Input$UpdateCustomerCustomFieldsInput<TRes>
   TRes call({
     Object? location = _undefined,
     Object? loyaltyPointsAvailable = _undefined,
+    Object? isDeletionRequested = _undefined,
+    Object? deletionRequestReason = _undefined,
   }) =>
       _then(Input$UpdateCustomerCustomFieldsInput._({
         ..._instance._$data,
         if (location != _undefined) 'location': (location as String?),
         if (loyaltyPointsAvailable != _undefined)
           'loyaltyPointsAvailable': (loyaltyPointsAvailable as int?),
+        if (isDeletionRequested != _undefined)
+          'isDeletionRequested': (isDeletionRequested as bool?),
+        if (deletionRequestReason != _undefined)
+          'deletionRequestReason': (deletionRequestReason as String?),
       }));
 }
 
@@ -17559,6 +18264,8 @@ class _CopyWithStubImpl$Input$UpdateCustomerCustomFieldsInput<TRes>
   call({
     String? location,
     int? loyaltyPointsAvailable,
+    bool? isDeletionRequested,
+    String? deletionRequestReason,
   }) =>
       _res;
 }
@@ -19159,6 +19866,7 @@ enum Enum$ErrorCode {
   NOT_VERIFIED_ERROR,
   CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR,
   QUANTITY_LIMIT_ERROR,
+  CART_INSUFFICIENT_STOCK_ERROR,
   $unknown;
 
   factory Enum$ErrorCode.fromJson(String value) =>
@@ -19235,6 +19943,8 @@ String toJson$Enum$ErrorCode(Enum$ErrorCode e) {
       return r'CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR';
     case Enum$ErrorCode.QUANTITY_LIMIT_ERROR:
       return r'QUANTITY_LIMIT_ERROR';
+    case Enum$ErrorCode.CART_INSUFFICIENT_STOCK_ERROR:
+      return r'CART_INSUFFICIENT_STOCK_ERROR';
     case Enum$ErrorCode.$unknown:
       return r'$unknown';
   }
@@ -19308,6 +20018,8 @@ Enum$ErrorCode fromJson$Enum$ErrorCode(String value) {
       return Enum$ErrorCode.CART_CONTAINS_UNAVAILABLE_ITEMS_ERROR;
     case r'QUANTITY_LIMIT_ERROR':
       return Enum$ErrorCode.QUANTITY_LIMIT_ERROR;
+    case r'CART_INSUFFICIENT_STOCK_ERROR':
+      return Enum$ErrorCode.CART_INSUFFICIENT_STOCK_ERROR;
     default:
       return Enum$ErrorCode.$unknown;
   }

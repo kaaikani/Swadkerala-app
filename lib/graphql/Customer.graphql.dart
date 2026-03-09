@@ -17493,8 +17493,8 @@ class Mutation$RequestAccountDeletion$Widget
 class Mutation$RequestAccountDeletion$requestAccountDeletion {
   Mutation$RequestAccountDeletion$requestAccountDeletion({
     required this.success,
-    this.message,
-    this.$__typename = 'RequestAccountDeletionResponse',
+    required this.message,
+    this.$__typename = 'AccountDeletionResponse',
   });
 
   factory Mutation$RequestAccountDeletion$requestAccountDeletion.fromJson(
@@ -17504,14 +17504,14 @@ class Mutation$RequestAccountDeletion$requestAccountDeletion {
     final l$$__typename = json['__typename'];
     return Mutation$RequestAccountDeletion$requestAccountDeletion(
       success: (l$success as bool),
-      message: (l$message as String?),
+      message: (l$message as String),
       $__typename: (l$$__typename as String),
     );
   }
 
   final bool success;
 
-  final String? message;
+  final String message;
 
   final String $__typename;
 
@@ -17619,8 +17619,9 @@ class _CopyWithImpl$Mutation$RequestAccountDeletion$requestAccountDeletion<TRes>
         success: success == _undefined || success == null
             ? _instance.success
             : (success as bool),
-        message:
-            message == _undefined ? _instance.message : (message as String?),
+        message: message == _undefined || message == null
+            ? _instance.message
+            : (message as String),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),

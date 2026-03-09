@@ -61,6 +61,10 @@ query GetProductDetail($id: ID!) {
             ...Asset
             __typename
         }
+        optionGroups {
+            id
+            name
+        }
         collections {
             id
             slug
