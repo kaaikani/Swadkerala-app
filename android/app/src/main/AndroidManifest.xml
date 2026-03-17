@@ -105,62 +105,14 @@
                 <data android:scheme="https" android:host="demo.htagbilling.com" />
             </intent-filter>
 
-            <!-- 4. Ngrok Local Testing with specific paths (ENABLE ONLY DURING DEVELOPMENT) -->
-            
-            <!-- Root path for home -->
-            <intent-filter android:priority="100">
+            <!-- 4. AVS EcomHub App Links - www.avsecomhub.com -->
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
-                      android:host="138cedf90c79.ngrok-free.app"
-                      android:path="/" />
-            </intent-filter>
-            
-            <!-- Cart page -->
-            <intent-filter android:priority="999">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="138cedf90c79.ngrok-free.app"
-                      android:pathPrefix="/cart" />
-            </intent-filter>
-            
-            <intent-filter android:priority="999">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="138cedf90c79.ngrok-free.app"
-                      android:pathPrefix="/checkout" />
-            </intent-filter>
-            
-            <intent-filter android:priority="999">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="138cedf90c79.ngrok-free.app"
-                      android:pathPrefix="/account" />
-            </intent-filter>
-            
-            <intent-filter android:priority="999">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="138cedf90c79.ngrok-free.app"
-                      android:pathPrefix="/addresses" />
-            </intent-filter>
-            
-            <intent-filter android:priority="999">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="138cedf90c79.ngrok-free.app"
-                      android:pathPrefix="/orders" />
+                      android:host="www.avsecomhub.com"
+                      android:pathPrefix="/products/kaaikani" />
             </intent-filter>
 
 

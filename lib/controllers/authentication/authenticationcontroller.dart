@@ -27,6 +27,7 @@ import '../../graphql/order.graphql.dart';
 import '../../utils/logger.dart';
 import '../../utils/google_auth_env.dart';
 import '../../routes.dart';
+import '../referral/referral_controller.dart';
 
 class AuthController extends BaseController {
   // Controllers
@@ -54,7 +55,20 @@ class AuthController extends BaseController {
   String get _debugState => 'AuthController{isOtpSent=${_isOtpSent.value}, isLoading=$isLoading, isLoggedIn=${_isLoggedIn.value}, phoneLength=${phoneNumber.text.length}}';
 
   // Setters
-  void setLoggedIn(bool value) => _isLoggedIn.value = value;
+  void setLoggedIn(bool value) {
+    _isLoggedIn.value = value;
+    if (value) {
+      // Process pending referral from deep link after login
+      Future.delayed(const Duration(seconds: 2), () {
+        if (Get.isRegistered<ReferralController>()) {
+          Get.find<ReferralController>().processPendingReferral();
+        } else if (ReferralController.pendingReferrerId != null) {
+          final controller = Get.put(ReferralController());
+          controller.processPendingReferral();
+        }
+      });
+    }
+  }
   void setOtpSent(bool value) {
     debugPrint('[AuthController] setOtpSent called with: $value, current: ${_isOtpSent.value} | $_debugState');
     if (_isOtpSent.value != value) {
@@ -602,6 +616,11 @@ class AuthController extends BaseController {
       setLoggedIn(true);
       resetFormField();
 
+      // 3.5️⃣ Flag new registration so homepage can show referral code dialog
+      if (isRegistration) {
+        GetStorage().write('just_registered', true);
+      }
+
       // 4️⃣ Claim guest cart if any, then refresh cart and customer
       await _claimGuestOrderIfAny();
       await _refreshCartAndCustomerAfterLogin();
@@ -646,6 +665,25 @@ class AuthController extends BaseController {
         // skipPostalCodeCheck: false → extract postal code from shipping address
         // and set channel if not already set (prevents mandatory postal code sheet after login)
         await Get.find<CustomerController>().getActiveCustomer(skipPostalCodeCheck: false);
+      }
+    } catch (_) {}
+  }
+
+  /// Check if the customer was just created (within last 60 seconds) and set the
+  /// `just_registered` flag so homepage shows the referral code dialog.
+  /// Used for Google/Apple sign-in where login and registration are the same flow.
+  void _checkIfNewRegistrationAndSetFlag() {
+    try {
+      if (Get.isRegistered<CustomerController>()) {
+        final customer = Get.find<CustomerController>().activeCustomer.value;
+        if (customer != null) {
+          final createdAt = customer.createdAt;
+          final now = DateTime.now();
+          final diff = now.difference(createdAt).inSeconds;
+          if (diff <= 60) {
+            GetStorage().write('just_registered', true);
+          }
+        }
       }
     } catch (_) {}
   }
@@ -984,6 +1022,7 @@ class AuthController extends BaseController {
           setLoggedIn(true);
           resetFormField();
           await _refreshCartAndCustomerAfterLogin();
+          _checkIfNewRegistrationAndSetFlag();
           return true;
         } else {
           ErrorDialog.showError('Authentication token not received from server');
@@ -1197,6 +1236,7 @@ class AuthController extends BaseController {
           setLoggedIn(true);
           resetFormField();
           await _refreshCartAndCustomerAfterLogin();
+          _checkIfNewRegistrationAndSetFlag();
           return true;
         } else {
           _appleLog('EXIT', {'reason': 'authToken not received from server'});

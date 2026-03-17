@@ -37,6 +37,7 @@ import '../widgets/notification_permission_dialog.dart';
 import '../services/channel_service.dart';
 import '../routes.dart';
 import '../graphql/schema.graphql.dart';
+import '../controllers/referral/referral_controller.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -100,6 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
       _isInitialLoad = false;
       // Check notification permission after page is built
       _checkNotificationPermission();
+      // Show referral code dialog if user just registered
+      _checkAndShowReferralDialog();
     });
     
     // Listen to channel token changes and update UI immediately
@@ -271,6 +274,107 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     } catch (e) {
     }
+  }
+
+  /// Show referral code dialog if user just registered (not on login).
+  /// Non-mandatory — user can skip.
+  Future<void> _checkAndShowReferralDialog() async {
+    final justRegistered = box.read<bool>('just_registered') ?? false;
+    if (!justRegistered) return;
+    // Clear flag immediately so it doesn't show again
+    await box.remove('just_registered');
+
+    // Wait for notification dialog to finish first
+    while (_isNotificationDialogShowing && mounted) {
+      await Future.delayed(const Duration(milliseconds: 300));
+    }
+    if (!mounted) return;
+
+    // Small delay for smooth transition
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (!mounted) return;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) {
+        final textController = TextEditingController();
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+          ),
+          title: Text(
+            'Have a Referral Code?',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(18),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter your referrer\'s ID to earn rewards. You can skip this.',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(13),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(16)),
+              TextField(
+                controller: textController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Enter referrer ID',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.rp(14),
+                    vertical: ResponsiveUtils.rp(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'Skip',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final referrerId = textController.text.trim();
+                if (referrerId.isEmpty) return;
+                Navigator.of(ctx).pop();
+                // Register referral
+                final referralController = Get.put(ReferralController());
+                final success = await referralController.registerReferral(referrerId);
+                if (mounted) {
+                  if (success) {
+                    SnackBarWidget.showSuccess('Referral redeemed successfully!');
+                  } else {
+                    SnackBarWidget.showError('Failed to redeem referral. Please check the ID.');
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.button,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                ),
+              ),
+              child: const Text('Redeem'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   /// Update reactive channel display variables

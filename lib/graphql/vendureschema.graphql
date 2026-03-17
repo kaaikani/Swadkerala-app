@@ -2438,6 +2438,8 @@ type Mutation {
   toggleFavorite(productId: ID!, options: FavoriteListOptions = null): FavoriteList!
   requestAccountDeletion(reason: String): AccountDeletionResponse!
   cancelAccountDeletion: AccountDeletionResponse!
+  registerReferral(referrerId: ID!): Referral!
+  scratchReferralCard(referralNumber: Int!): Referral!
 }
 
 union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError | NativeAuthStrategyError
@@ -3755,6 +3757,10 @@ type Query {
   """
   eligibleShippingMethodsEnabled: [ShippingMethod!]!
   accountDeletionStatus: AccountDeletionStatus
+  myReferrals(take: Int, skip: Int, status: ReferralStatus): ReferralList!
+  earnedScratchCards(take: Int, skip: Int): ReferralList!
+  scratchedCards(take: Int, skip: Int): ReferralList!
+  referralChannelPoints: ReferralChannelPoints
 }
 
 type RazorpayOrderStatus {
@@ -4318,5 +4324,38 @@ type Zone implements Node {
   name: String!
   members: [Region!]!
   customFields: JSON
+}
+
+enum ReferralStatus {
+  REGISTERED
+  ELIGIBLE
+  CLAIMED
+}
+
+type Referral implements Node {
+  id: ID!
+  referralNumber: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  referrer: Customer!
+  referredCustomer: Customer!
+  order: Order
+  status: ReferralStatus!
+  points: Int!
+  isScratched: Boolean!
+  note: String
+}
+
+type ReferralList {
+  items: [Referral!]!
+  totalItems: Int!
+}
+
+type ReferralChannelPoints implements Node {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  points: Int!
+  channels: [Channel!]!
 }
 

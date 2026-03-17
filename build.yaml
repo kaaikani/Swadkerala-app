@@ -13,6 +13,7 @@ targets:
             - lib/graphql/order.graphql
             - lib/graphql/product.graphql
             - lib/graphql/app_update.graphql
+            - lib/graphql/referral.graphql
           scalars:
             DateTime:
               type: DateTime

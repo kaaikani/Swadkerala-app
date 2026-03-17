@@ -21716,6 +21716,44 @@ Enum$SortOrder fromJson$Enum$SortOrder(String value) {
   }
 }
 
+enum Enum$ReferralStatus {
+  REGISTERED,
+  ELIGIBLE,
+  CLAIMED,
+  $unknown;
+
+  factory Enum$ReferralStatus.fromJson(String value) =>
+      fromJson$Enum$ReferralStatus(value);
+
+  String toJson() => toJson$Enum$ReferralStatus(this);
+}
+
+String toJson$Enum$ReferralStatus(Enum$ReferralStatus e) {
+  switch (e) {
+    case Enum$ReferralStatus.REGISTERED:
+      return r'REGISTERED';
+    case Enum$ReferralStatus.ELIGIBLE:
+      return r'ELIGIBLE';
+    case Enum$ReferralStatus.CLAIMED:
+      return r'CLAIMED';
+    case Enum$ReferralStatus.$unknown:
+      return r'$unknown';
+  }
+}
+
+Enum$ReferralStatus fromJson$Enum$ReferralStatus(String value) {
+  switch (value) {
+    case r'REGISTERED':
+      return Enum$ReferralStatus.REGISTERED;
+    case r'ELIGIBLE':
+      return Enum$ReferralStatus.ELIGIBLE;
+    case r'CLAIMED':
+      return Enum$ReferralStatus.CLAIMED;
+    default:
+      return Enum$ReferralStatus.$unknown;
+  }
+}
+
 enum Enum$__TypeKind {
   SCALAR,
   OBJECT,
@@ -21946,6 +21984,8 @@ const possibleTypesMap = <String, Set<String>>{
     'TaxRate',
     'User',
     'Zone',
+    'Referral',
+    'ReferralChannelPoints',
   },
   'ErrorResult': {
     'AlreadyLoggedInError',

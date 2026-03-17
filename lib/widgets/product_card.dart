@@ -492,6 +492,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
       final channelTokenLower = channelToken.toLowerCase();
       final isIndSnacksChannel = channelTokenLower == 'ind-snacks';
       final isIndNonVegChannel = channelTokenLower == 'ind' || channelTokenLower == 'ind-non veg';
+      final isSwadKeralaChannel = channelTokenLower == 'ind-swadkerala';
     
     // Determine colors and icon based on state
     Color buttonColor1;
@@ -522,14 +523,16 @@ class _AddToCartButtonState extends State<_AddToCartButton>
         );
         break;
       case _AddToCartState.success:
-        // Use AppColors for ind-snacks, red for ind-non-veg, green for other channels
+        // Use channel-specific colors for success state
         if (isIndSnacksChannel) {
           buttonColor1 = AppColors.buttonLight;
           buttonColor2 = AppColors.button;
         } else if (isIndNonVegChannel) {
-          // Red color for non-veg channel
           buttonColor1 = AppColors.indNonVegRedLight;
           buttonColor2 = AppColors.indNonVegRed;
+        } else if (isSwadKeralaChannel) {
+          buttonColor1 = AppColors.buttonLight;
+          buttonColor2 = AppColors.button;
         } else {
           buttonColor1 = Colors.green.shade400;
           buttonColor2 = Colors.green.shade600;
@@ -616,10 +619,10 @@ class _AddToCartButtonState extends State<_AddToCartButton>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: (_state == _AddToCartState.success 
-                              ? (isIndSnacksChannel ? AppColors.button : Colors.green)
-                              : _state == _AddToCartState.error 
-                              ? Colors.red 
+                          color: (_state == _AddToCartState.success
+                              ? ((isIndSnacksChannel || isSwadKeralaChannel) ? AppColors.button : Colors.green)
+                              : _state == _AddToCartState.error
+                              ? Colors.red
                               : Colors.black).withValues(alpha: 0.25),
                           blurRadius: ResponsiveUtils.rp(12),
                           offset: Offset(0, ResponsiveUtils.rp(4)),

@@ -8,6 +8,7 @@ mutation UpdateCustomer($input: UpdateCustomerInput!){
             emailAddress
         }
     }
+    
 }
 
 mutation UpdateProfileEmail($email: String!) {
@@ -90,12 +91,24 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
         ... on Customer {
             id
             title
+            createdAt
             emailAddress
             firstName
             lastName
             phoneNumber
 
 
+            referredBy {
+                id
+                referrer {
+                    id
+                    firstName
+                    lastName
+                }
+                status
+                points
+                createdAt
+            }
             customFields {
                 location
                 loyaltyPointsAvailable

@@ -1011,8 +1011,8 @@ class _AddToCartButtonState extends State<_AddToCartButton>
           );
           break;
         case _AddToCartState.success:
-          buttonColor1 = AppColors.success;
-          buttonColor2 = AppColors.success.withValues(alpha: 0.8);
+          buttonColor1 = AppColors.button;
+          buttonColor2 = AppColors.button.withValues(alpha: 0.8);
           iconWidget = Icon(
             Icons.check,
             color: Colors.white,

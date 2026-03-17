@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../routes.dart';
 import '../utils/navigation_helper.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
+import '../controllers/referral/referral_controller.dart';
 import 'graphql_client.dart';
 
 /// Service to handle deep links and app links
@@ -149,7 +150,7 @@ class DeepLinkService {
       // These should be treated as deep links, not HTTP requests
       if (uri.host.contains('ngrok') || 
           uri.host == 'demo.htagbilling.com' ||
-          uri.host == '63f4005bb018.ngrok-free.app') {
+          uri.host == 'f181-2409-40f4-100f-8b08-648b-8302-14b4-e58d.ngrok-free.app') {
       }
 
       // Handle custom schemes (kaaikani://, testapp://)
@@ -342,6 +343,33 @@ class DeepLinkService {
               Get.offAllNamed(AppRoutes.initial);
             }
             return;
+        }
+      }
+
+      // Handle referral links: /refer?referrerId=123
+      if (cleanPath == 'refer' || queryParams.containsKey('referrerId')) {
+        final referrerId = queryParams['referrerId'];
+        if (referrerId != null && referrerId.isNotEmpty) {
+          if (_isUserAuthenticated()) {
+            // Register referral and go to home
+            try {
+              final controller = Get.isRegistered<ReferralController>()
+                  ? Get.find<ReferralController>()
+                  : Get.put(ReferralController());
+              controller.registerReferral(referrerId);
+            } catch (e) {
+              debugPrint('Error registering referral: $e');
+            }
+            Get.offAllNamed(AppRoutes.home);
+          } else {
+            // Save referrer ID for after login
+            ReferralController.pendingReferrerId = referrerId;
+            await _navigateToLoginPage(
+              arguments: {'intendedRoute': AppRoutes.home},
+              replace: isInitialLink,
+            );
+          }
+          return;
         }
       }
 

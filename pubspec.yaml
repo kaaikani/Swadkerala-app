@@ -1,3 +1,4 @@
+
 name: recipe.app
 description: A new Flutter project.
 
@@ -53,6 +54,7 @@ dependencies:
   flutter_local_notifications: ^17.2.1
   app_links: ^6.3.3
   share_plus: ^7.2.1
+  scratcher: ^2.5.0
   pdf: ^3.11.3
   printing: ^5.13.1
   path_provider: ^2.1.5

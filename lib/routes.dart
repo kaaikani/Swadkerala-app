@@ -12,6 +12,8 @@ import 'package:recipe.app/pages/order_detail_page.dart';
 import 'package:recipe.app/pages/orders_page.dart';
 import 'package:recipe.app/pages/product_detail_page.dart';
 import 'package:recipe.app/pages/loyalty_points_transaction_page.dart';
+import 'package:recipe.app/pages/scratch_cards_page.dart';
+import 'package:recipe.app/pages/my_referrals_page.dart';
 import 'package:recipe.app/pages/connect_with_us_page.dart';
 import 'package:recipe.app/pages/help_support_page.dart';
 import 'package:recipe.app/pages/privacy_policy_page.dart';
@@ -51,6 +53,8 @@ class AppRoutes {
   static const String helpSupport = '/help-support';
   static const String privacyPolicy = '/privacy-policy';
   static const String termsConditions = '/terms-conditions';
+  static const String scratchCards = '/scratch-cards';
+  static const String myReferrals = '/my-referrals';
 
   static List<GetPage> routes = [
     GetPage(
@@ -220,6 +224,18 @@ class AppRoutes {
       name: termsConditions,
       page: () => const TermsConditionsPage(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: scratchCards,
+      page: () => const ScratchCardsPage(),
+      transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
+    ),
+    GetPage(
+      name: myReferrals,
+      page: () => const MyReferralsPage(),
+      transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
   ];
 }

@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
+import '../controllers/referral/referral_controller.dart';
 import '../services/graphql_client.dart';
 import '../services/channel_service.dart';
 import '../controllers/theme_controller.dart';
@@ -38,6 +39,7 @@ class _AccountPageState extends State<AccountPage> {
   final ThemeController themeController = Get.put(ThemeController());
   final UtilityController utilityController = Get.find();
   final InAppUpdateService _updateService = InAppUpdateService();
+  final ReferralController referralController = Get.put(ReferralController());
 
   @override
   void initState() {
@@ -47,6 +49,13 @@ class _AccountPageState extends State<AccountPage> {
       // Only fetch customer data if user is authenticated
       if (_isUserAuthenticated()) {
         await customerController.getActiveCustomer();
+        // Load referral redeemed status for this customer
+        final cid = customerController.activeCustomer.value?.id;
+        if (cid != null) referralController.loadRedeemedStatus(cid);
+        // Fetch referral data
+        referralController.fetchMyReferrals();
+        referralController.fetchEarnedScratchCards();
+        referralController.fetchChannelPoints();
         // Check for invalid email or missing phone number after customer data loads
      _checkAndShowUpdateDialogs();
       }
@@ -759,11 +768,17 @@ class _AccountPageState extends State<AccountPage> {
                         : _buildGuestProfileCard(),
 
                 // Orders Section (hide for guest)
+               
+
+                // Referral Section (hide for guest)
                 if (_isUserAuthenticated()) ...[
+                  _buildReferralSection(),
+                  SizedBox(height: ResponsiveUtils.rp(8)),
+                ],
+ if (_isUserAuthenticated()) ...[
                   _buildOrdersSection(),
                   SizedBox(height: ResponsiveUtils.rp(8)),
                 ],
-
                 // Account Options
                 _buildAccountOptions(isGuest: !_isUserAuthenticated()),
 
@@ -1156,19 +1171,20 @@ class _AccountPageState extends State<AccountPage> {
       child: Column(
         children: [
           Container(
-            width: ResponsiveUtils.rp(40),
-            height: ResponsiveUtils.rp(40),
+            width: ResponsiveUtils.rp(54),
+            height: ResponsiveUtils.rp(54),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(27)),
             ),
-            child: Icon(icon, color: color, size: ResponsiveUtils.rp(20)),
+            child: Icon(icon, color: color, size: ResponsiveUtils.rp(26)),
           ),
-          SizedBox(height: ResponsiveUtils.rp(6)),
+          SizedBox(height: ResponsiveUtils.rp(8)),
           Text(
             status,
             style: TextStyle(
-              fontSize: ResponsiveUtils.sp(11),
+              fontSize: ResponsiveUtils.sp(12),
+              fontWeight: FontWeight.w500,
               color: AppColors.textSecondary,
             ),
           ),
@@ -1177,36 +1193,276 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildAccountOptions({bool isGuest = false}) {
-    final addressesCount = customerController.addresses.length;
+  Widget _buildReferralSection() {
+    return Container(
+      color: AppColors.surface,
+      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.card_giftcard_outlined,
+                  color: AppColors.iconLight, size: ResponsiveUtils.rp(20)),
+              SizedBox(width: ResponsiveUtils.rp(8)),
+              Text(
+                'Refer & Earn',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              Obx(() {
+                final earned = referralController.totalEarnedCards.value;
+                if (earned > 0) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(8),
+                      vertical: ResponsiveUtils.rp(2),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade100,
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+                    ),
+                    child: Text(
+                      '$earned cards to scratch!',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(11),
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange.shade800,
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+            ],
+          ),
+          SizedBox(height: ResponsiveUtils.rp(12)),
+          // Share referral link
+          InkWell(
+            onTap: () => _shareReferralLink(),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(16),
+                vertical: ResponsiveUtils.rp(14),
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.button.withValues(alpha: 0.1), AppColors.button.withValues(alpha: 0.05)],
+                ),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                border: Border.all(color: AppColors.button.withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.share_outlined, color: AppColors.button, size: ResponsiveUtils.rp(22)),
+                  SizedBox(width: ResponsiveUtils.rp(12)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Share your referral link',
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.sp(14),
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(width: ResponsiveUtils.rp(8)),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveUtils.rp(8),
+                                vertical: ResponsiveUtils.rp(2),
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.button.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                              ),
+                              child: Text(
+                                'ID: ${customerController.activeCustomer.value?.id ?? ''}',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.sp(11),
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.button,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: ResponsiveUtils.rp(2)),
+                        Obx(() => Text(
+                          'Earn ${referralController.channelPoints.value} points per referral',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(12),
+                            color: AppColors.textSecondary,
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios, color: AppColors.button, size: ResponsiveUtils.rp(16)),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(16)),
+          // Scratch Cards, My Referrals, Saved Addresses, Wishlist, Preferred Items as icon row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildOrderStatusItem(
+                Icons.style_outlined,
+                'Scratch Cards',
+                Colors.amber.shade700,
+                () => Get.toNamed(AppRoutes.scratchCards),
+              ),
+              _buildOrderStatusItem(
+                Icons.people_outline,
+                'Referrals',
+                Colors.blue.shade700,
+                () => Get.toNamed(AppRoutes.myReferrals),
+              ),
+              _buildOrderStatusItem(
+                Icons.location_on_outlined,
+                'Addresses',
+                Colors.green.shade700,
+                () => Get.toNamed('/addresses'),
+              ),
+              _buildOrderStatusItem(
+                Icons.favorite_outline,
+                'Wishlist',
+                Colors.red.shade700,
+                () => Get.toNamed('/favourite'),
+              ),
+              _buildOrderStatusItem(
+                Icons.shopping_bag_outlined,
+                'Preferred',
+                Colors.purple.shade700,
+                () => Get.toNamed('/frequently-ordered'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
+  Future<void> _shareReferralLink() async {
+    final customer = customerController.activeCustomer.value;
+    if (customer == null) return;
+    final customerId = customer.id;
+    final link = 'https://www.avsecomhub.com/products/kaaikani/refer?referrerId=$customerId';
+    try {
+      await Share.share(
+        'Hey! Use my referral link to sign up on Kaaikani and we both earn rewards!\n\n$link',
+      );
+    } catch (e) {
+      debugPrint('Error sharing referral: $e');
+    }
+  }
+
+  /// Returns true if the customer account was created within the last 24 hours.
+  bool _isAccountCreatedWithin24Hours() {
+    final customer = customerController.activeCustomer.value;
+    if (customer == null) return false;
+    final createdAt = customer.createdAt;
+    return DateTime.now().difference(createdAt).inHours < 24;
+  }
+
+  /// Shows "Redeem Referral" tile only if account is < 24 hours old and not already referred.
+  Widget _buildRedeemReferralTile() {
+    if (!_isAccountCreatedWithin24Hours()) return const SizedBox.shrink();
+    final customer = customerController.activeCustomer.value;
+    if (customer?.referredBy != null) return const SizedBox.shrink();
+    return Obx(() {
+      if (referralController.hasRedeemed.value) return const SizedBox.shrink();
+      return Column(
+        children: [
+          _buildListTile(
+            Icons.card_giftcard_outlined,
+            'Redeem Referral',
+            Icons.arrow_forward_ios,
+            subtitle: 'Enter referrer ID to earn rewards',
+            onTap: _showRedeemReferralDialog,
+          ),
+          _buildDivider(),
+        ],
+      );
+    });
+  }
+
+  /// Shows dialog to enter referrer ID (numbers only) and calls registerReferral mutation.
+  void _showRedeemReferralDialog() {
+    final textController = TextEditingController();
+    final isSubmitting = false.obs;
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Redeem Referral'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Enter the referrer ID to redeem your referral reward.'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: textController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                hintText: 'Enter referrer ID',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          Obx(() => ElevatedButton(
+            onPressed: isSubmitting.value
+                ? null
+                : () async {
+                    final referrerId = textController.text.trim();
+                    if (referrerId.isEmpty) {
+                      SnackBarWidget.showError('Please enter a referrer ID');
+                      return;
+                    }
+                    isSubmitting.value = true;
+                    final customerId = customerController.activeCustomer.value?.id;
+                    final success = await referralController.registerReferral(referrerId, customerId: customerId);
+                    isSubmitting.value = false;
+                    if (success) {
+                      Get.back();
+                      SnackBarWidget.showSuccess('Referral redeemed successfully!');
+                      referralController.fetchMyReferrals();
+                      referralController.fetchEarnedScratchCards();
+                    } else {
+                      SnackBarWidget.showError('Failed to redeem referral. Please check the ID and try again.');
+                    }
+                  },
+            child: isSubmitting.value
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Text('Redeem'),
+          )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountOptions({bool isGuest = false}) {
     return Container(
       color: AppColors.surface,
       child: Column(
         children: [
           if (!isGuest) ...[
-            _buildListTile(
-              Icons.location_on_outlined,
-              'Saved Addresses',
-              Icons.arrow_forward_ios,
-              subtitle: '$addressesCount addresses',
-              onTap: () => Get.toNamed('/addresses'),
-            ),
-            _buildDivider(),
-            _buildListTile(
-              Icons.favorite_outline,
-              'Wishlist',
-              Icons.arrow_forward_ios,
-              onTap: () => Get.toNamed('/favourite'),
-            ),
-            _buildDivider(),
-            _buildListTile(
-              Icons.shopping_bag_outlined,
-              'Preferred Items',
-              Icons.arrow_forward_ios,
-              onTap: () => Get.toNamed('/frequently-ordered'),
-            ),
-            _buildDivider(),
+            _buildRedeemReferralTile(),
           ],
           _buildDarkModeTile(),
         ],

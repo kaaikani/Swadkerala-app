@@ -237,6 +237,7 @@ class _BannerComponentState extends State<BannerComponent> {
 
                   return Container(
                     width: double.infinity,
+                    color: AppColors.background,
                     child: GestureDetector(
                       onTap: () => _handleBannerTap(banner),
                       child: imageUrl.isNotEmpty

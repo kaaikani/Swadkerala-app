@@ -20,6 +20,10 @@ import FBSDKCoreKit
     }
     // Required for FCM on physical device: register for remote notifications so APNs token is obtained
     application.registerForRemoteNotifications()
+
+    // Initialize Facebook SDK for AEM (Aggregated Event Measurement) - iOS 14.5+ compliance
+    ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
@@ -29,6 +33,22 @@ import FBSDKCoreKit
     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
   ) {
     Messaging.messaging().apnsToken = deviceToken
+  }
+
+  // MARK: - Facebook SDK DeepLink (Custom URL schemes)
+  // Pass DeepLink URL to Facebook SDK for ad attribution and re-engagement tracking.
+  override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+  ) -> Bool {
+    ApplicationDelegate.shared.application(
+      app,
+      open: url,
+      sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+      annotation: options[UIApplication.OpenURLOptionsKey.annotation]
+    )
+    return super.application(app, open: url, options: options)
   }
 
   // MARK: - Aggregated Event Measurement (AEM) / Facebook SDK

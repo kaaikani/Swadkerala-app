@@ -5530,6 +5530,13 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                 selectionSet: null,
               ),
               FieldNode(
+                name: NameNode(value: 'createdAt'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
                 name: NameNode(value: 'emailAddress'),
                 alias: null,
                 arguments: [],
@@ -5556,6 +5563,85 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                 arguments: [],
                 directives: [],
                 selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'referredBy'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'referrer'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'firstName'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'lastName'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'status'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'points'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'createdAt'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
               ),
               FieldNode(
                 name: NameNode(value: 'customFields'),
@@ -6413,10 +6499,12 @@ class Query$GetActiveCustomer$activeCustomer {
     this.$__typename = 'Customer',
     required this.id,
     this.title,
+    required this.createdAt,
     required this.emailAddress,
     required this.firstName,
     required this.lastName,
     this.phoneNumber,
+    this.referredBy,
     this.customFields,
     this.addresses,
     required this.orders,
@@ -6427,10 +6515,12 @@ class Query$GetActiveCustomer$activeCustomer {
     final l$$__typename = json['__typename'];
     final l$id = json['id'];
     final l$title = json['title'];
+    final l$createdAt = json['createdAt'];
     final l$emailAddress = json['emailAddress'];
     final l$firstName = json['firstName'];
     final l$lastName = json['lastName'];
     final l$phoneNumber = json['phoneNumber'];
+    final l$referredBy = json['referredBy'];
     final l$customFields = json['customFields'];
     final l$addresses = json['addresses'];
     final l$orders = json['orders'];
@@ -6438,10 +6528,15 @@ class Query$GetActiveCustomer$activeCustomer {
       $__typename: (l$$__typename as String),
       id: (l$id as String),
       title: (l$title as String?),
+      createdAt: DateTime.parse((l$createdAt as String)),
       emailAddress: (l$emailAddress as String),
       firstName: (l$firstName as String),
       lastName: (l$lastName as String),
       phoneNumber: (l$phoneNumber as String?),
+      referredBy: l$referredBy == null
+          ? null
+          : Query$GetActiveCustomer$activeCustomer$referredBy.fromJson(
+              (l$referredBy as Map<String, dynamic>)),
       customFields: l$customFields == null
           ? null
           : Query$GetActiveCustomer$activeCustomer$customFields.fromJson(
@@ -6462,6 +6557,8 @@ class Query$GetActiveCustomer$activeCustomer {
 
   final String? title;
 
+  final DateTime createdAt;
+
   final String emailAddress;
 
   final String firstName;
@@ -6469,6 +6566,8 @@ class Query$GetActiveCustomer$activeCustomer {
   final String lastName;
 
   final String? phoneNumber;
+
+  final Query$GetActiveCustomer$activeCustomer$referredBy? referredBy;
 
   final Query$GetActiveCustomer$activeCustomer$customFields? customFields;
 
@@ -6484,6 +6583,8 @@ class Query$GetActiveCustomer$activeCustomer {
     _resultData['id'] = l$id;
     final l$title = title;
     _resultData['title'] = l$title;
+    final l$createdAt = createdAt;
+    _resultData['createdAt'] = l$createdAt.toIso8601String();
     final l$emailAddress = emailAddress;
     _resultData['emailAddress'] = l$emailAddress;
     final l$firstName = firstName;
@@ -6492,6 +6593,8 @@ class Query$GetActiveCustomer$activeCustomer {
     _resultData['lastName'] = l$lastName;
     final l$phoneNumber = phoneNumber;
     _resultData['phoneNumber'] = l$phoneNumber;
+    final l$referredBy = referredBy;
+    _resultData['referredBy'] = l$referredBy?.toJson();
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields?.toJson();
     final l$addresses = addresses;
@@ -6506,10 +6609,12 @@ class Query$GetActiveCustomer$activeCustomer {
     final l$$__typename = $__typename;
     final l$id = id;
     final l$title = title;
+    final l$createdAt = createdAt;
     final l$emailAddress = emailAddress;
     final l$firstName = firstName;
     final l$lastName = lastName;
     final l$phoneNumber = phoneNumber;
+    final l$referredBy = referredBy;
     final l$customFields = customFields;
     final l$addresses = addresses;
     final l$orders = orders;
@@ -6517,10 +6622,12 @@ class Query$GetActiveCustomer$activeCustomer {
       l$$__typename,
       l$id,
       l$title,
+      l$createdAt,
       l$emailAddress,
       l$firstName,
       l$lastName,
       l$phoneNumber,
+      l$referredBy,
       l$customFields,
       l$addresses == null ? null : Object.hashAll(l$addresses.map((v) => v)),
       l$orders,
@@ -6551,6 +6658,11 @@ class Query$GetActiveCustomer$activeCustomer {
     if (l$title != lOther$title) {
       return false;
     }
+    final l$createdAt = createdAt;
+    final lOther$createdAt = other.createdAt;
+    if (l$createdAt != lOther$createdAt) {
+      return false;
+    }
     final l$emailAddress = emailAddress;
     final lOther$emailAddress = other.emailAddress;
     if (l$emailAddress != lOther$emailAddress) {
@@ -6569,6 +6681,11 @@ class Query$GetActiveCustomer$activeCustomer {
     final l$phoneNumber = phoneNumber;
     final lOther$phoneNumber = other.phoneNumber;
     if (l$phoneNumber != lOther$phoneNumber) {
+      return false;
+    }
+    final l$referredBy = referredBy;
+    final lOther$referredBy = other.referredBy;
+    if (l$referredBy != lOther$referredBy) {
       return false;
     }
     final l$customFields = customFields;
@@ -6624,14 +6741,18 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> {
     String? $__typename,
     String? id,
     String? title,
+    DateTime? createdAt,
     String? emailAddress,
     String? firstName,
     String? lastName,
     String? phoneNumber,
+    Query$GetActiveCustomer$activeCustomer$referredBy? referredBy,
     Query$GetActiveCustomer$activeCustomer$customFields? customFields,
     List<Query$GetActiveCustomer$activeCustomer$addresses>? addresses,
     Query$GetActiveCustomer$activeCustomer$orders? orders,
   });
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy<TRes>
+      get referredBy;
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
       get customFields;
   TRes addresses(
@@ -6660,10 +6781,12 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
     Object? $__typename = _undefined,
     Object? id = _undefined,
     Object? title = _undefined,
+    Object? createdAt = _undefined,
     Object? emailAddress = _undefined,
     Object? firstName = _undefined,
     Object? lastName = _undefined,
     Object? phoneNumber = _undefined,
+    Object? referredBy = _undefined,
     Object? customFields = _undefined,
     Object? addresses = _undefined,
     Object? orders = _undefined,
@@ -6674,6 +6797,9 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
             : ($__typename as String),
         id: id == _undefined || id == null ? _instance.id : (id as String),
         title: title == _undefined ? _instance.title : (title as String?),
+        createdAt: createdAt == _undefined || createdAt == null
+            ? _instance.createdAt
+            : (createdAt as DateTime),
         emailAddress: emailAddress == _undefined || emailAddress == null
             ? _instance.emailAddress
             : (emailAddress as String),
@@ -6686,6 +6812,10 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
         phoneNumber: phoneNumber == _undefined
             ? _instance.phoneNumber
             : (phoneNumber as String?),
+        referredBy: referredBy == _undefined
+            ? _instance.referredBy
+            : (referredBy
+                as Query$GetActiveCustomer$activeCustomer$referredBy?),
         customFields: customFields == _undefined
             ? _instance.customFields
             : (customFields
@@ -6698,6 +6828,16 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
             ? _instance.orders
             : (orders as Query$GetActiveCustomer$activeCustomer$orders),
       ));
+
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy<TRes>
+      get referredBy {
+    final local$referredBy = _instance.referredBy;
+    return local$referredBy == null
+        ? CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy.stub(
+            _then(_instance))
+        : CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy(
+            local$referredBy, (e) => call(referredBy: e));
+  }
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
       get customFields {
@@ -6739,15 +6879,21 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer<TRes>
     String? $__typename,
     String? id,
     String? title,
+    DateTime? createdAt,
     String? emailAddress,
     String? firstName,
     String? lastName,
     String? phoneNumber,
+    Query$GetActiveCustomer$activeCustomer$referredBy? referredBy,
     Query$GetActiveCustomer$activeCustomer$customFields? customFields,
     List<Query$GetActiveCustomer$activeCustomer$addresses>? addresses,
     Query$GetActiveCustomer$activeCustomer$orders? orders,
   }) =>
       _res;
+
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy<TRes>
+      get referredBy =>
+          CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy.stub(_res);
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
       get customFields =>
@@ -6758,6 +6904,411 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer<TRes>
 
   CopyWith$Query$GetActiveCustomer$activeCustomer$orders<TRes> get orders =>
       CopyWith$Query$GetActiveCustomer$activeCustomer$orders.stub(_res);
+}
+
+class Query$GetActiveCustomer$activeCustomer$referredBy {
+  Query$GetActiveCustomer$activeCustomer$referredBy({
+    required this.id,
+    required this.referrer,
+    required this.status,
+    required this.points,
+    required this.createdAt,
+    this.$__typename = 'Referral',
+  });
+
+  factory Query$GetActiveCustomer$activeCustomer$referredBy.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$referrer = json['referrer'];
+    final l$status = json['status'];
+    final l$points = json['points'];
+    final l$createdAt = json['createdAt'];
+    final l$$__typename = json['__typename'];
+    return Query$GetActiveCustomer$activeCustomer$referredBy(
+      id: (l$id as String),
+      referrer:
+          Query$GetActiveCustomer$activeCustomer$referredBy$referrer.fromJson(
+              (l$referrer as Map<String, dynamic>)),
+      status: fromJson$Enum$ReferralStatus((l$status as String)),
+      points: (l$points as int),
+      createdAt: DateTime.parse((l$createdAt as String)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final Query$GetActiveCustomer$activeCustomer$referredBy$referrer referrer;
+
+  final Enum$ReferralStatus status;
+
+  final int points;
+
+  final DateTime createdAt;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$referrer = referrer;
+    _resultData['referrer'] = l$referrer.toJson();
+    final l$status = status;
+    _resultData['status'] = toJson$Enum$ReferralStatus(l$status);
+    final l$points = points;
+    _resultData['points'] = l$points;
+    final l$createdAt = createdAt;
+    _resultData['createdAt'] = l$createdAt.toIso8601String();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$referrer = referrer;
+    final l$status = status;
+    final l$points = points;
+    final l$createdAt = createdAt;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$referrer,
+      l$status,
+      l$points,
+      l$createdAt,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetActiveCustomer$activeCustomer$referredBy ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$referrer = referrer;
+    final lOther$referrer = other.referrer;
+    if (l$referrer != lOther$referrer) {
+      return false;
+    }
+    final l$status = status;
+    final lOther$status = other.status;
+    if (l$status != lOther$status) {
+      return false;
+    }
+    final l$points = points;
+    final lOther$points = other.points;
+    if (l$points != lOther$points) {
+      return false;
+    }
+    final l$createdAt = createdAt;
+    final lOther$createdAt = other.createdAt;
+    if (l$createdAt != lOther$createdAt) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$referredBy
+    on Query$GetActiveCustomer$activeCustomer$referredBy {
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy<
+          Query$GetActiveCustomer$activeCustomer$referredBy>
+      get copyWith =>
+          CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy<
+    TRes> {
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy(
+    Query$GetActiveCustomer$activeCustomer$referredBy instance,
+    TRes Function(Query$GetActiveCustomer$activeCustomer$referredBy) then,
+  ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$referredBy;
+
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$referredBy;
+
+  TRes call({
+    String? id,
+    Query$GetActiveCustomer$activeCustomer$referredBy$referrer? referrer,
+    Enum$ReferralStatus? status,
+    int? points,
+    DateTime? createdAt,
+    String? $__typename,
+  });
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<TRes>
+      get referrer;
+}
+
+class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$referredBy<TRes>
+    implements
+        CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy<TRes> {
+  _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$referredBy(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetActiveCustomer$activeCustomer$referredBy _instance;
+
+  final TRes Function(Query$GetActiveCustomer$activeCustomer$referredBy) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? referrer = _undefined,
+    Object? status = _undefined,
+    Object? points = _undefined,
+    Object? createdAt = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetActiveCustomer$activeCustomer$referredBy(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        referrer: referrer == _undefined || referrer == null
+            ? _instance.referrer
+            : (referrer
+                as Query$GetActiveCustomer$activeCustomer$referredBy$referrer),
+        status: status == _undefined || status == null
+            ? _instance.status
+            : (status as Enum$ReferralStatus),
+        points: points == _undefined || points == null
+            ? _instance.points
+            : (points as int),
+        createdAt: createdAt == _undefined || createdAt == null
+            ? _instance.createdAt
+            : (createdAt as DateTime),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<TRes>
+      get referrer {
+    final local$referrer = _instance.referrer;
+    return CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer(
+        local$referrer, (e) => call(referrer: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$referredBy<TRes>
+    implements
+        CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy<TRes> {
+  _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$referredBy(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    Query$GetActiveCustomer$activeCustomer$referredBy$referrer? referrer,
+    Enum$ReferralStatus? status,
+    int? points,
+    DateTime? createdAt,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<TRes>
+      get referrer =>
+          CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer
+              .stub(_res);
+}
+
+class Query$GetActiveCustomer$activeCustomer$referredBy$referrer {
+  Query$GetActiveCustomer$activeCustomer$referredBy$referrer({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    this.$__typename = 'Customer',
+  });
+
+  factory Query$GetActiveCustomer$activeCustomer$referredBy$referrer.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$firstName = json['firstName'];
+    final l$lastName = json['lastName'];
+    final l$$__typename = json['__typename'];
+    return Query$GetActiveCustomer$activeCustomer$referredBy$referrer(
+      id: (l$id as String),
+      firstName: (l$firstName as String),
+      lastName: (l$lastName as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String firstName;
+
+  final String lastName;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$firstName = firstName;
+    _resultData['firstName'] = l$firstName;
+    final l$lastName = lastName;
+    _resultData['lastName'] = l$lastName;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$firstName = firstName;
+    final l$lastName = lastName;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$firstName,
+      l$lastName,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetActiveCustomer$activeCustomer$referredBy$referrer ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$firstName = firstName;
+    final lOther$firstName = other.firstName;
+    if (l$firstName != lOther$firstName) {
+      return false;
+    }
+    final l$lastName = lastName;
+    final lOther$lastName = other.lastName;
+    if (l$lastName != lOther$lastName) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$referredBy$referrer
+    on Query$GetActiveCustomer$activeCustomer$referredBy$referrer {
+  CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<
+          Query$GetActiveCustomer$activeCustomer$referredBy$referrer>
+      get copyWith =>
+          CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<
+    TRes> {
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer(
+    Query$GetActiveCustomer$activeCustomer$referredBy$referrer instance,
+    TRes Function(Query$GetActiveCustomer$activeCustomer$referredBy$referrer)
+        then,
+  ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$referredBy$referrer;
+
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$referredBy$referrer;
+
+  TRes call({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<
+        TRes>
+    implements
+        CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<
+            TRes> {
+  _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$referredBy$referrer(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetActiveCustomer$activeCustomer$referredBy$referrer _instance;
+
+  final TRes Function(
+      Query$GetActiveCustomer$activeCustomer$referredBy$referrer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? firstName = _undefined,
+    Object? lastName = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetActiveCustomer$activeCustomer$referredBy$referrer(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        firstName: firstName == _undefined || firstName == null
+            ? _instance.firstName
+            : (firstName as String),
+        lastName: lastName == _undefined || lastName == null
+            ? _instance.lastName
+            : (lastName as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<
+        TRes>
+    implements
+        CopyWith$Query$GetActiveCustomer$activeCustomer$referredBy$referrer<
+            TRes> {
+  _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$referredBy$referrer(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Query$GetActiveCustomer$activeCustomer$customFields {

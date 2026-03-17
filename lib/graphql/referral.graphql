@@ -1,0 +1,92 @@
+query MyReferrals($take: Int, $skip: Int, $status: ReferralStatus) {
+  myReferrals(take: $take, skip: $skip, status: $status) {
+    totalItems
+    items {
+      id
+      referralNumber
+      createdAt
+      referredCustomer {
+        id
+        firstName
+        lastName
+        emailAddress
+      }
+      order {
+        id
+        code
+        state
+      }
+      status
+      points
+      isScratched
+      note
+    }
+  }
+}
+
+query EarnedScratchCards($take: Int, $skip: Int) {
+  earnedScratchCards(take: $take, skip: $skip) {
+    totalItems
+    items {
+      id
+      referralNumber
+      createdAt
+      referredCustomer {
+        id
+        firstName
+        lastName
+      }
+      status
+      points
+      isScratched
+      note
+    }
+  }
+}
+
+query ScratchedCards($take: Int, $skip: Int) {
+  scratchedCards(take: $take, skip: $skip) {
+    totalItems
+    items {
+      id
+      referralNumber
+      createdAt
+      referredCustomer {
+        id
+        firstName
+        lastName
+      }
+      status
+      points
+      isScratched
+      note
+    }
+  }
+}
+
+query ReferralChannelPoints {
+  referralChannelPoints {
+    id
+    points
+  }
+}
+
+mutation RegisterReferral($referrerId: ID!) {
+  registerReferral(referrerId: $referrerId) {
+    id
+    referralNumber
+    status
+    note
+  }
+}
+
+mutation ScratchReferralCard($referralNumber: Int!) {
+  scratchReferralCard(referralNumber: $referralNumber) {
+    id
+    referralNumber
+    status
+    points
+    isScratched
+    note
+  }
+}

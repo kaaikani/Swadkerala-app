@@ -103,19 +103,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     ];
   }
 
-  /// Helper function to check if channel is Swad Kerala
-  bool _isSwadKeralaChannel(Query$GetAvailableChannels$getAvailableChannels channel) {
-    final channelToken = channel.token?.toLowerCase() ?? '';
-    final channelName = channel.name.toLowerCase();
-    final channelCode = channel.code.toLowerCase();
-    
-    return channelToken == 'ind-swadkerala' || 
-           channelName.contains('swad kerala') || 
-           channelCode.contains('swad kerala') ||
-           channelName.contains('swadkerala') ||
-           channelCode.contains('swadkerala');
-  }
-
   Future<void> _switchChannel(Query$GetAvailableChannels$getAvailableChannels channel) async {
     if (channel.token == null || channel.token!.isEmpty) {
       showErrorSnackbar('Channel token is missing');
@@ -125,11 +112,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     // Check if channel is already selected - no action needed
     final currentChannelToken = ChannelService.getChannelToken() ?? '';
     if (channel.token == currentChannelToken) {
-      return;
-    }
-    
-    // Check if channel is Swad Kerala - should not switch
-    if (_isSwadKeralaChannel(channel)) {
       return;
     }
 
@@ -156,11 +138,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }
 
   String _getChannelDisplayName(Query$GetAvailableChannels$getAvailableChannels channel) {
-    // Check if channel is Swad Kerala
-    if (_isSwadKeralaChannel(channel)) {
-      return '${channel.name} - Opening soon';
-    }
-    
     if (channel.type == Enum$ChannelType.CITY && channel.isAvailable) {
       return 'Kaaikani ${channel.name}';
     } else if (channel.type == Enum$ChannelType.BRAND) {
@@ -177,11 +154,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   }
 
   bool _isChannelClickable(Query$GetAvailableChannels$getAvailableChannels channel) {
-    // Check if channel is Swad Kerala - not clickable
-    if (_isSwadKeralaChannel(channel)) {
-      return false;
-    }
-    
     if (channel.type == Enum$ChannelType.CITY) {
       final isClickable = channel.isAvailable == true;
       return isClickable;
@@ -217,10 +189,12 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
       return assetPath;
     }
     
-    // Check if channel is Swad Kerala
-    if (_isSwadKeralaChannel(channel)) {
+    // Check if channel token is ind-swadkerala
+    if (channelToken == 'ind-swadkerala' ||
+        channelName.contains('swad kerala') ||
+        channelName.contains('swadkerala')) {
       final assetPath = 'assets/images/SwadKerala Ban.jpeg';
-      debugPrint('✅ [SwitchStore] Returning Swad Kerala image asset path (matched by token/name/code): $assetPath');
+      debugPrint('✅ [SwitchStore] Returning Swad Kerala image asset path: $assetPath');
       return assetPath;
     }
 
@@ -280,22 +254,19 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
     final channelToken = channel.token?.toLowerCase() ?? '';
     final channelName = channel.name.toLowerCase();
     final channelCode = channel.code.toLowerCase();
-    final isSwadkerala = _isSwadKeralaChannel(channel);
-    
     debugPrint('🎴 [SwitchStore] Building image card:');
     debugPrint('   - Channel Key: "$channelKey"');
     debugPrint('   - Channel Token: "$channelToken"');
     debugPrint('   - Channel Name: "$channelName"');
     debugPrint('   - Channel Code: "$channelCode"');
-    debugPrint('   - Is Swadkerala: $isSwadkerala');
     debugPrint('   - Image URL passed: $imageUrl');
 
     // Check if channel is already selected
     final currentChannelToken = ChannelService.getChannelToken() ?? '';
     final isAlreadySelected = channel.token != null && channel.token == currentChannelToken;
-    
-    // Don't allow tap if already selected, not clickable, or is Swadkerala
-    final shouldAllowTap = isClickable && !isAlreadySelected && !isSwadkerala;
+
+    // Don't allow tap if already selected or not clickable
+    final shouldAllowTap = isClickable && !isAlreadySelected;
     
     return GestureDetector(
       onTap: shouldAllowTap ? () => _switchChannel(channel) : null,
@@ -336,28 +307,10 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
               children: [
               // Background Image or Placeholder
               imageUrl != null
-                  ? Stack(
-                      children: [
-                        // Image (dimmed for Swad Kerala)
-                        Opacity(
-                          opacity: isSwadkerala ? 0.3 : 1.0, // Grey shade effect - 30% opacity for Swad Kerala
-                          child: _buildImageWithFallback(
-                            imageUrl,
-                            // Use appropriate fallback based on channel
-                            isSwadkerala
-                                ? 'assets/images/SwadKerala Ban.jpeg'
-                                : 'assets/images/Kaaikani.jpeg',
-                            channelKey: channelKey,
-                          ),
-                        ),
-                        // Grey overlay for Swad Kerala
-                        if (isSwadkerala)
-                          Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            color: Colors.grey.withValues(alpha: 0.3), // Additional grey overlay
-                          ),
-                      ],
+                  ? _buildImageWithFallback(
+                      imageUrl,
+                      'assets/images/Kaaikani.jpeg',
+                      channelKey: channelKey,
                     )
                   : Container(
                       width: double.infinity,
@@ -422,49 +375,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
                       Icons.check_rounded,
                       color: AppColors.button,
                       size: ResponsiveUtils.rp(24),
-                    ),
-                  ),
-                ),
-
-              // Opening Soon Text - Show in center for Swad Kerala (Grey color)
-              if (isSwadkerala && imageUrl != null)
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveUtils.rp(24),
-                      vertical: ResponsiveUtils.rp(12),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: ResponsiveUtils.rp(12),
-                          offset: Offset(0, ResponsiveUtils.rp(4)),
-                          spreadRadius: ResponsiveUtils.rp(2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.schedule_rounded,
-                          color: Colors.grey.shade200,
-                          size: ResponsiveUtils.rp(24),
-                        ),
-                        SizedBox(width: ResponsiveUtils.rp(10)),
-                        Text(
-                          'Opening Soon',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(18),
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade200,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
