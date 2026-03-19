@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,10 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // Track if dialog is showing to prevent multiple dialogs
   bool _isAddressDialogShowing = false;
   bool _isPostalCodeDialogShowing = false;
-  bool _isNotificationDialogShowing = false;
-
-  // Timer to periodically re-check notification permission
-  Timer? _notificationCheckTimer;
   
   // Track if data refresh is in progress to prevent duplicate calls
   bool _isRefreshingData = false;
@@ -109,12 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // Show referral code dialog if user just registered
       _checkAndShowReferralDialog();
     });
-
-    // Re-check notification permission every 3 days while app is open
-    // The internal 7/30-day cooldowns prevent dialogs from appearing too often
-    _notificationCheckTimer = Timer.periodic(const Duration(days: 3), (_) {
-      if (mounted) _checkNotificationPermission();
-    });
     
     // Listen to channel token changes and update UI immediately
     // Only trigger refresh if token actually changed (not just emitted)
@@ -149,7 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _notificationCheckTimer?.cancel();
     _mainScrollController.removeListener(_onMainScroll);
     _mainScrollController.dispose();
     super.dispose();
@@ -208,11 +196,9 @@ class _MyHomePageState extends State<MyHomePage> {
         if (shouldShow) {
           // Show the dialog after a short delay to ensure page is fully loaded
           await Future.delayed(Duration(milliseconds: 500));
-
+          
           if (mounted) {
-            _isNotificationDialogShowing = true;
             await NotificationPermissionDialog.show(context);
-            _isNotificationDialogShowing = false;
             // Mark that we've shown the dialog and record the time
             await box.write('notification_permission_dialog_shown', true);
             await box.write('notification_permission_dialog_last_shown', now);
@@ -230,7 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
         if (shouldShowSettings) {
           await Future.delayed(Duration(milliseconds: 500));
           if (mounted) {
-            _isNotificationDialogShowing = true;
             // Show settings dialog
             Get.dialog(
               AlertDialog(
@@ -281,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-            ).then((_) => _isNotificationDialogShowing = false);
+            );
             await box.write('notification_settings_dialog_shown', true);
             await box.write('notification_settings_dialog_last_shown', now);
           }
@@ -296,15 +281,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _checkAndShowReferralDialog() async {
     final justRegistered = box.read<bool>('just_registered') ?? false;
     if (!justRegistered) return;
-
-    // Clear flag (and its timestamp) immediately so it doesn't show again
+    // Clear flag immediately so it doesn't show again
     await box.remove('just_registered');
-    final registeredAt = box.read<int>('just_registered_at') ?? 0;
-    await box.remove('just_registered_at');
-
-    // Ignore stale flags (set more than 5 minutes ago — e.g. app crashed before showing)
-    final ageMs = DateTime.now().millisecondsSinceEpoch - registeredAt;
-    if (registeredAt == 0 || ageMs > 5 * 60 * 1000) return;
 
     // Wait for notification dialog to finish first
     while (_isNotificationDialogShowing && mounted) {
