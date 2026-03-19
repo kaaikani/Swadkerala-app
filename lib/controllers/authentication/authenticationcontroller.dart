@@ -617,8 +617,11 @@ class AuthController extends BaseController {
       resetFormField();
 
       // 3.5️⃣ Flag new registration so homepage can show referral code dialog
-      if (isRegistration) {
+      // Skip if user came from a referral deep link — referral is auto-processed,
+      // so there's no need to ask them to enter a referral code manually.
+      if (isRegistration && ReferralController.pendingReferrerId == null) {
         GetStorage().write('just_registered', true);
+        GetStorage().write('just_registered_at', DateTime.now().millisecondsSinceEpoch);
       }
 
       // 4️⃣ Claim guest cart if any, then refresh cart and customer
@@ -669,19 +672,21 @@ class AuthController extends BaseController {
     } catch (_) {}
   }
 
-  /// Check if the customer was just created (within last 60 seconds) and set the
-  /// `just_registered` flag so homepage shows the referral code dialog.
-  /// Used for Google/Apple sign-in where login and registration are the same flow.
-  void _checkIfNewRegistrationAndSetFlag() {
+  /// Check if the customer was just created and set the `just_registered` flag
+  /// so homepage shows the referral code dialog.
+  /// [loginStartTime] is recorded BEFORE the sign-in mutation — if the account's
+  /// createdAt is after that moment, it was created during this sign-in = new user.
+  void _checkIfNewRegistrationAndSetFlag(DateTime loginStartTime) {
     try {
       if (Get.isRegistered<CustomerController>()) {
         final customer = Get.find<CustomerController>().activeCustomer.value;
         if (customer != null) {
           final createdAt = customer.createdAt;
-          final now = DateTime.now();
-          final diff = now.difference(createdAt).inSeconds;
-          if (diff <= 60) {
+          // Allow 10s buffer for clock skew between device and server
+          final threshold = loginStartTime.subtract(const Duration(seconds: 10));
+          if (createdAt.isAfter(threshold) && ReferralController.pendingReferrerId == null) {
             GetStorage().write('just_registered', true);
+            GetStorage().write('just_registered_at', DateTime.now().millisecondsSinceEpoch);
           }
         }
       }
@@ -892,6 +897,7 @@ class AuthController extends BaseController {
 
   /// Google Sign In and authenticate
   Future<bool> signInWithGoogle(BuildContext context) async {
+    final loginStartTime = DateTime.now();
     setLoading(true);
     try {
       // Google Auth: read from .env via GoogleAuthEnv
@@ -1022,7 +1028,7 @@ class AuthController extends BaseController {
           setLoggedIn(true);
           resetFormField();
           await _refreshCartAndCustomerAfterLogin();
-          _checkIfNewRegistrationAndSetFlag();
+          _checkIfNewRegistrationAndSetFlag(loginStartTime);
           return true;
         } else {
           ErrorDialog.showError('Authentication token not received from server');
@@ -1126,6 +1132,7 @@ class AuthController extends BaseController {
 
   /// Apple Sign In and authenticate
   Future<bool> signInWithApple(BuildContext context) async {
+    final loginStartTime = DateTime.now();
     _appleLog('═══ START ═══');
     _appleLog('1. Request', {'scopes': 'email, fullName', 'state': _debugState});
     Logger.logFunction(functionName: 'signInWithApple', mutationName: 'LoginWithApple');
@@ -1236,7 +1243,7 @@ class AuthController extends BaseController {
           setLoggedIn(true);
           resetFormField();
           await _refreshCartAndCustomerAfterLogin();
-          _checkIfNewRegistrationAndSetFlag();
+          _checkIfNewRegistrationAndSetFlag(loginStartTime);
           return true;
         } else {
           _appleLog('EXIT', {'reason': 'authToken not received from server'});
