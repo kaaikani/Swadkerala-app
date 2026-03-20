@@ -370,6 +370,31 @@ class _CartItemsListState extends State<CartItemsList> {
 
                 // Handle coupon products differently (shown first at top)
                 if (isCouponProduct && couponCode != null) {
+                  // Original price from variant catalog price × quantity
+                  final originalUnitPrice = variant.price.toInt();
+                  final originalLinePrice = originalUnitPrice * displayQuantity;
+                  // Discounted price (after coupon applied)
+                  final discountedLinePrice = (line.discountedLinePriceWithTax / line.quantity * displayQuantity).toInt();
+                  // Find the promotion's discount % from cart.promotions by matching couponCode
+                  String couponLabel = 'Coupon: $couponCode';
+                  final cartData = widget.cartController.cart.value;
+                  if (cartData != null) {
+                    try {
+                      final promo = cartData.promotions.firstWhere(
+                        (p) => p.couponCode == couponCode,
+                      );
+                      for (final action in promo.actions) {
+                        if (action.code.contains('percentage')) {
+                          final discountArg = action.args.firstWhere(
+                            (a) => a.name == 'discount',
+                            orElse: () => action.args.first,
+                          );
+                          couponLabel = 'Coupon: $couponCode (${discountArg.value}% off)';
+                          break;
+                        }
+                      }
+                    } catch (_) {}
+                  }
                   return _wrapItemCard(
                     context: context,
                     isRemoving: isRemoving,
@@ -377,10 +402,13 @@ class _CartItemsListState extends State<CartItemsList> {
                     child: CartItemCardPremium(
                       imageUrl: imageUrl,
                       productName: variant.name,
-                      variantName: 'Included with coupon: $couponCode',
+                      variantName: couponLabel,
                       stockLevel: line.isAvailable ? variant.stockLevel : null,
-                      unitPrice: 'FREE',
-                      totalPrice: 'FREE',
+                      unitPrice: widget.cartController.formatPrice(originalUnitPrice),
+                      totalPrice: widget.cartController.formatPrice(discountedLinePrice),
+                      originalPrice: originalLinePrice != discountedLinePrice
+                          ? widget.cartController.formatPrice(originalLinePrice)
+                          : null,
                       quantity: displayQuantity,
                       onIncreaseQuantity: null,
                       onDecreaseQuantity: null,

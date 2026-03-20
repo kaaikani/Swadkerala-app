@@ -8,6 +8,7 @@ import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/price_formatter.dart';
 import '../../graphql/banner.graphql.dart';
+import '../../graphql/schema.graphql.dart';
 
 class CheckoutOrderSummarySection extends StatelessWidget {
   final CartController cartController;
@@ -141,17 +142,52 @@ class CheckoutOrderSummarySection extends StatelessWidget {
           ? (loyaltyPointsUsed / pointsPerRupee * 100).toInt()
           : 0;
       
+      // Extract discount percentage from applied coupon promotion
+      String? discountPercentage;
+      if (appliedCouponCode != null && cart != null) {
+        final promo = cart.promotions.firstWhereOrNull(
+          (p) => (p.couponCode ?? '').toUpperCase() == appliedCouponCode.toUpperCase(),
+        );
+        if (promo != null) {
+          for (final action in promo.actions) {
+            if (action.code.contains('percentage')) {
+              final discountArg = action.args.firstWhereOrNull(
+                (a) => a.name == 'discount',
+              );
+              if (discountArg != null) {
+                discountPercentage = '${discountArg.value}%';
+                break;
+              }
+            }
+          }
+        }
+      }
+
       // Get coupon discount from cart discounts (updated after coupon application)
+      // Vendure returns discount amounts as negative values, so use .abs()
       int couponDiscount = 0;
       if (cart != null && cart.discounts.isNotEmpty) {
         couponDiscount = cart.discounts
-            .where((discount) => discount.adjustmentSource == 'PROMOTION' || 
-                                 discount.adjustmentSource == 'COUPON_CODE')
-            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
-      } else if (bannerController.appliedCouponCodes.isNotEmpty) {
-        // Fallback: calculate from subtotal and total
+            .where((discount) => discount.type == Enum$AdjustmentType.PROMOTION ||
+                                 discount.type == Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt().abs());
+      }
+      // Also check line-level discounts if order-level is 0
+      // Some promotions (e.g. products_percentage_discount) apply at line level
+      if (couponDiscount == 0 && cart != null && bannerController.appliedCouponCodes.isNotEmpty) {
+        for (final line in cart.lines) {
+          if (line.discounts.isNotEmpty) {
+            couponDiscount += line.discounts
+                .where((d) => d.type == Enum$AdjustmentType.PROMOTION ||
+                              d.type == Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+                .fold(0, (int sum, d) => sum + d.amountWithTax.toInt().abs());
+          }
+        }
+      }
+      // Final fallback: calculate from subtotal and total
+      if (couponDiscount == 0 && bannerController.appliedCouponCodes.isNotEmpty) {
         final totalDiscount = (subtotal + (hasFreeShipping ? 0 : shipping) - total);
-        couponDiscount = (totalDiscount - loyaltyDiscountAmount).toInt();
+        couponDiscount = (totalDiscount - loyaltyDiscountAmount).toInt().abs();
       }
       
       return Column(
@@ -175,7 +211,9 @@ class CheckoutOrderSummarySection extends StatelessWidget {
               children: [
                 _buildSummaryRow(
                   'Items ($itemCount)',
-                  PriceFormatter.formatPrice(subtotal.toInt()),
+                  // Vendure's subTotalWithTax already has coupon discount applied,
+                  // so add it back to show the original subtotal before discount
+                  PriceFormatter.formatPrice(subtotal.toInt() + couponDiscount),
                 ),
                 SizedBox(height: ResponsiveUtils.rp(12)),
                 if (hasFreeShipping && hasFreeShippingInCoupon && appliedCouponCode != null) ...[
@@ -263,9 +301,9 @@ class CheckoutOrderSummarySection extends StatelessWidget {
                             SizedBox(width: ResponsiveUtils.rp(6)),
                             Flexible(
                               child: Text(
-                                appliedCouponName != null 
-                                    ? 'Coupon: $appliedCouponName'
-                                    : 'Coupon Discount',
+                                appliedCouponName != null
+                                    ? 'Coupon: $appliedCouponName${discountPercentage != null ? ' ($discountPercentage)' : ''}'
+                                    : 'Coupon Discount${discountPercentage != null ? ' ($discountPercentage)' : ''}',
                                 style: TextStyle(
                                   fontSize: ResponsiveUtils.sp(15),
                                   fontWeight: FontWeight.w500,
@@ -313,6 +351,36 @@ class CheckoutOrderSummarySection extends StatelessWidget {
                     ),
                   ],
                 ),
+                // "You save" banner when coupon discount is applied
+                if (couponDiscount > 0) ...[
+                  SizedBox(height: ResponsiveUtils.rp(12)),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveUtils.rp(12),
+                      vertical: ResponsiveUtils.rp(6),
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.savings_outlined, size: ResponsiveUtils.rp(16), color: AppColors.success),
+                        SizedBox(width: ResponsiveUtils.rp(6)),
+                        Text(
+                          'You save ${PriceFormatter.formatPrice(couponDiscount)} with this coupon',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(13),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.success,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

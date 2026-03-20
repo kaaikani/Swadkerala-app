@@ -46,7 +46,7 @@ class CouponValidationHelper {
           results.add(_evaluateMinimumOrderAmount(argsMap, cart));
           break;
         case 'contains_products':
-          results.add(_evaluateContainsProducts(argsMap, cart, variantNames));
+          results.add(_evaluateContainsProducts(argsMap, cart, variantNames, coupon.promotion.actions));
           break;
         case 'at_least_n_with_facets':
           results.add(_evaluateAtLeastNWithFacets(argsMap, facetValueNames));
@@ -248,6 +248,7 @@ class CouponValidationHelper {
     Map<String, String> args,
     cart_graphql.Fragment$Cart? cart,
     Map<String, String>? variantNames,
+    List<dynamic> actions,
   ) {
     final variantIds = _parseIdList(args['productVariantIds'] ?? '');
     final minimum = int.tryParse(args['minimum'] ?? '1') ?? 1;
@@ -280,12 +281,36 @@ class CouponValidationHelper {
       productText = 'required product(s)';
     }
 
-    // Show as a free product benefit — always green, never red
+    // Extract discount % from coupon actions instead of showing "Free"
+    String discountText = _getDiscountTextFromActions(actions, variantNames);
+
     return CouponConditionInfo(
       code: 'contains_products',
-      displayText: 'Free: $minimum × $productText',
+      displayText: '$discountText on $minimum × $productText',
       isMet: true,
     );
+  }
+
+  /// Extract the discount description from coupon actions for display in conditions.
+  /// Returns e.g. "10% off", "₹50 off", or falls back to "Discount" if unknown.
+  static String _getDiscountTextFromActions(List<dynamic> actions, Map<String, String>? variantNames) {
+    for (final action in actions) {
+      final argsMap = {for (var a in action.args) a.name: a.value};
+      switch (action.code) {
+        case 'order_percentage_discount':
+        case 'products_percentage_discount':
+          final discount = argsMap['discount'] ?? '0';
+          return '$discount% off';
+        case 'order_fixed_discount':
+        case 'order_line_fixed_discount':
+          final amount = int.tryParse(argsMap['discount'] ?? '0') ?? 0;
+          return '${PriceFormatter.formatPrice(amount)} off';
+        case 'facet_based_discount':
+          final discount = argsMap['discount'] ?? '0';
+          return '$discount% off';
+      }
+    }
+    return 'Discount';
   }
 
   static CouponConditionInfo _evaluateAtLeastNWithFacets(

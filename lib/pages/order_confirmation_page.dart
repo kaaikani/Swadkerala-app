@@ -244,12 +244,12 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                           .where((line) => line.discountedLinePriceWithTax > 0)
                           .map((line) => _buildProductItem(line, isFree: false))
                           .toList(),
-                      // Coupon / free products (show separately as free)
+                      // Coupon discounted products
                       if (order.couponCodes.isNotEmpty &&
                           order.lines.any((line) => line.discountedLinePriceWithTax == 0)) ...[
                         SizedBox(height: ResponsiveUtils.rp(12)),
                         Text(
-                          'Free with coupon',
+                          'Discounted with coupon',
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(14),
                             fontWeight: FontWeight.w600,
@@ -259,7 +259,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                         SizedBox(height: ResponsiveUtils.rp(8)),
                         ...order.lines
                             .where((line) => line.discountedLinePriceWithTax == 0)
-                            .map((line) => _buildProductItem(line, isFree: true))
+                            .map((line) => _buildProductItem(line, isFree: false))
                             .toList(),
                       ],
                       Divider(height: ResponsiveUtils.rp(32), color: AppColors.divider),

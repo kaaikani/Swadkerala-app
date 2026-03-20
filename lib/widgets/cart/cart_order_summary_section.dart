@@ -5,6 +5,7 @@ import '../../controllers/order/ordercontroller.dart';
 import '../../controllers/banner/bannercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
+import '../../graphql/schema.graphql.dart';
 
 class CartOrderSummarySection extends StatefulWidget {
   final CartController cartController;
@@ -38,40 +39,53 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
       final finalTotal = cart.totalWithTax.toInt();
       
       // Get loyalty discount from cart discounts first (updated after coupon), fallback to order
+      // Vendure returns discount amounts as negative values, so use .abs()
       int loyaltyDiscount = 0;
       if (cart.discounts.isNotEmpty) {
         loyaltyDiscount = cart.discounts
-            .where((discount) => discount.adjustmentSource != 'PROMOTION' && 
-                                 discount.adjustmentSource != 'COUPON_CODE' &&
-                                 discount.adjustmentSource != 'DISTRIBUTED_ORDER_PROMOTION')
-            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+            .where((discount) => discount.type != Enum$AdjustmentType.PROMOTION &&
+                                 discount.type != Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt().abs());
       } else if (order != null && order.discounts.isNotEmpty) {
         loyaltyDiscount = order.discounts
-            .where((discount) => discount.adjustmentSource != 'PROMOTION' && 
-                                 discount.adjustmentSource != 'COUPON_CODE' &&
-                                 discount.adjustmentSource != 'DISTRIBUTED_ORDER_PROMOTION')
-            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+            .where((discount) => discount.type != Enum$AdjustmentType.PROMOTION &&
+                                 discount.type != Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt().abs());
       }
-      
+
       // Get coupon discount from cart discounts first (updated after coupon), fallback to order
+      // Vendure returns discount amounts as negative values, so use .abs() to get positive total
       int couponDiscountTotal = 0;
       if (cart.discounts.isNotEmpty) {
         couponDiscountTotal = cart.discounts
-            .where((discount) => discount.adjustmentSource == 'PROMOTION' || 
-                                 discount.adjustmentSource == 'COUPON_CODE')
-            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+            .where((discount) => discount.type == Enum$AdjustmentType.PROMOTION ||
+                                 discount.type == Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt().abs());
       } else if (order != null && order.discounts.isNotEmpty) {
         couponDiscountTotal = order.discounts
-            .where((discount) => discount.adjustmentSource == 'PROMOTION' || 
-                                 discount.adjustmentSource == 'COUPON_CODE')
-            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt());
+            .where((discount) => discount.type == Enum$AdjustmentType.PROMOTION ||
+                                 discount.type == Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt().abs());
+      }
+      // Also check line-level discounts if order-level discounts are 0
+      // Some promotions (e.g. products_percentage_discount) apply at the line level
+      if (couponDiscountTotal == 0 && widget.bannerController.appliedCouponCodes.isNotEmpty) {
+        for (final line in cart.lines) {
+          if (line.discounts.isNotEmpty) {
+            couponDiscountTotal += line.discounts
+                .where((d) => d.type == Enum$AdjustmentType.PROMOTION ||
+                              d.type == Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+                .fold(0, (int sum, d) => sum + d.amountWithTax.toInt().abs());
+          }
+        }
       }
       
-      // Get applied coupon name
+      // Get applied coupon name and discount percentage
       String? appliedCouponName;
+      String? discountPercentage;
       if (widget.bannerController.appliedCouponCodes.isNotEmpty) {
+        final appliedCode = widget.bannerController.appliedCouponCodes.first;
         if (widget.bannerController.availableCouponCodes.isNotEmpty) {
-          final appliedCode = widget.bannerController.appliedCouponCodes.first;
           final coupon = widget.bannerController.availableCouponCodes.firstWhereOrNull(
             (c) => c.promotion.couponCode == appliedCode,
           );
@@ -79,7 +93,24 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
               ? coupon!.promotion.name
               : appliedCode;
         } else {
-          appliedCouponName = widget.bannerController.appliedCouponCodes.first;
+          appliedCouponName = appliedCode;
+        }
+        // Extract discount percentage from cart promotions
+        final promo = cart.promotions.firstWhereOrNull(
+          (p) => (p.couponCode ?? '').toUpperCase() == appliedCode.toUpperCase(),
+        );
+        if (promo != null) {
+          for (final action in promo.actions) {
+            if (action.code.contains('percentage')) {
+              final discountArg = action.args.firstWhereOrNull(
+                (a) => a.name == 'discount',
+              );
+              if (discountArg != null) {
+                discountPercentage = '${discountArg.value}%';
+                break;
+              }
+            }
+          }
         }
       }
       
@@ -133,7 +164,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
               ],
             ),
             SizedBox(height: ResponsiveUtils.rp(12)),
-            // When collapsed: show Subtotal with Tax and Total with Tax only
+            // When collapsed: show Subtotal, coupon discount, and Total with Tax
             if (!_isExpanded) ...[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -147,7 +178,9 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                     ),
                   ),
                   Text(
-                    widget.cartController.formatPrice(cart.subTotalWithTax.toInt()),
+                    // Vendure's subTotalWithTax already has coupon discount applied,
+                    // so add it back to show the original subtotal before discount
+                    widget.cartController.formatPrice(cart.subTotalWithTax.toInt() + couponDiscountTotal),
                     style: TextStyle(
                       fontSize: ResponsiveUtils.sp(14),
                       fontWeight: FontWeight.w600,
@@ -156,11 +189,42 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                   ),
                 ],
               ),
+              // Coupon discount in collapsed view
+              if (couponDiscountTotal > 0 && appliedCouponName != null) ...[
+                SizedBox(height: ResponsiveUtils.rp(8)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.local_offer, size: ResponsiveUtils.rp(14), color: AppColors.success),
+                        SizedBox(width: ResponsiveUtils.rp(4)),
+                        Text(
+                          'Coupon Discount${discountPercentage != null ? ' ($discountPercentage)' : ''}',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.sp(13),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.success,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '-${widget.cartController.formatPrice(couponDiscountTotal)}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(14),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               SizedBox(height: ResponsiveUtils.rp(8)),
             ],
             // Show full breakdown only if expanded
             if (_isExpanded) ...[
-              // Subtotal (without tax)
+              // Subtotal (without tax) — add back coupon discount to show original
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -173,7 +237,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                   ),
                 ),
                 Text(
-                    widget.cartController.formatPrice(cart.subTotal.toInt()),
+                    widget.cartController.formatPrice(cart.subTotal.toInt() + couponDiscountTotal),
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(14),
                     fontWeight: FontWeight.w600,
@@ -313,7 +377,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Coupon Discount',
+                      'Coupon Discount${discountPercentage != null ? ' ($discountPercentage)' : ''}',
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(14),
                         fontWeight: FontWeight.w500,
@@ -406,6 +470,36 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                 ),
               ],
             ),
+            // "You save" banner when coupon discount is applied
+            if (couponDiscountTotal > 0) ...[
+              SizedBox(height: ResponsiveUtils.rp(8)),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.rp(12),
+                  vertical: ResponsiveUtils.rp(6),
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.savings_outlined, size: ResponsiveUtils.rp(16), color: AppColors.success),
+                    SizedBox(width: ResponsiveUtils.rp(6)),
+                    Text(
+                      'You save ${widget.cartController.formatPrice(couponDiscountTotal)} with this coupon',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(13),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       );

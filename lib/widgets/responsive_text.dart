@@ -13,6 +13,7 @@ class ResponsiveText extends StatelessWidget {
   final TextAlign? textAlign;
   final double? letterSpacing;
   final double? height;
+  final TextDecoration? textDecoration;
   final TextStyle? style;
 
   const ResponsiveText(
@@ -26,6 +27,7 @@ class ResponsiveText extends StatelessWidget {
     this.textAlign,
     this.letterSpacing,
     this.height,
+    this.textDecoration,
     this.style,
   }) : super(key: key);
 
@@ -45,6 +47,7 @@ class ResponsiveText extends StatelessWidget {
             color: color ?? AppColors.textPrimary,
             letterSpacing: letterSpacing,
             height: height,
+            decoration: textDecoration,
           ),
     );
   }

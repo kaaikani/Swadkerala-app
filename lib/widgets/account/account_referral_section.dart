@@ -31,7 +31,7 @@ class AccountReferralSection extends StatelessWidget {
     final customer = customerController.activeCustomer.value;
     if (customer == null) return;
     final customerId = customer.id;
-    final link = 'https://www.avsecomhub.com/products/kaaikani/refer?referrerId=$customerId';
+    final link = 'https://kaaikanistore.com/home?referrerId=$customerId';
     try {
       await Share.share(
         'Hey! Use my referral link to sign up on Kaaikani and we both earn rewards!\n\n$link',

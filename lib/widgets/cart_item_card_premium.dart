@@ -15,6 +15,7 @@ class CartItemCardPremium extends StatelessWidget {
   final String? variantName;
   final String unitPrice;
   final String totalPrice;
+  final String? originalPrice; // Original price before discount (shown struck through)
   final int quantity;
   final VoidCallback? onIncreaseQuantity;
   final VoidCallback? onDecreaseQuantity;
@@ -36,6 +37,7 @@ class CartItemCardPremium extends StatelessWidget {
     this.variantName,
     required this.unitPrice,
     required this.totalPrice,
+    this.originalPrice,
     required this.quantity,
     this.onIncreaseQuantity,
     this.onDecreaseQuantity,
@@ -246,16 +248,33 @@ class CartItemCardPremium extends StatelessWidget {
                                   : AppColors.textPrimary,
                             ),
                         ),
-                        ResponsiveText(
-                          totalPrice,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: totalPrice == 'FREE' 
-                              ? AppColors.success
-                              : (isUnavailable
-                              ? AppColors.textSecondary
-                                  : AppColors.button),
-                        ),
+                        if (originalPrice != null && originalPrice != totalPrice)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              ResponsiveText(
+                                originalPrice!,
+                                fontSize: 12,
+                                color: AppColors.textTertiary,
+                                textDecoration: TextDecoration.lineThrough,
+                              ),
+                              ResponsiveText(
+                                totalPrice,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.success,
+                              ),
+                            ],
+                          )
+                        else
+                          ResponsiveText(
+                            totalPrice,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: isUnavailable
+                                ? AppColors.textSecondary
+                                : AppColors.button,
+                          ),
                       ],
                     ),
                   ],

@@ -337,13 +337,13 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
     final isProductDisabled = line.productVariant.product.enabled == false;
     final isUnavailable = !line.isAvailable || isOutOfStock || isProductDisabled;
     
-    // If product was added via coupon, ALWAYS treat it as free and disable controls
-    // Otherwise, check if product is free (discounted price is 0)
-    final isFree = isCouponProduct || line.discountedLinePriceWithTax == 0;
-    // Check if product is discounted but not free and not a coupon product
-    final isDiscounted = !isCouponProduct && 
-                        line.discountedLinePriceWithTax < line.linePriceWithTax && 
-                        line.discountedLinePriceWithTax > 0;
+    // Check if product is actually free (discounted price is 0 and not a coupon product)
+    final isFree = !isCouponProduct && line.discountedLinePriceWithTax == 0;
+    // Coupon products or items with a discount show the discounted price
+    final isDiscounted = (isCouponProduct && line.discountedLinePriceWithTax < line.linePriceWithTax) ||
+                        (!isCouponProduct &&
+                        line.discountedLinePriceWithTax < line.linePriceWithTax &&
+                        line.discountedLinePriceWithTax > 0);
 
     return Padding(
       padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(16)),
@@ -397,7 +397,50 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                if (isFree) ...[
+                if (isCouponProduct && isDiscounted) ...[
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  Builder(builder: (context) {
+                    // Find promotion discount % from cart.promotions
+                    String discountLabel = 'Coupon applied';
+                    final cart = widget.cartController.cart.value;
+                    if (cart != null) {
+                      final couponCodes = cart.couponCodes;
+                      for (final code in couponCodes) {
+                        try {
+                          final promo = cart.promotions.firstWhere((p) => p.couponCode == code);
+                          for (final action in promo.actions) {
+                            if (action.code.contains('percentage')) {
+                              final discountArg = action.args.firstWhere(
+                                (a) => a.name == 'discount',
+                                orElse: () => action.args.first,
+                              );
+                              discountLabel = '${discountArg.value}% off with $code';
+                              break;
+                            }
+                          }
+                        } catch (_) {}
+                      }
+                    }
+                    return Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveUtils.rp(6),
+                        vertical: ResponsiveUtils.rp(2),
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        discountLabel,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(10),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.success,
+                        ),
+                      ),
+                    );
+                  }),
+                ] else if (isFree) ...[
                   SizedBox(height: ResponsiveUtils.rp(4)),
                   Container(
                     padding: EdgeInsets.symmetric(
@@ -444,11 +487,11 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Price - Coupon products ALWAYS show as FREE
+                    // Price
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         if (isCouponProduct || isFree)
+                         if (isFree)
                           Text(
                             'FREE',
                             style: TextStyle(
