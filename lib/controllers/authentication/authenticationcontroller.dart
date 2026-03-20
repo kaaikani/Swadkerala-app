@@ -48,6 +48,8 @@ class AuthController extends BaseController {
 
   // Getters
   bool get isLoggedIn => _isLoggedIn.value;
+  /// Reactive version of isLoggedIn for use in Obx/ever/workers
+  RxBool get isLoggedInRx => _isLoggedIn;
   bool get isOtpSent => _isOtpSent.value;
   bool get isLoading => utilityController.isLoading;
 
