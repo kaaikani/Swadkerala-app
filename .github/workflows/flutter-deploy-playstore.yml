@@ -87,16 +87,17 @@ jobs:
         run: |
           sed -i '/^fluttertoast=/d' .flutter-plugins 2>/dev/null || true
           sed -i '/^speech_to_text=/d' .flutter-plugins 2>/dev/null || true
+          sed -i '/^flutter_dynamic_icon=/d' .flutter-plugins 2>/dev/null || true
           if [ -f .flutter-plugins-dependencies ]; then
             jq '
-              .plugins.android |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
-              .plugins.ios |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
-              .plugins.web |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
-              .plugins.macos |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
-              .plugins.linux |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
-              .plugins.windows |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
-              .dependencyGraph |= map(select(.name != "fluttertoast" and .name != "speech_to_text")) |
-              .dependencyGraph |= map(if .dependencies then .dependencies |= map(select(. != "fluttertoast" and . != "speech_to_text")) else . end)
+              .plugins.android |= map(select(.name != "fluttertoast" and .name != "speech_to_text" and .name != "flutter_dynamic_icon")) |
+              .plugins.ios |= map(select(.name != "fluttertoast" and .name != "speech_to_text" and .name != "flutter_dynamic_icon")) |
+              .plugins.web |= map(select(.name != "fluttertoast" and .name != "speech_to_text" and .name != "flutter_dynamic_icon")) |
+              .plugins.macos |= map(select(.name != "fluttertoast" and .name != "speech_to_text" and .name != "flutter_dynamic_icon")) |
+              .plugins.linux |= map(select(.name != "fluttertoast" and .name != "speech_to_text" and .name != "flutter_dynamic_icon")) |
+              .plugins.windows |= map(select(.name != "fluttertoast" and .name != "speech_to_text" and .name != "flutter_dynamic_icon")) |
+              .dependencyGraph |= map(select(.name != "fluttertoast" and .name != "speech_to_text" and .name != "flutter_dynamic_icon")) |
+              .dependencyGraph |= map(if .dependencies then .dependencies |= map(select(. != "fluttertoast" and . != "speech_to_text" and . != "flutter_dynamic_icon")) else . end)
             ' .flutter-plugins-dependencies > .flutter-plugins-dependencies.tmp && mv .flutter-plugins-dependencies.tmp .flutter-plugins-dependencies
             echo "Removed fluttertoast and speech_to_text from .flutter-plugins-dependencies"
           fi
@@ -107,7 +108,7 @@ jobs:
       - name: Patch GeneratedPluginRegistrant.java
         run: |
           REGISTRANT="android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java"
-          for plugin in SpeechToTextPlugin FlutterToastPlugin FlutterNativeSplashPlugin; do
+          for plugin in SpeechToTextPlugin FlutterToastPlugin FlutterNativeSplashPlugin FlutterDynamicIconPlugin; do
             line=$(grep -n "$plugin" "$REGISTRANT" 2>/dev/null | head -1 | cut -d: -f1)
             while [ -n "$line" ]; do
               start=$((line - 2))
