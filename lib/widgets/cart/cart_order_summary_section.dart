@@ -73,10 +73,10 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
         if (widget.bannerController.availableCouponCodes.isNotEmpty) {
           final appliedCode = widget.bannerController.appliedCouponCodes.first;
           final coupon = widget.bannerController.availableCouponCodes.firstWhereOrNull(
-            (c) => c.couponCode == appliedCode,
+            (c) => c.promotion.couponCode == appliedCode,
           );
-          appliedCouponName = coupon?.name.isNotEmpty == true 
-              ? coupon!.name 
+          appliedCouponName = coupon?.promotion.name.isNotEmpty == true
+              ? coupon!.promotion.name
               : appliedCode;
         } else {
           appliedCouponName = widget.bannerController.appliedCouponCodes.first;

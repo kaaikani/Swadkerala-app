@@ -187,7 +187,7 @@ class CustomerController extends BaseController {
           Future.wait([
             bannerController.getCouponCodeList(),
             bannerController.fetchLoyaltyPointsConfig(),
-          ], eagerError: false).catchError((_) {});
+          ], eagerError: false).catchError((_) => <void>[]);
         }
         return;
       }

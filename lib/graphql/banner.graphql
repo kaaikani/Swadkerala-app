@@ -86,6 +86,7 @@ query GetCustomerFavorites {
                             price
                             priceWithTax
                             currencyCode
+                            stockLevel
                             options {
                                 id
                                 name
@@ -123,6 +124,7 @@ query GetFrequentlyOrderedProducts {
                 price
                 priceWithTax
                 currencyCode
+                stockLevel
                 options {
                     id
                     name
@@ -180,42 +182,69 @@ mutation RemoveLoyaltyPointsFromActiveOrder {
 
 
 
-query GetCouponCodeList{
-    getCouponCodeList{
-
-        items {
-            id
-            name
-
-            couponCode
-            description
-            enabled
-            endsAt
-            startsAt
-            createdAt
-            updatedAt
-
-            perCustomerUsageLimit
-            actions {
-                code
-                args {
-
-                    name
-                    value
-                }
-            }
-
-            conditions{
-                code
-                args{
-                    name
-                    value
-                }
-            }
-            usageLimit
-        }
+query GetCouponCodeList {
+    getCouponCodeList {
         totalItems
         __typename
+        items {
+            customerGroup {
+                id
+                name
+            }
+            productVariants {
+                id
+                name
+                price
+                priceWithTax
+                featuredAsset {
+                    id
+                    preview
+                    source
+                }
+                product {
+                    id
+                    name
+                    slug
+                }
+            }
+            facetValues {
+                id
+                name
+                code
+                facet {
+                    id
+                    name
+                    code
+                }
+            }
+            promotion {
+                id
+                name
+                couponCode
+                description
+                enabled
+                endsAt
+                startsAt
+                createdAt
+                updatedAt
+                perCustomerUsageLimit
+                usageLimit
+                actions {
+                    code
+                    args {
+                        name
+                        value
+                    }
+                }
+                conditions {
+                    code
+                    args {
+                        name
+                        value
+                    }
+                }
+            }
+        }
     }
 }
 

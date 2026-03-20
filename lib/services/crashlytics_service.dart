@@ -20,16 +20,22 @@ class CrashlyticsService {
     }
 
     try {
-      // Pass all uncaught errors to Crashlytics
-      FlutterError.onError = (errorDetails) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-      };
+      // Enable Crashlytics only for store builds (AAB/IPA with --dart-define=ANALYTICS_ENABLED=true)
+      const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
+      await FirebaseCrashlytics.instance
+          .setCrashlyticsCollectionEnabled(analyticsEnabled);
 
-      // Pass all uncaught asynchronous errors to Crashlytics
-      PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        return true;
-      };
+      if (analyticsEnabled) {
+        // Only register error handlers for store builds
+        FlutterError.onError = (errorDetails) {
+          FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+        };
+
+        PlatformDispatcher.instance.onError = (error, stack) {
+          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+          return true;
+        };
+      }
 
       _initialized = true;
     } catch (e) {
@@ -44,7 +50,8 @@ class CrashlyticsService {
     bool fatal = false,
     Map<String, dynamic>? additionalData,
   }) {
-    if (kIsWeb || !_initialized) return;
+    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
+    if (kIsWeb || !_initialized || !analyticsEnabled) return;
 
     try {
       if (additionalData != null) {
@@ -69,7 +76,8 @@ class CrashlyticsService {
 
   /// Log a message
   void log(String message) {
-    if (kIsWeb || !_initialized) return;
+    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
+    if (kIsWeb || !_initialized || !analyticsEnabled) return;
 
     try {
       FirebaseCrashlytics.instance.log(message);
@@ -79,7 +87,8 @@ class CrashlyticsService {
 
   /// Set user identifier
   void setUserId(String userId) {
-    if (kIsWeb || !_initialized) return;
+    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
+    if (kIsWeb || !_initialized || !analyticsEnabled) return;
 
     try {
       FirebaseCrashlytics.instance.setUserIdentifier(userId);
@@ -89,7 +98,8 @@ class CrashlyticsService {
 
   /// Set custom key-value pair
   void setCustomKey(String key, dynamic value) {
-    if (kIsWeb || !_initialized) return;
+    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
+    if (kIsWeb || !_initialized || !analyticsEnabled) return;
 
     try {
       if (value is String) {

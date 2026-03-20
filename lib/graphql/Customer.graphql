@@ -113,6 +113,10 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
                 location
                 loyaltyPointsAvailable
             }
+            groups {
+                id
+                name
+            }
             addresses {
                 id
                 postalCode

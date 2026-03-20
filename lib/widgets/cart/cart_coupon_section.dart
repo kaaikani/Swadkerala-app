@@ -93,7 +93,7 @@ class CartCouponSection extends StatelessWidget {
                 Query$GetCouponCodeList$getCouponCodeList$items? appliedCoupon;
                 try {
                   appliedCoupon = bannerController.availableCouponCodes.firstWhere(
-                    (c) => (c.couponCode ?? '').toLowerCase() == appliedCouponCode.toLowerCase(),
+                    (c) => (c.promotion.couponCode ?? '').toLowerCase() == appliedCouponCode.toLowerCase(),
                   );
                 } catch (e) {
                   // Coupon not found in list, show just the code
@@ -131,14 +131,14 @@ class CartCouponSection extends StatelessWidget {
                             ),
                             SizedBox(height: ResponsiveUtils.rp(4)),
                             Text(
-                              appliedCoupon?.name ?? appliedCouponCode,
+                              appliedCoupon?.promotion.name ?? appliedCouponCode,
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(14),
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
                             ),
-                            if (appliedCouponCode != appliedCoupon?.name && appliedCoupon?.name != null)
+                            if (appliedCouponCode != appliedCoupon?.promotion.name && appliedCoupon?.promotion.name != null)
                               Text(
                                 appliedCouponCode,
                                 style: TextStyle(

@@ -462,7 +462,8 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
             ], eagerError: false);
           },
           color: AppColors.refreshIndicator,
-          child: GridView.builder(
+          child: OrientationBuilder(
+            builder: (context, orientation) => GridView.builder(
             controller: _scrollController,
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(
@@ -471,10 +472,10 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
             ),
             itemCount: variants.length + (controller.hasMoreItems ? 1 : 0), // Add 1 for loading indicator
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+              crossAxisCount: ResponsiveUtils.gridCrossAxisCount,
               crossAxisSpacing: ResponsiveUtils.rp(14),
               mainAxisSpacing: ResponsiveUtils.rp(18),
-              childAspectRatio: ResponsiveUtils.rp(0.72),
+              childAspectRatio: orientation == Orientation.landscape ? 0.85 : 0.72,
             ),
             itemBuilder: (context, index) {
               // Show loading indicator at the end
@@ -540,6 +541,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                     NavigationHelper.navigateToProductDetail(
                       productId: productId,
                       productName: name,
+                      selectedVariantId: selectedVariant.id,
                     );
                   },
                   onDoubleTap: () => _handleFavoriteToggle(productId, name),
@@ -569,6 +571,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
               });
             },
           ),
+          ),  // OrientationBuilder
         );
       }),
     );
@@ -584,19 +587,20 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
           : GraphqlService.channelToken;
       final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
       
-      return Skeletonizer(
-      enabled: true,
-      child: GridView.builder(
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveUtils.rp(16),
-          vertical: ResponsiveUtils.rp(20),
-        ),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: ResponsiveUtils.rp(14),
-          mainAxisSpacing: ResponsiveUtils.rp(18),
-          childAspectRatio: ResponsiveUtils.rp(0.72),
-        ),
+      return OrientationBuilder(
+        builder: (context, orientation) => Skeletonizer(
+        enabled: true,
+        child: GridView.builder(
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveUtils.rp(16),
+            vertical: ResponsiveUtils.rp(20),
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: ResponsiveUtils.gridCrossAxisCount,
+            crossAxisSpacing: ResponsiveUtils.rp(14),
+            mainAxisSpacing: ResponsiveUtils.rp(18),
+            childAspectRatio: orientation == Orientation.landscape ? 0.85 : 0.72,
+          ),
         itemCount: 8,
         itemBuilder: (context, index) {
           return Container(
@@ -675,11 +679,12 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                 ),
               ],
             ),
-          );
-        },
-      ),
-      );
-    });
+          );        // Container
+        },          // itemBuilder
+      ),            // GridView.builder (child of Skeletonizer)
+    ),              // Skeletonizer (return value of OrientationBuilder builder)
+    );              // OrientationBuilder
+    });             // Obx
   }
 
   /// Build loading indicator for lazy loading

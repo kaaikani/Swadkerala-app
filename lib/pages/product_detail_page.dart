@@ -27,11 +27,13 @@ import '../services/analytics_service.dart';
 class ProductDetailPage extends StatefulWidget {
   final String productId;
   final String? productName;
+  final String? selectedVariantId;
 
   const ProductDetailPage({
     Key? key,
     required this.productId,
     this.productName,
+    this.selectedVariantId,
   }) : super(key: key);
 
   @override
@@ -344,8 +346,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           }
           
           if (productDetail!.variants.isNotEmpty) {
-            selectedVariant = productDetail!.variants.first;
-            _selectedOptionsByGroup = _selectedOptionsFromVariant(productDetail!.variants.first);
+            // Pre-select the variant the user had chosen on the category page
+            final preSelected = widget.selectedVariantId != null
+                ? productDetail!.variants.firstWhere(
+                    (v) => v.id == widget.selectedVariantId,
+                    orElse: () => productDetail!.variants.first,
+                  )
+                : productDetail!.variants.first;
+            selectedVariant = preSelected;
+            _selectedOptionsByGroup = _selectedOptionsFromVariant(preSelected);
           }
         }
       });
@@ -383,8 +392,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget _buildAppBar() {
     final images = _getAllImageUrls();
 
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final imageHeight = isLandscape ? screenHeight * 0.55 : ResponsiveUtils.rp(300);
     return SliverAppBar(
-      expandedHeight: ResponsiveUtils.rp(300),
+      expandedHeight: imageHeight,
       floating: false,
       pinned: true,
       backgroundColor: AppColors.surface,
@@ -461,7 +473,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       return CachedAppImage(
                         imageUrl: images[index],
                         fit: BoxFit.cover,
-                        height: ResponsiveUtils.rp(300),
+                        height: imageHeight,
                         width: double.infinity,
                         cacheWidth: 800,
                         cacheHeight: 600,
@@ -517,7 +529,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ],
               )
             : Skeletons.imageRect(
-                height: ResponsiveUtils.rp(300),
+                height: imageHeight,
                 width: double.infinity,
               ),
       ),
@@ -1566,6 +1578,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               return _buildShimmerLoading();
             }
 
+            if (orientation == Orientation.landscape) {
+              return _buildLandscapeLayout();
+            }
+
             return RefreshIndicator(
               onRefresh: () async {
                 await _fetchProductDetail();
@@ -1582,9 +1598,122 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             );
           }),
-          bottomNavigationBar: _buildBottomBar(),
+          bottomNavigationBar: orientation == Orientation.landscape
+              ? null
+              : _buildBottomBar(),
         );
       },
+    );
+  }
+
+  /// Landscape layout: image on left (swipeable), content + add-to-cart on right
+  Widget _buildLandscapeLayout() {
+    final images = _getAllImageUrls();
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_rounded,
+              color: AppColors.textPrimary, size: ResponsiveUtils.rp(18)),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          productDetail?.name ?? widget.productName ?? '',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(16),
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        actions: [
+          CartButtonWithBadge(cartController: cartController, useIconButton: false),
+        ],
+      ),
+      body: Row(
+        children: [
+          // ── LEFT: swipeable image (50% width) ──────────────────────────
+          Expanded(
+            flex: 1,
+            child: Stack(
+              children: [
+                PageView.builder(
+                  controller: _imagePageController,
+                  itemCount: images.isEmpty ? 1 : images.length,
+                  onPageChanged: (i) => setState(() => _currentImageIndex = i),
+                  itemBuilder: (context, index) {
+                    final url = images.isEmpty ? '' : images[index];
+                    if (url.isEmpty) {
+                      return Container(
+                        color: AppColors.grey200,
+                        child: Center(
+                          child: Icon(Icons.image,
+                              size: ResponsiveUtils.rp(60),
+                              color: AppColors.textTertiary),
+                        ),
+                      );
+                    }
+                    return CachedAppImage(
+                      imageUrl: url,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                      cacheWidth: 800,
+                      cacheHeight: 600,
+                      errorWidget: Container(
+                        color: AppColors.grey200,
+                        child: Center(
+                          child: Icon(Icons.image,
+                              size: ResponsiveUtils.rp(60),
+                              color: AppColors.textTertiary),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                // Page indicator dots
+                if (images.length > 1)
+                  Positioned(
+                    bottom: ResponsiveUtils.rp(12),
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(images.length, (i) => Container(
+                        margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(3)),
+                        width: ResponsiveUtils.rp(7),
+                        height: ResponsiveUtils.rp(7),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentImageIndex == i
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.5),
+                        ),
+                      )),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          // ── RIGHT: scrollable content + bottom bar ──────────────────────
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: _buildContent(),
+                  ),
+                ),
+                _buildBottomBar(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1604,8 +1733,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildAppBarShimmer() {
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final imageHeight = isLandscape ? screenHeight * 0.55 : ResponsiveUtils.rp(300);
     return SliverAppBar(
-      expandedHeight: ResponsiveUtils.rp(300),
+      expandedHeight: imageHeight,
       floating: false,
       pinned: true,
       backgroundColor: AppColors.surface,

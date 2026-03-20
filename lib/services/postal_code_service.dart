@@ -57,7 +57,7 @@ class PostalCodeService {
           'Accept': 'application/json',
         },
       ).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 45),
         onTimeout: () {
           throw Exception('Request timeout');
         },

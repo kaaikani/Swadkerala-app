@@ -165,7 +165,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   /// Get minimum order amount from coupon conditions
   int? _getCouponMinimumAmount(Query$GetCouponCodeList$getCouponCodeList$items coupon) {
     try {
-      for (final condition in coupon.conditions) {
+      for (final condition in coupon.promotion.conditions) {
         if (condition.code == 'minimum_order_amount') {
           for (final arg in condition.args) {
             if (arg.name == 'amount') {
@@ -188,7 +188,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     final applicableCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[];
 
     for (final coupon in coupons) {
-      if (!coupon.enabled) continue;
+      if (!coupon.promotion.enabled) continue;
 
       // Get minimum order amount required for this coupon
       final minimumAmount = _getCouponMinimumAmount(coupon);
@@ -216,7 +216,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     int? amountShort;
 
     for (final coupon in coupons) {
-      if (!coupon.enabled) continue;
+      if (!coupon.promotion.enabled) continue;
 
       // Get minimum order amount from coupon conditions
       final minimumAmount = _getCouponMinimumAmount(coupon);
@@ -255,11 +255,11 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       final cart = cartController.cart.value;
       if (cart != null) {
         final coupon = bannerController.availableCouponCodes.firstWhere(
-          (c) => c.couponCode == couponCode,
+          (c) => c.promotion.couponCode == couponCode,
           orElse: () => bannerController.availableCouponCodes.first,
         );
         await AnalyticsService().logApplyCoupon(
-          couponName: coupon.name,
+          couponName: coupon.promotion.name,
           couponCode: couponCode,
           value: cart.totalWithTax / 100.0,
           currency: 'INR',
@@ -1211,7 +1211,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                               text: 'Add ₹${PriceFormatter.addCommas(differenceInRupees.toStringAsFixed(2))} more to unlock ',
                             ),
                             TextSpan(
-                              text: coupon.couponCode ?? '',
+                              text: coupon.promotion.couponCode ?? '',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.8,

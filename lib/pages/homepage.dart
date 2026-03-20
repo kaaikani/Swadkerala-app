@@ -62,7 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // Track if dialog is showing to prevent multiple dialogs
   bool _isAddressDialogShowing = false;
   bool _isPostalCodeDialogShowing = false;
-  
+  bool _isNotificationDialogShowing = false;
+
   // Track if data refresh is in progress to prevent duplicate calls
   bool _isRefreshingData = false;
   
@@ -283,6 +284,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!justRegistered) return;
     // Clear flag immediately so it doesn't show again
     await box.remove('just_registered');
+
+    // Don't show if account was created more than 1 day ago
+    try {
+      final customer = customerController.activeCustomer.value;
+      if (customer != null) {
+        final age = DateTime.now().difference(customer.createdAt.toLocal());
+        if (age.inDays >= 1) return;
+      }
+    } catch (_) {}
 
     // Wait for notification dialog to finish first
     while (_isNotificationDialogShowing && mounted) {

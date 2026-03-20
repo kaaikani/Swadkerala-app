@@ -40,6 +40,8 @@ class _AccountPageState extends State<AccountPage> {
   final UtilityController utilityController = Get.find();
   final InAppUpdateService _updateService = InAppUpdateService();
   final ReferralController referralController = Get.put(ReferralController());
+  final GlobalKey _shareReferralKey = GlobalKey();
+  final GlobalKey _shareAppKey = GlobalKey();
 
   @override
   void initState() {
@@ -1007,6 +1009,31 @@ class _AccountPageState extends State<AccountPage> {
                         ),
                       ],
                     ),
+                    if (customer.groups.isNotEmpty) ...[
+                      SizedBox(height: ResponsiveUtils.rp(6)),
+                      Wrap(
+                        spacing: ResponsiveUtils.rp(6),
+                        runSpacing: ResponsiveUtils.rp(4),
+                        children: customer.groups.map((g) => Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveUtils.rp(8),
+                            vertical: ResponsiveUtils.rp(3),
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.button.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+                          ),
+                          child: Text(
+                            g.name,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(11),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.button,
+                            ),
+                          ),
+                        )).toList(),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -1243,6 +1270,7 @@ class _AccountPageState extends State<AccountPage> {
           SizedBox(height: ResponsiveUtils.rp(12)),
           // Share referral link
           InkWell(
+            key: _shareReferralKey,
             onTap: () => _shareReferralLink(),
             child: Container(
               padding: EdgeInsets.symmetric(
@@ -1353,6 +1381,12 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+  Rect? _shareOrigin(GlobalKey key) {
+    final box = key.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
   Future<void> _shareReferralLink() async {
     final customer = customerController.activeCustomer.value;
     if (customer == null) return;
@@ -1361,6 +1395,7 @@ class _AccountPageState extends State<AccountPage> {
     try {
       await Share.share(
         'Hey! Use my referral link to sign up on Kaaikani and we both earn rewards!\n\n$link',
+        sharePositionOrigin: _shareOrigin(_shareReferralKey),
       );
     } catch (e) {
       debugPrint('Error sharing referral: $e');
@@ -1496,11 +1531,14 @@ class _AccountPageState extends State<AccountPage> {
             onTap: _openStoreForRating,
           ),
           _buildDivider(),
-          _buildListTile(
-            Icons.share_outlined,
-            'Share App',
-            Icons.arrow_forward_ios,
-            onTap: _shareApp,
+          KeyedSubtree(
+            key: _shareAppKey,
+            child: _buildListTile(
+              Icons.share_outlined,
+              'Share App',
+              Icons.arrow_forward_ios,
+              onTap: _shareApp,
+            ),
           ),
           _buildDivider(),
           _buildListTile(
@@ -2832,7 +2870,7 @@ class _AccountPageState extends State<AccountPage> {
         appLink =
             'https://play.google.com/store/apps/details?id=${packageInfo.packageName}';
       }
-      await Share.share(appLink);
+      await Share.share(appLink, sharePositionOrigin: _shareOrigin(_shareAppKey));
     } catch (e) {
       showErrorSnackbar('Could not share app');
     }

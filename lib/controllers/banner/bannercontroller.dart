@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart'
     show Context, HttpLinkHeaders, QueryResult, gql;
-// import 'package:flutter/foundation.dart'; // Unused import removed
+import 'package:flutter/foundation.dart';
 import '../../graphql/banner.graphql.dart';
 import '../../graphql/cart.graphql.dart' as cart_graphql;
 import '../../graphql/order.graphql.dart';
@@ -13,6 +13,7 @@ import '../../services/graphql_client.dart';
 import '../../services/channel_service.dart';
 // import '../../utils/html_utils.dart'; // Unused import
 import '../../utils/price_formatter.dart';
+import '../../utils/coupon_validation_helper.dart';
 import '../../services/in_app_update_service.dart';
 import '../../services/analytics_service.dart';
 import '../../widgets/error_dialog.dart';
@@ -76,6 +77,26 @@ class BannerController extends BaseController {
   final RxList<Query$GetCouponCodeList$getCouponCodeList$items> availableCouponCodes = <Query$GetCouponCodeList$getCouponCodeList$items>[].obs;
   final RxList<String> appliedCouponCodes = <String>[].obs;
   final RxBool couponCodesLoaded = false.obs;
+  final RxBool isLoadingMoreCoupons = false.obs;
+  final RxBool hasMoreCoupons = true.obs;
+  final RxInt totalCouponCount = 0.obs;
+  static const int couponsPerPage = 10;
+  /// Cached map of facet value ID → name, fetched alongside coupons.
+  /// Used to show human-readable category names in at_least_n_with_facets conditions.
+  final Map<String, String> _facetValueNames = {};
+
+  /// Cached map of product variant ID → name, fetched alongside coupons.
+  /// Used to show human-readable product names in buy_x_get_y_free conditions.
+  final Map<String, String> _variantNames = {};
+
+  /// Cached map of customer group ID → name, fetched alongside coupons.
+  /// Used to show human-readable group names in customer_group conditions.
+  final Map<String, String> _customerGroupNames = {};
+
+  /// Group IDs the currently logged-in customer belongs to.
+  /// Populated from activeCustomer.groups after fetching coupons.
+  /// Empty if not logged in or backend doesn't expose groups yet.
+  final Set<String> _myGroupIds = {};
 
   // Track products added by each coupon: Map<couponCode, Map<variantId, quantity>>
   final RxMap<String, Map<String, int>> couponAddedProducts =
@@ -658,8 +679,8 @@ class BannerController extends BaseController {
       // Find the coupon in the available list
       Query$GetCouponCodeList$getCouponCodeList$items? coupon;
       try {
-        coupon = availableCouponCodes.firstWhere(
-          (c) => (c.couponCode ?? '').toUpperCase() == couponCode.toUpperCase(),
+        coupon = _allFetchedCoupons.firstWhere(
+          (c) => (c.promotion.couponCode ?? '').toUpperCase() == couponCode.toUpperCase(),
         );
       } catch (e) {
         return [];
@@ -671,7 +692,7 @@ class BannerController extends BaseController {
       final products = <Map<String, dynamic>>[];
 
       // Check actions for product information (actions are what the coupon DOES)
-      for (final action in coupon.actions) {
+      for (final action in coupon.promotion.actions) {
         if (action.code == 'add_products' ||
             action.code == 'contains_products' ||
             action.code == 'free_shipping') {
@@ -681,12 +702,12 @@ class BannerController extends BaseController {
               for (final variantId in variantIds) {
                 products.add({
                   'id': variantId.toString(),
-                  'name': 'Product from ${coupon.name}',
+                  'name': 'Product from ${coupon.promotion.name}',
                   'productVariantId': variantId.toString(),
                   'price': 0.0,
                   'priceWithTax': 0.0,
                   'quantity': 1,
-                  'description': 'Product from coupon: ${coupon.name}',
+                  'description': 'Product from coupon: ${coupon.promotion.name}',
                 });
               }
             }
@@ -695,7 +716,33 @@ class BannerController extends BaseController {
       }
 
       // Check conditions for product information
-      for (final condition in coupon.conditions) {
+      for (final condition in coupon.promotion.conditions) {
+        // buy_x_get_y_free: auto-add the free products (variantIdsY, amountY qty)
+        if (condition.code == 'buy_x_get_y_free') {
+          final argsMap = {for (final a in condition.args) a.name: a.value.toString()};
+          final amountY = int.tryParse(argsMap['amountY'] ?? '1') ?? 1;
+          final rawY = argsMap['variantIdsY'] ?? '';
+
+          List<String> variantIdsY = [];
+          final cleaned = rawY.trim().replaceAll('[', '').replaceAll(']', '');
+          if (cleaned.isNotEmpty) {
+            variantIdsY = cleaned.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+          }
+
+          for (final variantId in variantIdsY) {
+            final name = _variantNames[variantId] ?? 'Free product';
+            products.add({
+              'id': variantId,
+              'name': name,
+              'productVariantId': variantId,
+              'price': 0.0,
+              'priceWithTax': 0.0,
+              'quantity': amountY,
+              'description': 'Free product from coupon: ${coupon.promotion.name}',
+            });
+          }
+        }
+
         if (condition.code == 'contains_products') {
           for (final arg in condition.args) {
 
@@ -728,12 +775,12 @@ class BannerController extends BaseController {
                 for (final variantId in variantIds) {
                   products.add({
                     'id': variantId.toString(),
-                    'name': 'Product from ${coupon.name}',
+                    'name': 'Product from ${coupon.promotion.name}',
                     'productVariantId': variantId.toString(),
                     'price': 0.0,
                     'priceWithTax': 0.0,
                     'quantity': 1,
-                    'description': 'Product from coupon: ${coupon.name}',
+                    'description': 'Product from coupon: ${coupon.promotion.name}',
                   });
                 }
               }
@@ -742,12 +789,12 @@ class BannerController extends BaseController {
               for (final productId in productIds) {
                 products.add({
                   'id': productId.toString(),
-                  'name': 'Product from ${coupon.name}',
+                  'name': 'Product from ${coupon.promotion.name}',
                   'productVariantId': productId.toString(),
                   'price': 0.0,
                   'priceWithTax': 0.0,
                   'quantity': 1,
-                  'description': 'Product from coupon: ${coupon.name}',
+                  'description': 'Product from coupon: ${coupon.promotion.name}',
                 });
               }
             } else if (arg.name == 'products' && arg.value is List) {
@@ -757,7 +804,7 @@ class BannerController extends BaseController {
                   products.add({
                     'id': product['id']?.toString() ?? 'unknown',
                     'name': product['name']?.toString() ??
-                        'Product from ${coupon.name}',
+                        'Product from ${coupon.promotion.name}',
                     'productVariantId': product['variantId']?.toString() ??
                         product['id']?.toString() ??
                         'unknown',
@@ -765,7 +812,7 @@ class BannerController extends BaseController {
                     'priceWithTax':
                         (product['priceWithTax'] as num?)?.toDouble() ?? 0.0,
                     'quantity': (product['quantity'] as num?)?.toInt() ?? 1,
-                    'description': 'Product from coupon: ${coupon.name}',
+                    'description': 'Product from coupon: ${coupon.promotion.name}',
                   });
                 }
               }
@@ -821,26 +868,26 @@ class BannerController extends BaseController {
     return originalCartQuantities[couponCode]?[variantId] ?? 0;
   }
 
-  /// Get available coupon codes
+  // All coupons fetched from server (may be limited by server default)
+  final RxList<Query$GetCouponCodeList$getCouponCodeList$items> _allFetchedCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[].obs;
+
   Future<void> getCouponCodeList() async {
     try {
+      debugPrint('[CouponList] getCouponCodeList() called');
       utilityController.setLoadingState(false);
-      // Check if we have authentication token
-      final authToken = GraphqlService.authToken;
-      final channelToken = GraphqlService.channelToken;
-      if (authToken.isNotEmpty) {
-      } else {
-      }
-      if (channelToken.isNotEmpty) {
-      } else {
-      }
-      // Try the query with retry logic
+      _allFetchedCoupons.clear();
+      availableCouponCodes.clear();
+      hasMoreCoupons.value = true;
+      totalCouponCount.value = 0;
+      couponCodesLoaded.value = false;
+
       QueryResult<Query$GetCouponCodeList>? res;
       int retryCount = 0;
       const maxRetries = 3;
 
       while (retryCount < maxRetries) {
         try {
+          debugPrint('[CouponList] Query attempt ${retryCount + 1}/$maxRetries');
           res = await Future.any([
             GraphqlService.client.value.query$GetCouponCodeList(
               Options$Query$GetCouponCodeList(),
@@ -849,67 +896,146 @@ class BannerController extends BaseController {
                 throw TimeoutException(
                     'Query timeout after 15 seconds', Duration(seconds: 15))),
           ]);
-          break; // Success, exit retry loop
+          debugPrint('[CouponList] Query succeeded');
+          break;
         } catch (e) {
           retryCount++;
-
-          if (retryCount >= maxRetries) {
-            rethrow;
-          }
-
-          // Wait before retrying
+          debugPrint('[CouponList] Query attempt $retryCount failed: $e');
+          if (retryCount >= maxRetries) rethrow;
           await Future.delayed(Duration(seconds: 2));
         }
       }
 
       if (res == null) {
-        throw Exception(
-            'Failed to get coupon codes after $maxRetries attempts');
+        throw Exception('Failed to get coupon codes after $maxRetries attempts');
       }
+
+      debugPrint('[CouponList] Response: hasException=${res.hasException}, data=${res.data != null}');
       if (res.hasException) {
+        debugPrint('[CouponList] Exception: ${res.exception}');
       }
 
       if (checkResponseForErrors(res,
           customErrorMessage: 'Failed to load coupon codes')) {
+        debugPrint('[CouponList] checkResponseForErrors returned true - aborting');
+        couponCodesLoaded.value = true;
         utilityController.setLoadingState(false);
         return;
       }
-      if (res.data != null) {
-      } else {
-      }
 
       final couponData = res.parsedData?.getCouponCodeList;
+      debugPrint('[CouponList] parsedData: ${couponData != null ? 'present' : 'null'}');
       if (couponData != null) {
+        totalCouponCount.value = couponData.totalItems;
         final items = couponData.items;
-        if (items.isNotEmpty) {
+        debugPrint('[CouponList] Fetched ${items.length} items, totalItems=${couponData.totalItems}');
 
-          // Check if items are properly structured
-        } else {
-        }
-
-        try {
-          final fetchedCoupons = items.map((item) {
-            final json = item.toJson();
-            return Query$GetCouponCodeList$getCouponCodeList$items.fromJson(json);
-          }).toList();
-          availableCouponCodes.assignAll(fetchedCoupons);
-          couponCodesLoaded.value = true;
-          // Debug print each coupon details
-          for (int i = 0; i < fetchedCoupons.length; i++) {
-            // ignore: unused_local_variable
-            final _coupon = fetchedCoupons[i];
-            // final sanitizedDescription = HtmlUtils.stripHtmlTags(coupon.description); // Unused variable
-            // Products are extracted from coupon actions/conditions, not directly from coupon
-            // This debug section removed as products field doesn't exist in generated type
+        // Build facet value names, variant names, and customer group names from items
+        _facetValueNames.clear();
+        _variantNames.clear();
+        _customerGroupNames.clear();
+        for (final item in items) {
+          for (final fv in item.facetValues) {
+            _facetValueNames[fv.id] = fv.name;
           }
-        } catch (conversionError) {
+          for (final variant in item.productVariants) {
+            _variantNames[variant.id] = variant.name;
+          }
+          final cg = item.customerGroup;
+          if (cg != null) {
+            _customerGroupNames[cg.id] = cg.name;
+          }
         }
-      } else {
+
+        debugPrint('[CouponList] facetValueNames: $_facetValueNames');
+        debugPrint('[CouponList] variantNames: $_variantNames');
+        debugPrint('[CouponList] customerGroupNames: $_customerGroupNames');
+
+        // Populate customer's own group IDs from activeCustomer
+        _myGroupIds.clear();
+        try {
+          final customerController = Get.find<CustomerController>();
+          final customer = customerController.activeCustomer.value;
+          if (customer != null) {
+            for (final g in customer.groups) {
+              _myGroupIds.add(g.id);
+            }
+          }
+        } catch (_) {
+          // CustomerController not available
+        }
+        debugPrint('[CouponList] myGroupIds: $_myGroupIds');
+
+        for (int i = 0; i < items.length; i++) {
+          final item = items[i];
+          final conditionCodes = item.promotion.conditions.map((c) => c.code).join(', ');
+          debugPrint('[CouponList]   [$i] id=${item.promotion.id}, name=${item.promotion.name}, code=${item.promotion.couponCode}, enabled=${item.promotion.enabled}, conditions=[$conditionCodes]');
+        }
+
+        final fetchedCoupons = items.map((item) {
+          final json = item.toJson();
+          return Query$GetCouponCodeList$getCouponCodeList$items.fromJson(json);
+        }).toList();
+
+        // Filter group-restricted coupons based on login state
+        // If not logged in: show all coupons
+        // If logged in: hide group-restricted coupons unless customer is in that group
+        final isLoggedIn = GraphqlService.authToken.isNotEmpty;
+        final filteredCoupons = !isLoggedIn
+            ? fetchedCoupons
+            : fetchedCoupons.where((coupon) {
+                final groupConditions = coupon.promotion.conditions
+                    .where((c) => c.code == 'customer_group')
+                    .toList();
+                if (groupConditions.isEmpty) return true; // no group restriction
+                // Has group restriction — show only if customer is in the required group
+                return groupConditions.any((c) {
+                  final argsMap = {for (var a in c.args) a.name: a.value};
+                  final requiredGroupId = argsMap['customerGroupId'] ?? '';
+                  return _myGroupIds.contains(requiredGroupId);
+                });
+              }).toList();
+
+        debugPrint('[CouponList] After group filter: ${fetchedCoupons.length} → ${filteredCoupons.length} coupons');
+        for (int i = 0; i < filteredCoupons.length; i++) {
+          final c = filteredCoupons[i];
+          debugPrint('[CouponList]   visible[$i] code=${c.promotion.couponCode}, name=${c.promotion.name}');
+        }
+        _allFetchedCoupons.assignAll(filteredCoupons);
+
+        // Show first batch
+        final firstBatch = filteredCoupons.take(couponsPerPage).toList();
+        availableCouponCodes.assignAll(firstBatch);
+        hasMoreCoupons.value = availableCouponCodes.length < _allFetchedCoupons.length;
+        debugPrint('[CouponList] Showing first batch: ${firstBatch.length}, hasMore=${hasMoreCoupons.value}');
       }
+
+      couponCodesLoaded.value = true;
       utilityController.setLoadingState(false);
     } catch (e) {
+      debugPrint('[CouponList] getCouponCodeList() ERROR: $e');
+      couponCodesLoaded.value = true;
       utilityController.setLoadingState(false);
     }
+  }
+
+  /// Load more coupons for lazy loading (client-side pagination)
+  Future<void> loadMoreCoupons() async {
+    if (isLoadingMoreCoupons.value || !hasMoreCoupons.value) return;
+
+    debugPrint('[CouponList] loadMoreCoupons() called - showing=${availableCouponCodes.length}, total=${_allFetchedCoupons.length}');
+    isLoadingMoreCoupons.value = true;
+
+    // Small delay for smooth UX
+    await Future.delayed(Duration(milliseconds: 300));
+
+    final currentCount = availableCouponCodes.length;
+    final nextBatch = _allFetchedCoupons.skip(currentCount).take(couponsPerPage).toList();
+    availableCouponCodes.addAll(nextBatch);
+    hasMoreCoupons.value = availableCouponCodes.length < _allFetchedCoupons.length;
+
+    debugPrint('[CouponList] Load more complete: showing=${availableCouponCodes.length}, hasMore=${hasMoreCoupons.value}');
+    isLoadingMoreCoupons.value = false;
   }
 
   /// Validate coupon code before applying
@@ -918,8 +1044,8 @@ class BannerController extends BaseController {
       // First check if coupon code exists in available list
       Query$GetCouponCodeList$getCouponCodeList$items? coupon;
       try {
-        coupon = availableCouponCodes.firstWhere(
-          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+        coupon = _allFetchedCoupons.firstWhere(
+          (c) => (c.promotion.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
         );
       } catch (e) {
         return {
@@ -932,7 +1058,7 @@ class BannerController extends BaseController {
 
 
       // Check if coupon is enabled
-      if (!coupon.enabled) {
+      if (!coupon.promotion.enabled) {
         return {
           'valid': false,
           'message': 'Coupon code is disabled',
@@ -941,8 +1067,8 @@ class BannerController extends BaseController {
       }
 
       // Check if coupon has expired
-      if (coupon.endsAt != null) {
-        final endDate = coupon.endsAt!;
+      if (coupon.promotion.endsAt != null) {
+        final endDate = coupon.promotion.endsAt!;
         if (DateTime.now().isAfter(endDate)) {
           return {
             'valid': false,
@@ -953,8 +1079,8 @@ class BannerController extends BaseController {
       }
 
       // Check if coupon has started
-      if (coupon.startsAt != null) {
-        final startDate = coupon.startsAt!;
+      if (coupon.promotion.startsAt != null) {
+        final startDate = coupon.promotion.startsAt!;
         if (DateTime.now().isBefore(startDate)) {
           return {
             'valid': false,
@@ -984,15 +1110,17 @@ class BannerController extends BaseController {
         };
       }
 
-      // Check minimum order amount conditions
-      final minimumAmountValidation = await _validateMinimumOrderAmount(coupon);
-      if (!minimumAmountValidation['valid']) {
+      // Check ALL client-validatable conditions
+      final cartController = Get.find<CartController>();
+      final unmetMessage = CouponValidationHelper.getFirstUnmetConditionMessage(
+          coupon, cartController.cart.value,
+          facetValueNames: _facetValueNames, variantNames: _variantNames,
+          customerGroupNames: _customerGroupNames);
+      if (unmetMessage != null) {
         return {
           'valid': false,
-          'message': minimumAmountValidation['message'],
-          'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
-          'requiredAmount': minimumAmountValidation['requiredAmount'],
-          'currentAmount': minimumAmountValidation['currentAmount']
+          'message': unmetMessage,
+          'error': 'CONDITION_NOT_MET',
         };
       }
       return {
@@ -1009,61 +1137,6 @@ class BannerController extends BaseController {
     }
   }
 
-  /// Validate minimum order amount for coupon (checked against cart subtotal, not total)
-  Future<Map<String, dynamic>> _validateMinimumOrderAmount(
-      Query$GetCouponCodeList$getCouponCodeList$items coupon) async {
-    try {
-      // Get current cart subtotal from active order (subtotal = line items, not total with shipping)
-      final orderController = Get.find<OrderController>();
-      
-      // Try to get from already-loaded order first
-      double? cartSubTotal = orderController.currentOrder.value?.subTotalWithTax;
-      
-      // If not available, load active order
-      if (cartSubTotal == null) {
-        final loaded = await orderController.getActiveOrder(skipLoading: true);
-        if (loaded) {
-          cartSubTotal = orderController.currentOrder.value?.subTotalWithTax;
-        }
-      }
-
-      if (cartSubTotal == null) {
-        return {
-          'valid': false,
-          'message': 'Unable to get cart subtotal',
-          'error': 'CART_TOTAL_ERROR'
-        };
-      }
-      // Check coupon conditions for minimum order amount (against subtotal)
-      for (final condition in coupon.conditions) {
-        if (condition.code == 'minimum_order_amount') {
-          for (final arg in condition.args) {
-            if (arg.name == 'amount') {
-              // arg.value is always String, so parse it directly
-              final requiredAmount = double.tryParse(arg.value) ?? 0.0;
-              if (cartSubTotal < requiredAmount) {
-                return {
-                  'valid': false,
-                  'message':
-                      'Minimum order amount of ${_formatPrice(requiredAmount.toInt())} required. Current cart subtotal is ${_formatPrice(cartSubTotal.toInt())}.',
-                  'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
-                  'requiredAmount': requiredAmount,
-                  'currentAmount': cartSubTotal
-                };
-              }
-            }
-          }
-        }
-      }
-      return {'valid': true, 'message': 'Minimum order amount requirement met'};
-    } catch (e) {
-      return {
-        'valid': false,
-        'message': 'Error validating minimum order amount',
-        'error': 'VALIDATION_ERROR'
-      };
-    }
-  }
 
   /// Get current cart total from active order
   /// Uses orderController to get total from already-loaded active order
@@ -1077,7 +1150,7 @@ class BannerController extends BaseController {
   /// Get minimum order amount from coupon conditions
   int? _getCouponMinimumAmount(Query$GetCouponCodeList$getCouponCodeList$items coupon) {
     try {
-      for (final condition in coupon.conditions) {
+      for (final condition in coupon.promotion.conditions) {
         if (condition.code == 'minimum_order_amount') {
           for (final arg in condition.args) {
             if (arg.name == 'amount') {
@@ -1098,9 +1171,9 @@ class BannerController extends BaseController {
   List<Query$GetCouponCodeList$getCouponCodeList$items> getEligibleCoupons(int subTotalInPaise) {
     final eligibleCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[];
     
-    for (final coupon in availableCouponCodes) {
-      if (!coupon.enabled) continue;
-      
+    for (final coupon in _allFetchedCoupons) {
+      if (!coupon.promotion.enabled) continue;
+
       final requiredAmount = _getCouponMinimumAmount(coupon);
       if (requiredAmount == null) continue;
       
@@ -1121,8 +1194,37 @@ class BannerController extends BaseController {
     return minimumAmount ?? 0;
   }
 
+  /// Get parsed condition info with met/unmet status for a coupon
+  List<CouponConditionInfo> getCouponConditionStatus(
+      Query$GetCouponCodeList$getCouponCodeList$items coupon) {
+    final cartController = Get.find<CartController>();
+    return CouponValidationHelper.evaluateConditions(
+        coupon, cartController.cart.value,
+        facetValueNames: _facetValueNames,
+        variantNames: _variantNames,
+        customerGroupNames: _customerGroupNames);
+  }
+
+  /// Get parsed action info for display
+  List<CouponActionInfo> getCouponActionInfo(
+      Query$GetCouponCodeList$getCouponCodeList$items coupon) {
+    return CouponValidationHelper.parseActions(coupon,
+        variantNames: _variantNames);
+  }
+
+  /// Check if all client-validatable conditions are met for a coupon
+  bool areAllConditionsMet(
+      Query$GetCouponCodeList$getCouponCodeList$items coupon) {
+    final cartController = Get.find<CartController>();
+    return CouponValidationHelper.areAllConditionsMet(
+        coupon, cartController.cart.value,
+        facetValueNames: _facetValueNames,
+        variantNames: _variantNames,
+        customerGroupNames: _customerGroupNames);
+  }
+
   /// Apply coupon code to active order with proper validation
-  /// This method checks minimum order amount FIRST, then applies coupon
+  /// This method checks ALL conditions FIRST, then applies coupon
   Future<Map<String, dynamic>> applyCouponCode(String couponCode) async {
     try {
       utilityController.setLoadingState(true);
@@ -1130,8 +1232,8 @@ class BannerController extends BaseController {
       // Step 1: Find the coupon
       Query$GetCouponCodeList$getCouponCodeList$items? coupon;
       try {
-        coupon = availableCouponCodes.firstWhere(
-          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+        coupon = _allFetchedCoupons.firstWhere(
+          (c) => (c.promotion.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
         );
       } catch (e) {
         utilityController.setLoadingState(false);
@@ -1144,24 +1246,24 @@ class BannerController extends BaseController {
         };
       }
 
-      // Step 2: Check minimum order amount FIRST (before other validations)
-      final minimumAmountValidation = await _validateMinimumOrderAmount(coupon);
-      
-      if (!minimumAmountValidation['valid']) {
+      // Step 2: Check ALL client-validatable conditions
+      final cartController = Get.find<CartController>();
+      final unmetMessage = CouponValidationHelper.getFirstUnmetConditionMessage(
+          coupon, cartController.cart.value,
+          facetValueNames: _facetValueNames, variantNames: _variantNames,
+          customerGroupNames: _customerGroupNames);
+
+      if (unmetMessage != null) {
         utilityController.setLoadingState(false);
-        ErrorDialog.showWarning(
-          message: minimumAmountValidation['message'] as String,
-        );
+        ErrorDialog.showWarning(message: unmetMessage);
         _refreshCartAfterCouponError();
         return {
           'success': false,
-          'message': minimumAmountValidation['message'],
-          'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
-          'requiredAmount': minimumAmountValidation['requiredAmount'],
-          'currentAmount': minimumAmountValidation['currentAmount']
+          'message': unmetMessage,
+          'error': 'CONDITION_NOT_MET',
         };
       }
-      // Step 3: Now apply the coupon (minimum is already validated)
+      // Step 3: Now apply the coupon (conditions validated)
       return await _applyCouponCodeWithoutMinimumCheck(couponCode);
     } catch (e) {
       utilityController.setLoadingState(false);
@@ -1188,8 +1290,8 @@ class BannerController extends BaseController {
       // Find the coupon
       Query$GetCouponCodeList$getCouponCodeList$items? coupon;
       try {
-        coupon = availableCouponCodes.firstWhere(
-          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+        coupon = _allFetchedCoupons.firstWhere(
+          (c) => (c.promotion.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
         );
       } catch (e) {
         utilityController.setLoadingState(false);
@@ -1201,7 +1303,7 @@ class BannerController extends BaseController {
       }
 
       // Check other validations except minimum
-      if (!coupon.enabled) {
+      if (!coupon.promotion.enabled) {
         utilityController.setLoadingState(false);
         return {
           'success': false,
@@ -1210,7 +1312,7 @@ class BannerController extends BaseController {
         };
       }
 
-      if (coupon.endsAt != null && DateTime.now().isAfter(coupon.endsAt!)) {
+      if (coupon.promotion.endsAt != null && DateTime.now().isAfter(coupon.promotion.endsAt!)) {
         utilityController.setLoadingState(false);
         return {
           'success': false,
@@ -1219,7 +1321,7 @@ class BannerController extends BaseController {
         };
       }
 
-      if (coupon.startsAt != null && DateTime.now().isBefore(coupon.startsAt!)) {
+      if (coupon.promotion.startsAt != null && DateTime.now().isBefore(coupon.promotion.startsAt!)) {
         utilityController.setLoadingState(false);
         return {
           'success': false,
@@ -1315,6 +1417,37 @@ class BannerController extends BaseController {
           }
         }
         
+        // Post-apply check: verify the coupon actually produced a discount.
+        // Vendure silently accepts the coupon code without giving a discount when
+        // conditions aren't met (customer_group, at_least_n_with_facets,
+        // buy_x_get_y_free with specific variantIds, etc.) — no error is thrown.
+        // Only run this for coupons that have a price-discount action (not free_shipping
+        // only), since shipping discounts are reflected in shippingLines, not discounts[].
+        if (CouponValidationHelper.hasPriceDiscountActions(coupon) &&
+            result.discounts.every((d) => d.amountWithTax == 0) &&
+            result.totalQuantity > 0) {
+          final cartController = Get.find<CartController>();
+          final conditions = CouponValidationHelper.evaluateConditions(
+            coupon,
+            cartController.cart.value,
+            facetValueNames: _facetValueNames,
+            variantNames: _variantNames,
+            customerGroupNames: _customerGroupNames,
+          );
+          // Auto-remove the coupon since it produced no discount
+          await removeCouponCode(couponCode);
+          utilityController.setLoadingState(false);
+          ErrorDialog.showConditionsNotMet(
+            couponCode: couponCode,
+            conditions: conditions,
+          );
+          return {
+            'success': false,
+            'message': 'Coupon conditions not satisfied',
+            'error': 'CONDITIONS_NOT_MET',
+          };
+        }
+
         utilityController.setLoadingState(false);
         return {
           'success': true,
@@ -1699,8 +1832,8 @@ class BannerController extends BaseController {
         // ignore: unused_local_variable
         Query$GetCouponCodeList$getCouponCodeList$items? coupon;
         try {
-          coupon = availableCouponCodes.firstWhere(
-            (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+          coupon = _allFetchedCoupons.firstWhere(
+            (c) => (c.promotion.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
           );
         } catch (e) {
           continue;
@@ -1787,15 +1920,16 @@ class BannerController extends BaseController {
       if (cartSubTotal == null) {
         return;
       }
-      // Check each applied coupon
+      // Check each applied coupon against ALL conditions
       final couponsToRemove = <String>[];
-      
+      final cartController = Get.find<CartController>();
+
       for (final couponCode in appliedCouponCodes.toList()) {
         // Find the coupon in available coupons
         Query$GetCouponCodeList$getCouponCodeList$items? coupon;
         try {
-          coupon = availableCouponCodes.firstWhere(
-            (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+          coupon = _allFetchedCoupons.firstWhere(
+            (c) => (c.promotion.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
           );
         } catch (e) {
           // Remove it from applied list if not found
@@ -1803,21 +1937,17 @@ class BannerController extends BaseController {
           continue;
         }
 
-        // Get minimum amount for this coupon
-        final minimumAmount = _getCouponMinimumAmount(coupon);
-        if (minimumAmount == null) {
-          // No minimum requirement, skip
-          continue;
-        }
-
-        // Check if cart subtotal is below minimum
-        if (cartSubTotal < minimumAmount) {
+        // Check if all client-validatable conditions are still met
+        if (!CouponValidationHelper.areAllConditionsMet(
+            coupon, cartController.cart.value,
+            facetValueNames: _facetValueNames,
+            variantNames: _variantNames,
+            customerGroupNames: _customerGroupNames)) {
           couponsToRemove.add(couponCode);
-        } else {
         }
       }
 
-      // Remove coupons that don't meet minimum requirements
+      // Remove coupons that don't meet conditions
       if (couponsToRemove.isNotEmpty) {
         for (final couponCode in couponsToRemove) {
           await removeCouponCode(couponCode);
@@ -2117,13 +2247,13 @@ class BannerController extends BaseController {
   Future<Map<String, dynamic>> applyCouponCodeWithProducts(
       String couponCode) async {
     Logger.logFunction(functionName: 'applyCouponCodeWithProducts', mutationName: 'ApplyCouponCode');
-    
+
     try {
       // Step 1: Find the coupon
       Query$GetCouponCodeList$getCouponCodeList$items? coupon;
       try {
-        coupon = availableCouponCodes.firstWhere(
-          (c) => (c.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
+        coupon = _allFetchedCoupons.firstWhere(
+          (c) => (c.promotion.couponCode ?? '').toLowerCase() == couponCode.toLowerCase(),
         );
       } catch (e) {
         return {
@@ -2133,50 +2263,41 @@ class BannerController extends BaseController {
         };
       }
 
-      // Step 2: Check minimum order amount FIRST
-      final minimumAmountValidation = await _validateMinimumOrderAmount(coupon);
-      
+      // Step 2: Check only NON-product conditions (minimum_order, etc.)
+      // Skip 'contains_products' validation since we will auto-add those products
+      final cartController = Get.find<CartController>();
+      final hasProductCondition = CouponValidationHelper.hasContainsProductsCondition(coupon);
+      final unmetMessage = hasProductCondition
+          ? CouponValidationHelper.getFirstUnmetNonProductConditionMessage(
+              coupon, cartController.cart.value,
+              facetValueNames: _facetValueNames,
+              variantNames: _variantNames,
+              customerGroupNames: _customerGroupNames)
+          : CouponValidationHelper.getFirstUnmetConditionMessage(
+              coupon, cartController.cart.value,
+              facetValueNames: _facetValueNames,
+              variantNames: _variantNames,
+              customerGroupNames: _customerGroupNames);
+
       Map<String, dynamic>? addResult;
-      
-      // Step 2: If minimum not met, show dialog and return (don't apply coupon or add products)
-      if (!minimumAmountValidation['valid']) {
-        ErrorDialog.showWarning(
-          message: minimumAmountValidation['message'] as String,
-        );
+
+      if (unmetMessage != null) {
+        ErrorDialog.showWarning(message: unmetMessage);
         return {
           'success': false,
-          'message': minimumAmountValidation['message'],
-          'error': 'MINIMUM_ORDER_AMOUNT_NOT_MET',
-          'requiredAmount': minimumAmountValidation['requiredAmount'],
-          'currentAmount': minimumAmountValidation['currentAmount'],
+          'message': unmetMessage,
+          'error': 'CONDITION_NOT_MET',
           'dialogShown': true,
         };
       }
 
-      // Step 3: Apply coupon code FIRST (before adding products)
-      final couponResult = await _applyCouponCodeWithoutMinimumCheck(couponCode);
-
-      if (!couponResult['success']) {
-        // Coupon apply failed - nothing to rollback (no products added yet)
-        final errorMessage = couponResult['message'] as String? ?? 'Failed to apply coupon code';
-        ErrorDialog.showWarning(message: errorMessage);
-        await _refreshCartAfterCouponError();
-        return {
-          'success': false,
-          'message': errorMessage,
-          'couponApplied': false,
-          'couponError': couponResult['error'],
-          'dialogShown': true,
-        };
-      }
-
-      // Step 4: Coupon applied successfully - now add coupon products (if any)
+      // Step 3: If coupon has 'contains_products' condition, add those products FIRST
       final hasProducts = hasCouponProducts(couponCode);
       if (hasProducts) {
         addResult = await addCouponProductsToCart(couponCode);
         if (!addResult['success']) {
-          // Adding products failed - remove the coupon we just applied
-          await removeCouponCode(couponCode);
+          // Adding products failed - rollback added products and abort
+          await removeCouponProducts(couponCode);
           _refreshCartAfterCouponError();
           String errorMsg = addResult['message'] as String? ?? 'Failed to add coupon products to cart.';
           final failedProducts = addResult['failedProducts'] as List<dynamic>? ?? [];
@@ -2189,24 +2310,42 @@ class BannerController extends BaseController {
             }).join('\n');
             if (details.isNotEmpty) errorMsg = '$errorMsg\n\n$details';
           }
-          ErrorDialog.showWarning(
-            message: '$errorMsg\n\nCoupon has been removed.',
-          );
+          ErrorDialog.showWarning(message: errorMsg);
           return {
             'success': false,
             'message': errorMsg,
             'error': 'PRODUCT_ADDITION_FAILED',
             'addResult': addResult,
-            'couponRemoved': true,
             'dialogShown': true,
           };
         }
       }
 
-      // Success: coupon applied and products added (if any)
+      // Step 4: Apply coupon code (products are now in cart, server validates contains_products)
+      final couponResult = await _applyCouponCodeWithoutMinimumCheck(couponCode);
+
+      if (!couponResult['success']) {
+        // Coupon apply failed - rollback products we just added
+        if (hasProducts) {
+          await removeCouponProducts(couponCode);
+        }
+        final errorMessage = couponResult['message'] as String? ?? 'Failed to apply coupon code';
+        ErrorDialog.showWarning(message: errorMessage);
+        await _refreshCartAfterCouponError();
+        return {
+          'success': false,
+          'message': errorMessage,
+          'couponApplied': false,
+          'couponError': couponResult['error'],
+          'productsRolledBack': hasProducts,
+          'dialogShown': true,
+        };
+      }
+
+      // Success: products added (if any) and coupon applied
       try {
-        final cartController = Get.find<CartController>();
-        await cartController.getActiveOrder();
+        final cartCtrl = Get.find<CartController>();
+        await cartCtrl.getActiveOrder();
       } catch (e) {
       }
       try {

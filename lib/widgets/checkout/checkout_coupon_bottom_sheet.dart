@@ -6,7 +6,6 @@ import '../../controllers/order/ordercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/html_utils.dart';
-import '../../utils/price_formatter.dart';
 import '../../widgets/snackbar.dart';
 
 class CheckoutCouponBottomSheet {
@@ -81,7 +80,7 @@ class CheckoutCouponBottomSheet {
                 }
 
                 final enabledCoupons = bannerController.availableCouponCodes
-                    .where((coupon) => coupon.enabled)
+                    .where((coupon) => coupon.promotion.enabled)
                     .toList();
 
                 if (enabledCoupons.isEmpty) {
@@ -107,15 +106,35 @@ class CheckoutCouponBottomSheet {
                   );
                 }
 
-                return ListView.builder(
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (scrollInfo) {
+                    if (scrollInfo is ScrollEndNotification &&
+                        scrollInfo.metrics.extentAfter < 200 &&
+                        !bannerController.isLoadingMoreCoupons.value &&
+                        bannerController.hasMoreCoupons.value) {
+                      bannerController.loadMoreCoupons();
+                    }
+                    return false;
+                  },
+                  child: ListView.builder(
                   padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-                  itemCount: enabledCoupons.length,
+                  itemCount: enabledCoupons.length + (bannerController.hasMoreCoupons.value ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index >= enabledCoupons.length) {
+                      return Padding(
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                        child: Center(
+                          child: bannerController.isLoadingMoreCoupons.value
+                              ? CircularProgressIndicator(color: AppColors.button)
+                              : SizedBox.shrink(),
+                        ),
+                      );
+                    }
                     final coupon = enabledCoupons[index];
                     final isApplied =
-                        bannerController.isCouponCodeApplied(coupon.couponCode ?? '');
+                        bannerController.isCouponCodeApplied(coupon.promotion.couponCode ?? '');
                     final descriptionText =
-                        HtmlUtils.stripHtmlTags(coupon.description);
+                        HtmlUtils.stripHtmlTags(coupon.promotion.description);
 
                     return Card(
                       color: AppColors.surface,
@@ -153,7 +172,7 @@ class CheckoutCouponBottomSheet {
                                         ResponsiveUtils.rp(6)),
                                   ),
                                   child: Text(
-                                    coupon.couponCode ?? '',
+                                    coupon.promotion.couponCode ?? '',
                                     style: TextStyle(
                                       color: AppColors.textLight,
                                       fontWeight: FontWeight.bold,
@@ -198,67 +217,86 @@ class CheckoutCouponBottomSheet {
 
                             SizedBox(height: ResponsiveUtils.rp(12)),
 
-                            // Coupon name
-                            Text(
-                              coupon.name,
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(16),
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
+                            // Action info (what discount the user gets)
+                            Builder(builder: (context) {
+                              final actions = bannerController.getCouponActionInfo(coupon);
+                              if (actions.isEmpty) return SizedBox.shrink();
+                              return Padding(
+                                padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+                                child: Wrap(
+                                  spacing: ResponsiveUtils.rp(6),
+                                  runSpacing: ResponsiveUtils.rp(6),
+                                  children: actions.map((action) => Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveUtils.rp(8),
+                                      vertical: ResponsiveUtils.rp(4),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.success.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                      border: Border.all(
+                                        color: AppColors.success.withValues(alpha: 0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.local_offer, size: ResponsiveUtils.rp(14), color: AppColors.success),
+                                        SizedBox(width: ResponsiveUtils.rp(4)),
+                                        Text(
+                                          action.displayText,
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUtils.sp(11),
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.success,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )).toList(),
+                                ),
+                              );
+                            }),
 
                             SizedBox(height: ResponsiveUtils.rp(8)),
 
-                            // Minimum order amount display (checked against subtotal)
+                            // Condition requirements with met/unmet status
                             Obx(() {
-                              final requiredAmount = bannerController.getRequiredAmount(coupon);
-                              if (requiredAmount > 0) {
-                                final currentCartSubTotal = (orderController.currentOrder.value?.subTotalWithTax ?? 0).toInt();
-                                final meetsMinimum = currentCartSubTotal >= requiredAmount;
-                                final difference = requiredAmount - currentCartSubTotal;
-                                
-                                return Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: ResponsiveUtils.rp(8),
-                                    vertical: ResponsiveUtils.rp(6),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: meetsMinimum 
-                                        ? AppColors.success.withValues(alpha: 0.1)
-                                        : AppColors.warning.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
-                                    border: Border.all(
-                                      color: meetsMinimum
-                                          ? AppColors.success.withValues(alpha: 0.3)
-                                          : AppColors.warning.withValues(alpha: 0.3),
-                                      width: 1,
-                                    ),
-                                  ),
+                              // Access reactive cart to trigger rebuild on changes
+                              cartController.cart.value;
+                              final conditions = bannerController.getCouponConditionStatus(coupon);
+                              if (conditions.isEmpty) return SizedBox.shrink();
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: conditions.map((cond) => Padding(
+                                  padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(4)),
                                   child: Row(
-                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
-                                        meetsMinimum ? Icons.check_circle_outline : Icons.info_outline,
-                                        size: ResponsiveUtils.rp(14),
-                                        color: meetsMinimum ? AppColors.success : AppColors.warning,
+                                        cond.canValidate
+                                          ? (cond.isMet ? Icons.check_circle : Icons.cancel)
+                                          : Icons.info_outline,
+                                        size: ResponsiveUtils.rp(16),
+                                        color: cond.canValidate
+                                          ? (cond.isMet ? AppColors.success : AppColors.error)
+                                          : AppColors.textSecondary,
                                       ),
                                       SizedBox(width: ResponsiveUtils.rp(6)),
-                                      Text(
-                                        meetsMinimum
-                                            ? 'Minimum order: ${PriceFormatter.formatPrice(requiredAmount)} ✓'
-                                            : 'Add ${PriceFormatter.formatPrice(difference)} more to reach minimum of ${PriceFormatter.formatPrice(requiredAmount)}',
+                                      Expanded(child: Text(
+                                        cond.displayText,
                                         style: TextStyle(
-                                          fontSize: ResponsiveUtils.sp(11),
-                                          fontWeight: FontWeight.w600,
-                                          color: meetsMinimum ? AppColors.success : AppColors.warning,
+                                          fontSize: ResponsiveUtils.sp(12),
+                                          fontWeight: FontWeight.w500,
+                                          color: cond.canValidate
+                                            ? (cond.isMet ? AppColors.success : AppColors.error)
+                                            : AppColors.textSecondary,
                                         ),
-                                      ),
+                                      )),
                                     ],
                                   ),
-                                );
-                              }
-                              return SizedBox.shrink();
+                                )).toList(),
+                              );
                             }),
 
                             SizedBox(height: ResponsiveUtils.rp(8)),
@@ -276,12 +314,12 @@ class CheckoutCouponBottomSheet {
                             ],
 
                             // Usage limits display
-                            if (coupon.usageLimit != null || coupon.perCustomerUsageLimit != null) ...[
+                            if (coupon.promotion.usageLimit != null || coupon.promotion.perCustomerUsageLimit != null) ...[
                               Wrap(
                                 spacing: ResponsiveUtils.rp(8),
                                 runSpacing: ResponsiveUtils.rp(8),
                                 children: [
-                                  if (coupon.usageLimit != null)
+                                  if (coupon.promotion.usageLimit != null)
                                     Container(
                                       padding: EdgeInsets.symmetric(
                                         horizontal: ResponsiveUtils.rp(8),
@@ -305,7 +343,7 @@ class CheckoutCouponBottomSheet {
                                           ),
                                           SizedBox(width: ResponsiveUtils.rp(4)),
                                           Text(
-                                            'Total uses: ${coupon.usageLimit}',
+                                            'Total uses: ${coupon.promotion.usageLimit}',
                                             style: TextStyle(
                                               fontSize: ResponsiveUtils.sp(11),
                                               fontWeight: FontWeight.w500,
@@ -315,7 +353,7 @@ class CheckoutCouponBottomSheet {
                                         ],
                                       ),
                                     ),
-                                  if (coupon.perCustomerUsageLimit != null)
+                                  if (coupon.promotion.perCustomerUsageLimit != null)
                                     Container(
                                       padding: EdgeInsets.symmetric(
                                         horizontal: ResponsiveUtils.rp(8),
@@ -339,7 +377,7 @@ class CheckoutCouponBottomSheet {
                                           ),
                                           SizedBox(width: ResponsiveUtils.rp(4)),
                                           Text(
-                                            'Per customer: ${coupon.perCustomerUsageLimit}',
+                                            'Per customer: ${coupon.promotion.perCustomerUsageLimit}',
                                             style: TextStyle(
                                               fontSize: ResponsiveUtils.sp(11),
                                               fontWeight: FontWeight.w500,
@@ -355,7 +393,7 @@ class CheckoutCouponBottomSheet {
                             ],
 
                             // Expiry date
-                            if (coupon.endsAt != null) ...[
+                            if (coupon.promotion.endsAt != null) ...[
                               Row(
                                 children: [
                                   Icon(
@@ -365,7 +403,7 @@ class CheckoutCouponBottomSheet {
                                   ),
                                   SizedBox(width: ResponsiveUtils.rp(4)),
                                   Text(
-                                    'Expires: ${coupon.endsAt != null ? coupon.endsAt!.toString().split(' ')[0] : 'N/A'}',
+                                    'Expires: ${coupon.promotion.endsAt != null ? coupon.promotion.endsAt!.toString().split(' ')[0] : 'N/A'}',
                                     style: TextStyle(
                                       color: AppColors.error,
                                       fontSize: ResponsiveUtils.sp(12),
@@ -382,7 +420,7 @@ class CheckoutCouponBottomSheet {
                               FutureBuilder<Map<String, dynamic>>(
                                 future:
                                     bannerController.getCouponValidationStatus(
-                                        coupon.couponCode ?? ''),
+                                        coupon.promotion.couponCode ?? ''),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     final validation = snapshot.data!;
@@ -455,16 +493,14 @@ class CheckoutCouponBottomSheet {
                                 final isAnotherCouponApplied =
                                     anyCouponApplied &&
                                         currentlyAppliedCoupon !=
-                                            coupon.couponCode;
+                                            coupon.promotion.couponCode;
                                 final appliedCouponCount = bannerController.appliedCouponCodes.length;
                                 final canRemoveCoupon = appliedCouponCount < 2;
 
-                                final requiredAmount = bannerController.getRequiredAmount(coupon);
-                                final currentCartSubTotal = (orderController.currentOrder.value?.subTotalWithTax ?? 0).toInt();
-                                final meetsMinimumAmount = requiredAmount == 0 || currentCartSubTotal >= requiredAmount;
+                                final allConditionsMet = bannerController.areAllConditionsMet(coupon);
 
                                 return ElevatedButton(
-                                  onPressed: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon) || (!isApplied && !meetsMinimumAmount && requiredAmount > 0))
+                                  onPressed: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon) || (!isApplied && !allConditionsMet))
                                       ? null
                                       : () async {
                                           if (isApplied) {
@@ -473,7 +509,7 @@ class CheckoutCouponBottomSheet {
                                                   'Cannot remove coupon when 2 or more coupons are applied');
                                               return;
                                             }
-                                            final couponCodeToRemove = coupon.couponCode;
+                                            final couponCodeToRemove = coupon.promotion.couponCode;
                                             final hadProducts = bannerController.couponAddedProducts.containsKey(couponCodeToRemove);
                                             
                                             // Show loading dialog
@@ -549,8 +585,8 @@ class CheckoutCouponBottomSheet {
                                                   'Failed to remove coupon code');
                                             }
                                           } else {
-                                            final couponCode = coupon.couponCode ?? '';
-                                            
+                                            final couponCode = coupon.promotion.couponCode ?? '';
+
                                             // Show loading dialog
                                             showDialog(
                                               context: context,
@@ -643,7 +679,7 @@ class CheckoutCouponBottomSheet {
                                           }
                                         },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon) || (!isApplied && !meetsMinimumAmount && requiredAmount > 0))
+                                    backgroundColor: (isAnotherCouponApplied || (isApplied && !canRemoveCoupon) || (!isApplied && !allConditionsMet))
                                         ? AppColors.grey300
                                         : (isApplied
                                             ? AppColors.error
@@ -661,8 +697,8 @@ class CheckoutCouponBottomSheet {
                                         ? 'Another Coupon Applied'
                                         : (isApplied && !canRemoveCoupon)
                                             ? 'Cannot Remove'
-                                            : (!isApplied && !meetsMinimumAmount && requiredAmount > 0)
-                                                ? 'Minimum ${PriceFormatter.formatPrice(requiredAmount)} Required'
+                                            : (!isApplied && !allConditionsMet)
+                                                ? 'Conditions Not Met'
                                             : (isApplied
                                                 ? 'Remove Coupon'
                                                 : 'Apply Coupon'),
@@ -679,6 +715,7 @@ class CheckoutCouponBottomSheet {
                       ),
                     );
                   },
+                ),
                 );
               }),
             ),

@@ -189,6 +189,7 @@ class AppRoutes {
         return ProductDetailPage(
           productId: productId,
           productName: arguments?['productName'] as String?,
+          selectedVariantId: arguments?['selectedVariantId'] as String?,
         );
       },
       transition: Transition.rightToLeft,

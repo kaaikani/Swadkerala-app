@@ -383,8 +383,15 @@ type CountryList implements PaginatedList {
   totalItems: Int!
 }
 
+type CouponCodeItem {
+  promotion: Promotion!
+  productVariants: [ProductVariant!]!
+  facetValues: [FacetValue!]!
+  customerGroup: CustomerGroup
+}
+
 type CoupcodesList implements PaginatedList {
-  items: [Promotion!]!
+  items: [CouponCodeItem!]!
   totalItems: Int!
 }
 
@@ -961,6 +968,7 @@ type Customer implements Node {
   addresses: [Address!]
   orders(options: OrderListOptions): OrderList!
   user: User
+  groups: [CustomerGroup!]!
   loyaltyPointsTransactions(options: LoyaltyPointsTransactionListOptions): LoyaltyPointsTransactionList!
   favorites(options: FavoriteListOptions, productNameFilter: String): FavoriteList!
   referredBy: Referral

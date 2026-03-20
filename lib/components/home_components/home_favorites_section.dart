@@ -409,7 +409,8 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
                                 ? PriceFormatter.formatPrice(selectedVariant.priceWithTax.round())
                                 : 'Rs --',
                             shadowPriceText: null,
-                            isOutOfStock: false,
+                            isOutOfStock: selectedVariant?.stockLevel == 'OUT_OF_STOCK',
+                            stockLevel: selectedVariant?.stockLevel,
                             groupName: selectedVariant != null && selectedVariant.options.isNotEmpty
                                 ? selectedVariant.options.first.group.name
                                 : null,

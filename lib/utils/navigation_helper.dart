@@ -17,11 +17,13 @@ class NavigationHelper {
   static Future<void> navigateToProductDetail({
     required String productId,
     String? productName,
+    String? selectedVariantId,
     bool? isInitialLink,
   }) async {
     final arguments = <String, dynamic>{
       'productId': productId,
       if (productName != null) 'productName': productName,
+      if (selectedVariantId != null) 'selectedVariantId': selectedVariantId,
     };
 
     if (isInitialLink == true) {

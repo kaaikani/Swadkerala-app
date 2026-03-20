@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -13,140 +14,8 @@ class NotificationPermissionDialog {
       return;
     }
     return Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
-        ),
-        backgroundColor: AppColors.surface,
-        title: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
-              decoration: BoxDecoration(
-                color: AppColors.button.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-              ),
-              child: Icon(
-                Icons.notifications_active_rounded,
-                color: AppColors.button,
-                size: ResponsiveUtils.rp(28),
-              ),
-            ),
-            SizedBox(width: ResponsiveUtils.rp(12)),
-            Expanded(
-              child: Text(
-                'Enable Notifications',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.sp(20),
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Stay updated with your orders, offers, and important updates!',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(15),
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(16)),
-            _buildFeatureItem(
-              icon: Icons.shopping_bag_rounded,
-              text: 'Order status updates',
-            ),
-            SizedBox(height: ResponsiveUtils.rp(8)),
-            _buildFeatureItem(
-              icon: Icons.local_offer_rounded,
-              text: 'Exclusive offers & discounts',
-            ),
-            SizedBox(height: ResponsiveUtils.rp(8)),
-            _buildFeatureItem(
-              icon: Icons.shopping_cart_rounded,
-              text: 'Cart reminders',
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.textSecondary,
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUtils.rp(16),
-                vertical: ResponsiveUtils.rp(12),
-              ),
-            ),
-            child: Text(
-              'Not Now',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(15),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Get.back();
-              await _requestNotificationPermission(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.button,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUtils.rp(20),
-                vertical: ResponsiveUtils.rp(12),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              'Enable',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(15),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
+      _NotificationDialogContent(context: context),
       barrierDismissible: true,
-    );
-  }
-
-  static Widget _buildFeatureItem({
-    required IconData icon,
-    required String text,
-  }) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: ResponsiveUtils.rp(18),
-          color: AppColors.button,
-        ),
-        SizedBox(width: ResponsiveUtils.rp(8)),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(14),
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -154,15 +23,13 @@ class NotificationPermissionDialog {
     try {
       final status = await Permission.notification.request();
       final box = GetStorage();
-      
+
       if (status.isGranted) {
-        // Permission granted - reset dialog flags
         await box.remove('notification_permission_dialog_shown');
         await box.remove('notification_permission_dialog_last_shown');
         await box.remove('notification_settings_dialog_shown');
         await box.remove('notification_settings_dialog_last_shown');
-        
-        // Optionally show a success message
+
         Get.snackbar(
           'Notifications Enabled',
           'You\'ll now receive important updates!',
@@ -174,13 +41,9 @@ class NotificationPermissionDialog {
           borderRadius: ResponsiveUtils.rp(8),
         );
       } else if (status.isPermanentlyDenied) {
-        // Permission permanently denied - show settings dialog
         _showSettingsDialog(context);
-      } else {
-        // Permission denied (but can be requested again)
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   static void _showSettingsDialog(BuildContext context) {
@@ -220,9 +83,7 @@ class NotificationPermissionDialog {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: () => Get.back(),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
             ),
@@ -242,6 +103,173 @@ class NotificationPermissionDialog {
         ],
       ),
       barrierDismissible: true,
+    );
+  }
+}
+
+class _NotificationDialogContent extends StatefulWidget {
+  final BuildContext context;
+  const _NotificationDialogContent({required this.context});
+
+  @override
+  State<_NotificationDialogContent> createState() =>
+      _NotificationDialogContentState();
+}
+
+class _NotificationDialogContentState
+    extends State<_NotificationDialogContent> {
+  static const int _countdownSeconds = 5;
+  int _elapsed = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_elapsed >= _countdownSeconds - 1) {
+        t.cancel();
+        setState(() => _elapsed = _countdownSeconds);
+      } else {
+        setState(() => _elapsed++);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final canDismiss = _elapsed >= _countdownSeconds;
+
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(20)),
+      ),
+      backgroundColor: AppColors.surface,
+      title: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+            decoration: BoxDecoration(
+              color: AppColors.button.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+            ),
+            child: Icon(
+              Icons.notifications_active_rounded,
+              color: AppColors.button,
+              size: ResponsiveUtils.rp(28),
+            ),
+          ),
+          SizedBox(width: ResponsiveUtils.rp(12)),
+          Expanded(
+            child: Text(
+              'Enable Notifications',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(20),
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Stay updated with your orders, offers, and important updates!',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(15),
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(16)),
+          _buildFeatureItem(
+            icon: Icons.shopping_bag_rounded,
+            text: 'Order status updates',
+          ),
+          SizedBox(height: ResponsiveUtils.rp(8)),
+          _buildFeatureItem(
+            icon: Icons.local_offer_rounded,
+            text: 'Exclusive offers & discounts',
+          ),
+          SizedBox(height: ResponsiveUtils.rp(8)),
+          _buildFeatureItem(
+            icon: Icons.shopping_cart_rounded,
+            text: 'Cart reminders',
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: canDismiss ? () => Get.back() : null,
+          style: TextButton.styleFrom(
+            foregroundColor:
+                canDismiss ? AppColors.textSecondary : AppColors.textSecondary.withValues(alpha: 0.4),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.rp(16),
+              vertical: ResponsiveUtils.rp(12),
+            ),
+          ),
+          child: Text(
+            canDismiss ? 'Not Now' : 'Not Now ($_elapsed)',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(15),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            Get.back();
+            await NotificationPermissionDialog._requestNotificationPermission(
+                widget.context);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.button,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.rp(20),
+              vertical: ResponsiveUtils.rp(12),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+            ),
+            elevation: 0,
+          ),
+          child: Text(
+            'Enable',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(15),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeatureItem({required IconData icon, required String text}) {
+    return Row(
+      children: [
+        Icon(icon, size: ResponsiveUtils.rp(18), color: AppColors.button),
+        SizedBox(width: ResponsiveUtils.rp(8)),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

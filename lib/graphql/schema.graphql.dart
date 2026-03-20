@@ -10801,7 +10801,6 @@ class Input$OrderFilterParameter {
     List<Input$OrderFilterParameter>? $_or,
     Input$StringOperators? platform,
     Input$StringOperators? deviceMedium,
-    Input$NumberOperators? invoiceNo,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
@@ -10829,7 +10828,6 @@ class Input$OrderFilterParameter {
         if ($_or != null) r'_or': $_or,
         if (platform != null) r'platform': platform,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
-        if (invoiceNo != null) r'invoiceNo': invoiceNo,
         if (otherInstructions != null) r'otherInstructions': otherInstructions,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
         if (loyaltyPointsEarned != null)
@@ -10986,13 +10984,6 @@ class Input$OrderFilterParameter {
           : Input$StringOperators.fromJson(
               (l$deviceMedium as Map<String, dynamic>));
     }
-    if (data.containsKey('invoiceNo')) {
-      final l$invoiceNo = data['invoiceNo'];
-      result$data['invoiceNo'] = l$invoiceNo == null
-          ? null
-          : Input$NumberOperators.fromJson(
-              (l$invoiceNo as Map<String, dynamic>));
-    }
     if (data.containsKey('otherInstructions')) {
       final l$otherInstructions = data['otherInstructions'];
       result$data['otherInstructions'] = l$otherInstructions == null
@@ -11081,9 +11072,6 @@ class Input$OrderFilterParameter {
 
   Input$StringOperators? get deviceMedium =>
       (_$data['deviceMedium'] as Input$StringOperators?);
-
-  Input$NumberOperators? get invoiceNo =>
-      (_$data['invoiceNo'] as Input$NumberOperators?);
 
   Input$StringOperators? get otherInstructions =>
       (_$data['otherInstructions'] as Input$StringOperators?);
@@ -11183,10 +11171,6 @@ class Input$OrderFilterParameter {
     if (_$data.containsKey('deviceMedium')) {
       final l$deviceMedium = deviceMedium;
       result$data['deviceMedium'] = l$deviceMedium?.toJson();
-    }
-    if (_$data.containsKey('invoiceNo')) {
-      final l$invoiceNo = invoiceNo;
-      result$data['invoiceNo'] = l$invoiceNo?.toJson();
     }
     if (_$data.containsKey('otherInstructions')) {
       final l$otherInstructions = otherInstructions;
@@ -11430,15 +11414,6 @@ class Input$OrderFilterParameter {
     if (l$deviceMedium != lOther$deviceMedium) {
       return false;
     }
-    final l$invoiceNo = invoiceNo;
-    final lOther$invoiceNo = other.invoiceNo;
-    if (_$data.containsKey('invoiceNo') !=
-        other._$data.containsKey('invoiceNo')) {
-      return false;
-    }
-    if (l$invoiceNo != lOther$invoiceNo) {
-      return false;
-    }
     final l$otherInstructions = otherInstructions;
     final lOther$otherInstructions = other.otherInstructions;
     if (_$data.containsKey('otherInstructions') !=
@@ -11493,7 +11468,6 @@ class Input$OrderFilterParameter {
     final l$$_or = $_or;
     final l$platform = platform;
     final l$deviceMedium = deviceMedium;
-    final l$invoiceNo = invoiceNo;
     final l$otherInstructions = otherInstructions;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -11528,7 +11502,6 @@ class Input$OrderFilterParameter {
           : const {},
       _$data.containsKey('platform') ? l$platform : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
-      _$data.containsKey('invoiceNo') ? l$invoiceNo : const {},
       _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
       _$data.containsKey('loyaltyPointsEarned')
@@ -11570,7 +11543,6 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
     List<Input$OrderFilterParameter>? $_or,
     Input$StringOperators? platform,
     Input$StringOperators? deviceMedium,
-    Input$NumberOperators? invoiceNo,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
@@ -11607,7 +11579,6 @@ abstract class CopyWith$Input$OrderFilterParameter<TRes> {
           _fn);
   CopyWith$Input$StringOperators<TRes> get platform;
   CopyWith$Input$StringOperators<TRes> get deviceMedium;
-  CopyWith$Input$NumberOperators<TRes> get invoiceNo;
   CopyWith$Input$StringOperators<TRes> get otherInstructions;
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsUsed;
   CopyWith$Input$NumberOperators<TRes> get loyaltyPointsEarned;
@@ -11649,7 +11620,6 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
     Object? $_or = _undefined,
     Object? platform = _undefined,
     Object? deviceMedium = _undefined,
-    Object? invoiceNo = _undefined,
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
@@ -11694,8 +11664,6 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
           'platform': (platform as Input$StringOperators?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as Input$StringOperators?),
-        if (invoiceNo != _undefined)
-          'invoiceNo': (invoiceNo as Input$NumberOperators?),
         if (otherInstructions != _undefined)
           'otherInstructions': (otherInstructions as Input$StringOperators?),
         if (loyaltyPointsUsed != _undefined)
@@ -11885,14 +11853,6 @@ class _CopyWithImpl$Input$OrderFilterParameter<TRes>
             local$deviceMedium, (e) => call(deviceMedium: e));
   }
 
-  CopyWith$Input$NumberOperators<TRes> get invoiceNo {
-    final local$invoiceNo = _instance.invoiceNo;
-    return local$invoiceNo == null
-        ? CopyWith$Input$NumberOperators.stub(_then(_instance))
-        : CopyWith$Input$NumberOperators(
-            local$invoiceNo, (e) => call(invoiceNo: e));
-  }
-
   CopyWith$Input$StringOperators<TRes> get otherInstructions {
     final local$otherInstructions = _instance.otherInstructions;
     return local$otherInstructions == null
@@ -11947,7 +11907,6 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
     List<Input$OrderFilterParameter>? $_or,
     Input$StringOperators? platform,
     Input$StringOperators? deviceMedium,
-    Input$NumberOperators? invoiceNo,
     Input$StringOperators? otherInstructions,
     Input$NumberOperators? loyaltyPointsUsed,
     Input$NumberOperators? loyaltyPointsEarned,
@@ -12017,9 +11976,6 @@ class _CopyWithStubImpl$Input$OrderFilterParameter<TRes>
 
   CopyWith$Input$StringOperators<TRes> get deviceMedium =>
       CopyWith$Input$StringOperators.stub(_res);
-
-  CopyWith$Input$NumberOperators<TRes> get invoiceNo =>
-      CopyWith$Input$NumberOperators.stub(_res);
 
   CopyWith$Input$StringOperators<TRes> get otherInstructions =>
       CopyWith$Input$StringOperators.stub(_res);
@@ -12305,7 +12261,6 @@ class Input$OrderSortParameter {
     Enum$SortOrder? unavailableReason,
     Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
-    Enum$SortOrder? invoiceNo,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,
@@ -12327,7 +12282,6 @@ class Input$OrderSortParameter {
         if (unavailableReason != null) r'unavailableReason': unavailableReason,
         if (platform != null) r'platform': platform,
         if (deviceMedium != null) r'deviceMedium': deviceMedium,
-        if (invoiceNo != null) r'invoiceNo': invoiceNo,
         if (otherInstructions != null) r'otherInstructions': otherInstructions,
         if (loyaltyPointsUsed != null) r'loyaltyPointsUsed': loyaltyPointsUsed,
         if (loyaltyPointsEarned != null)
@@ -12430,12 +12384,6 @@ class Input$OrderSortParameter {
           ? null
           : fromJson$Enum$SortOrder((l$deviceMedium as String));
     }
-    if (data.containsKey('invoiceNo')) {
-      final l$invoiceNo = data['invoiceNo'];
-      result$data['invoiceNo'] = l$invoiceNo == null
-          ? null
-          : fromJson$Enum$SortOrder((l$invoiceNo as String));
-    }
     if (data.containsKey('otherInstructions')) {
       final l$otherInstructions = data['otherInstructions'];
       result$data['otherInstructions'] = l$otherInstructions == null
@@ -12497,8 +12445,6 @@ class Input$OrderSortParameter {
 
   Enum$SortOrder? get deviceMedium =>
       (_$data['deviceMedium'] as Enum$SortOrder?);
-
-  Enum$SortOrder? get invoiceNo => (_$data['invoiceNo'] as Enum$SortOrder?);
 
   Enum$SortOrder? get otherInstructions =>
       (_$data['otherInstructions'] as Enum$SortOrder?);
@@ -12594,11 +12540,6 @@ class Input$OrderSortParameter {
       final l$deviceMedium = deviceMedium;
       result$data['deviceMedium'] =
           l$deviceMedium == null ? null : toJson$Enum$SortOrder(l$deviceMedium);
-    }
-    if (_$data.containsKey('invoiceNo')) {
-      final l$invoiceNo = invoiceNo;
-      result$data['invoiceNo'] =
-          l$invoiceNo == null ? null : toJson$Enum$SortOrder(l$invoiceNo);
     }
     if (_$data.containsKey('otherInstructions')) {
       final l$otherInstructions = otherInstructions;
@@ -12776,15 +12717,6 @@ class Input$OrderSortParameter {
     if (l$deviceMedium != lOther$deviceMedium) {
       return false;
     }
-    final l$invoiceNo = invoiceNo;
-    final lOther$invoiceNo = other.invoiceNo;
-    if (_$data.containsKey('invoiceNo') !=
-        other._$data.containsKey('invoiceNo')) {
-      return false;
-    }
-    if (l$invoiceNo != lOther$invoiceNo) {
-      return false;
-    }
     final l$otherInstructions = otherInstructions;
     final lOther$otherInstructions = other.otherInstructions;
     if (_$data.containsKey('otherInstructions') !=
@@ -12833,7 +12765,6 @@ class Input$OrderSortParameter {
     final l$unavailableReason = unavailableReason;
     final l$platform = platform;
     final l$deviceMedium = deviceMedium;
-    final l$invoiceNo = invoiceNo;
     final l$otherInstructions = otherInstructions;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -12854,7 +12785,6 @@ class Input$OrderSortParameter {
       _$data.containsKey('unavailableReason') ? l$unavailableReason : const {},
       _$data.containsKey('platform') ? l$platform : const {},
       _$data.containsKey('deviceMedium') ? l$deviceMedium : const {},
-      _$data.containsKey('invoiceNo') ? l$invoiceNo : const {},
       _$data.containsKey('otherInstructions') ? l$otherInstructions : const {},
       _$data.containsKey('loyaltyPointsUsed') ? l$loyaltyPointsUsed : const {},
       _$data.containsKey('loyaltyPointsEarned')
@@ -12890,7 +12820,6 @@ abstract class CopyWith$Input$OrderSortParameter<TRes> {
     Enum$SortOrder? unavailableReason,
     Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
-    Enum$SortOrder? invoiceNo,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,
@@ -12927,7 +12856,6 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
     Object? unavailableReason = _undefined,
     Object? platform = _undefined,
     Object? deviceMedium = _undefined,
-    Object? invoiceNo = _undefined,
     Object? otherInstructions = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
@@ -12959,8 +12887,6 @@ class _CopyWithImpl$Input$OrderSortParameter<TRes>
         if (platform != _undefined) 'platform': (platform as Enum$SortOrder?),
         if (deviceMedium != _undefined)
           'deviceMedium': (deviceMedium as Enum$SortOrder?),
-        if (invoiceNo != _undefined)
-          'invoiceNo': (invoiceNo as Enum$SortOrder?),
         if (otherInstructions != _undefined)
           'otherInstructions': (otherInstructions as Enum$SortOrder?),
         if (loyaltyPointsUsed != _undefined)
@@ -12993,7 +12919,6 @@ class _CopyWithStubImpl$Input$OrderSortParameter<TRes>
     Enum$SortOrder? unavailableReason,
     Enum$SortOrder? platform,
     Enum$SortOrder? deviceMedium,
-    Enum$SortOrder? invoiceNo,
     Enum$SortOrder? otherInstructions,
     Enum$SortOrder? loyaltyPointsUsed,
     Enum$SortOrder? loyaltyPointsEarned,

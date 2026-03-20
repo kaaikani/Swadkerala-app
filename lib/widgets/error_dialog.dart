@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../theme/colors.dart';
+import '../utils/coupon_validation_helper.dart';
 import '../utils/responsive.dart';
 
 /// Centralized error dialog utility for controllers
@@ -231,5 +232,103 @@ class ErrorDialog {
   /// Show warning from string
   static void showWarningMessage(String message) {
     showWarning(message: message);
+  }
+
+  /// Show dialog listing all coupon conditions with met/unmet/unknown status.
+  /// Called when coupon was accepted by server but produced no discount.
+  static void showConditionsNotMet({
+    required String couponCode,
+    required List<CouponConditionInfo> conditions,
+  }) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.info_outline_rounded,
+              color: Colors.orange,
+              size: ResponsiveUtils.rp(26),
+            ),
+            SizedBox(width: ResponsiveUtils.rp(10)),
+            Expanded(
+              child: Text(
+                'Coupon Not Applied',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(17),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Conditions not satisfied for "$couponCode":',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(13),
+                color: AppColors.textSecondary,
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            ...conditions.map((c) => _buildConditionRow(c)),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: Get.back,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.button,
+              foregroundColor: AppColors.buttonText,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  static Widget _buildConditionRow(CouponConditionInfo c) {
+    final IconData icon;
+    final Color color;
+    if (!c.canValidate) {
+      icon = Icons.help_outline_rounded;
+      color = Colors.orange;
+    } else if (c.isMet) {
+      icon = Icons.check_circle_outline_rounded;
+      color = Colors.green;
+    } else {
+      icon = Icons.cancel_outlined;
+      color = Colors.red;
+    }
+    return Padding(
+      padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(8)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: ResponsiveUtils.rp(18), color: color),
+          SizedBox(width: ResponsiveUtils.rp(8)),
+          Expanded(
+            child: Text(
+              c.displayText,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(14),
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

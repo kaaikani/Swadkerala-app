@@ -4101,6 +4101,13 @@ const documentNodeQueryGetCustomerFavorites = DocumentNode(definitions: [
                                 selectionSet: null,
                               ),
                               FieldNode(
+                                name: NameNode(value: 'stockLevel'),
+                                alias: null,
+                                arguments: [],
+                                directives: [],
+                                selectionSet: null,
+                              ),
+                              FieldNode(
                                 name: NameNode(value: 'options'),
                                 alias: null,
                                 arguments: [],
@@ -5343,6 +5350,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     required this.price,
     required this.priceWithTax,
     required this.currencyCode,
+    required this.stockLevel,
     required this.options,
     this.$__typename = 'ProductVariant',
   });
@@ -5354,6 +5362,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     final l$price = json['price'];
     final l$priceWithTax = json['priceWithTax'];
     final l$currencyCode = json['currencyCode'];
+    final l$stockLevel = json['stockLevel'];
     final l$options = json['options'];
     final l$$__typename = json['__typename'];
     return Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants(
@@ -5362,6 +5371,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
       price: (l$price as num).toDouble(),
       priceWithTax: (l$priceWithTax as num).toDouble(),
       currencyCode: fromJson$Enum$CurrencyCode((l$currencyCode as String)),
+      stockLevel: (l$stockLevel as String),
       options: (l$options as List<dynamic>)
           .map((e) =>
               Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options
@@ -5381,6 +5391,8 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
 
   final Enum$CurrencyCode currencyCode;
 
+  final String stockLevel;
+
   final List<
           Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>
       options;
@@ -5399,6 +5411,8 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     _resultData['priceWithTax'] = l$priceWithTax;
     final l$currencyCode = currencyCode;
     _resultData['currencyCode'] = toJson$Enum$CurrencyCode(l$currencyCode);
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
     final l$options = options;
     _resultData['options'] = l$options.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
@@ -5413,6 +5427,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     final l$price = price;
     final l$priceWithTax = priceWithTax;
     final l$currencyCode = currencyCode;
+    final l$stockLevel = stockLevel;
     final l$options = options;
     final l$$__typename = $__typename;
     return Object.hashAll([
@@ -5421,6 +5436,7 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
       l$price,
       l$priceWithTax,
       l$currencyCode,
+      l$stockLevel,
       Object.hashAll(l$options.map((v) => v)),
       l$$__typename,
     ]);
@@ -5459,6 +5475,11 @@ class Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants
     final l$currencyCode = currencyCode;
     final lOther$currencyCode = other.currencyCode;
     if (l$currencyCode != lOther$currencyCode) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
       return false;
     }
     final l$options = options;
@@ -5513,6 +5534,7 @@ abstract class CopyWith$Query$GetCustomerFavorites$activeCustomer$favorites$item
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    String? stockLevel,
     List<Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>?
         options,
     String? $__typename,
@@ -5550,6 +5572,7 @@ class _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$pr
     Object? price = _undefined,
     Object? priceWithTax = _undefined,
     Object? currencyCode = _undefined,
+    Object? stockLevel = _undefined,
     Object? options = _undefined,
     Object? $__typename = _undefined,
   }) =>
@@ -5568,6 +5591,9 @@ class _CopyWithImpl$Query$GetCustomerFavorites$activeCustomer$favorites$items$pr
         currencyCode: currencyCode == _undefined || currencyCode == null
             ? _instance.currencyCode
             : (currencyCode as Enum$CurrencyCode),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
         options: options == _undefined || options == null
             ? _instance.options
             : (options as List<
@@ -5607,6 +5633,7 @@ class _CopyWithStubImpl$Query$GetCustomerFavorites$activeCustomer$favorites$item
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    String? stockLevel,
     List<Query$GetCustomerFavorites$activeCustomer$favorites$items$product$variants$options>?
         options,
     String? $__typename,
@@ -6236,6 +6263,13 @@ const documentNodeQueryGetFrequentlyOrderedProducts =
                   ),
                   FieldNode(
                     name: NameNode(value: 'currencyCode'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'stockLevel'),
                     alias: null,
                     arguments: [],
                     directives: [],
@@ -7016,6 +7050,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     required this.price,
     required this.priceWithTax,
     required this.currencyCode,
+    required this.stockLevel,
     required this.options,
     this.$__typename = 'ProductVariant',
   });
@@ -7027,6 +7062,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     final l$price = json['price'];
     final l$priceWithTax = json['priceWithTax'];
     final l$currencyCode = json['currencyCode'];
+    final l$stockLevel = json['stockLevel'];
     final l$options = json['options'];
     final l$$__typename = json['__typename'];
     return Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants(
@@ -7035,6 +7071,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
       price: (l$price as num).toDouble(),
       priceWithTax: (l$priceWithTax as num).toDouble(),
       currencyCode: fromJson$Enum$CurrencyCode((l$currencyCode as String)),
+      stockLevel: (l$stockLevel as String),
       options: (l$options as List<dynamic>)
           .map((e) =>
               Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options
@@ -7054,6 +7091,8 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
 
   final Enum$CurrencyCode currencyCode;
 
+  final String stockLevel;
+
   final List<
           Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>
       options;
@@ -7072,6 +7111,8 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     _resultData['priceWithTax'] = l$priceWithTax;
     final l$currencyCode = currencyCode;
     _resultData['currencyCode'] = toJson$Enum$CurrencyCode(l$currencyCode);
+    final l$stockLevel = stockLevel;
+    _resultData['stockLevel'] = l$stockLevel;
     final l$options = options;
     _resultData['options'] = l$options.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
@@ -7086,6 +7127,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     final l$price = price;
     final l$priceWithTax = priceWithTax;
     final l$currencyCode = currencyCode;
+    final l$stockLevel = stockLevel;
     final l$options = options;
     final l$$__typename = $__typename;
     return Object.hashAll([
@@ -7094,6 +7136,7 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
       l$price,
       l$priceWithTax,
       l$currencyCode,
+      l$stockLevel,
       Object.hashAll(l$options.map((v) => v)),
       l$$__typename,
     ]);
@@ -7132,6 +7175,11 @@ class Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$varia
     final l$currencyCode = currencyCode;
     final lOther$currencyCode = other.currencyCode;
     if (l$currencyCode != lOther$currencyCode) {
+      return false;
+    }
+    final l$stockLevel = stockLevel;
+    final lOther$stockLevel = other.stockLevel;
+    if (l$stockLevel != lOther$stockLevel) {
       return false;
     }
     final l$options = options;
@@ -7186,6 +7234,7 @@ abstract class CopyWith$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProd
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    String? stockLevel,
     List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>?
         options,
     String? $__typename,
@@ -7223,6 +7272,7 @@ class _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts
     Object? price = _undefined,
     Object? priceWithTax = _undefined,
     Object? currencyCode = _undefined,
+    Object? stockLevel = _undefined,
     Object? options = _undefined,
     Object? $__typename = _undefined,
   }) =>
@@ -7241,6 +7291,9 @@ class _CopyWithImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts
         currencyCode: currencyCode == _undefined || currencyCode == null
             ? _instance.currencyCode
             : (currencyCode as Enum$CurrencyCode),
+        stockLevel: stockLevel == _undefined || stockLevel == null
+            ? _instance.stockLevel
+            : (stockLevel as String),
         options: options == _undefined || options == null
             ? _instance.options
             : (options as List<
@@ -7280,6 +7333,7 @@ class _CopyWithStubImpl$Query$GetFrequentlyOrderedProducts$frequentlyOrderedProd
     double? price,
     double? priceWithTax,
     Enum$CurrencyCode? currencyCode,
+    String? stockLevel,
     List<Query$GetFrequentlyOrderedProducts$frequentlyOrderedProducts$product$variants$options>?
         options,
     String? $__typename,
@@ -10246,200 +10300,6 @@ const documentNodeQueryGetCouponCodeList = DocumentNode(definitions: [
         directives: [],
         selectionSet: SelectionSetNode(selections: [
           FieldNode(
-            name: NameNode(value: 'items'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: SelectionSetNode(selections: [
-              FieldNode(
-                name: NameNode(value: 'id'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'name'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'couponCode'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'description'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'enabled'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'endsAt'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'startsAt'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'createdAt'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'updatedAt'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'perCustomerUsageLimit'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: 'actions'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  FieldNode(
-                    name: NameNode(value: 'code'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'args'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: SelectionSetNode(selections: [
-                      FieldNode(
-                        name: NameNode(value: 'name'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'value'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: '__typename'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                    ]),
-                  ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: 'conditions'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: SelectionSetNode(selections: [
-                  FieldNode(
-                    name: NameNode(value: 'code'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                  FieldNode(
-                    name: NameNode(value: 'args'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: SelectionSetNode(selections: [
-                      FieldNode(
-                        name: NameNode(value: 'name'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: 'value'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                      FieldNode(
-                        name: NameNode(value: '__typename'),
-                        alias: null,
-                        arguments: [],
-                        directives: [],
-                        selectionSet: null,
-                      ),
-                    ]),
-                  ),
-                  FieldNode(
-                    name: NameNode(value: '__typename'),
-                    alias: null,
-                    arguments: [],
-                    directives: [],
-                    selectionSet: null,
-                  ),
-                ]),
-              ),
-              FieldNode(
-                name: NameNode(value: 'usageLimit'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-              FieldNode(
-                name: NameNode(value: '__typename'),
-                alias: null,
-                arguments: [],
-                directives: [],
-                selectionSet: null,
-              ),
-            ]),
-          ),
-          FieldNode(
             name: NameNode(value: 'totalItems'),
             alias: null,
             arguments: [],
@@ -10452,6 +10312,431 @@ const documentNodeQueryGetCouponCodeList = DocumentNode(definitions: [
             arguments: [],
             directives: [],
             selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'items'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'customerGroup'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: 'productVariants'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'price'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'priceWithTax'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'featuredAsset'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'preview'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'source'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'product'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'slug'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: 'facetValues'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'code'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'facet'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'id'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'name'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'code'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: 'promotion'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'couponCode'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'description'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'enabled'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'endsAt'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'startsAt'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'createdAt'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'updatedAt'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'perCustomerUsageLimit'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'usageLimit'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'actions'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'code'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'args'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(selections: [
+                          FieldNode(
+                            name: NameNode(value: 'name'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: 'value'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: '__typename'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                        ]),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'conditions'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'code'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: 'args'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: SelectionSetNode(selections: [
+                          FieldNode(
+                            name: NameNode(value: 'name'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: 'value'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: '__typename'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                        ]),
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
           ),
         ]),
       ),
@@ -10613,52 +10898,52 @@ class Query$GetCouponCodeList$Widget
 
 class Query$GetCouponCodeList$getCouponCodeList {
   Query$GetCouponCodeList$getCouponCodeList({
-    required this.items,
     required this.totalItems,
     this.$__typename = 'CoupcodesList',
+    required this.items,
   });
 
   factory Query$GetCouponCodeList$getCouponCodeList.fromJson(
       Map<String, dynamic> json) {
-    final l$items = json['items'];
     final l$totalItems = json['totalItems'];
     final l$$__typename = json['__typename'];
+    final l$items = json['items'];
     return Query$GetCouponCodeList$getCouponCodeList(
+      totalItems: (l$totalItems as int),
+      $__typename: (l$$__typename as String),
       items: (l$items as List<dynamic>)
           .map((e) => Query$GetCouponCodeList$getCouponCodeList$items.fromJson(
               (e as Map<String, dynamic>)))
           .toList(),
-      totalItems: (l$totalItems as int),
-      $__typename: (l$$__typename as String),
     );
   }
-
-  final List<Query$GetCouponCodeList$getCouponCodeList$items> items;
 
   final int totalItems;
 
   final String $__typename;
 
+  final List<Query$GetCouponCodeList$getCouponCodeList$items> items;
+
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
-    final l$items = items;
-    _resultData['items'] = l$items.map((e) => e.toJson()).toList();
     final l$totalItems = totalItems;
     _resultData['totalItems'] = l$totalItems;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
+    final l$items = items;
+    _resultData['items'] = l$items.map((e) => e.toJson()).toList();
     return _resultData;
   }
 
   @override
   int get hashCode {
-    final l$items = items;
     final l$totalItems = totalItems;
     final l$$__typename = $__typename;
+    final l$items = items;
     return Object.hashAll([
-      Object.hashAll(l$items.map((v) => v)),
       l$totalItems,
       l$$__typename,
+      Object.hashAll(l$items.map((v) => v)),
     ]);
   }
 
@@ -10669,6 +10954,16 @@ class Query$GetCouponCodeList$getCouponCodeList {
     }
     if (other is! Query$GetCouponCodeList$getCouponCodeList ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$totalItems = totalItems;
+    final lOther$totalItems = other.totalItems;
+    if (l$totalItems != lOther$totalItems) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
       return false;
     }
     final l$items = items;
@@ -10682,16 +10977,6 @@ class Query$GetCouponCodeList$getCouponCodeList {
       if (l$items$entry != lOther$items$entry) {
         return false;
       }
-    }
-    final l$totalItems = totalItems;
-    final lOther$totalItems = other.totalItems;
-    if (l$totalItems != lOther$totalItems) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
     }
     return true;
   }
@@ -10717,9 +11002,9 @@ abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList<TRes> {
       _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList;
 
   TRes call({
-    List<Query$GetCouponCodeList$getCouponCodeList$items>? items,
     int? totalItems,
     String? $__typename,
+    List<Query$GetCouponCodeList$getCouponCodeList$items>? items,
   });
   TRes items(
       Iterable<Query$GetCouponCodeList$getCouponCodeList$items> Function(
@@ -10743,20 +11028,20 @@ class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
-    Object? items = _undefined,
     Object? totalItems = _undefined,
     Object? $__typename = _undefined,
+    Object? items = _undefined,
   }) =>
       _then(Query$GetCouponCodeList$getCouponCodeList(
-        items: items == _undefined || items == null
-            ? _instance.items
-            : (items as List<Query$GetCouponCodeList$getCouponCodeList$items>),
         totalItems: totalItems == _undefined || totalItems == null
             ? _instance.totalItems
             : (totalItems as int),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
+        items: items == _undefined || items == null
+            ? _instance.items
+            : (items as List<Query$GetCouponCodeList$getCouponCodeList$items>),
       ));
 
   TRes items(
@@ -10780,9 +11065,9 @@ class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList<TRes>
   TRes _res;
 
   call({
-    List<Query$GetCouponCodeList$getCouponCodeList$items>? items,
     int? totalItems,
     String? $__typename,
+    List<Query$GetCouponCodeList$getCouponCodeList$items>? items,
   }) =>
       _res;
 
@@ -10791,6 +11076,1513 @@ class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList<TRes>
 
 class Query$GetCouponCodeList$getCouponCodeList$items {
   Query$GetCouponCodeList$getCouponCodeList$items({
+    this.customerGroup,
+    required this.productVariants,
+    required this.facetValues,
+    required this.promotion,
+    this.$__typename = 'CouponCodeItem',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items.fromJson(
+      Map<String, dynamic> json) {
+    final l$customerGroup = json['customerGroup'];
+    final l$productVariants = json['productVariants'];
+    final l$facetValues = json['facetValues'];
+    final l$promotion = json['promotion'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items(
+      customerGroup: l$customerGroup == null
+          ? null
+          : Query$GetCouponCodeList$getCouponCodeList$items$customerGroup
+              .fromJson((l$customerGroup as Map<String, dynamic>)),
+      productVariants: (l$productVariants as List<dynamic>)
+          .map((e) =>
+              Query$GetCouponCodeList$getCouponCodeList$items$productVariants
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      facetValues: (l$facetValues as List<dynamic>)
+          .map((e) =>
+              Query$GetCouponCodeList$getCouponCodeList$items$facetValues
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      promotion:
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion.fromJson(
+              (l$promotion as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$customerGroup?
+      customerGroup;
+
+  final List<Query$GetCouponCodeList$getCouponCodeList$items$productVariants>
+      productVariants;
+
+  final List<Query$GetCouponCodeList$getCouponCodeList$items$facetValues>
+      facetValues;
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$promotion promotion;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$customerGroup = customerGroup;
+    _resultData['customerGroup'] = l$customerGroup?.toJson();
+    final l$productVariants = productVariants;
+    _resultData['productVariants'] =
+        l$productVariants.map((e) => e.toJson()).toList();
+    final l$facetValues = facetValues;
+    _resultData['facetValues'] = l$facetValues.map((e) => e.toJson()).toList();
+    final l$promotion = promotion;
+    _resultData['promotion'] = l$promotion.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$customerGroup = customerGroup;
+    final l$productVariants = productVariants;
+    final l$facetValues = facetValues;
+    final l$promotion = promotion;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$customerGroup,
+      Object.hashAll(l$productVariants.map((v) => v)),
+      Object.hashAll(l$facetValues.map((v) => v)),
+      l$promotion,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetCouponCodeList$getCouponCodeList$items ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$customerGroup = customerGroup;
+    final lOther$customerGroup = other.customerGroup;
+    if (l$customerGroup != lOther$customerGroup) {
+      return false;
+    }
+    final l$productVariants = productVariants;
+    final lOther$productVariants = other.productVariants;
+    if (l$productVariants.length != lOther$productVariants.length) {
+      return false;
+    }
+    for (int i = 0; i < l$productVariants.length; i++) {
+      final l$productVariants$entry = l$productVariants[i];
+      final lOther$productVariants$entry = lOther$productVariants[i];
+      if (l$productVariants$entry != lOther$productVariants$entry) {
+        return false;
+      }
+    }
+    final l$facetValues = facetValues;
+    final lOther$facetValues = other.facetValues;
+    if (l$facetValues.length != lOther$facetValues.length) {
+      return false;
+    }
+    for (int i = 0; i < l$facetValues.length; i++) {
+      final l$facetValues$entry = l$facetValues[i];
+      final lOther$facetValues$entry = lOther$facetValues[i];
+      if (l$facetValues$entry != lOther$facetValues$entry) {
+        return false;
+      }
+    }
+    final l$promotion = promotion;
+    final lOther$promotion = other.promotion;
+    if (l$promotion != lOther$promotion) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items
+    on Query$GetCouponCodeList$getCouponCodeList$items {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<
+          Query$GetCouponCodeList$getCouponCodeList$items>
+      get copyWith => CopyWith$Query$GetCouponCodeList$getCouponCodeList$items(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items(
+    Query$GetCouponCodeList$getCouponCodeList$items instance,
+    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items) then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items;
+
+  TRes call({
+    Query$GetCouponCodeList$getCouponCodeList$items$customerGroup?
+        customerGroup,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$productVariants>?
+        productVariants,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$facetValues>?
+        facetValues,
+    Query$GetCouponCodeList$getCouponCodeList$items$promotion? promotion,
+    String? $__typename,
+  });
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<TRes>
+      get customerGroup;
+  TRes productVariants(
+      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$productVariants> Function(
+              Iterable<
+                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+                      Query$GetCouponCodeList$getCouponCodeList$items$productVariants>>)
+          _fn);
+  TRes facetValues(
+      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$facetValues> Function(
+              Iterable<
+                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+                      Query$GetCouponCodeList$getCouponCodeList$items$facetValues>>)
+          _fn);
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion<TRes>
+      get promotion;
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
+    implements CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items _instance;
+
+  final TRes Function(Query$GetCouponCodeList$getCouponCodeList$items) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? customerGroup = _undefined,
+    Object? productVariants = _undefined,
+    Object? facetValues = _undefined,
+    Object? promotion = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetCouponCodeList$getCouponCodeList$items(
+        customerGroup: customerGroup == _undefined
+            ? _instance.customerGroup
+            : (customerGroup
+                as Query$GetCouponCodeList$getCouponCodeList$items$customerGroup?),
+        productVariants: productVariants == _undefined ||
+                productVariants == null
+            ? _instance.productVariants
+            : (productVariants as List<
+                Query$GetCouponCodeList$getCouponCodeList$items$productVariants>),
+        facetValues: facetValues == _undefined || facetValues == null
+            ? _instance.facetValues
+            : (facetValues as List<
+                Query$GetCouponCodeList$getCouponCodeList$items$facetValues>),
+        promotion: promotion == _undefined || promotion == null
+            ? _instance.promotion
+            : (promotion
+                as Query$GetCouponCodeList$getCouponCodeList$items$promotion),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<TRes>
+      get customerGroup {
+    final local$customerGroup = _instance.customerGroup;
+    return local$customerGroup == null
+        ? CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup
+            .stub(_then(_instance))
+        : CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup(
+            local$customerGroup, (e) => call(customerGroup: e));
+  }
+
+  TRes productVariants(
+          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$productVariants> Function(
+                  Iterable<
+                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+                          Query$GetCouponCodeList$getCouponCodeList$items$productVariants>>)
+              _fn) =>
+      call(
+          productVariants: _fn(_instance.productVariants.map((e) =>
+              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants(
+                e,
+                (i) => i,
+              ))).toList());
+
+  TRes facetValues(
+          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$facetValues> Function(
+                  Iterable<
+                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+                          Query$GetCouponCodeList$getCouponCodeList$items$facetValues>>)
+              _fn) =>
+      call(
+          facetValues: _fn(_instance.facetValues.map((e) =>
+              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues(
+                e,
+                (i) => i,
+              ))).toList());
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion<TRes>
+      get promotion {
+    final local$promotion = _instance.promotion;
+    return CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion(
+        local$promotion, (e) => call(promotion: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
+    implements CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items(this._res);
+
+  TRes _res;
+
+  call({
+    Query$GetCouponCodeList$getCouponCodeList$items$customerGroup?
+        customerGroup,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$productVariants>?
+        productVariants,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$facetValues>?
+        facetValues,
+    Query$GetCouponCodeList$getCouponCodeList$items$promotion? promotion,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<TRes>
+      get customerGroup =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup
+              .stub(_res);
+
+  productVariants(_fn) => _res;
+
+  facetValues(_fn) => _res;
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion<TRes>
+      get promotion =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion
+              .stub(_res);
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$customerGroup {
+  Query$GetCouponCodeList$getCouponCodeList$items$customerGroup({
+    required this.id,
+    required this.name,
+    this.$__typename = 'CustomerGroup',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$customerGroup.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$customerGroup(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$customerGroup ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup
+    on Query$GetCouponCodeList$getCouponCodeList$items$customerGroup {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<
+          Query$GetCouponCodeList$getCouponCodeList$items$customerGroup>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup(
+    Query$GetCouponCodeList$getCouponCodeList$items$customerGroup instance,
+    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$customerGroup)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$customerGroup _instance;
+
+  final TRes Function(
+      Query$GetCouponCodeList$getCouponCodeList$items$customerGroup) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetCouponCodeList$getCouponCodeList$items$customerGroup(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$customerGroup(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$productVariants {
+  Query$GetCouponCodeList$getCouponCodeList$items$productVariants({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.priceWithTax,
+    this.featuredAsset,
+    required this.product,
+    this.$__typename = 'ProductVariant',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$productVariants.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$price = json['price'];
+    final l$priceWithTax = json['priceWithTax'];
+    final l$featuredAsset = json['featuredAsset'];
+    final l$product = json['product'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$productVariants(
+      id: (l$id as String),
+      name: (l$name as String),
+      price: (l$price as num).toDouble(),
+      priceWithTax: (l$priceWithTax as num).toDouble(),
+      featuredAsset: l$featuredAsset == null
+          ? null
+          : Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset
+              .fromJson((l$featuredAsset as Map<String, dynamic>)),
+      product:
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product
+              .fromJson((l$product as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final double price;
+
+  final double priceWithTax;
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset?
+      featuredAsset;
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product
+      product;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$price = price;
+    _resultData['price'] = l$price;
+    final l$priceWithTax = priceWithTax;
+    _resultData['priceWithTax'] = l$priceWithTax;
+    final l$featuredAsset = featuredAsset;
+    _resultData['featuredAsset'] = l$featuredAsset?.toJson();
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$price = price;
+    final l$priceWithTax = priceWithTax;
+    final l$featuredAsset = featuredAsset;
+    final l$product = product;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$price,
+      l$priceWithTax,
+      l$featuredAsset,
+      l$product,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$productVariants ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$price = price;
+    final lOther$price = other.price;
+    if (l$price != lOther$price) {
+      return false;
+    }
+    final l$priceWithTax = priceWithTax;
+    final lOther$priceWithTax = other.priceWithTax;
+    if (l$priceWithTax != lOther$priceWithTax) {
+      return false;
+    }
+    final l$featuredAsset = featuredAsset;
+    final lOther$featuredAsset = other.featuredAsset;
+    if (l$featuredAsset != lOther$featuredAsset) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$productVariants
+    on Query$GetCouponCodeList$getCouponCodeList$items$productVariants {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants(
+    Query$GetCouponCodeList$getCouponCodeList$items$productVariants instance,
+    TRes Function(
+            Query$GetCouponCodeList$getCouponCodeList$items$productVariants)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants;
+
+  TRes call({
+    String? id,
+    String? name,
+    double? price,
+    double? priceWithTax,
+    Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset?
+        featuredAsset,
+    Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product?
+        product,
+    String? $__typename,
+  });
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+      TRes> get featuredAsset;
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+      TRes> get product;
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$productVariants
+      _instance;
+
+  final TRes Function(
+      Query$GetCouponCodeList$getCouponCodeList$items$productVariants) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? price = _undefined,
+    Object? priceWithTax = _undefined,
+    Object? featuredAsset = _undefined,
+    Object? product = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetCouponCodeList$getCouponCodeList$items$productVariants(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        price: price == _undefined || price == null
+            ? _instance.price
+            : (price as double),
+        priceWithTax: priceWithTax == _undefined || priceWithTax == null
+            ? _instance.priceWithTax
+            : (priceWithTax as double),
+        featuredAsset: featuredAsset == _undefined
+            ? _instance.featuredAsset
+            : (featuredAsset
+                as Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset?),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+      TRes> get featuredAsset {
+    final local$featuredAsset = _instance.featuredAsset;
+    return local$featuredAsset == null
+        ? CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset
+            .stub(_then(_instance))
+        : CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset(
+            local$featuredAsset, (e) => call(featuredAsset: e));
+  }
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+      TRes> get product {
+    final local$product = _instance.product;
+    return CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product(
+        local$product, (e) => call(product: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    double? price,
+    double? priceWithTax,
+    Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset?
+        featuredAsset,
+    Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product?
+        product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+          TRes>
+      get featuredAsset =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset
+              .stub(_res);
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+          TRes>
+      get product =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product
+              .stub(_res);
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset {
+  Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset({
+    required this.id,
+    required this.preview,
+    required this.source,
+    this.$__typename = 'Asset',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$preview = json['preview'];
+    final l$source = json['source'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset(
+      id: (l$id as String),
+      preview: (l$preview as String),
+      source: (l$source as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String preview;
+
+  final String source;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$preview = preview;
+    _resultData['preview'] = l$preview;
+    final l$source = source;
+    _resultData['source'] = l$source;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$preview = preview;
+    final l$source = source;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$preview,
+      l$source,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$preview = preview;
+    final lOther$preview = other.preview;
+    if (l$preview != lOther$preview) {
+      return false;
+    }
+    final l$source = source;
+    final lOther$source = other.source;
+    if (l$source != lOther$source) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset
+    on Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset(
+    Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset
+        instance,
+    TRes Function(
+            Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset;
+
+  TRes call({
+    String? id,
+    String? preview,
+    String? source,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset
+      _instance;
+
+  final TRes Function(
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? preview = _undefined,
+    Object? source = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        preview: preview == _undefined || preview == null
+            ? _instance.preview
+            : (preview as String),
+        source: source == _undefined || source == null
+            ? _instance.source
+            : (source as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$featuredAsset(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? preview,
+    String? source,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product {
+  Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product({
+    required this.id,
+    required this.name,
+    required this.slug,
+    this.$__typename = 'Product',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$slug = json['slug'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product(
+      id: (l$id as String),
+      name: (l$name as String),
+      slug: (l$slug as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String slug;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$slug = slug;
+    _resultData['slug'] = l$slug;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$slug = slug;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$slug,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$slug = slug;
+    final lOther$slug = other.slug;
+    if (l$slug != lOther$slug) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product
+    on Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product(
+    Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product
+        instance,
+    TRes Function(
+            Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? slug,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product
+      _instance;
+
+  final TRes Function(
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? slug = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        slug: slug == _undefined || slug == null
+            ? _instance.slug
+            : (slug as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$productVariants$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? slug,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$facetValues {
+  Query$GetCouponCodeList$getCouponCodeList$items$facetValues({
+    required this.id,
+    required this.name,
+    required this.code,
+    required this.facet,
+    this.$__typename = 'FacetValue',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$facetValues.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$code = json['code'];
+    final l$facet = json['facet'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$facetValues(
+      id: (l$id as String),
+      name: (l$name as String),
+      code: (l$code as String),
+      facet: Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet
+          .fromJson((l$facet as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String code;
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet facet;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$facet = facet;
+    _resultData['facet'] = l$facet.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$code = code;
+    final l$facet = facet;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$code,
+      l$facet,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetCouponCodeList$getCouponCodeList$items$facetValues ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$facet = facet;
+    final lOther$facet = other.facet;
+    if (l$facet != lOther$facet) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$facetValues
+    on Query$GetCouponCodeList$getCouponCodeList$items$facetValues {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+          Query$GetCouponCodeList$getCouponCodeList$items$facetValues>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues(
+    Query$GetCouponCodeList$getCouponCodeList$items$facetValues instance,
+    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$facetValues)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? code,
+    Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet? facet,
+    String? $__typename,
+  });
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+      TRes> get facet;
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$facetValues _instance;
+
+  final TRes Function(
+      Query$GetCouponCodeList$getCouponCodeList$items$facetValues) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? code = _undefined,
+    Object? facet = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetCouponCodeList$getCouponCodeList$items$facetValues(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        facet: facet == _undefined || facet == null
+            ? _instance.facet
+            : (facet
+                as Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+      TRes> get facet {
+    final local$facet = _instance.facet;
+    return CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet(
+        local$facet, (e) => call(facet: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? code,
+    Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet? facet,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+          TRes>
+      get facet =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet
+              .stub(_res);
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet {
+  Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet({
+    required this.id,
+    required this.name,
+    required this.code,
+    this.$__typename = 'Facet',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$code = json['code'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet(
+      id: (l$id as String),
+      name: (l$name as String),
+      code: (l$code as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String code;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$code = code;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$code,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet
+    on Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+          Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet(
+    Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet instance,
+    TRes Function(
+            Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? code,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet
+      _instance;
+
+  final TRes Function(
+      Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? code = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$facetValues$facet(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? code,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$promotion {
+  Query$GetCouponCodeList$getCouponCodeList$items$promotion({
     required this.id,
     required this.name,
     this.couponCode,
@@ -10801,13 +12593,13 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
     required this.createdAt,
     required this.updatedAt,
     this.perCustomerUsageLimit,
+    this.usageLimit,
     required this.actions,
     required this.conditions,
-    this.usageLimit,
     this.$__typename = 'Promotion',
   });
 
-  factory Query$GetCouponCodeList$getCouponCodeList$items.fromJson(
+  factory Query$GetCouponCodeList$getCouponCodeList$items$promotion.fromJson(
       Map<String, dynamic> json) {
     final l$id = json['id'];
     final l$name = json['name'];
@@ -10819,11 +12611,11 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
     final l$createdAt = json['createdAt'];
     final l$updatedAt = json['updatedAt'];
     final l$perCustomerUsageLimit = json['perCustomerUsageLimit'];
+    final l$usageLimit = json['usageLimit'];
     final l$actions = json['actions'];
     final l$conditions = json['conditions'];
-    final l$usageLimit = json['usageLimit'];
     final l$$__typename = json['__typename'];
-    return Query$GetCouponCodeList$getCouponCodeList$items(
+    return Query$GetCouponCodeList$getCouponCodeList$items$promotion(
       id: (l$id as String),
       name: (l$name as String),
       couponCode: (l$couponCode as String?),
@@ -10835,16 +12627,17 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
       createdAt: DateTime.parse((l$createdAt as String)),
       updatedAt: DateTime.parse((l$updatedAt as String)),
       perCustomerUsageLimit: (l$perCustomerUsageLimit as int?),
+      usageLimit: (l$usageLimit as int?),
       actions: (l$actions as List<dynamic>)
           .map((e) =>
-              Query$GetCouponCodeList$getCouponCodeList$items$actions.fromJson(
-                  (e as Map<String, dynamic>)))
+              Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions
+                  .fromJson((e as Map<String, dynamic>)))
           .toList(),
       conditions: (l$conditions as List<dynamic>)
-          .map((e) => Query$GetCouponCodeList$getCouponCodeList$items$conditions
-              .fromJson((e as Map<String, dynamic>)))
+          .map((e) =>
+              Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions
+                  .fromJson((e as Map<String, dynamic>)))
           .toList(),
-      usageLimit: (l$usageLimit as int?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -10869,12 +12662,14 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
 
   final int? perCustomerUsageLimit;
 
-  final List<Query$GetCouponCodeList$getCouponCodeList$items$actions> actions;
-
-  final List<Query$GetCouponCodeList$getCouponCodeList$items$conditions>
-      conditions;
-
   final int? usageLimit;
+
+  final List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions>
+      actions;
+
+  final List<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions>
+      conditions;
 
   final String $__typename;
 
@@ -10900,12 +12695,12 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
     _resultData['updatedAt'] = l$updatedAt.toIso8601String();
     final l$perCustomerUsageLimit = perCustomerUsageLimit;
     _resultData['perCustomerUsageLimit'] = l$perCustomerUsageLimit;
+    final l$usageLimit = usageLimit;
+    _resultData['usageLimit'] = l$usageLimit;
     final l$actions = actions;
     _resultData['actions'] = l$actions.map((e) => e.toJson()).toList();
     final l$conditions = conditions;
     _resultData['conditions'] = l$conditions.map((e) => e.toJson()).toList();
-    final l$usageLimit = usageLimit;
-    _resultData['usageLimit'] = l$usageLimit;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -10923,9 +12718,9 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
     final l$createdAt = createdAt;
     final l$updatedAt = updatedAt;
     final l$perCustomerUsageLimit = perCustomerUsageLimit;
+    final l$usageLimit = usageLimit;
     final l$actions = actions;
     final l$conditions = conditions;
-    final l$usageLimit = usageLimit;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -10938,9 +12733,9 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
       l$createdAt,
       l$updatedAt,
       l$perCustomerUsageLimit,
+      l$usageLimit,
       Object.hashAll(l$actions.map((v) => v)),
       Object.hashAll(l$conditions.map((v) => v)),
-      l$usageLimit,
       l$$__typename,
     ]);
   }
@@ -10950,7 +12745,7 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
     if (identical(this, other)) {
       return true;
     }
-    if (other is! Query$GetCouponCodeList$getCouponCodeList$items ||
+    if (other is! Query$GetCouponCodeList$getCouponCodeList$items$promotion ||
         runtimeType != other.runtimeType) {
       return false;
     }
@@ -11004,6 +12799,11 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
     if (l$perCustomerUsageLimit != lOther$perCustomerUsageLimit) {
       return false;
     }
+    final l$usageLimit = usageLimit;
+    final lOther$usageLimit = other.usageLimit;
+    if (l$usageLimit != lOther$usageLimit) {
+      return false;
+    }
     final l$actions = actions;
     final lOther$actions = other.actions;
     if (l$actions.length != lOther$actions.length) {
@@ -11028,11 +12828,6 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
         return false;
       }
     }
-    final l$usageLimit = usageLimit;
-    final lOther$usageLimit = other.usageLimit;
-    if (l$usageLimit != lOther$usageLimit) {
-      return false;
-    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -11042,25 +12837,28 @@ class Query$GetCouponCodeList$getCouponCodeList$items {
   }
 }
 
-extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items
-    on Query$GetCouponCodeList$getCouponCodeList$items {
-  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<
-          Query$GetCouponCodeList$getCouponCodeList$items>
-      get copyWith => CopyWith$Query$GetCouponCodeList$getCouponCodeList$items(
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$promotion
+    on Query$GetCouponCodeList$getCouponCodeList$items$promotion {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion(
             this,
             (i) => i,
           );
 }
 
-abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<TRes> {
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items(
-    Query$GetCouponCodeList$getCouponCodeList$items instance,
-    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items) then,
-  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items;
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion(
+    Query$GetCouponCodeList$getCouponCodeList$items$promotion instance,
+    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$promotion)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion;
 
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items.stub(
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion.stub(
           TRes res) =
-      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items;
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion;
 
   TRes call({
     String? id,
@@ -11073,36 +12871,41 @@ abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<TRes> {
     DateTime? createdAt,
     DateTime? updatedAt,
     int? perCustomerUsageLimit,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$actions>? actions,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$conditions>?
-        conditions,
     int? usageLimit,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions>?
+        actions,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions>?
+        conditions,
     String? $__typename,
   });
   TRes actions(
-      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$actions> Function(
+      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions> Function(
               Iterable<
-                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions<
-                      Query$GetCouponCodeList$getCouponCodeList$items$actions>>)
+                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
+                      Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions>>)
           _fn);
   TRes conditions(
-      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$conditions> Function(
+      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions> Function(
               Iterable<
-                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
-                      Query$GetCouponCodeList$getCouponCodeList$items$conditions>>)
+                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+                      Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions>>)
           _fn);
 }
 
-class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
-    implements CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<TRes> {
-  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items(
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion(
     this._instance,
     this._then,
   );
 
-  final Query$GetCouponCodeList$getCouponCodeList$items _instance;
+  final Query$GetCouponCodeList$getCouponCodeList$items$promotion _instance;
 
-  final TRes Function(Query$GetCouponCodeList$getCouponCodeList$items) _then;
+  final TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$promotion)
+      _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -11117,12 +12920,12 @@ class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
     Object? createdAt = _undefined,
     Object? updatedAt = _undefined,
     Object? perCustomerUsageLimit = _undefined,
+    Object? usageLimit = _undefined,
     Object? actions = _undefined,
     Object? conditions = _undefined,
-    Object? usageLimit = _undefined,
     Object? $__typename = _undefined,
   }) =>
-      _then(Query$GetCouponCodeList$getCouponCodeList$items(
+      _then(Query$GetCouponCodeList$getCouponCodeList$items$promotion(
         id: id == _undefined || id == null ? _instance.id : (id as String),
         name: name == _undefined || name == null
             ? _instance.name
@@ -11149,52 +12952,56 @@ class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
         perCustomerUsageLimit: perCustomerUsageLimit == _undefined
             ? _instance.perCustomerUsageLimit
             : (perCustomerUsageLimit as int?),
-        actions: actions == _undefined || actions == null
-            ? _instance.actions
-            : (actions as List<
-                Query$GetCouponCodeList$getCouponCodeList$items$actions>),
-        conditions: conditions == _undefined || conditions == null
-            ? _instance.conditions
-            : (conditions as List<
-                Query$GetCouponCodeList$getCouponCodeList$items$conditions>),
         usageLimit: usageLimit == _undefined
             ? _instance.usageLimit
             : (usageLimit as int?),
+        actions: actions == _undefined || actions == null
+            ? _instance.actions
+            : (actions as List<
+                Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions>),
+        conditions: conditions == _undefined || conditions == null
+            ? _instance.conditions
+            : (conditions as List<
+                Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
 
   TRes actions(
-          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$actions> Function(
+          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions> Function(
                   Iterable<
-                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions<
-                          Query$GetCouponCodeList$getCouponCodeList$items$actions>>)
+                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
+                          Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions>>)
               _fn) =>
       call(
           actions: _fn(_instance.actions.map((e) =>
-              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions(
+              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions(
                 e,
                 (i) => i,
               ))).toList());
 
   TRes conditions(
-          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$conditions> Function(
+          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions> Function(
                   Iterable<
-                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
-                          Query$GetCouponCodeList$getCouponCodeList$items$conditions>>)
+                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+                          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions>>)
               _fn) =>
       call(
           conditions: _fn(_instance.conditions.map((e) =>
-              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions(
+              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions(
                 e,
                 (i) => i,
               ))).toList());
 }
 
-class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
-    implements CopyWith$Query$GetCouponCodeList$getCouponCodeList$items<TRes> {
-  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items(this._res);
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion(
+      this._res);
 
   TRes _res;
 
@@ -11209,10 +13016,11 @@ class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
     DateTime? createdAt,
     DateTime? updatedAt,
     int? perCustomerUsageLimit,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$actions>? actions,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$conditions>?
-        conditions,
     int? usageLimit,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions>?
+        actions,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions>?
+        conditions,
     String? $__typename,
   }) =>
       _res;
@@ -11222,23 +13030,23 @@ class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items<TRes>
   conditions(_fn) => _res;
 }
 
-class Query$GetCouponCodeList$getCouponCodeList$items$actions {
-  Query$GetCouponCodeList$getCouponCodeList$items$actions({
+class Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions {
+  Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions({
     required this.code,
     required this.args,
     this.$__typename = 'ConfigurableOperation',
   });
 
-  factory Query$GetCouponCodeList$getCouponCodeList$items$actions.fromJson(
+  factory Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions.fromJson(
       Map<String, dynamic> json) {
     final l$code = json['code'];
     final l$args = json['args'];
     final l$$__typename = json['__typename'];
-    return Query$GetCouponCodeList$getCouponCodeList$items$actions(
+    return Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions(
       code: (l$code as String),
       args: (l$args as List<dynamic>)
           .map((e) =>
-              Query$GetCouponCodeList$getCouponCodeList$items$actions$args
+              Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args
                   .fromJson((e as Map<String, dynamic>)))
           .toList(),
       $__typename: (l$$__typename as String),
@@ -11247,356 +13055,8 @@ class Query$GetCouponCodeList$getCouponCodeList$items$actions {
 
   final String code;
 
-  final List<Query$GetCouponCodeList$getCouponCodeList$items$actions$args> args;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$code = code;
-    _resultData['code'] = l$code;
-    final l$args = args;
-    _resultData['args'] = l$args.map((e) => e.toJson()).toList();
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$code = code;
-    final l$args = args;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$code,
-      Object.hashAll(l$args.map((v) => v)),
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! Query$GetCouponCodeList$getCouponCodeList$items$actions ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$code = code;
-    final lOther$code = other.code;
-    if (l$code != lOther$code) {
-      return false;
-    }
-    final l$args = args;
-    final lOther$args = other.args;
-    if (l$args.length != lOther$args.length) {
-      return false;
-    }
-    for (int i = 0; i < l$args.length; i++) {
-      final l$args$entry = l$args[i];
-      final lOther$args$entry = lOther$args[i];
-      if (l$args$entry != lOther$args$entry) {
-        return false;
-      }
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$actions
-    on Query$GetCouponCodeList$getCouponCodeList$items$actions {
-  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions<
-          Query$GetCouponCodeList$getCouponCodeList$items$actions>
-      get copyWith =>
-          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions<
-    TRes> {
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions(
-    Query$GetCouponCodeList$getCouponCodeList$items$actions instance,
-    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$actions) then,
-  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions;
-
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions;
-
-  TRes call({
-    String? code,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$actions$args>? args,
-    String? $__typename,
-  });
-  TRes args(
-      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$actions$args> Function(
-              Iterable<
-                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-                      Query$GetCouponCodeList$getCouponCodeList$items$actions$args>>)
-          _fn);
-}
-
-class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions<
-        TRes>
-    implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions<TRes> {
-  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetCouponCodeList$getCouponCodeList$items$actions _instance;
-
-  final TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$actions)
-      _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? code = _undefined,
-    Object? args = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetCouponCodeList$getCouponCodeList$items$actions(
-        code: code == _undefined || code == null
-            ? _instance.code
-            : (code as String),
-        args: args == _undefined || args == null
-            ? _instance.args
-            : (args as List<
-                Query$GetCouponCodeList$getCouponCodeList$items$actions$args>),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-
-  TRes args(
-          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$actions$args> Function(
-                  Iterable<
-                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-                          Query$GetCouponCodeList$getCouponCodeList$items$actions$args>>)
-              _fn) =>
-      call(
-          args: _fn(_instance.args.map((e) =>
-              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args(
-                e,
-                (i) => i,
-              ))).toList());
-}
-
-class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions<
-        TRes>
-    implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions<TRes> {
-  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions(
-      this._res);
-
-  TRes _res;
-
-  call({
-    String? code,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$actions$args>? args,
-    String? $__typename,
-  }) =>
-      _res;
-
-  args(_fn) => _res;
-}
-
-class Query$GetCouponCodeList$getCouponCodeList$items$actions$args {
-  Query$GetCouponCodeList$getCouponCodeList$items$actions$args({
-    required this.name,
-    required this.value,
-    this.$__typename = 'ConfigArg',
-  });
-
-  factory Query$GetCouponCodeList$getCouponCodeList$items$actions$args.fromJson(
-      Map<String, dynamic> json) {
-    final l$name = json['name'];
-    final l$value = json['value'];
-    final l$$__typename = json['__typename'];
-    return Query$GetCouponCodeList$getCouponCodeList$items$actions$args(
-      name: (l$name as String),
-      value: (l$value as String),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String name;
-
-  final String value;
-
-  final String $__typename;
-
-  Map<String, dynamic> toJson() {
-    final _resultData = <String, dynamic>{};
-    final l$name = name;
-    _resultData['name'] = l$name;
-    final l$value = value;
-    _resultData['value'] = l$value;
-    final l$$__typename = $__typename;
-    _resultData['__typename'] = l$$__typename;
-    return _resultData;
-  }
-
-  @override
-  int get hashCode {
-    final l$name = name;
-    final l$value = value;
-    final l$$__typename = $__typename;
-    return Object.hashAll([
-      l$name,
-      l$value,
-      l$$__typename,
-    ]);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other
-            is! Query$GetCouponCodeList$getCouponCodeList$items$actions$args ||
-        runtimeType != other.runtimeType) {
-      return false;
-    }
-    final l$name = name;
-    final lOther$name = other.name;
-    if (l$name != lOther$name) {
-      return false;
-    }
-    final l$value = value;
-    final lOther$value = other.value;
-    if (l$value != lOther$value) {
-      return false;
-    }
-    final l$$__typename = $__typename;
-    final lOther$$__typename = other.$__typename;
-    if (l$$__typename != lOther$$__typename) {
-      return false;
-    }
-    return true;
-  }
-}
-
-extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$actions$args
-    on Query$GetCouponCodeList$getCouponCodeList$items$actions$args {
-  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-          Query$GetCouponCodeList$getCouponCodeList$items$actions$args>
-      get copyWith =>
-          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args(
-            this,
-            (i) => i,
-          );
-}
-
-abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-    TRes> {
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args(
-    Query$GetCouponCodeList$getCouponCodeList$items$actions$args instance,
-    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$actions$args)
-        then,
-  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions$args;
-
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args.stub(
-          TRes res) =
-      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions$args;
-
-  TRes call({
-    String? name,
-    String? value,
-    String? $__typename,
-  });
-}
-
-class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-        TRes>
-    implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-            TRes> {
-  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions$args(
-    this._instance,
-    this._then,
-  );
-
-  final Query$GetCouponCodeList$getCouponCodeList$items$actions$args _instance;
-
-  final TRes Function(
-      Query$GetCouponCodeList$getCouponCodeList$items$actions$args) _then;
-
-  static const _undefined = <dynamic, dynamic>{};
-
-  TRes call({
-    Object? name = _undefined,
-    Object? value = _undefined,
-    Object? $__typename = _undefined,
-  }) =>
-      _then(Query$GetCouponCodeList$getCouponCodeList$items$actions$args(
-        name: name == _undefined || name == null
-            ? _instance.name
-            : (name as String),
-        value: value == _undefined || value == null
-            ? _instance.value
-            : (value as String),
-        $__typename: $__typename == _undefined || $__typename == null
-            ? _instance.$__typename
-            : ($__typename as String),
-      ));
-}
-
-class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-        TRes>
-    implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$actions$args<
-            TRes> {
-  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$actions$args(
-      this._res);
-
-  TRes _res;
-
-  call({
-    String? name,
-    String? value,
-    String? $__typename,
-  }) =>
-      _res;
-}
-
-class Query$GetCouponCodeList$getCouponCodeList$items$conditions {
-  Query$GetCouponCodeList$getCouponCodeList$items$conditions({
-    required this.code,
-    required this.args,
-    this.$__typename = 'ConfigurableOperation',
-  });
-
-  factory Query$GetCouponCodeList$getCouponCodeList$items$conditions.fromJson(
-      Map<String, dynamic> json) {
-    final l$code = json['code'];
-    final l$args = json['args'];
-    final l$$__typename = json['__typename'];
-    return Query$GetCouponCodeList$getCouponCodeList$items$conditions(
-      code: (l$code as String),
-      args: (l$args as List<dynamic>)
-          .map((e) =>
-              Query$GetCouponCodeList$getCouponCodeList$items$conditions$args
-                  .fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      $__typename: (l$$__typename as String),
-    );
-  }
-
-  final String code;
-
-  final List<Query$GetCouponCodeList$getCouponCodeList$items$conditions$args>
+  final List<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args>
       args;
 
   final String $__typename;
@@ -11629,7 +13089,8 @@ class Query$GetCouponCodeList$getCouponCodeList$items$conditions {
     if (identical(this, other)) {
       return true;
     }
-    if (other is! Query$GetCouponCodeList$getCouponCodeList$items$conditions ||
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions ||
         runtimeType != other.runtimeType) {
       return false;
     }
@@ -11659,56 +13120,59 @@ class Query$GetCouponCodeList$getCouponCodeList$items$conditions {
   }
 }
 
-extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$conditions
-    on Query$GetCouponCodeList$getCouponCodeList$items$conditions {
-  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
-          Query$GetCouponCodeList$getCouponCodeList$items$conditions>
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions
+    on Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions>
       get copyWith =>
-          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions(
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions(
             this,
             (i) => i,
           );
 }
 
-abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
     TRes> {
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions(
-    Query$GetCouponCodeList$getCouponCodeList$items$conditions instance,
-    TRes Function(Query$GetCouponCodeList$getCouponCodeList$items$conditions)
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions(
+    Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions instance,
+    TRes Function(
+            Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions)
         then,
-  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions;
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions;
 
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions.stub(
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions.stub(
           TRes res) =
-      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions;
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions;
 
   TRes call({
     String? code,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$conditions$args>? args,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args>?
+        args,
     String? $__typename,
   });
   TRes args(
-      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$conditions$args> Function(
+      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args> Function(
               Iterable<
-                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
-                      Query$GetCouponCodeList$getCouponCodeList$items$conditions$args>>)
+                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
+                      Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args>>)
           _fn);
 }
 
-class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
         TRes>
     implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
             TRes> {
-  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions(
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions(
     this._instance,
     this._then,
   );
 
-  final Query$GetCouponCodeList$getCouponCodeList$items$conditions _instance;
+  final Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions
+      _instance;
 
   final TRes Function(
-      Query$GetCouponCodeList$getCouponCodeList$items$conditions) _then;
+      Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions) _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -11717,46 +13181,47 @@ class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
     Object? args = _undefined,
     Object? $__typename = _undefined,
   }) =>
-      _then(Query$GetCouponCodeList$getCouponCodeList$items$conditions(
+      _then(Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions(
         code: code == _undefined || code == null
             ? _instance.code
             : (code as String),
         args: args == _undefined || args == null
             ? _instance.args
             : (args as List<
-                Query$GetCouponCodeList$getCouponCodeList$items$conditions$args>),
+                Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
 
   TRes args(
-          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$conditions$args> Function(
+          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args> Function(
                   Iterable<
-                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
-                          Query$GetCouponCodeList$getCouponCodeList$items$conditions$args>>)
+                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
+                          Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args>>)
               _fn) =>
       call(
           args: _fn(_instance.args.map((e) =>
-              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args(
+              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args(
                 e,
                 (i) => i,
               ))).toList());
 }
 
-class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
         TRes>
     implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions<
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions<
             TRes> {
-  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions(
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions(
       this._res);
 
   TRes _res;
 
   call({
     String? code,
-    List<Query$GetCouponCodeList$getCouponCodeList$items$conditions$args>? args,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args>?
+        args,
     String? $__typename,
   }) =>
       _res;
@@ -11764,19 +13229,19 @@ class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditio
   args(_fn) => _res;
 }
 
-class Query$GetCouponCodeList$getCouponCodeList$items$conditions$args {
-  Query$GetCouponCodeList$getCouponCodeList$items$conditions$args({
+class Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args {
+  Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args({
     required this.name,
     required this.value,
     this.$__typename = 'ConfigArg',
   });
 
-  factory Query$GetCouponCodeList$getCouponCodeList$items$conditions$args.fromJson(
+  factory Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args.fromJson(
       Map<String, dynamic> json) {
     final l$name = json['name'];
     final l$value = json['value'];
     final l$$__typename = json['__typename'];
-    return Query$GetCouponCodeList$getCouponCodeList$items$conditions$args(
+    return Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args(
       name: (l$name as String),
       value: (l$value as String),
       $__typename: (l$$__typename as String),
@@ -11818,7 +13283,7 @@ class Query$GetCouponCodeList$getCouponCodeList$items$conditions$args {
       return true;
     }
     if (other
-            is! Query$GetCouponCodeList$getCouponCodeList$items$conditions$args ||
+            is! Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args ||
         runtimeType != other.runtimeType) {
       return false;
     }
@@ -11841,29 +13306,30 @@ class Query$GetCouponCodeList$getCouponCodeList$items$conditions$args {
   }
 }
 
-extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args
-    on Query$GetCouponCodeList$getCouponCodeList$items$conditions$args {
-  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
-          Query$GetCouponCodeList$getCouponCodeList$items$conditions$args>
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args
+    on Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args>
       get copyWith =>
-          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args(
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args(
             this,
             (i) => i,
           );
 }
 
-abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
     TRes> {
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args(
-    Query$GetCouponCodeList$getCouponCodeList$items$conditions$args instance,
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args(
+    Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args
+        instance,
     TRes Function(
-            Query$GetCouponCodeList$getCouponCodeList$items$conditions$args)
+            Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args)
         then,
-  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args;
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args;
 
-  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args.stub(
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args.stub(
           TRes res) =
-      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args;
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args;
 
   TRes call({
     String? name,
@@ -11872,21 +13338,22 @@ abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditio
   });
 }
 
-class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
         TRes>
     implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
             TRes> {
-  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args(
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args(
     this._instance,
     this._then,
   );
 
-  final Query$GetCouponCodeList$getCouponCodeList$items$conditions$args
+  final Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args
       _instance;
 
   final TRes Function(
-      Query$GetCouponCodeList$getCouponCodeList$items$conditions$args) _then;
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args)
+      _then;
 
   static const _undefined = <dynamic, dynamic>{};
 
@@ -11895,7 +13362,8 @@ class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$a
     Object? value = _undefined,
     Object? $__typename = _undefined,
   }) =>
-      _then(Query$GetCouponCodeList$getCouponCodeList$items$conditions$args(
+      _then(
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args(
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
@@ -11908,12 +13376,379 @@ class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$a
       ));
 }
 
-class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
         TRes>
     implements
-        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args<
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args<
             TRes> {
-  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$conditions$args(
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$actions$args(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? name,
+    String? value,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions {
+  Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions({
+    required this.code,
+    required this.args,
+    this.$__typename = 'ConfigurableOperation',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions.fromJson(
+      Map<String, dynamic> json) {
+    final l$code = json['code'];
+    final l$args = json['args'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions(
+      code: (l$code as String),
+      args: (l$args as List<dynamic>)
+          .map((e) =>
+              Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args
+                  .fromJson((e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String code;
+
+  final List<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args>
+      args;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$code = code;
+    _resultData['code'] = l$code;
+    final l$args = args;
+    _resultData['args'] = l$args.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$code = code;
+    final l$args = args;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$code,
+      Object.hashAll(l$args.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    final l$args = args;
+    final lOther$args = other.args;
+    if (l$args.length != lOther$args.length) {
+      return false;
+    }
+    for (int i = 0; i < l$args.length; i++) {
+      final l$args$entry = l$args[i];
+      final lOther$args$entry = lOther$args[i];
+      if (l$args$entry != lOther$args$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions
+    on Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions(
+    Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions
+        instance,
+    TRes Function(
+            Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions;
+
+  TRes call({
+    String? code,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args>?
+        args,
+    String? $__typename,
+  });
+  TRes args(
+      Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args> Function(
+              Iterable<
+                  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+                      Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions
+      _instance;
+
+  final TRes Function(
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? code = _undefined,
+    Object? args = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions(
+        code: code == _undefined || code == null
+            ? _instance.code
+            : (code as String),
+        args: args == _undefined || args == null
+            ? _instance.args
+            : (args as List<
+                Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes args(
+          Iterable<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args> Function(
+                  Iterable<
+                      CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+                          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args>>)
+              _fn) =>
+      call(
+          args: _fn(_instance.args.map((e) =>
+              CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args(
+                e,
+                (i) => i,
+              ))).toList());
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? code,
+    List<Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args>?
+        args,
+    String? $__typename,
+  }) =>
+      _res;
+
+  args(_fn) => _res;
+}
+
+class Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args {
+  Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args({
+    required this.name,
+    required this.value,
+    this.$__typename = 'ConfigArg',
+  });
+
+  factory Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args.fromJson(
+      Map<String, dynamic> json) {
+    final l$name = json['name'];
+    final l$value = json['value'];
+    final l$$__typename = json['__typename'];
+    return Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args(
+      name: (l$name as String),
+      value: (l$value as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String name;
+
+  final String value;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$value = value;
+    _resultData['value'] = l$value;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$name = name;
+    final l$value = value;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$name,
+      l$value,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$value = value;
+    final lOther$value = other.value;
+    if (l$value != lOther$value) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args
+    on Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args {
+  CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args>
+      get copyWith =>
+          CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+    TRes> {
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args(
+    Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args
+        instance,
+    TRes Function(
+            Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args)
+        then,
+  ) = _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args;
+
+  factory CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args;
+
+  TRes call({
+    String? name,
+    String? value,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+            TRes> {
+  _CopyWithImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args
+      _instance;
+
+  final TRes Function(
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? name = _undefined,
+    Object? value = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(
+          Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args(
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        value: value == _undefined || value == null
+            ? _instance.value
+            : (value as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+        TRes>
+    implements
+        CopyWith$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args<
+            TRes> {
+  _CopyWithStubImpl$Query$GetCouponCodeList$getCouponCodeList$items$promotion$conditions$args(
       this._res);
 
   TRes _res;

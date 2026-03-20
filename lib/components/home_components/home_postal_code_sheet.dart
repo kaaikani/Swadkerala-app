@@ -124,45 +124,59 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                       final locationData = await postalCodeService.getPostalCodeFromLocation();
                       
                       if (locationData != null) {
-                        // Check service availability without switching channel
-                        final serviceAvailable = await widget.customerController.hasValidPostalCode(
-                          locationData.pincode,
-                        );
-                        
-                        if (!mounted) return;
-                        
                         setState(() {
                           isGettingLocation = false;
                           pincodeController.text = locationData.pincode;
+                          isSearching = true;
+                          searchResults = [];
+                          isServiceUnavailable = false;
                         });
-                        
-                        // Get Indian postal code data regardless of service availability
-                        final postalCodeResults = await widget.customerController.searchPostalCodes(locationData.pincode);
-                        
+
+                        setState(() {
+                          isGettingLocation = false;
+                          pincodeController.text = locationData.pincode;
+                          isSearching = true;
+                        });
+
+                        // Step 1: Try to switch channel directly in Vendure
+                        final navigator = Navigator.of(context, rootNavigator: false);
+                        final channelSwitched = await widget.customerController
+                            .switchChannelByPostalCode(locationData.pincode, showLoading: false);
+
                         if (!mounted) return;
-                        
-                        if (serviceAvailable) {
-                          // Service available - show Indian postal code data for user to select
+
+                        if (channelSwitched) {
+                          setState(() => isSearching = false);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              try {
+                                if (navigator.canPop()) navigator.pop();
+                                widget.onPostalCodeSelected();
+                              } catch (_) {}
+                            }
+                          });
+                          return;
+                        }
+
+                        // Step 2: Not in Vendure — check Indian postal API
+                        final postalCodeResults = await widget.customerController
+                            .searchPostalCodes(locationData.pincode);
+
+                        if (!mounted) return;
+
+                        if (postalCodeResults.isNotEmpty) {
                           setState(() {
                             searchResults = postalCodeResults;
+                            isSearching = false;
                             isServiceUnavailable = false;
                           });
                         } else {
-                          // Service not available
-                          if (postalCodeResults.isNotEmpty) {
-                            // Indian postal code data exists - show service unavailable message
-                            setState(() {
-                              searchResults = postalCodeResults;
-                              isServiceUnavailable = true;
-                            });
-                          } else {
-                            // No Indian postal code data - show enter valid postal code
-                            setState(() {
-                              searchResults = [];
-                              isServiceUnavailable = false;
-                            });
-                            SnackBarWidget.showError('Service not available for this location. Please enter postal code manually.');
-                          }
+                          setState(() {
+                            searchResults = [];
+                            isSearching = false;
+                            isServiceUnavailable = false;
+                          });
+                          SnackBarWidget.showError('Service not available for this location. Please enter postal code manually.');
                         }
                       } else {
                         if (!mounted) return;
@@ -205,50 +219,53 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                   ),
                   onChanged: (value) async {
                     if (value.length == 6) {
-                      // Close keyboard when 6 digits are entered
                       FocusScope.of(context).unfocus();
-                      
-                      // First check service availability when 6 digits are entered (without switching channel)
                       setState(() {
                         isSearching = true;
                         searchResults = [];
                         isServiceUnavailable = false;
                       });
-                      
-                      // Check service availability without switching channel
-                      final serviceAvailable = await widget.customerController.hasValidPostalCode(value);
-                      
+
+                      // Step 1: Try to switch channel directly in Vendure
+                      final navigator = Navigator.of(context, rootNavigator: false);
+                      final channelSwitched = await widget.customerController
+                          .switchChannelByPostalCode(value, showLoading: false);
+
                       if (!mounted) return;
-                      
-                      // Get Indian postal code data regardless of service availability
-                      final postalCodeResults = await widget.customerController.searchPostalCodes(value);
-                      
+
+                      if (channelSwitched) {
+                        // Vendure has this postal code — switched, close sheet
+                        setState(() => isSearching = false);
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            try {
+                              if (navigator.canPop()) navigator.pop();
+                              widget.onPostalCodeSelected();
+                            } catch (_) {}
+                          }
+                        });
+                        return;
+                      }
+
+                      // Step 2: Not in Vendure — check Indian postal API to show area names
+                      final postalCodeResults =
+                          await widget.customerController.searchPostalCodes(value);
+
                       if (!mounted) return;
-                      
-                      if (serviceAvailable) {
-                        // Service available - show Indian postal code data for user to select
+
+                      if (postalCodeResults.isNotEmpty) {
+                        // Show list — tapping a result will show "Service Not Available"
                         setState(() {
                           searchResults = postalCodeResults;
                           isSearching = false;
                           isServiceUnavailable = false;
                         });
                       } else {
-                        // Service not available
-                        if (postalCodeResults.isNotEmpty) {
-                          // Indian postal code data exists - show service unavailable message
-                          setState(() {
-                            searchResults = postalCodeResults; // Store for reference but don't show
-                            isSearching = false;
-                            isServiceUnavailable = true;
-                          });
-                        } else {
-                          // No Indian postal code data - show enter valid postal code
-                          setState(() {
-                            searchResults = [];
-                            isSearching = false;
-                            isServiceUnavailable = false;
-                          });
-                        }
+                        setState(() {
+                          searchResults = [];
+                          isSearching = false;
+                          isServiceUnavailable = false;
+                        });
                       }
                     } else {
                       setState(() {

@@ -367,7 +367,8 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
                       priceText: priceText,
                       shadowPriceText: null,
                       orderCount: item.orderCount,
-                      isOutOfStock: false,
+                      isOutOfStock: selectedVariant.stockLevel == 'OUT_OF_STOCK',
+                      stockLevel: selectedVariant.stockLevel,
                       groupName: selectedVariant.options.isNotEmpty
                           ? selectedVariant.options.first.group.name
                           : null,

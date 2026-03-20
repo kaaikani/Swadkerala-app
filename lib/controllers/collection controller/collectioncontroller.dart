@@ -237,25 +237,30 @@ class CollectionsController extends GetxController {
 
         final productItems = collectionData.productVariants.items;
 
-        // Filter unique products by product.id and group variants
-        final loggedProductIds = <String>{};
-        
+        // Pass 1: group all variants by productId, preserving API order
+        final orderedProductIds = <String>[];
         for (var item in productItems) {
-          final product = item.product;
-          final productId = product.id;
-          
-          // Add to variants map
+          final productId = item.product.id;
           if (!variantsByProductId.containsKey(productId)) {
             variantsByProductId[productId] = [];
+            orderedProductIds.add(productId); // remember insertion order
           }
           variantsByProductId[productId]!.add(item);
-          
-          // Add first variant to unique list for display
-          if (!loggedProductIds.contains(productId)) {
-            loggedProductIds.add(productId);
-            _allUniqueVariants.add(item); // Store all variants
-            selectedVariantIdByProductId[productId] = item.id;
-          }
+        }
+
+        // Pass 2: for each product pick first in-stock variant as default
+        for (final productId in orderedProductIds) {
+          final variants = variantsByProductId[productId]!;
+          // Prefer IN_STOCK, then LOW_STOCK, fallback to first
+          final defaultVariant = variants.firstWhere(
+            (v) => v.stockLevel.toUpperCase() == 'IN_STOCK',
+            orElse: () => variants.firstWhere(
+              (v) => v.stockLevel.toUpperCase() == 'LOW_STOCK',
+              orElse: () => variants.first,
+            ),
+          );
+          _allUniqueVariants.add(defaultVariant);
+          selectedVariantIdByProductId[productId] = defaultVariant.id;
         }
         
         // Sort products based on slug ending numbers

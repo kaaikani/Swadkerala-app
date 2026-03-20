@@ -71,7 +71,7 @@ class CartCouponBottomSheet {
                 }
 
                 final enabledCoupons = bannerController.availableCouponCodes
-                    .where((coupon) => coupon.enabled)
+                    .where((coupon) => coupon.promotion.enabled)
                     .toList();
 
                 if (enabledCoupons.isEmpty) {
@@ -97,14 +97,34 @@ class CartCouponBottomSheet {
                   );
                 }
 
-                return ListView.builder(
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (scrollInfo) {
+                    if (scrollInfo is ScrollEndNotification &&
+                        scrollInfo.metrics.extentAfter < 200 &&
+                        !bannerController.isLoadingMoreCoupons.value &&
+                        bannerController.hasMoreCoupons.value) {
+                      bannerController.loadMoreCoupons();
+                    }
+                    return false;
+                  },
+                  child: ListView.builder(
                   padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-                  itemCount: enabledCoupons.length,
+                  itemCount: enabledCoupons.length + (bannerController.hasMoreCoupons.value ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index >= enabledCoupons.length) {
+                      return Padding(
+                        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+                        child: Center(
+                          child: bannerController.isLoadingMoreCoupons.value
+                              ? CircularProgressIndicator(color: AppColors.button)
+                              : SizedBox.shrink(),
+                        ),
+                      );
+                    }
                     final coupon = enabledCoupons[index];
                     final isApplied =
-                        bannerController.isCouponCodeApplied(coupon.couponCode ?? '');
-                    final descriptionText = coupon.description.replaceAll(RegExp(r'<[^>]*>'), '');
+                        bannerController.isCouponCodeApplied(coupon.promotion.couponCode ?? '');
+                    final descriptionText = coupon.promotion.description.replaceAll(RegExp(r'<[^>]*>'), '');
 
                     return Card(
                       color: AppColors.surface,
@@ -141,7 +161,7 @@ class CartCouponBottomSheet {
                                         ResponsiveUtils.rp(6)),
                                   ),
                                   child: Text(
-                                    coupon.couponCode ?? '',
+                                    coupon.promotion.couponCode ?? '',
                                     style: TextStyle(
                                       color: AppColors.textLight,
                                       fontWeight: FontWeight.bold,
@@ -184,14 +204,49 @@ class CartCouponBottomSheet {
                               ],
                             ),
                             SizedBox(height: ResponsiveUtils.rp(12)),
-                            Text(
-                              coupon.name,
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.sp(16),
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
+
+                            // Action info (what discount the user gets)
+                            Builder(builder: (context) {
+                              final actions = bannerController.getCouponActionInfo(coupon);
+                              if (actions.isEmpty) return SizedBox.shrink();
+                              return Padding(
+                                padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+                                child: Wrap(
+                                  spacing: ResponsiveUtils.rp(6),
+                                  runSpacing: ResponsiveUtils.rp(6),
+                                  children: actions.map((action) => Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveUtils.rp(8),
+                                      vertical: ResponsiveUtils.rp(4),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.success.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                                      border: Border.all(
+                                        color: AppColors.success.withValues(alpha: 0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.local_offer, size: ResponsiveUtils.rp(14), color: AppColors.success),
+                                        SizedBox(width: ResponsiveUtils.rp(4)),
+                                        Text(
+                                          action.displayText,
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUtils.sp(11),
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.success,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )).toList(),
+                                ),
+                              );
+                            }),
+
                             if (descriptionText.isNotEmpty) ...[
                               SizedBox(height: ResponsiveUtils.rp(8)),
                               Text(
@@ -202,15 +257,54 @@ class CartCouponBottomSheet {
                                 ),
                               ),
                             ],
-                            
+
+                            // Condition requirements with met/unmet status
+                            Builder(builder: (context) {
+                              final conditions = bannerController.getCouponConditionStatus(coupon);
+                              if (conditions.isEmpty) return SizedBox.shrink();
+                              return Padding(
+                                padding: EdgeInsets.only(top: ResponsiveUtils.rp(8)),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: conditions.map((cond) => Padding(
+                                    padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(4)),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          cond.canValidate
+                                            ? (cond.isMet ? Icons.check_circle : Icons.cancel)
+                                            : Icons.info_outline,
+                                          size: ResponsiveUtils.rp(16),
+                                          color: cond.canValidate
+                                            ? (cond.isMet ? AppColors.success : AppColors.error)
+                                            : AppColors.textSecondary,
+                                        ),
+                                        SizedBox(width: ResponsiveUtils.rp(6)),
+                                        Expanded(child: Text(
+                                          cond.displayText,
+                                          style: TextStyle(
+                                            fontSize: ResponsiveUtils.sp(12),
+                                            fontWeight: FontWeight.w500,
+                                            color: cond.canValidate
+                                              ? (cond.isMet ? AppColors.success : AppColors.error)
+                                              : AppColors.textSecondary,
+                                          ),
+                                        )),
+                                      ],
+                                    ),
+                                  )).toList(),
+                                ),
+                              );
+                            }),
+
                             // Usage limits display
-                            if (coupon.usageLimit != null || coupon.perCustomerUsageLimit != null) ...[
+                            if (coupon.promotion.usageLimit != null || coupon.promotion.perCustomerUsageLimit != null) ...[
                               SizedBox(height: ResponsiveUtils.rp(8)),
                               Wrap(
                                 spacing: ResponsiveUtils.rp(8),
                                 runSpacing: ResponsiveUtils.rp(8),
                                 children: [
-                                  if (coupon.usageLimit != null)
+                                  if (coupon.promotion.usageLimit != null)
                                     Container(
                                       padding: EdgeInsets.symmetric(
                                         horizontal: ResponsiveUtils.rp(8),
@@ -234,7 +328,7 @@ class CartCouponBottomSheet {
                                           ),
                                           SizedBox(width: ResponsiveUtils.rp(4)),
                                           Text(
-                                            'Total uses: ${coupon.usageLimit}',
+                                            'Total uses: ${coupon.promotion.usageLimit}',
                                             style: TextStyle(
                                               fontSize: ResponsiveUtils.sp(11),
                                               fontWeight: FontWeight.w500,
@@ -244,7 +338,7 @@ class CartCouponBottomSheet {
                                         ],
                                       ),
                                     ),
-                                  if (coupon.perCustomerUsageLimit != null)
+                                  if (coupon.promotion.perCustomerUsageLimit != null)
                                     Container(
                                       padding: EdgeInsets.symmetric(
                                         horizontal: ResponsiveUtils.rp(8),
@@ -268,7 +362,7 @@ class CartCouponBottomSheet {
                                           ),
                                           SizedBox(width: ResponsiveUtils.rp(4)),
                                           Text(
-                                            'Per customer: ${coupon.perCustomerUsageLimit}',
+                                            'Per customer: ${coupon.promotion.perCustomerUsageLimit}',
                                             style: TextStyle(
                                               fontSize: ResponsiveUtils.sp(11),
                                               fontWeight: FontWeight.w500,
@@ -347,15 +441,15 @@ class CartCouponBottomSheet {
                                             Navigator.pop(context);
                                           }
                                           
-                                          await bannerController.removeCouponCode(coupon.couponCode ?? '');
+                                          await bannerController.removeCouponCode(coupon.promotion.couponCode ?? '');
                                         },
                                       )
                                     : AnalyticsHelper.trackButtonAsync(
                                         'Apply Coupon - List',
                                         screenName: 'Cart',
                                         callback: () async {
-                                          final couponCode = coupon.couponCode ?? '';
-                                          
+                                          final couponCode = coupon.promotion.couponCode ?? '';
+
                                           // Show loading dialog
                                           showDialog(
                                             context: context,
@@ -449,6 +543,7 @@ class CartCouponBottomSheet {
                       ),
                     );
                   },
+                ),
                 );
               }),
             ),

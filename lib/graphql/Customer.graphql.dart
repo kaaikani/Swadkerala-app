@@ -5673,6 +5673,35 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                 ]),
               ),
               FieldNode(
+                name: NameNode(value: 'groups'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
                 name: NameNode(value: 'addresses'),
                 alias: null,
                 arguments: [],
@@ -6506,6 +6535,7 @@ class Query$GetActiveCustomer$activeCustomer {
     this.phoneNumber,
     this.referredBy,
     this.customFields,
+    required this.groups,
     this.addresses,
     required this.orders,
   });
@@ -6522,6 +6552,7 @@ class Query$GetActiveCustomer$activeCustomer {
     final l$phoneNumber = json['phoneNumber'];
     final l$referredBy = json['referredBy'];
     final l$customFields = json['customFields'];
+    final l$groups = json['groups'];
     final l$addresses = json['addresses'];
     final l$orders = json['orders'];
     return Query$GetActiveCustomer$activeCustomer(
@@ -6541,6 +6572,10 @@ class Query$GetActiveCustomer$activeCustomer {
           ? null
           : Query$GetActiveCustomer$activeCustomer$customFields.fromJson(
               (l$customFields as Map<String, dynamic>)),
+      groups: (l$groups as List<dynamic>)
+          .map((e) => Query$GetActiveCustomer$activeCustomer$groups.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
       addresses: (l$addresses as List<dynamic>?)
           ?.map((e) =>
               Query$GetActiveCustomer$activeCustomer$addresses.fromJson(
@@ -6571,6 +6606,8 @@ class Query$GetActiveCustomer$activeCustomer {
 
   final Query$GetActiveCustomer$activeCustomer$customFields? customFields;
 
+  final List<Query$GetActiveCustomer$activeCustomer$groups> groups;
+
   final List<Query$GetActiveCustomer$activeCustomer$addresses>? addresses;
 
   final Query$GetActiveCustomer$activeCustomer$orders orders;
@@ -6597,6 +6634,8 @@ class Query$GetActiveCustomer$activeCustomer {
     _resultData['referredBy'] = l$referredBy?.toJson();
     final l$customFields = customFields;
     _resultData['customFields'] = l$customFields?.toJson();
+    final l$groups = groups;
+    _resultData['groups'] = l$groups.map((e) => e.toJson()).toList();
     final l$addresses = addresses;
     _resultData['addresses'] = l$addresses?.map((e) => e.toJson()).toList();
     final l$orders = orders;
@@ -6616,6 +6655,7 @@ class Query$GetActiveCustomer$activeCustomer {
     final l$phoneNumber = phoneNumber;
     final l$referredBy = referredBy;
     final l$customFields = customFields;
+    final l$groups = groups;
     final l$addresses = addresses;
     final l$orders = orders;
     return Object.hashAll([
@@ -6629,6 +6669,7 @@ class Query$GetActiveCustomer$activeCustomer {
       l$phoneNumber,
       l$referredBy,
       l$customFields,
+      Object.hashAll(l$groups.map((v) => v)),
       l$addresses == null ? null : Object.hashAll(l$addresses.map((v) => v)),
       l$orders,
     ]);
@@ -6693,6 +6734,18 @@ class Query$GetActiveCustomer$activeCustomer {
     if (l$customFields != lOther$customFields) {
       return false;
     }
+    final l$groups = groups;
+    final lOther$groups = other.groups;
+    if (l$groups.length != lOther$groups.length) {
+      return false;
+    }
+    for (int i = 0; i < l$groups.length; i++) {
+      final l$groups$entry = l$groups[i];
+      final lOther$groups$entry = lOther$groups[i];
+      if (l$groups$entry != lOther$groups$entry) {
+        return false;
+      }
+    }
     final l$addresses = addresses;
     final lOther$addresses = other.addresses;
     if (l$addresses != null && lOther$addresses != null) {
@@ -6748,6 +6801,7 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> {
     String? phoneNumber,
     Query$GetActiveCustomer$activeCustomer$referredBy? referredBy,
     Query$GetActiveCustomer$activeCustomer$customFields? customFields,
+    List<Query$GetActiveCustomer$activeCustomer$groups>? groups,
     List<Query$GetActiveCustomer$activeCustomer$addresses>? addresses,
     Query$GetActiveCustomer$activeCustomer$orders? orders,
   });
@@ -6755,6 +6809,12 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer<TRes> {
       get referredBy;
   CopyWith$Query$GetActiveCustomer$activeCustomer$customFields<TRes>
       get customFields;
+  TRes groups(
+      Iterable<Query$GetActiveCustomer$activeCustomer$groups> Function(
+              Iterable<
+                  CopyWith$Query$GetActiveCustomer$activeCustomer$groups<
+                      Query$GetActiveCustomer$activeCustomer$groups>>)
+          _fn);
   TRes addresses(
       Iterable<Query$GetActiveCustomer$activeCustomer$addresses>? Function(
               Iterable<
@@ -6788,6 +6848,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
     Object? phoneNumber = _undefined,
     Object? referredBy = _undefined,
     Object? customFields = _undefined,
+    Object? groups = _undefined,
     Object? addresses = _undefined,
     Object? orders = _undefined,
   }) =>
@@ -6820,6 +6881,9 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
             ? _instance.customFields
             : (customFields
                 as Query$GetActiveCustomer$activeCustomer$customFields?),
+        groups: groups == _undefined || groups == null
+            ? _instance.groups
+            : (groups as List<Query$GetActiveCustomer$activeCustomer$groups>),
         addresses: addresses == _undefined
             ? _instance.addresses
             : (addresses
@@ -6848,6 +6912,19 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer<TRes>
         : CopyWith$Query$GetActiveCustomer$activeCustomer$customFields(
             local$customFields, (e) => call(customFields: e));
   }
+
+  TRes groups(
+          Iterable<Query$GetActiveCustomer$activeCustomer$groups> Function(
+                  Iterable<
+                      CopyWith$Query$GetActiveCustomer$activeCustomer$groups<
+                          Query$GetActiveCustomer$activeCustomer$groups>>)
+              _fn) =>
+      call(
+          groups: _fn(_instance.groups.map(
+              (e) => CopyWith$Query$GetActiveCustomer$activeCustomer$groups(
+                    e,
+                    (i) => i,
+                  ))).toList());
 
   TRes addresses(
           Iterable<Query$GetActiveCustomer$activeCustomer$addresses>? Function(
@@ -6886,6 +6963,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer<TRes>
     String? phoneNumber,
     Query$GetActiveCustomer$activeCustomer$referredBy? referredBy,
     Query$GetActiveCustomer$activeCustomer$customFields? customFields,
+    List<Query$GetActiveCustomer$activeCustomer$groups>? groups,
     List<Query$GetActiveCustomer$activeCustomer$addresses>? addresses,
     Query$GetActiveCustomer$activeCustomer$orders? orders,
   }) =>
@@ -6899,6 +6977,8 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer<TRes>
       get customFields =>
           CopyWith$Query$GetActiveCustomer$activeCustomer$customFields.stub(
               _res);
+
+  groups(_fn) => _res;
 
   addresses(_fn) => _res;
 
@@ -7460,6 +7540,152 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$customFields<
   call({
     String? location,
     int? loyaltyPointsAvailable,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$GetActiveCustomer$activeCustomer$groups {
+  Query$GetActiveCustomer$activeCustomer$groups({
+    required this.id,
+    required this.name,
+    this.$__typename = 'CustomerGroup',
+  });
+
+  factory Query$GetActiveCustomer$activeCustomer$groups.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$GetActiveCustomer$activeCustomer$groups(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$GetActiveCustomer$activeCustomer$groups ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$groups
+    on Query$GetActiveCustomer$activeCustomer$groups {
+  CopyWith$Query$GetActiveCustomer$activeCustomer$groups<
+          Query$GetActiveCustomer$activeCustomer$groups>
+      get copyWith => CopyWith$Query$GetActiveCustomer$activeCustomer$groups(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$groups<TRes> {
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$groups(
+    Query$GetActiveCustomer$activeCustomer$groups instance,
+    TRes Function(Query$GetActiveCustomer$activeCustomer$groups) then,
+  ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$groups;
+
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$groups.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$groups;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$groups<TRes>
+    implements CopyWith$Query$GetActiveCustomer$activeCustomer$groups<TRes> {
+  _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$groups(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetActiveCustomer$activeCustomer$groups _instance;
+
+  final TRes Function(Query$GetActiveCustomer$activeCustomer$groups) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetActiveCustomer$activeCustomer$groups(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$groups<TRes>
+    implements CopyWith$Query$GetActiveCustomer$activeCustomer$groups<TRes> {
+  _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$groups(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
     String? $__typename,
   }) =>
       _res;

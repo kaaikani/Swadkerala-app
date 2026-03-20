@@ -617,7 +617,8 @@ class AuthController extends BaseController {
       resetFormField();
 
       // 3.5️⃣ Flag new registration so homepage can show referral code dialog
-      if (isRegistration) {
+      // Skip if user came from a referral deep link — referral is auto-processed.
+      if (isRegistration && ReferralController.pendingReferrerId == null) {
         GetStorage().write('just_registered', true);
       }
 
@@ -675,12 +676,22 @@ class AuthController extends BaseController {
   void _checkIfNewRegistrationAndSetFlag() {
     try {
       if (Get.isRegistered<CustomerController>()) {
-        final customer = Get.find<CustomerController>().activeCustomer.value;
+        final customerController = Get.find<CustomerController>();
+        final customer = customerController.activeCustomer.value;
         if (customer != null) {
-          final createdAt = customer.createdAt;
+          final createdAt = customer.createdAt.toLocal();
           final now = DateTime.now();
           final diff = now.difference(createdAt).inSeconds;
-          if (diff <= 60) {
+          // Only treat as new registration if:
+          // 1. Account was created within 30 seconds (tight window)
+          // 2. Customer has no orders (truly new, not an existing customer)
+          // 3. User did NOT come via referral deep link (referral auto-processed)
+          // 4. Customer has NOT already been referred by someone
+          final isNewCustomer = diff <= 30 &&
+              customerController.orders.isEmpty &&
+              ReferralController.pendingReferrerId == null &&
+              customer.referredBy == null;
+          if (isNewCustomer) {
             GetStorage().write('just_registered', true);
           }
         }

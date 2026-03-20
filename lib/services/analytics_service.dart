@@ -19,8 +19,12 @@ class AnalyticsService {
       _analytics = FirebaseAnalytics.instance;
       _observer = FirebaseAnalyticsObserver(analytics: _analytics!);
 
+      // Enable analytics only for store builds (AAB/IPA with --dart-define=ANALYTICS_ENABLED=true)
+      const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
+      await _analytics!.setAnalyticsCollectionEnabled(analyticsEnabled);
+
       await _analytics!.setDefaultEventParameters({
-        'app_version': '2.0.78',
+        'app_version': '2.1.08',
         'platform': defaultTargetPlatform.toString(),
       });
 

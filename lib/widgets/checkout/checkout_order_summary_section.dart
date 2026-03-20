@@ -117,15 +117,15 @@ class CheckoutOrderSummarySection extends StatelessWidget {
         Query$GetCouponCodeList$getCouponCodeList$items? coupon;
         try {
           coupon = bannerController.availableCouponCodes.firstWhere(
-            (c) => (c.couponCode ?? '').toUpperCase() == appliedCouponCode.toUpperCase(),
+            (c) => (c.promotion.couponCode ?? '').toUpperCase() == appliedCouponCode.toUpperCase(),
           );
         } catch (e) {
           coupon = null;
         }
         
-        if (coupon != null && coupon.id.isNotEmpty) {
-          appliedCouponName = coupon.name;
-          hasFreeShippingInCoupon = coupon.actions.any(
+        if (coupon != null && coupon.promotion.id.isNotEmpty) {
+          appliedCouponName = coupon.promotion.name;
+          hasFreeShippingInCoupon = coupon.promotion.actions.any(
             (action) => action.code == 'free_shipping',
           );
         }

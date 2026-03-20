@@ -76,7 +76,7 @@ class OrderSummaryCard extends StatelessWidget {
           // Suggested Coupon Banner - Show if user is close to qualifying
           if (suggestedCoupon != null && amountShort != null && amountShort! > 0) ...[
             _CouponSuggestionBanner(
-              couponCode: suggestedCoupon!.couponCode ?? '',
+              couponCode: suggestedCoupon!.promotion.couponCode ?? '',
               amountShort: amountShort!,
             ),
             SizedBox(height: ResponsiveUtils.rp(6)),
@@ -84,13 +84,13 @@ class OrderSummaryCard extends StatelessWidget {
           // Applicable Coupon Codes - Small stripe above total
           if (applicableCoupons != null && applicableCoupons!.isNotEmpty) ...[
             ...applicableCoupons!.map((coupon) {
-              final couponCode = coupon.couponCode ?? '';
-              final couponName = coupon.name.isNotEmpty ? coupon.name : couponCode;
+              final couponCode = coupon.promotion.couponCode ?? '';
+              final couponName = coupon.promotion.name.isNotEmpty ? coupon.promotion.name : couponCode;
               final isApplied = appliedCouponCodes?.contains(couponCode) ?? false;
               
               // Get minimum order amount from coupon conditions
               int? minimumAmount;
-              for (final condition in coupon.conditions) {
+              for (final condition in coupon.promotion.conditions) {
                 if (condition.code == 'minimum_order_amount') {
                   for (final arg in condition.args) {
                     if (arg.name == 'amount') {
