@@ -10,6 +10,19 @@ subprojects {
         // Force all Android subprojects to use compileSdk 36
         extensions.findByType<com.android.build.gradle.BaseExtension>()?.apply {
             compileSdkVersion(36)
+            // Inject namespace for old plugins that only declared it in AndroidManifest.xml
+            if (namespace.isNullOrEmpty()) {
+                namespace = project.group.toString().ifEmpty {
+                    val manifest = project.file("src/main/AndroidManifest.xml")
+                    if (manifest.exists()) {
+                        val pkg = Regex("""package\s*=\s*"([^"]+)"""")
+                            .find(manifest.readText())?.groupValues?.get(1)
+                        pkg ?: "com.${project.name.replace("-", ".")}"
+                    } else {
+                        "com.${project.name.replace("-", ".")}"
+                    }
+                }
+            }
         }
     }
 }
