@@ -15,10 +15,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.35.5"
+          channel: 'stable'
 
       - name: Install dependencies
         run: flutter pub get
@@ -39,13 +46,13 @@ jobs:
           echo "Using version: $BUILD_NAME+$BUILD_NUMBER"
 
       - name: Build APK (universal)
-        run: flutter build apk --release --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
+        run: flutter build apk --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
 
       - name: Build APK (split per ABI)
-        run: flutter build apk --release --split-per-abi --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
+        run: flutter build apk --release --no-pub --split-per-abi --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
 
       - name: Build AAB
-        run: flutter build appbundle --release --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
+        run: flutter build appbundle --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
 
       # - name: Upload APK & AAB artifacts
       #   uses: actions/upload-artifact@v4

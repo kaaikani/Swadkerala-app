@@ -85,11 +85,11 @@ jobs:
 
       - name: Build APK
         if: matrix.build-type == 'apk'
-        run: flutter build apk --release --split-per-abi --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
+        run: flutter build apk --release --no-pub --split-per-abi --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
 
       - name: Build App Bundle
         if: matrix.build-type == 'appbundle'
-        run: flutter build appbundle --release --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
+        run: flutter build appbundle --release --no-pub --build-name=${{ steps.version.outputs.build_name }} --build-number=${{ steps.version.outputs.build_number }}
 
       - name: Upload APK artifacts
         if: matrix.build-type == 'apk'
