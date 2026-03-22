@@ -269,18 +269,22 @@ class CheckoutCouponBottomSheet {
                               if (conditions.isEmpty) return SizedBox.shrink();
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: conditions.map((cond) => Padding(
+                                children: conditions.map((cond) {
+                                  // If coupon is applied, all conditions are met (server validated)
+                                  final effectivelyMet = isApplied || (cond.canValidate && cond.isMet);
+                                  final showAsInfo = !isApplied && !cond.canValidate;
+                                  return Padding(
                                   padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(4)),
                                   child: Row(
                                     children: [
                                       Icon(
-                                        cond.canValidate
-                                          ? (cond.isMet ? Icons.check_circle : Icons.cancel)
-                                          : Icons.info_outline,
+                                        showAsInfo
+                                          ? Icons.info_outline
+                                          : (effectivelyMet ? Icons.check_circle : Icons.cancel),
                                         size: ResponsiveUtils.rp(16),
-                                        color: cond.canValidate
-                                          ? (cond.isMet ? AppColors.success : AppColors.error)
-                                          : AppColors.textSecondary,
+                                        color: showAsInfo
+                                          ? AppColors.textSecondary
+                                          : (effectivelyMet ? AppColors.success : AppColors.error),
                                       ),
                                       SizedBox(width: ResponsiveUtils.rp(6)),
                                       Expanded(child: Text(
@@ -288,14 +292,15 @@ class CheckoutCouponBottomSheet {
                                         style: TextStyle(
                                           fontSize: ResponsiveUtils.sp(12),
                                           fontWeight: FontWeight.w500,
-                                          color: cond.canValidate
-                                            ? (cond.isMet ? AppColors.success : AppColors.error)
-                                            : AppColors.textSecondary,
+                                          color: showAsInfo
+                                            ? AppColors.textSecondary
+                                            : (effectivelyMet ? AppColors.success : AppColors.error),
                                         ),
                                       )),
                                     ],
                                   ),
-                                )).toList(),
+                                );
+                                }).toList(),
                               );
                             }),
 

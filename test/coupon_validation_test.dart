@@ -155,6 +155,65 @@ void main() {
       ]);
       expect(CouponValidationHelper.evaluateConditions(c, null)[0].isMet, false);
     });
+
+    test('effective subtotal — excludes contains_products free items', () {
+      // Cart subtotal is 60000 but free product (variant 100) worth 20000 is in cart
+      // Effective subtotal = 60000 - 20000 = 40000 < 50000 → NOT MET
+      final c = _makeCoupon(conditions: [
+        _makeCondition('minimum_order_amount', {'amount': '50000'}),
+        _makeCondition('contains_products', {
+          'productVariantIds': '[100]',
+          'minimum': '1',
+        }),
+      ]);
+      final cart = _makeCart(
+        subTotalWithTax: 60000,
+        totalQuantity: 3,
+        lines: [
+          _makeCartLine(variantId: '100', quantity: 1, unitPrice: 20000),
+          _makeCartLine(variantId: '200', quantity: 2, unitPrice: 20000),
+        ],
+      );
+      final r = CouponValidationHelper.evaluateConditions(c, cart);
+      // minimum_order_amount should use effective subtotal (60000 - 20000 = 40000)
+      final minCond = r.firstWhere((c) => c.code == 'minimum_order_amount');
+      expect(minCond.isMet, false, reason: 'effective subtotal 40000 < required 50000');
+    });
+
+    test('effective subtotal — excludes buy_x_get_y_free Y items', () {
+      // Cart subtotal is 70000 but BXGY free product (variant 300) worth 15000
+      // Effective subtotal = 70000 - 15000 = 55000 >= 50000 → MET
+      final c = _makeCoupon(conditions: [
+        _makeCondition('minimum_order_amount', {'amount': '50000'}),
+        _makeCondition('buy_x_get_y_free', {
+          'amountX': '2',
+          'amountY': '1',
+          'variantIdsX': '[200]',
+          'variantIdsY': '[300]',
+        }),
+      ]);
+      final cart = _makeCart(
+        subTotalWithTax: 70000,
+        totalQuantity: 3,
+        lines: [
+          _makeCartLine(variantId: '200', quantity: 2, unitPrice: 27500),
+          _makeCartLine(variantId: '300', quantity: 1, unitPrice: 15000),
+        ],
+      );
+      final r = CouponValidationHelper.evaluateConditions(c, cart);
+      final minCond = r.firstWhere((c) => c.code == 'minimum_order_amount');
+      expect(minCond.isMet, true, reason: 'effective subtotal 55000 >= required 50000');
+    });
+
+    test('effective subtotal — no free products, uses raw subtotal', () {
+      // No contains_products or BXGY → effective subtotal = raw subtotal
+      final c = _makeCoupon(conditions: [
+        _makeCondition('minimum_order_amount', {'amount': '50000'}),
+      ]);
+      final cart = _makeCart(subTotalWithTax: 60000);
+      final r = CouponValidationHelper.evaluateConditions(c, cart);
+      expect(r[0].isMet, true, reason: 'no free products, raw subtotal 60000 >= 50000');
+    });
   });
 
   // =========================================================================
@@ -205,7 +264,7 @@ void main() {
       expect(CouponValidationHelper.evaluateConditions(c, cart)[0].isMet, true);
     });
 
-    test('displayText shows Free: N × productText', () {
+    test('displayText shows discount text and minimum count', () {
       final c = _makeCoupon(conditions: [
         _makeCondition('contains_products', {
           'productVariantIds': '[100]',
@@ -213,8 +272,23 @@ void main() {
         }),
       ]);
       final r = CouponValidationHelper.evaluateConditions(c, _makeCart());
-      expect(r[0].displayText, startsWith('Free:'));
       expect(r[0].displayText, contains('2'));
+    });
+
+    test('displayText shows action discount when action present', () {
+      final c = _makeCoupon(
+        conditions: [
+          _makeCondition('contains_products', {
+            'productVariantIds': '[100]',
+            'minimum': '1',
+          }),
+        ],
+        actions: [
+          _makeAction('order_percentage_discount', {'discount': '10'}),
+        ],
+      );
+      final r = CouponValidationHelper.evaluateConditions(c, _makeCart());
+      expect(r[0].displayText, contains('10% off'));
     });
 
     test('canValidate false when empty variant IDs', () {
@@ -388,6 +462,30 @@ void main() {
         _makeCondition('customer_group', {'customerGroupId': '5'}),
       ]);
       expect(CouponValidationHelper.evaluateConditions(c, _makeCart())[0].canValidate, false);
+    });
+  });
+
+  // =========================================================================
+  // 7b. CONDITION: shouldApplyCouponcode (server-only)
+  // =========================================================================
+  group('shouldApplyCouponcode', () {
+    test('canValidate false (server-side only)', () {
+      final c = _makeCoupon(conditions: [
+        _makeCondition('shouldApplyCouponcode', {}),
+      ]);
+      final r = CouponValidationHelper.evaluateConditions(c, _makeCart());
+      expect(r[0].canValidate, false);
+      expect(r[0].code, 'shouldApplyCouponcode');
+      expect(r[0].displayText, 'Coupon code required');
+    });
+
+    test('does not block areAllConditionsMet', () {
+      final c = _makeCoupon(conditions: [
+        _makeCondition('shouldApplyCouponcode', {}),
+        _makeCondition('minimum_order_amount', {'amount': '1000'}),
+      ]);
+      final cart = _makeCart(subTotalWithTax: 5000);
+      expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
     });
   });
 
@@ -600,5 +698,208 @@ void main() {
     test('false when no conditions', () {
       expect(CouponValidationHelper.hasContainsProductsCondition(_makeCoupon()), false);
     });
+  });
+
+  // =========================================================================
+  // 13. ALL 42 CONDITION × ACTION COMBINATIONS
+  //     6 conditions × 7 actions = 42 combos
+  //     Verifies that evaluateConditions + parseActions work correctly
+  //     when a coupon has BOTH a condition and an action together.
+  // =========================================================================
+
+  // --- Helper lists for the matrix ---
+  // These match the EXACT 6 conditions available in the admin API
+  final allConditions = <String, Map<String, String>>{
+    'minimum_order_amount':    {'amount': '50000'},
+    'contains_products':       {'productVariantIds': '[100,101]', 'minimum': '1'},
+    'at_least_n_with_facets':  {'minimum': '2', 'facets': '[1,2]'},
+    'customer_group':          {'customerGroupId': '5'},
+    'buy_x_get_y_free':        {'amountX': '3', 'amountY': '1'},
+    'shouldApplyCouponcode':   {},
+  };
+
+  final allActions = <String, Map<String, String>>{
+    'order_percentage_discount':  {'discount': '10'},
+    'order_fixed_discount':       {'discount': '10000'},
+    'facet_based_discount':       {'discount': '15'},
+    'products_percentage_discount': {'discount': '20', 'productVariantIds': '[100]'},
+    'free_shipping':              {},
+    'buy_x_get_y_free':           {'amountX': '3', 'amountY': '1'},
+    'order_line_fixed_discount':  {'discount': '5000'},
+  };
+
+  // ---------------------------------------------------------------------------
+  // 1. minimum_order_amount × all 7 actions
+  // ---------------------------------------------------------------------------
+  group('COMBO: minimum_order_amount ×', () {
+    for (final actionEntry in allActions.entries) {
+      test('${actionEntry.key} — MET', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('minimum_order_amount', allConditions['minimum_order_amount']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(subTotalWithTax: 60000, totalQuantity: 5);
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        final acts = CouponValidationHelper.parseActions(c);
+        expect(conds.length, 1);
+        expect(conds[0].isMet, true);
+        expect(conds[0].code, 'minimum_order_amount');
+        expect(acts.length, 1);
+        expect(acts[0].code, actionEntry.key);
+        expect(acts[0].displayText.isNotEmpty, true);
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+      });
+
+      test('${actionEntry.key} — NOT MET', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('minimum_order_amount', allConditions['minimum_order_amount']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(subTotalWithTax: 20000, totalQuantity: 1);
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        expect(conds[0].isMet, false);
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), false);
+        expect(CouponValidationHelper.getFirstUnmetConditionMessage(c, cart), isNotNull);
+      });
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // 2. contains_products × all 7 actions
+  // ---------------------------------------------------------------------------
+  group('COMBO: contains_products ×', () {
+    for (final actionEntry in allActions.entries) {
+      test('${actionEntry.key} — always MET (free benefit)', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('contains_products', allConditions['contains_products']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(
+          subTotalWithTax: 30000,
+          totalQuantity: 2,
+          lines: [_makeCartLine(variantId: '100', quantity: 2)],
+        );
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        final acts = CouponValidationHelper.parseActions(c);
+        expect(conds.length, 1);
+        expect(conds[0].isMet, true, reason: 'contains_products is always met (free benefit)');
+        expect(conds[0].code, 'contains_products');
+        expect(acts.length, 1);
+        expect(acts[0].code, actionEntry.key);
+        expect(acts[0].displayText.isNotEmpty, true);
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+      });
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // 3. at_least_n_with_facets × all 7 actions
+  // ---------------------------------------------------------------------------
+  group('COMBO: at_least_n_with_facets ×', () {
+    for (final actionEntry in allActions.entries) {
+      test('${actionEntry.key} — server-only, canValidate false', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('at_least_n_with_facets', allConditions['at_least_n_with_facets']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(subTotalWithTax: 60000, totalQuantity: 5);
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        final acts = CouponValidationHelper.parseActions(c);
+        expect(conds.length, 1);
+        expect(conds[0].canValidate, false, reason: 'at_least_n_with_facets is server-only');
+        expect(conds[0].code, 'at_least_n_with_facets');
+        expect(acts.length, 1);
+        expect(acts[0].code, actionEntry.key);
+        expect(acts[0].displayText.isNotEmpty, true);
+        // Server-only conditions don't block areAllConditionsMet
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+      });
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // 4. customer_group × all 7 actions
+  // ---------------------------------------------------------------------------
+  group('COMBO: customer_group ×', () {
+    for (final actionEntry in allActions.entries) {
+      test('${actionEntry.key} — server-only, canValidate false', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('customer_group', allConditions['customer_group']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(subTotalWithTax: 60000, totalQuantity: 5);
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        final acts = CouponValidationHelper.parseActions(c);
+        expect(conds.length, 1);
+        expect(conds[0].canValidate, false, reason: 'customer_group is server-only');
+        expect(conds[0].code, 'customer_group');
+        expect(acts.length, 1);
+        expect(acts[0].code, actionEntry.key);
+        expect(acts[0].displayText.isNotEmpty, true);
+        // Server-only conditions don't block areAllConditionsMet
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+      });
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // 5. buy_x_get_y_free × all 7 actions
+  // ---------------------------------------------------------------------------
+  group('COMBO: buy_x_get_y_free ×', () {
+    for (final actionEntry in allActions.entries) {
+      test('${actionEntry.key} — MET (qty >= X)', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('buy_x_get_y_free', allConditions['buy_x_get_y_free']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(subTotalWithTax: 60000, totalQuantity: 5);
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        final acts = CouponValidationHelper.parseActions(c);
+        expect(conds.length, 1);
+        expect(conds[0].isMet, true);
+        expect(conds[0].code, 'buy_x_get_y_free');
+        expect(acts.length, 1);
+        expect(acts[0].code, actionEntry.key);
+        expect(acts[0].displayText.isNotEmpty, true);
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+      });
+
+      test('${actionEntry.key} — NOT MET (qty < X)', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('buy_x_get_y_free', allConditions['buy_x_get_y_free']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(subTotalWithTax: 10000, totalQuantity: 1);
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        expect(conds[0].isMet, false);
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), false);
+        expect(CouponValidationHelper.getFirstUnmetConditionMessage(c, cart), isNotNull);
+      });
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // 6. shouldApplyCouponcode × all 7 actions
+  // ---------------------------------------------------------------------------
+  group('COMBO: shouldApplyCouponcode ×', () {
+    for (final actionEntry in allActions.entries) {
+      test('${actionEntry.key} — server-only, canValidate false', () {
+        final c = _makeCoupon(
+          conditions: [_makeCondition('shouldApplyCouponcode', allConditions['shouldApplyCouponcode']!)],
+          actions: [_makeAction(actionEntry.key, actionEntry.value)],
+        );
+        final cart = _makeCart(subTotalWithTax: 60000, totalQuantity: 5);
+        final conds = CouponValidationHelper.evaluateConditions(c, cart);
+        final acts = CouponValidationHelper.parseActions(c);
+        expect(conds.length, 1);
+        expect(conds[0].canValidate, false, reason: 'shouldApplyCouponcode is server-only');
+        expect(conds[0].code, 'shouldApplyCouponcode');
+        expect(acts.length, 1);
+        expect(acts[0].code, actionEntry.key);
+        expect(acts[0].displayText.isNotEmpty, true);
+        // Server-only conditions don't block areAllConditionsMet
+        expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+      });
+    }
   });
 }

@@ -55,30 +55,7 @@ class CartCouponSection extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                Obx(() {
-                  final appliedCount = bannerController.appliedCouponCodes.length;
-                  if (appliedCount > 0) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.rp(10),
-                        vertical: ResponsiveUtils.rp(6),
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.success,
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                      ),
-                      child: Text(
-                        '$appliedCount Applied',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ResponsiveUtils.sp(12),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }),
+                const SizedBox.shrink(),
               ],
             ),
             SizedBox(height: ResponsiveUtils.rp(12)),

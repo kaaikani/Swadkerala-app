@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../theme/colors.dart';
@@ -13,8 +14,9 @@ class LoadingDialog {
     if (_isShowing) {
       return;
     }
-    
+
     _isShowing = true;
+    _startSafetyTimer();
     Get.dialog(
       WillPopScope(
         onWillPop: () async => false, // Prevent dismissing by back button
@@ -116,11 +118,33 @@ class LoadingDialog {
 
   /// Hide loading dialog. Always clears state and closes the dialog so it never stays stuck (e.g. on iOS).
   static void hide() {
-    if (!_isShowing) return;
     _isShowing = false;
-    if (Get.isDialogOpen == true) {
-      Get.back();
+    _cancelSafetyTimer();
+    try {
+      if (Get.isDialogOpen == true) {
+        Get.back();
+      }
+    } catch (_) {
+      // Dialog might already be closed or navigator state invalid
     }
+  }
+
+  static Timer? _safetyTimer;
+
+  /// Start a safety timer that auto-hides the dialog after [duration].
+  /// Prevents the dialog from being stuck indefinitely if the caller fails to hide it.
+  static void _startSafetyTimer() {
+    _cancelSafetyTimer();
+    _safetyTimer = Timer(const Duration(seconds: 15), () {
+      if (_isShowing) {
+        hide();
+      }
+    });
+  }
+
+  static void _cancelSafetyTimer() {
+    _safetyTimer?.cancel();
+    _safetyTimer = null;
   }
 }
 

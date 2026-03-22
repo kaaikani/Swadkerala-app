@@ -43,7 +43,9 @@ class CouponValidationHelper {
 
       switch (condition.code) {
         case 'minimum_order_amount':
-          results.add(_evaluateMinimumOrderAmount(argsMap, cart));
+          results.add(_evaluateMinimumOrderAmount(
+            argsMap, cart, _getFreeProductVariantIds(coupon),
+          ));
           break;
         case 'contains_products':
           results.add(_evaluateContainsProducts(argsMap, cart, variantNames, coupon.promotion.actions));
@@ -62,6 +64,9 @@ class CouponValidationHelper {
           break;
         case 'has_active_customer':
           results.add(_evaluateHasActiveCustomer(cart));
+          break;
+        case 'shouldApplyCouponcode':
+          results.add(_evaluateShouldApplyCouponCode(cart));
           break;
         default:
           results.add(CouponConditionInfo(
@@ -231,10 +236,12 @@ class CouponValidationHelper {
   static CouponConditionInfo _evaluateMinimumOrderAmount(
     Map<String, String> args,
     cart_graphql.Fragment$Cart? cart,
+    Set<String> freeProductVariantIds,
   ) {
     final requiredAmount = int.tryParse(args['amount'] ?? '0') ?? 0;
-    final cartSubTotal = cart?.subTotalWithTax.toInt() ?? 0;
-    final isMet = cartSubTotal >= requiredAmount;
+    // Calculate effective subtotal excluding free products added by this coupon
+    final effectiveSubTotal = _getEffectiveSubTotal(cart, freeProductVariantIds);
+    final isMet = effectiveSubTotal >= requiredAmount;
 
     return CouponConditionInfo(
       code: 'minimum_order_amount',
@@ -242,6 +249,41 @@ class CouponValidationHelper {
           'Minimum order ${PriceFormatter.formatPrice(requiredAmount)}',
       isMet: isMet,
     );
+  }
+
+  /// Calculate effective subtotal excluding prices of free products added by coupon
+  /// (contains_products and buy_x_get_y_free Y products).
+  static int _getEffectiveSubTotal(
+    cart_graphql.Fragment$Cart? cart,
+    Set<String> freeProductVariantIds,
+  ) {
+    if (cart == null) return 0;
+    if (freeProductVariantIds.isEmpty) return cart.subTotalWithTax.toInt();
+
+    int freeProductTotal = 0;
+    for (final line in cart.lines) {
+      if (freeProductVariantIds.contains(line.productVariant.id)) {
+        freeProductTotal += line.linePriceWithTax.toInt();
+      }
+    }
+    return cart.subTotalWithTax.toInt() - freeProductTotal;
+  }
+
+  /// Extract variant IDs of free products from coupon conditions
+  /// (contains_products productVariantIds + buy_x_get_y_free variantIdsY).
+  static Set<String> _getFreeProductVariantIds(
+    Query$GetCouponCodeList$getCouponCodeList$items coupon,
+  ) {
+    final ids = <String>{};
+    for (final condition in coupon.promotion.conditions) {
+      final argsMap = {for (var a in condition.args) a.name: a.value};
+      if (condition.code == 'contains_products') {
+        ids.addAll(_parseIdList(argsMap['productVariantIds'] ?? ''));
+      } else if (condition.code == 'buy_x_get_y_free') {
+        ids.addAll(_parseIdList(argsMap['variantIdsY'] ?? ''));
+      }
+    }
+    return ids;
   }
 
   static CouponConditionInfo _evaluateContainsProducts(
@@ -429,6 +471,19 @@ class CouponValidationHelper {
       code: 'has_active_customer',
       displayText: 'Must be logged in',
       isMet: isMet,
+    );
+  }
+
+  static CouponConditionInfo _evaluateShouldApplyCouponCode(
+    cart_graphql.Fragment$Cart? cart,
+  ) {
+    // Server-side check — coupon code applicability is validated by the server
+    // when applying. We show it as info-only on the client.
+    return CouponConditionInfo(
+      code: 'shouldApplyCouponcode',
+      displayText: 'Coupon code required',
+      isMet: false,
+      canValidate: false,
     );
   }
 

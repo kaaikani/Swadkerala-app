@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' show Rect;
 import 'package:flutter/services.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -60,7 +59,7 @@ class BillGenerator {
     final channelType = ChannelService.getChannelType() ?? '';
     final isCityChannel = channelType.contains('CITY');
     pw.Image? logoImage;
-    
+
     // Load image in parallel with other setup (non-blocking)
     if (isCityChannel) {
       try {
@@ -97,12 +96,16 @@ class BillGenerator {
       }
     }
 
-    // Fetch loyalty points config only if not already loaded (avoids slow network call every share)
+    // Fetch loyalty points config only if not already loaded (avoids slow network call every share).
+    // Timeout after 3 seconds to avoid hanging the loading dialog indefinitely.
     if (Get.isRegistered<BannerController>()) {
       final bannerController = Get.find<BannerController>();
       if (bannerController.loyaltyPointsConfig.value == null) {
         try {
-          await bannerController.fetchLoyaltyPointsConfig();
+          await bannerController.fetchLoyaltyPointsConfig().timeout(
+            const Duration(seconds: 3),
+            onTimeout: () {}, // Skip if network is slow
+          );
         } catch (_) {}
       }
     }
@@ -194,27 +197,30 @@ class BillGenerator {
       throw Exception('PDF file was not written');
     }
 
-    LoadingDialog.hide();
     final origin = sharePositionOrigin ?? const Rect.fromLTWH(95, 372, 200, 100);
 
-    // On iOS, a short delay after writing ensures the file is visible to the share extension (avoids "Failed to request default share mode" / "error fetching item for URL").
-    final isIOS = Platform.isIOS;
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      try {
-        if (isIOS) {
-          await Future<void>.delayed(const Duration(milliseconds: 150));
-        }
-        await Share.shareXFiles(
-          [XFile(filePath)],
-          subject: 'Invoice - Order #${order.code}',
-          sharePositionOrigin: origin,
-        );
-      } catch (e) {
-        LoadingDialog.hide();
-        if (Get.isSnackbarOpen) Get.back();
-        Get.snackbar('Share failed', 'Could not open share sheet. Try again.', snackPosition: SnackPosition.BOTTOM);
-      }
-    });
+    // Hide loading BEFORE opening share sheet — otherwise the dialog blocks the share sheet
+    // and can get stuck if the share sheet fails or is dismissed.
+    LoadingDialog.hide();
+
+    // On iOS, a short delay after writing ensures the file is visible to the share extension.
+    if (Platform.isIOS) {
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+    }
+
+    try {
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        subject: 'Invoice - Order #${order.code}',
+        sharePositionOrigin: origin,
+      );
+    } catch (e) {
+      // Share sheet failed — don't rethrow, just show snackbar.
+      // LoadingDialog is already hidden at this point.
+      if (Get.isSnackbarOpen) Get.back();
+      Get.snackbar('Share failed', 'Could not open share sheet. Try again.',
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   static pw.Widget _buildHeader(Fragment$Cart order, pw.Image? logoImage) {
@@ -259,43 +265,64 @@ class BillGenerator {
   }
 
   static pw.Widget _buildInfoSection(Fragment$Cart order) {
-    // Access order as dynamic to get extended fields (Query$GetOrderByCode$orderByCode)
+    // Access order as dynamic to get extended fields (Query$GetOrderByCode$orderByCode).
+    // Fragment$Cart may not have these fields, so wrap each in try-catch to avoid crashes.
     final orderDynamic = order as dynamic;
-    
+
     // Get customer information (sanitize for PDF to avoid FormatException)
-    final customer = orderDynamic.customer;
-    final firstName = _safeString(customer?.firstName ?? '');
-    final lastName = _safeString(customer?.lastName ?? '');
-    final rawEmail = _safeString(customer?.emailAddress ?? '');
-    // Don't show @kaikani.com email in bill print
-    final emailAddress = rawEmail.trim().toLowerCase().endsWith('@kaikani.com')
-        ? ''
-        : rawEmail;
+    String firstName = '';
+    String lastName = '';
+    String emailAddress = '';
+    try {
+      final customer = orderDynamic.customer;
+      firstName = _safeString(customer?.firstName ?? '');
+      lastName = _safeString(customer?.lastName ?? '');
+      final rawEmail = _safeString(customer?.emailAddress ?? '');
+      emailAddress = rawEmail.trim().toLowerCase().endsWith('@kaikani.com')
+          ? ''
+          : rawEmail;
+    } catch (_) {}
 
     // Get billing address (for phone number)
-    final billingAddress = orderDynamic.billingAddress;
-    final billingPhone = _safeString(billingAddress?.phoneNumber ?? '');
-    
+    String billingPhone = '';
+    try {
+      final billingAddress = orderDynamic.billingAddress;
+      billingPhone = _safeString(billingAddress?.phoneNumber ?? '');
+    } catch (_) {}
+
     // Get shipping address
-    final shippingAddress = orderDynamic.shippingAddress;
-    
-    // Get order date
-    final orderPlacedAt = orderDynamic.orderPlacedAt;
-    final orderDate = orderPlacedAt != null 
-        ? DateTime.parse(orderPlacedAt.toString()).toString().split(' ')[0]
-        : DateTime.now().toString().split(' ')[0];
-    
-    // Get payment method
-    final payments = orderDynamic.payments;
-    String paymentMethod = 'N/A';
-    if (payments != null && payments.isNotEmpty) {
-      final payment = payments.first;
-      paymentMethod = _safeString(payment.method ?? 'N/A');
+    dynamic shippingAddress;
+    try {
+      shippingAddress = orderDynamic.shippingAddress;
+    } catch (_) {
+      shippingAddress = null;
     }
-    final isOnlinePayment = paymentMethod.toLowerCase().contains('razorpay') ||
-        paymentMethod.toLowerCase().contains('online') ||
-        paymentMethod.toLowerCase().contains('card');
-    final paymentMethodText = isOnlinePayment ? 'Online Payment' : 'Offline Payment';
+
+    // Get order date
+    String orderDate;
+    try {
+      final orderPlacedAt = orderDynamic.orderPlacedAt;
+      orderDate = orderPlacedAt != null
+          ? DateTime.parse(orderPlacedAt.toString()).toString().split(' ')[0]
+          : DateTime.now().toString().split(' ')[0];
+    } catch (_) {
+      orderDate = DateTime.now().toString().split(' ')[0];
+    }
+
+    // Get payment method
+    String paymentMethodText = 'Offline Payment';
+    try {
+      final payments = orderDynamic.payments;
+      String paymentMethod = 'N/A';
+      if (payments != null && payments.isNotEmpty) {
+        final payment = payments.first;
+        paymentMethod = _safeString(payment.method ?? 'N/A');
+      }
+      final isOnlinePayment = paymentMethod.toLowerCase().contains('razorpay') ||
+          paymentMethod.toLowerCase().contains('online') ||
+          paymentMethod.toLowerCase().contains('card');
+      paymentMethodText = isOnlinePayment ? 'Online Payment' : 'Offline Payment';
+    } catch (_) {}
     
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,

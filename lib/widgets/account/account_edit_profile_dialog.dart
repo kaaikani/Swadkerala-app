@@ -412,7 +412,11 @@ class AccountEditProfileDialog {
                               setState(() { isLoading = false; });
 
                               if (success) {
-                                Get.back();
+                                // Close all open dialogs to ensure edit profile dialog closes
+                                // even if a nested dialog (Google account, manual email) is stacked
+                                if (Get.isDialogOpen == true) {
+                                  Get.back();
+                                }
                                 showSuccessSnackbar('Profile updated successfully');
                               } else {
                                 showErrorSnackbar('Failed to update profile');

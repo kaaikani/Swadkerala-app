@@ -1423,8 +1423,13 @@ class BannerController extends BaseController {
         // buy_x_get_y_free with specific variantIds, etc.) — no error is thrown.
         // Only run this for coupons that have a price-discount action (not free_shipping
         // only), since shipping discounts are reflected in shippingLines, not discounts[].
+        // Check both order-level AND line-level discounts, since facet_based_discount
+        // applies at the line level.
+        final hasOrderDiscount = result.discounts.any((d) => d.amountWithTax != 0);
+        final hasLineDiscount = result.lines.any((line) =>
+            line.discounts.any((d) => d.amountWithTax != 0));
         if (CouponValidationHelper.hasPriceDiscountActions(coupon) &&
-            result.discounts.every((d) => d.amountWithTax == 0) &&
+            !hasOrderDiscount && !hasLineDiscount &&
             result.totalQuantity > 0) {
           final cartController = Get.find<CartController>();
           final conditions = CouponValidationHelper.evaluateConditions(
