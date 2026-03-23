@@ -695,15 +695,27 @@ class BannerController extends BaseController {
       for (final action in coupon.promotion.actions) {
         if (action.code == 'add_products' ||
             action.code == 'contains_products' ||
+            action.code == 'products_percentage_discount' ||
             action.code == 'free_shipping') {
           for (final arg in action.args) {
-            if (arg.name == 'productVariantIds' && arg.value is List) {
-              final variantIds = arg.value as List<dynamic>;
+            if (arg.name == 'productVariantIds') {
+              List<String> variantIds = [];
+              if (arg.value is List) {
+                variantIds = (arg.value as List<dynamic>).map((e) => e.toString()).toList();
+              } else {
+                // Parse string representation like '["14","15"]' or '14,15'
+                final stringValue = arg.value.toString();
+                final cleaned = stringValue.trim().replaceAll('[', '').replaceAll(']', '').replaceAll('"', '');
+                if (cleaned.isNotEmpty) {
+                  variantIds = cleaned.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                }
+              }
               for (final variantId in variantIds) {
+                final name = _variantNames[variantId] ?? 'Product from ${coupon.promotion.name}';
                 products.add({
-                  'id': variantId.toString(),
-                  'name': 'Product from ${coupon.promotion.name}',
-                  'productVariantId': variantId.toString(),
+                  'id': variantId,
+                  'name': name,
+                  'productVariantId': variantId,
                   'price': 0.0,
                   'priceWithTax': 0.0,
                   'quantity': 1,
@@ -1246,8 +1258,15 @@ class BannerController extends BaseController {
         };
       }
 
-      // Step 2: Check ALL client-validatable conditions
+      // Step 2: Refresh cart to ensure we validate against latest data
       final cartController = Get.find<CartController>();
+      try {
+        await cartController.refreshCartData();
+      } catch (_) {
+        // Continue with current cart data if refresh fails
+      }
+
+      // Step 3: Check ALL client-validatable conditions
       final unmetMessage = CouponValidationHelper.getFirstUnmetConditionMessage(
           coupon, cartController.cart.value,
           facetValueNames: _facetValueNames, variantNames: _variantNames,
@@ -1263,7 +1282,7 @@ class BannerController extends BaseController {
           'error': 'CONDITION_NOT_MET',
         };
       }
-      // Step 3: Now apply the coupon (conditions validated)
+      // Step 4: Now apply the coupon (conditions validated)
       return await _applyCouponCodeWithoutMinimumCheck(couponCode);
     } catch (e) {
       utilityController.setLoadingState(false);
@@ -1431,24 +1450,34 @@ class BannerController extends BaseController {
         if (CouponValidationHelper.hasPriceDiscountActions(coupon) &&
             !hasOrderDiscount && !hasLineDiscount &&
             result.totalQuantity > 0) {
-          final cartController = Get.find<CartController>();
-          final conditions = CouponValidationHelper.evaluateConditions(
-            coupon,
-            cartController.cart.value,
-            facetValueNames: _facetValueNames,
-            variantNames: _variantNames,
-            customerGroupNames: _customerGroupNames,
-          );
           // Auto-remove the coupon since it produced no discount
           await removeCouponCode(couponCode);
           utilityController.setLoadingState(false);
-          ErrorDialog.showConditionsNotMet(
-            couponCode: couponCode,
-            conditions: conditions,
-          );
+
+          // Check if the issue is that action-targeted products are not in cart
+          // (e.g., products_percentage_discount or facet_based_discount with specific items)
+          final cartVariantIds = result.lines.map((l) => l.productVariant.id).toSet();
+          final actionMessage = CouponValidationHelper.getNoDiscountReason(coupon, cartVariantIds);
+          if (actionMessage != null) {
+            ErrorDialog.showWarning(message: actionMessage);
+          } else {
+            // Fallback: show unmet conditions dialog
+            final cartController = Get.find<CartController>();
+            final conditions = CouponValidationHelper.evaluateConditions(
+              coupon,
+              cartController.cart.value,
+              facetValueNames: _facetValueNames,
+              variantNames: _variantNames,
+              customerGroupNames: _customerGroupNames,
+            );
+            ErrorDialog.showConditionsNotMet(
+              couponCode: couponCode,
+              conditions: conditions,
+            );
+          }
           return {
             'success': false,
-            'message': 'Coupon conditions not satisfied',
+            'message': actionMessage ?? 'Coupon conditions not satisfied',
             'error': 'CONDITIONS_NOT_MET',
           };
         }
@@ -2268,9 +2297,16 @@ class BannerController extends BaseController {
         };
       }
 
-      // Step 2: Check only NON-product conditions (minimum_order, etc.)
-      // Skip 'contains_products' validation since we will auto-add those products
+      // Step 2: Refresh cart to ensure we validate against latest data
       final cartController = Get.find<CartController>();
+      try {
+        await cartController.refreshCartData();
+      } catch (_) {
+        // Continue with current cart data if refresh fails
+      }
+
+      // Step 3: Check only NON-product conditions (minimum_order, etc.)
+      // Skip 'contains_products' validation since we will auto-add those products
       final hasProductCondition = CouponValidationHelper.hasContainsProductsCondition(coupon);
       final unmetMessage = hasProductCondition
           ? CouponValidationHelper.getFirstUnmetNonProductConditionMessage(

@@ -358,7 +358,7 @@ class CustomerController extends BaseController {
           activeCustomer {
             __typename
             ... on Customer {
-              orders(options: { skip: \$skip, take: \$take, filter: \$orderStateFilter }) {
+              orders(options: { skip: \$skip, take: \$take, sort: { orderPlacedAt: DESC }, filter: \$orderStateFilter }) {
                 totalItems
                 items {
                   id

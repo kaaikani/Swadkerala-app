@@ -346,8 +346,8 @@ class DeepLinkService {
         }
       }
 
-      // Handle referral links: /refer?referrerId=123
-      if (cleanPath == 'refer' || queryParams.containsKey('referrerId')) {
+      // Handle referral links: /referal?referrerId=123 or /refer?referrerId=123
+      if (cleanPath == 'referal' || cleanPath == 'refer' || cleanPath == 'referral' || queryParams.containsKey('referrerId')) {
         final referrerId = queryParams['referrerId'];
         if (referrerId != null && referrerId.isNotEmpty) {
           if (_isUserAuthenticated()) {

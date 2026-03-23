@@ -229,6 +229,36 @@ class CouponValidationHelper {
     return coupon.promotion.actions.any((a) => a.code != 'free_shipping');
   }
 
+  /// When the server accepted the coupon but produced no discount, determine why.
+  /// Checks if action-targeted products (products_percentage_discount, facet_based_discount)
+  /// are missing from the cart. Returns a user-friendly message, or null if unknown.
+  /// [cartVariantIds] is the set of product variant IDs currently in the cart.
+  static String? getNoDiscountReason(
+    Query$GetCouponCodeList$getCouponCodeList$items coupon,
+    Set<String> cartVariantIds,
+  ) {
+    for (final action in coupon.promotion.actions) {
+      final argsMap = {for (var a in action.args) a.name: a.value};
+
+      if (action.code == 'products_percentage_discount') {
+        final targetIds = _parseIdList(argsMap['productVariantIds'] ?? '');
+        if (targetIds.isEmpty) continue;
+        final inCart = targetIds.where((id) => cartVariantIds.contains(id));
+        if (inCart.isEmpty) {
+          // Products should have been auto-added; if still missing, show specific message
+          return 'The eligible products for this coupon could not be added to your cart. '
+              'Please try adding them manually.';
+        }
+      }
+
+      if (action.code == 'facet_based_discount') {
+        return 'This coupon applies to specific categories. '
+            'Add items from the eligible category to get the discount.';
+      }
+    }
+    return null;
+  }
+
   // ---------------------------------------------------------------------------
   // Private condition evaluators
   // ---------------------------------------------------------------------------
@@ -242,6 +272,17 @@ class CouponValidationHelper {
     // Calculate effective subtotal excluding free products added by this coupon
     final effectiveSubTotal = _getEffectiveSubTotal(cart, freeProductVariantIds);
     final isMet = effectiveSubTotal >= requiredAmount;
+
+    // Debug: log comparison values to diagnose validation issues
+    assert(() {
+      print('[CouponValidation] minimum_order_amount: '
+          'required=$requiredAmount (${PriceFormatter.formatPrice(requiredAmount)}), '
+          'effectiveSubTotal=$effectiveSubTotal (${PriceFormatter.formatPrice(effectiveSubTotal)}), '
+          'cartNull=${cart == null}, '
+          'freeIds=${freeProductVariantIds.length}, '
+          'isMet=$isMet');
+      return true;
+    }());
 
     return CouponConditionInfo(
       code: 'minimum_order_amount',

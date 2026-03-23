@@ -140,9 +140,10 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
                 defaultShippingAddress
                 defaultBillingAddress
             }
-            orders(options: { 
-                take: 10, 
+            orders(options: {
+                take: 10,
                 skip: 0,
+                sort: { orderPlacedAt: DESC },
                 filter: $orderStateFilter
             }) {
 
@@ -222,9 +223,10 @@ query GetCustomerOrders($skip: Int!, $take: Int!, $orderStateFilter: OrderFilter
     activeCustomer {
         __typename
         ... on Customer {
-            orders(options: { 
-                skip: $skip, 
+            orders(options: {
+                skip: $skip,
                 take: $take,
+                sort: { orderPlacedAt: DESC },
                 filter: $orderStateFilter
             }) {
                 totalItems

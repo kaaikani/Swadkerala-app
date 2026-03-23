@@ -265,20 +265,36 @@ class ErrorDialog {
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Conditions not satisfied for "$couponCode":',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.sp(13),
-                color: AppColors.textSecondary,
-              ),
-            ),
-            SizedBox(height: ResponsiveUtils.rp(12)),
-            ...conditions.map((c) => _buildConditionRow(c)),
-          ],
+        content: Builder(
+          builder: (context) {
+            // Only show client-validatable unmet conditions — server-only (canValidate=false)
+            // conditions like shouldApplyCouponcode are informational and should not
+            // appear as failures in the error dialog.
+            final unmetConditions = conditions.where((c) => c.canValidate && !c.isMet).toList();
+            final serverOnlyConditions = conditions.where((c) => !c.canValidate).toList();
+            final displayConditions = unmetConditions.isNotEmpty
+                ? unmetConditions
+                : serverOnlyConditions.isNotEmpty
+                    ? serverOnlyConditions
+                    : conditions;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  unmetConditions.isNotEmpty
+                      ? 'The following condition${unmetConditions.length > 1 ? 's are' : ' is'} not satisfied for "$couponCode":'
+                      : 'Conditions not satisfied for "$couponCode":',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(13),
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(12)),
+                ...displayConditions.map((c) => _buildConditionRow(c)),
+              ],
+            );
+          },
         ),
         actions: [
           ElevatedButton(

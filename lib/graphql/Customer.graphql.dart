@@ -5873,6 +5873,15 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                         value: IntValueNode(value: '0'),
                       ),
                       ObjectFieldNode(
+                        name: NameNode(value: 'sort'),
+                        value: ObjectValueNode(fields: [
+                          ObjectFieldNode(
+                            name: NameNode(value: 'orderPlacedAt'),
+                            value: EnumValueNode(name: NameNode(value: 'DESC')),
+                          )
+                        ]),
+                      ),
+                      ObjectFieldNode(
                         name: NameNode(value: 'filter'),
                         value: VariableNode(
                             name: NameNode(value: 'orderStateFilter')),
@@ -11395,6 +11404,15 @@ const documentNodeQueryGetCustomerOrders = DocumentNode(definitions: [
                       ObjectFieldNode(
                         name: NameNode(value: 'take'),
                         value: VariableNode(name: NameNode(value: 'take')),
+                      ),
+                      ObjectFieldNode(
+                        name: NameNode(value: 'sort'),
+                        value: ObjectValueNode(fields: [
+                          ObjectFieldNode(
+                            name: NameNode(value: 'orderPlacedAt'),
+                            value: EnumValueNode(name: NameNode(value: 'DESC')),
+                          )
+                        ]),
                       ),
                       ObjectFieldNode(
                         name: NameNode(value: 'filter'),
