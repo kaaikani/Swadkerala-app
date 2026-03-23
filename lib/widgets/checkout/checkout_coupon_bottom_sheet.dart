@@ -79,9 +79,7 @@ class CheckoutCouponBottomSheet {
                   );
                 }
 
-                final enabledCoupons = bannerController.availableCouponCodes
-                    .where((coupon) => coupon.promotion.enabled)
-                    .toList();
+                final enabledCoupons = bannerController.availableCouponCodes.toList();
 
                 if (enabledCoupons.isEmpty) {
                   return Center(

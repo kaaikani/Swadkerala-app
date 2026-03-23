@@ -244,14 +244,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     }
     
     try {
-      LoadingDialog.show(message: 'Please wait');
-      // The order from orderController.currentOrder is already in the correct format
+      LoadingDialog.show(message: 'Generating bill...');
       final orderModel = orderController.currentOrder.value;
-      if (orderModel != null) {
-        await BillGenerator.generateAndShare(orderModel);
-      } else {
+      if (orderModel == null) {
+        LoadingDialog.hide();
         SnackBarWidget.showError('Failed to load order details');
+        return;
       }
+      await BillGenerator.generateAndShare(orderModel);
     } catch (e) {
       SnackBarWidget.showError('Failed to generate invoice: $e');
     } finally {

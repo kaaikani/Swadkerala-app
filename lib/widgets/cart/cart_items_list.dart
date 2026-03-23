@@ -406,9 +406,7 @@ class _CartItemsListState extends State<CartItemsList> {
                       stockLevel: line.isAvailable ? variant.stockLevel : null,
                       unitPrice: widget.cartController.formatPrice(originalUnitPrice),
                       totalPrice: widget.cartController.formatPrice(discountedLinePrice),
-                      originalPrice: originalLinePrice != discountedLinePrice
-                          ? widget.cartController.formatPrice(originalLinePrice)
-                          : null,
+                      originalPrice: null,
                       quantity: displayQuantity,
                       onIncreaseQuantity: null,
                       onDecreaseQuantity: null,

@@ -563,21 +563,22 @@ class _OrdersComponentState extends State<OrdersComponent> {
       SnackBarWidget.showError('Cannot share invoice for cancelled orders');
       return;
     }
-    
+
     try {
       final orderController = Get.find<OrderController>();
-      
-      LoadingDialog.show(message: AppStrings.pleaseWait);
-      
+
+      LoadingDialog.show(message: 'Generating bill...');
+
       // Fetch full order details using order code
-      final orderModel = await orderController.getOrderByCode(order.code);
-      
-      if (orderModel != null) {
-        // Use BillGenerator to generate and share the invoice
-        await BillGenerator.generateAndShare(orderModel);
-      } else {
+      final orderModel = await orderController.getOrderByCode(order.code, silent: true);
+
+      if (orderModel == null) {
+        LoadingDialog.hide();
         SnackBarWidget.showError('Failed to load order details');
+        return;
       }
+
+      await BillGenerator.generateAndShare(orderModel);
     } catch (e) {
       SnackBarWidget.showError('Failed to generate invoice: $e');
     } finally {

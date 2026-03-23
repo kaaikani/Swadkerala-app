@@ -221,7 +221,7 @@ void main() {
   //    Always isMet: true (free product benefit, auto-added to cart)
   // =========================================================================
   group('contains_products', () {
-    test('always isMet true — required product in cart', () {
+    test('MET — required product in cart with enough quantity', () {
       final c = _makeCoupon(conditions: [
         _makeCondition('contains_products', {
           'productVariantIds': '[100,101]',
@@ -235,7 +235,7 @@ void main() {
       expect(CouponValidationHelper.evaluateConditions(c, cart)[0].isMet, true);
     });
 
-    test('always isMet true — required product NOT in cart (free benefit)', () {
+    test('NOT MET — required product NOT in cart (will be auto-added)', () {
       final c = _makeCoupon(conditions: [
         _makeCondition('contains_products', {
           'productVariantIds': '[100]',
@@ -246,11 +246,11 @@ void main() {
         totalQuantity: 1,
         lines: [_makeCartLine(variantId: '999', quantity: 1)],
       );
-      // contains_products is a free-product benefit — always shown as met
-      expect(CouponValidationHelper.evaluateConditions(c, cart)[0].isMet, true);
+      // contains_products checks if product is in cart; if not, it will be auto-added during apply
+      expect(CouponValidationHelper.evaluateConditions(c, cart)[0].isMet, false);
     });
 
-    test('always isMet true — quantity below minimum (free benefit)', () {
+    test('NOT MET — quantity below minimum', () {
       final c = _makeCoupon(conditions: [
         _makeCondition('contains_products', {
           'productVariantIds': '[100]',
@@ -261,10 +261,10 @@ void main() {
         totalQuantity: 2,
         lines: [_makeCartLine(variantId: '100', quantity: 2)],
       );
-      expect(CouponValidationHelper.evaluateConditions(c, cart)[0].isMet, true);
+      expect(CouponValidationHelper.evaluateConditions(c, cart)[0].isMet, false);
     });
 
-    test('displayText shows discount text and minimum count', () {
+    test('displayText shows "Buy at least" when not met', () {
       final c = _makeCoupon(conditions: [
         _makeCondition('contains_products', {
           'productVariantIds': '[100]',
@@ -272,10 +272,11 @@ void main() {
         }),
       ]);
       final r = CouponValidationHelper.evaluateConditions(c, _makeCart());
+      expect(r[0].displayText, contains('Buy at least'));
       expect(r[0].displayText, contains('2'));
     });
 
-    test('displayText shows action discount when action present', () {
+    test('displayText shows action discount when met', () {
       final c = _makeCoupon(
         conditions: [
           _makeCondition('contains_products', {
@@ -287,7 +288,12 @@ void main() {
           _makeAction('order_percentage_discount', {'discount': '10'}),
         ],
       );
-      final r = CouponValidationHelper.evaluateConditions(c, _makeCart());
+      final cart = _makeCart(
+        totalQuantity: 1,
+        lines: [_makeCartLine(variantId: '100', quantity: 1)],
+      );
+      final r = CouponValidationHelper.evaluateConditions(c, cart);
+      expect(r[0].isMet, true);
       expect(r[0].displayText, contains('10% off'));
     });
 
@@ -536,7 +542,7 @@ void main() {
       expect(CouponValidationHelper.areAllConditionsMet(c, cart), false);
     });
 
-    test('contains_products always green — does not block areAllConditionsMet', () {
+    test('contains_products MET when product in cart — does not block areAllConditionsMet', () {
       final c = _makeCoupon(conditions: [
         _makeCondition('minimum_order_amount', {'amount': '20000'}),
         _makeCondition('contains_products', {
@@ -544,14 +550,30 @@ void main() {
           'minimum': '1',
         }),
       ]);
-      // Cart has enough total but NOT the specific product — still all met
-      // because contains_products is always isMet: true
+      // Cart has enough total AND the specific product
+      final cart = _makeCart(
+        subTotalWithTax: 30000,
+        totalQuantity: 1,
+        lines: [_makeCartLine(variantId: '100', quantity: 1)],
+      );
+      expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+    });
+
+    test('contains_products NOT MET when product not in cart', () {
+      final c = _makeCoupon(conditions: [
+        _makeCondition('minimum_order_amount', {'amount': '20000'}),
+        _makeCondition('contains_products', {
+          'productVariantIds': '[100]',
+          'minimum': '1',
+        }),
+      ]);
+      // Cart has enough total but NOT the specific product
       final cart = _makeCart(
         subTotalWithTax: 30000,
         totalQuantity: 1,
         lines: [_makeCartLine(variantId: '999', quantity: 1)],
       );
-      expect(CouponValidationHelper.areAllConditionsMet(c, cart), true);
+      expect(CouponValidationHelper.areAllConditionsMet(c, cart), false);
     });
 
     test('getFirstUnmetNonProductConditionMessage skips contains_products', () {
@@ -782,7 +804,7 @@ void main() {
         final conds = CouponValidationHelper.evaluateConditions(c, cart);
         final acts = CouponValidationHelper.parseActions(c);
         expect(conds.length, 1);
-        expect(conds[0].isMet, true, reason: 'contains_products is always met (free benefit)');
+        expect(conds[0].isMet, true, reason: 'contains_products met — product 100 is in cart with qty 2 >= minimum 1');
         expect(conds[0].code, 'contains_products');
         expect(acts.length, 1);
         expect(acts[0].code, actionEntry.key);

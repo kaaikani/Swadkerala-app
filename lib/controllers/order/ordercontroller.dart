@@ -1048,7 +1048,10 @@ class OrderController extends BaseController {
   }
 
   /// Get order by code
-  Future<Fragment$Cart?> getOrderByCode(String code) async {
+  /// Fetch order by code. When [silent] is true, errors are logged but no
+  /// dialogs/snackbars are shown — useful when the caller handles errors itself
+  /// (e.g. share invoice flow where a LoadingDialog is already visible).
+  Future<Fragment$Cart?> getOrderByCode(String code, {bool silent = false}) async {
     try {
           Logger.logFunction(functionName: 'getOrderByCode');
     utilityController.setLoadingState(true);
@@ -1058,11 +1061,15 @@ class OrderController extends BaseController {
           variables: Variables$Query$GetOrderByCode(
             code: code,
           ),
+          fetchPolicy: FetchPolicy.networkOnly,
         ),
       );
 
-      if (checkResponseForErrors(response,
-          customErrorMessage: 'Failed to load order')) {
+      if (response.hasException && response.parsedData?.orderByCode == null) {
+        if (!silent) {
+          checkResponseForErrors(response,
+              customErrorMessage: 'Failed to load order');
+        }
         return null;
       }
 
@@ -1076,7 +1083,9 @@ class OrderController extends BaseController {
       return null;
     } catch (e) {
       currentOrder.value = null; // Clear on error
-      handleException(e, customErrorMessage: 'Failed to load order');
+      if (!silent) {
+        handleException(e, customErrorMessage: 'Failed to load order');
+      }
       return null;
     } finally {
       utilityController.setLoadingState(false);

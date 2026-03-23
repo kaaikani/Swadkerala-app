@@ -117,12 +117,21 @@ class LoadingDialog {
   }
 
   /// Hide loading dialog. Always clears state and closes the dialog so it never stays stuck (e.g. on iOS).
+  /// If other dialogs were opened on top (e.g. error dialogs from API calls),
+  /// closes all open dialogs to ensure the loading dialog is dismissed.
   static void hide() {
+    if (!_isShowing) return;
     _isShowing = false;
     _cancelSafetyTimer();
     try {
-      if (Get.isDialogOpen == true) {
+      // Close all open dialogs — another dialog (e.g. error dialog from
+      // handleException) may have been pushed on top of the loading dialog.
+      // A single Get.back() would only close the topmost one, leaving the
+      // loading dialog stuck underneath.
+      int safety = 0;
+      while (Get.isDialogOpen == true && safety < 5) {
         Get.back();
+        safety++;
       }
     } catch (_) {
       // Dialog might already be closed or navigator state invalid

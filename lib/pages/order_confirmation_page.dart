@@ -91,18 +91,27 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
   }
 
   Future<void> _shareBill() async {
-    final orderModel = orderController.currentOrder.value;
-    if (orderModel != null) {
-      try {
-        LoadingDialog.show(message: 'Generating bill...');
-        // Generate bill in background to avoid blocking UI
-        await BillGenerator.generateAndShare(orderModel);
-      } catch (e) {
-        Logger.logError(functionName: '_shareBill', error: e);
-        SnackBarWidget.showError('${AppStrings.failedToGenerateBill}: $e');
-      } finally {
-        LoadingDialog.hide();
+    try {
+      LoadingDialog.show(message: 'Generating bill...');
+
+      // Ensure we have order data — re-fetch if currentOrder is null
+      var orderModel = orderController.currentOrder.value;
+      if (orderModel == null) {
+        orderModel = await orderController.getOrderByCode(widget.orderId, silent: true);
       }
+
+      if (orderModel == null) {
+        LoadingDialog.hide();
+        SnackBarWidget.showError('Failed to load order details');
+        return;
+      }
+
+      await BillGenerator.generateAndShare(orderModel);
+    } catch (e) {
+      Logger.logError(functionName: '_shareBill', error: e);
+      SnackBarWidget.showError('${AppStrings.failedToGenerateBill}: $e');
+    } finally {
+      LoadingDialog.hide();
     }
   }
 

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart'
-    show Context, HttpLinkHeaders, QueryResult, gql;
+    show Context, FetchPolicy, HttpLinkHeaders, QueryResult, gql;
 import 'package:flutter/foundation.dart';
 import '../../graphql/banner.graphql.dart';
 import '../../graphql/cart.graphql.dart' as cart_graphql;
@@ -81,6 +81,7 @@ class BannerController extends BaseController {
   final RxBool hasMoreCoupons = true.obs;
   final RxInt totalCouponCount = 0.obs;
   static const int couponsPerPage = 10;
+  bool _isFetchingCoupons = false;
   /// Cached map of facet value ID → name, fetched alongside coupons.
   /// Used to show human-readable category names in at_least_n_with_facets conditions.
   final Map<String, String> _facetValueNames = {};
@@ -884,6 +885,12 @@ class BannerController extends BaseController {
   final RxList<Query$GetCouponCodeList$getCouponCodeList$items> _allFetchedCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[].obs;
 
   Future<void> getCouponCodeList() async {
+    // Prevent concurrent calls — a second call would clear data from the first
+    if (_isFetchingCoupons) {
+      debugPrint('[CouponList] getCouponCodeList() skipped — already fetching');
+      return;
+    }
+    _isFetchingCoupons = true;
     try {
       debugPrint('[CouponList] getCouponCodeList() called');
       utilityController.setLoadingState(false);
@@ -902,7 +909,9 @@ class BannerController extends BaseController {
           debugPrint('[CouponList] Query attempt ${retryCount + 1}/$maxRetries');
           res = await Future.any([
             GraphqlService.client.value.query$GetCouponCodeList(
-              Options$Query$GetCouponCodeList(),
+              Options$Query$GetCouponCodeList(
+                fetchPolicy: FetchPolicy.networkOnly,
+              ),
             ),
             Future.delayed(Duration(seconds: 15)).then((_) =>
                 throw TimeoutException(
@@ -925,14 +934,15 @@ class BannerController extends BaseController {
       debugPrint('[CouponList] Response: hasException=${res.hasException}, data=${res.data != null}');
       if (res.hasException) {
         debugPrint('[CouponList] Exception: ${res.exception}');
-      }
-
-      if (checkResponseForErrors(res,
-          customErrorMessage: 'Failed to load coupon codes')) {
-        debugPrint('[CouponList] checkResponseForErrors returned true - aborting');
-        couponCodesLoaded.value = true;
-        utilityController.setLoadingState(false);
-        return;
+        // Only abort if there's no usable data — some exceptions (cache miss)
+        // can occur alongside valid network data
+        if (res.parsedData?.getCouponCodeList == null) {
+          debugPrint('[CouponList] No data with exception - aborting');
+          couponCodesLoaded.value = true;
+          utilityController.setLoadingState(false);
+          return;
+        }
+        debugPrint('[CouponList] Exception present but data available - continuing');
       }
 
       final couponData = res.parsedData?.getCouponCodeList;
@@ -984,10 +994,7 @@ class BannerController extends BaseController {
           debugPrint('[CouponList]   [$i] id=${item.promotion.id}, name=${item.promotion.name}, code=${item.promotion.couponCode}, enabled=${item.promotion.enabled}, conditions=[$conditionCodes]');
         }
 
-        final fetchedCoupons = items.map((item) {
-          final json = item.toJson();
-          return Query$GetCouponCodeList$getCouponCodeList$items.fromJson(json);
-        }).toList();
+        final fetchedCoupons = items.toList();
 
         // Filter group-restricted coupons based on login state
         // If not logged in: show all coupons
@@ -1023,11 +1030,14 @@ class BannerController extends BaseController {
       }
 
       couponCodesLoaded.value = true;
+      debugPrint('[CouponList] Done. availableCouponCodes=${availableCouponCodes.length}, couponCodesLoaded=true');
       utilityController.setLoadingState(false);
     } catch (e) {
       debugPrint('[CouponList] getCouponCodeList() ERROR: $e');
       couponCodesLoaded.value = true;
       utilityController.setLoadingState(false);
+    } finally {
+      _isFetchingCoupons = false;
     }
   }
 
@@ -2056,9 +2066,17 @@ class BannerController extends BaseController {
       // Store original quantities for this coupon
       originalCartQuantities[couponCode] = Map<String, int>.from(originalQuantities);
 
-      // Add each product from the coupon to cart
+      // Add each product from the coupon to cart (skip if already present)
       final addedProducts = <Map<String, dynamic>>[];
       final failedProducts = <Map<String, dynamic>>[];
+
+      // Build set of variant IDs already in cart to avoid duplicate adds
+      final existingVariantIds = <String>{};
+      if (cartBefore != null) {
+        for (final line in cartBefore.lines) {
+          existingVariantIds.add(line.productVariant.id);
+        }
+      }
 
       for (final product in couponProducts) {
         try {
@@ -2066,6 +2084,18 @@ class BannerController extends BaseController {
           final productVariantId = product['productVariantId'] as String;
           final quantity = product['quantity'] as int;
           final priceWithTax = product['priceWithTax'] as double;
+
+          // Skip if this product is already in the cart
+          if (existingVariantIds.contains(productVariantId)) {
+            addedProducts.add({
+              'product': productName,
+              'quantity': quantity,
+              'price': priceWithTax,
+              'productVariantId': productVariantId,
+              'alreadyInCart': true,
+            });
+            continue;
+          }
 
 
           final res = await GraphqlService.client.value.mutate$AddToCart(
@@ -2169,19 +2199,19 @@ class BannerController extends BaseController {
         final actualAddedQuantities = <String, int>{};
         if (cartAfter != null) {
           final cartLines = cartAfter.lines;
-          
+
           // Only track products that were actually supposed to be added by this coupon
           final couponProductVariantIds = addedProducts.map((p) => p['productVariantId']?.toString()).whereType<String>().toSet();
-          
+
           for (final line in cartLines) {
             final variantId = line.productVariant.id;
-            
+
             // Only calculate difference for products that were intended to be added by this coupon
             if (couponProductVariantIds.contains(variantId)) {
               final quantityAfter = line.quantity;
               final quantityBefore = originalQuantities[variantId] ?? 0;
               final quantityAdded = quantityAfter - quantityBefore;
-              
+
               if (quantityAdded > 0) {
                 actualAddedQuantities[variantId] = quantityAdded;
               } else {
@@ -2190,7 +2220,7 @@ class BannerController extends BaseController {
           }
         }
 
-        // Store the actual quantities added by this coupon (difference, not absolute)
+        // Store the actual quantities added/tracked by this coupon
         couponAddedProducts[couponCode] = actualAddedQuantities;
       }
 

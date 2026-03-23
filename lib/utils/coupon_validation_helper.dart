@@ -367,10 +367,16 @@ class CouponValidationHelper {
     // Extract discount % from coupon actions instead of showing "Free"
     String discountText = _getDiscountTextFromActions(actions, variantNames);
 
+    // Check if the required products are actually in the cart.
+    // If not, they will be auto-added during coupon application.
+    final isMet = matchCount >= minimum;
+
     return CouponConditionInfo(
       code: 'contains_products',
-      displayText: '$discountText on $minimum × $productText',
-      isMet: true,
+      displayText: isMet
+          ? '$discountText on $minimum × $productText'
+          : 'Buy at least $minimum of $productText',
+      isMet: isMet,
     );
   }
 
