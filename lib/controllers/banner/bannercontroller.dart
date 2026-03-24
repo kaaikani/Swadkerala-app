@@ -108,6 +108,13 @@ class BannerController extends BaseController {
   final RxMap<String, Map<String, int>> originalCartQuantities =
       <String, Map<String, int>>{}.obs;
 
+  // Track whether coupon products were already in cart (true) or auto-added (false)
+  // Map<couponCode, Map<variantId, wasAlreadyInCart>>
+  // true = product was manually added by user, don't remove on coupon removal
+  // false = product was auto-added by coupon, remove on coupon removal
+  final RxMap<String, Map<String, bool>> couponProductPreExisting =
+      <String, Map<String, bool>>{}.obs;
+
   // Flag to prevent duplicate addToCart calls when order is complete
   bool _isAddingItems = false;
 
@@ -1552,11 +1559,17 @@ class BannerController extends BaseController {
   /// Remove products added by a specific coupon
   Future<bool> removeCouponProducts(String couponCode) async {
     try {
-      if (!couponAddedProducts.containsKey(couponCode)) {
-        return true; // No products to remove
+      if (!couponAddedProducts.containsKey(couponCode) ||
+          couponAddedProducts[couponCode]!.isEmpty) {
+        // No products tracked as auto-added, nothing to remove
+        couponAddedProducts.remove(couponCode);
+        originalCartQuantities.remove(couponCode);
+        couponProductPreExisting.remove(couponCode);
+        return true;
       }
 
       final productsToRemove = couponAddedProducts[couponCode]!;
+      final preExisting = couponProductPreExisting[couponCode] ?? {};
       // Get current cart to find order line IDs for these products
       final cartController = Get.find<CartController>();
       final cart = cartController.cart.value;
@@ -1566,10 +1579,16 @@ class BannerController extends BaseController {
 
       final cartLines = cart.lines;
       int removedCount = 0;
-      
+
       for (final entry in productsToRemove.entries) {
         final variantId = entry.key;
         final quantityToRemove = entry.value;
+
+        // Skip removal if product was already in cart before coupon was applied
+        if (preExisting[variantId] == true) {
+          continue;
+        }
+
         bool found = false;
 
         // Find order lines that match this variant ID
@@ -1581,11 +1600,9 @@ class BannerController extends BaseController {
             found = true;
             // Calculate new quantity after removing coupon-added quantity
             final newQuantity = currentQuantity - quantityToRemove;
-            
+
             if (newQuantity <= 0) {
               // Remove the entire line if quantity becomes 0 or negative
-              // This happens when: currentQuantity <= quantityToRemove
-              // Example: currentQuantity=1, quantityToRemove=1 → newQuantity=0 → remove
               final success = await _removeOrderLineById(lineId);
               if (success) {
                 removedCount++;
@@ -1600,8 +1617,6 @@ class BannerController extends BaseController {
               }
             } else {
               // Decrease quantity instead of removing the line
-              // This happens when: currentQuantity > quantityToRemove
-              // Example: currentQuantity=2, quantityToRemove=1 → newQuantity=1 → decrease
               final success = await cartController.adjustOrderLine(
                 orderLineId: lineId,
                 quantity: newQuantity,
@@ -1634,10 +1649,12 @@ class BannerController extends BaseController {
       // Clear the tracked products and original quantities for this coupon
       couponAddedProducts.remove(couponCode);
       originalCartQuantities.remove(couponCode);
-      return removedCount > 0;
+      couponProductPreExisting.remove(couponCode);
+      // Return true even if some removals failed, so coupon removal can proceed
+      return true;
     } catch (e) {
           Logger.logFunction(functionName: '_removeOrderLineById', mutationName: 'RemoveOrderLine');
-    return false;
+    return true;
     }
   }
 
@@ -1746,6 +1763,7 @@ class BannerController extends BaseController {
         // Clear tracked products and original quantities for this coupon
         couponAddedProducts.remove(couponCode);
         originalCartQuantities.remove(couponCode);
+        couponProductPreExisting.remove(couponCode);
         // Update both cart and order controllers directly from the response
         try {
           final cartController = Get.find<CartController>();
@@ -1822,6 +1840,7 @@ class BannerController extends BaseController {
   void resetCouponCodes() {
     appliedCouponCodes.clear();
     couponAddedProducts.clear();
+    couponProductPreExisting.clear();
   }
 
   /// Restore coupon tracking state from cart
@@ -1841,6 +1860,7 @@ class BannerController extends BaseController {
         appliedCouponCodes.clear();
         couponAddedProducts.clear();
         originalCartQuantities.clear();
+        couponProductPreExisting.clear();
         return;
       }
 
@@ -1868,10 +1888,23 @@ class BannerController extends BaseController {
         await getCouponCodeList();
       }
 
+      // Save existing pre-existing tracking from fresh apply (don't overwrite)
+      final savedPreExisting = Map<String, Map<String, bool>>.from(couponProductPreExisting);
+      final savedAddedProducts = Map<String, Map<String, int>>.from(couponAddedProducts);
+      final savedOriginalQuantities = Map<String, Map<String, int>>.from(originalCartQuantities);
+
       couponAddedProducts.clear();
       originalCartQuantities.clear();
+      couponProductPreExisting.clear();
 
       for (final couponCode in cartCouponCodes) {
+        // Skip restore for coupons that already have fresh tracking
+        if (savedPreExisting.containsKey(couponCode)) {
+          couponAddedProducts[couponCode] = savedAddedProducts[couponCode] ?? {};
+          originalCartQuantities[couponCode] = savedOriginalQuantities[couponCode] ?? {};
+          couponProductPreExisting[couponCode] = savedPreExisting[couponCode]!;
+          continue;
+        }
         // Find the coupon in available coupons
         // ignore: unused_local_variable
         Query$GetCouponCodeList$getCouponCodeList$items? coupon;
@@ -1919,6 +1952,12 @@ class BannerController extends BaseController {
         if (addedQuantities.isNotEmpty) {
           couponAddedProducts[couponCode] = addedQuantities;
           originalCartQuantities[couponCode] = originalQuantities;
+          // On restore, assume products were auto-added (false) so they can be removed
+          final restoredPreExisting = <String, bool>{};
+          for (final variantId in addedQuantities.keys) {
+            restoredPreExisting[variantId] = false;
+          }
+          couponProductPreExisting[couponCode] = restoredPreExisting;
         } else {
         }
       }
@@ -2069,6 +2108,7 @@ class BannerController extends BaseController {
       // Add each product from the coupon to cart (skip if already present)
       final addedProducts = <Map<String, dynamic>>[];
       final failedProducts = <Map<String, dynamic>>[];
+      final preExistingMap = <String, bool>{};
 
       // Build set of variant IDs already in cart to avoid duplicate adds
       final existingVariantIds = <String>{};
@@ -2087,6 +2127,8 @@ class BannerController extends BaseController {
 
           // Skip if this product is already in the cart
           if (existingVariantIds.contains(productVariantId)) {
+            // Product was manually added by user — mark as pre-existing (true)
+            preExistingMap[productVariantId] = true;
             addedProducts.add({
               'product': productName,
               'quantity': quantity,
@@ -2096,6 +2138,8 @@ class BannerController extends BaseController {
             });
             continue;
           }
+          // Product not in cart — will be auto-added, mark as not pre-existing (false)
+          preExistingMap[productVariantId] = false;
 
 
           final res = await GraphqlService.client.value.mutate$AddToCart(
@@ -2222,6 +2266,8 @@ class BannerController extends BaseController {
 
         // Store the actual quantities added/tracked by this coupon
         couponAddedProducts[couponCode] = actualAddedQuantities;
+        // Store pre-existing status for each product
+        couponProductPreExisting[couponCode] = preExistingMap;
       }
 
       if (failedProducts.isNotEmpty) {
@@ -2261,6 +2307,7 @@ class BannerController extends BaseController {
         
         // Clear tracked products for this coupon
         couponAddedProducts.remove(couponCode);
+        couponProductPreExisting.remove(couponCode);
         return {
           'success': false,
           'message': 'Failed to add all coupon products. Added products have been removed.',
@@ -2441,6 +2488,7 @@ class BannerController extends BaseController {
           rollbackPerformed = await removeCouponProducts(couponCode);
         }
         originalCartQuantities.remove(couponCode);
+        couponProductPreExisting.remove(couponCode);
         await _refreshCartAfterCouponError();
       } catch (_) {
         await _refreshCartAfterCouponError();
@@ -2541,6 +2589,7 @@ class BannerController extends BaseController {
       }
       // Clear the tracked products for this coupon
       couponAddedProducts.remove(couponCode);
+      couponProductPreExisting.remove(couponCode);
       return {
         'success': removedCount > 0 || failedRemovals.isEmpty,
         'message': removedCount > 0
