@@ -306,7 +306,7 @@ class OrderSummaryCard extends StatelessWidget {
                     ),
                     SizedBox(width: ResponsiveUtils.rp(6)),
                     ResponsiveText(
-                      'Loyalty Points',
+                      'Points Applied',
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textSecondary,

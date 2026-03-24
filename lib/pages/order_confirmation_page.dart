@@ -272,7 +272,24 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                             .toList(),
                       ],
                       Divider(height: ResponsiveUtils.rp(32), color: AppColors.divider),
-                      _buildSummaryRow('Subtotal', order.subTotalWithTax.toDouble()),
+                      // Calculate discounts to add back to subtotal
+                      Builder(builder: (context) {
+                        // Coupon discount from order discounts
+                        double couponDiscount = 0.0;
+                        if (order.discounts.isNotEmpty) {
+                          couponDiscount = order.discounts.fold<double>(
+                            0.0,
+                            (sum, discount) => sum + discount.amountWithTax.toDouble().abs(),
+                          );
+                        }
+                        // Loyalty discount in paise
+                        final loyaltyPointsUsed = _getLoyaltyPointsUsed();
+                        final loyaltyDiscountRupees = _pointsToRupees(loyaltyPointsUsed);
+                        final loyaltyDiscountPaise = (loyaltyDiscountRupees * 100).toInt();
+                        // Add back discounts to show original subtotal
+                        final originalSubtotal = order.subTotalWithTax.toDouble() + couponDiscount + loyaltyDiscountPaise;
+                        return _buildSummaryRow('Subtotal', originalSubtotal);
+                      }),
                       SizedBox(height: ResponsiveUtils.rp(8)),
                       _buildSummaryRow('Shipping', order.shippingWithTax.toDouble()),
                       // Show coupon codes if applied
@@ -497,7 +514,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
             ),
             SizedBox(width: ResponsiveUtils.rp(6)),
             Text(
-              'Loyalty Points Used',
+              'Points Applied',
               style: TextStyle(
                 fontSize: ResponsiveUtils.sp(14),
                 fontWeight: FontWeight.w600,
@@ -508,12 +525,12 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
         ),
         Text(
           rupees > 0
-              ? '$points pts (${cartController.formatPrice((rupees * 100).toInt())})'
+              ? '-${cartController.formatPrice((rupees * 100).toInt())}'
               : '$points pts',
           style: TextStyle(
             fontSize: ResponsiveUtils.sp(14),
             fontWeight: FontWeight.bold,
-            color: AppColors.success,
+            color: AppColors.info,
           ),
         ),
       ],

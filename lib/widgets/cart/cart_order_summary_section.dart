@@ -237,7 +237,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                   ),
                 ),
                 Text(
-                    widget.cartController.formatPrice(cart.subTotal.toInt() + couponDiscountTotal),
+                    widget.cartController.formatPrice(cart.subTotal.toInt() + couponDiscountTotal + loyaltyDiscount),
                   style: TextStyle(
                     fontSize: ResponsiveUtils.sp(14),
                     fontWeight: FontWeight.w600,
@@ -271,7 +271,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                       ],
                     ),
                     Text(
-                      '${widget.bannerController.loyaltyPointsUsed.value} pts',
+                      '-${widget.cartController.formatPrice(loyaltyDiscount)}',
                       style: TextStyle(
                         fontSize: ResponsiveUtils.sp(14),
                         fontWeight: FontWeight.w600,
@@ -281,31 +281,6 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                   ],
                 ),
               ],
-            // Loyalty Points Discount
-            if (loyaltyDiscount > 0) ...[
-              SizedBox(height: ResponsiveUtils.rp(8)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                      'Loyalty Points Discount',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  Text(
-                      '-${widget.cartController.formatPrice(loyaltyDiscount)}',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.sp(14),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.info,
-                    ),
-                  ),
-                ],
-              ),
-            ],
               // Delivery Charge
               if (order != null && order.shippingLines.isNotEmpty) ...[
               SizedBox(height: ResponsiveUtils.rp(8)),

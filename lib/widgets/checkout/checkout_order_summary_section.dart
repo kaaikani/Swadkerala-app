@@ -113,7 +113,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
       final appliedCouponCode = bannerController.getCurrentlyAppliedCoupon();
       String? appliedCouponName;
       bool hasFreeShippingInCoupon = false;
-      
+
       if (appliedCouponCode != null) {
         Query$GetCouponCodeList$getCouponCodeList$items? coupon;
         try {
@@ -123,7 +123,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
         } catch (e) {
           coupon = null;
         }
-        
+
         if (coupon != null && coupon.promotion.id.isNotEmpty) {
           appliedCouponName = coupon.promotion.name;
           hasFreeShippingInCoupon = coupon.promotion.actions.any(
@@ -211,9 +211,9 @@ class CheckoutOrderSummarySection extends StatelessWidget {
               children: [
                 _buildSummaryRow(
                   'Items ($itemCount)',
-                  // Vendure's subTotalWithTax already has coupon discount applied,
-                  // so add it back to show the original subtotal before discount
-                  PriceFormatter.formatPrice(subtotal.toInt() + couponDiscount),
+                  // Vendure's subTotalWithTax already has coupon & loyalty discount applied,
+                  // so add them back to show the original subtotal before discounts
+                  PriceFormatter.formatPrice(subtotal.toInt() + couponDiscount + loyaltyDiscountAmount),
                 ),
                 SizedBox(height: ResponsiveUtils.rp(12)),
                 if (hasFreeShipping && hasFreeShippingInCoupon && appliedCouponCode != null) ...[
@@ -279,10 +279,36 @@ class CheckoutOrderSummarySection extends StatelessWidget {
                 ],
                 if (loyaltyPointsApplied && loyaltyPointsUsed > 0 && loyaltyDiscountAmount > 0) ...[
                   SizedBox(height: ResponsiveUtils.rp(12)),
-                  _buildSummaryRow(
-                    'Loyalty Points Discount',
-                    '-${PriceFormatter.formatPrice(loyaltyDiscountAmount.toInt())}',
-                    valueColor: AppColors.success,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.stars,
+                            size: ResponsiveUtils.rp(16),
+                            color: AppColors.info,
+                          ),
+                          SizedBox(width: ResponsiveUtils.rp(6)),
+                          Text(
+                            'Points Applied',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(14),
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '-${PriceFormatter.formatPrice(loyaltyDiscountAmount.toInt())}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(14),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.info,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
                 if (bannerController.appliedCouponCodes.isNotEmpty && couponDiscount > 0) ...[

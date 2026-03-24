@@ -484,7 +484,8 @@ class BillGenerator {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.end,
       children: [
-        _buildTotalRow('Subtotal', order.subTotalWithTax),
+        // Add back coupon + loyalty discounts to show original subtotal
+        _buildTotalRow('Subtotal', order.subTotalWithTax + couponDiscount.abs() + (loyaltyDiscountRupees * 100)),
         _buildTotalRow('Total Qty', totalQuantity.toDouble(), isQuantity: true),
         _buildTotalRow('Shipping', order.shippingWithTax),
         // Show coupon codes if applied (show even if discount is 0, as coupon might have other effects)
@@ -518,7 +519,7 @@ class BillGenerator {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.end,
             children: [
-              pw.Text('Points Used (${loyaltyPointsUsed} pts): ',
+              pw.Text('Points Applied: ',
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.blue700)),
