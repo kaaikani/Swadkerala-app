@@ -39,6 +39,9 @@ mutation CreateCustomerAddress($input: CreateAddressInput!) {
             id
             name
         }
+        customFields {
+            area
+        }
     }
 }
 
@@ -60,7 +63,9 @@ mutation UpdateCustomerAddress($input: UpdateAddressInput!){
         phoneNumber
         streetLine1
         streetLine2
-
+        customFields {
+            area
+        }
     }
 }
 mutation DeleteCustomerAddress($id: ID!) {
@@ -139,6 +144,9 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
 
                 defaultShippingAddress
                 defaultBillingAddress
+                customFields {
+                    area
+                }
             }
             orders(options: {
                 take: 10,
@@ -334,6 +342,10 @@ query PostalCodes {
         id
         code
         isAnywhere
+        areas {
+            id
+            name
+        }
     }
 }
 

@@ -267,10 +267,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       }
       
       // Cart is already updated by applyCouponCode/applyCouponCodeWithProducts - no need for additional refresh
-    } else {
-      if (result['dialogShown'] != true && result['suppressSnackbar'] != true) {
-        showErrorSnackbar(result['message'] ?? 'Failed to apply coupon');
-      }
     }
   }
 

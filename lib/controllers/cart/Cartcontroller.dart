@@ -17,7 +17,7 @@ class CartController extends BaseController {
   Rx<cart_graphql.Fragment$ErrorResult?> error = Rx<cart_graphql.Fragment$ErrorResult?>(null);
   final UtilityController utilityController = Get.find();
   final OrderController orderController = Get.put(OrderController());
-  
+
   // Track previous cart count to update badge only when it changes
   int _previousCartCount = 0;
 
@@ -26,6 +26,7 @@ class CartController extends BaseController {
 
   // Flag to prevent concurrent calls to getActiveOrder
   bool _isFetchingActiveOrder = false;
+
 
   Future<bool> addToCart(
       {required int productVariantId, int quantity = 1}) async {
@@ -149,19 +150,23 @@ class CartController extends BaseController {
   /// Get active order (current cart)
   Future<bool> getActiveOrder() async {
     Logger.logFunction(functionName: 'getActiveOrder', queryName: 'ActiveOrder');
-    
+    debugPrint('[CartController] getActiveOrder() called');
+
     // Prevent concurrent calls
     if (_isFetchingActiveOrder) {
+      debugPrint('[CartController] getActiveOrder() skipped - already fetching');
       return false;
     }
-    
+
     _isFetchingActiveOrder = true;
     try {
       // Restore guest token from storage before fetch (ensures cart persists across app restart)
       if (GraphqlService.authToken.isEmpty) {
+        debugPrint('[CartController] getActiveOrder: restoring guest session');
         await GraphqlService.ensureGuestSessionForLogin();
       }
-      
+
+      debugPrint('[CartController] getActiveOrder: fetching from network...');
       final response = await GraphqlService.client.value.query$ActiveOrder(
         Options$Query$ActiveOrder(
           fetchPolicy: graphql.FetchPolicy.networkOnly,
@@ -171,6 +176,13 @@ class CartController extends BaseController {
 
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to load cart')) {
+        debugPrint('[CartController] getActiveOrder: response has errors');
+        if (response.exception != null) {
+          debugPrint('[CartController] getActiveOrder: exception=${response.exception}');
+          for (final error in response.exception!.graphqlErrors) {
+            debugPrint('[CartController] getActiveOrder: graphqlError=${error.message}');
+          }
+        }
         return false;
       }
 
@@ -308,10 +320,12 @@ class CartController extends BaseController {
       _updateAppBadge();
       return true;
     } catch (e) {
+      debugPrint('[CartController] getActiveOrder: ERROR - $e');
       handleException(e, customErrorMessage: 'Failed to load cart', functionName: 'getActiveOrder');
       return false;
     } finally {
       _isFetchingActiveOrder = false;
+      debugPrint('[CartController] getActiveOrder() completed, cart=${cart.value != null ? "has data (${cart.value!.lines.length} lines)" : "null"}');
     }
   }
 

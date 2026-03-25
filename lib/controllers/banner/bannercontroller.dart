@@ -108,6 +108,9 @@ class BannerController extends BaseController {
   final RxMap<String, Map<String, int>> originalCartQuantities =
       <String, Map<String, int>>{}.obs;
 
+  // Flag to suppress coupon validation during auto-removal (prevents double dialogs)
+  bool _suppressCouponValidation = false;
+
   // Track whether coupon products were already in cart (true) or auto-added (false)
   // Map<couponCode, Map<variantId, wasAlreadyInCart>>
   // true = product was manually added by user, don't remove on coupon removal
@@ -1467,18 +1470,21 @@ class BannerController extends BaseController {
         if (CouponValidationHelper.hasPriceDiscountActions(coupon) &&
             !hasOrderDiscount && !hasLineDiscount &&
             result.totalQuantity > 0) {
-          // Auto-remove the coupon since it produced no discount
-          await removeCouponCode(couponCode);
+          // Auto-remove the coupon silently since it produced no discount
+          // Suppress validation to prevent double dialogs
+          _suppressCouponValidation = true;
+          try {
+            await removeCouponCode(couponCode);
+          } catch (_) {}
+          _suppressCouponValidation = false;
           utilityController.setLoadingState(false);
 
-          // Check if the issue is that action-targeted products are not in cart
-          // (e.g., products_percentage_discount or facet_based_discount with specific items)
+          // Show only ONE dialog for the conditions not met
           final cartVariantIds = result.lines.map((l) => l.productVariant.id).toSet();
           final actionMessage = CouponValidationHelper.getNoDiscountReason(coupon, cartVariantIds);
           if (actionMessage != null) {
             ErrorDialog.showWarning(message: actionMessage);
           } else {
-            // Fallback: show unmet conditions dialog
             final cartController = Get.find<CartController>();
             final conditions = CouponValidationHelper.evaluateConditions(
               coupon,
@@ -1496,6 +1502,7 @@ class BannerController extends BaseController {
             'success': false,
             'message': actionMessage ?? 'Coupon conditions not satisfied',
             'error': 'CONDITIONS_NOT_MET',
+            'dialogShown': true,
           };
         }
 
@@ -1969,6 +1976,7 @@ class BannerController extends BaseController {
   /// Check and remove coupons if cart total is below their minimum requirement
   /// Called automatically when cart is cleared or cart total decreases
   Future<void> validateAndRemoveCouponsIfNeeded() async {
+    if (_suppressCouponValidation) return;
     try {
       // First, restore coupon tracking from cart if appliedCouponCodes is empty but cart has coupons
       final orderController = Get.find<OrderController>();

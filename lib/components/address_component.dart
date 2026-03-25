@@ -392,6 +392,10 @@ class AddressComponent extends StatelessWidget {
             : (existingAddress?.city ?? ''));
     final postalController =
         TextEditingController(text: existingAddress?.postalCode ?? '');
+    // Track selected postal code for landmark dropdown
+    String selectedPostalCode = existingAddress?.postalCode ?? '';
+    // Get existing area from address customFields
+    String? selectedArea = (existingAddress as Query$GetActiveCustomer$activeCustomer$addresses?)?.customFields?.area;
     final phoneController = TextEditingController(
         text: existingAddress?.phoneNumber ??
             (autoPhone.isNotEmpty ? autoPhone : ''));
@@ -578,7 +582,27 @@ class AddressComponent extends StatelessWidget {
                             postalController,
                             postalCodesState.postalCodesList,
                             postalCodesState.isLoadingPostalCodes,
+                            (value) {
+                              setState(() {
+                                postalController.text = value ?? '';
+                                selectedPostalCode = value ?? '';
+                                // Reset area when postal code changes
+                                selectedArea = null;
+                              });
+                            },
                             setState,
+                          ),
+                          SizedBox(height: ResponsiveUtils.rp(16)),
+                          _buildLandmarkField(
+                            context,
+                            selectedPostalCode,
+                            postalCodesState.postalCodesList,
+                            selectedArea,
+                            (value) {
+                              setState(() {
+                                selectedArea = value;
+                              });
+                            },
                           ),
                           SizedBox(height: ResponsiveUtils.rp(16)),
                           _buildFormField(phoneController, 'Phone', Icons.phone,
@@ -758,6 +782,9 @@ class AddressComponent extends StatelessWidget {
                                 defaultShippingAddress: isDefault,
                                 defaultBillingAddress: isDefault,
                                 country: country,
+                                customFields: selectedArea != null
+                                    ? Query$GetActiveCustomer$activeCustomer$addresses$customFields(area: selectedArea)
+                                    : null,
                               );
 
                               bool success;
@@ -927,6 +954,7 @@ class AddressComponent extends StatelessWidget {
     TextEditingController controller,
     List<Query$PostalCodes$postalCodes> postalCodesList,
     bool isLoadingPostalCodes,
+    ValueChanged<String?> onPostalCodeChanged,
     StateSetter setState,
   ) {
     final hasPostalCodes = postalCodesList.isNotEmpty;
@@ -1044,9 +1072,7 @@ class AddressComponent extends StatelessWidget {
               }).toList(),
               onChanged: (String? value) {
                 if (value != null) {
-                  setState(() {
-                    controller.text = value;
-                  });
+                  onPostalCodeChanged(value);
                 }
               },
               dropdownColor: AppColors.surface,
@@ -1064,6 +1090,91 @@ class AddressComponent extends StatelessWidget {
             Icons.markunread_mailbox,
             required: true,
           ),
+      ],
+    );
+  }
+
+  Widget _buildLandmarkField(
+    BuildContext context,
+    String selectedPostalCode,
+    List<Query$PostalCodes$postalCodes> postalCodesList,
+    String? selectedArea,
+    ValueChanged<String?> onAreaChanged,
+  ) {
+    // Get areas for the selected postal code
+    final areas = <Query$PostalCodes$postalCodes$areas>[];
+    for (final postalCode in postalCodesList) {
+      if (postalCode.code == selectedPostalCode) {
+        areas.addAll(postalCode.areas);
+      }
+    }
+
+    debugPrint('LandmarkField: postalCode=$selectedPostalCode, postalCodesList=${postalCodesList.length}, areas=${areas.length}');
+    for (final a in areas) {
+      debugPrint('  area: ${a.id} - ${a.name}');
+    }
+
+    if (selectedPostalCode.isEmpty || areas.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Landmark / Area',
+          style: TextStyle(
+            fontSize: ResponsiveUtils.sp(14),
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        SizedBox(height: ResponsiveUtils.rp(8)),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.inputFill,
+            borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: DropdownButtonFormField<String>(
+            value: selectedArea != null && areas.any((a) => a.name == selectedArea) ? selectedArea : null,
+            decoration: InputDecoration(
+              hintText: 'Select Landmark / Area',
+              hintStyle: TextStyle(
+                color: AppColors.textTertiary,
+                fontSize: ResponsiveUtils.sp(14),
+              ),
+              prefixIcon: Icon(
+                Icons.place_outlined,
+                color: AppColors.textSecondary,
+                size: ResponsiveUtils.rp(20),
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.rp(16),
+                vertical: ResponsiveUtils.rp(14),
+              ),
+            ),
+            items: areas.map((area) {
+              return DropdownMenuItem<String>(
+                value: area.name,
+                child: Text(
+                  area.name,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(15),
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: onAreaChanged,
+            dropdownColor: AppColors.surface,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(15),
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
       ],
     );
   }

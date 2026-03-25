@@ -247,6 +247,9 @@ fragment OrderAddress on OrderAddress {
     country
     countryCode
     phoneNumber
+    customFields {
+        area
+    }
     __typename
 }
 

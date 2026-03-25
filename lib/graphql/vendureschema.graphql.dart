@@ -2167,6 +2167,112 @@ class _CopyWithStubImpl$Input$ConfigurableOperationInput<TRes>
   arguments(_fn) => _res;
 }
 
+class Input$CreateAddressCustomFieldsInput {
+  factory Input$CreateAddressCustomFieldsInput({String? area}) =>
+      Input$CreateAddressCustomFieldsInput._({
+        if (area != null) r'area': area,
+      });
+
+  Input$CreateAddressCustomFieldsInput._(this._$data);
+
+  factory Input$CreateAddressCustomFieldsInput.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    if (data.containsKey('area')) {
+      final l$area = data['area'];
+      result$data['area'] = (l$area as String?);
+    }
+    return Input$CreateAddressCustomFieldsInput._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String? get area => (_$data['area'] as String?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    if (_$data.containsKey('area')) {
+      final l$area = area;
+      result$data['area'] = l$area;
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$CreateAddressCustomFieldsInput<
+          Input$CreateAddressCustomFieldsInput>
+      get copyWith => CopyWith$Input$CreateAddressCustomFieldsInput(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$CreateAddressCustomFieldsInput ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$area = area;
+    final lOther$area = other.area;
+    if (_$data.containsKey('area') != other._$data.containsKey('area')) {
+      return false;
+    }
+    if (l$area != lOther$area) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$area = area;
+    return Object.hashAll([_$data.containsKey('area') ? l$area : const {}]);
+  }
+}
+
+abstract class CopyWith$Input$CreateAddressCustomFieldsInput<TRes> {
+  factory CopyWith$Input$CreateAddressCustomFieldsInput(
+    Input$CreateAddressCustomFieldsInput instance,
+    TRes Function(Input$CreateAddressCustomFieldsInput) then,
+  ) = _CopyWithImpl$Input$CreateAddressCustomFieldsInput;
+
+  factory CopyWith$Input$CreateAddressCustomFieldsInput.stub(TRes res) =
+      _CopyWithStubImpl$Input$CreateAddressCustomFieldsInput;
+
+  TRes call({String? area});
+}
+
+class _CopyWithImpl$Input$CreateAddressCustomFieldsInput<TRes>
+    implements CopyWith$Input$CreateAddressCustomFieldsInput<TRes> {
+  _CopyWithImpl$Input$CreateAddressCustomFieldsInput(
+    this._instance,
+    this._then,
+  );
+
+  final Input$CreateAddressCustomFieldsInput _instance;
+
+  final TRes Function(Input$CreateAddressCustomFieldsInput) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? area = _undefined}) =>
+      _then(Input$CreateAddressCustomFieldsInput._({
+        ..._instance._$data,
+        if (area != _undefined) 'area': (area as String?),
+      }));
+}
+
+class _CopyWithStubImpl$Input$CreateAddressCustomFieldsInput<TRes>
+    implements CopyWith$Input$CreateAddressCustomFieldsInput<TRes> {
+  _CopyWithStubImpl$Input$CreateAddressCustomFieldsInput(this._res);
+
+  TRes _res;
+
+  call({String? area}) => _res;
+}
+
 class Input$CreateAddressInput {
   factory Input$CreateAddressInput({
     String? fullName,
@@ -2180,7 +2286,7 @@ class Input$CreateAddressInput {
     String? phoneNumber,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
-    Map<String, dynamic>? customFields,
+    Input$CreateAddressCustomFieldsInput? customFields,
   }) =>
       Input$CreateAddressInput._({
         if (fullName != null) r'fullName': fullName,
@@ -2246,7 +2352,10 @@ class Input$CreateAddressInput {
     }
     if (data.containsKey('customFields')) {
       final l$customFields = data['customFields'];
-      result$data['customFields'] = (l$customFields as Map<String, dynamic>?);
+      result$data['customFields'] = l$customFields == null
+          ? null
+          : Input$CreateAddressCustomFieldsInput.fromJson(
+              (l$customFields as Map<String, dynamic>));
     }
     return Input$CreateAddressInput._(result$data);
   }
@@ -2276,8 +2385,8 @@ class Input$CreateAddressInput {
 
   bool? get defaultBillingAddress => (_$data['defaultBillingAddress'] as bool?);
 
-  Map<String, dynamic>? get customFields =>
-      (_$data['customFields'] as Map<String, dynamic>?);
+  Input$CreateAddressCustomFieldsInput? get customFields =>
+      (_$data['customFields'] as Input$CreateAddressCustomFieldsInput?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -2323,7 +2432,7 @@ class Input$CreateAddressInput {
     }
     if (_$data.containsKey('customFields')) {
       final l$customFields = customFields;
-      result$data['customFields'] = l$customFields;
+      result$data['customFields'] = l$customFields?.toJson();
     }
     return result$data;
   }
@@ -2500,8 +2609,9 @@ abstract class CopyWith$Input$CreateAddressInput<TRes> {
     String? phoneNumber,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
-    Map<String, dynamic>? customFields,
+    Input$CreateAddressCustomFieldsInput? customFields,
   });
+  CopyWith$Input$CreateAddressCustomFieldsInput<TRes> get customFields;
 }
 
 class _CopyWithImpl$Input$CreateAddressInput<TRes>
@@ -2549,8 +2659,17 @@ class _CopyWithImpl$Input$CreateAddressInput<TRes>
         if (defaultBillingAddress != _undefined)
           'defaultBillingAddress': (defaultBillingAddress as bool?),
         if (customFields != _undefined)
-          'customFields': (customFields as Map<String, dynamic>?),
+          'customFields':
+              (customFields as Input$CreateAddressCustomFieldsInput?),
       }));
+
+  CopyWith$Input$CreateAddressCustomFieldsInput<TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Input$CreateAddressCustomFieldsInput.stub(_then(_instance))
+        : CopyWith$Input$CreateAddressCustomFieldsInput(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$CreateAddressInput<TRes>
@@ -2571,9 +2690,12 @@ class _CopyWithStubImpl$Input$CreateAddressInput<TRes>
     String? phoneNumber,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
-    Map<String, dynamic>? customFields,
+    Input$CreateAddressCustomFieldsInput? customFields,
   }) =>
       _res;
+
+  CopyWith$Input$CreateAddressCustomFieldsInput<TRes> get customFields =>
+      CopyWith$Input$CreateAddressCustomFieldsInput.stub(_res);
 }
 
 class Input$CreateCustomerCustomFieldsInput {
@@ -17616,6 +17738,112 @@ class _CopyWithStubImpl$Input$StringOperators<TRes>
       _res;
 }
 
+class Input$UpdateAddressCustomFieldsInput {
+  factory Input$UpdateAddressCustomFieldsInput({String? area}) =>
+      Input$UpdateAddressCustomFieldsInput._({
+        if (area != null) r'area': area,
+      });
+
+  Input$UpdateAddressCustomFieldsInput._(this._$data);
+
+  factory Input$UpdateAddressCustomFieldsInput.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    if (data.containsKey('area')) {
+      final l$area = data['area'];
+      result$data['area'] = (l$area as String?);
+    }
+    return Input$UpdateAddressCustomFieldsInput._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String? get area => (_$data['area'] as String?);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    if (_$data.containsKey('area')) {
+      final l$area = area;
+      result$data['area'] = l$area;
+    }
+    return result$data;
+  }
+
+  CopyWith$Input$UpdateAddressCustomFieldsInput<
+          Input$UpdateAddressCustomFieldsInput>
+      get copyWith => CopyWith$Input$UpdateAddressCustomFieldsInput(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Input$UpdateAddressCustomFieldsInput ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$area = area;
+    final lOther$area = other.area;
+    if (_$data.containsKey('area') != other._$data.containsKey('area')) {
+      return false;
+    }
+    if (l$area != lOther$area) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$area = area;
+    return Object.hashAll([_$data.containsKey('area') ? l$area : const {}]);
+  }
+}
+
+abstract class CopyWith$Input$UpdateAddressCustomFieldsInput<TRes> {
+  factory CopyWith$Input$UpdateAddressCustomFieldsInput(
+    Input$UpdateAddressCustomFieldsInput instance,
+    TRes Function(Input$UpdateAddressCustomFieldsInput) then,
+  ) = _CopyWithImpl$Input$UpdateAddressCustomFieldsInput;
+
+  factory CopyWith$Input$UpdateAddressCustomFieldsInput.stub(TRes res) =
+      _CopyWithStubImpl$Input$UpdateAddressCustomFieldsInput;
+
+  TRes call({String? area});
+}
+
+class _CopyWithImpl$Input$UpdateAddressCustomFieldsInput<TRes>
+    implements CopyWith$Input$UpdateAddressCustomFieldsInput<TRes> {
+  _CopyWithImpl$Input$UpdateAddressCustomFieldsInput(
+    this._instance,
+    this._then,
+  );
+
+  final Input$UpdateAddressCustomFieldsInput _instance;
+
+  final TRes Function(Input$UpdateAddressCustomFieldsInput) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? area = _undefined}) =>
+      _then(Input$UpdateAddressCustomFieldsInput._({
+        ..._instance._$data,
+        if (area != _undefined) 'area': (area as String?),
+      }));
+}
+
+class _CopyWithStubImpl$Input$UpdateAddressCustomFieldsInput<TRes>
+    implements CopyWith$Input$UpdateAddressCustomFieldsInput<TRes> {
+  _CopyWithStubImpl$Input$UpdateAddressCustomFieldsInput(this._res);
+
+  TRes _res;
+
+  call({String? area}) => _res;
+}
+
 class Input$UpdateAddressInput {
   factory Input$UpdateAddressInput({
     required String id,
@@ -17630,7 +17858,7 @@ class Input$UpdateAddressInput {
     String? phoneNumber,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
-    Map<String, dynamic>? customFields,
+    Input$UpdateAddressCustomFieldsInput? customFields,
   }) =>
       Input$UpdateAddressInput._({
         r'id': id,
@@ -17703,7 +17931,10 @@ class Input$UpdateAddressInput {
     }
     if (data.containsKey('customFields')) {
       final l$customFields = data['customFields'];
-      result$data['customFields'] = (l$customFields as Map<String, dynamic>?);
+      result$data['customFields'] = l$customFields == null
+          ? null
+          : Input$UpdateAddressCustomFieldsInput.fromJson(
+              (l$customFields as Map<String, dynamic>));
     }
     return Input$UpdateAddressInput._(result$data);
   }
@@ -17735,8 +17966,8 @@ class Input$UpdateAddressInput {
 
   bool? get defaultBillingAddress => (_$data['defaultBillingAddress'] as bool?);
 
-  Map<String, dynamic>? get customFields =>
-      (_$data['customFields'] as Map<String, dynamic>?);
+  Input$UpdateAddressCustomFieldsInput? get customFields =>
+      (_$data['customFields'] as Input$UpdateAddressCustomFieldsInput?);
 
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
@@ -17788,7 +18019,7 @@ class Input$UpdateAddressInput {
     }
     if (_$data.containsKey('customFields')) {
       final l$customFields = customFields;
-      result$data['customFields'] = l$customFields;
+      result$data['customFields'] = l$customFields?.toJson();
     }
     return result$data;
   }
@@ -17981,8 +18212,9 @@ abstract class CopyWith$Input$UpdateAddressInput<TRes> {
     String? phoneNumber,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
-    Map<String, dynamic>? customFields,
+    Input$UpdateAddressCustomFieldsInput? customFields,
   });
+  CopyWith$Input$UpdateAddressCustomFieldsInput<TRes> get customFields;
 }
 
 class _CopyWithImpl$Input$UpdateAddressInput<TRes>
@@ -18030,8 +18262,17 @@ class _CopyWithImpl$Input$UpdateAddressInput<TRes>
         if (defaultBillingAddress != _undefined)
           'defaultBillingAddress': (defaultBillingAddress as bool?),
         if (customFields != _undefined)
-          'customFields': (customFields as Map<String, dynamic>?),
+          'customFields':
+              (customFields as Input$UpdateAddressCustomFieldsInput?),
       }));
+
+  CopyWith$Input$UpdateAddressCustomFieldsInput<TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Input$UpdateAddressCustomFieldsInput.stub(_then(_instance))
+        : CopyWith$Input$UpdateAddressCustomFieldsInput(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Input$UpdateAddressInput<TRes>
@@ -18053,9 +18294,12 @@ class _CopyWithStubImpl$Input$UpdateAddressInput<TRes>
     String? phoneNumber,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
-    Map<String, dynamic>? customFields,
+    Input$UpdateAddressCustomFieldsInput? customFields,
   }) =>
       _res;
+
+  CopyWith$Input$UpdateAddressCustomFieldsInput<TRes> get customFields =>
+      CopyWith$Input$UpdateAddressCustomFieldsInput.stub(_res);
 }
 
 class Input$UpdateCustomerCustomFieldsInput {

@@ -139,8 +139,6 @@ class CartCouponSection extends StatelessWidget {
                                 orderController.getActiveOrder(skipLoading: true),
                               ]);
                               showSuccessSnackbar('Coupon removed successfully');
-                            } else {
-                              showErrorSnackbar('Failed to remove coupon code');
                             }
                           },
                         ),

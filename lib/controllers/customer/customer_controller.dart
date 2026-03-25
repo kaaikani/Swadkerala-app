@@ -808,6 +808,9 @@ class CustomerController extends BaseController {
         phoneNumber: address.phoneNumber,
         defaultShippingAddress: address.defaultShippingAddress ?? false,
         defaultBillingAddress: address.defaultBillingAddress ?? false,
+        customFields: address.customFields != null
+            ? Input$CreateAddressCustomFieldsInput(area: address.customFields!.area)
+            : null,
       );
 
       final response =
@@ -931,6 +934,9 @@ class CustomerController extends BaseController {
         phoneNumber: address.phoneNumber,
         defaultShippingAddress: address.defaultShippingAddress ?? false,
         defaultBillingAddress: address.defaultBillingAddress ?? false,
+        customFields: address.customFields != null
+            ? Input$UpdateAddressCustomFieldsInput(area: address.customFields!.area)
+            : null,
       );
       final response =
           await GraphqlService.client.value.mutate$UpdateCustomerAddress(
@@ -1523,7 +1529,9 @@ class CustomerController extends BaseController {
       } else {
       }
       final response = await GraphqlService.client.value.query$PostalCodes(
-        Options$Query$PostalCodes(),
+        Options$Query$PostalCodes(
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
       );
       // Print raw response data for debugging
       if (response.data != null) {

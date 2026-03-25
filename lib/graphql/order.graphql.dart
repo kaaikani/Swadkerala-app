@@ -17,6 +17,7 @@ class Fragment$OrderAddress {
     this.country,
     this.countryCode,
     this.phoneNumber,
+    this.customFields,
     this.$__typename = 'OrderAddress',
   });
 
@@ -31,6 +32,7 @@ class Fragment$OrderAddress {
     final l$country = json['country'];
     final l$countryCode = json['countryCode'];
     final l$phoneNumber = json['phoneNumber'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Fragment$OrderAddress(
       fullName: (l$fullName as String?),
@@ -43,6 +45,10 @@ class Fragment$OrderAddress {
       country: (l$country as String?),
       countryCode: (l$countryCode as String?),
       phoneNumber: (l$phoneNumber as String?),
+      customFields: l$customFields == null
+          ? null
+          : Fragment$OrderAddress$customFields.fromJson(
+              (l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -66,6 +72,8 @@ class Fragment$OrderAddress {
   final String? countryCode;
 
   final String? phoneNumber;
+
+  final Fragment$OrderAddress$customFields? customFields;
 
   final String $__typename;
 
@@ -91,6 +99,8 @@ class Fragment$OrderAddress {
     _resultData['countryCode'] = l$countryCode;
     final l$phoneNumber = phoneNumber;
     _resultData['phoneNumber'] = l$phoneNumber;
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -108,6 +118,7 @@ class Fragment$OrderAddress {
     final l$country = country;
     final l$countryCode = countryCode;
     final l$phoneNumber = phoneNumber;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$fullName,
@@ -120,6 +131,7 @@ class Fragment$OrderAddress {
       l$country,
       l$countryCode,
       l$phoneNumber,
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -182,6 +194,11 @@ class Fragment$OrderAddress {
     if (l$phoneNumber != lOther$phoneNumber) {
       return false;
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -219,8 +236,10 @@ abstract class CopyWith$Fragment$OrderAddress<TRes> {
     String? country,
     String? countryCode,
     String? phoneNumber,
+    Fragment$OrderAddress$customFields? customFields,
     String? $__typename,
   });
+  CopyWith$Fragment$OrderAddress$customFields<TRes> get customFields;
 }
 
 class _CopyWithImpl$Fragment$OrderAddress<TRes>
@@ -247,6 +266,7 @@ class _CopyWithImpl$Fragment$OrderAddress<TRes>
     Object? country = _undefined,
     Object? countryCode = _undefined,
     Object? phoneNumber = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$OrderAddress(
@@ -274,10 +294,21 @@ class _CopyWithImpl$Fragment$OrderAddress<TRes>
         phoneNumber: phoneNumber == _undefined
             ? _instance.phoneNumber
             : (phoneNumber as String?),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields as Fragment$OrderAddress$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  CopyWith$Fragment$OrderAddress$customFields<TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Fragment$OrderAddress$customFields.stub(_then(_instance))
+        : CopyWith$Fragment$OrderAddress$customFields(
+            local$customFields, (e) => call(customFields: e));
+  }
 }
 
 class _CopyWithStubImpl$Fragment$OrderAddress<TRes>
@@ -297,9 +328,13 @@ class _CopyWithStubImpl$Fragment$OrderAddress<TRes>
     String? country,
     String? countryCode,
     String? phoneNumber,
+    Fragment$OrderAddress$customFields? customFields,
     String? $__typename,
   }) =>
       _res;
+
+  CopyWith$Fragment$OrderAddress$customFields<TRes> get customFields =>
+      CopyWith$Fragment$OrderAddress$customFields.stub(_res);
 }
 
 const fragmentDefinitionOrderAddress = FragmentDefinitionNode(
@@ -382,6 +417,28 @@ const fragmentDefinitionOrderAddress = FragmentDefinitionNode(
       selectionSet: null,
     ),
     FieldNode(
+      name: NameNode(value: 'customFields'),
+      alias: null,
+      arguments: [],
+      directives: [],
+      selectionSet: SelectionSetNode(selections: [
+        FieldNode(
+          name: NameNode(value: 'area'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
+          name: NameNode(value: '__typename'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+      ]),
+    ),
+    FieldNode(
       name: NameNode(value: '__typename'),
       alias: null,
       arguments: [],
@@ -427,6 +484,131 @@ extension ClientExtension$Fragment$OrderAddress on graphql.GraphQLClient {
     );
     return result == null ? null : Fragment$OrderAddress.fromJson(result);
   }
+}
+
+class Fragment$OrderAddress$customFields {
+  Fragment$OrderAddress$customFields({
+    this.area,
+    this.$__typename = 'OrderAddressCustomFields',
+  });
+
+  factory Fragment$OrderAddress$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$area = json['area'];
+    final l$$__typename = json['__typename'];
+    return Fragment$OrderAddress$customFields(
+      area: (l$area as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? area;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$area = area;
+    _resultData['area'] = l$area;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$area = area;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$area,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Fragment$OrderAddress$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$area = area;
+    final lOther$area = other.area;
+    if (l$area != lOther$area) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Fragment$OrderAddress$customFields
+    on Fragment$OrderAddress$customFields {
+  CopyWith$Fragment$OrderAddress$customFields<
+          Fragment$OrderAddress$customFields>
+      get copyWith => CopyWith$Fragment$OrderAddress$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Fragment$OrderAddress$customFields<TRes> {
+  factory CopyWith$Fragment$OrderAddress$customFields(
+    Fragment$OrderAddress$customFields instance,
+    TRes Function(Fragment$OrderAddress$customFields) then,
+  ) = _CopyWithImpl$Fragment$OrderAddress$customFields;
+
+  factory CopyWith$Fragment$OrderAddress$customFields.stub(TRes res) =
+      _CopyWithStubImpl$Fragment$OrderAddress$customFields;
+
+  TRes call({
+    String? area,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Fragment$OrderAddress$customFields<TRes>
+    implements CopyWith$Fragment$OrderAddress$customFields<TRes> {
+  _CopyWithImpl$Fragment$OrderAddress$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Fragment$OrderAddress$customFields _instance;
+
+  final TRes Function(Fragment$OrderAddress$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? area = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Fragment$OrderAddress$customFields(
+        area: area == _undefined ? _instance.area : (area as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Fragment$OrderAddress$customFields<TRes>
+    implements CopyWith$Fragment$OrderAddress$customFields<TRes> {
+  _CopyWithStubImpl$Fragment$OrderAddress$customFields(this._res);
+
+  TRes _res;
+
+  call({
+    String? area,
+    String? $__typename,
+  }) =>
+      _res;
 }
 
 class Fragment$ErrorResult {

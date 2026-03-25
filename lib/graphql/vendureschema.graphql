@@ -33,7 +33,11 @@ type Address implements Node {
   phoneNumber: String
   defaultShippingAddress: Boolean
   defaultBillingAddress: Boolean
-  customFields: JSON
+  customFields: AddressCustomFields
+}
+
+type AddressCustomFields {
+  area: String
 }
 
 type Adjustment {
@@ -417,6 +421,10 @@ The countryCode must correspond to a `code` property of a Country that has been 
 Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
 If an invalid code is passed, the mutation will fail.
 """
+input CreateAddressCustomFieldsInput {
+  area: String
+}
+
 input CreateAddressInput {
   fullName: String
   company: String
@@ -429,7 +437,7 @@ input CreateAddressInput {
   phoneNumber: String
   defaultShippingAddress: Boolean
   defaultBillingAddress: Boolean
-  customFields: JSON
+  customFields: CreateAddressCustomFieldsInput
 }
 
 input CreateCustomerCustomFieldsInput {
@@ -2584,6 +2592,10 @@ type Order implements Node {
   customFields: OrderCustomFields
 }
 
+type OrderAddressCustomFields {
+  area: String
+}
+
 type OrderAddress {
   fullName: String
   company: String
@@ -2595,7 +2607,7 @@ type OrderAddress {
   country: String
   countryCode: String
   phoneNumber: String
-  customFields: JSON
+  customFields: OrderAddressCustomFields
 }
 
 type OrderCustomFields {
@@ -3315,10 +3327,16 @@ input PhoneOtpInput {
   emailAddress: String
 }
 
+type PostalCodeArea {
+  id: ID!
+  name: String!
+}
+
 type PostalCode {
   id: ID!
   code: String!
   isAnywhere: Boolean!
+  areas: [PostalCodeArea!]!
 }
 
 """The price range where the result has more than one price"""
@@ -4234,6 +4252,10 @@ The countryCode must correspond to a `code` property of a Country that has been 
 Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
 If an invalid code is passed, the mutation will fail.
 """
+input UpdateAddressCustomFieldsInput {
+  area: String
+}
+
 input UpdateAddressInput {
   id: ID!
   fullName: String
@@ -4247,7 +4269,7 @@ input UpdateAddressInput {
   phoneNumber: String
   defaultShippingAddress: Boolean
   defaultBillingAddress: Boolean
-  customFields: JSON
+  customFields: UpdateAddressCustomFieldsInput
 }
 
 input UpdateCustomerCustomFieldsInput {

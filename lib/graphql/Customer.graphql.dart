@@ -1848,6 +1848,28 @@ const documentNodeMutationCreateCustomerAddress = DocumentNode(definitions: [
             ]),
           ),
           FieldNode(
+            name: NameNode(value: 'customFields'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'area'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
             arguments: [],
@@ -2101,6 +2123,7 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
     this.defaultShippingAddress,
     this.defaultBillingAddress,
     required this.country,
+    this.customFields,
     this.$__typename = 'Address',
   });
 
@@ -2120,6 +2143,7 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
     final l$defaultShippingAddress = json['defaultShippingAddress'];
     final l$defaultBillingAddress = json['defaultBillingAddress'];
     final l$country = json['country'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$CreateCustomerAddress$createCustomerAddress(
       id: (l$id as String),
@@ -2138,6 +2162,10 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
       country:
           Mutation$CreateCustomerAddress$createCustomerAddress$country.fromJson(
               (l$country as Map<String, dynamic>)),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$CreateCustomerAddress$createCustomerAddress$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -2169,6 +2197,9 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
   final bool? defaultBillingAddress;
 
   final Mutation$CreateCustomerAddress$createCustomerAddress$country country;
+
+  final Mutation$CreateCustomerAddress$createCustomerAddress$customFields?
+      customFields;
 
   final String $__typename;
 
@@ -2202,6 +2233,8 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
     _resultData['defaultBillingAddress'] = l$defaultBillingAddress;
     final l$country = country;
     _resultData['country'] = l$country.toJson();
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2223,6 +2256,7 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
     final l$defaultShippingAddress = defaultShippingAddress;
     final l$defaultBillingAddress = defaultBillingAddress;
     final l$country = country;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -2239,6 +2273,7 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
       l$defaultShippingAddress,
       l$defaultBillingAddress,
       l$country,
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -2322,6 +2357,11 @@ class Mutation$CreateCustomerAddress$createCustomerAddress {
     if (l$country != lOther$country) {
       return false;
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -2368,10 +2408,14 @@ abstract class CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress<
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Mutation$CreateCustomerAddress$createCustomerAddress$country? country,
+    Mutation$CreateCustomerAddress$createCustomerAddress$customFields?
+        customFields,
     String? $__typename,
   });
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<TRes>
       get country;
+  CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+      TRes> get customFields;
 }
 
 class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
@@ -2404,6 +2448,7 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
     Object? defaultShippingAddress = _undefined,
     Object? defaultBillingAddress = _undefined,
     Object? country = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$CreateCustomerAddress$createCustomerAddress(
@@ -2443,6 +2488,10 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
             ? _instance.country
             : (country
                 as Mutation$CreateCustomerAddress$createCustomerAddress$country),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$CreateCustomerAddress$createCustomerAddress$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -2453,6 +2502,16 @@ class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress<TRes>
     final local$country = _instance.country;
     return CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country(
         local$country, (e) => call(country: e));
+  }
+
+  CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+      TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields(
+            local$customFields, (e) => call(customFields: e));
   }
 }
 
@@ -2480,6 +2539,8 @@ class _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress<
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Mutation$CreateCustomerAddress$createCustomerAddress$country? country,
+    Mutation$CreateCustomerAddress$createCustomerAddress$customFields?
+        customFields,
     String? $__typename,
   }) =>
       _res;
@@ -2487,6 +2548,12 @@ class _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress<
   CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country<TRes>
       get country =>
           CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$country
+              .stub(_res);
+
+  CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+          TRes>
+      get customFields =>
+          CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields
               .stub(_res);
 }
 
@@ -2643,6 +2710,146 @@ class _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$cou
   call({
     String? id,
     String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$CreateCustomerAddress$createCustomerAddress$customFields {
+  Mutation$CreateCustomerAddress$createCustomerAddress$customFields({
+    this.area,
+    this.$__typename = 'AddressCustomFields',
+  });
+
+  factory Mutation$CreateCustomerAddress$createCustomerAddress$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$area = json['area'];
+    final l$$__typename = json['__typename'];
+    return Mutation$CreateCustomerAddress$createCustomerAddress$customFields(
+      area: (l$area as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? area;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$area = area;
+    _resultData['area'] = l$area;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$area = area;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$area,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$CreateCustomerAddress$createCustomerAddress$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$area = area;
+    final lOther$area = other.area;
+    if (l$area != lOther$area) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$CreateCustomerAddress$createCustomerAddress$customFields
+    on Mutation$CreateCustomerAddress$createCustomerAddress$customFields {
+  CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+          Mutation$CreateCustomerAddress$createCustomerAddress$customFields>
+      get copyWith =>
+          CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+    TRes> {
+  factory CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields(
+    Mutation$CreateCustomerAddress$createCustomerAddress$customFields instance,
+    TRes Function(
+            Mutation$CreateCustomerAddress$createCustomerAddress$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$customFields;
+
+  factory CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$customFields;
+
+  TRes call({
+    String? area,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$CreateCustomerAddress$createCustomerAddress$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$CreateCustomerAddress$createCustomerAddress$customFields
+      _instance;
+
+  final TRes Function(
+      Mutation$CreateCustomerAddress$createCustomerAddress$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? area = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$CreateCustomerAddress$createCustomerAddress$customFields(
+        area: area == _undefined ? _instance.area : (area as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$CreateCustomerAddress$createCustomerAddress$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$CreateCustomerAddress$createCustomerAddress$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? area,
     String? $__typename,
   }) =>
       _res;
@@ -3037,6 +3244,28 @@ const documentNodeMutationUpdateCustomerAddress = DocumentNode(definitions: [
             selectionSet: null,
           ),
           FieldNode(
+            name: NameNode(value: 'customFields'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'area'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
             arguments: [],
@@ -3287,6 +3516,7 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
     this.phoneNumber,
     required this.streetLine1,
     this.streetLine2,
+    this.customFields,
     this.$__typename = 'Address',
   });
 
@@ -3303,6 +3533,7 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
     final l$phoneNumber = json['phoneNumber'];
     final l$streetLine1 = json['streetLine1'];
     final l$streetLine2 = json['streetLine2'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Mutation$UpdateCustomerAddress$updateCustomerAddress(
       createdAt: DateTime.parse((l$createdAt as String)),
@@ -3318,6 +3549,10 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
       phoneNumber: (l$phoneNumber as String?),
       streetLine1: (l$streetLine1 as String),
       streetLine2: (l$streetLine2 as String?),
+      customFields: l$customFields == null
+          ? null
+          : Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -3343,6 +3578,9 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
   final String streetLine1;
 
   final String? streetLine2;
+
+  final Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields?
+      customFields;
 
   final String $__typename;
 
@@ -3370,6 +3608,8 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
     _resultData['streetLine1'] = l$streetLine1;
     final l$streetLine2 = streetLine2;
     _resultData['streetLine2'] = l$streetLine2;
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -3388,6 +3628,7 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
     final l$phoneNumber = phoneNumber;
     final l$streetLine1 = streetLine1;
     final l$streetLine2 = streetLine2;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$createdAt,
@@ -3401,6 +3642,7 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
       l$phoneNumber,
       l$streetLine1,
       l$streetLine2,
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -3469,6 +3711,11 @@ class Mutation$UpdateCustomerAddress$updateCustomerAddress {
     if (l$streetLine2 != lOther$streetLine2) {
       return false;
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -3512,10 +3759,14 @@ abstract class CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress<
     String? phoneNumber,
     String? streetLine1,
     String? streetLine2,
+    Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields?
+        customFields,
     String? $__typename,
   });
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<TRes>
       get country;
+  CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+      TRes> get customFields;
 }
 
 class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
@@ -3545,6 +3796,7 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
     Object? phoneNumber = _undefined,
     Object? streetLine1 = _undefined,
     Object? streetLine2 = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$UpdateCustomerAddress$updateCustomerAddress(
@@ -3576,6 +3828,10 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
         streetLine2: streetLine2 == _undefined
             ? _instance.streetLine2
             : (streetLine2 as String?),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -3586,6 +3842,16 @@ class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<TRes>
     final local$country = _instance.country;
     return CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country(
         local$country, (e) => call(country: e));
+  }
+
+  CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+      TRes> get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields
+            .stub(_then(_instance))
+        : CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields(
+            local$customFields, (e) => call(customFields: e));
   }
 }
 
@@ -3610,6 +3876,8 @@ class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<
     String? phoneNumber,
     String? streetLine1,
     String? streetLine2,
+    Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields?
+        customFields,
     String? $__typename,
   }) =>
       _res;
@@ -3617,6 +3885,12 @@ class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress<
   CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country<TRes>
       get country =>
           CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$country
+              .stub(_res);
+
+  CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+          TRes>
+      get customFields =>
+          CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields
               .stub(_res);
 }
 
@@ -3813,6 +4087,146 @@ class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$cou
     String? code,
     String? id,
     Enum$LanguageCode? languageCode,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields {
+  Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields({
+    this.area,
+    this.$__typename = 'AddressCustomFields',
+  });
+
+  factory Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$area = json['area'];
+    final l$$__typename = json['__typename'];
+    return Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields(
+      area: (l$area as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? area;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$area = area;
+    _resultData['area'] = l$area;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$area = area;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$area,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$area = area;
+    final lOther$area = other.area;
+    if (l$area != lOther$area) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields
+    on Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields {
+  CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+          Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields>
+      get copyWith =>
+          CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+    TRes> {
+  factory CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields(
+    Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields instance,
+    TRes Function(
+            Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields)
+        then,
+  ) = _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields;
+
+  factory CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields;
+
+  TRes call({
+    String? area,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+            TRes> {
+  _CopyWithImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields
+      _instance;
+
+  final TRes Function(
+      Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? area = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields(
+        area: area == _undefined ? _instance.area : (area as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+        TRes>
+    implements
+        CopyWith$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields<
+            TRes> {
+  _CopyWithStubImpl$Mutation$UpdateCustomerAddress$updateCustomerAddress$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? area,
     String? $__typename,
   }) =>
       _res;
@@ -5849,6 +6263,28 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                     selectionSet: null,
                   ),
                   FieldNode(
+                    name: NameNode(value: 'customFields'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: SelectionSetNode(selections: [
+                      FieldNode(
+                        name: NameNode(value: 'area'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                      FieldNode(
+                        name: NameNode(value: '__typename'),
+                        alias: null,
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      ),
+                    ]),
+                  ),
+                  FieldNode(
                     name: NameNode(value: '__typename'),
                     alias: null,
                     arguments: [],
@@ -7713,6 +8149,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     this.city,
     this.defaultShippingAddress,
     this.defaultBillingAddress,
+    this.customFields,
     this.$__typename = 'Address',
   });
 
@@ -7729,6 +8166,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     final l$city = json['city'];
     final l$defaultShippingAddress = json['defaultShippingAddress'];
     final l$defaultBillingAddress = json['defaultBillingAddress'];
+    final l$customFields = json['customFields'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$addresses(
       id: (l$id as String),
@@ -7744,6 +8182,10 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
       city: (l$city as String?),
       defaultShippingAddress: (l$defaultShippingAddress as bool?),
       defaultBillingAddress: (l$defaultBillingAddress as bool?),
+      customFields: l$customFields == null
+          ? null
+          : Query$GetActiveCustomer$activeCustomer$addresses$customFields
+              .fromJson((l$customFields as Map<String, dynamic>)),
       $__typename: (l$$__typename as String),
     );
   }
@@ -7769,6 +8211,9 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
   final bool? defaultShippingAddress;
 
   final bool? defaultBillingAddress;
+
+  final Query$GetActiveCustomer$activeCustomer$addresses$customFields?
+      customFields;
 
   final String $__typename;
 
@@ -7796,6 +8241,8 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     _resultData['defaultShippingAddress'] = l$defaultShippingAddress;
     final l$defaultBillingAddress = defaultBillingAddress;
     _resultData['defaultBillingAddress'] = l$defaultBillingAddress;
+    final l$customFields = customFields;
+    _resultData['customFields'] = l$customFields?.toJson();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -7814,6 +8261,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     final l$city = city;
     final l$defaultShippingAddress = defaultShippingAddress;
     final l$defaultBillingAddress = defaultBillingAddress;
+    final l$customFields = customFields;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
@@ -7827,6 +8275,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
       l$city,
       l$defaultShippingAddress,
       l$defaultBillingAddress,
+      l$customFields,
       l$$__typename,
     ]);
   }
@@ -7895,6 +8344,11 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     if (l$defaultBillingAddress != lOther$defaultBillingAddress) {
       return false;
     }
+    final l$customFields = customFields;
+    final lOther$customFields = other.customFields;
+    if (l$customFields != lOther$customFields) {
+      return false;
+    }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
     if (l$$__typename != lOther$$__typename) {
@@ -7936,10 +8390,13 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<TRes> {
     String? city,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
+    Query$GetActiveCustomer$activeCustomer$addresses$customFields? customFields,
     String? $__typename,
   });
   CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<TRes>
       get country;
+  CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields<TRes>
+      get customFields;
 }
 
 class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
@@ -7967,6 +8424,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
     Object? city = _undefined,
     Object? defaultShippingAddress = _undefined,
     Object? defaultBillingAddress = _undefined,
+    Object? customFields = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetActiveCustomer$activeCustomer$addresses(
@@ -7998,6 +8456,10 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
         defaultBillingAddress: defaultBillingAddress == _undefined
             ? _instance.defaultBillingAddress
             : (defaultBillingAddress as bool?),
+        customFields: customFields == _undefined
+            ? _instance.customFields
+            : (customFields
+                as Query$GetActiveCustomer$activeCustomer$addresses$customFields?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -8008,6 +8470,16 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
     final local$country = _instance.country;
     return CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country(
         local$country, (e) => call(country: e));
+  }
+
+  CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields<TRes>
+      get customFields {
+    final local$customFields = _instance.customFields;
+    return local$customFields == null
+        ? CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields
+            .stub(_then(_instance))
+        : CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields(
+            local$customFields, (e) => call(customFields: e));
   }
 }
 
@@ -8029,6 +8501,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
     String? city,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
+    Query$GetActiveCustomer$activeCustomer$addresses$customFields? customFields,
     String? $__typename,
   }) =>
       _res;
@@ -8036,6 +8509,11 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
   CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country<TRes>
       get country =>
           CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$country
+              .stub(_res);
+
+  CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields<TRes>
+      get customFields =>
+          CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields
               .stub(_res);
 }
 
@@ -8231,6 +8709,144 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$country
     String? name,
     String? code,
     Enum$LanguageCode? languageCode,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$GetActiveCustomer$activeCustomer$addresses$customFields {
+  Query$GetActiveCustomer$activeCustomer$addresses$customFields({
+    this.area,
+    this.$__typename = 'AddressCustomFields',
+  });
+
+  factory Query$GetActiveCustomer$activeCustomer$addresses$customFields.fromJson(
+      Map<String, dynamic> json) {
+    final l$area = json['area'];
+    final l$$__typename = json['__typename'];
+    return Query$GetActiveCustomer$activeCustomer$addresses$customFields(
+      area: (l$area as String?),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String? area;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$area = area;
+    _resultData['area'] = l$area;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$area = area;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$area,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other
+            is! Query$GetActiveCustomer$activeCustomer$addresses$customFields ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$area = area;
+    final lOther$area = other.area;
+    if (l$area != lOther$area) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$GetActiveCustomer$activeCustomer$addresses$customFields
+    on Query$GetActiveCustomer$activeCustomer$addresses$customFields {
+  CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields<
+          Query$GetActiveCustomer$activeCustomer$addresses$customFields>
+      get copyWith =>
+          CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields<
+    TRes> {
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields(
+    Query$GetActiveCustomer$activeCustomer$addresses$customFields instance,
+    TRes Function(Query$GetActiveCustomer$activeCustomer$addresses$customFields)
+        then,
+  ) = _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$customFields;
+
+  factory CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$customFields;
+
+  TRes call({
+    String? area,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$customFields<
+        TRes>
+    implements
+        CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields<
+            TRes> {
+  _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses$customFields(
+    this._instance,
+    this._then,
+  );
+
+  final Query$GetActiveCustomer$activeCustomer$addresses$customFields _instance;
+
+  final TRes Function(
+      Query$GetActiveCustomer$activeCustomer$addresses$customFields) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? area = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$GetActiveCustomer$activeCustomer$addresses$customFields(
+        area: area == _undefined ? _instance.area : (area as String?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$customFields<
+        TRes>
+    implements
+        CopyWith$Query$GetActiveCustomer$activeCustomer$addresses$customFields<
+            TRes> {
+  _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses$customFields(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? area,
     String? $__typename,
   }) =>
       _res;
@@ -17432,6 +18048,35 @@ const documentNodeQueryPostalCodes = DocumentNode(definitions: [
             selectionSet: null,
           ),
           FieldNode(
+            name: NameNode(value: 'areas'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'id'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'name'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          FieldNode(
             name: NameNode(value: '__typename'),
             alias: null,
             arguments: [],
@@ -17592,6 +18237,7 @@ class Query$PostalCodes$postalCodes {
     required this.id,
     required this.code,
     required this.isAnywhere,
+    required this.areas,
     this.$__typename = 'PostalCode',
   });
 
@@ -17599,11 +18245,16 @@ class Query$PostalCodes$postalCodes {
     final l$id = json['id'];
     final l$code = json['code'];
     final l$isAnywhere = json['isAnywhere'];
+    final l$areas = json['areas'];
     final l$$__typename = json['__typename'];
     return Query$PostalCodes$postalCodes(
       id: (l$id as String),
       code: (l$code as String),
       isAnywhere: (l$isAnywhere as bool),
+      areas: (l$areas as List<dynamic>)
+          .map((e) => Query$PostalCodes$postalCodes$areas.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
       $__typename: (l$$__typename as String),
     );
   }
@@ -17613,6 +18264,8 @@ class Query$PostalCodes$postalCodes {
   final String code;
 
   final bool isAnywhere;
+
+  final List<Query$PostalCodes$postalCodes$areas> areas;
 
   final String $__typename;
 
@@ -17624,6 +18277,8 @@ class Query$PostalCodes$postalCodes {
     _resultData['code'] = l$code;
     final l$isAnywhere = isAnywhere;
     _resultData['isAnywhere'] = l$isAnywhere;
+    final l$areas = areas;
+    _resultData['areas'] = l$areas.map((e) => e.toJson()).toList();
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -17634,11 +18289,13 @@ class Query$PostalCodes$postalCodes {
     final l$id = id;
     final l$code = code;
     final l$isAnywhere = isAnywhere;
+    final l$areas = areas;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$id,
       l$code,
       l$isAnywhere,
+      Object.hashAll(l$areas.map((v) => v)),
       l$$__typename,
     ]);
   }
@@ -17666,6 +18323,18 @@ class Query$PostalCodes$postalCodes {
     final lOther$isAnywhere = other.isAnywhere;
     if (l$isAnywhere != lOther$isAnywhere) {
       return false;
+    }
+    final l$areas = areas;
+    final lOther$areas = other.areas;
+    if (l$areas.length != lOther$areas.length) {
+      return false;
+    }
+    for (int i = 0; i < l$areas.length; i++) {
+      final l$areas$entry = l$areas[i];
+      final lOther$areas$entry = lOther$areas[i];
+      if (l$areas$entry != lOther$areas$entry) {
+        return false;
+      }
     }
     final l$$__typename = $__typename;
     final lOther$$__typename = other.$__typename;
@@ -17698,8 +18367,15 @@ abstract class CopyWith$Query$PostalCodes$postalCodes<TRes> {
     String? id,
     String? code,
     bool? isAnywhere,
+    List<Query$PostalCodes$postalCodes$areas>? areas,
     String? $__typename,
   });
+  TRes areas(
+      Iterable<Query$PostalCodes$postalCodes$areas> Function(
+              Iterable<
+                  CopyWith$Query$PostalCodes$postalCodes$areas<
+                      Query$PostalCodes$postalCodes$areas>>)
+          _fn);
 }
 
 class _CopyWithImpl$Query$PostalCodes$postalCodes<TRes>
@@ -17719,6 +18395,7 @@ class _CopyWithImpl$Query$PostalCodes$postalCodes<TRes>
     Object? id = _undefined,
     Object? code = _undefined,
     Object? isAnywhere = _undefined,
+    Object? areas = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$PostalCodes$postalCodes(
@@ -17729,10 +18406,26 @@ class _CopyWithImpl$Query$PostalCodes$postalCodes<TRes>
         isAnywhere: isAnywhere == _undefined || isAnywhere == null
             ? _instance.isAnywhere
             : (isAnywhere as bool),
+        areas: areas == _undefined || areas == null
+            ? _instance.areas
+            : (areas as List<Query$PostalCodes$postalCodes$areas>),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
       ));
+
+  TRes areas(
+          Iterable<Query$PostalCodes$postalCodes$areas> Function(
+                  Iterable<
+                      CopyWith$Query$PostalCodes$postalCodes$areas<
+                          Query$PostalCodes$postalCodes$areas>>)
+              _fn) =>
+      call(
+          areas: _fn(_instance.areas
+              .map((e) => CopyWith$Query$PostalCodes$postalCodes$areas(
+                    e,
+                    (i) => i,
+                  ))).toList());
 }
 
 class _CopyWithStubImpl$Query$PostalCodes$postalCodes<TRes>
@@ -17745,6 +18438,154 @@ class _CopyWithStubImpl$Query$PostalCodes$postalCodes<TRes>
     String? id,
     String? code,
     bool? isAnywhere,
+    List<Query$PostalCodes$postalCodes$areas>? areas,
+    String? $__typename,
+  }) =>
+      _res;
+
+  areas(_fn) => _res;
+}
+
+class Query$PostalCodes$postalCodes$areas {
+  Query$PostalCodes$postalCodes$areas({
+    required this.id,
+    required this.name,
+    this.$__typename = 'PostalCodeArea',
+  });
+
+  factory Query$PostalCodes$postalCodes$areas.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$PostalCodes$postalCodes$areas(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$PostalCodes$postalCodes$areas ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$PostalCodes$postalCodes$areas
+    on Query$PostalCodes$postalCodes$areas {
+  CopyWith$Query$PostalCodes$postalCodes$areas<
+          Query$PostalCodes$postalCodes$areas>
+      get copyWith => CopyWith$Query$PostalCodes$postalCodes$areas(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$PostalCodes$postalCodes$areas<TRes> {
+  factory CopyWith$Query$PostalCodes$postalCodes$areas(
+    Query$PostalCodes$postalCodes$areas instance,
+    TRes Function(Query$PostalCodes$postalCodes$areas) then,
+  ) = _CopyWithImpl$Query$PostalCodes$postalCodes$areas;
+
+  factory CopyWith$Query$PostalCodes$postalCodes$areas.stub(TRes res) =
+      _CopyWithStubImpl$Query$PostalCodes$postalCodes$areas;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$PostalCodes$postalCodes$areas<TRes>
+    implements CopyWith$Query$PostalCodes$postalCodes$areas<TRes> {
+  _CopyWithImpl$Query$PostalCodes$postalCodes$areas(
+    this._instance,
+    this._then,
+  );
+
+  final Query$PostalCodes$postalCodes$areas _instance;
+
+  final TRes Function(Query$PostalCodes$postalCodes$areas) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$PostalCodes$postalCodes$areas(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$PostalCodes$postalCodes$areas<TRes>
+    implements CopyWith$Query$PostalCodes$postalCodes$areas<TRes> {
+  _CopyWithStubImpl$Query$PostalCodes$postalCodes$areas(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
     String? $__typename,
   }) =>
       _res;
