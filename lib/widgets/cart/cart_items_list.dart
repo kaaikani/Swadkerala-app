@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/utilitycontroller/utilitycontroller.dart';
-import '../../controllers/banner/bannercontroller.dart';
+import '../../controllers/coupon/coupon_controller.dart';
 import '../../widgets/cart_item_card_premium.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
@@ -107,7 +107,7 @@ class _CartItemsListState extends State<CartItemsList> {
       }
       
       // Separate coupon products from regular products
-      final bannerController = Get.find<BannerController>();
+      final bannerController = Get.find<CouponController>();
       // Access reactive map to ensure UI updates when coupon tracking changes
       final _ = bannerController.couponAddedProducts;
       final regularProducts = <Map<String, dynamic>>[];

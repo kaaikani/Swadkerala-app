@@ -7,6 +7,7 @@ import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
+import '../controllers/coupon/coupon_controller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../routes.dart';
@@ -45,6 +46,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   final OrderController orderController = Get.find<OrderController>();
   final UtilityController utilityController = Get.find<UtilityController>();
   final BannerController bannerController = Get.find<BannerController>();
+  final CouponController couponController = Get.find<CouponController>();
   final CustomerController customerController = Get.find<CustomerController>();
 
   // Scroll controller and keys
@@ -184,7 +186,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   /// regardless of cart value. Validation happens when applying.
   // ignore: unused_element
   List<Query$GetCouponCodeList$getCouponCodeList$items> _getApplicableCoupons(int cartTotal) {
-    final coupons = bannerController.availableCouponCodes;
+    final coupons = couponController.availableCouponCodes;
     final applicableCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[];
 
     for (final coupon in coupons) {
@@ -243,10 +245,10 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   // ignore: unused_element
   Future<void> _applyCouponCode(String couponCode) async {
     // Check if coupon has products to add
-    final hasProducts = bannerController.hasCouponProducts(couponCode);
-    final result = hasProducts 
-        ? await bannerController.applyCouponCodeWithProducts(couponCode)
-        : await bannerController.applyCouponCode(couponCode);
+    final hasProducts = couponController.hasCouponProducts(couponCode);
+    final result = hasProducts
+        ? await couponController.applyCouponCodeWithProducts(couponCode)
+        : await couponController.applyCouponCode(couponCode);
     
     if (result['success'] == true) {
       showSuccessSnackbar(result['message'] ?? 'Coupon applied successfully');
@@ -254,9 +256,9 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       // Track coupon application
       final cart = cartController.cart.value;
       if (cart != null) {
-        final coupon = bannerController.availableCouponCodes.firstWhere(
+        final coupon = couponController.availableCouponCodes.firstWhere(
           (c) => c.promotion.couponCode == couponCode,
-          orElse: () => bannerController.availableCouponCodes.first,
+          orElse: () => couponController.availableCouponCodes.first,
         );
         await AnalyticsService().logApplyCoupon(
           couponName: coupon.promotion.name,
@@ -796,8 +798,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       final cart = cartController.cart.value;
       if (cart != null && cart.couponCodes.isNotEmpty) {
         for (final couponCode in cart.couponCodes) {
-          if (!bannerController.appliedCouponCodes.contains(couponCode)) {
-            bannerController.appliedCouponCodes.add(couponCode);
+          if (!couponController.appliedCouponCodes.contains(couponCode)) {
+            couponController.appliedCouponCodes.add(couponCode);
           }
         }
       } else {
@@ -1079,13 +1081,13 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                         return Padding(
                           padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
                           child: CartCouponSection(
-                            bannerController: bannerController,
+                            bannerController: couponController,
                             cartController: cartController,
                             orderController: orderController,
                             onShowCouponBottomSheet: () {
                               CartCouponBottomSheet.show(
                                 context: context,
-                                bannerController: bannerController,
+                                bannerController: couponController,
                                 cartController: cartController,
                               );
                             },
@@ -1111,6 +1113,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                           cartController: cartController,
                           orderController: orderController,
                           bannerController: bannerController,
+                          couponController: couponController,
                         ),
                       ),
                       SizedBox(height: ResponsiveUtils.rp(12)),
@@ -1128,7 +1131,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
               if (cart == null) return const SizedBox.shrink();
 
               // Hide banner if coupon is already applied
-              if (bannerController.appliedCouponCodes.isNotEmpty) {
+              if (couponController.appliedCouponCodes.isNotEmpty) {
                 return const SizedBox.shrink();
               }
 
@@ -1144,12 +1147,12 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
               // Get eligible coupons
               final subTotal = cart.subTotalWithTax.toInt();
-              final eligibleCoupons = bannerController.getEligibleCoupons(subTotal);
+              final eligibleCoupons = couponController.getEligibleCoupons(subTotal);
 
               if (eligibleCoupons.isEmpty) return SizedBox.shrink();
 
               final coupon = eligibleCoupons.first;
-              final requiredAmount = bannerController.getRequiredAmount(coupon);
+              final requiredAmount = couponController.getRequiredAmount(coupon);
               final difference = requiredAmount - subTotal;
 
               if (difference <= 0 || difference >= 40000) return SizedBox.shrink();

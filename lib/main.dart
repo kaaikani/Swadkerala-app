@@ -368,7 +368,7 @@ Future<void> main() async {
         Get.put<AuthController>(AuthController());
         Get.put(CartController());
         Get.put(CollectionsController());
-        
+
         // Initialize theme controller early and ensure storage is ready
         final themeController = Get.put(ThemeController());
         // Ensure theme is loaded before app starts

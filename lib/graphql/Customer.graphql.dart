@@ -18591,6 +18591,657 @@ class _CopyWithStubImpl$Query$PostalCodes$postalCodes$areas<TRes>
       _res;
 }
 
+class Variables$Query$AreasForPostalCode {
+  factory Variables$Query$AreasForPostalCode({required String code}) =>
+      Variables$Query$AreasForPostalCode._({
+        r'code': code,
+      });
+
+  Variables$Query$AreasForPostalCode._(this._$data);
+
+  factory Variables$Query$AreasForPostalCode.fromJson(
+      Map<String, dynamic> data) {
+    final result$data = <String, dynamic>{};
+    final l$code = data['code'];
+    result$data['code'] = (l$code as String);
+    return Variables$Query$AreasForPostalCode._(result$data);
+  }
+
+  Map<String, dynamic> _$data;
+
+  String get code => (_$data['code'] as String);
+
+  Map<String, dynamic> toJson() {
+    final result$data = <String, dynamic>{};
+    final l$code = code;
+    result$data['code'] = l$code;
+    return result$data;
+  }
+
+  CopyWith$Variables$Query$AreasForPostalCode<
+          Variables$Query$AreasForPostalCode>
+      get copyWith => CopyWith$Variables$Query$AreasForPostalCode(
+            this,
+            (i) => i,
+          );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Variables$Query$AreasForPostalCode ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$code = code;
+    final lOther$code = other.code;
+    if (l$code != lOther$code) {
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    final l$code = code;
+    return Object.hashAll([l$code]);
+  }
+}
+
+abstract class CopyWith$Variables$Query$AreasForPostalCode<TRes> {
+  factory CopyWith$Variables$Query$AreasForPostalCode(
+    Variables$Query$AreasForPostalCode instance,
+    TRes Function(Variables$Query$AreasForPostalCode) then,
+  ) = _CopyWithImpl$Variables$Query$AreasForPostalCode;
+
+  factory CopyWith$Variables$Query$AreasForPostalCode.stub(TRes res) =
+      _CopyWithStubImpl$Variables$Query$AreasForPostalCode;
+
+  TRes call({String? code});
+}
+
+class _CopyWithImpl$Variables$Query$AreasForPostalCode<TRes>
+    implements CopyWith$Variables$Query$AreasForPostalCode<TRes> {
+  _CopyWithImpl$Variables$Query$AreasForPostalCode(
+    this._instance,
+    this._then,
+  );
+
+  final Variables$Query$AreasForPostalCode _instance;
+
+  final TRes Function(Variables$Query$AreasForPostalCode) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({Object? code = _undefined}) =>
+      _then(Variables$Query$AreasForPostalCode._({
+        ..._instance._$data,
+        if (code != _undefined && code != null) 'code': (code as String),
+      }));
+}
+
+class _CopyWithStubImpl$Variables$Query$AreasForPostalCode<TRes>
+    implements CopyWith$Variables$Query$AreasForPostalCode<TRes> {
+  _CopyWithStubImpl$Variables$Query$AreasForPostalCode(this._res);
+
+  TRes _res;
+
+  call({String? code}) => _res;
+}
+
+class Query$AreasForPostalCode {
+  Query$AreasForPostalCode({
+    required this.areasForPostalCode,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$AreasForPostalCode.fromJson(Map<String, dynamic> json) {
+    final l$areasForPostalCode = json['areasForPostalCode'];
+    final l$$__typename = json['__typename'];
+    return Query$AreasForPostalCode(
+      areasForPostalCode: (l$areasForPostalCode as List<dynamic>)
+          .map((e) => Query$AreasForPostalCode$areasForPostalCode.fromJson(
+              (e as Map<String, dynamic>)))
+          .toList(),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final List<Query$AreasForPostalCode$areasForPostalCode> areasForPostalCode;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$areasForPostalCode = areasForPostalCode;
+    _resultData['areasForPostalCode'] =
+        l$areasForPostalCode.map((e) => e.toJson()).toList();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$areasForPostalCode = areasForPostalCode;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      Object.hashAll(l$areasForPostalCode.map((v) => v)),
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$AreasForPostalCode ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$areasForPostalCode = areasForPostalCode;
+    final lOther$areasForPostalCode = other.areasForPostalCode;
+    if (l$areasForPostalCode.length != lOther$areasForPostalCode.length) {
+      return false;
+    }
+    for (int i = 0; i < l$areasForPostalCode.length; i++) {
+      final l$areasForPostalCode$entry = l$areasForPostalCode[i];
+      final lOther$areasForPostalCode$entry = lOther$areasForPostalCode[i];
+      if (l$areasForPostalCode$entry != lOther$areasForPostalCode$entry) {
+        return false;
+      }
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$AreasForPostalCode
+    on Query$AreasForPostalCode {
+  CopyWith$Query$AreasForPostalCode<Query$AreasForPostalCode> get copyWith =>
+      CopyWith$Query$AreasForPostalCode(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$AreasForPostalCode<TRes> {
+  factory CopyWith$Query$AreasForPostalCode(
+    Query$AreasForPostalCode instance,
+    TRes Function(Query$AreasForPostalCode) then,
+  ) = _CopyWithImpl$Query$AreasForPostalCode;
+
+  factory CopyWith$Query$AreasForPostalCode.stub(TRes res) =
+      _CopyWithStubImpl$Query$AreasForPostalCode;
+
+  TRes call({
+    List<Query$AreasForPostalCode$areasForPostalCode>? areasForPostalCode,
+    String? $__typename,
+  });
+  TRes areasForPostalCode(
+      Iterable<Query$AreasForPostalCode$areasForPostalCode> Function(
+              Iterable<
+                  CopyWith$Query$AreasForPostalCode$areasForPostalCode<
+                      Query$AreasForPostalCode$areasForPostalCode>>)
+          _fn);
+}
+
+class _CopyWithImpl$Query$AreasForPostalCode<TRes>
+    implements CopyWith$Query$AreasForPostalCode<TRes> {
+  _CopyWithImpl$Query$AreasForPostalCode(
+    this._instance,
+    this._then,
+  );
+
+  final Query$AreasForPostalCode _instance;
+
+  final TRes Function(Query$AreasForPostalCode) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? areasForPostalCode = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$AreasForPostalCode(
+        areasForPostalCode:
+            areasForPostalCode == _undefined || areasForPostalCode == null
+                ? _instance.areasForPostalCode
+                : (areasForPostalCode
+                    as List<Query$AreasForPostalCode$areasForPostalCode>),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  TRes areasForPostalCode(
+          Iterable<Query$AreasForPostalCode$areasForPostalCode> Function(
+                  Iterable<
+                      CopyWith$Query$AreasForPostalCode$areasForPostalCode<
+                          Query$AreasForPostalCode$areasForPostalCode>>)
+              _fn) =>
+      call(
+          areasForPostalCode: _fn(_instance.areasForPostalCode
+              .map((e) => CopyWith$Query$AreasForPostalCode$areasForPostalCode(
+                    e,
+                    (i) => i,
+                  ))).toList());
+}
+
+class _CopyWithStubImpl$Query$AreasForPostalCode<TRes>
+    implements CopyWith$Query$AreasForPostalCode<TRes> {
+  _CopyWithStubImpl$Query$AreasForPostalCode(this._res);
+
+  TRes _res;
+
+  call({
+    List<Query$AreasForPostalCode$areasForPostalCode>? areasForPostalCode,
+    String? $__typename,
+  }) =>
+      _res;
+
+  areasForPostalCode(_fn) => _res;
+}
+
+const documentNodeQueryAreasForPostalCode = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'AreasForPostalCode'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'code')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'areasForPostalCode'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'code'),
+            value: VariableNode(name: NameNode(value: 'code')),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'name'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'enabled'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Query$AreasForPostalCode _parserFn$Query$AreasForPostalCode(
+        Map<String, dynamic> data) =>
+    Query$AreasForPostalCode.fromJson(data);
+typedef OnQueryComplete$Query$AreasForPostalCode = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Query$AreasForPostalCode?,
+);
+
+class Options$Query$AreasForPostalCode
+    extends graphql.QueryOptions<Query$AreasForPostalCode> {
+  Options$Query$AreasForPostalCode({
+    String? operationName,
+    required Variables$Query$AreasForPostalCode variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$AreasForPostalCode? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$AreasForPostalCode? onComplete,
+    graphql.OnQueryError? onError,
+  })  : onCompleteWithParsed = onComplete,
+        super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          pollInterval: pollInterval,
+          context: context,
+          onComplete: onComplete == null
+              ? null
+              : (data) => onComplete(
+                    data,
+                    data == null
+                        ? null
+                        : _parserFn$Query$AreasForPostalCode(data),
+                  ),
+          onError: onError,
+          document: documentNodeQueryAreasForPostalCode,
+          parserFn: _parserFn$Query$AreasForPostalCode,
+        );
+
+  final OnQueryComplete$Query$AreasForPostalCode? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onComplete == null
+            ? super.properties
+            : super.properties.where((property) => property != onComplete),
+        onCompleteWithParsed,
+      ];
+}
+
+class WatchOptions$Query$AreasForPostalCode
+    extends graphql.WatchQueryOptions<Query$AreasForPostalCode> {
+  WatchOptions$Query$AreasForPostalCode({
+    String? operationName,
+    required Variables$Query$AreasForPostalCode variables,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$AreasForPostalCode? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          variables: variables.toJson(),
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeQueryAreasForPostalCode,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Query$AreasForPostalCode,
+        );
+}
+
+class FetchMoreOptions$Query$AreasForPostalCode
+    extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$AreasForPostalCode({
+    required graphql.UpdateQuery updateQuery,
+    required Variables$Query$AreasForPostalCode variables,
+  }) : super(
+          updateQuery: updateQuery,
+          variables: variables.toJson(),
+          document: documentNodeQueryAreasForPostalCode,
+        );
+}
+
+extension ClientExtension$Query$AreasForPostalCode on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$AreasForPostalCode>>
+      query$AreasForPostalCode(
+              Options$Query$AreasForPostalCode options) async =>
+          await this.query(options);
+  graphql.ObservableQuery<Query$AreasForPostalCode>
+      watchQuery$AreasForPostalCode(
+              WatchOptions$Query$AreasForPostalCode options) =>
+          this.watchQuery(options);
+  void writeQuery$AreasForPostalCode({
+    required Query$AreasForPostalCode data,
+    required Variables$Query$AreasForPostalCode variables,
+    bool broadcast = true,
+  }) =>
+      this.writeQuery(
+        graphql.Request(
+          operation:
+              graphql.Operation(document: documentNodeQueryAreasForPostalCode),
+          variables: variables.toJson(),
+        ),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Query$AreasForPostalCode? readQuery$AreasForPostalCode({
+    required Variables$Query$AreasForPostalCode variables,
+    bool optimistic = true,
+  }) {
+    final result = this.readQuery(
+      graphql.Request(
+        operation:
+            graphql.Operation(document: documentNodeQueryAreasForPostalCode),
+        variables: variables.toJson(),
+      ),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$AreasForPostalCode.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$AreasForPostalCode>
+    useQuery$AreasForPostalCode(Options$Query$AreasForPostalCode options) =>
+        graphql_flutter.useQuery(options);
+graphql.ObservableQuery<Query$AreasForPostalCode>
+    useWatchQuery$AreasForPostalCode(
+            WatchOptions$Query$AreasForPostalCode options) =>
+        graphql_flutter.useWatchQuery(options);
+
+class Query$AreasForPostalCode$Widget
+    extends graphql_flutter.Query<Query$AreasForPostalCode> {
+  Query$AreasForPostalCode$Widget({
+    widgets.Key? key,
+    required Options$Query$AreasForPostalCode options,
+    required graphql_flutter.QueryBuilder<Query$AreasForPostalCode> builder,
+  }) : super(
+          key: key,
+          options: options,
+          builder: builder,
+        );
+}
+
+class Query$AreasForPostalCode$areasForPostalCode {
+  Query$AreasForPostalCode$areasForPostalCode({
+    required this.id,
+    required this.name,
+    required this.enabled,
+    this.$__typename = 'PostalCodeArea',
+  });
+
+  factory Query$AreasForPostalCode$areasForPostalCode.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$enabled = json['enabled'];
+    final l$$__typename = json['__typename'];
+    return Query$AreasForPostalCode$areasForPostalCode(
+      id: (l$id as String),
+      name: (l$name as String),
+      enabled: (l$enabled as bool),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final bool enabled;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$enabled = enabled;
+    _resultData['enabled'] = l$enabled;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$enabled = enabled;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$enabled,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$AreasForPostalCode$areasForPostalCode ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$enabled = enabled;
+    final lOther$enabled = other.enabled;
+    if (l$enabled != lOther$enabled) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$AreasForPostalCode$areasForPostalCode
+    on Query$AreasForPostalCode$areasForPostalCode {
+  CopyWith$Query$AreasForPostalCode$areasForPostalCode<
+          Query$AreasForPostalCode$areasForPostalCode>
+      get copyWith => CopyWith$Query$AreasForPostalCode$areasForPostalCode(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$AreasForPostalCode$areasForPostalCode<TRes> {
+  factory CopyWith$Query$AreasForPostalCode$areasForPostalCode(
+    Query$AreasForPostalCode$areasForPostalCode instance,
+    TRes Function(Query$AreasForPostalCode$areasForPostalCode) then,
+  ) = _CopyWithImpl$Query$AreasForPostalCode$areasForPostalCode;
+
+  factory CopyWith$Query$AreasForPostalCode$areasForPostalCode.stub(TRes res) =
+      _CopyWithStubImpl$Query$AreasForPostalCode$areasForPostalCode;
+
+  TRes call({
+    String? id,
+    String? name,
+    bool? enabled,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$AreasForPostalCode$areasForPostalCode<TRes>
+    implements CopyWith$Query$AreasForPostalCode$areasForPostalCode<TRes> {
+  _CopyWithImpl$Query$AreasForPostalCode$areasForPostalCode(
+    this._instance,
+    this._then,
+  );
+
+  final Query$AreasForPostalCode$areasForPostalCode _instance;
+
+  final TRes Function(Query$AreasForPostalCode$areasForPostalCode) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? enabled = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$AreasForPostalCode$areasForPostalCode(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        enabled: enabled == _undefined || enabled == null
+            ? _instance.enabled
+            : (enabled as bool),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$AreasForPostalCode$areasForPostalCode<TRes>
+    implements CopyWith$Query$AreasForPostalCode$areasForPostalCode<TRes> {
+  _CopyWithStubImpl$Query$AreasForPostalCode$areasForPostalCode(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    bool? enabled,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Variables$Mutation$RequestAccountDeletion {
   factory Variables$Mutation$RequestAccountDeletion({String? reason}) =>
       Variables$Mutation$RequestAccountDeletion._({

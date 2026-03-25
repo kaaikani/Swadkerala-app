@@ -185,8 +185,7 @@ class CollectionsController extends GetxController {
           final bNumber = bMatch != null ? int.tryParse(bMatch.group(1) ?? '') : null;
           
           if (aNumber != null && bNumber != null) {
-                Logger.logFunction(functionName: 'fetchCollectionproducts', queryName: 'Product');
-    return aNumber.compareTo(bNumber);
+            return aNumber.compareTo(bNumber);
           }
           
           return aSlug.compareTo(bSlug);

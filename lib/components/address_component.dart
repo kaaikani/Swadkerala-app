@@ -19,6 +19,13 @@ class _PostalCodesState {
   Function(VoidCallback)? setStateCallback;
 }
 
+// Helper class to persist areas state for selected postal code
+class _AreasState {
+  List<Query$AreasForPostalCode$areasForPostalCode> areasList = [];
+  bool isLoadingAreas = false;
+  String? loadedForPostalCode;
+}
+
 class AddressComponent extends StatelessWidget {
   final CustomerController customerController;
 
@@ -420,7 +427,8 @@ class AddressComponent extends StatelessWidget {
         
         // State variables for postal codes - use closure to persist
         final postalCodesState = _PostalCodesState();
-        
+        final areasState = _AreasState();
+
         // Store setState reference - will be set in StatefulBuilder
         StateSetter? dialogSetState;
         
@@ -428,8 +436,38 @@ class AddressComponent extends StatelessWidget {
         void triggerUpdate() {
           if (dialogSetState != null && context.mounted) {
             dialogSetState!(() {});
-          } else {
           }
+        }
+
+        // Fetch areas for a postal code
+        void fetchAreasForCode(String code) {
+          debugPrint('[Areas] fetchAreasForCode called: code=$code, alreadyLoaded=${areasState.loadedForPostalCode}');
+          if (code.isEmpty) return;
+          // Reset state for new fetch
+          areasState.isLoadingAreas = true;
+          areasState.areasList = [];
+          areasState.loadedForPostalCode = code;
+          // Force immediate UI update via dialogSetState
+          if (dialogSetState != null) {
+            try { dialogSetState!(() {}); } catch (_) {}
+          }
+          customerController.fetchAreasForPostalCode(code).then((areas) {
+            debugPrint('[Areas] Fetched ${areas.length} areas for $code');
+            for (final a in areas) {
+              debugPrint('[Areas]   ${a.id}: ${a.name} (enabled=${a.enabled})');
+            }
+            areasState.areasList = areas;
+            areasState.isLoadingAreas = false;
+            if (dialogSetState != null) {
+              try { dialogSetState!(() {}); } catch (_) {}
+            }
+          }).catchError((e) {
+            debugPrint('[Areas] Error fetching areas: $e');
+            areasState.isLoadingAreas = false;
+            if (dialogSetState != null) {
+              try { dialogSetState!(() {}); } catch (_) {}
+            }
+          });
         }
         
         // Trigger fetch immediately when dialog builder is called (synchronously)
@@ -475,6 +513,31 @@ class AddressComponent extends StatelessWidget {
             // Store setState reference for postal codes state updates
             dialogSetState = setState;
             postalCodesState.setStateCallback = setState;
+
+            // Fetch areas for postal code (edit mode or after selection)
+            debugPrint('[Areas] Builder: postalCode=$selectedPostalCode, loadedFor=${areasState.loadedForPostalCode}, isLoading=${areasState.isLoadingAreas}, areas=${areasState.areasList.length}');
+            if (selectedPostalCode.isNotEmpty && areasState.loadedForPostalCode != selectedPostalCode) {
+              debugPrint('[Areas] Will fetch areas for: $selectedPostalCode');
+              final codeToFetch = selectedPostalCode;
+              areasState.loadedForPostalCode = codeToFetch;
+              areasState.isLoadingAreas = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                debugPrint('[Areas] PostFrameCallback: fetching areas for $codeToFetch');
+                customerController.fetchAreasForPostalCode(codeToFetch).then((areas) {
+                  debugPrint('[Areas] Got ${areas.length} areas for $codeToFetch');
+                  for (final a in areas) {
+                    debugPrint('[Areas]   ${a.id}: ${a.name} (enabled=${a.enabled})');
+                  }
+                  areasState.areasList = areas;
+                  areasState.isLoadingAreas = false;
+                  setState(() {});
+                }).catchError((e) {
+                  debugPrint('[Areas] Fetch error: $e');
+                  areasState.isLoadingAreas = false;
+                  setState(() {});
+                });
+              });
+            }
             
             // If fetch completed before StatefulBuilder was called, trigger update now
             if (!postalCodesState.isLoadingPostalCodes) {
@@ -583,20 +646,24 @@ class AddressComponent extends StatelessWidget {
                             postalCodesState.postalCodesList,
                             postalCodesState.isLoadingPostalCodes,
                             (value) {
+                              debugPrint('[Address] Postal code selected: $value');
                               setState(() {
                                 postalController.text = value ?? '';
                                 selectedPostalCode = value ?? '';
-                                // Reset area when postal code changes
                                 selectedArea = null;
+                                // Reset areas state so it fetches fresh
+                                areasState.loadedForPostalCode = null;
+                                areasState.areasList = [];
                               });
+                              // Fetch areas for the new postal code
+                              fetchAreasForCode(value ?? '');
                             },
                             setState,
                           ),
                           SizedBox(height: ResponsiveUtils.rp(16)),
-                          _buildLandmarkField(
+                          _buildLandmarkFieldFromQuery(
                             context,
-                            selectedPostalCode,
-                            postalCodesState.postalCodesList,
+                            areasState,
                             selectedArea,
                             (value) {
                               setState(() {
@@ -1094,27 +1161,49 @@ class AddressComponent extends StatelessWidget {
     );
   }
 
-  Widget _buildLandmarkField(
+  Widget _buildLandmarkFieldFromQuery(
     BuildContext context,
-    String selectedPostalCode,
-    List<Query$PostalCodes$postalCodes> postalCodesList,
+    _AreasState areasState,
     String? selectedArea,
     ValueChanged<String?> onAreaChanged,
   ) {
-    // Get areas for the selected postal code
-    final areas = <Query$PostalCodes$postalCodes$areas>[];
-    for (final postalCode in postalCodesList) {
-      if (postalCode.code == selectedPostalCode) {
-        areas.addAll(postalCode.areas);
-      }
+    debugPrint('[Areas] _buildLandmarkFieldFromQuery: isLoading=${areasState.isLoadingAreas}, areas=${areasState.areasList.length}, selectedArea=$selectedArea, loadedFor=${areasState.loadedForPostalCode}');
+    if (areasState.isLoadingAreas) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Landmark / Area',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.sp(14),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.rp(8)),
+          Container(
+            height: ResponsiveUtils.rp(50),
+            decoration: BoxDecoration(
+              color: AppColors.inputFill,
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Center(
+              child: SizedBox(
+                width: ResponsiveUtils.rp(20),
+                height: ResponsiveUtils.rp(20),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
     }
 
-    debugPrint('LandmarkField: postalCode=$selectedPostalCode, postalCodesList=${postalCodesList.length}, areas=${areas.length}');
-    for (final a in areas) {
-      debugPrint('  area: ${a.id} - ${a.name}');
-    }
-
-    if (selectedPostalCode.isEmpty || areas.isEmpty) {
+    if (areasState.areasList.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -1137,7 +1226,9 @@ class AddressComponent extends StatelessWidget {
             border: Border.all(color: AppColors.border),
           ),
           child: DropdownButtonFormField<String>(
-            value: selectedArea != null && areas.any((a) => a.name == selectedArea) ? selectedArea : null,
+            value: selectedArea != null && areasState.areasList.any((a) => a.name == selectedArea && a.enabled)
+                ? selectedArea
+                : null,
             decoration: InputDecoration(
               hintText: 'Select Landmark / Area',
               hintStyle: TextStyle(
@@ -1155,15 +1246,25 @@ class AddressComponent extends StatelessWidget {
                 vertical: ResponsiveUtils.rp(14),
               ),
             ),
-            items: areas.map((area) {
+            items: areasState.areasList.map((area) {
               return DropdownMenuItem<String>(
-                value: area.name,
-                child: Text(
-                  area.name,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(15),
-                    color: AppColors.textPrimary,
-                  ),
+                value: area.enabled ? area.name : null,
+                enabled: area.enabled,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        area.name,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(15),
+                          color: area.enabled
+                              ? AppColors.textPrimary
+                              : AppColors.textTertiary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               );
             }).toList(),

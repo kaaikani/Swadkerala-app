@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/banner/bannercontroller.dart';
+import '../../controllers/coupon/coupon_controller.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../theme/colors.dart';
@@ -11,7 +11,7 @@ import '../../widgets/snackbar.dart';
 class CheckoutCouponBottomSheet {
   static void show({
     required BuildContext context,
-    required BannerController bannerController,
+    required CouponController bannerController,
     required CartController cartController,
     required OrderController orderController,
     required VoidCallback onStateChanged,

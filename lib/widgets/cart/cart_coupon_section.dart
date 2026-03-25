@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/banner/bannercontroller.dart';
+import '../../controllers/coupon/coupon_controller.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../theme/colors.dart';
@@ -10,7 +10,7 @@ import '../../widgets/snackbar.dart';
 import '../../graphql/banner.graphql.dart';
 
 class CartCouponSection extends StatelessWidget {
-  final BannerController bannerController;
+  final CouponController bannerController;
   final CartController cartController;
   final OrderController orderController;
   final VoidCallback onShowCouponBottomSheet;

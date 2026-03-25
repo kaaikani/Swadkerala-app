@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import '../graphql/banner.graphql.dart';
 import '../graphql/cart.graphql.dart' as cart_graphql;
 import 'price_formatter.dart';
@@ -243,11 +244,28 @@ class CouponValidationHelper {
       if (action.code == 'products_percentage_discount') {
         final targetIds = _parseIdList(argsMap['productVariantIds'] ?? '');
         if (targetIds.isEmpty) continue;
-        final inCart = targetIds.where((id) => cartVariantIds.contains(id));
-        if (inCart.isEmpty) {
-          // Products should have been auto-added; if still missing, show specific message
-          return 'The eligible products for this coupon could not be added to your cart. '
-              'Please try adding them manually.';
+        // Check if contains_products condition products are in cart — if so, skip this check
+        final conditionProductIds = <String>{};
+        for (final cond in coupon.promotion.conditions) {
+          if (cond.code == 'contains_products') {
+            final condArgs = {for (var a in cond.args) a.name: a.value};
+            conditionProductIds.addAll(_parseIdList(condArgs['productVariantIds'] ?? ''));
+          }
+        }
+        // If condition products are in cart, coupon should work — don't show error
+        if (conditionProductIds.isNotEmpty && conditionProductIds.any((id) => cartVariantIds.contains(id))) {
+          continue;
+        }
+        final missingIds = targetIds.where((id) => !cartVariantIds.contains(id)).toList();
+        if (missingIds.isNotEmpty) {
+          // Build product names from coupon's productVariants
+          final variantNames = <String>[];
+          for (final id in missingIds) {
+            final variant = coupon.productVariants.firstWhereOrNull((v) => v.id == id);
+            variantNames.add(variant?.name ?? 'Product #$id');
+          }
+          final productList = variantNames.join(', ');
+          return 'Please add the following products to your cart to use this coupon: $productList';
         }
       }
 

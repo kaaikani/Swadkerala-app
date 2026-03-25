@@ -484,14 +484,13 @@ class _AddToCartButtonState extends State<_AddToCartButton>
   Widget build(BuildContext context) {
     final resolvedSize = ResponsiveUtils.rp(42);
     
-    // Check if channel is Ind-Snacks or Ind-Non-Veg - use reactive observable
+    // Check if channel is Ind-Snacks or Swad Kerala - use reactive observable
     return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
+      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty
+          ? GraphqlService.channelTokenRx.value
           : GraphqlService.channelToken;
       final channelTokenLower = channelToken.toLowerCase();
       final isIndSnacksChannel = channelTokenLower == 'ind-snacks';
-      final isIndNonVegChannel = channelTokenLower == 'ind' || channelTokenLower == 'ind-non veg';
       final isSwadKeralaChannel = channelTokenLower == 'ind-swadkerala';
     
     // Determine colors and icon based on state
@@ -527,9 +526,6 @@ class _AddToCartButtonState extends State<_AddToCartButton>
         if (isIndSnacksChannel) {
           buttonColor1 = AppColors.buttonLight;
           buttonColor2 = AppColors.button;
-        } else if (isIndNonVegChannel) {
-          buttonColor1 = AppColors.indNonVegRedLight;
-          buttonColor2 = AppColors.indNonVegRed;
         } else if (isSwadKeralaChannel) {
           buttonColor1 = AppColors.buttonLight;
           buttonColor2 = AppColors.button;

@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import '../components/collectioncomponent.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
+import '../controllers/coupon/coupon_controller.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../graphql/product.graphql.dart';
@@ -49,6 +50,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final box = GetStorage();
   final BannerController bannerController = Get.put(BannerController());
+  final CouponController couponController = Get.put(CouponController());
   final CollectionsController collectionController =
       Get.put(CollectionsController());
   final CartController cartController = Get.put(CartController());

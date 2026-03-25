@@ -4,7 +4,7 @@ import 'graphql_client.dart';
 
 /// Centralized service for managing channel information
 /// Handles channel token, code, name, type, and postal code
-/// Examples: "ind-snacks", "ind-non-veg", etc.
+/// Examples: "ind-snacks", "ind-swadkerala", etc.
 class ChannelService {
   static final GetStorage _storage = GetStorage();
   
@@ -20,7 +20,7 @@ class ChannelService {
     return _storage.read(_channelTokenKey);
   }
 
-  /// Get channel code (e.g., "ind-snacks", "ind-non-veg")
+  /// Get channel code (e.g., "ind-snacks", "ind-swadkerala")
   static String? getChannelCode() {
     return _storage.read(_channelCodeKey);
   }
@@ -81,7 +81,7 @@ class ChannelService {
   }
 
   /// Check if a specific channel code is active
-  /// Examples: isChannelActive('ind-snacks'), isChannelActive('ind-non-veg')
+  /// Examples: isChannelActive('ind-snacks'), isChannelActive('ind-swadkerala')
   static bool isChannelActive(String channelCode) {
     final currentCode = getChannelCode();
     return currentCode != null && 

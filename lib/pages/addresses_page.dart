@@ -794,10 +794,15 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
   bool _isBrandChannel = false; // Track if channel type is BRAND
 
+  // Areas state
+  List<Query$AreasForPostalCode$areasForPostalCode> _areasList = [];
+  bool _isLoadingAreas = false;
+  String? _selectedArea;
+
   @override
   void initState() {
     super.initState();
-    
+
     // Pre-initialize controllers for better performance
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
@@ -812,33 +817,38 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
         text: autoFullName.isNotEmpty ? autoFullName : '');
     streetLine1Controller = TextEditingController();
     streetLine2Controller = TextEditingController();
-    
+
     // Check if channel type is BRAND
     final channelType = box.read('channel_type')?.toString() ?? '';
     _isBrandChannel = channelType.toUpperCase().contains('BRAND');
-    
-    
+
+
     // Only auto-fill city with channel code if NOT a BRAND channel
     cityController = TextEditingController(
         text: !_isBrandChannel && channelCode.isNotEmpty ? channelCode : '');
-    
+
     // Get postal code from local storage if available
     final storedPostalCode = box.read('postal_code');
     postalCodeController = TextEditingController(
         text: storedPostalCode != null && storedPostalCode.toString().isNotEmpty
             ? storedPostalCode.toString()
             : '');
-    
+
     // Check if channel is Ind-Snacks
     _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-    
+
     provinceController = TextEditingController();
-    
+
     phoneController = TextEditingController(
         text: autoPhone.isNotEmpty ? autoPhone : '');
-    
+
     // Fetch postal codes when form is initialized
     _fetchPostalCodes();
+
+    // Fetch areas if postal code is pre-filled
+    if (postalCodeController.text.isNotEmpty) {
+      _fetchAreasForPostalCode(postalCodeController.text);
+    }
   }
   
   /// Fetch postal codes for the current channel
@@ -859,6 +869,29 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
       if (mounted) {
         setState(() {
           _isLoadingPostalCodes = false;
+        });
+      }
+    });
+  }
+
+  void _fetchAreasForPostalCode(String code) {
+    if (code.isEmpty) return;
+    setState(() {
+      _isLoadingAreas = true;
+      _areasList = [];
+      _selectedArea = null;
+    });
+    widget.customerController.fetchAreasForPostalCode(code).then((areas) {
+      if (mounted) {
+        setState(() {
+          _areasList = areas;
+          _isLoadingAreas = false;
+        });
+      }
+    }).catchError((_) {
+      if (mounted) {
+        setState(() {
+          _isLoadingAreas = false;
         });
       }
     });
@@ -996,6 +1029,23 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                 },
                 provinceController, // Pass province controller to auto-populate state
               ),
+              if (_isLoadingAreas) ...[
+                SizedBox(height: 16),
+                Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColors.inputFill,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Center(
+                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(AppColors.button))),
+                  ),
+                ),
+              ] else if (_areasList.isNotEmpty) ...[
+                SizedBox(height: 16),
+                _buildAreaDropdownField(),
+              ],
               SizedBox(height: 16),
               // Show State field only if channel is Ind-Snacks
               if (_isIndSnacksChannel) ...[
@@ -1193,8 +1243,11 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                           defaultShippingAddress: shouldBeDefault,
                           defaultBillingAddress: shouldBeDefault,
                           country: country,
+                          customFields: _selectedArea != null
+                              ? Query$GetActiveCustomer$activeCustomer$addresses$customFields(area: _selectedArea)
+                              : null,
                         );
-                        
+
                         // If setting as default, unset other addresses first
                         if (shouldBeDefault && !isFirstAddress) {
                           // Unset all other addresses as default
@@ -1550,6 +1603,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                     controller.text = value;
                   });
                   onChanged();
+                  _fetchAreasForPostalCode(value);
                 }
               },
               dropdownColor: AppColors.surface,
@@ -1588,6 +1642,58 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     );
   }
 
+  Widget _buildAreaDropdownField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Landmark / Area', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.inputFill,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: DropdownButtonFormField<String>(
+            value: _selectedArea != null && _areasList.any((a) => a.name == _selectedArea && a.enabled) ? _selectedArea : null,
+            decoration: InputDecoration(
+              hintText: 'Select Landmark / Area',
+              hintStyle: TextStyle(color: AppColors.textTertiary, fontSize: 14),
+              prefixIcon: Icon(Icons.place_outlined, color: AppColors.textSecondary, size: 20),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+            items: _areasList.map((area) {
+              return DropdownMenuItem<String>(
+                value: area.enabled ? area.name : null,
+                enabled: area.enabled,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        area.name,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: area.enabled ? AppColors.textPrimary : AppColors.textTertiary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() { _selectedArea = value; });
+            },
+            dropdownColor: AppColors.surface,
+            style: TextStyle(fontSize: 15, color: AppColors.textPrimary),
+          ),
+        ),
+      ],
+    );
+  }
+
 }
 class _EditAddressFormWidget extends StatefulWidget {
   final dynamic existingAddress;
@@ -1614,17 +1720,22 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   late final TextEditingController postalCodeController;
   late final TextEditingController provinceController;
   late final TextEditingController phoneController;
-  
+
   // Postal codes state
   List<Query$PostalCodes$postalCodes> _postalCodesList = [];
   bool _isLoadingPostalCodes = true;
   bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
   bool _isBrandChannel = false; // Track if channel type is BRAND
 
+  // Areas state
+  List<Query$AreasForPostalCode$areasForPostalCode> _areasList = [];
+  bool _isLoadingAreas = false;
+  String? _selectedArea;
+
   @override
   void initState() {
     super.initState();
-    
+
     // Pre-initialize controllers for better performance
     final existingAddress = widget.existingAddress;
     fullNameController = TextEditingController(
@@ -1636,12 +1747,12 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
     final channelToken = box.read('channel_token')?.toString() ?? '';
-    
+
     // Check if channel type is BRAND
     final channelType = box.read('channel_type')?.toString() ?? '';
     _isBrandChannel = channelType.toUpperCase().contains('BRAND');
-    
-    
+
+
     // Only auto-fill city with channel code if NOT a BRAND channel
     cityController = TextEditingController(
         text: !_isBrandChannel && channelCode.isNotEmpty
@@ -1649,10 +1760,10 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
             : (existingAddress?.city ?? ''));
     postalCodeController = TextEditingController(
         text: existingAddress?.postalCode ?? '');
-    
+
     // Check if channel is Ind-Snacks
     _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-    
+
     provinceController = TextEditingController();
     
     phoneController = TextEditingController(
@@ -1665,8 +1776,16 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     if (_isIndSnacksChannel && existingAddress?.postalCode != null && existingAddress!.postalCode.isNotEmpty) {
       _fetchStateForPostalCode(existingAddress.postalCode);
     }
+
+    // Pre-set selected area from existing address customFields
+    _selectedArea = (widget.existingAddress as Query$GetActiveCustomer$activeCustomer$addresses?)?.customFields?.area;
+
+    // Fetch areas if postal code is pre-filled
+    if (existingAddress?.postalCode != null && existingAddress!.postalCode.isNotEmpty) {
+      _fetchAreasForPostalCode(existingAddress.postalCode);
+    }
   }
-  
+
   /// Fetch postal codes for the current channel
   void _fetchPostalCodes() {
     widget.customerController.fetchPostalCodes().then((codes) {
@@ -1704,6 +1823,34 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
       }
     } catch (e) {
     }
+  }
+
+  void _fetchAreasForPostalCode(String code) {
+    if (code.isEmpty) return;
+    setState(() {
+      _isLoadingAreas = true;
+      _areasList = [];
+      _selectedArea = null;
+    });
+    widget.customerController.fetchAreasForPostalCode(code).then((areas) {
+      if (mounted) {
+        setState(() {
+          _areasList = areas;
+          _isLoadingAreas = false;
+          // Re-set selected area from existing address if available in fetched areas
+          final existingArea = (widget.existingAddress as Query$GetActiveCustomer$activeCustomer$addresses?)?.customFields?.area;
+          if (existingArea != null && areas.any((a) => a.name == existingArea && a.enabled)) {
+            _selectedArea = existingArea;
+          }
+        });
+      }
+    }).catchError((_) {
+      if (mounted) {
+        setState(() {
+          _isLoadingAreas = false;
+        });
+      }
+    });
   }
 
   @override
@@ -1845,6 +1992,23 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                 },
                 provinceController, // Pass province controller to auto-populate state
               ),
+              if (_isLoadingAreas) ...[
+                SizedBox(height: 16),
+                Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColors.inputFill,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Center(
+                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(AppColors.button))),
+                  ),
+                ),
+              ] else if (_areasList.isNotEmpty) ...[
+                SizedBox(height: 16),
+                _buildAreaDropdownField(),
+              ],
               SizedBox(height: 16),
               // Show State field only if channel is Ind-Snacks
               if (_isIndSnacksChannel) ...[
@@ -2075,13 +2239,16 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                           defaultShippingAddress: shouldBeDefault,
                           defaultBillingAddress: shouldBeDefault,
                           country: country,
+                          customFields: _selectedArea != null
+                              ? Query$GetActiveCustomer$activeCustomer$addresses$customFields(area: _selectedArea)
+                              : null,
                         );
 
                         // For Ind-Snacks channel, use province from field; for others, use 'Tamilnadu' as default
-                        final provinceValue = _isIndSnacksChannel 
+                        final provinceValue = _isIndSnacksChannel
                             ? (provinceController.text.trim().isEmpty ? null : provinceController.text.trim())
                             : 'Tamilnadu';
-                        
+
                         final success = await widget.customerController
                             .updateAddress(addressData, province: provinceValue);
 
@@ -2400,6 +2567,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                     controller.text = value;
                   });
                   onChanged();
+                  _fetchAreasForPostalCode(value);
                 }
               },
               dropdownColor: AppColors.surface,
@@ -2434,6 +2602,58 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildAreaDropdownField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Landmark / Area', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+        SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.inputFill,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: DropdownButtonFormField<String>(
+            value: _selectedArea != null && _areasList.any((a) => a.name == _selectedArea && a.enabled) ? _selectedArea : null,
+            decoration: InputDecoration(
+              hintText: 'Select Landmark / Area',
+              hintStyle: TextStyle(color: AppColors.textTertiary, fontSize: 14),
+              prefixIcon: Icon(Icons.place_outlined, color: AppColors.textSecondary, size: 20),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+            items: _areasList.map((area) {
+              return DropdownMenuItem<String>(
+                value: area.enabled ? area.name : null,
+                enabled: area.enabled,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        area.name,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: area.enabled ? AppColors.textPrimary : AppColors.textTertiary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() { _selectedArea = value; });
+            },
+            dropdownColor: AppColors.surface,
+            style: TextStyle(fontSize: 15, color: AppColors.textPrimary),
+          ),
+        ),
       ],
     );
   }

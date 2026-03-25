@@ -17,7 +17,7 @@ import '../../widgets/error_dialog.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../customer/customer_controller.dart';
 import '../cart/Cartcontroller.dart';
-import '../banner/bannercontroller.dart';
+import '../coupon/coupon_controller.dart';
 import '../order/ordercontroller.dart';
 import '../base_controller.dart';
 import '../../services/analytics_service.dart';
@@ -868,11 +868,11 @@ class AuthController extends BaseController {
           cartController.clearCart();
         }
 
-        if (Get.isRegistered<BannerController>()) {
-          final bannerController = Get.find<BannerController>();
-          bannerController.availableCouponCodes.clear();
-          bannerController.couponCodesLoaded.value = false;
-          bannerController.appliedCouponCodes.clear();
+        if (Get.isRegistered<CouponController>()) {
+          final couponController = Get.find<CouponController>();
+          couponController.availableCouponCodes.clear();
+          couponController.couponCodesLoaded.value = false;
+          couponController.appliedCouponCodes.clear();
         }
 
         if (Get.isRegistered<UtilityController>()) {

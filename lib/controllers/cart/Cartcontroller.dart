@@ -10,6 +10,7 @@ import '../order/ordercontroller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../base_controller.dart';
 import '../banner/bannercontroller.dart';
+import '../coupon/coupon_controller.dart';
 import '../../utils/logger.dart';
 
 class CartController extends BaseController {
@@ -132,8 +133,8 @@ class CartController extends BaseController {
       // Note: This is less critical when adding items (cart total increases)
       // but we still check in case multiple items were removed elsewhere
       try {
-        final bannerController = Get.find<BannerController>();
-        await bannerController.validateAndRemoveCouponsIfNeeded();
+        final couponController = Get.find<CouponController>();
+        await couponController.validateAndRemoveCouponsIfNeeded();
       } catch (e) {
       }
 
@@ -244,7 +245,7 @@ class CartController extends BaseController {
           // Extract loyalty points from response before converting to Fragment$Cart
           // The response.parsedData?.activeOrder is Query$ActiveOrder$activeOrder which has customFields
           try {
-            final bannerController = Get.find<BannerController>();
+            final bannerCtrl = Get.find<BannerController>();
             if (response.parsedData?.activeOrder != null) {
               final activeOrder = response.parsedData!.activeOrder!;
               // activeOrder is Query$ActiveOrder$activeOrder type which has customFields
@@ -252,25 +253,25 @@ class CartController extends BaseController {
                 final customFields = activeOrder.customFields as Query$ActiveOrder$activeOrder$customFields;
                 final loyaltyPointsUsed = customFields.loyaltyPointsUsed;
                 if (loyaltyPointsUsed != null && loyaltyPointsUsed > 0) {
-                  bannerController.loyaltyPointsUsed.value = loyaltyPointsUsed;
-                  bannerController.loyaltyPointsApplied.value = true;
+                  bannerCtrl.loyaltyPointsUsed.value = loyaltyPointsUsed;
+                  bannerCtrl.loyaltyPointsApplied.value = true;
                 } else {
                   // If loyaltyPointsUsed is 0 or null, reset the applied state
-                  bannerController.loyaltyPointsUsed.value = 0;
-                  bannerController.loyaltyPointsApplied.value = false;
+                  bannerCtrl.loyaltyPointsUsed.value = 0;
+                  bannerCtrl.loyaltyPointsApplied.value = false;
                 }
               } else {
                 // If customFields is null, reset the applied state
-                bannerController.loyaltyPointsUsed.value = 0;
-                bannerController.loyaltyPointsApplied.value = false;
+                bannerCtrl.loyaltyPointsUsed.value = 0;
+                bannerCtrl.loyaltyPointsApplied.value = false;
               }
             }
           } catch (e) {
             // Reset on error to ensure UI is in correct state
             try {
-              final bannerController = Get.find<BannerController>();
-              bannerController.loyaltyPointsUsed.value = 0;
-              bannerController.loyaltyPointsApplied.value = false;
+              final bannerCtrl = Get.find<BannerController>();
+              bannerCtrl.loyaltyPointsUsed.value = 0;
+              bannerCtrl.loyaltyPointsApplied.value = false;
             } catch (_) {}
           }
           
@@ -288,10 +289,10 @@ class CartController extends BaseController {
           }
           // Restore coupon tracking from cart (before validation)
           try {
-            final bannerController = Get.find<BannerController>();
-            await bannerController.restoreCouponTrackingFromCart();
+            final couponController = Get.find<CouponController>();
+            await couponController.restoreCouponTrackingFromCart();
             // Then validate and remove coupons if cart total is below minimum
-            await bannerController.validateAndRemoveCouponsIfNeeded();
+            await couponController.validateAndRemoveCouponsIfNeeded();
           } catch (e) {
           }
           
@@ -304,8 +305,8 @@ class CartController extends BaseController {
           _updateAppBadge();
           // Remove any applied coupons when cart is empty
           try {
-            final bannerController = Get.find<BannerController>();
-            await bannerController.validateAndRemoveCouponsIfNeeded();
+            final couponController = Get.find<CouponController>();
+            await couponController.validateAndRemoveCouponsIfNeeded();
           } catch (e) {
           }
           
@@ -477,8 +478,8 @@ class CartController extends BaseController {
 
       // Validate and remove coupons if cart total is below minimum
       try {
-        final bannerController = Get.find<BannerController>();
-        await bannerController.validateAndRemoveCouponsIfNeeded();
+        final couponController = Get.find<CouponController>();
+        await couponController.validateAndRemoveCouponsIfNeeded();
       } catch (e) {
       }
 
@@ -579,11 +580,11 @@ class CartController extends BaseController {
     error.value = null;
     _updateAppBadge(); // Update badge when cart is cleared
     try {
-      final bannerController = Get.find<BannerController>();
+      final couponController = Get.find<CouponController>();
       if (skipCouponValidation) {
-        bannerController.resetCouponCodes();
+        couponController.resetCouponCodes();
       } else {
-        await bannerController.validateAndRemoveCouponsIfNeeded();
+        await couponController.validateAndRemoveCouponsIfNeeded();
       }
     } catch (e) {
     }

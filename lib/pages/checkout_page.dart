@@ -6,6 +6,7 @@ import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/banner/bannercontroller.dart';
+import '../controllers/coupon/coupon_controller.dart';
 import '../controllers/theme_controller.dart';
 import '../services/razorpay_service.dart';
 import '../services/analytics_service.dart';
@@ -40,6 +41,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   final UtilityController utilityController = Get.find<UtilityController>();
   final CustomerController customerController = Get.find<CustomerController>();
   final BannerController bannerController = Get.find<BannerController>();
+  final CouponController couponController = Get.find<CouponController>();
   final ThemeController themeController = Get.find<ThemeController>();
 
   late RazorpayService _razorpayService;
@@ -405,10 +407,10 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
 
   Future<void> _loadCouponCodes() async {
     try {
-      await bannerController.getCouponCodeList();
-      if (bannerController.availableCouponCodes.isNotEmpty) {
-        for (int i = 0; i < bannerController.availableCouponCodes.length; i++) {
-          // final coupon = bannerController.availableCouponCodes[i]; // Unused variable
+      await couponController.getCouponCodeList();
+      if (couponController.availableCouponCodes.isNotEmpty) {
+        for (int i = 0; i < couponController.availableCouponCodes.length; i++) {
+          // final coupon = couponController.availableCouponCodes[i]; // Unused variable
         }
       } else {
       }
@@ -478,17 +480,17 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       if (cart != null && cart.couponCodes.isNotEmpty) {
         // Sync applied coupon codes with the order
         for (final couponCode in cart.couponCodes) {
-          if (!bannerController.appliedCouponCodes.contains(couponCode)) {
-            bannerController.appliedCouponCodes.add(couponCode);
+          if (!couponController.appliedCouponCodes.contains(couponCode)) {
+            couponController.appliedCouponCodes.add(couponCode);
           }
         }
         
         // Remove any coupon codes that are not in the order
-        final codesToRemove = bannerController.appliedCouponCodes
+        final codesToRemove = couponController.appliedCouponCodes
             .where((code) => !cart.couponCodes.contains(code))
             .toList();
         for (final code in codesToRemove) {
-          bannerController.appliedCouponCodes.remove(code);
+          couponController.appliedCouponCodes.remove(code);
         }
       } else {
       }
@@ -1190,6 +1192,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                                     orderController: orderController,
                                     utilityController: utilityController,
                                     bannerController: bannerController,
+                                    couponController: couponController,
                                   ),
                                   
                                   SizedBox(height: ResponsiveUtils.rp(16)),

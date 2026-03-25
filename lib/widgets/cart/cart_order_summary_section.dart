@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../controllers/banner/bannercontroller.dart';
+import '../../controllers/coupon/coupon_controller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../graphql/schema.graphql.dart';
@@ -11,12 +12,14 @@ class CartOrderSummarySection extends StatefulWidget {
   final CartController cartController;
   final OrderController orderController;
   final BannerController bannerController;
+  final CouponController couponController;
 
   const CartOrderSummarySection({
     super.key,
     required this.cartController,
     required this.orderController,
     required this.bannerController,
+    required this.couponController,
   });
 
   @override
@@ -69,7 +72,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
       }
       // Also check line-level discounts if order-level discounts are 0
       // Some promotions (e.g. products_percentage_discount) apply at the line level
-      if (couponDiscountTotal == 0 && widget.bannerController.appliedCouponCodes.isNotEmpty) {
+      if (couponDiscountTotal == 0 && widget.couponController.appliedCouponCodes.isNotEmpty) {
         for (final line in cart.lines) {
           if (line.discounts.isNotEmpty) {
             couponDiscountTotal += line.discounts
@@ -83,10 +86,10 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
       // Get applied coupon name and discount percentage
       String? appliedCouponName;
       String? discountPercentage;
-      if (widget.bannerController.appliedCouponCodes.isNotEmpty) {
-        final appliedCode = widget.bannerController.appliedCouponCodes.first;
-        if (widget.bannerController.availableCouponCodes.isNotEmpty) {
-          final coupon = widget.bannerController.availableCouponCodes.firstWhereOrNull(
+      if (widget.couponController.appliedCouponCodes.isNotEmpty) {
+        final appliedCode = widget.couponController.appliedCouponCodes.first;
+        if (widget.couponController.availableCouponCodes.isNotEmpty) {
+          final coupon = widget.couponController.availableCouponCodes.firstWhereOrNull(
             (c) => c.promotion.couponCode == appliedCode,
           );
           appliedCouponName = coupon?.promotion.name.isNotEmpty == true
@@ -311,7 +314,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
               ),
             ],
               // Coupon Code Used
-              if (widget.bannerController.appliedCouponCodes.isNotEmpty && appliedCouponName != null) ...[
+              if (widget.couponController.appliedCouponCodes.isNotEmpty && appliedCouponName != null) ...[
               SizedBox(height: ResponsiveUtils.rp(8)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

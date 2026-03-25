@@ -20,6 +20,7 @@ import '../base_controller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../authentication/authenticationcontroller.dart';
 import '../banner/bannercontroller.dart';
+import '../coupon/coupon_controller.dart';
 import '../collection controller/collectioncontroller.dart';
 import '../cart/Cartcontroller.dart';
 import '../order/ordercontroller.dart';
@@ -182,12 +183,15 @@ class CustomerController extends BaseController {
         totalOrdersCount.value = 0;
         hasMoreOrders.value = false;
         error.value = '';
+        final List<Future> futures = [];
+        if (Get.isRegistered<CouponController>()) {
+          futures.add(Get.find<CouponController>().getCouponCodeList());
+        }
         if (Get.isRegistered<BannerController>()) {
-          final bannerController = Get.find<BannerController>();
-          Future.wait([
-            bannerController.getCouponCodeList(),
-            bannerController.fetchLoyaltyPointsConfig(),
-          ], eagerError: false).catchError((_) => <void>[]);
+          futures.add(Get.find<BannerController>().fetchLoyaltyPointsConfig());
+        }
+        if (futures.isNotEmpty) {
+          Future.wait(futures, eagerError: false).catchError((_) => <void>[]);
         }
         return;
       }
@@ -282,16 +286,21 @@ class CustomerController extends BaseController {
         }
         
         // Load coupon codes and loyalty points config in parallel (fire and forget)
-        if (Get.isRegistered<BannerController>()) {
-          final bannerController = Get.find<BannerController>();
-          Future.wait([
-            bannerController.getCouponCodeList(),
-            bannerController.fetchLoyaltyPointsConfig(),
-          ], eagerError: false).then((_) {
-            // Data loaded successfully
-          }).catchError((_) {
-            // Silently handle errors - these are supplementary data
-          });
+        {
+          final List<Future> futures = [];
+          if (Get.isRegistered<CouponController>()) {
+            futures.add(Get.find<CouponController>().getCouponCodeList());
+          }
+          if (Get.isRegistered<BannerController>()) {
+            futures.add(Get.find<BannerController>().fetchLoyaltyPointsConfig());
+          }
+          if (futures.isNotEmpty) {
+            Future.wait(futures, eagerError: false).then((_) {
+              // Data loaded successfully
+            }).catchError((_) {
+              // Silently handle errors - these are supplementary data
+            });
+          }
         }
         
         // Check if postal code is in local storage, if not get from shipping address
@@ -1591,6 +1600,40 @@ class CustomerController extends BaseController {
         return [];
       }
       handleException(e, customErrorMessage: 'Failed to fetch postal codes');
+      return [];
+    }
+  }
+
+  /// Fetch areas for a specific postal code
+  Future<List<Query$AreasForPostalCode$areasForPostalCode>> fetchAreasForPostalCode(String code) async {
+    debugPrint('[Areas] fetchAreasForPostalCode() called with code=$code');
+    debugPrint('[Areas] channelToken=${GraphqlService.channelToken}');
+    debugPrint('[Areas] authToken=${GraphqlService.authToken.isNotEmpty ? "present" : "empty"}');
+    try {
+      final response = await GraphqlService.client.value.query$AreasForPostalCode(
+        Options$Query$AreasForPostalCode(
+          variables: Variables$Query$AreasForPostalCode(code: code),
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
+      debugPrint('[Areas] response: hasException=${response.hasException}, data=${response.data}');
+      if (response.hasException) {
+        debugPrint('[Areas] exception: ${response.exception}');
+        if (response.exception?.graphqlErrors != null) {
+          for (final err in response.exception!.graphqlErrors) {
+            debugPrint('[Areas] graphqlError: ${err.message}');
+          }
+        }
+        return [];
+      }
+      final areas = response.parsedData?.areasForPostalCode ?? [];
+      debugPrint('[Areas] parsed ${areas.length} areas');
+      for (final a in areas) {
+        debugPrint('[Areas]   id=${a.id}, name=${a.name}, enabled=${a.enabled}');
+      }
+      return areas;
+    } catch (e) {
+      debugPrint('[Areas] EXCEPTION: $e');
       return [];
     }
   }

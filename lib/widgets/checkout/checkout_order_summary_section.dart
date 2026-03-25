@@ -4,6 +4,7 @@ import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
 import '../../controllers/utilitycontroller/utilitycontroller.dart';
 import '../../controllers/banner/bannercontroller.dart';
+import '../../controllers/coupon/coupon_controller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/price_formatter.dart';
@@ -15,6 +16,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
   final OrderController orderController;
   final UtilityController utilityController;
   final BannerController bannerController;
+  final CouponController couponController;
 
   const CheckoutOrderSummarySection({
     super.key,
@@ -22,6 +24,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
     required this.orderController,
     required this.utilityController,
     required this.bannerController,
+    required this.couponController,
   });
 
   Widget _buildSummaryRow(
@@ -110,14 +113,14 @@ class CheckoutOrderSummarySection extends StatelessWidget {
       final hasFreeShipping = cartController.hasFreeShippingCoupon();
       
       // Get applied coupon details
-      final appliedCouponCode = bannerController.getCurrentlyAppliedCoupon();
+      final appliedCouponCode = couponController.getCurrentlyAppliedCoupon();
       String? appliedCouponName;
       bool hasFreeShippingInCoupon = false;
 
       if (appliedCouponCode != null) {
         Query$GetCouponCodeList$getCouponCodeList$items? coupon;
         try {
-          coupon = bannerController.availableCouponCodes.firstWhere(
+          coupon = couponController.availableCouponCodes.firstWhere(
             (c) => (c.promotion.couponCode ?? '').toUpperCase() == appliedCouponCode.toUpperCase(),
           );
         } catch (e) {
@@ -174,7 +177,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
       }
       // Also check line-level discounts if order-level is 0
       // Some promotions (e.g. products_percentage_discount) apply at line level
-      if (couponDiscount == 0 && cart != null && bannerController.appliedCouponCodes.isNotEmpty) {
+      if (couponDiscount == 0 && cart != null && couponController.appliedCouponCodes.isNotEmpty) {
         for (final line in cart.lines) {
           if (line.discounts.isNotEmpty) {
             couponDiscount += line.discounts
@@ -185,7 +188,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
         }
       }
       // Final fallback: calculate from subtotal and total
-      if (couponDiscount == 0 && bannerController.appliedCouponCodes.isNotEmpty) {
+      if (couponDiscount == 0 && couponController.appliedCouponCodes.isNotEmpty) {
         final totalDiscount = (subtotal + (hasFreeShipping ? 0 : shipping) - total);
         couponDiscount = (totalDiscount - loyaltyDiscountAmount).toInt().abs();
       }
@@ -311,7 +314,7 @@ class CheckoutOrderSummarySection extends StatelessWidget {
                     ],
                   ),
                 ],
-                if (bannerController.appliedCouponCodes.isNotEmpty && couponDiscount > 0) ...[
+                if (couponController.appliedCouponCodes.isNotEmpty && couponDiscount > 0) ...[
                   SizedBox(height: ResponsiveUtils.rp(12)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

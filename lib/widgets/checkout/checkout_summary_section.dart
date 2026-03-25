@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/cart/Cartcontroller.dart';
 import '../../controllers/order/ordercontroller.dart';
+import '../../controllers/coupon/coupon_controller.dart';
 import '../../controllers/banner/bannercontroller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
@@ -23,6 +24,7 @@ class CheckoutSummarySection extends StatefulWidget {
 }
 
 class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
+  late final CouponController couponController;
   late final BannerController bannerController;
   bool _showAllProducts = false;
   bool _showAllSummaryDetails = false;
@@ -30,6 +32,7 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
   @override
   void initState() {
     super.initState();
+    couponController = Get.find<CouponController>();
     bannerController = Get.find<BannerController>();
     // Auto-expand if any item is unavailable (isAvailable false, out of stock, or disabled)
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,7 +64,7 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
         Obx(() {
           // Observe both cart and coupon products to update UI when coupon is applied
           final cart = widget.cartController.cart.value;
-          final _ = bannerController.couponAddedProducts; // Observe coupon products
+          final _ = couponController.couponAddedProducts; // Observe coupon products
           if (cart == null) return SizedBox.shrink();
 
           final shippingMethod = widget.orderController.selectedShippingMethod.value;
@@ -682,8 +685,8 @@ class _CheckoutSummarySectionState extends State<CheckoutSummarySection> {
   /// Check if a product variant was added by any coupon code
   bool _isProductAddedByCoupon(String variantId) {
     // Check all coupon-added products to see if this variant ID is in any map
-    for (final couponCode in bannerController.couponAddedProducts.keys) {
-      final addedProducts = bannerController.couponAddedProducts[couponCode];
+    for (final couponCode in couponController.couponAddedProducts.keys) {
+      final addedProducts = couponController.couponAddedProducts[couponCode];
       if (addedProducts != null && addedProducts.containsKey(variantId)) {
         return true;
       }

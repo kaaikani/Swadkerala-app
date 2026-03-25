@@ -3351,6 +3351,7 @@ input PhoneOtpInput {
 type PostalCodeArea {
   id: ID!
   name: String!
+  enabled: Boolean!
 }
 
 type PostalCode {
@@ -3780,6 +3781,7 @@ type Query {
   loyaltyPointsConfig: LoyaltyPointsConfig
   frequentlyOrderedProducts: [FrequentlyOrderedProduct!]!
   postalCodes: [PostalCode!]!
+  areasForPostalCode(code: String!): [PostalCodeArea!]!
 
   """
   Get all channels with availability based on postal code.
