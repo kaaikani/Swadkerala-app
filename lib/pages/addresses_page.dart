@@ -1679,6 +1679,17 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                         ),
                       ),
                     ),
+                    if (!area.enabled) ...[
+                      SizedBox(width: 8),
+                      Text(
+                        'Service not available',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.red.shade400,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               );
@@ -2643,6 +2654,17 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                         ),
                       ),
                     ),
+                    if (!area.enabled) ...[
+                      SizedBox(width: 8),
+                      Text(
+                        'Service not available',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.red.shade400,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               );

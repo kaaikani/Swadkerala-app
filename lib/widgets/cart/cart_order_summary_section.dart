@@ -41,20 +41,14 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
       // Cart is updated directly from coupon response, order may have stale data
       final finalTotal = cart.totalWithTax.toInt();
       
-      // Get loyalty discount from cart discounts first (updated after coupon), fallback to order
-      // Vendure returns discount amounts as negative values, so use .abs()
-      int loyaltyDiscount = 0;
-      if (cart.discounts.isNotEmpty) {
-        loyaltyDiscount = cart.discounts
-            .where((discount) => discount.type != Enum$AdjustmentType.PROMOTION &&
-                                 discount.type != Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
-            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt().abs());
-      } else if (order != null && order.discounts.isNotEmpty) {
-        loyaltyDiscount = order.discounts
-            .where((discount) => discount.type != Enum$AdjustmentType.PROMOTION &&
-                                 discount.type != Enum$AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
-            .fold(0, (sum, discount) => sum + discount.amountWithTax.toInt().abs());
-      }
+      // Calculate loyalty discount from bannerController values (points / pointsPerRupee * 100 for paise)
+      final loyaltyPointsUsed = widget.bannerController.loyaltyPointsUsed.value;
+      final loyaltyPointsApplied = widget.bannerController.loyaltyPointsApplied.value;
+      final loyaltyConfig = widget.bannerController.loyaltyPointsConfig.value;
+      final pointsPerRupee = loyaltyConfig?.pointsPerRupee ?? 0;
+      int loyaltyDiscount = loyaltyPointsApplied && loyaltyPointsUsed > 0 && pointsPerRupee > 0
+          ? (loyaltyPointsUsed / pointsPerRupee * 100).toInt()
+          : 0;
 
       // Get coupon discount from cart discounts first (updated after coupon), fallback to order
       // Vendure returns discount amounts as negative values, so use .abs() to get positive total
@@ -183,7 +177,7 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                   Text(
                     // Vendure's subTotalWithTax already has coupon discount applied,
                     // so add it back to show the original subtotal before discount
-                    widget.cartController.formatPrice(cart.subTotalWithTax.toInt() + couponDiscountTotal),
+                    widget.cartController.formatPrice(cart.subTotalWithTax.toInt() + couponDiscountTotal + loyaltyDiscount),
                     style: TextStyle(
                       fontSize: ResponsiveUtils.sp(14),
                       fontWeight: FontWeight.w600,
@@ -249,8 +243,8 @@ class _CartOrderSummarySectionState extends State<CartOrderSummarySection> {
                 ),
               ],
             ),
-              // Points Applied
-              if (widget.bannerController.loyaltyPointsApplied.value && widget.bannerController.loyaltyPointsUsed.value > 0) ...[
+              // Points Applied - only show when loyalty discount is actually > 0
+              if (widget.bannerController.loyaltyPointsApplied.value && widget.bannerController.loyaltyPointsUsed.value > 0 && loyaltyDiscount > 0) ...[
                 SizedBox(height: ResponsiveUtils.rp(8)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' show Rect;
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -468,18 +469,36 @@ class BillGenerator {
       );
     }
 
-    // Loyalty points from order customFields; discount in rupees from fetch loyalty config (Points per Rupee)
-    final loyaltyPointsUsed = order.customFields?.loyaltyPointsUsed ?? 0;
+    // Loyalty points: try order customFields first, fallback to bannerController (for active orders)
+    int loyaltyPointsUsed = order.customFields?.loyaltyPointsUsed ?? 0;
     final loyaltyPointsEarned = order.customFields?.loyaltyPointsEarned ?? 0;
-    double loyaltyDiscountRupees = 0.0;
-    if (loyaltyPointsUsed > 0 && loyaltyConfig != null) {
-      final pointsPerRupee = loyaltyConfig.pointsPerRupee as int?;
-      if (pointsPerRupee != null && pointsPerRupee > 0) {
-        loyaltyDiscountRupees = loyaltyPointsUsed / pointsPerRupee.toDouble();
-      } else {
-        loyaltyDiscountRupees = loyaltyPointsUsed.toDouble();
+    debugPrint('[BillGen] loyaltyPointsUsed from order: $loyaltyPointsUsed, loyaltyPointsEarned: $loyaltyPointsEarned, loyaltyConfig: ${loyaltyConfig != null}');
+    if (loyaltyPointsUsed == 0 && Get.isRegistered<BannerController>()) {
+      final bc = Get.find<BannerController>();
+      if (bc.loyaltyPointsApplied.value && bc.loyaltyPointsUsed.value > 0) {
+        loyaltyPointsUsed = bc.loyaltyPointsUsed.value;
       }
     }
+    double loyaltyDiscountRupees = 0.0;
+    if (loyaltyPointsUsed > 0) {
+      int? pointsPerRupee;
+      if (loyaltyConfig != null) {
+        pointsPerRupee = loyaltyConfig.pointsPerRupee as int?;
+      }
+      // Fallback: try bannerController config if loyaltyConfig is null
+      if ((pointsPerRupee == null || pointsPerRupee == 0) && Get.isRegistered<BannerController>()) {
+        final bc = Get.find<BannerController>();
+        final config = bc.loyaltyPointsConfig.value;
+        if (config != null && config.pointsPerRupee > 0) {
+          pointsPerRupee = config.pointsPerRupee;
+        }
+      }
+      debugPrint('[BillGen] pointsPerRupee resolved: $pointsPerRupee');
+      if (pointsPerRupee != null && pointsPerRupee > 0) {
+        loyaltyDiscountRupees = loyaltyPointsUsed / pointsPerRupee.toDouble();
+      }
+    }
+    debugPrint('[BillGen] Final: loyaltyPointsUsed=$loyaltyPointsUsed, loyaltyDiscountRupees=$loyaltyDiscountRupees');
 
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.end,
@@ -513,8 +532,8 @@ class BillGenerator {
             ],
           ),
         ],
-        // Show loyalty points used if applied
-        if (loyaltyPointsUsed > 0) ...[
+        // Show loyalty points used if applied and discount is > 0
+        if (loyaltyPointsUsed > 0 && loyaltyDiscountRupees > 0) ...[
           pw.SizedBox(height: 4),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.end,

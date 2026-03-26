@@ -1018,7 +1018,31 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                           },
                         ),
                       ),
+                    
                       SizedBox(height: ResponsiveUtils.rp(8)),
+                      
+                      // Coupon Section - hide for guest
+                      Obx(() {
+                        final authController = Get.find<AuthController>();
+                        if (!authController.isLoggedIn) return const SizedBox.shrink();
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+                          child: CartCouponSection(
+                            bannerController: couponController,
+                            cartController: cartController,
+                            orderController: orderController,
+                            onShowCouponBottomSheet: () {
+                              CartCouponBottomSheet.show(
+                                context: context,
+                                bannerController: couponController,
+                                cartController: cartController,
+                              );
+                            },
+                          ),
+                        );
+                      }),
+                      SizedBox(height: ResponsiveUtils.rp(8)),
+                        SizedBox(height: ResponsiveUtils.rp(8)),
                       
                       // Loyalty Points Section (below shipping method)
                       Obx(() {
@@ -1072,30 +1096,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                           ),
                         );
                       }),
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-                      
-                      // Coupon Section - hide for guest
-                      Obx(() {
-                        final authController = Get.find<AuthController>();
-                        if (!authController.isLoggedIn) return const SizedBox.shrink();
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                          child: CartCouponSection(
-                            bannerController: couponController,
-                            cartController: cartController,
-                            orderController: orderController,
-                            onShowCouponBottomSheet: () {
-                              CartCouponBottomSheet.show(
-                                context: context,
-                                bannerController: couponController,
-                                cartController: cartController,
-                              );
-                            },
-                          ),
-                        );
-                      }),
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-                      
                       // Other Instructions Section (Small)
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
