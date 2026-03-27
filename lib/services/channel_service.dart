@@ -50,11 +50,10 @@ class ChannelService {
     String? postalCode,
   }) async {
     debugPrint('[UpdateLocation] ChannelService.setChannelInfo called: code=$code, name=$name, type=$type, postalCode=$postalCode, token=${token != null ? "***" : null}');
-    if (token != null) {
-      await _storage.write(_channelTokenKey, token);
-      await GraphqlService.setToken(key: 'channel', token: token);
-      debugPrint('[UpdateLocation] ChannelService: channel_token and GraphQL token written');
-    }
+    // Always enforce ind-Swadkerala channel token
+    const enforcedToken = 'ind-Swadkerala';
+    await _storage.write(_channelTokenKey, enforcedToken);
+    await GraphqlService.setToken(key: 'channel', token: enforcedToken);
     if (code != null) {
       await _storage.write(_channelCodeKey, code);
       debugPrint('[UpdateLocation] ChannelService: channel_code=$code written');

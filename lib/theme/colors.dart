@@ -1,99 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../controllers/theme_controller.dart';
-import '../services/graphql_client.dart';
 
-/// Green-inspired Theme - Fresh green & lime palette
-/// With channel-based theming:
-/// - Default: Green theme
-/// - Ind-Snacks: Brown/Orange theme
-/// - Swad Kerala: Navy blue/cream theme
+/// Swad Kerala Theme - Navy blue + cream palette
 class AppColors {
-  // Get current channel token
-  static String get _currentChannelToken {
-    try {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty
-          ? GraphqlService.channelTokenRx.value
-          : (GraphqlService.channelToken.isNotEmpty
-              ? GraphqlService.channelToken
-              : (GetStorage().read('channel_token')?.toString() ?? ''));
-      return channelToken.toLowerCase();
-    } catch (e) {
-      return '';
-    }
-  }
+  // Swad Kerala Brand Colors
+  static const Color swadKeralaPrimary = Color(0xFF1E3A5F); // Dark navy blue
+  static const Color swadKeralaBackground = Color(0xFFFAF8EB); // Light cream
 
-  // Channel-based color scheme - use reactive observable
-  static bool get _isIndSnacksChannel {
-    final token = _currentChannelToken;
-    return token == 'ind-snacks';
-  }
+  // Legacy aliases (kept for backward compatibility)
+  static const Color greenPrimary = swadKeralaPrimary;
+  static const Color greenPrimaryLight = Color(0xFF2C5282);
+  static const Color greenPrimaryDark = Color(0xFF152D4A);
+  static const Color greenAccent = swadKeralaPrimary;
+  static const Color greenAccentLight = Color(0xFF2C5282);
+  static const Color greenBackground = swadKeralaBackground;
 
-  // Swad Kerala channel - Navy blue + cream theme
-  static bool get _isSwadKeralaChannel {
-    final token = _currentChannelToken;
-    return token == 'ind-swadkerala';
-  }
-
-  // Ind-Snacks Brand Colors (Brown, Beige, Orange theme)
-  static const Color indSnacksBrown = Color(0xFF5D4037); // Dark brown for headers
-  static const Color indSnacksBrownDark = Color(0xFF3E2723); // Darker brown
-  static const Color indSnacksBrownLight = Color(0xFF8D6E63); // Lighter brown
-
-  static const Color indSnacksBeige = Color(0xFFF5F1E8); // Light beige/cream background
-  static const Color indSnacksBeigeLight = Color(0xFFFAF8F3); // Lighter beige
-  static const Color indSnacksBeigeDark = Color(0xFFE8E0D3); // Darker beige
-
-  static const Color indSnacksOrange = Color(0xFFFF6B35); // Orange accent (from image)
-  static const Color indSnacksOrangeLight = Color(0xFFFF8C5A); // Lighter orange
-  static const Color indSnacksOrangeDark = Color(0xFFE55A2B); // Darker orange
-  static const Color indSnacksAccent = Color(0xFFF2A23A); // Accent color for dropdowns and outlines
-
-  // Swad Kerala Brand Colors (Navy blue + cream theme)
-  static const Color swadKeralaPrimary = Color(0xFF1E3A5F); // Dark navy blue for headers
-  static const Color swadKeralaBackground = Color(0xFFFAF8EB); // Light cream background
-
-  // New Brand Green Colors (default)
-  static const Color greenPrimary = Color(0xFF22A45D); // Fresh green
-  static const Color greenPrimaryLight = Color(0xFF4CCB84); // Lighter green
-  static const Color greenPrimaryDark = Color(0xFF1C8A4E); // Darker green
-
-  static const Color greenAccent = Color(0xFF40C057); // Accent green
-  static const Color greenAccentLight = Color(0xFF69DB7C); // Light accent green
-
-  static const Color greenBackground = Color(0xFFF6FFF8); // Soft green tint
-
-  // ============================================================
-  // 🔥 BACKWARD-COMPATIBILITY FOR OLD VARIABLES (NO ERRORS)
-  // ============================================================
   static const Color zomatoRed = greenPrimary;
   static const Color zomatoRedLight = greenPrimaryLight;
   static const Color zomatoRedDark = greenPrimaryDark;
-
   static const Color zomatoOrange = greenAccent;
   static const Color zomatoOrangeLight = greenAccentLight;
-
   static const Color zomatoBackground = greenBackground;
 
   // Primary Colors
   static Color get primary {
     if (_isDarkMode) return Colors.grey[900]!;
-    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
-    if (_isSwadKeralaChannel) return swadKeralaBackground;
-    return greenBackground;
+    return swadKeralaBackground;
   }
   static Color get primaryLight {
     if (_isDarkMode) return Colors.grey[800]!;
-    if (_isIndSnacksChannel) return Color(0xFFFFF4E0);
-    if (_isSwadKeralaChannel) return Color(0xFFFCFBF3);
-    return Color(0xFFF8FFF9);
+    return Color(0xFFFCFBF3);
   }
   static Color get primaryDark {
     if (_isDarkMode) return Colors.grey[700]!;
-    if (_isIndSnacksChannel) return Color(0xFFFFE5B4);
-    if (_isSwadKeralaChannel) return Color(0xFFF0EDDA);
-    return Color(0xFFE8FFF0);
+    return Color(0xFFF0EDDA);
   }
 
   // CONSTANT TEXT COLORS
@@ -101,26 +42,18 @@ class AppColors {
   static const Color textSecondaryConst = Colors.black87;
   static const Color textTertiaryConst = Colors.black54;
   static const Color textDarkConst = Colors.black;
-  static const Color primaryConst = greenBackground;
+  static const Color primaryConst = swadKeralaBackground;
 
   // Secondary Colors
   static Color get secondary {
     if (_isDarkMode) return Colors.grey[800]!;
-    if (_isIndSnacksChannel) return indSnacksBrown;
-    if (_isSwadKeralaChannel) return swadKeralaPrimary;
-    return greenAccent;
+    return swadKeralaPrimary;
   }
   static Color get secondaryLight {
     if (_isDarkMode) return Colors.grey[700]!;
-    if (_isIndSnacksChannel) return indSnacksBrownLight;
-    if (_isSwadKeralaChannel) return Color(0xFF2C5282);
-    return greenAccentLight;
+    return Color(0xFF2C5282);
   }
-  static Color get accent {
-    if (_isIndSnacksChannel) return indSnacksOrange;
-    if (_isSwadKeralaChannel) return swadKeralaPrimary;
-    return greenPrimary;
-  }
+  static Color get accent => swadKeralaPrimary;
   static Color get promoCard {
     if (_isDarkMode) return Colors.grey[800]!;
     return Color(0xFFEFFFF2);
@@ -129,28 +62,19 @@ class AppColors {
   // Background Colors
   static Color get background {
     if (_isDarkMode) return Colors.black;
-    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
-    if (_isSwadKeralaChannel) return swadKeralaBackground;
-    return Colors.white;
+    return swadKeralaBackground;
   }
   static Color get backgroundLight {
     if (_isDarkMode) return Colors.grey[900]!;
-    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
-    if (_isSwadKeralaChannel) return swadKeralaBackground;
-    return greenBackground;
+    return swadKeralaBackground;
   }
   static Color get surface {
     if (_isDarkMode) return Colors.grey[900]!;
-    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
-    if (_isSwadKeralaChannel) return swadKeralaBackground;
-    return Colors.white;
+    return swadKeralaBackground;
   }
-
   static Color get card {
     if (_isDarkMode) return const Color(0xFF1A1A1A);
-    if (_isIndSnacksChannel) return Color(0xFFFFEDC7);
-    if (_isSwadKeralaChannel) return swadKeralaBackground;
-    return Colors.white;
+    return swadKeralaBackground;
   }
 
   // Text Colors
@@ -180,45 +104,23 @@ class AppColors {
   static Color get divider => _isDarkMode ? Colors.grey[800]! : Color(0xFFE5E7EB);
 
   // Interactive
-  static Color get heartActive {
-    if (_isIndSnacksChannel) return Color(0xFF92400E);
-    if (_isSwadKeralaChannel) return swadKeralaPrimary;
-    return greenPrimary;
-  }
+  static Color get heartActive => swadKeralaPrimary;
   static Color get heartInactive => _isDarkMode ? Colors.grey[400]! : Colors.black;
 
   static const Color buttonText = Colors.white;
-  static Color get button {
-    if (_isIndSnacksChannel) return Color(0xFF92400E);
-    if (_isSwadKeralaChannel) return swadKeralaPrimary;
-    return greenPrimary;
-  }
-  static Color get buttonLight {
-    if (_isIndSnacksChannel) return Color(0xFFB85C1A);
-    if (_isSwadKeralaChannel) return Color(0xFF2C5282);
-    return greenPrimaryLight;
-  }
-  static Color get buttonDark {
-    if (_isIndSnacksChannel) return Color(0xFF6B2F0A);
-    if (_isSwadKeralaChannel) return Color(0xFF152D4A);
-    return greenPrimaryDark;
-  }
+  static Color get button => swadKeralaPrimary;
+  static Color get buttonLight => Color(0xFF2C5282);
+  static Color get buttonDark => Color(0xFF152D4A);
 
   static const Color link = Color(0xFF3B82F6);
 
   // Refresh Indicator
-  static Color get refreshIndicator {
-    if (_isIndSnacksChannel) return Color(0xFF92400E);
-    if (_isSwadKeralaChannel) return swadKeralaPrimary;
-    return greenPrimary;
-  }
+  static Color get refreshIndicator => swadKeralaPrimary;
 
   // Inputs & Shadows
   static Color get inputFill {
     if (_isDarkMode) return Colors.grey[900]!;
-    if (_isIndSnacksChannel) return indSnacksBeige;
-    if (_isSwadKeralaChannel) return swadKeralaBackground;
-    return Color(0xFFF9FAFB);
+    return swadKeralaBackground;
   }
   static Color get inputBorder => _isDarkMode ? Colors.grey[700]! : Color(0xFFE5E7EB);
 
@@ -230,15 +132,11 @@ class AppColors {
   // Gradients
   static Color get gradientStart {
     if (_isDarkMode) return Colors.grey[900]!;
-    if (_isIndSnacksChannel) return indSnacksBrown;
-    if (_isSwadKeralaChannel) return swadKeralaPrimary;
-    return greenPrimary;
+    return swadKeralaPrimary;
   }
   static Color get gradientEnd {
     if (_isDarkMode) return Colors.grey[800]!;
-    if (_isIndSnacksChannel) return indSnacksOrange;
-    if (_isSwadKeralaChannel) return Color(0xFF2C5282);
-    return greenAccent;
+    return Color(0xFF2C5282);
   }
 
   // Special

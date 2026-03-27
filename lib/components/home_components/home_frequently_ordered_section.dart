@@ -78,21 +78,14 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
       }
     }
     
-    // Check if channel is Ind-Snacks
-    return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
-          : GraphqlService.channelToken;
-      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-      
-      return Container(
+    return Container(
         height: ResponsiveUtils.rp(32),
         padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
         decoration: BoxDecoration(
           color: AppColors.backgroundLight,
           borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
           border: Border.all(
-            color: isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.border.withValues(alpha: 0.6),
+            color: AppColors.border.withValues(alpha: 0.6),
             width: 1,
           ),
         ),
@@ -184,7 +177,6 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
         ),
       ),
     );
-    });
   }
 
   Future<bool> _addVariantToCart(String variantId, String productName) async {

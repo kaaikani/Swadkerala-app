@@ -29,6 +29,7 @@ class CartItemCardPremium extends StatelessWidget {
   final String? quantityLimitReason;
   final bool hasInsufficientStock;
   final String? insufficientStockMessage;
+  final String? validationStatusReason;
 
   const CartItemCardPremium({
     Key? key,
@@ -51,6 +52,7 @@ class CartItemCardPremium extends StatelessWidget {
     this.quantityLimitReason,
     this.hasInsufficientStock = false,
     this.insufficientStockMessage,
+    this.validationStatusReason,
   }) : super(key: key);
 
   String _quantityLimitMessage() {
@@ -71,7 +73,7 @@ class CartItemCardPremium extends StatelessWidget {
     final canAdjust = !isUnavailable && !isLoading;
     // When line is grey (e.g. isAvailable false), minus button stays normal if user can decrease
     final canDecrease = onDecreaseQuantity != null && quantity > 1;
-    final showMinusInNormalColor = canDecrease && isUnavailable && hasInsufficientStock;
+    final showMinusInNormalColor = canDecrease && isUnavailable && (hasInsufficientStock || hasQuantityLimitViolation);
 
     final card = Container(
       padding: ResponsiveSpacing.padding(all: 10),
@@ -166,7 +168,7 @@ class CartItemCardPremium extends StatelessWidget {
                             border: Border.all(color: AppColors.border),
                             borderRadius:
                                 BorderRadius.circular(ResponsiveUtils.rp(8)),
-                            color: isUnavailable
+                            color: isUnavailable && !hasQuantityLimitViolation && !hasInsufficientStock
                                 ? AppColors.borderLight.withValues(alpha: 0.25)
                                 : null,
                           ),
@@ -202,7 +204,7 @@ class CartItemCardPremium extends StatelessWidget {
                                   '$quantity',
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: isUnavailable
+                                  color: isUnavailable && !hasQuantityLimitViolation && !hasInsufficientStock
                                       ? AppColors.textTertiary
                                       : AppColors.textPrimary,
                                 ),
@@ -405,7 +407,8 @@ class CartItemCardPremium extends StatelessWidget {
     );
 
     // When only insufficient stock (user can decrease), keep full opacity so minus button stays normal
-    final dimCard = isUnavailable && !hasInsufficientStock;
+    final hasServerReason = validationStatusReason != null && validationStatusReason!.isNotEmpty;
+    final dimCard = isUnavailable && !hasInsufficientStock && !hasServerReason && !hasQuantityLimitViolation;
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
       opacity: dimCard ? 0.65 : 1,

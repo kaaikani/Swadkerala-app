@@ -484,15 +484,6 @@ class _AddToCartButtonState extends State<_AddToCartButton>
   Widget build(BuildContext context) {
     final resolvedSize = ResponsiveUtils.rp(42);
     
-    // Check if channel is Ind-Snacks or Swad Kerala - use reactive observable
-    return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty
-          ? GraphqlService.channelTokenRx.value
-          : GraphqlService.channelToken;
-      final channelTokenLower = channelToken.toLowerCase();
-      final isIndSnacksChannel = channelTokenLower == 'ind-snacks';
-      final isSwadKeralaChannel = channelTokenLower == 'ind-swadkerala';
-    
     // Determine colors and icon based on state
     Color buttonColor1;
     Color buttonColor2;
@@ -522,17 +513,8 @@ class _AddToCartButtonState extends State<_AddToCartButton>
         );
         break;
       case _AddToCartState.success:
-        // Use channel-specific colors for success state
-        if (isIndSnacksChannel) {
-          buttonColor1 = AppColors.buttonLight;
-          buttonColor2 = AppColors.button;
-        } else if (isSwadKeralaChannel) {
-          buttonColor1 = AppColors.buttonLight;
-          buttonColor2 = AppColors.button;
-        } else {
-          buttonColor1 = Colors.green.shade400;
-          buttonColor2 = Colors.green.shade600;
-        }
+        buttonColor1 = AppColors.buttonLight;
+        buttonColor2 = AppColors.button;
         iconWidget = AnimatedBuilder(
           animation: _iconController,
           builder: (context, child) {
@@ -583,7 +565,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
       }
     }
     
-      return AnimatedBuilder(
+    return AnimatedBuilder(
         animation: Listenable.merge([_scaleController, _iconController]),
         builder: (context, child) {
           return Transform.scale(
@@ -616,7 +598,7 @@ class _AddToCartButtonState extends State<_AddToCartButton>
                       boxShadow: [
                         BoxShadow(
                           color: (_state == _AddToCartState.success
-                              ? ((isIndSnacksChannel || isSwadKeralaChannel) ? AppColors.button : Colors.green)
+                              ? AppColors.button
                               : _state == _AddToCartState.error
                               ? Colors.red
                               : Colors.black).withValues(alpha: 0.25),
@@ -634,7 +616,6 @@ class _AddToCartButtonState extends State<_AddToCartButton>
           );
         },
       );
-    });
   }
 }
 

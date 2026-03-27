@@ -182,33 +182,20 @@ class _FavoritesPageState extends State<FavoritesPage> {
           horizontal: ResponsiveUtils.rp(24),
           vertical: ResponsiveUtils.rp(40),
         ),
-        child: Obx(() {
-          final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-              ? GraphqlService.channelTokenRx.value 
-              : GraphqlService.channelToken;
-          final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-          final iconColor = isIndSnacksChannel 
-              ? AppColors.indSnacksAccent 
-              : AppColors.greenPrimary;
+        child: Builder(builder: (context) {
+          final iconColor = AppColors.button;
           final gradientColors = isDark
               ? [
                   Colors.grey[800]!.withOpacity(0.3),
                   Colors.grey[700]!.withOpacity(0.2),
                 ]
-              : isIndSnacksChannel
-                  ? [
+              : [
                       AppColors.backgroundLight,
-                      AppColors.primaryLight,
-                    ]
-                  : [
-                      AppColors.greenBackground,
                       AppColors.primaryLight,
                     ];
           final shadowColor = isDark
               ? Colors.black.withOpacity(0.3)
-              : isIndSnacksChannel
-                  ? AppColors.indSnacksAccent.withOpacity(0.1)
-                  : AppColors.greenPrimary.withOpacity(0.1);
+              : AppColors.button.withOpacity(0.1);
           
           return Center(
             child: Column(
@@ -463,21 +450,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     final variantOptions = product.variants;
 
-    // Check if channel is Ind-Snacks
-    return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
-          : GraphqlService.channelToken;
-      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-      
-      return Container(
+    return Container(
         height: ResponsiveUtils.rp(36),
         padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(8)),
         decoration: BoxDecoration(
           color: AppColors.backgroundLight,
           borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
           border: Border.all(
-            color: isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.border,
+            color: AppColors.border,
           ),
         ),
       child: DropdownButtonHideUnderline(
@@ -529,6 +509,5 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ),
       ),
     );
-    });
   }
 }

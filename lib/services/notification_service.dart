@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:get/get.dart';
+import '../routes.dart';
 import '../widgets/snackbar.dart';
 import 'channel_service.dart';
 
@@ -17,6 +19,9 @@ class NotificationService {
 
   /// Last FCM topic we subscribed to (for channel-wise notifications). Unsubscribe when channel changes.
   String? _lastSubscribedTopic;
+
+  /// Pending initial message from terminated state — processed after auth is ready.
+  RemoteMessage? _pendingInitialMessage;
 
   // High importance channel for heads-up notifications (Snapchat-style)
   static const AndroidNotificationChannel _defaultChannel =
@@ -53,7 +58,11 @@ class NotificationService {
 
     await _localNotifications.initialize(initSettings,
         onDidReceiveNotificationResponse: (response) {
-      // You can navigate using payload data if needed
+      // User tapped a local notification (foreground case)
+      final payload = response.payload;
+      if (payload != null && payload.isNotEmpty) {
+        handleNotificationOpenFromPayload(payload);
+      }
     });
 
     final androidPlugin = _localNotifications
@@ -170,6 +179,152 @@ class NotificationService {
         _lastSubscribedTopic = null;
       }
     } catch (_) {}
+  }
+
+  // ─── Notification Click → Page Redirect ───
+
+  /// Store initial message from terminated state (called in main.dart).
+  void setPendingInitialMessage(RemoteMessage message) {
+    _pendingInitialMessage = message;
+  }
+
+  /// Process pending initial message after auth is ready (called in AuthWrapper).
+  Future<void> handlePendingInitialMessageIfAny() async {
+    // Check stored pending message first
+    if (_pendingInitialMessage != null) {
+      final msg = _pendingInitialMessage!;
+      _pendingInitialMessage = null;
+      _navigateFromNotificationData(msg.data);
+      return;
+    }
+    // Fallback: re-check getInitialMessage (may have been null when called too early)
+    try {
+      final msg = await FirebaseMessaging.instance.getInitialMessage();
+      if (msg != null) {
+        _navigateFromNotificationData(msg.data);
+      }
+    } catch (_) {}
+  }
+
+  /// Handle notification tap when app was in background (onMessageOpenedApp).
+  void handleNotificationOpen(RemoteMessage message) {
+    _navigateFromNotificationData(message.data);
+  }
+
+  /// Handle local notification tap (foreground). Payload is JSON-encoded message.data.
+  void handleNotificationOpenFromPayload(String payload) {
+    try {
+      final data = Map<String, dynamic>.from(jsonDecode(payload));
+      _navigateFromNotificationData(data);
+    } catch (_) {}
+  }
+
+  /// Core navigation logic — routes to the correct page based on notification data.
+  void _navigateFromNotificationData(Map<String, dynamic> data) {
+    if (data.isEmpty) return;
+
+    // Normalize keys to lowercase for case-insensitive lookup
+    final d = data.map((k, v) => MapEntry(k.toLowerCase(), v?.toString() ?? ''));
+
+    // Determine target page
+    String page = d['page'] ?? d['route'] ?? '';
+
+    // If no page but has productId, default to product-detail
+    if (page.isEmpty && (d.containsKey('productid') || d.containsKey('product_id'))) {
+      page = 'product-detail';
+    }
+
+    // Normalize: strip leading slash, lowercase
+    page = page.replaceAll(RegExp(r'^/+'), '').toLowerCase().trim();
+
+    if (page.isEmpty) return;
+
+    debugPrint('[Notification] Navigating to page: $page, data: $d');
+
+    // Defer navigation to next frame to ensure navigator is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      switch (page) {
+        case 'home':
+          Get.offAllNamed(AppRoutes.home);
+          break;
+        case 'cart':
+          Get.toNamed(AppRoutes.cart);
+          break;
+        case 'orders':
+          Get.toNamed(AppRoutes.orders);
+          break;
+        case 'order-detail':
+          final orderCode = d['ordercode'] ?? d['order_code'] ?? '';
+          if (orderCode.isNotEmpty) {
+            Get.toNamed(AppRoutes.orderDetail, arguments: {'orderCode': orderCode});
+          } else {
+            Get.toNamed(AppRoutes.orders);
+          }
+          break;
+        case 'product-detail':
+          final productId = d['productid'] ?? d['product_id'] ?? '';
+          final productName = d['productname'] ?? d['product_name'] ?? '';
+          if (productId.isNotEmpty) {
+            Get.toNamed(AppRoutes.productDetail, arguments: {
+              'productId': productId,
+              'productName': productName,
+            });
+          }
+          break;
+        case 'account':
+        case 'profile':
+          Get.toNamed(AppRoutes.account);
+          break;
+        case 'addresses':
+          Get.toNamed(AppRoutes.addresses);
+          break;
+        case 'checkout':
+          Get.toNamed(AppRoutes.checkout);
+          break;
+        case 'favourite':
+        case 'favorites':
+        case 'favourites':
+          Get.toNamed(AppRoutes.favourite);
+          break;
+        case 'search':
+          Get.toNamed(AppRoutes.search);
+          break;
+        case 'order-confirmation':
+          final orderId = d['orderid'] ?? d['order_id'] ?? '';
+          if (orderId.isNotEmpty) {
+            Get.toNamed(AppRoutes.orderConfirmation, arguments: {'orderId': orderId});
+          }
+          break;
+        case 'collection-products':
+        case 'collection':
+        case 'category':
+          final collectionId = d['collectionid'] ?? d['collection_id'] ?? '';
+          final collectionName = d['collectionname'] ?? d['collection_name'] ?? '';
+          final slug = d['slug'] ?? '';
+          Get.toNamed(AppRoutes.collectionProducts, arguments: {
+            'id': collectionId,
+            'name': collectionName,
+            'slug': slug,
+          });
+          break;
+        case 'loyalty-points':
+        case 'loyalty-points-transactions':
+          Get.toNamed(AppRoutes.loyaltyPointsTransactions);
+          break;
+        case 'scratch-cards':
+          Get.toNamed(AppRoutes.scratchCards);
+          break;
+        case 'referrals':
+        case 'my-referrals':
+          Get.toNamed(AppRoutes.myReferrals);
+          break;
+        default:
+          // Try navigating to the route directly
+          final route = '/$page';
+          Get.toNamed(route);
+          break;
+      }
+    });
   }
 }
 

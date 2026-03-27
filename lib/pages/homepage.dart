@@ -22,8 +22,6 @@ import '../utils/google_auth_env.dart';
 import '../widgets/responsive_spacing.dart';
 import '../components/bottomnavigationbar.dart';
 import '../components/home_components/home_delivery_address_header.dart';
-import '../components/home_components/home_shipping_ticker.dart';
-import '../components/home_components/home_switch_store_sheet.dart';
 import '../components/home_components/home_header.dart';
 import '../components/home_components/home_postal_code_sheet.dart';
 import '../components/home_components/home_frequently_ordered_section.dart';
@@ -622,12 +620,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final customer = customerController.activeCustomer.value;
     if (customer == null) return;
 
-    final channelCode = ChannelService.getChannelCode()?.toLowerCase() ?? '';
-    final isIndSnacks = channelCode == 'ind-snacks';
-    // Ind-Snacks: only show update email dialog when email is @kaikani.com (placeholder). If not @kaikani.com, skip email dialog.
-    final emailIsPlaceholder = customer.emailAddress.trim().toLowerCase().endsWith('@kaikani.com');
-    final shouldShowEmailDialog = !_isValidGmail(customer.emailAddress) &&
-        (!isIndSnacks || emailIsPlaceholder);
+    final shouldShowEmailDialog = !_isValidGmail(customer.emailAddress);
 
     if (shouldShowEmailDialog) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1469,7 +1462,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           bottomNavigationBar: Obx(() => BottomNavComponent(
             cartCount: cartController.cartItemCount,
-            onSwitchStoreTap: _showSwitchStoreBottomSheet,
           )),
         );
       }),
@@ -1498,7 +1490,6 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_isBrandChannel()) return SizedBox.shrink();
           return Column(
             children: [
-              _buildShippingTicker(),
               // No spacing before banner - banner has no top padding
             ],
           );
@@ -1561,9 +1552,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildShippingTicker() {
-    return const HomeShippingTicker();
-  }
 
   Widget _buildHeroBanner() {
     return BannerComponent();
@@ -1660,32 +1648,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  /// Show switch store bottom sheet
-  void _showSwitchStoreBottomSheet() {
-    final storedPostalCode = ChannelService.getPostalCode();
-    if (storedPostalCode == null || storedPostalCode.toString().isEmpty) {
-      showErrorSnackbar('Please select a postal code first');
-      return;
-    }
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext bottomSheetContext) {
-        return HomeSwitchStoreSheet(
-          postalCode: storedPostalCode.toString(),
-          customerController: customerController,
-          onChannelSwitched: () {
-            // Force immediate UI update
-            _updateChannelDisplay(skipRefreshTrigger: false);
-            // Refresh data and force UI rebuild - force since channel changed
-            if (mounted) {
-              setState(() {});
-              _refreshData(forceRefresh: true);
-            }
-          },
-        );
-      },
-    );
-  }
 }

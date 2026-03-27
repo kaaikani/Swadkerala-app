@@ -218,10 +218,22 @@ Future<void> _initializeFirebase() async {
       debugPrint('[FCM] Token refreshed ($platform): $newToken');
     });
 
+    // Foreground: show notification banner + snackbar
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       NotificationService.instance.showRemoteNotification(message);
       NotificationService.instance.showSnackbar(message);
     });
+
+    // Background: user taps notification while app was in background
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      NotificationService.instance.handleNotificationOpen(message);
+    });
+
+    // Terminated: app was killed, user tapped notification to launch it
+    final initialMessage = await messaging.getInitialMessage();
+    if (initialMessage != null) {
+      NotificationService.instance.setPendingInitialMessage(initialMessage);
+    }
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 

@@ -485,9 +485,9 @@ class DeepLinkService {
         case 'signup':
         case 'register':
           if (isInitialLink) {
-            Get.offAllNamed(AppRoutes.signup);
+            Get.offAllNamed(AppRoutes.login);
           } else {
-            Get.toNamed(AppRoutes.signup);
+            Get.toNamed(AppRoutes.login);
           }
           break;
 

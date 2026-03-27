@@ -350,17 +350,71 @@ class _CartItemsListState extends State<CartItemsList> {
             }
           }
 
-          // Grey/disabled when: OUT_OF_STOCK, product disabled, or isAvailable false (e.g. "This variant is no longer available")
-          final isUnavailable = isOutOfStock || isProductDisabledAny || !line.isAvailable;
+          // Look up validationStatus reason for this line
+          String? validationStatusReason;
+          bool isServerUnavailable = false;
+          if (cart != null) {
+            final vMessage = cart.validationStatus.message;
+            if (cart.validationStatus.unavailableItems.isNotEmpty) {
+              for (final uItem in cart.validationStatus.unavailableItems) {
+                if (uItem.orderLineId == line.id) {
+                  validationStatusReason = (uItem.reason.isNotEmpty) ? uItem.reason : vMessage ?? 'Unavailable';
+                  isServerUnavailable = true;
+                  break;
+                }
+              }
+            }
+            if (!isServerUnavailable && vMessage != null && vMessage.isNotEmpty) {
+              if (!line.isAvailable) {
+                validationStatusReason = line.unavailableReason ?? vMessage;
+                isServerUnavailable = true;
+              }
+            }
+          }
 
+          // Check quantity limit violation for this line
+          bool hasQuantityLimitForLine = false;
+          String? quantityLimitMsgForLine;
+          if (cart != null && cart.quantityLimitStatus.hasViolations) {
+            try {
+              final violation = cart.quantityLimitStatus.violations.firstWhere(
+                (v) => v.orderLineId == line.id,
+              );
+              hasQuantityLimitForLine = true;
+              quantityLimitMsgForLine = violation.reason;
+              final idx = quantityLimitMsgForLine.indexOf('This product');
+              if (idx > 0) quantityLimitMsgForLine = quantityLimitMsgForLine.substring(idx);
+            } catch (_) {}
+          }
+
+          // Unavailable when any issue exists
+          final isUnavailable = isProductDisabledAny || isOutOfStock || !line.isAvailable || hasQuantityLimitForLine || isServerUnavailable;
+
+          // Status message by priority: 1. Disabled → 2. Out of stock → 3. Quantity limit → 4. Validation message (stock)
           String statusMessage;
-          if (hasInsufficientStock) {
-            // "Only X available, kindly decrease quantity" - show insufficient stock banner only, not "remove from cart"
-            statusMessage = '';
-          } else if (isOutOfStock || isProductDisabledAny) {
+          if (isProductDisabledAny) {
+            statusMessage = 'Product is disabled - Please remove from cart';
+            insufficientStockMessage = null;
+          } else if (isOutOfStock) {
             statusMessage = 'OUT OF STOCK - Please remove from cart';
+            insufficientStockMessage = null;
+          } else if (!line.isAvailable && hasInsufficientStock) {
+            statusMessage = '';
+            // If there's also a quantity limit violation, only show the quantity limit (it's more restrictive)
+            if (hasQuantityLimitForLine) {
+              insufficientStockMessage = null;
+            }
           } else if (!line.isAvailable) {
             statusMessage = 'OUT OF STOCK - Please remove from cart';
+            insufficientStockMessage = null;
+          } else if (hasQuantityLimitForLine && quantityLimitMsgForLine != null) {
+            statusMessage = quantityLimitMsgForLine;
+            insufficientStockMessage = null;
+          } else if (isServerUnavailable) {
+            statusMessage = '';
+            insufficientStockMessage = null;
+          } else if (hasInsufficientStock) {
+            statusMessage = '';
           } else {
             statusMessage = '';
           }
@@ -417,6 +471,7 @@ class _CartItemsListState extends State<CartItemsList> {
                       maxQuantity: maxQuantityForLine,
                       hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
                       quantityLimitReason: quantityLimitReasonForLine,
+                      validationStatusReason: validationStatusReason,
                     ),
                   );
                 }
@@ -446,7 +501,7 @@ class _CartItemsListState extends State<CartItemsList> {
               onIncreaseQuantity: !isUnavailable && !hasQuantityLimitViolationForLine && !hasInsufficientStock
                   ? () => widget.onQuantityChange(line.id, line.quantity + 1)
                   : null,
-              onDecreaseQuantity: displayQuantity > 1 && (!isUnavailable || hasInsufficientStock)
+              onDecreaseQuantity: displayQuantity > 1 && (!isUnavailable || hasInsufficientStock || isServerUnavailable || hasQuantityLimitForLine)
                   ? () {
                       if (displayQuantity <= 1) return;
                       if (isVirtual) {
@@ -470,6 +525,7 @@ class _CartItemsListState extends State<CartItemsList> {
               maxQuantity: maxQuantityForLine,
               hasQuantityLimitViolation: hasQuantityLimitViolationForLine,
               quantityLimitReason: quantityLimitReasonForLine,
+              validationStatusReason: validationStatusReason,
             ),
           );
         },

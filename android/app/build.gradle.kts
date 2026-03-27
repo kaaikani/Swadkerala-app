@@ -17,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.kaaikani.kaaikani"
+    namespace = "com.Swadkerala.Swadkerala"
     compileSdk = 36
     buildToolsVersion = "36.0.0"
     ndkVersion = "29.0.14206865"
@@ -49,7 +49,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.kaaikani.kaaikani"
+        applicationId = "com.Swadkerala.Swadkerala"
         minSdk = flutter.minSdkVersion
         // Google Play requires targetSdk 35 (Android 15) as of 2025
         // Device compatibility is handled via optional hardware features in AndroidManifest.xml
@@ -164,7 +164,7 @@ android {
 
             buildConfigField("boolean", "DEBUG", "false")
             // manifestPlaceholders - use putAll to add values
-            manifestPlaceholders.putAll(mapOf("appName" to "Kaaikani"))
+            manifestPlaceholders.putAll(mapOf("appName" to "Swadkerala"))
         }
         getByName("debug") {
             isMinifyEnabled = false

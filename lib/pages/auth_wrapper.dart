@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../services/graphql_client.dart';
+import '../services/notification_service.dart';
 import '../theme/colors.dart';
 import '../routes.dart';
 import 'login_page.dart';
@@ -56,6 +57,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
     if (mounted) {
       setState(() {
         _hasCheckedTokens = true;
+      });
+      // Handle pending notification from terminated state (after auth + navigator are ready)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 600), () {
+          NotificationService.instance.handlePendingInitialMessageIfAny();
+        });
       });
     }
     } catch (e) {
@@ -220,52 +227,28 @@ class _GuestOrSignupGateState extends State<_GuestOrSignupGate> {
                 ),
               ),
               const SizedBox(height: 28),
-              // Sign up and Sign in in a row
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        Get.toNamed(AppRoutes.signup);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.button,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Sign up',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
+              // Sign in button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    Get.toNamed(AppRoutes.login);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    elevation: 0,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        Get.toNamed(AppRoutes.login);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.button,
-                        side: BorderSide(color: AppColors.button),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Sign in',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                    ),
+                  child: const Text(
+                    'Sign In',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                ],
+                ),
               ),
               const SizedBox(height: 12),
               // Continue as guest button (secondary)

@@ -7,7 +7,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Kaaikani</string>
+		<string>Swadkerala</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-		<string>Kaaikani</string>
+		<string>Swadkerala</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>
@@ -28,7 +28,7 @@
 				<key>CFBundleTypeRole</key>
 				<string>Editor</string>
 				<key>CFBundleURLName</key>
-				<string>com.kaaikani.kaaikani</string>
+				<string>com.Swadkerala.Swadkerala</string>
 				<key>CFBundleURLSchemes</key>
 				<array>
 					<string>kaaikani</string>
@@ -64,7 +64,7 @@
 		<key>FacebookAdvertiserIDCollectionEnabled</key>
 		<true/>
 		<key>FacebookDisplayName</key>
-		<string>Kaaikani</string>
+		<string>Swadkerala</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSLocalNetworkUsageDescription</key>

@@ -82,13 +82,6 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
       }
     }
     
-    // Check if channel is Ind-Snacks
-    return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
-          : GraphqlService.channelToken;
-      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-    
     return Container(
       height: ResponsiveUtils.rp(32),
       padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
@@ -96,7 +89,7 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
         color: AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
         border: Border.all(
-            color: isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.border.withValues(alpha: 0.6),
+            color: AppColors.border.withValues(alpha: 0.6),
           width: 1,
         ),
       ),
@@ -188,7 +181,6 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
         ),
       ),
     );
-    });
   }
 
   Future<bool> _addVariantToCart(String variantId, String productName) async {
@@ -324,13 +316,7 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
                     ],
                   ),
                   if (enabledFavorites.length > 3)
-                    Obx(() {
-                      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-                          ? GraphqlService.channelTokenRx.value 
-                          : GraphqlService.channelToken;
-                      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-                      
-                      return TextButton(
+                    TextButton(
                       onPressed: AnalyticsHelper.trackButton(
                         'See All - Favorites',
                         screenName: 'Home',
@@ -339,15 +325,14 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
                         },
                       ),
                       child: Text(
-                          isIndSnacksChannel ? 'See All >' : 'See All',
+                          'See All',
                         style: TextStyle(
                           color: AppColors.button,
                           fontSize: ResponsiveUtils.sp(14),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      );
-                    }),
+                    ),
                 ],
               ),
             ),

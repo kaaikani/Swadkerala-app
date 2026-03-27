@@ -73,10 +73,8 @@ class GraphqlService {
     
     final httpClient = http_io.IOClient(httpClientInstance);
 
-    // Channel token: in-memory first, then storage so guest requests pass it when user has selected location
-    final channelTokenForHeaders = _channelToken.isNotEmpty
-        ? _channelToken
-        : (_storage.read('channel_token')?.toString() ?? '');
+    // Always use the enforced default channel token
+    final channelTokenForHeaders = _defaultChannelToken;
 
     // Prepare headers - use actual platform where app is running
     final headers = <String, String>{
@@ -89,10 +87,6 @@ class GraphqlService {
       'Accept-Encoding': 'gzip, deflate', // Enable compression
     };
     
-    // Debug print channel token header prominently
-    if (channelTokenForHeaders.isNotEmpty) {
-    } else {
-    }
     // Debug print all headers
     headers.forEach((key, value) {
       if (key == _channelTokenKey) {
@@ -121,10 +115,14 @@ class GraphqlService {
   }
 
   // Initialize from storage
+  static const String _defaultChannelToken = 'ind-Swadkerala';
+
   static Future<void> initialize() async {
     await GetStorage.init();
     _authToken = _storage.read('auth_token') ?? "";
-    _channelToken = _storage.read('channel_token') ?? "";
+    // Always enforce default channel token
+    _channelToken = _defaultChannelToken;
+    await _storage.write('channel_token', _defaultChannelToken);
     channelTokenRx.value = _channelToken;
     if (_authToken.isEmpty && _channelToken.isNotEmpty) {
       final map = _readGuestTokensByChannel();
@@ -192,9 +190,11 @@ class GraphqlService {
       if (_authToken != token) _authToken = token;
       _guestToken = ''; // Clear guest token after successful login
     } else if (key == 'channel') {
-      if (_channelToken != token) {
-        _channelToken = token;
-        channelTokenRx.value = token;
+      // Force channel token to always be the default (ind-Swadkerala)
+      final enforced = _defaultChannelToken;
+      if (_channelToken != enforced) {
+        _channelToken = enforced;
+        channelTokenRx.value = enforced;
         // Restore guest token for this channel so A→B→A shows channel A's cart (guest mode)
         if (_authToken.isEmpty && token.isNotEmpty) {
           final map = _readGuestTokensByChannel();
@@ -215,10 +215,13 @@ class GraphqlService {
       // guest session so the authenticate() request carries it and the shop API can merge guest cart.
     }
     if (key == 'channel') {
-      _channelToken = "";
-      channelTokenRx.value = ""; // Update reactive observable
+      // Reset to default channel instead of clearing
+      _channelToken = _defaultChannelToken;
+      channelTokenRx.value = _defaultChannelToken;
     }
-    await _storage.remove('${key}_token');
+    if (key != 'channel') {
+      await _storage.remove('${key}_token');
+    }
     _client?.value = _createClient();
 // print("✅ $key token cleared and client recreated");
   }
@@ -248,8 +251,7 @@ class GraphqlService {
 
   // Getters
   static String get authToken => _authToken;
-  /// Channel token (in-memory, or from storage so guest requests use it after location selection).
-  static String get channelToken =>
-      _channelToken.isNotEmpty ? _channelToken : (_storage.read('channel_token')?.toString() ?? '');
+  /// Channel token — always returns the default (ind-Swadkerala).
+  static String get channelToken => _defaultChannelToken;
   static String get guestToken => _guestToken;
 }

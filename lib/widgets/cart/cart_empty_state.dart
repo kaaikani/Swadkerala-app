@@ -10,17 +10,10 @@ class CartEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
-          : GraphqlService.channelToken;
-      final tokenLower = channelToken.toLowerCase();
-      final isIndSnacksChannel = tokenLower == 'ind-snacks';
-      // Use channel-aware button color for non-Ind-Snacks (green otherwise)
-      final iconColor = isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.button;
-      final buttonColor = isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.button;
-      
-      return Container(
+    final iconColor = AppColors.button;
+    final buttonColor = AppColors.button;
+
+    return Container(
         width: double.infinity,
         color: AppColors.background,
         child: SafeArea(
@@ -144,7 +137,6 @@ class CartEmptyState extends StatelessWidget {
           ),
         ),
       );
-    });
   }
 }
 

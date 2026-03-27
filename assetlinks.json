@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.kaaikani.kaaikani",
+      "package_name": "com.Swadkerala.Swadkerala",
       "sha256_cert_fingerprints": [
         "8173008B9DC016570C2B61CF0462A9FC61B9D118BCCA5DE35705DA06593B3202"
       ]

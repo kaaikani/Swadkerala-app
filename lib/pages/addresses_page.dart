@@ -791,7 +791,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
   // Postal codes state
   List<Query$PostalCodes$postalCodes> _postalCodesList = [];
   bool _isLoadingPostalCodes = true;
-  bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
+  // Channel is always Swad Kerala
   bool _isBrandChannel = false; // Track if channel type is BRAND
 
   // Areas state
@@ -833,9 +833,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
         text: storedPostalCode != null && storedPostalCode.toString().isNotEmpty
             ? storedPostalCode.toString()
             : '');
-
-    // Check if channel is Ind-Snacks
-    _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
 
     provinceController = TextEditingController();
 
@@ -1047,15 +1044,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                 _buildAreaDropdownField(),
               ],
               SizedBox(height: 16),
-              // Show State field only if channel is Ind-Snacks
-              if (_isIndSnacksChannel) ...[
-                _buildTextField(
-                  provinceController,
-                  'State',
-                  Icons.map,
-                ),
-                SizedBox(height: 16),
-              ],
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   required: true,
                   keyboardType: TextInputType.phone,
@@ -1279,10 +1267,7 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                           }
                         }
 
-                        // For Ind-Snacks channel, use province from field; for others, use 'Tamilnadu' as default
-                        final provinceValue = _isIndSnacksChannel 
-                            ? (provinceController.text.trim().isEmpty ? null : provinceController.text.trim())
-                            : 'Tamilnadu';
+                        final provinceValue = 'Tamilnadu';
                         
                         final success = await widget.customerController
                             .createAddress(addressData, province: provinceValue);
@@ -1735,7 +1720,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
   // Postal codes state
   List<Query$PostalCodes$postalCodes> _postalCodesList = [];
   bool _isLoadingPostalCodes = true;
-  bool _isIndSnacksChannel = false; // Track if channel is Ind-Snacks
+  // Channel is always Swad Kerala
   bool _isBrandChannel = false; // Track if channel type is BRAND
 
   // Areas state
@@ -1772,9 +1757,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     postalCodeController = TextEditingController(
         text: existingAddress?.postalCode ?? '');
 
-    // Check if channel is Ind-Snacks
-    _isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-
     provinceController = TextEditingController();
     
     phoneController = TextEditingController(
@@ -1783,10 +1765,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     // Fetch postal codes when form is initialized
     _fetchPostalCodes();
     
-    // If postal code exists and channel is Ind-Snacks, fetch state for province
-    if (_isIndSnacksChannel && existingAddress?.postalCode != null && existingAddress!.postalCode.isNotEmpty) {
-      _fetchStateForPostalCode(existingAddress.postalCode);
-    }
+
 
     // Pre-set selected area from existing address customFields
     _selectedArea = (widget.existingAddress as Query$GetActiveCustomer$activeCustomer$addresses?)?.customFields?.area;
@@ -2021,15 +2000,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                 _buildAreaDropdownField(),
               ],
               SizedBox(height: 16),
-              // Show State field only if channel is Ind-Snacks
-              if (_isIndSnacksChannel) ...[
-                _buildTextField(
-                  provinceController,
-                  'State',
-                  Icons.map,
-                ),
-                SizedBox(height: 16),
-              ],
               _buildTextField(phoneController, 'Phone', Icons.phone,
                   required: true,
                   keyboardType: TextInputType.phone,
@@ -2256,9 +2226,7 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                         );
 
                         // For Ind-Snacks channel, use province from field; for others, use 'Tamilnadu' as default
-                        final provinceValue = _isIndSnacksChannel
-                            ? (provinceController.text.trim().isEmpty ? null : provinceController.text.trim())
-                            : 'Tamilnadu';
+                        final provinceValue = 'Tamilnadu';
 
                         final success = await widget.customerController
                             .updateAddress(addressData, province: provinceValue);

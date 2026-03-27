@@ -26,17 +26,7 @@ class CheckoutShippingSection extends StatelessWidget {
         return SizedBox.shrink();
       }
 
-      // Check if channel is Ind-Snacks
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
-          : GraphqlService.channelToken;
-      final channelTokenLower = channelToken.toLowerCase();
-      final isIndSnacksChannel = channelTokenLower == 'ind-snacks';
-      
-      // Use indSnacksAccent color for border if ind-snacks channel
-      final borderColor = isIndSnacksChannel 
-          ? AppColors.indSnacksAccent 
-          : AppColors.border;
+      final borderColor = AppColors.border;
 
       final hasSingleMethod = orderController.shippingMethods.length == 1;
       final singleMethod = hasSingleMethod ? orderController.shippingMethods.first : null;

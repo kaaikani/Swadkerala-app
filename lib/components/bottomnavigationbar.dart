@@ -8,12 +8,9 @@ import '../utils/navigation_helper.dart';
 
 class BottomNavComponent extends StatefulWidget {
   final int cartCount;
-  final VoidCallback? onSwitchStoreTap;
-
   const BottomNavComponent({
     super.key,
     this.cartCount = AppContent.defaultCartCount,
-    this.onSwitchStoreTap,
   });
 
   @override
@@ -49,27 +46,7 @@ class _BottomNavComponentState extends State<BottomNavComponent> {
             ),
             child: Row(
               children: [
-                // Switch Store Button (Left Corner)
-                if (widget.onSwitchStoreTap != null)
-                  InkWell(
-                    onTap: widget.onSwitchStoreTap,
-                    child: Container(
-                      padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
-                      decoration: BoxDecoration(
-                        color: AppColors.button,
-                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                      ),
-                      child: Icon(
-                        Icons.store_rounded,
-                        color: AppColors.textLight,
-                        size: ResponsiveUtils.rp(24),
-                      ),
-                    ),
-                  ),
-                if (widget.onSwitchStoreTap != null)
-                  SizedBox(width: ResponsiveUtils.rp(12)),
-                
-                // Cart Section (Right Side) - Only show when cart has items
+                // Cart Section - Only show when cart has items
               //  if (widget.cartCount > 0)
                   Expanded(
                     child: InkWell(

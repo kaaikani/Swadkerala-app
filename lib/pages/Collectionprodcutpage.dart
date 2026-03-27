@@ -232,21 +232,14 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
       }
     }
 
-    // Check if channel is Ind-Snacks - use reactive observable
-    return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
-          : GraphqlService.channelToken;
-      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-      
-      return Container(
+    return Container(
       height: ResponsiveUtils.rp(32),
       padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(10)),
       decoration: BoxDecoration(
         color: AppColors.backgroundLight,
         borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
         border: Border.all(
-          color: isIndSnacksChannel ? AppColors.indSnacksAccent : AppColors.border.withValues(alpha: 0.6),
+          color: AppColors.border.withValues(alpha: 0.6),
           width: 1,
         ),
       ),
@@ -331,7 +324,6 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
         ),
       ),
     );
-    });
   }
 
   /// Add a variant to cart
@@ -580,14 +572,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
   // Rest of the class methods (_buildShimmerGrid, etc.) remain the same...
 
   Widget _buildShimmerGrid() {
-    // Check if channel is Ind-Snacks - use reactive observable
-    return Obx(() {
-      final channelToken = GraphqlService.channelTokenRx.value.isNotEmpty 
-          ? GraphqlService.channelTokenRx.value 
-          : GraphqlService.channelToken;
-      final isIndSnacksChannel = channelToken == 'Ind-Snacks' || channelToken == 'ind-snacks';
-      
-      return OrientationBuilder(
+    return OrientationBuilder(
         builder: (context, orientation) => Skeletonizer(
         enabled: true,
         child: GridView.builder(
@@ -608,7 +593,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
               color: AppColors.card,
               borderRadius: BorderRadius.circular(10), // Reduced border radius
               border: Border.all(
-                color: isIndSnacksChannel ? AppColors.black : AppColors.border.withValues(alpha: 0.5),
+                color: AppColors.border.withValues(alpha: 0.5),
               ),
               boxShadow: [
                 BoxShadow(
@@ -684,7 +669,6 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
       ),            // GridView.builder (child of Skeletonizer)
     ),              // Skeletonizer (return value of OrientationBuilder builder)
     );              // OrientationBuilder
-    });             // Obx
   }
 
   /// Build loading indicator for lazy loading

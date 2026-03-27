@@ -22,7 +22,6 @@ import 'package:recipe.app/pages/terms_conditions_page.dart';
 import 'components/searchbarcomponent.dart';
 import 'controllers/banner/bannercontroller.dart';
 import 'pages/login_page.dart';
-import 'pages/signup_page.dart';
 import 'pages/homepage.dart';
 import 'pages/intro_page.dart';
 import 'pages/initial_route_wrapper.dart';
@@ -33,7 +32,6 @@ class AppRoutes {
   static const String initial = '/';
   static const String update = '/update';
   static const String login = '/login';
-  static const String signup = '/signup';
   static const String home = '/home';
   static const String intro = '/intro';
   static const String favourite = '/favourite';
@@ -70,11 +68,6 @@ class AppRoutes {
       name: login,
       page: () => const LoginPage(),
       transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: signup,
-      page: () => const SignupPage(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: home,
