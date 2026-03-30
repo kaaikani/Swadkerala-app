@@ -426,7 +426,6 @@ class _CartItemsListState extends State<CartItemsList> {
                 if (isCouponProduct && couponCode != null) {
                   // Original price from variant catalog price × quantity
                   final originalUnitPrice = variant.price.toInt();
-                  final originalLinePrice = originalUnitPrice * displayQuantity;
                   // Discounted price (after coupon applied)
                   final discountedLinePrice = (line.discountedLinePriceWithTax / line.quantity * displayQuantity).toInt();
                   // Find the promotion's discount % from cart.promotions by matching couponCode

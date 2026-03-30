@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
-import '../../services/graphql_client.dart';
 import '../../utils/analytics_helper.dart';
 
 class CartEmptyState extends StatelessWidget {

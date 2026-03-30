@@ -30,7 +30,6 @@ class _HomeSwitchStoreSheetState extends State<HomeSwitchStoreSheet> {
   List<Query$GetAvailableChannels$getAvailableChannels> _channels = [];
   bool _isLoading = true;
   String? _errorMessage;
-  final Map<String, bool> _imageLoadFailed = {};
 
   @override
   void initState() {

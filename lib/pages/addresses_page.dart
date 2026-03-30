@@ -8,7 +8,6 @@ import '../theme/theme.dart';
 import '../widgets/snackbar.dart';
 import '../graphql/Customer.graphql.dart';
 import '../graphql/schema.graphql.dart';
-import '../services/postal_code_service.dart';
 import '../services/analytics_service.dart';
 
 class AddressesPage extends StatefulWidget {
@@ -806,7 +805,6 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
     // Pre-initialize controllers for better performance
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
-    final channelToken = box.read('channel_token')?.toString() ?? '';
     final customer = widget.customerController.activeCustomer.value;
     final autoFullName = customer != null
         ? '${customer.firstName} ${customer.lastName}'.trim()
@@ -1742,7 +1740,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
         text: existingAddress?.streetLine2 ?? '');
     final box = GetStorage();
     final channelCode = box.read('channel_code') ?? '';
-    final channelToken = box.read('channel_token')?.toString() ?? '';
 
     // Check if channel type is BRAND
     final channelType = box.read('channel_type')?.toString() ?? '';
@@ -1797,22 +1794,6 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
         });
       }
     });
-  }
-
-  /// Fetch state for a postal code and populate province field
-  void _fetchStateForPostalCode(String postalCode) async {
-    if (postalCode.length != 6) return;
-    try {
-      final postalCodeService = PostalCodeService();
-      final results = await postalCodeService.searchPostalCode(postalCode);
-      if (results.isNotEmpty && mounted) {
-        final postalData = results.first;
-        setState(() {
-          provinceController.text = postalData.state;
-        });
-      }
-    } catch (e) {
-    }
   }
 
   void _fetchAreasForPostalCode(String code) {

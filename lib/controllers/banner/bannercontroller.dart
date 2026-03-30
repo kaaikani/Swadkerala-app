@@ -8,11 +8,9 @@ import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../../services/channel_service.dart';
 import '../../services/analytics_service.dart';
-import '../../widgets/error_dialog.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../base_controller.dart';
 import '../cart/Cartcontroller.dart';
-import '../authentication/authenticationcontroller.dart';
 import '../customer/customer_controller.dart';
 import '../../utils/logger.dart';
 import '../../routes.dart';
@@ -747,31 +745,4 @@ class BannerController extends BaseController {
     }
   }
 
-  /// Handle customer data not found - clear cache and logout (fallback method)
-  Future<void> _handleCustomerDataNotFound() async {
-    if (AuthController.isLoggingOut) return;
-    try {
-      // Clear authentication tokens
-      await GraphqlService.clearToken('auth');
-      await GraphqlService.clearToken('channel');
-
-      // Show message to user
-      ErrorDialog.show(
-        title: 'Session Expired',
-        message: 'No customer data found. Please login again.',
-      );
-
-      if (AuthController.isLoggingOut) {
-        Get.offAllNamed(AppRoutes.home);
-      } else {
-        Get.offAllNamed(AppRoutes.login);
-      }
-    } catch (e) {
-      if (AuthController.isLoggingOut) {
-        Get.offAllNamed(AppRoutes.home);
-      } else {
-        Get.offAllNamed(AppRoutes.login);
-      }
-    }
-  }
 }

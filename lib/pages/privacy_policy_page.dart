@@ -260,7 +260,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                   return;
                 }
                 if (data.success) {
-                  SnackBarWidget.showSuccess(data.message ?? 'Account deletion requested. You will be signed out.');
+                  SnackBarWidget.showSuccess(data.message);
                   final authController = Get.find<AuthController>();
                   final ctx = Get.context;
                   if (ctx != null) {
@@ -272,7 +272,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                     Get.offAllNamed(AppRoutes.home);
                   }
                 } else {
-                  showErrorSnackbar(data.message ?? 'Could not request account deletion');
+                  showErrorSnackbar(data.message);
                 }
               } catch (e) {
                 showErrorSnackbar('Failed to request account deletion. Please try again.');

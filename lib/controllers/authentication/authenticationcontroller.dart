@@ -165,8 +165,6 @@ class AuthController extends BaseController {
     return false;
   }
 
-  static const String _preserveGuestChannelKey = 'preserve_guest_channel';
-
   Future<void> _claimGuestOrderIfAny() async {
     return;
   }
@@ -208,7 +206,7 @@ class AuthController extends BaseController {
     isLoggingOut = true;
     setLoading(true);
     try {
-      final response = await GraphqlService.client.value.mutate$LogoutUser(
+      await GraphqlService.client.value.mutate$LogoutUser(
         Options$Mutation$LogoutUser(),
       );
 

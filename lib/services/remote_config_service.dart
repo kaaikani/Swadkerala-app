@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -5,9 +6,11 @@ import 'crashlytics_service.dart';
 
 class RemoteConfigService extends GetxController {
   static RemoteConfigService get instance => Get.find<RemoteConfigService>();
-  
+
   FirebaseRemoteConfig? _remoteConfig;
-  final RxString shippingTickerText = ''.obs;
+
+  /// Platform suffix for Remote Config keys (_android or _ios)
+  String get _platformSuffix => Platform.isIOS ? '_ios' : '_android';
 
   /// Initialize Firebase Remote Config
   Future<void> initialize() async {
@@ -24,24 +27,19 @@ class RemoteConfigService extends GetxController {
         minimumFetchInterval: kDebugMode ? Duration.zero : const Duration(hours: 1),
       ));
 
-      // Set defaults (app update: min_version = force update, latest_version = optional)
+      // Set defaults with platform-specific keys
       await _remoteConfig!.setDefaults({
-        'shipping_ticker_text': '',
-        'min_version': '0.0.0',
-        'latest_version': '0.0.0',
+        'min_version$_platformSuffix': '0.0.0',
+        'latest_version$_platformSuffix': '0.0.0',
       });
 
       // Fetch and activate
       final updated = await _remoteConfig!.fetchAndActivate();
       if (kDebugMode) {
-        final minV = _remoteConfig!.getString('min_version').trim();
-        final latestV = _remoteConfig!.getString('latest_version').trim();
-        debugPrint('[RemoteConfig] Fetched: updated=$updated, min_version="$minV", latest_version="$latestV"');
+        final minV = _remoteConfig!.getString('min_version$_platformSuffix').trim();
+        final latestV = _remoteConfig!.getString('latest_version$_platformSuffix').trim();
+        debugPrint('[RemoteConfig] Fetched: updated=$updated, min_version="$minV", latest_version="$latestV" (platform: $_platformSuffix)');
       }
-
-      // Load shipping ticker text
-      await _loadShippingTickerText();
-      
     } catch (e, stackTrace) {
       CrashlyticsService.instance.recordError(
         e,
@@ -51,38 +49,12 @@ class RemoteConfigService extends GetxController {
     }
   }
 
-  /// Load shipping ticker text from Remote Config
-  Future<void> _loadShippingTickerText() async {
-    try {
-      if (_remoteConfig == null) return;
-      
-      final text = _remoteConfig!.getString('shipping_ticker_text');
-      if (text.isNotEmpty) {
-        shippingTickerText.value = text;
-      } else {
-        shippingTickerText.value = '';
-      }
-    } catch (e, stackTrace) {
-      CrashlyticsService.instance.recordError(
-        e,
-        stackTrace,
-        reason: 'Failed to load shipping ticker text',
-      );
-      shippingTickerText.value = '';
-    }
-  }
-
   /// Fetch latest config from Firebase
   Future<void> fetchAndActivate() async {
     if (_remoteConfig == null || kIsWeb) return;
 
     try {
-      final updated = await _remoteConfig!.fetchAndActivate();
-      
-      if (updated) {
-        await _loadShippingTickerText();
-      } else {
-      }
+      await _remoteConfig!.fetchAndActivate();
     } catch (e, stackTrace) {
       CrashlyticsService.instance.recordError(
         e,
@@ -92,28 +64,17 @@ class RemoteConfigService extends GetxController {
     }
   }
 
-  /// Get shipping ticker text
-  String getShippingTickerText() {
-    return shippingTickerText.value;
-  }
-
-  /// Check if shipping ticker text is available
-  bool hasShippingTickerText() {
-    return shippingTickerText.value.isNotEmpty;
-  }
-
   /// Get min required version (below this = mandatory update, cannot use app)
   String getMinVersion() {
     if (_remoteConfig == null) return '0.0.0';
-    final v = _remoteConfig!.getString('min_version').trim();
+    final v = _remoteConfig!.getString('min_version$_platformSuffix').trim();
     return v.isEmpty ? '0.0.0' : v;
   }
 
   /// Get latest available version (below this = optional update prompt)
   String getLatestVersion() {
     if (_remoteConfig == null) return '0.0.0';
-    final v = _remoteConfig!.getString('latest_version').trim();
+    final v = _remoteConfig!.getString('latest_version$_platformSuffix').trim();
     return v.isEmpty ? '0.0.0' : v;
   }
 }
-

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/customer/customer_controller.dart';
 import '../../controllers/referral/referral_controller.dart';
-import '../../controllers/theme_controller.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import 'account_referral_section.dart';
@@ -59,7 +58,6 @@ class AccountOptionsSection extends StatelessWidget {
           if (!isGuest) ...[
             _buildRedeemReferralTile(),
           ],
-          const AccountDarkModeTile(),
         ],
       ),
     );
@@ -191,54 +189,6 @@ class AccountListTile extends StatelessWidget {
   }
 }
 
-class AccountDarkModeTile extends StatelessWidget {
-  const AccountDarkModeTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
-    return Obx(() => ListTile(
-          leading: Container(
-            width: ResponsiveUtils.rp(36),
-            height: ResponsiveUtils.rp(36),
-            decoration: BoxDecoration(
-              color: AppColors.button.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(18)),
-            ),
-            child: Icon(
-              themeController.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-              color: AppColors.button,
-              size: ResponsiveUtils.rp(20),
-            ),
-          ),
-          title: Text(
-            'Dark Mode',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(14),
-              fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          subtitle: Text(
-            themeController.isDarkMode ? 'Enabled' : 'Disabled',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.sp(12),
-              color: AppColors.textSecondary,
-            ),
-          ),
-          trailing: Switch(
-            value: themeController.isDarkMode,
-            onChanged: (value) {
-              themeController.setDarkMode(value);
-            },
-            activeColor: AppColors.button,
-          ),
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          minLeadingWidth: 0,
-        ));
-  }
-}
 
 class AccountDivider extends StatelessWidget {
   const AccountDivider({super.key});

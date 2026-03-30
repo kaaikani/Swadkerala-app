@@ -224,8 +224,8 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   bool _checkoutHasItems() {
     final cart = cartController.cart.value;
     final order = orderController.currentOrder.value;
-    return (cart != null && (cart.lines.isNotEmpty || (cart.totalQuantity ?? 0) > 0)) ||
-        (order != null && (order.lines.isNotEmpty || (order.totalQuantity ?? 0) > 0));
+    return (cart != null && (cart.lines.isNotEmpty || cart.totalQuantity > 0)) ||
+        (order != null && (order.lines.isNotEmpty || order.totalQuantity > 0));
   }
 
   Future<void> _loadCustomerAddresses({bool forceUpdate = false, bool skipPostalCodeCheck = false}) async {
@@ -881,7 +881,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         debugPrint('[Checkout] Razorpay after getActiveOrder: hasActiveOrder=$hasActiveOrder, currentOrder.code=${orderController.currentOrder.value?.code}, cart.code=${cartController.cart.value?.code}');
 
         if (!hasActiveOrder) {
-          final finalOrderCode = (orderCode ?? orderId ?? '').toString();
+          final finalOrderCode = (orderCode ?? orderId).toString();
           debugPrint('[Checkout] Razorpay no active order: finalOrderCode=$finalOrderCode, willNavigate=${finalOrderCode.isNotEmpty}');
           if (finalOrderCode.isNotEmpty) {
             _navigateToOrderConfirmation(finalOrderCode);
@@ -927,7 +927,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
             );
             return;
           }
-          final code = (finalOrderCode ?? '').toString();
+          final code = finalOrderCode.toString();
           debugPrint('[Checkout] Razorpay post-addPayment: code=$code, navigating=${code.isNotEmpty}');
           if (code.isNotEmpty) {
             _navigateToOrderConfirmation(code);
@@ -939,7 +939,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         } else {
           debugPrint('[Checkout] Razorpay order not in ArrangingPayment, tracking analytics and navigating with code=$finalOrderCode');
           await _trackPaymentAnalytics(response, orderModel, cartOrder);
-          final code = (finalOrderCode ?? '').toString();
+          final code = finalOrderCode.toString();
           if (code.isNotEmpty) {
             _navigateToOrderConfirmation(code);
           }

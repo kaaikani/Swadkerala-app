@@ -16,7 +16,6 @@ import '../utils/app_strings.dart';
 import '../widgets/product_card.dart';
 import '../utils/navigation_helper.dart';
 import '../routes.dart';
-import '../services/graphql_client.dart';
 import '../services/analytics_service.dart';
 
 class FavoritesPage extends StatefulWidget {
@@ -139,7 +138,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
               crossAxisCount: 2,
               crossAxisSpacing: ResponsiveUtils.rp(14),
               mainAxisSpacing: ResponsiveUtils.rp(18),
-              childAspectRatio: ResponsiveUtils.rp(0.72),
+              childAspectRatio: ResponsiveUtils.rp(0.55),
             ),
             itemBuilder: (context, index) {
               final favoriteItem = enabledFavorites[index];
@@ -310,7 +309,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           crossAxisCount: 2,
           crossAxisSpacing: ResponsiveUtils.rp(14),
           mainAxisSpacing: ResponsiveUtils.rp(18),
-          childAspectRatio: ResponsiveUtils.rp(0.72),
+          childAspectRatio: ResponsiveUtils.rp(0.55),
         ),
         itemCount: 8,
         itemBuilder: (context, index) {
@@ -369,6 +368,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
       priceText: priceText,
       shadowPriceText: null,
       isOutOfStock: false,
+      cartQuantity: variant != null ? cartController.getVariantQuantity(variant.id) : 0,
+      onIncrement: () => _handleAddToCart(name, variant?.id),
+      onDecrement: variant != null ? () => cartController.decrementOrRemoveVariant(variantId: variant.id) : null,
       onAddToCart: () => _handleAddToCart(name, variant?.id),
     );
   }
