@@ -267,6 +267,7 @@ fragment Cart on Order {
     active
     validationStatus {
         isValid
+        message
         hasUnavailableItems
         totalUnavailableItems
         unavailableItems {

@@ -97,7 +97,7 @@ class AccountFooter extends StatelessWidget {
                         ),
                         SizedBox(height: ResponsiveUtils.rp(4)),
                         Text(
-                          '12424999000168',
+                          '21325176000258',
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(13),
                             fontWeight: FontWeight.w500,

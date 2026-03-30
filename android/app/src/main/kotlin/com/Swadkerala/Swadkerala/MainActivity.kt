@@ -1,4 +1,4 @@
-package com.kaaikani.kaaikani
+package com.Swadkerala.Swadkerala
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -11,43 +11,36 @@ import android.util.Log
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.kaaikani.kaaikani/account_manager"
     private val TAG = "MainActivity"
-    
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        // Note: With Flutter 2.0+ embedding, plugins are automatically registered
-        // No need to manually call GeneratedPluginRegistrant.registerWith()
         super.configureFlutterEngine(flutterEngine)
-        
+
         Log.d(TAG, "MainActivity: FlutterEngine configured, plugins auto-registered")
-        
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "getGoogleAccounts" -> {
                     try {
                         val accountManager = AccountManager.get(this)
-                        
-                        // Try different methods to get Google accounts
+
                         var accounts = arrayOf<Account>()
-                        
-                        // Method 1: Try "com.google" account type
+
                         try {
                             accounts = accountManager.getAccountsByType("com.google")
                             Log.d(TAG, "Found ${accounts.size} accounts with type 'com.google'")
                         } catch (e: Exception) {
                             Log.d(TAG, "Error getting accounts by type 'com.google': ${e.message}")
                         }
-                        
-                        // Method 2: If no accounts, try getting all accounts and filter
+
                         if (accounts.isEmpty()) {
                             try {
                                 val allAccounts = accountManager.accounts
                                 Log.d(TAG, "Total accounts on device: ${allAccounts.size}")
-                                
-                                // Log all account types for debugging
+
                                 allAccounts.forEach { account ->
                                     Log.d(TAG, "Account: ${account.name}, Type: ${account.type}")
                                 }
-                                
-                                // Filter for Google accounts (Gmail emails or Google account types)
+
                                 accounts = allAccounts.filter { account ->
                                     val isGmail = account.name.contains("@gmail.com", ignoreCase = true)
                                     val isGoogleType = account.type.contains("google", ignoreCase = true) ||
@@ -55,20 +48,20 @@ class MainActivity : FlutterActivity() {
                                                       account.type.contains("com.google")
                                     isGmail || isGoogleType
                                 }.toTypedArray()
-                                
+
                                 Log.d(TAG, "Filtered ${accounts.size} Google accounts from all accounts")
                             } catch (e: Exception) {
                                 Log.e(TAG, "Error getting all accounts: ${e.message}")
                             }
                         }
-                        
+
                         val accountList = accounts.map { account ->
                             mapOf(
                                 "email" to account.name,
                                 "type" to account.type
                             )
                         }
-                        
+
                         Log.d(TAG, "Returning ${accountList.size} Google accounts to Flutter")
                         result.success(accountList)
                     } catch (e: SecurityException) {
@@ -86,4 +79,3 @@ class MainActivity : FlutterActivity() {
         }
     }
 }
-

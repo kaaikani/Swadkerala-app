@@ -613,7 +613,7 @@ class BillGenerator {
         pw.SizedBox(height: 12),
         pw.Divider(),
         pw.SizedBox(height: 8),
-        pw.Text('FSSAI License Number: 12422012001406',
+        pw.Text('FSSAI License Number: 21325176000258',
             style: pw.TextStyle(
                 color: PdfColors.grey700,
                 fontSize: 10)),

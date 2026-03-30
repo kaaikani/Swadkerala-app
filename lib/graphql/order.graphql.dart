@@ -7129,6 +7129,13 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
           selectionSet: null,
         ),
         FieldNode(
+          name: NameNode(value: 'message'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
           name: NameNode(value: 'hasUnavailableItems'),
           alias: null,
           arguments: [],
@@ -7896,6 +7903,7 @@ extension ClientExtension$Fragment$Cart on graphql.GraphQLClient {
 class Fragment$Cart$validationStatus {
   Fragment$Cart$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -7904,12 +7912,14 @@ class Fragment$Cart$validationStatus {
 
   factory Fragment$Cart$validationStatus.fromJson(Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -7921,6 +7931,8 @@ class Fragment$Cart$validationStatus {
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -7934,6 +7946,8 @@ class Fragment$Cart$validationStatus {
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -7949,12 +7963,14 @@ class Fragment$Cart$validationStatus {
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -7974,6 +7990,11 @@ class Fragment$Cart$validationStatus {
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -8027,6 +8048,7 @@ abstract class CopyWith$Fragment$Cart$validationStatus<TRes> {
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Fragment$Cart$validationStatus$unavailableItems>? unavailableItems,
@@ -8055,6 +8077,7 @@ class _CopyWithImpl$Fragment$Cart$validationStatus<TRes>
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -8064,6 +8087,8 @@ class _CopyWithImpl$Fragment$Cart$validationStatus<TRes>
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -8104,6 +8129,7 @@ class _CopyWithStubImpl$Fragment$Cart$validationStatus<TRes>
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Fragment$Cart$validationStatus$unavailableItems>? unavailableItems,
@@ -13051,6 +13077,7 @@ class Query$ActiveOrder$activeOrder$validationStatus
     implements Fragment$Cart$validationStatus {
   Query$ActiveOrder$activeOrder$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -13060,12 +13087,14 @@ class Query$ActiveOrder$activeOrder$validationStatus
   factory Query$ActiveOrder$activeOrder$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Query$ActiveOrder$activeOrder$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -13078,6 +13107,8 @@ class Query$ActiveOrder$activeOrder$validationStatus
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -13092,6 +13123,8 @@ class Query$ActiveOrder$activeOrder$validationStatus
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -13107,12 +13140,14 @@ class Query$ActiveOrder$activeOrder$validationStatus
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -13132,6 +13167,11 @@ class Query$ActiveOrder$activeOrder$validationStatus
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -13187,6 +13227,7 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder$validationStatus<TRes> {
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>?
@@ -13216,6 +13257,7 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus<TRes>
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -13225,6 +13267,8 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$validationStatus<TRes>
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -13265,6 +13309,7 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$validationStatus<TRes>
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Query$ActiveOrder$activeOrder$validationStatus$unavailableItems>?
@@ -18363,6 +18408,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
     implements Fragment$Cart$validationStatus {
   Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -18372,12 +18418,14 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
   factory Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -18390,6 +18438,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -18405,6 +18455,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -18420,12 +18472,14 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -18446,6 +18500,11 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -18505,6 +18564,7 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$validati
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>?
@@ -18539,6 +18599,7 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationSt
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -18548,6 +18609,8 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validationSt
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -18592,6 +18655,7 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$validati
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$RemoveOrderLine$removeOrderLine$$Order$validationStatus$unavailableItems>?
@@ -23748,6 +23812,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
     implements Fragment$Cart$validationStatus {
   Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -23757,12 +23822,14 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
   factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -23775,6 +23842,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -23790,6 +23859,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -23805,12 +23876,14 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -23831,6 +23904,11 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -23891,6 +23969,7 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>?
@@ -23926,6 +24005,7 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$vali
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -23936,6 +24016,8 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$vali
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -23980,6 +24062,7 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$validationStatus$unavailableItems>?
@@ -29277,6 +29360,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
     implements Fragment$Cart$validationStatus {
   Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -29286,12 +29370,14 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
   factory Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -29304,6 +29390,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -29319,6 +29407,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -29334,12 +29424,14 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -29360,6 +29452,11 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -29419,6 +29516,7 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validati
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>?
@@ -29453,6 +29551,7 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationSt
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -29462,6 +29561,8 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationSt
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -29506,6 +29607,7 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$validati
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$AdjustOrderLine$adjustOrderLine$$Order$validationStatus$unavailableItems>?
@@ -35202,6 +35304,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatu
     implements Fragment$Cart$validationStatus {
   Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -35211,12 +35314,14 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatu
   factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -35229,6 +35334,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatu
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -35244,6 +35351,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatu
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -35259,12 +35368,14 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatu
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -35285,6 +35396,11 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatu
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -35345,6 +35461,7 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>?
@@ -35380,6 +35497,7 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$v
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -35390,6 +35508,8 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$v
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -35434,6 +35554,7 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$SetShippingAddress$setOrderShippingAddress$$Order$validationStatus$unavailableItems>?
@@ -41510,6 +41631,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
     implements Fragment$Cart$validationStatus {
   Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -41519,12 +41641,14 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
   factory Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -41537,6 +41661,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -41552,6 +41678,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -41567,12 +41695,14 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -41593,6 +41723,11 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -41653,6 +41788,7 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>?
@@ -41688,6 +41824,7 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$val
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -41698,6 +41835,8 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$val
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -41742,6 +41881,7 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$SetShippingMethod$setOrderShippingMethod$$Order$validationStatus$unavailableItems>?
@@ -49150,6 +49290,7 @@ class Query$GetOrderByCode$orderByCode$validationStatus
     implements Fragment$Cart$validationStatus {
   Query$GetOrderByCode$orderByCode$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -49159,12 +49300,14 @@ class Query$GetOrderByCode$orderByCode$validationStatus
   factory Query$GetOrderByCode$orderByCode$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Query$GetOrderByCode$orderByCode$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -49177,6 +49320,8 @@ class Query$GetOrderByCode$orderByCode$validationStatus
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -49191,6 +49336,8 @@ class Query$GetOrderByCode$orderByCode$validationStatus
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -49206,12 +49353,14 @@ class Query$GetOrderByCode$orderByCode$validationStatus
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -49231,6 +49380,11 @@ class Query$GetOrderByCode$orderByCode$validationStatus
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -49288,6 +49442,7 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode$validationStatus<
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>?
@@ -49318,6 +49473,7 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -49327,6 +49483,8 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -49369,6 +49527,7 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$validationStatus<TRes>
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Query$GetOrderByCode$orderByCode$validationStatus$unavailableItems>?
@@ -55365,6 +55524,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
     implements Fragment$Cart$validationStatus {
   Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -55374,12 +55534,14 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
   factory Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -55392,6 +55554,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -55407,6 +55571,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -55422,12 +55588,14 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -55448,6 +55616,11 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -55506,6 +55679,7 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$validationS
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>?
@@ -55539,6 +55713,7 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatu
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -55548,6 +55723,8 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationStatu
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -55592,6 +55769,7 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$validationS
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$AddPayment$addPaymentToOrder$$Order$validationStatus$unavailableItems>?
@@ -61887,6 +62065,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationSt
     implements Fragment$Cart$validationStatus {
   Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -61896,12 +62075,14 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationSt
   factory Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -61914,6 +62095,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationSt
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -61929,6 +62112,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationSt
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -61944,12 +62129,14 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationSt
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -61970,6 +62157,11 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationSt
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -62030,6 +62222,7 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>?
@@ -62065,6 +62258,7 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -62075,6 +62269,8 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -62119,6 +62315,7 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$TransitionOrderToState$transitionOrderToState$$Order$validationStatus$unavailableItems>?
@@ -67776,6 +67973,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$valida
     implements Fragment$Cart$validationStatus {
   Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus({
     required this.isValid,
+    this.message,
     required this.hasUnavailableItems,
     required this.totalUnavailableItems,
     required this.unavailableItems,
@@ -67785,12 +67983,14 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$valida
   factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus.fromJson(
       Map<String, dynamic> json) {
     final l$isValid = json['isValid'];
+    final l$message = json['message'];
     final l$hasUnavailableItems = json['hasUnavailableItems'];
     final l$totalUnavailableItems = json['totalUnavailableItems'];
     final l$unavailableItems = json['unavailableItems'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus(
       isValid: (l$isValid as bool),
+      message: (l$message as String?),
       hasUnavailableItems: (l$hasUnavailableItems as bool),
       totalUnavailableItems: (l$totalUnavailableItems as int),
       unavailableItems: (l$unavailableItems as List<dynamic>)
@@ -67803,6 +68003,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$valida
   }
 
   final bool isValid;
+
+  final String? message;
 
   final bool hasUnavailableItems;
 
@@ -67818,6 +68020,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$valida
     final _resultData = <String, dynamic>{};
     final l$isValid = isValid;
     _resultData['isValid'] = l$isValid;
+    final l$message = message;
+    _resultData['message'] = l$message;
     final l$hasUnavailableItems = hasUnavailableItems;
     _resultData['hasUnavailableItems'] = l$hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
@@ -67833,12 +68037,14 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$valida
   @override
   int get hashCode {
     final l$isValid = isValid;
+    final l$message = message;
     final l$hasUnavailableItems = hasUnavailableItems;
     final l$totalUnavailableItems = totalUnavailableItems;
     final l$unavailableItems = unavailableItems;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$isValid,
+      l$message,
       l$hasUnavailableItems,
       l$totalUnavailableItems,
       Object.hashAll(l$unavailableItems.map((v) => v)),
@@ -67859,6 +68065,11 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$valida
     final l$isValid = isValid;
     final lOther$isValid = other.isValid;
     if (l$isValid != lOther$isValid) {
+      return false;
+    }
+    final l$message = message;
+    final lOther$message = other.message;
+    if (l$message != lOther$message) {
       return false;
     }
     final l$hasUnavailableItems = hasUnavailableItems;
@@ -67919,6 +68130,7 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
 
   TRes call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>?
@@ -67954,6 +68166,7 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
 
   TRes call({
     Object? isValid = _undefined,
+    Object? message = _undefined,
     Object? hasUnavailableItems = _undefined,
     Object? totalUnavailableItems = _undefined,
     Object? unavailableItems = _undefined,
@@ -67964,6 +68177,8 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
         isValid: isValid == _undefined || isValid == null
             ? _instance.isValid
             : (isValid as bool),
+        message:
+            message == _undefined ? _instance.message : (message as String?),
         hasUnavailableItems:
             hasUnavailableItems == _undefined || hasUnavailableItems == null
                 ? _instance.hasUnavailableItems
@@ -68008,6 +68223,7 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
 
   call({
     bool? isValid,
+    String? message,
     bool? hasUnavailableItems,
     int? totalUnavailableItems,
     List<Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$validationStatus$unavailableItems>?
