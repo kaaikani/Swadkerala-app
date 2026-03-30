@@ -161,6 +161,7 @@ type CartInsufficientStockError implements ErrorResult {
 
 type CartValidationStatus {
   isValid: Boolean!
+  message: String
   hasUnavailableItems: Boolean!
   totalUnavailableItems: Int!
   unavailableItems: [UnavailableCartItem!]!

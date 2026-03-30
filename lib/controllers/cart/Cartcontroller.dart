@@ -524,6 +524,22 @@ class CartController extends BaseController {
     } finally {}
   }
 
+  /// Decrement variant, and if quantity reaches 0, remove it from cart.
+  Future<bool> decrementOrRemoveVariant({required String variantId}) async {
+    final line = _findOrderLineByVariant(variantId);
+    if (line == null) return false;
+
+    if (line.quantity <= 1) {
+      final success = await orderController.removeOrderLine(line.id);
+      if (success) {
+        await getActiveOrder(); // Refresh cart to update UI
+      }
+      return success;
+    } else {
+      return await decrementVariant(variantId: variantId);
+    }
+  }
+
   /// Get cart total items count
   int get cartItemCount => cart.value?.totalQuantity ?? 0;
 

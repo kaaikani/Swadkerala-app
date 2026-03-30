@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../graphql/product.graphql.dart';
@@ -87,27 +84,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   void dispose() {
     _imagePageController.dispose();
     super.dispose();
-  }
-
-  /// Generate shareable deep link URL for this product
-  String _generateShareLink() {
-    // Get base URL from environment variables
-    final baseUrl = dotenv.env['DEEP_LINK_URL'] ?? 
-                    dotenv.env['APP_URL'] ?? 
-                    dotenv.env['SHOP_API_URL']?.replaceAll('/shop-api', '') ??
-                    'https://kaaikani.co.in';
-    
-    // Remove trailing slash if present
-    final cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-    
-    // Get product name for better sharing experience
-    final productName = productDetail?.name ?? widget.productName ?? 'Product';
-    
-    // Generate deep link URL with query parameters
-    // Format: https://domain.com?page=product&productId=xxx&productName=xxx
-    final shareLink = '$cleanBaseUrl?page=product&productId=${widget.productId}&productName=${Uri.encodeComponent(productName)}';
-    
-    return shareLink;
   }
 
   /// Get display name from variant options, fallback to variant name

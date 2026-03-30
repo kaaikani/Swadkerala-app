@@ -128,7 +128,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
               crossAxisCount: 2,
               crossAxisSpacing: ResponsiveUtils.rp(14),
               mainAxisSpacing: ResponsiveUtils.rp(18),
-              childAspectRatio: ResponsiveUtils.rp(0.72),
+              childAspectRatio: ResponsiveUtils.rp(0.55),
             ),
             itemBuilder: (context, index) {
               final item = enabledProducts[index];
@@ -178,7 +178,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
           crossAxisCount: 2,
           crossAxisSpacing: ResponsiveUtils.rp(14),
           mainAxisSpacing: ResponsiveUtils.rp(18),
-          childAspectRatio: ResponsiveUtils.rp(0.72),
+          childAspectRatio: ResponsiveUtils.rp(0.55),
         ),
         itemCount: 8,
         itemBuilder: (context, index) {
@@ -351,6 +351,9 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
       isOutOfStock: isOutOfStock,
       groupName: groupName,
       hasMultipleVariants: hasMultipleVariants,
+      cartQuantity: cartController.getVariantQuantity(variant.id),
+      onIncrement: () => _handleAddToCart(name, variant.id),
+      onDecrement: () => cartController.decrementOrRemoveVariant(variantId: variant.id),
       onAddToCart: () => _handleAddToCart(name, variant.id),
     );
   }

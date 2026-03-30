@@ -11,7 +11,7 @@ import '../../utils/analytics_helper.dart';
 import '../../widgets/responsive_spacing.dart';
 import '../../widgets/home_product_card.dart';
 import '../../widgets/snackbar.dart';
-import '../../services/graphql_client.dart';
+
 
 class HomeFrequentlyOrderedSection extends StatefulWidget {
   final BannerController bannerController;

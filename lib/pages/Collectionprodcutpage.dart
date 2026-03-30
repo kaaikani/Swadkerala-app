@@ -6,7 +6,6 @@ import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/collection controller/collectioncontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../routes.dart';
-import '../services/graphql_client.dart';
 import '../graphql/product.graphql.dart';
 import '../widgets/Variant bottom sheet.dart' show VariantBottomSheet;
 import '../widgets/appbar.dart';
@@ -467,7 +466,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
               crossAxisCount: ResponsiveUtils.gridCrossAxisCount,
               crossAxisSpacing: ResponsiveUtils.rp(14),
               mainAxisSpacing: ResponsiveUtils.rp(18),
-              childAspectRatio: orientation == Orientation.landscape ? 0.85 : 0.72,
+              childAspectRatio: orientation == Orientation.landscape ? 0.75 : 0.55,
             ),
             itemBuilder: (context, index) {
               // Show loading indicator at the end
@@ -555,6 +554,14 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
                   stockLevel: stockLevelStr,
                   groupName: groupName,
                   hasMultipleVariants: hasMultipleVariants,
+                  cartQuantity: cartController.getVariantQuantity(selectedVariant.id),
+                  onIncrement: () => _handleAddToCart(
+                    selectedVariant,
+                    allowVariantSelector: false,
+                  ),
+                  onDecrement: () => cartController.decrementOrRemoveVariant(
+                    variantId: selectedVariant.id,
+                  ),
                   onAddToCart: () => _handleAddToCart(
                     selectedVariant,
                     allowVariantSelector: false,
@@ -584,7 +591,7 @@ class _CollectionProductsPageState extends State<CollectionProductsPage> {
             crossAxisCount: ResponsiveUtils.gridCrossAxisCount,
             crossAxisSpacing: ResponsiveUtils.rp(14),
             mainAxisSpacing: ResponsiveUtils.rp(18),
-            childAspectRatio: orientation == Orientation.landscape ? 0.85 : 0.72,
+            childAspectRatio: orientation == Orientation.landscape ? 0.75 : 0.55,
           ),
         itemCount: 8,
         itemBuilder: (context, index) {

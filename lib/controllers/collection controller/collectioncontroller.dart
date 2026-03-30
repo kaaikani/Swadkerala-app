@@ -4,7 +4,6 @@ import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 // import 'package:flutter/foundation.dart'; // Unused import removed
-import '../../utils/logger.dart';
 
 class CollectionsController extends GetxController {
   RxList<Query$Collections$collections$items> allCollections = <Query$Collections$collections$items>[].obs;

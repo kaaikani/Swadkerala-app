@@ -116,15 +116,14 @@ class _HomeProductCardState extends State<HomeProductCard>
               angle: _rotationAnimation.value,
               child: Container(
         decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-          border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+          border: Border.all(color: AppColors.border.withValues(alpha: 0.3)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: _shadowAnimation.value),
-              blurRadius: ResponsiveUtils.rp(12) * (1 + _controller.value * 0.5),
-              offset: Offset(0, ResponsiveUtils.rp(4) * (1 + _controller.value * 0.3)),
-              spreadRadius: _controller.value * 2,
+              color: Colors.black.withValues(alpha: 0.03 + _shadowAnimation.value * 0.2),
+              blurRadius: ResponsiveUtils.rp(8),
+              offset: Offset(0, ResponsiveUtils.rp(4)),
             ),
           ],
         ),
@@ -132,9 +131,9 @@ class _HomeProductCardState extends State<HomeProductCard>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              flex: 4,
+              flex: 5,
               child: Stack(
-                clipBehavior: Clip.none,
+                clipBehavior: Clip.hardEdge,
                 children: [
                   ColorFiltered(
                     colorFilter: widget.isOutOfStock
@@ -146,16 +145,15 @@ class _HomeProductCardState extends State<HomeProductCard>
                           ])
                         : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
                     child: Container(
-                      color: Color(0xFFF6F6F6),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF9F9F9),
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(ResponsiveUtils.rp(12))),
+                      ),
+                      padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(ResponsiveUtils.rp(8)),
-                          topRight: Radius.circular(ResponsiveUtils.rp(8)),
-                        ),
+                        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
                         child: (widget.imageUrl != null && widget.imageUrl!.isNotEmpty
-                                ? _AnimatedProductImage(
-                                    imageUrl: widget.imageUrl!,
-                                  )
+                                ? _AnimatedProductImage(imageUrl: widget.imageUrl!)
                                 : Skeletons.imageRect(
                                     height: double.infinity,
                                     width: double.infinity,
@@ -166,15 +164,13 @@ class _HomeProductCardState extends State<HomeProductCard>
                   ),
                   if (widget.orderCount != null && widget.orderCount! > 0)
                     Positioned(
-                      top: ResponsiveUtils.rp(6),
-                      left: ResponsiveUtils.rp(6),
-                      child: _AnimatedOrderCountBadge(
-                        orderCount: widget.orderCount!,
-                      ),
+                      top: ResponsiveUtils.rp(8),
+                      left: ResponsiveUtils.rp(8),
+                      child: _AnimatedOrderCountBadge(orderCount: widget.orderCount!),
                     ),
                   Positioned(
-                    top: ResponsiveUtils.rp(4),
-                    right: ResponsiveUtils.rp(4),
+                    top: ResponsiveUtils.rp(8),
+                    right: ResponsiveUtils.rp(8),
                     child: _AnimatedFavoriteButton(
                       isFavorite: widget.isFavorite,
                       onTap: widget.onFavoriteToggle,
@@ -182,79 +178,48 @@ class _HomeProductCardState extends State<HomeProductCard>
                   ),
                   if (widget.discountPercent != null)
                     Positioned(
-                      top: ResponsiveUtils.rp(4),
-                      left: ResponsiveUtils.rp(4),
-                      child: _AnimatedDiscountBadge(
-                        discountPercent: widget.discountPercent!,
-                      ),
+                      bottom: ResponsiveUtils.rp(8),
+                      left: ResponsiveUtils.rp(8),
+                      child: _AnimatedDiscountBadge(discountPercent: widget.discountPercent!),
                     ),
-                  Positioned(
-                    bottom: -ResponsiveUtils.rp(0),
-                    right: -ResponsiveUtils.rp(0),
-                    child: _AddToCartButton(
-                      onPressed: widget.isOutOfStock ? () async => false : (widget.onAddToCart ?? () async => false),
-                      isDisabled: widget.isOutOfStock,
-                    ),
-                  ),
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUtils.rp(6),
-                vertical: ResponsiveUtils.rp(4),
+              padding: EdgeInsets.fromLTRB(
+                ResponsiveUtils.rp(10),
+                ResponsiveUtils.rp(10),
+                ResponsiveUtils.rp(10),
+                ResponsiveUtils.rp(10),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Product Name - Bold, larger, primary color
                   Flexible(
                     child: _AnimatedText(
                       text: widget.name,
                       fontSize: ResponsiveUtils.sp(13),
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                       maxLines: 2,
                     ),
                   ),
-                  SizedBox(height: ResponsiveUtils.rp(2)),
+                  SizedBox(height: ResponsiveUtils.rp(4)),
                   if (widget.showVariantSelector && widget.variantSelector != null) ...[
-                            widget.variantSelector!,
-                            SizedBox(height: ResponsiveUtils.rp(2)),
-                          ] else ...[
-                            // If only one variant, show group name and option name on same line
-                            if (!widget.hasMultipleVariants && widget.groupName != null && widget.groupName!.isNotEmpty)
+                    widget.variantSelector!,
+                    SizedBox(height: ResponsiveUtils.rp(4)),
+                  ] else ...[
+                    if (!widget.hasMultipleVariants && widget.groupName != null && widget.groupName!.isNotEmpty)
                       Row(
                         children: [
-                          Text(
-                            widget.groupName!,
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(10),
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.textSecondary,
-                              fontStyle: FontStyle.italic,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(width: ResponsiveUtils.rp(3)),
-                          Text(
-                            '•',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.sp(10),
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          SizedBox(width: ResponsiveUtils.rp(3)),
                           Expanded(
                             child: Text(
                               widget.variantLabel,
                               style: TextStyle(
                                 fontSize: ResponsiveUtils.sp(11),
+                                color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
-                                color: AppColors.button,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -263,30 +228,14 @@ class _HomeProductCardState extends State<HomeProductCard>
                         ],
                       )
                     else ...[
-                      // If multiple variants, show group name and option name on separate lines
-                      if (widget.groupName != null && widget.groupName!.isNotEmpty)
-                        Text(
-                          widget.groupName!,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(10),
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.textSecondary,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      if (widget.groupName != null && widget.groupName!.isNotEmpty)
-                        SizedBox(height: ResponsiveUtils.rp(2)),
-                      // Option Name - Medium size, different color
                       Padding(
                         padding: EdgeInsets.only(top: ResponsiveUtils.rp(1)),
                         child: Text(
                           widget.variantLabel,
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(11),
+                            color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.button,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -294,57 +243,29 @@ class _HomeProductCardState extends State<HomeProductCard>
                       ),
                     ],
                   ],
-                  SizedBox(height: ResponsiveUtils.rp(3)),
-                  // Total row: price on left, stock status on right corner
+                  SizedBox(height: ResponsiveUtils.rp(8)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Flexible(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Flexible(
-                              child: _AnimatedPriceText(
-                                price: widget.priceText,
-                                fontSize: ResponsiveUtils.sp(15),
-                              ),
+                            _AnimatedPriceText(
+                              price: widget.priceText,
+                              fontSize: ResponsiveUtils.sp(14),
                             ),
                           ],
                         ),
                       ),
-                      // Stock status on right corner
-                      widget.stockLevel != null
-                          ? StockLevelLabel(
-                              stockLevel: widget.stockLevel!,
-                              compact: true,
-                            )
-                          : Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: ResponsiveUtils.rp(6),
-                                vertical: ResponsiveUtils.rp(3),
-                              ),
-                              decoration: BoxDecoration(
-                                color: widget.isOutOfStock
-                                    ? AppColors.error.withValues(alpha: 0.12)
-                                    : AppColors.success.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(5)),
-                                border: Border.all(
-                                  color: widget.isOutOfStock
-                                      ? AppColors.error.withValues(alpha: 0.4)
-                                      : AppColors.success.withValues(alpha: 0.4),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Text(
-                                widget.isOutOfStock ? 'Out of Stock' : 'In Stock',
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(10),
-                                  fontWeight: FontWeight.w600,
-                                  color: widget.isOutOfStock ? AppColors.error : AppColors.success,
-                                ),
-                              ),
-                            ),
+                      SizedBox(width: ResponsiveUtils.rp(4)),
+                      widget.isOutOfStock 
+                        ? StockLevelLabel(stockLevel: 'OUT_OF_STOCK', compact: true)
+                        : _AddToCartButton(
+                            onPressed: widget.onAddToCart ?? () async => false,
+                            isDisabled: widget.isOutOfStock,
+                          ),
                     ],
                   ),
                 ],
@@ -971,110 +892,128 @@ class _AddToCartButtonState extends State<_AddToCartButton>
 
   @override
   Widget build(BuildContext context) {
-    final resolvedSize = ResponsiveUtils.rp(36);
+    final resolvedHeight = ResponsiveUtils.rp(30);
+    final resolvedWidth = ResponsiveUtils.rp(65);
     
     // Determine colors and icon based on state
-    Color buttonColor1;
-    Color buttonColor2;
-    Widget iconWidget;
+    Color buttonBgColor;
+    Color buttonBorderColor;
+    Color textColor;
+    Widget contentWidget;
     
     // If disabled (out of stock), use grey colors
     if (widget.isDisabled) {
-      buttonColor1 = Colors.grey.shade400;
-      buttonColor2 = Colors.grey.shade600;
-      iconWidget = Icon(
-        Icons.add,
-        color: Colors.white,
-        size: resolvedSize * 0.45,
+      buttonBgColor = Colors.grey.shade200;
+      buttonBorderColor = Colors.grey.shade300;
+      textColor = Colors.grey.shade500;
+      contentWidget = Text(
+        'ADD',
+        style: TextStyle(
+          color: textColor,
+          fontSize: ResponsiveUtils.sp(12),
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.5,
+        ),
       );
     } else {
       switch (_state) {
         case _AddToCartState.idle:
-          buttonColor1 = AppColors.button;
-          buttonColor2 = AppColors.button.withValues(alpha: 0.8);
-          iconWidget = Icon(
-            Icons.add,
-            color: Colors.white,
-            size: resolvedSize * 0.45,
+          buttonBgColor = Colors.white;
+          buttonBorderColor = AppColors.button;
+          textColor = AppColors.button;
+          contentWidget = Text(
+            'ADD',
+            style: TextStyle(
+              color: textColor,
+              fontSize: ResponsiveUtils.sp(12),
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+            ),
           );
           break;
         case _AddToCartState.loading:
-          buttonColor1 = AppColors.button.withValues(alpha: 0.7);
-          buttonColor2 = AppColors.button.withValues(alpha: 0.5);
-          iconWidget = SizedBox(
-            width: resolvedSize * 0.45,
-            height: resolvedSize * 0.45,
+          buttonBgColor = AppColors.button.withValues(alpha: 0.1);
+          buttonBorderColor = AppColors.button;
+          textColor = AppColors.button;
+          contentWidget = SizedBox(
+            width: ResponsiveUtils.rp(14),
+            height: ResponsiveUtils.rp(14),
             child: CircularProgressIndicator(
-              strokeWidth: 2.5,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              strokeWidth: 2.0,
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.button),
             ),
           );
           break;
         case _AddToCartState.success:
-          buttonColor1 = AppColors.button;
-          buttonColor2 = AppColors.button.withValues(alpha: 0.8);
-          iconWidget = Icon(
+          buttonBgColor = AppColors.button;
+          buttonBorderColor = AppColors.button;
+          textColor = Colors.white;
+          contentWidget = Icon(
             Icons.check,
             color: Colors.white,
-            size: resolvedSize * 0.5,
+            size: ResponsiveUtils.rp(18),
           );
           break;
         case _AddToCartState.error:
-          buttonColor1 = AppColors.error;
-          buttonColor2 = AppColors.error.withValues(alpha: 0.8);
-          iconWidget = Icon(
+          buttonBgColor = AppColors.error;
+          buttonBorderColor = AppColors.error;
+          textColor = Colors.white;
+          contentWidget = Icon(
             Icons.close,
             color: Colors.white,
-            size: resolvedSize * 0.45,
+            size: ResponsiveUtils.rp(18),
           );
           break;
       }
     }
     
-      return AnimatedBuilder(
-        animation: Listenable.merge([_scaleAnimation, _iconScaleAnimation]),
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Container(
-              width: resolvedSize,
-              height: resolvedSize,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [buttonColor1, buttonColor2],
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: buttonColor1.withValues(alpha: 0.4),
-                    blurRadius: ResponsiveUtils.rp(8),
-                    offset: Offset(0, ResponsiveUtils.rp(2)),
-                  ),
-                ],
+    return AnimatedBuilder(
+      animation: Listenable.merge([_scaleAnimation, _iconScaleAnimation]),
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Container(
+            width: resolvedWidth,
+            height: resolvedHeight,
+            decoration: BoxDecoration(
+              color: buttonBgColor,
+              borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+              border: Border.all(
+                color: buttonBorderColor,
+                width: 1,
               ),
-              child: Material(
-                color: Colors.transparent,
-                shape: const CircleBorder(),
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: widget.isDisabled ? null : _handleTap,
+              boxShadow: _state == _AddToCartState.idle && !widget.isDisabled
+                  ? [
+                      BoxShadow(
+                        color: AppColors.button.withValues(alpha: 0.1),
+                        blurRadius: ResponsiveUtils.rp(4),
+                        offset: Offset(0, ResponsiveUtils.rp(2)),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(6)),
+                onTap: widget.isDisabled ? null : _handleTap,
+                child: Center(
                   child: AnimatedBuilder(
                     animation: _iconScaleAnimation,
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _iconScaleAnimation.value,
-                        child: Center(child: iconWidget),
+                        child: contentWidget,
                       );
                     },
                   ),
                 ),
               ),
             ),
-          );
-        },
-      );
+          ),
+        );
+      },
+    );
   }
 }
 

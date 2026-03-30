@@ -828,7 +828,7 @@ class AddressComponent extends StatelessWidget {
                                 return;
                               }
 
-                              final existingAddressTyped = existingAddress as Query$GetActiveCustomer$activeCustomer$addresses?;
+                              final existingAddressTyped = existingAddress;
                               final country = existingAddressTyped?.country ??
                                   Query$GetActiveCustomer$activeCustomer$addresses$country(
                                     id: 'IN',

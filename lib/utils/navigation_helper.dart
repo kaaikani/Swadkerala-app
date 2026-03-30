@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../routes.dart';
-import '../services/graphql_client.dart';
 import '../theme/colors.dart';
 
 /// Centralized navigation helper for consistent navigation across the app
 class NavigationHelper {
   /// Returns true if user has auth token (logged in).
-  static bool get _isLoggedIn => GraphqlService.authToken.isNotEmpty;
   /// Navigate to product detail page
   /// 
   /// [productId] - Required product ID
