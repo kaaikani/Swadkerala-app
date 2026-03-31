@@ -137,6 +137,7 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
                 phoneNumber
                 company
                 city
+                province
                 streetLine2
                 streetLine1
                 fullName

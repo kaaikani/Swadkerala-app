@@ -109,7 +109,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   Future<void> _openPlayStoreForUpdate() async {
     try {
-      const packageName = 'com.kaaikani.kaaikani';
+      const packageName = 'com.Swadkerala.Swadkerala';
       final Uri playStoreUrl = Uri.parse('market://details?id=$packageName');
       final Uri webStoreUrl = Uri.parse(
           'https://play.google.com/store/apps/details?id=$packageName');

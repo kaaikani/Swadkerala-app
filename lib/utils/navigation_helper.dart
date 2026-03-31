@@ -93,8 +93,13 @@ class NavigationHelper {
     }
   }
 
+  /// Navigate to offers page (coupons, loyalty points, instructions)
+  static Future<void> navigateToOffers() async {
+    await Get.toNamed(AppRoutes.offers);
+  }
+
   /// Navigate to checkout page
-  /// 
+  ///
   /// [isInitialLink] - If true, ensures home page is in navigation stack
   /// Authentication is now handled by AuthGuard middleware in routes
   static Future<void> navigateToCheckout({bool? isInitialLink}) async {

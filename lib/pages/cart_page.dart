@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/cart/Cartcontroller.dart';
 import '../controllers/order/ordercontroller.dart';
 import '../controllers/utilitycontroller/utilitycontroller.dart';
@@ -11,28 +10,19 @@ import '../controllers/coupon/coupon_controller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/authentication/authenticationcontroller.dart';
 import '../routes.dart';
-import '../utils/price_formatter.dart';
 import '../widgets/appbar.dart';
 import '../widgets/snackbar.dart';
 import '../widgets/cart/cart_empty_state.dart';
 import '../widgets/cart/cart_shimmer_loading.dart';
 import '../widgets/cart/cart_items_list.dart';
-import '../widgets/cart/cart_shipping_section.dart';
-import '../widgets/cart/cart_loyalty_points_section.dart';
-import '../widgets/cart/cart_coupon_section.dart';
 import '../widgets/cart/cart_order_summary_section.dart';
 import '../widgets/cart/cart_checkout_section.dart';
-import '../widgets/cart/cart_other_instructions_section.dart';
-import '../widgets/cart/cart_coupon_bottom_sheet.dart';
 import '../utils/responsive.dart';
 import '../utils/app_strings.dart';
 import '../theme/colors.dart';
-import '../utils/navigation_helper.dart';
 import '../services/analytics_service.dart';
 import '../utils/analytics_helper.dart';
-import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
-import '../graphql/order.graphql.dart';
-import '../graphql/banner.graphql.dart';
+
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -41,7 +31,7 @@ class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
 }
 
-class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
   final CartController cartController = Get.find<CartController>();
   final OrderController orderController = Get.find<OrderController>();
   final UtilityController utilityController = Get.find<UtilityController>();
@@ -51,16 +41,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
 
   // Scroll controller and keys
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _shippingSectionKey = GlobalKey();
   final GlobalKey _cartItemsListKey = GlobalKey();
-  
-  // Animation for blinking shipping section
-  late AnimationController _blinkAnimationController;
-  late Animation<double> _blinkAnimation;
-
-  // Other Instructions - moved to CartOtherInstructionsSection component
-
-  String? _lastAppliedShippingMethodId;
 
   // Animation states for item removal
   String? _removingItemId; // Track which item is being removed (single item)
@@ -88,18 +69,6 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     // Add observer to detect app lifecycle and route changes
     WidgetsBinding.instance.addObserver(this);
     
-    // Initialize blink animation
-    _blinkAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    _blinkAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _blinkAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
-    
     // Store current route
     _lastRoute = Get.currentRoute;
     
@@ -118,38 +87,20 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Load cart first
       await cartController.getActiveOrder();
-      
-      // Call getActiveCustomer which will also load coupon codes and loyalty points config
-      // Load other data in parallel
-      Future.wait([
-        customerController.getActiveCustomer(),
-        orderController.getEligibleShippingMethods(),
-      ], eagerError: false).then((_) async {
-        // After shipping methods are loaded, check for single method
-        if (orderController.shippingMethods.length == 1) {
-          final singleMethod = orderController.shippingMethods.first;
-          orderController.selectedShippingMethod.value = singleMethod;
-          // Skip sync during initialization since getActiveOrder was just called
-          await _applyShippingMethod(showFeedback: false, force: true, skipSync: true);
-        }
-        
-        // OrderController is already updated by cartController.getActiveOrder() above
-        // No need to fetch again - just load existing data from controllers
-        _loadExistingShippingMethod();
-        _loadExistingCouponCodes();
-        _loadExistingInstructions();
-        
-        // Mark refresh as complete
-        _isRefreshingData = false;
-      });
-      
+
+      // Load customer data in parallel
+      await customerController.getActiveCustomer();
+
+      // Mark refresh as complete
+      _isRefreshingData = false;
+
       // Mark initial loading as complete after first frame
       if (mounted) {
         setState(() {
           _isInitialLoading = false;
         });
       }
-      
+
       // Track screen view
       AnalyticsService().logScreenView(screenName: 'Cart');
     });
@@ -158,120 +109,9 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _instructionsDebounceTimer?.cancel();
     _scrollController.dispose();
-    _blinkAnimationController.dispose();
     super.dispose();
   }
-
-  /// Get minimum order amount from coupon conditions
-  int? _getCouponMinimumAmount(Query$GetCouponCodeList$getCouponCodeList$items coupon) {
-    try {
-      for (final condition in coupon.promotion.conditions) {
-        if (condition.code == 'minimum_order_amount') {
-          for (final arg in condition.args) {
-            if (arg.name == 'amount') {
-              // arg.value is always String, so parse it directly
-              return int.tryParse(arg.value);
-            }
-          }
-        }
-      }
-    } catch (e) {
-    }
-    return null;
-  }
-
-  /// Get applicable coupons - show coupons with minimum amounts 500, 1000, 1500
-  /// regardless of cart value. Validation happens when applying.
-  // ignore: unused_element
-  List<Query$GetCouponCodeList$getCouponCodeList$items> _getApplicableCoupons(int cartTotal) {
-    final coupons = couponController.availableCouponCodes;
-    final applicableCoupons = <Query$GetCouponCodeList$getCouponCodeList$items>[];
-
-    for (final coupon in coupons) {
-      if (!coupon.promotion.enabled) continue;
-
-      // Get minimum order amount required for this coupon
-      final minimumAmount = _getCouponMinimumAmount(coupon);
-      
-      // Show coupons with minimum amounts of 500, 1000, 1500
-      // (or any coupon if no minimum amount is set)
-      if (minimumAmount == null) {
-        // If no minimum amount condition, show the coupon
-        applicableCoupons.add(coupon);
-      } else if (minimumAmount == 500 || minimumAmount == 1000 || minimumAmount == 1500) {
-        // Show coupons that require 500, 1000, or 1500 minimum order
-        applicableCoupons.add(coupon);
-      }
-    }
-
-    return applicableCoupons;
-  }
-
-  /// Calculate coupon suggestion based on cart total
-  /// Returns coupon and amount short if user is close to qualifying
-  // ignore: unused_element
-  Map<String, dynamic> _calculateCouponInfo(double totalPrice, List<Query$GetCouponCodeList$getCouponCodeList$items> coupons) {
-    final totalInPaise = (totalPrice * 100).toInt(); // Convert to paise
-    Query$GetCouponCodeList$getCouponCodeList$items? suggestedCoupon;
-    int? amountShort;
-
-    for (final coupon in coupons) {
-      if (!coupon.promotion.enabled) continue;
-
-      // Get minimum order amount from coupon conditions
-      final minimumAmount = _getCouponMinimumAmount(coupon);
-      if (minimumAmount == null) continue;
-
-      // Calculate difference: (requiredAmount - totalInPaise) + 100
-      final difference = (minimumAmount - totalInPaise) + 100;
-
-      // If difference is between 1-40000 (₹0.01 to ₹400), suggest this coupon
-      if (difference >= 1 && difference <= 40000) {
-        suggestedCoupon = coupon;
-        amountShort = difference;
-        break; // Use first matching coupon
-      }
-    }
-
-    return {
-      'coupon': suggestedCoupon,
-      'amountShort': amountShort,
-    };
-  }
-
-  /// Apply coupon code
-  // ignore: unused_element
-  Future<void> _applyCouponCode(String couponCode) async {
-    // Check if coupon has products to add
-    final hasProducts = couponController.hasCouponProducts(couponCode);
-    final result = hasProducts
-        ? await couponController.applyCouponCodeWithProducts(couponCode)
-        : await couponController.applyCouponCode(couponCode);
-    
-    if (result['success'] == true) {
-      showSuccessSnackbar(result['message'] ?? 'Coupon applied successfully');
-      
-      // Track coupon application
-      final cart = cartController.cart.value;
-      if (cart != null) {
-        final coupon = couponController.availableCouponCodes.firstWhere(
-          (c) => c.promotion.couponCode == couponCode,
-          orElse: () => couponController.availableCouponCodes.first,
-        );
-        await AnalyticsService().logApplyCoupon(
-          couponName: coupon.promotion.name,
-          couponCode: couponCode,
-          value: cart.totalWithTax / 100.0,
-          currency: 'INR',
-        );
-      }
-      
-      // Cart is already updated by applyCouponCode/applyCouponCodeWithProducts - no need for additional refresh
-    }
-  }
-
 
   Future<void> _handleRemoveItem(String orderLineId, String productName) async {
     // Set removing state to trigger slide-out animation
@@ -537,102 +377,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
       }
     }
 
-    // Check if shipping methods are available
-    if (orderController.shippingMethods.isEmpty) {
-      showErrorSnackbar('No shipping methods available. Please contact support.');
-      return;
-    }
-
-    // Check if delivery method is selected and actually applied to the order
-    final selectedMethod = orderController.selectedShippingMethod.value;
-    final currentOrder = orderController.currentOrder.value;
-    
-    // Check if shipping method is selected and has valid values
-    final isMethodSelected = selectedMethod != null && 
-                             selectedMethod.id.isNotEmpty && 
-                             selectedMethod.name.isNotEmpty &&
-                             selectedMethod.id != '0' &&
-                             selectedMethod.id != 'null';
-    
-    // Check if shipping method is actually applied to the current order
-    final isMethodApplied = currentOrder != null && 
-                           currentOrder.shippingLines.isNotEmpty &&
-                           currentOrder.shippingLines.any((line) => 
-                             line.shippingMethod.id == selectedMethod?.id);
-    
-    final isShippingMethodValid = isMethodSelected && isMethodApplied;
-    if (!isShippingMethodValid) {
-      // If method is selected but not applied, clear the selection
-      if (isMethodSelected && !isMethodApplied) {
-        orderController.selectedShippingMethod.value = null;
-      }
-      
-      // Scroll to shipping section
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final context = _shippingSectionKey.currentContext;
-        if (context != null) {
-          Scrollable.ensureVisible(
-            context,
-            duration: Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        }
-      });
-      
-      // Trigger blink animation
-      if (mounted) {
-        _blinkAnimationController.reset();
-        _blinkAnimationController.repeat(reverse: true);
-        
-        // Stop blinking after 3 seconds
-        Future.delayed(const Duration(seconds: 3), () {
-          if (mounted) {
-            _blinkAnimationController.stop();
-            _blinkAnimationController.reset();
-          }
-        });
-      }
-      
-      return; // CRITICAL: Return early to prevent navigation
-    }
-    
-    // Final validation check right before navigation (double-check to be absolutely sure)
-    final finalCheck = orderController.selectedShippingMethod.value;
-    final finalOrder = orderController.currentOrder.value;
-    final finalIsApplied = finalOrder != null && 
-                           finalOrder.shippingLines.isNotEmpty &&
-                           finalOrder.shippingLines.any((line) => 
-                             line.shippingMethod.id == finalCheck?.id);
-    
-    if (finalCheck == null || 
-        finalCheck.id.isEmpty || 
-        finalCheck.name.isEmpty || 
-        finalCheck.id == '0' || 
-        finalCheck.id == 'null' ||
-        !finalIsApplied) {
-      return; // Block navigation
-    }
-
-    // Track begin checkout event
-    final cartForAnalytics = cartController.cart.value;
-    if (cartForAnalytics != null) {
-      final items = cartForAnalytics.lines.map((line) {
-        return analytics.AnalyticsEventItem(
-          itemId: line.productVariant.id,
-          itemName: line.productVariant.name,
-          itemCategory: 'Product', // ProductVariant doesn't have product reference
-          price: line.unitPriceWithTax / 100.0,
-          quantity: line.quantity,
-        );
-      }).toList();
-      
-      AnalyticsService().logBeginCheckout(
-        value: cartForAnalytics.totalWithTax / 100.0,
-        currency: 'INR',
-        items: items,
-      );
-    }
-    NavigationHelper.navigateToCheckout();
+    Get.toNamed(AppRoutes.offers);
   }
 
   Future<void> _handleClearCart() async {
@@ -699,141 +444,8 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
     }
   }
 
-  // Shipping Method Methods
-
-  Future<void> _loadExistingShippingMethod() async {
-    try {
-      // Use already-loaded order data instead of fetching again
-      final order = orderController.currentOrder.value;
-      
-      // If there's only one shipping method, always set and apply it
-      if (orderController.shippingMethods.length == 1) {
-        final singleMethod = orderController.shippingMethods.first;
-        
-        // Always set the single method
-        orderController.selectedShippingMethod.value = singleMethod;
-        // Check if it's already applied to the order (using already-loaded data)
-        final isAlreadyApplied = order != null &&
-            order.shippingLines.isNotEmpty &&
-            order.shippingLines.any((line) => line.shippingMethod.id == singleMethod.id);
-        
-        // Only apply if not already applied
-        if (!isAlreadyApplied) {
-          await _applyShippingMethod(showFeedback: false, force: true);
-        } else {
-          _lastAppliedShippingMethodId = singleMethod.id;
-        }
-        return;
-      }
-      
-      // Multiple methods - check for existing shipping method from order (using already-loaded data)
-      if (order != null && order.shippingLines.isNotEmpty) {
-        final shippingLine = order.shippingLines.first;
-        final shippingMethodId = shippingLine.shippingMethod.id;
-        
-        // Find matching shipping method from available methods
-        final matchingMethod = orderController.shippingMethods.firstWhereOrNull(
-          (method) => method.id == shippingMethodId,
-        );
-        
-        if (matchingMethod != null) {
-          orderController.selectedShippingMethod.value = matchingMethod;
-          _lastAppliedShippingMethodId = matchingMethod.id;
-          return; // Already has a shipping method, no need to auto-apply
-        }
-        // If order has shipping method but it doesn't match any available method, clear selection
-        orderController.selectedShippingMethod.value = null;
-        _lastAppliedShippingMethodId = null;
-        return;
-      }
-      
-      // If no existing shipping method in order, clear selection to show "Select delivery method"
-      orderController.selectedShippingMethod.value = null;
-      _lastAppliedShippingMethodId = null;
-    } catch (e) {
-    }
-  }
-
-  Future<void> _applyShippingMethod({bool showFeedback = false, bool force = false, bool skipSync = false}) async {
-    final selected = orderController.selectedShippingMethod.value;
-    if (selected == null) return;
-
-    if (!force && _lastAppliedShippingMethodId == selected.id) {
-      return; // Already applied
-    }
-
-    final success = await orderController.setShippingMethod(
-      selected.id, 
-      skipIfAlreadySet: false,
-    );
-
-    if (success) {
-      _lastAppliedShippingMethodId = selected.id;
-
-      // Sync CartController with updated order only if not skipping sync
-      // (skipSync is true during initialization when getActiveOrder was just called)
-      if (!skipSync) {
-        await cartController.getActiveOrder();
-      }
-      // During initialization with skipSync=true, we skip the getActiveOrder call
-      // The order is already updated in orderController.currentOrder by setShippingMethod
-      // and will be synced on the next getActiveOrder call or when needed
-    } else {
-    }
-  }
 
 
-  // Instructions Methods
-  Timer? _instructionsDebounceTimer;
-  void _saveOtherInstructions(String instructions) {
-    _instructionsDebounceTimer?.cancel();
-    _instructionsDebounceTimer = Timer(const Duration(milliseconds: 500), () async {
-      await orderController.setOtherInstruction(instructions);
-    });
-  }
-
-  Future<void> _loadExistingCouponCodes() async {
-    try {
-      // Use already-loaded cart data instead of fetching again
-      final cart = cartController.cart.value;
-      if (cart != null && cart.couponCodes.isNotEmpty) {
-        for (final couponCode in cart.couponCodes) {
-          if (!couponController.appliedCouponCodes.contains(couponCode)) {
-            couponController.appliedCouponCodes.add(couponCode);
-          }
-        }
-      } else {
-      }
-    } catch (e) {
-    }
-  }
-
-  Future<void> _loadExistingInstructions() async {
-    try {
-      // Use already-loaded order data instead of fetching again
-      final order = orderController.currentOrder.value;
-      
-      // Try to get customFields - Fragment$Cart doesn't have customFields, but Query$ActiveOrder$activeOrder does
-      if (order != null) {
-        try {
-          // Try to access customFields if available (for Query$ActiveOrder$activeOrder type)
-          // Fragment$Cart doesn't have customFields, so this will fail gracefully
-      if (order is Query$ActiveOrder$activeOrder && order.customFields != null) {
-        final customFields = order.customFields as Query$ActiveOrder$activeOrder$customFields;
-        final instructions = customFields.otherInstructions;
-        if (instructions != null && instructions.isNotEmpty && mounted) {
-          // Instructions are now managed by CartOtherInstructionsSection component
-          // The component will handle loading existing instructions internally
-            }
-          } else {
-          }
-        } catch (e) {
-          // Fragment$Cart doesn't have customFields, that's okay
-        }
-      }
-    } catch (e) {
-    }
-  }
 
   @override
   void didChangeDependencies() {
@@ -988,125 +600,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                         scrollController: _scrollController,
                         expandIfHasUnavailableItems: cart.lines.any((l) => !l.isAvailable),
                       ),
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-
-                      // Shipping Method Section with blink animation
-                      Padding(
-                        key: _shippingSectionKey,
-                        padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                        child: AnimatedBuilder(
-                          animation: _blinkAnimation,
-                          builder: (context, child) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                                border: Border.all(
-                                  color: _blinkAnimation.value > 0
-                                      ? AppColors.button.withValues(alpha: _blinkAnimation.value)
-                                      : Colors.transparent,
-                                  width: _blinkAnimation.value > 0 ? 3 : 0,
-                                ),
-                              ),
-                              child: CartShippingSection(
-                                orderController: orderController,
-                                cartController: cartController,
-                                onShippingMethodSelected: () async {
-                                  await _applyShippingMethod(showFeedback: true);
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-                      
-                      // Coupon Section - hide for guest
-                      Obx(() {
-                        final authController = Get.find<AuthController>();
-                        if (!authController.isLoggedIn) return const SizedBox.shrink();
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                          child: CartCouponSection(
-                            bannerController: couponController,
-                            cartController: cartController,
-                            orderController: orderController,
-                            onShowCouponBottomSheet: () {
-                              CartCouponBottomSheet.show(
-                                context: context,
-                                bannerController: couponController,
-                                cartController: cartController,
-                              );
-                            },
-                          ),
-                        );
-                      }),
-                      SizedBox(height: ResponsiveUtils.rp(8)),
-                        SizedBox(height: ResponsiveUtils.rp(8)),
-                      
-                      // Loyalty Points Section (below shipping method)
-                      Obx(() {
-                        final availablePoints = customerController.loyaltyPoints;
-                        final config = bannerController.loyaltyPointsConfig.value;
-                        final minimumPoints = config?.pointsPerRupee ?? 0;
-                        final isApplied = bannerController.loyaltyPointsApplied.value;
-                        if (minimumPoints > 0 && availablePoints < minimumPoints && !isApplied) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                          child: CartLoyaltyPointsSection(
-                            bannerController: bannerController,
-                            customerController: customerController,
-                            onApplyLoyaltyPoints: (pointsText) async {
-                              if (pointsText.isEmpty) {
-                                showErrorSnackbar(AppStrings.pleaseEnterLoyaltyPoints);
-                                return;
-                              }
-                              final points = int.tryParse(pointsText);
-                              if (points == null || points <= 0) {
-                                showErrorSnackbar(AppStrings.pleaseEnterValidLoyaltyPoints);
-                                return;
-                              }
-                              final available = customerController.loyaltyPoints;
-                              if (points > available) {
-                                showErrorSnackbar('Insufficient loyalty points! You have $available points available.');
-                                return;
-                              }
-                              final cfg = bannerController.loyaltyPointsConfig.value;
-                              if (cfg != null && points < cfg.pointsPerRupee) {
-                                showErrorSnackbar('Minimum loyalty points required: ${cfg.pointsPerRupee} points.');
-                                return;
-                              }
-                              final success = await bannerController.applyLoyaltyPoints(points);
-                              if (success) {
-                                showSuccessSnackbar(AppStrings.loyaltyPointsAppliedSuccessfully);
-                              } else {
-                                showErrorSnackbar(AppStrings.failedToApplyLoyaltyPoints);
-                              }
-                            },
-                            onRemoveLoyaltyPoints: () async {
-                              final success = await bannerController.removeLoyaltyPoints();
-                              if (success) {
-                                showSuccessSnackbar(AppStrings.loyaltyPointsRemovedSuccessfully);
-                              } else {
-                                showErrorSnackbar(AppStrings.failedToRemoveLoyaltyPoints);
-                              }
-                            },
-                          ),
-                        );
-                      }),
-                      // Other Instructions Section (Small)
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                        child: CartOtherInstructionsSection(
-                          bannerController: bannerController,
-                          onSaveInstructions: _saveOtherInstructions,
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUtils.rp(12)),
-                      
-                      // Order Summary Section - Below Additional Instructions
+                      // Order Summary Section
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
                         child: CartOrderSummarySection(
@@ -1123,111 +617,7 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
               ),
             ),
 
-            // Amount to apply coupon code section (above bottom navigation bar) - hide for guest
-            Obx(() {
-              final authController = Get.find<AuthController>();
-              if (!authController.isLoggedIn) return const SizedBox.shrink();
-              final cart = cartController.cart.value;
-              if (cart == null) return const SizedBox.shrink();
-
-              // Hide banner if coupon is already applied
-              if (couponController.appliedCouponCodes.isNotEmpty) {
-                return const SizedBox.shrink();
-              }
-
-              // Check for out of stock items (LOW_STOCK does not block - coupon can still apply)
-              final hasOutOfStockItems = cart.lines.any((line) {
-                final stockLevel = line.productVariant.stockLevel.toUpperCase();
-                final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-                final isProductDisabled = line.productVariant.product.enabled == false;
-                return !line.isAvailable || isOutOfStock || isProductDisabled;
-              });
-
-              if (hasOutOfStockItems) return SizedBox.shrink();
-
-              // Get eligible coupons
-              final subTotal = cart.subTotalWithTax.toInt();
-              final eligibleCoupons = couponController.getEligibleCoupons(subTotal);
-
-              if (eligibleCoupons.isEmpty) return SizedBox.shrink();
-
-              final coupon = eligibleCoupons.first;
-              final requiredAmount = couponController.getRequiredAmount(coupon);
-              final difference = requiredAmount - subTotal;
-
-              if (difference <= 0 || difference >= 40000) return SizedBox.shrink();
-
-              final differenceInRupees = difference / 100;
-
-              return Container(
-                margin: EdgeInsets.only(
-                  left: ResponsiveUtils.rp(16),
-                  right: ResponsiveUtils.rp(16),
-                  bottom: ResponsiveUtils.rp(12),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.rp(16),
-                  vertical: ResponsiveUtils.rp(14),
-                ),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFFFF6B35),
-                      const Color(0xFFFF8C42),
-                      const Color(0xFFFFA500),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(14)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFF6B35).withValues(alpha: 0.35),
-                      blurRadius: ResponsiveUtils.rp(10),
-                      offset: Offset(0, ResponsiveUtils.rp(4)),
-                      spreadRadius: ResponsiveUtils.rp(1),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.local_offer_rounded,
-                      color: Colors.white,
-                      size: ResponsiveUtils.rp(22),
-                    ),
-                    SizedBox(width: ResponsiveUtils.rp(12)),
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(14),
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: 'Add ₹${PriceFormatter.addCommas(differenceInRupees.toStringAsFixed(2))} more to unlock ',
-                            ),
-                            TextSpan(
-                              text: coupon.promotion.couponCode ?? '',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.8,
-                              ),
-                            ),
-                          ],
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-
-            // Checkout Section - Fixed Bottom Navigation Bar
+            // Checkout Section - Fixed Bottom Bar
             SafeArea(
               top: false,
               child: Container(
@@ -1253,54 +643,10 @@ class _CartPageState extends State<CartPage> with SingleTickerProviderStateMixin
                     orderController: orderController,
                     utilityController: utilityController,
                     isGuest: !isLoggedIn,
-                    checkoutButtonLabel: isLoggedIn ? 'Proceed to Checkout' : 'Login to Continue',
+                    checkoutButtonLabel: isLoggedIn ? 'Continue' : 'Login to Continue',
                     onProceedToCheckout: isLoggedIn
                         ? _proceedToCheckout
                         : () {
-                            // Validate shipping method before sending guest to login
-                            if (orderController.shippingMethods.isEmpty) {
-                              showErrorSnackbar('No shipping methods available. Please contact support.');
-                              return;
-                            }
-                            final selectedMethod = orderController.selectedShippingMethod.value;
-                            final currentOrder = orderController.currentOrder.value;
-                            final isMethodSelected = selectedMethod != null &&
-                                selectedMethod.id.isNotEmpty &&
-                                selectedMethod.name.isNotEmpty &&
-                                selectedMethod.id != '0' &&
-                                selectedMethod.id != 'null';
-                            final isMethodApplied = currentOrder != null &&
-                                currentOrder.shippingLines.isNotEmpty &&
-                                currentOrder.shippingLines.any((line) =>
-                                    line.shippingMethod.id == selectedMethod?.id);
-                            if (!isMethodSelected || !isMethodApplied) {
-                              if (isMethodSelected && !isMethodApplied) {
-                                orderController.selectedShippingMethod.value = null;
-                              }
-                              showErrorSnackbar('Kindly choose a shipping method to proceed');
-                              // Scroll to shipping section and blink
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                final ctx = _shippingSectionKey.currentContext;
-                                if (ctx != null) {
-                                  Scrollable.ensureVisible(
-                                    ctx,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                }
-                              });
-                              if (mounted) {
-                                _blinkAnimationController.reset();
-                                _blinkAnimationController.repeat(reverse: true);
-                                Future.delayed(const Duration(seconds: 3), () {
-                                  if (mounted) {
-                                    _blinkAnimationController.stop();
-                                    _blinkAnimationController.reset();
-                                  }
-                                });
-                              }
-                              return;
-                            }
                             const key = 'login_intended_route';
                             GetStorage().write(key, AppRoutes.cart);
                             Get.toNamed(AppRoutes.login, arguments: {'intendedRoute': AppRoutes.cart});

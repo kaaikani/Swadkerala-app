@@ -114,11 +114,8 @@ class SlideToPayButtonState extends State<SlideToPayButton>
   }
 
   void reset() {
-    // Don't reset if loading or already reset
-    if (widget.isLoading || (_dragPosition == 0 && !_isSubmitted && !_isDragging)) {
-      return;
-    }
-    
+    if (!mounted) return;
+
     setState(() {
       _dragPosition = 0;
       _dragPercentage = 0;
@@ -127,7 +124,10 @@ class SlideToPayButtonState extends State<SlideToPayButton>
     });
     _successAnimationController.reset();
 
-    // Restart hint animation after reset
+    // Restart pulse and hint animations
+    if (!_pulseAnimationController.isAnimating) {
+      _pulseAnimationController.repeat(reverse: true);
+    }
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted && widget.isEnabled && !_isSubmitted && !widget.isLoading) {
         _startHintAnimation();
@@ -271,7 +271,12 @@ class SlideToPayButtonState extends State<SlideToPayButton>
         final containerWidth = constraints.maxWidth;
         final maxDrag = _getMaxDragDistance(containerWidth);
 
-        return AnimatedBuilder(
+        return GestureDetector(
+          onHorizontalDragStart: widget.isLoading ? null : (details) => _onDragStart(details, containerWidth),
+          onHorizontalDragUpdate: widget.isLoading ? null : (details) => _onDragUpdate(details, containerWidth),
+          onHorizontalDragEnd: widget.isLoading ? null : (details) => _onDragEnd(details, containerWidth),
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedBuilder(
           animation: Listenable.merge([_hintAnimation, _pulseAnimation]),
           builder: (context, child) {
             // Calculate position including hint animation
@@ -430,11 +435,7 @@ class SlideToPayButtonState extends State<SlideToPayButton>
                   Positioned(
                     left: _horizontalPadding + displayPosition,
                     top: (_containerHeight - _buttonSize) / 2,
-                    child: GestureDetector(
-                      onHorizontalDragStart: widget.isLoading ? null : (details) => _onDragStart(details, containerWidth),
-                      onHorizontalDragUpdate: widget.isLoading ? null : (details) => _onDragUpdate(details, containerWidth),
-                      onHorizontalDragEnd: widget.isLoading ? null : (details) => _onDragEnd(details, containerWidth),
-                      child: AnimatedContainer(
+                    child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
                         curve: Curves.easeOut,
                         width: _buttonSize,
@@ -467,11 +468,11 @@ class SlideToPayButtonState extends State<SlideToPayButton>
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             );
           },
+        ),
         );
       },
       ),

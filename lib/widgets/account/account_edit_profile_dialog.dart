@@ -537,7 +537,7 @@ class AccountEditProfileDialog {
     TextEditingController emailController,
   ) async {
     try {
-      const platform = MethodChannel('com.kaaikani.kaaikani/account_manager');
+      const platform = MethodChannel('com.Swadkerala.Swadkerala/account_manager');
       final List<dynamic> accounts = await platform.invokeMethod('getGoogleAccounts') as List<dynamic>;
 
       if (accounts.isNotEmpty) {

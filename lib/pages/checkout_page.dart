@@ -21,9 +21,9 @@ import '../utils/app_config.dart';
 import '../utils/app_strings.dart';
 import '../routes.dart';
 import '../widgets/checkout/checkout_payment_section.dart';
+import '../widgets/checkout/checkout_shipping_section.dart';
 import '../widgets/checkout/checkout_app_bar.dart';
 import '../widgets/checkout/checkout_order_summary_section.dart';
-import '../widgets/checkout/checkout_delivery_address_section.dart';
 import '../widgets/checkout/checkout_place_order_button.dart';
 import '../widgets/checkout/checkout_shimmer_loading.dart';
 import '../widgets/checkout/slide_to_pay_button.dart';
@@ -325,8 +325,14 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       _lastAppliedShippingMethodId = null;
       return;
     }
-    // Removed auto-select and auto-apply logic - user should select shipping method manually
-    // Just load the methods, don't auto-select or auto-apply
+
+    // Auto-select if only one shipping method and none is currently selected
+    if (orderController.selectedShippingMethod.value == null &&
+        orderController.shippingMethods.length == 1) {
+      orderController.selectedShippingMethod.value =
+          orderController.shippingMethods.first;
+      await _applyShippingMethod();
+    }
   }
 
   /// Load existing shipping method from already-loaded order data
@@ -1115,131 +1121,280 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     ], eagerError: false);
   }
 
+  // ── UI Helpers ──
+
+  Widget _buildCheckoutSectionCard({
+    required String title,
+    required IconData icon,
+    required Color iconColor,
+    required Widget child,
+  }) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.2), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: ResponsiveUtils.rp(6),
+            offset: Offset(0, ResponsiveUtils.rp(2)),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              ResponsiveUtils.rp(16),
+              ResponsiveUtils.rp(14),
+              ResponsiveUtils.rp(16),
+              ResponsiveUtils.rp(10),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.rp(6)),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                  ),
+                  child: Icon(icon, color: iconColor, size: ResponsiveUtils.rp(18)),
+                ),
+                SizedBox(width: ResponsiveUtils.rp(10)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(15),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(height: 1, color: AppColors.border.withValues(alpha: 0.15)),
+          Padding(
+            padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
+            child: child,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeliveryAddressSummary() {
+    if (_selectedAddress == null) {
+      return Container(
+        margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+        padding: EdgeInsets.all(ResponsiveUtils.rp(12)),
+        decoration: BoxDecoration(
+          color: AppColors.warning.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+          border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: ResponsiveUtils.rp(20)),
+            SizedBox(width: ResponsiveUtils.rp(8)),
+            Expanded(
+              child: Text(
+                'No delivery address set. Go back to add one.',
+                style: TextStyle(fontSize: ResponsiveUtils.sp(13), color: AppColors.warning),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final addr = _selectedAddress!;
+    // Build full address string
+    final addressParts = <String>[
+      addr.streetLine1,
+      if (addr.streetLine2 != null && addr.streetLine2!.isNotEmpty) addr.streetLine2!,
+      if (addr.city != null && addr.city!.isNotEmpty) addr.city!,
+      if (addr.province != null && addr.province!.isNotEmpty) addr.province!,
+      if (addr.postalCode != null && addr.postalCode!.isNotEmpty) addr.postalCode!,
+    ];
+    final fullAddress = addressParts.join(', ');
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+      padding: EdgeInsets.all(ResponsiveUtils.rp(14)),
+      decoration: BoxDecoration(
+        color: AppColors.success.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+        border: Border.all(color: AppColors.success.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.location_on_rounded, color: AppColors.success, size: ResponsiveUtils.rp(20)),
+          SizedBox(width: ResponsiveUtils.rp(10)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  addr.fullName ?? '',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(14),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.rp(4)),
+                Text(
+                  fullAddress,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.sp(13),
+                    color: AppColors.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+                if (addr.phoneNumber != null && addr.phoneNumber!.isNotEmpty) ...[
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  Row(
+                    children: [
+                      Icon(Icons.phone_outlined, color: AppColors.textSecondary, size: ResponsiveUtils.rp(14)),
+                      SizedBox(width: ResponsiveUtils.rp(4)),
+                      Text(
+                        addr.phoneNumber!,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(13),
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Icon(Icons.check_circle_rounded, color: AppColors.success, size: ResponsiveUtils.rp(18)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       return PopScope(
         canPop: true,
         onPopInvoked: (didPop) {
-          // Reset route tracking when leaving checkout page
           if (didPop) {
             _lastRoute = null;
           }
         },
         child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: Container(
-          color: AppColors.background,
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Custom App Bar
-              CheckoutAppBar(),
-              
-              // Content Area
-              Expanded(
-                child: GetBuilder<UtilityController>(
-                  builder: (utilityCtrl) {
-                    // Only show shimmer on initial load, not on subsequent loading states
-                    if (_isInitialLoading && utilityCtrl.isLoading) {
-                      return CheckoutShimmerLoading();
-                    }
+          backgroundColor: AppColors.background,
+          body: Container(
+            color: AppColors.background,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // Custom App Bar
+                  CheckoutAppBar(),
 
-                    return RefreshIndicator(
-                    onRefresh: () async {
-                      await Future.wait([
-                        _loadCustomerAddresses(skipPostalCodeCheck: true),
-                        _loadShippingMethods(),
-                        _refreshPaymentMethods(), // Always refresh payment methods on pull-to-refresh
-                        _loadCouponCodes(),
-                        _loadLoyaltyPointsConfig(),
-                      ]);
-                    },
-                    color: AppColors.button,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        children: [
-                          SizedBox(height: ResponsiveUtils.rp(16)),
-                          
-                          // Step Content
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: ResponsiveUtils.rp(16),
-                            ),
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              switchInCurve: Curves.easeOutCubic,
-                              switchOutCurve: Curves.easeInCubic,
-                              transitionBuilder: (child, animation) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: SlideTransition(
-                                    position: Tween<Offset>(
-                                      begin: const Offset(0.1, 0),
-                                      end: Offset.zero,
-                                    ).animate(animation),
-                                    child: child,
+                  // Content Area
+                  Expanded(
+                    child: GetBuilder<UtilityController>(
+                      builder: (utilityCtrl) {
+                        if (_isInitialLoading && utilityCtrl.isLoading) {
+                          return CheckoutShimmerLoading();
+                        }
+
+                        return RefreshIndicator(
+                          onRefresh: () async {
+                            await Future.wait([
+                              _loadCustomerAddresses(skipPostalCodeCheck: true),
+                              _loadShippingMethods(),
+                              _refreshPaymentMethods(),
+                              _loadCouponCodes(),
+                              _loadLoyaltyPointsConfig(),
+                            ]);
+                          },
+                          color: AppColors.button,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Column(
+                              children: [
+                                SizedBox(height: ResponsiveUtils.rp(12)),
+
+                                // ── Delivery Address Summary (read-only) ──
+                                _buildDeliveryAddressSummary(),
+
+                                SizedBox(height: ResponsiveUtils.rp(12)),
+
+                                // ── Shipping Method ──
+                                _buildCheckoutSectionCard(
+                                  title: 'Shipping Method',
+                                  icon: Icons.local_shipping_rounded,
+                                  iconColor: const Color(0xFF2196F3),
+                                  child: CheckoutShippingSection(
+                                    orderController: orderController,
+                                    cartController: cartController,
+                                    onShippingMethodSelected: () async {
+                                      await _applyShippingMethod(showFeedback: true, force: true);
+                                    },
                                   ),
-                                );
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  // Order Summary Section
-                                  CheckoutOrderSummarySection(
+                                ),
+
+                                SizedBox(height: ResponsiveUtils.rp(12)),
+
+                                // ── Payment Method ──
+                                _buildCheckoutSectionCard(
+                                  title: 'Payment Method',
+                                  icon: Icons.payment_rounded,
+                                  iconColor: const Color(0xFFFF9800),
+                                  child: CheckoutPaymentSection(
+                                    orderController: orderController,
+                                  ),
+                                ),
+
+                                SizedBox(height: ResponsiveUtils.rp(12)),
+
+                                // ── Order Summary ──
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+                                  child: CheckoutOrderSummarySection(
                                     cartController: cartController,
                                     orderController: orderController,
                                     utilityController: utilityController,
                                     bannerController: bannerController,
                                     couponController: couponController,
                                   ),
-                                  
-                                  SizedBox(height: ResponsiveUtils.rp(16)),
-                                  
-                                  Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
-                                  
-                                  // Delivery Address Section
-                                  CheckoutDeliveryAddressSection(
-                                    selectedAddress: _selectedAddress,
-                                    shouldBlinkAddress: _shouldBlinkAddress,
-                                    onLoadAddresses: () => _loadCustomerAddresses(skipPostalCodeCheck: true),
-                                  ),
-                                  
-                                  Divider(height: ResponsiveUtils.rp(32), thickness: 8, color: AppColors.divider),
-                                  
-                                  // Payment Method Section
-                                  _buildPaymentMethodSection(),
-                                ],
-                              ),
+                                ),
+
+                                SizedBox(height: ResponsiveUtils.rp(100)),
+                              ],
                             ),
                           ),
-                          
-                          SizedBox(height: ResponsiveUtils.rp(100)), // Space for bottom bar
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                  },
-                ),
-              ),
+                  ),
 
-              // Place Order Button
-              CheckoutPlaceOrderButton(
-                cartController: cartController,
-                orderController: orderController,
-                utilityController: utilityController,
-                bannerController: bannerController,
-                selectedAddress: _selectedAddress,
-                slideActionKey: _slideActionKey,
-                orderPlacedSuccessfully: _orderPlacedSuccessfully,
-                onPlaceOrder: _onPlaceOrder,
+                  // Place Order Button
+                  CheckoutPlaceOrderButton(
+                    cartController: cartController,
+                    orderController: orderController,
+                    utilityController: utilityController,
+                    bannerController: bannerController,
+                    selectedAddress: _selectedAddress,
+                    slideActionKey: _slideActionKey,
+                    orderPlacedSuccessfully: _orderPlacedSuccessfully,
+                    onPlaceOrder: _onPlaceOrder,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
           ),
         ),
-      ),
       );
     });
   }
@@ -1248,20 +1403,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   // _buildCustomAppBar, _buildOrderSummarySection, _buildDeliveryAddressSection, 
   // _buildPlaceOrderButton, _buildShimmerCheckout have been moved to separate component files.
 
-  Widget _buildPaymentMethodSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: ResponsiveUtils.rp(16)),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-          child: CheckoutPaymentSection(
-            orderController: orderController,
-          ),
-        ),
-      ],
-    );
-  }
 
   // ignore: unused_element
   Widget _buildSectionHeader({

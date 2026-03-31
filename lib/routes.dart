@@ -5,6 +5,7 @@ import 'package:recipe.app/pages/account_page.dart';
 import 'package:recipe.app/pages/addresses_page.dart';
 import 'package:recipe.app/pages/cart_page.dart';
 import 'package:recipe.app/pages/checkout_page.dart';
+import 'package:recipe.app/pages/offers_page.dart';
 import 'package:recipe.app/pages/favourites.dart';
 import 'package:recipe.app/pages/frequently_ordered_page.dart';
 import 'package:recipe.app/pages/order_confirmation_page.dart';
@@ -37,6 +38,7 @@ class AppRoutes {
   static const String favourite = '/favourite';
   static const String search = '/search';
   static const String cart = '/cart';
+  static const String offers = '/offers';
   static const String checkout = '/checkout';
   static const String account = '/account';
   static const String addresses = '/addresses';
@@ -98,6 +100,12 @@ class AppRoutes {
       name: cart,
       page: () => const CartPage(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: offers,
+      page: () => const OffersPage(),
+      transition: Transition.rightToLeft,
+      middlewares: [AuthGuard()],
     ),
     GetPage(
       name: checkout,

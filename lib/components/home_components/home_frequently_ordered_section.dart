@@ -293,7 +293,7 @@ class _HomeFrequentlyOrderedSectionState extends State<HomeFrequentlyOrderedSect
               ),
             ),
             SizedBox(
-              height: ResponsiveUtils.rp(240),
+              height: ResponsiveUtils.rp(280),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: ResponsiveSpacing.screenPadding,

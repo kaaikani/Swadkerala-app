@@ -118,6 +118,15 @@
 
         </activity>
 
+        <!-- Native FCM service for offer timer notifications (works even when app is killed) -->
+        <service
+            android:name=".OfferTimerFcmService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <!-- Flutter Embedding -->
         <meta-data
             android:name="flutterEmbedding"

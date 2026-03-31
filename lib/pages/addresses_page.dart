@@ -1007,8 +1007,12 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
               _buildTextField(
                   cityController, 'City', Icons.location_city,
                   required: true,
-                  keyboardType: TextInputType.text,
-                  readOnly: !_isBrandChannel),
+                  keyboardType: TextInputType.text),
+              SizedBox(height: 16),
+              _buildTextField(
+                  provinceController, 'State', Icons.map_rounded,
+                  required: false,
+                  keyboardType: TextInputType.text),
               SizedBox(height: 16),
               _buildPostalCodeField(
                 postalCodeController,
@@ -1265,7 +1269,9 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
                           }
                         }
 
-                        final provinceValue = 'Tamilnadu';
+                        final provinceValue = provinceController.text.trim().isNotEmpty
+                            ? provinceController.text.trim()
+                            : 'Tamilnadu';
                         
                         final success = await widget.customerController
                             .createAddress(addressData, province: provinceValue);
@@ -1754,8 +1760,9 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
     postalCodeController = TextEditingController(
         text: existingAddress?.postalCode ?? '');
 
-    provinceController = TextEditingController();
-    
+    provinceController = TextEditingController(
+        text: existingAddress?.province ?? '');
+
     phoneController = TextEditingController(
         text: existingAddress?.phoneNumber ?? '');
     
@@ -1946,8 +1953,12 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
               _buildTextField(
                   cityController, 'City', Icons.location_city,
                   required: true,
-                  keyboardType: TextInputType.text,
-                  readOnly: !_isBrandChannel),
+                  keyboardType: TextInputType.text),
+              SizedBox(height: 16),
+              _buildTextField(
+                  provinceController, 'State', Icons.map_rounded,
+                  required: false,
+                  keyboardType: TextInputType.text),
               SizedBox(height: 16),
               _buildPostalCodeField(
                 postalCodeController,
@@ -2207,7 +2218,9 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
                         );
 
                         // For Ind-Snacks channel, use province from field; for others, use 'Tamilnadu' as default
-                        final provinceValue = 'Tamilnadu';
+                        final provinceValue = provinceController.text.trim().isNotEmpty
+                            ? provinceController.text.trim()
+                            : 'Tamilnadu';
 
                         final success = await widget.customerController
                             .updateAddress(addressData, province: provinceValue);

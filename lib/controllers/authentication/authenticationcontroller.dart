@@ -503,7 +503,7 @@ class AuthController extends BaseController {
                 '3. Find your Android OAuth 2.0 Client ID\n'
                 '4. Add SHA-1 fingerprint:\n'
                 '   7B:87:2E:43:7B:68:07:28:A6:D2:7F:BE:28:C2:94:52:58:B7:E1:71\n\n'
-                '5. Verify package name: com.kaaikani.kaaikani\n\n'
+                '5. Verify package name: com.Swadkerala.Swadkerala\n\n'
                 '6. For release builds, add your release keystore SHA-1 as well'
         );
         return false;

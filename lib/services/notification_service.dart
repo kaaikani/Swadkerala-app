@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
@@ -15,7 +17,9 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
+  static const _timerPlatform = MethodChannel('com.Swadkerala.Swadkerala/offer_timer');
   bool _initialized = false;
+  bool _timerChannelListenerSet = false;
 
   /// Last FCM topic we subscribed to (for channel-wise notifications). Unsubscribe when channel changes.
   String? _lastSubscribedTopic;
@@ -34,6 +38,21 @@ class NotificationService {
     enableVibration: true,
     showBadge: true,
   );
+
+  // Channel for offer timer notifications
+  static const AndroidNotificationChannel _offerTimerChannel =
+      AndroidNotificationChannel(
+    'kaaikani_offer_timer',
+    'Offer Timers',
+    description: 'Flash sale and offer countdown timers',
+    importance: Importance.high,
+    playSound: true,
+    enableVibration: true,
+    showBadge: true,
+  );
+
+  /// Notification ID for offer timer (fixed so we can update/cancel it)
+  static const int _offerTimerNotificationId = 9999;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -69,10 +88,37 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
     await androidPlugin?.createNotificationChannel(_defaultChannel);
+    await androidPlugin?.createNotificationChannel(_offerTimerChannel);
     _initialized = true;
+
+    // Subscribe to "all" topic so we can send to all users at once
+    try {
+      await FirebaseMessaging.instance.subscribeToTopic('all');
+    } catch (_) {}
+
+    // Listen for native timer notification taps (Android onNewIntent)
+    if (Platform.isAndroid && !_timerChannelListenerSet) {
+      _timerChannelListenerSet = true;
+      _timerPlatform.setMethodCallHandler((call) async {
+        if (call.method == 'onTimerTap') {
+          final payload = call.arguments as String? ?? '';
+          if (payload.isNotEmpty) {
+            debugPrint('[OfferTimer] Native onTimerTap received: $payload');
+            handleNotificationOpenFromPayload(payload);
+          }
+        }
+      });
+    }
   }
 
   Future<void> showRemoteNotification(RemoteMessage message) async {
+    // Check if this is an offer timer notification
+    final type = message.data['type']?.toString().toLowerCase() ?? '';
+    if (type == 'offer_timer') {
+      await handleOfferTimerFromFCM(message);
+      return;
+    }
+
     final notification = message.notification;
     if (notification == null) return;
 
@@ -125,6 +171,191 @@ class NotificationService {
       body,
       const NotificationDetails(iOS: iosDetails),
       payload: payload,
+    );
+  }
+
+  /// Show a notification with a live countdown timer (Android chronometer).
+  /// [title] - Notification title (e.g. "Flash Sale Live!")
+  /// [body] - Notification body text
+  /// [endTime] - When the offer ends (epoch milliseconds)
+  /// [payload] - Optional JSON payload for tap navigation
+  Future<void> showOfferTimerNotification({
+    required String title,
+    required String body,
+    required int endTime,
+    String? payload,
+    Color? accentColor,
+  }) async {
+    final remaining = endTime - DateTime.now().millisecondsSinceEpoch;
+    if (remaining <= 0) return; // Offer already expired
+
+    // Calculate end time for display
+    final endDateTime = DateTime.fromMillisecondsSinceEpoch(endTime);
+    final remainingDuration = Duration(milliseconds: remaining);
+    final hours = remainingDuration.inHours;
+    final minutes = remainingDuration.inMinutes % 60;
+    final seconds = remainingDuration.inSeconds % 60;
+    final timeLeftText = hours > 0
+        ? '${hours}h ${minutes}m left'
+        : minutes > 0
+            ? '${minutes}m ${seconds}s left'
+            : '${seconds}s left';
+    final endsAtText = '${endDateTime.hour.toString().padLeft(2, '0')}:${endDateTime.minute.toString().padLeft(2, '0')}';
+
+    final colorHex = accentColor != null
+        ? accentColor.value.toRadixString(16).substring(2) // Remove alpha
+        : 'FF6B00';
+
+    // Android: use native custom layout with big Chronometer
+    if (Platform.isAndroid) {
+      try {
+        await _timerPlatform.invokeMethod('showOfferTimer', {
+          'title': title,
+          'body': body,
+          'endTime': endTime,
+          'endsAt': endsAtText,
+          'color': colorHex,
+          'payload': payload ?? '',
+        });
+      } catch (e) {
+        debugPrint('[OfferTimer] Native call failed, falling back to flutter_local_notifications: $e');
+        // Fallback to standard notification
+        await _showFallbackTimerNotification(title, body, endTime, endsAtText, timeLeftText, colorHex, payload);
+      }
+    } else {
+      // iOS: use flutter_local_notifications with time info in body
+      final iosBody = '$body\n\u23F0 Ends at $endsAtText ($timeLeftText)';
+      const iosDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
+
+      await _localNotifications.show(
+        _offerTimerNotificationId,
+        '\uD83D\uDD25 $title',
+        iosBody,
+        const NotificationDetails(iOS: iosDetails),
+        payload: payload,
+      );
+    }
+
+    // Auto-cancel the notification when the offer expires
+    Future.delayed(Duration(milliseconds: remaining), () {
+      cancelOfferTimerNotification();
+    });
+  }
+
+  /// Fallback for Android if native method channel is not available
+  Future<void> _showFallbackTimerNotification(
+    String title, String body, int endTime, String endsAtText, String timeLeftText, String colorHex, String? payload,
+  ) async {
+    final notifColor = Color(int.parse('FF$colorHex', radix: 16));
+    final androidDetails = AndroidNotificationDetails(
+      _offerTimerChannel.id,
+      _offerTimerChannel.name,
+      channelDescription: _offerTimerChannel.description,
+      importance: Importance.high,
+      priority: Priority.high,
+      ongoing: true,
+      autoCancel: false,
+      usesChronometer: true,
+      chronometerCountDown: true,
+      when: endTime,
+      showWhen: true,
+      icon: '@mipmap/ic_launcher',
+      color: notifColor,
+      colorized: true,
+      subText: '\u23F1 $timeLeftText',
+      styleInformation: BigTextStyleInformation(
+        '$body\n\n\u23F0 Offer ends at $endsAtText',
+        contentTitle: '\uD83D\uDD25 $title',
+        summaryText: 'Tap to shop now',
+      ),
+    );
+
+    await _localNotifications.show(
+      _offerTimerNotificationId,
+      '\uD83D\uDD25 $title',
+      body,
+      NotificationDetails(android: androidDetails),
+      payload: payload,
+    );
+  }
+
+  /// Check if app was opened from a timer notification and navigate accordingly.
+  /// Call this after app init / on resume.
+  Future<void> handlePendingTimerNavigation() async {
+    if (!Platform.isAndroid) return;
+    try {
+      final payload = await _timerPlatform.invokeMethod<String>('getTimerPayload');
+      if (payload != null && payload.isNotEmpty) {
+        debugPrint('[OfferTimer] Handling pending timer navigation: $payload');
+        handleNotificationOpenFromPayload(payload);
+      }
+    } catch (e) {
+      debugPrint('[OfferTimer] Error checking timer payload: $e');
+    }
+  }
+
+  /// Cancel the offer timer notification
+  Future<void> cancelOfferTimerNotification() async {
+    if (Platform.isAndroid) {
+      try {
+        await _timerPlatform.invokeMethod('cancelOfferTimer');
+      } catch (_) {}
+    }
+    await _localNotifications.cancel(_offerTimerNotificationId);
+  }
+
+  /// Handle FCM data that contains offer timer info.
+  /// Expected FCM data keys:
+  ///   - type: "offer_timer"
+  ///   - offer_end_time: epoch milliseconds as string (e.g. "1719900000000")
+  ///   - title: notification title
+  ///   - body: notification body
+  ///   - page: (optional) route to navigate on tap
+  Future<void> handleOfferTimerFromFCM(RemoteMessage message) async {
+    final data = message.data;
+    final type = data['type']?.toString().toLowerCase() ?? '';
+
+    debugPrint('[OfferTimer] Received FCM - type: $type, data: $data');
+
+    if (type != 'offer_timer') return;
+
+    final endTimeStr = data['offer_end_time'] ?? data['offerEndTime'] ?? '';
+    final endTime = int.tryParse(endTimeStr);
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    debugPrint('[OfferTimer] endTime: $endTime, now: $now, isValid: ${endTime != null && endTime > now}');
+
+    if (endTime == null || endTime <= now) {
+      debugPrint('[OfferTimer] Skipped - offer expired or invalid endTime');
+      return;
+    }
+
+    final title = data['title'] ?? message.notification?.title ?? 'Offer Live!';
+    final body = data['body'] ?? message.notification?.body ?? 'Hurry, offer ends soon!';
+    final payload = jsonEncode(data);
+
+    // Parse accent color from FCM data (hex string e.g. "FF6B00" or "#FF6B00")
+    Color? accentColor;
+    final colorStr = data['color'] ?? data['accent_color'] ?? '';
+    if (colorStr.isNotEmpty) {
+      try {
+        final hex = colorStr.replaceAll('#', '').trim();
+        accentColor = Color(int.parse('FF$hex', radix: 16));
+      } catch (_) {}
+    }
+
+    debugPrint('[OfferTimer] Showing timer notification - title: $title, remaining: ${(endTime - now) ~/ 1000}s');
+
+    await showOfferTimerNotification(
+      title: title,
+      body: body,
+      endTime: endTime,
+      payload: payload,
+      accentColor: accentColor,
     );
   }
 
@@ -302,8 +533,8 @@ class NotificationService {
           final collectionName = d['collectionname'] ?? d['collection_name'] ?? '';
           final slug = d['slug'] ?? '';
           Get.toNamed(AppRoutes.collectionProducts, arguments: {
-            'id': collectionId,
-            'name': collectionName,
+            'collectionId': collectionId,
+            'collectionName': collectionName,
             'slug': slug,
           });
           break;

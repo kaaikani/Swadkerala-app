@@ -6,7 +6,6 @@ import '../../graphql/order.graphql.dart';
 import '../../utils/responsive.dart';
 import '../../theme/colors.dart';
 
-
 class CheckoutShippingSection extends StatelessWidget {
   final OrderController orderController;
   final CartController cartController;
@@ -23,186 +22,128 @@ class CheckoutShippingSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       if (orderController.shippingMethods.isEmpty) {
-        return SizedBox.shrink();
+        return _buildEmptyState();
       }
 
-      final borderColor = AppColors.border;
-
-      final hasSingleMethod = orderController.shippingMethods.length == 1;
-      final singleMethod = hasSingleMethod ? orderController.shippingMethods.first : null;
+      final methods = orderController.shippingMethods;
       final selectedMethod = orderController.selectedShippingMethod.value;
-      
-      // Find the matching method from the list to ensure object equality
-      // DropdownButton requires the value to be the same instance as in items list
-      Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled? matchingSelectedMethod;
-      if (selectedMethod != null) {
-        try {
-          matchingSelectedMethod = orderController.shippingMethods.firstWhere(
-            (method) => method.id == selectedMethod.id,
-          );
-        } catch (e) {
-          // Method not found in list, set to null
-          matchingSelectedMethod = null;
-        }
-      }
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        children: methods.asMap().entries.map((entry) {
+          final index = entry.key;
+          final method = entry.value;
+          final isSelected = selectedMethod?.id == method.id;
+          final isLast = index == methods.length - 1;
+
+          return Column(
+            children: [
+              _buildShippingOption(method, isSelected),
+              if (!isLast) SizedBox(height: ResponsiveUtils.rp(10)),
+            ],
+          );
+        }).toList(),
+      );
+    });
+  }
+
+  Widget _buildShippingOption(
+    Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled method,
+    bool isSelected,
+  ) {
+    return InkWell(
+      onTap: () async {
+        if (orderController.selectedShippingMethod.value?.id == method.id) return;
+        orderController.selectedShippingMethod.value = method;
+        await onShippingMethodSelected();
+      },
+      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveUtils.rp(14),
+          vertical: ResponsiveUtils.rp(14),
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.button.withValues(alpha: 0.06)
+              : AppColors.background,
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.button.withValues(alpha: 0.5)
+                : AppColors.border.withValues(alpha: 0.4),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Radio indicator
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: ResponsiveUtils.rp(22),
+              height: ResponsiveUtils.rp(22),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? AppColors.button : Colors.transparent,
+                border: Border.all(
+                  color: isSelected ? AppColors.button : AppColors.border,
+                  width: 2,
+                ),
+              ),
+              child: isSelected
+                  ? Icon(Icons.check, size: ResponsiveUtils.rp(14), color: Colors.white)
+                  : null,
+            ),
+            SizedBox(width: ResponsiveUtils.rp(12)),
+            // Shipping icon
+            Icon(
+              Icons.local_shipping_outlined,
+              color: isSelected ? AppColors.button : AppColors.textSecondary,
+              size: ResponsiveUtils.rp(20),
+            ),
+            SizedBox(width: ResponsiveUtils.rp(10)),
+            // Method name
+            Expanded(
+              child: Text(
+                method.name,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.button,
+                size: ResponsiveUtils.rp(18),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(8)),
+      child: Row(
         children: [
-          // Section Title
-          Container(
-            padding: EdgeInsets.only(bottom: ResponsiveUtils.rp(16)),
+          Icon(Icons.info_outline, color: AppColors.textSecondary, size: ResponsiveUtils.rp(20)),
+          SizedBox(width: ResponsiveUtils.rp(10)),
+          Expanded(
             child: Text(
-              hasSingleMethod ? 'Delivery Method' : 'Select Delivery Method',
+              'No shipping methods available.',
               style: TextStyle(
-                fontSize: ResponsiveUtils.sp(20),
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: AppColors.textSecondary,
+                fontSize: ResponsiveUtils.sp(14),
               ),
             ),
           ),
-
-          // Show simple card for single method, dropdown for multiple methods
-          if (hasSingleMethod && singleMethod != null)
-            // Single method - show as simple card (no dropdown)
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                border: Border.all(
-                  color: borderColor,
-                  width: 1,
-                ),
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveUtils.rp(16),
-                vertical: ResponsiveUtils.rp(16),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.local_shipping_rounded,
-                    color: AppColors.button,
-                    size: ResponsiveUtils.rp(24),
-                  ),
-                  SizedBox(width: ResponsiveUtils.rp(12)),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          singleMethod.name,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.sp(16),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            // Multiple methods - show dropdown
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                border: Border.all(
-                  color: borderColor,
-                  width: 1,
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>(
-                  value: matchingSelectedMethod,
-                  isExpanded: true,
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    size: ResponsiveUtils.rp(24),
-                    color: AppColors.icon,
-                  ),
-                  hint: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveUtils.rp(16),
-                      vertical: ResponsiveUtils.rp(12),
-                    ),
-                    child: Text(
-                      'Select delivery method',
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.sp(15),
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                  items: orderController.shippingMethods.map((method) {
-                    return DropdownMenuItem<Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled>(
-                      value: method,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(16),
-                          vertical: ResponsiveUtils.rp(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                method.name,
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(13),
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textPrimary,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (Query$GetEligibleShippingMethodsEnabled$eligibleShippingMethodsEnabled? newMethod) async {
-                    if (newMethod == null) return;
-                    if (orderController.selectedShippingMethod.value?.id == newMethod.id) {
-                      return;
-                    }
-                    orderController.selectedShippingMethod.value = newMethod;
-                    await onShippingMethodSelected();
-                  },
-                  selectedItemBuilder: (BuildContext context) {
-                    return orderController.shippingMethods.map((method) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.rp(16),
-                          vertical: ResponsiveUtils.rp(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                method.name,
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.sp(15),
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList();
-                  },
-                ),
-              ),
-            ),
         ],
-      );
-    });
+      ),
+    );
   }
 }

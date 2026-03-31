@@ -62,6 +62,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Future.delayed(const Duration(milliseconds: 600), () {
           NotificationService.instance.handlePendingInitialMessageIfAny();
+          NotificationService.instance.handlePendingTimerNavigation();
         });
       });
     }

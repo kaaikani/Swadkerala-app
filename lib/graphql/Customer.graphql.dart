@@ -6221,6 +6221,13 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                     selectionSet: null,
                   ),
                   FieldNode(
+                    name: NameNode(value: 'province'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
                     name: NameNode(value: 'streetLine2'),
                     alias: null,
                     arguments: [],
@@ -8147,6 +8154,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     this.phoneNumber,
     this.company,
     this.city,
+    this.province,
     this.defaultShippingAddress,
     this.defaultBillingAddress,
     this.customFields,
@@ -8164,6 +8172,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     final l$phoneNumber = json['phoneNumber'];
     final l$company = json['company'];
     final l$city = json['city'];
+    final l$province = json['province'];
     final l$defaultShippingAddress = json['defaultShippingAddress'];
     final l$defaultBillingAddress = json['defaultBillingAddress'];
     final l$customFields = json['customFields'];
@@ -8180,6 +8189,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
       phoneNumber: (l$phoneNumber as String?),
       company: (l$company as String?),
       city: (l$city as String?),
+      province: (l$province as String?),
       defaultShippingAddress: (l$defaultShippingAddress as bool?),
       defaultBillingAddress: (l$defaultBillingAddress as bool?),
       customFields: l$customFields == null
@@ -8207,6 +8217,8 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
   final String? company;
 
   final String? city;
+
+  final String? province;
 
   final bool? defaultShippingAddress;
 
@@ -8237,6 +8249,8 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     _resultData['company'] = l$company;
     final l$city = city;
     _resultData['city'] = l$city;
+    final l$province = province;
+    _resultData['province'] = l$province;
     final l$defaultShippingAddress = defaultShippingAddress;
     _resultData['defaultShippingAddress'] = l$defaultShippingAddress;
     final l$defaultBillingAddress = defaultBillingAddress;
@@ -8259,6 +8273,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     final l$phoneNumber = phoneNumber;
     final l$company = company;
     final l$city = city;
+    final l$province = province;
     final l$defaultShippingAddress = defaultShippingAddress;
     final l$defaultBillingAddress = defaultBillingAddress;
     final l$customFields = customFields;
@@ -8273,6 +8288,7 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
       l$phoneNumber,
       l$company,
       l$city,
+      l$province,
       l$defaultShippingAddress,
       l$defaultBillingAddress,
       l$customFields,
@@ -8334,6 +8350,11 @@ class Query$GetActiveCustomer$activeCustomer$addresses {
     if (l$city != lOther$city) {
       return false;
     }
+    final l$province = province;
+    final lOther$province = other.province;
+    if (l$province != lOther$province) {
+      return false;
+    }
     final l$defaultShippingAddress = defaultShippingAddress;
     final lOther$defaultShippingAddress = other.defaultShippingAddress;
     if (l$defaultShippingAddress != lOther$defaultShippingAddress) {
@@ -8388,6 +8409,7 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$addresses<TRes> {
     String? phoneNumber,
     String? company,
     String? city,
+    String? province,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Query$GetActiveCustomer$activeCustomer$addresses$customFields? customFields,
@@ -8422,6 +8444,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
     Object? phoneNumber = _undefined,
     Object? company = _undefined,
     Object? city = _undefined,
+    Object? province = _undefined,
     Object? defaultShippingAddress = _undefined,
     Object? defaultBillingAddress = _undefined,
     Object? customFields = _undefined,
@@ -8450,6 +8473,8 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
         company:
             company == _undefined ? _instance.company : (company as String?),
         city: city == _undefined ? _instance.city : (city as String?),
+        province:
+            province == _undefined ? _instance.province : (province as String?),
         defaultShippingAddress: defaultShippingAddress == _undefined
             ? _instance.defaultShippingAddress
             : (defaultShippingAddress as bool?),
@@ -8499,6 +8524,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$addresses<TRes>
     String? phoneNumber,
     String? company,
     String? city,
+    String? province,
     bool? defaultShippingAddress,
     bool? defaultBillingAddress,
     Query$GetActiveCustomer$activeCustomer$addresses$customFields? customFields,

@@ -337,7 +337,7 @@ class _HomeFavoritesSectionState extends State<HomeFavoritesSection> {
               ),
             ),
             SizedBox(
-              height: ResponsiveUtils.rp(240),
+              height: ResponsiveUtils.rp(280),
               child: widget.utilityController.isLoadingRx.value && enabledFavorites.isEmpty
                   ? _buildShimmerRow()
                   : ListView.separated(
