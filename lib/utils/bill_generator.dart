@@ -188,7 +188,7 @@ class BillGenerator {
     if (Platform.isIOS && output.path.toLowerCase().contains('caches')) {
       output = Directory.systemTemp;
     }
-    final shareDir = Directory('${output.path}/kaaikani_share');
+    final shareDir = Directory('${output.path}/swadkerala_share');
     if (!await shareDir.exists()) await shareDir.create(recursive: true);
     final file = File('${shareDir.path}/invoice_${order.code}.pdf');
     await file.writeAsBytes(bytes);
@@ -229,7 +229,7 @@ class BillGenerator {
   static pw.Widget _buildHeader(Fragment$Cart order, pw.Image? logoImage) {
     // Get channel name (sanitized for PDF UTF-8)
     final channelName = _safeString(ChannelService.getChannelName()?.toString() ?? 
-        ChannelService.getChannelCode()?.toString() ?? 'Kaaikani');
+        ChannelService.getChannelCode()?.toString() ?? 'SwadKerala');
     
     // Determine logo widget
     pw.Widget logoWidget;

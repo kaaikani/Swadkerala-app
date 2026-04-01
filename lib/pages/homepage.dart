@@ -1318,7 +1318,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       bannerController: bannerController,
                       channelName: _channelName.value.isNotEmpty
                           ? _channelName.value
-                          : (ChannelService.getChannelName()?.toString() ?? ChannelService.getChannelCode()?.toString() ?? 'Kaaikani'),
+                          : (ChannelService.getChannelName()?.toString() ?? ChannelService.getChannelCode()?.toString() ?? 'SwadKerala'),
                       customerController: customerController,
                       postalCode: _postalCode.value.isNotEmpty ? _postalCode.value : (ChannelService.getPostalCode()?.toString()),
                       onWelcomeTap: null,

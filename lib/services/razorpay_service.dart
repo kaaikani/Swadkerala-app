@@ -139,7 +139,7 @@ class RazorpayService {
     final options = {
       'key': razorpayKeyId, // Razorpay key from backend
       'amount': amountInPaise, // Amount in paise (1 INR = 100 paise)
-      'name': customerName.isNotEmpty ? customerName : 'Kaaikani Store',
+      'name': customerName.isNotEmpty ? customerName : 'SwadKerala Store',
       'order_id': razorpayOrderId, // Razorpay order ID from backend
       'description': enhancedDescription,
       'timeout': 300, // in seconds (5 minutes)

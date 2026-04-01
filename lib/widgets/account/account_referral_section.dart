@@ -34,7 +34,7 @@ class AccountReferralSection extends StatelessWidget {
     final link = 'https://kaaikanistore.com/referal?referrerId=$customerId';
     try {
       await Share.share(
-        'Hey! Use my referral link to sign up on Kaaikani and we both earn rewards!\n\n$link',
+        'Hey! Use my referral link to sign up on SwadKerala and we both earn rewards!\n\n$link',
         sharePositionOrigin: _shareOrigin(shareReferralKey),
       );
     } catch (e) {

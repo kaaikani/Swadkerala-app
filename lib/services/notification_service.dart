@@ -30,9 +30,9 @@ class NotificationService {
   // High importance channel for heads-up notifications (Snapchat-style)
   static const AndroidNotificationChannel _defaultChannel =
       AndroidNotificationChannel(
-    'kaaikani_updates',
-    'Kaaikani Updates',
-    description: 'Order, cart, and promotional updates from Kaaikani',
+    'swadkerala_updates',
+    'SwadKerala Updates',
+    description: 'Order, cart, and promotional updates from SwadKerala',
     importance: Importance.high, // HIGH IMPORTANCE = Heads-up notifications
     playSound: true,
     enableVibration: true,
@@ -122,7 +122,7 @@ class NotificationService {
     final notification = message.notification;
     if (notification == null) return;
 
-    final title = notification.title ?? 'Kaaikani';
+    final title = notification.title ?? 'SwadKerala';
     final body = notification.body ?? '';
     final id = notification.hashCode;
     final payload = jsonEncode(message.data);
@@ -373,7 +373,7 @@ class NotificationService {
 
   /// Build a valid FCM topic from channel name/code. Topic allows only [a-zA-Z0-9-_.~%].
   static String _topicFromChannel(String? name, String? code) {
-    final raw = (code?.isNotEmpty == true ? code : name) ?? 'kaaikani';
+    final raw = (code?.isNotEmpty == true ? code : name) ?? 'swadkerala';
     final sanitized = raw
         .toLowerCase()
         .replaceAll(RegExp(r'[^\w\-_.~%]'), '_')

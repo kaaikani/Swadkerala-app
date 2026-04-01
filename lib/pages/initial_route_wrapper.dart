@@ -15,7 +15,7 @@ import 'auth_wrapper.dart';
 import '../routes.dart';
 
 /// Request notification permission once after app is visible — uses the same approach as microphone:
-/// system permission dialog ("Kaaikani would like to send you notifications" with Don't Allow / Allow).
+/// system permission dialog ("SwadKerala would like to send you notifications" with Don't Allow / Allow).
 bool _notificationPermissionRequested = false;
 
 Future<void> _requestNotificationPermissionWhenReady() async {

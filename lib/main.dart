@@ -477,7 +477,7 @@ class MyApp extends StatelessWidget {
       final isDark = themeController.isDarkMode;
       
       return GetMaterialApp(
-      title: 'Kaaikani',
+      title: 'SwadKerala',
       theme: AppTheme.lightTheme(),
       darkTheme: AppTheme.darkTheme(),
         themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
