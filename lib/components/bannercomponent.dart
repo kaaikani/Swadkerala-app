@@ -243,10 +243,10 @@ class _BannerComponentState extends State<BannerComponent> {
                       child: imageUrl.isNotEmpty
                           ? CachedAppImage(
                               imageUrl: imageUrl,
-                              fit: BoxFit.contain,
+                              fit: BoxFit.cover,
                               width: double.infinity,
-                              cacheWidth: 800,
-                              cacheHeight: 400,
+                              cacheWidth: 1920,
+                              cacheHeight: 640,
                               errorWidget: Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
@@ -287,7 +287,7 @@ class _BannerComponentState extends State<BannerComponent> {
                   );
                 },
                 options: CarouselOptions(
-                  aspectRatio: 16 / 9, // Use aspect ratio instead of fixed height
+                  aspectRatio: 1920 / 640, // 3:1 banner ratio (1920x640)
                   viewportFraction: 1.0,
                   autoPlay: false, // Disable built-in autoplay, use custom timer
                   enlargeCenterPage: false,

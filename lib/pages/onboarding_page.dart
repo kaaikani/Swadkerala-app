@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import '../generated/assets.dart';
+import '../controllers/authentication/authenticationcontroller.dart' show AuthController;
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -79,11 +80,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
               },
             ),
 
-            // Overlaid UI elements
-            Column(
-              children: [
-                // Skip button at top right
-                if (_currentPage < _onboardingImages.length - 1)
+            // Overlaid UI elements (only for screens 1 & 2)
+            if (_currentPage < _onboardingImages.length - 1)
+              Column(
+                children: [
                   Align(
                     alignment: Alignment.topRight,
                     child: Padding(
@@ -111,29 +111,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                   ),
-
-                // Spacer to push content to bottom
-                const Spacer(),
-
-                // Page indicator dots
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    _onboardingImages.length,
-                    (index) => _buildPageIndicator(index == _currentPage),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _onboardingImages.length,
+                      (index) => _buildPageIndicator(index == _currentPage),
+                    ),
                   ),
-                ),
-                SizedBox(height: ResponsiveUtils.rp(20)),
-
-                // Bottom buttons
-                Padding(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
-                  child: _currentPage < _onboardingImages.length - 1
-                      ? _buildNextButton()
-                      : _buildActionButtons(),
-                ),
-              ],
-            ),
+                  SizedBox(height: ResponsiveUtils.rp(20)),
+                  Padding(
+                    padding: EdgeInsets.all(ResponsiveUtils.rp(24)),
+                    child: _buildNextButton(),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
@@ -141,6 +133,40 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildOnboardingPage(String imagePath, int index) {
+    if (index == 2) {
+      return Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            // Image at the top, no extra whitespace
+            Expanded(
+              flex: 5,
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.fitWidth,
+                width: double.infinity,
+                alignment: Alignment.topCenter,
+              ),
+            ),
+            // Page indicator dots
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                _onboardingImages.length,
+                (i) => _buildPageIndicator(i == _currentPage),
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(12)),
+            // Buttons below the image
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(24)),
+              child: _buildActionButtons(),
+            ),
+            SizedBox(height: ResponsiveUtils.rp(16)),
+          ],
+        ),
+      );
+    }
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -149,38 +175,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ),
       child: Image.asset(
         imagePath,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         width: double.infinity,
         height: double.infinity,
         errorBuilder: (context, error, stackTrace) {
-          // Debug: Print error details
           debugPrint('[OnboardingPage] Error loading image: $imagePath');
-          debugPrint('[OnboardingPage] Error: $error');
-          // Fallback if image not found
           return Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.background,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.image_not_supported,
-                  size: ResponsiveUtils.rp(80),
-                  color: AppColors.textSecondary,
-                ),
-                SizedBox(height: ResponsiveUtils.rp(16)),
-                Text(
-                  'Image: ${imagePath.split('/').last}',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(12),
-                    color: AppColors.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+            color: AppColors.background,
+            child: Icon(
+              Icons.image_not_supported,
+              size: ResponsiveUtils.rp(80),
+              color: AppColors.textSecondary,
             ),
           );
         },
@@ -226,70 +233,102 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildActionButtons() {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Register and Login row
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _navigateToSignup,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.button,
-                  side: BorderSide(color: AppColors.button, width: 2),
-                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                  ),
-                ),
-                child: Text(
-                  'Register',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(16),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: ResponsiveUtils.rp(16)),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _navigateToLogin,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.button,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                  ),
-                  elevation: 2,
-                ),
-                child: Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(16),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: ResponsiveUtils.rp(12)),
-        // Go as guest
+        // Continue with Google
         SizedBox(
           width: double.infinity,
-          child: TextButton(
+          child: ElevatedButton.icon(
+            onPressed: () async {
+              _markOnboardingComplete();
+              final authController = Get.find<AuthController>();
+              final success = await authController.signInWithGoogle(context);
+              if (success) {
+                Get.offAllNamed('/home');
+              }
+            },
+            icon: Image.asset(
+              'assets/images/google_logo.png',
+              height: ResponsiveUtils.rp(24),
+              width: ResponsiveUtils.rp(24),
+              errorBuilder: (context, error, stackTrace) => Icon(
+                Icons.g_mobiledata,
+                size: ResponsiveUtils.rp(24),
+                color: Colors.white,
+              ),
+            ),
+            label: Text(
+              'Continue with Google',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.sp(16),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.button,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+              ),
+              elevation: 2,
+            ),
+          ),
+        ),
+        // Continue with Apple (iOS only)
+        if (isIOS) ...[
+          SizedBox(height: ResponsiveUtils.rp(12)),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                _markOnboardingComplete();
+                final authController = Get.find<AuthController>();
+                final success = await authController.signInWithApple(context);
+                if (success) {
+                  Get.offAllNamed('/home');
+                }
+              },
+              icon: Icon(Icons.apple, size: ResponsiveUtils.rp(24)),
+              label: Text(
+                'Continue with Apple',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(16),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ),
+        ],
+        // Continue as Guest
+        SizedBox(height: ResponsiveUtils.rp(12)),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
             onPressed: _navigateToHome,
-            style: TextButton.styleFrom(
+            style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
-              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+              side: BorderSide(color: AppColors.border),
+              padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+              ),
             ),
             child: Text(
               'Continue as Guest',
               style: TextStyle(
-                fontSize: ResponsiveUtils.sp(15),
+                fontSize: ResponsiveUtils.sp(16),
                 fontWeight: FontWeight.w500,
               ),
             ),

@@ -208,8 +208,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         Center(
           child: Image.asset(
             'assets/images/kklogo_foreground_large.png',
-            width: ResponsiveUtils.rp(160),
-            height: ResponsiveUtils.rp(160),
+            width: ResponsiveUtils.rp(220),
+            height: ResponsiveUtils.rp(220),
             fit: BoxFit.contain,
           ),
         ),
@@ -327,23 +327,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             vertical: ResponsiveUtils.rp(18),
           ),
           decoration: BoxDecoration(
-            color: backgroundColor,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-            border: Border.all(
-              color: color.withValues(alpha: 0.15),
-              width: 1.5,
-            ),
           ),
           child: Row(
             children: [
               // Icon
-              Container(
+              SizedBox(
                 width: ResponsiveUtils.rp(48),
                 height: ResponsiveUtils.rp(48),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
-                ),
                 child: Center(
                   child: isLoading
                       ? SizedBox(

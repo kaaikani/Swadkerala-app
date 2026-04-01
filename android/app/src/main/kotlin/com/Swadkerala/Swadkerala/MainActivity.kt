@@ -2,6 +2,7 @@ package com.Swadkerala.Swadkerala
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import android.os.CountDownTimer
 import android.os.SystemClock
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -24,7 +24,7 @@ class MainActivity : FlutterActivity() {
     private val TAG = "MainActivity"
     private val OFFER_TIMER_CHANNEL_ID = "kaaikani_offer_timer"
     private val OFFER_TIMER_NOTIFICATION_ID = 9999
-    private var offerCountDownTimer: CountDownTimer? = null
+    private val TIMER_ALARM_REQUEST_CODE = 9998
     private var timerMethodChannel: MethodChannel? = null
 
     override fun onNewIntent(intent: Intent) {
@@ -127,8 +127,7 @@ class MainActivity : FlutterActivity() {
                     }
                 }
                 "cancelOfferTimer" -> {
-                    offerCountDownTimer?.cancel()
-                    offerCountDownTimer = null
+                    cancelTimerAlarm()
                     val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     nm.cancel(OFFER_TIMER_NOTIFICATION_ID)
                     result.success(true)
@@ -223,15 +222,35 @@ class MainActivity : FlutterActivity() {
 
         nm.notify(OFFER_TIMER_NOTIFICATION_ID, notification)
 
-        // Auto-cancel when timer reaches zero (prevent going negative)
-        offerCountDownTimer?.cancel()
-        offerCountDownTimer = object : CountDownTimer(remaining, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // Chronometer handles the display; nothing to do here
-            }
-            override fun onFinish() {
-                nm.cancel(OFFER_TIMER_NOTIFICATION_ID)
-            }
-        }.start()
+        // Schedule alarm to cancel notification when timer expires (survives app death)
+        scheduleTimerAlarm(endTime)
+    }
+
+    private fun scheduleTimerAlarm(endTimeMillis: Long) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, TimerExpiredReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this, TIMER_ALARM_REQUEST_CODE, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        // Cancel any existing alarm first
+        alarmManager.cancel(pendingIntent)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endTimeMillis, pendingIntent)
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, endTimeMillis, pendingIntent)
+        }
+        Log.d(TAG, "Scheduled timer alarm at $endTimeMillis")
+    }
+
+    private fun cancelTimerAlarm() {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, TimerExpiredReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this, TIMER_ALARM_REQUEST_CODE, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
     }
 }

@@ -144,8 +144,8 @@ class _BannerCarouselStatefulState extends State<_BannerCarouselStateful> {
                     CachedAppImage(
                       imageUrl: widget.imageUrls[index],
                       fit: BoxFit.cover,
-                      cacheWidth: 800,
-                      cacheHeight: 400,
+                      cacheWidth: 1920,
+                      cacheHeight: 640,
                       errorWidget: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
