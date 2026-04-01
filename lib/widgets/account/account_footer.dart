@@ -81,6 +81,25 @@ class AccountFooter extends StatelessWidget {
                 ),
               ),
               SizedBox(height: ResponsiveUtils.rp(12)),
+              // Address
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.location_on_outlined, size: ResponsiveUtils.rp(16), color: AppColors.textSecondary),
+                  SizedBox(width: ResponsiveUtils.rp(6)),
+                  Expanded(
+                    child: Text(
+                      'Galaxy Traders, Karimannoor PO - 685581\nMannarathara - Kotta Road, Idukki Dist, Kerala',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.sp(12),
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.rp(12)),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -285,6 +285,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                         color: AppColors.textSecondary,
                       ),
                     ),
+                    if (order.customFields?.invoiceNo != null) ...[
+                      SizedBox(height: ResponsiveUtils.rp(2)),
+                      Text(
+                        'Invoice No: ${order.customFields!.invoiceNo}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.sp(12),
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                     SizedBox(height: ResponsiveUtils.rp(6)),
                     Text(
                       _formatPrice(order.totalWithTax.toInt()),

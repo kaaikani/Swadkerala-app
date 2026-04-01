@@ -32,7 +32,6 @@ import '../widgets/snackbar.dart';
 import '../services/graphql_client.dart';
 import '../controllers/theme_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../widgets/notification_permission_dialog.dart';
 import '../services/channel_service.dart';
 import '../routes.dart';
 import '../graphql/schema.graphql.dart';
@@ -62,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // Track if dialog is showing to prevent multiple dialogs
   bool _isAddressDialogShowing = false;
   bool _isPostalCodeDialogShowing = false;
-  bool _isNotificationDialogShowing = false;
 
   // Track if data refresh is in progress to prevent duplicate calls
   bool _isRefreshingData = false;
@@ -93,15 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _previousChannelToken = GraphqlService.channelToken;
     _updateChannelDisplay(skipRefreshTrigger: true); // Skip refresh on initial load
     
-    // Check postal code and validate available channels
-    _checkPostalCodeAndChannels();
-    
     _refreshData();
     // Mark initial load as complete after first refresh
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _isInitialLoad = false;
-      // Check notification permission after page is built
-      _checkNotificationPermission();
       // Show referral code dialog if user just registered
       _checkAndShowReferralDialog();
     });
@@ -167,115 +160,6 @@ class _MyHomePageState extends State<MyHomePage> {
            channelToken.isNotEmpty;
   }
 
-  /// Check notification permission and show dialog if denied
-  Future<void> _checkNotificationPermission() async {
-    try {
-      // Check current permission status
-      final status = await Permission.notification.status;
-      
-      
-      // If permission is granted (or provisional on iOS = "deliver quietly"), don't show dialog
-      if (status.isGranted || status.isProvisional) {
-        await box.remove('notification_permission_dialog_shown');
-        await box.remove('notification_settings_dialog_shown');
-        return;
-      }
-      
-      // Check if we've already shown the dialog in this session
-      final hasShownDialog = box.read<bool>('notification_permission_dialog_shown') ?? false;
-      final lastShownTime = box.read<int>('notification_permission_dialog_last_shown');
-      final now = DateTime.now().millisecondsSinceEpoch;
-      
-      // Show dialog if:
-      // 1. Permission is denied, restricted, or not yet determined (not granted, not permanently denied)
-      // 2. We haven't shown it before, OR it's been more than 7 days since last shown
-      final needsPrompt = status.isDenied || status.isRestricted;
-      if (needsPrompt && mounted) {
-        final shouldShow = !hasShownDialog || 
-                          (lastShownTime != null && (now - lastShownTime) > (7 * 24 * 60 * 60 * 1000));
-        
-        if (shouldShow) {
-          // Show the dialog after a short delay to ensure page is fully loaded
-          await Future.delayed(Duration(milliseconds: 500));
-          
-          if (mounted) {
-            await NotificationPermissionDialog.show(context);
-            // Mark that we've shown the dialog and record the time
-            await box.write('notification_permission_dialog_shown', true);
-            await box.write('notification_permission_dialog_last_shown', now);
-          }
-        }
-      } else if (status.isPermanentlyDenied && mounted) {
-        // If permanently denied, show settings dialog (but only once per 30 days)
-        final hasShownSettingsDialog = box.read<bool>('notification_settings_dialog_shown') ?? false;
-        final lastShownSettingsTime = box.read<int>('notification_settings_dialog_last_shown');
-        
-        final shouldShowSettings = !hasShownSettingsDialog || 
-                                  (lastShownSettingsTime != null && 
-                                   (now - lastShownSettingsTime) > (30 * 24 * 60 * 60 * 1000));
-        
-        if (shouldShowSettings) {
-          await Future.delayed(Duration(milliseconds: 500));
-          if (mounted) {
-            // Show settings dialog
-            Get.dialog(
-              AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                backgroundColor: AppColors.surface,
-                title: Row(
-                  children: [
-                    Icon(Icons.settings_rounded, color: AppColors.button),
-                    SizedBox(width: ResponsiveUtils.rp(12)),
-                    Expanded(
-                      child: Text(
-                        'Enable Notifications',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.sp(18),
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                content: Text(
-                  'Notification permission is disabled. Please enable it in your device settings to receive order updates and offers.',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.sp(15),
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    child: Text('Later'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      Get.back();
-                      await openAppSettings();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.button,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: Text('Open Settings'),
-                  ),
-                ],
-              ),
-            );
-            await box.write('notification_settings_dialog_shown', true);
-            await box.write('notification_settings_dialog_last_shown', now);
-          }
-        }
-      }
-    } catch (e) {
-    }
-  }
 
   /// Show referral code dialog if user just registered (not on login).
   /// Non-mandatory — user can skip.
@@ -294,10 +178,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     } catch (_) {}
 
-    // Wait for notification dialog to finish first
-    while (_isNotificationDialogShowing && mounted) {
-      await Future.delayed(const Duration(milliseconds: 300));
-    }
     if (!mounted) return;
 
     // Small delay for smooth transition
@@ -589,13 +469,6 @@ class _MyHomePageState extends State<MyHomePage> {
         bannerController.getBannersForChannel(),
         bannerController.getFrequentlyOrderedProducts(),
       ], eagerError: false);
-    } else {
-      // No postal code OR no available channel - show dialog but don't fetch collections/banners
-      // Check for postal code dialog if still needed
-      // Only check if dialog is not already showing
-      if (mounted && !_isPostalCodeDialogShowing) {
-        _checkAndShowPostalCodeDialog();
-      }
     }
 
 
@@ -1448,7 +1321,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           : (ChannelService.getChannelName()?.toString() ?? ChannelService.getChannelCode()?.toString() ?? 'Kaaikani'),
                       customerController: customerController,
                       postalCode: _postalCode.value.isNotEmpty ? _postalCode.value : (ChannelService.getPostalCode()?.toString()),
-                      onWelcomeTap: _showPostalCodeBottomSheet,
+                      onWelcomeTap: null,
                     ),
 
                     // ==================== MAIN CONTENT ====================
@@ -1642,7 +1515,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Build delivery address header (above search bar)
   Widget _buildDeliveryAddressHeader() {
     return HomeDeliveryAddressHeader(
-      onTap: _showPostalCodeBottomSheet,
+      onTap: null,
       channelName: _channelName,
       postalCode: _postalCode,
     );

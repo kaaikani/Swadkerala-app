@@ -254,6 +254,16 @@ class _OrdersComponentState extends State<OrdersComponent> {
                             ),
                           ],
                         ),
+                        if (order.customFields?.invoiceNo != null) ...[
+                          SizedBox(height: ResponsiveUtils.rp(2)),
+                          Text(
+                            'Invoice No: ${order.customFields!.invoiceNo}',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.sp(12),
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                         SizedBox(height: ResponsiveUtils.rp(4)),
                         Text(
                           _formatDate(order.orderPlacedAt ?? DateTime.now()),

@@ -631,9 +631,13 @@ class CouponController extends BaseController {
         try {
           _updateControllersFromJson(result.toJson(), result);
         } catch (_) {}
+        // Suppress validation during refresh to prevent race condition
+        // where validateAndRemoveCouponsIfNeeded() removes the just-applied coupon
+        _suppressCouponValidation = true;
         // Always do a full refresh to ensure UI is fully in sync
         await _refreshCartAndOrder();
         try { await restoreCouponTrackingFromCart(); } catch (_) {}
+        _suppressCouponValidation = false;
 
         // Verify coupon is actually in the order's couponCodes list
         final couponActuallyApplied = result.couponCodes.any(

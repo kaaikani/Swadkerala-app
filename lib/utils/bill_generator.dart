@@ -212,7 +212,9 @@ class BillGenerator {
     try {
       await Share.shareXFiles(
         [XFile(filePath)],
-        subject: 'Invoice - Order #${order.code}',
+        subject: order.customFields?.invoiceNo != null
+            ? 'Invoice #${order.customFields!.invoiceNo} - Order #${order.code}'
+            : 'Invoice - Order #${order.code}',
         sharePositionOrigin: origin,
       );
     } catch (e) {
@@ -254,9 +256,16 @@ class BillGenerator {
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 4),
+            if (order.customFields?.invoiceNo != null)
+              pw.Text('Invoice No: ${order.customFields!.invoiceNo}',
+                  style: pw.TextStyle(
+                      fontSize: 14,
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColors.grey800)),
+            pw.SizedBox(height: 2),
             pw.Text('Order #${_safeString(order.code)}',
                 style: pw.TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: PdfColors.grey700)),
           ],
         ),
@@ -613,6 +622,11 @@ class BillGenerator {
         pw.SizedBox(height: 12),
         pw.Divider(),
         pw.SizedBox(height: 8),
+        pw.Text('Galaxy Traders, Karimannoor PO - 685581, Mannarathara - Kotta Road, Idukki Dist, Kerala',
+            style: pw.TextStyle(
+                color: PdfColors.grey700,
+                fontSize: 10)),
+        pw.SizedBox(height: 4),
         pw.Text('FSSAI License Number: 21325176000258',
             style: pw.TextStyle(
                 color: PdfColors.grey700,

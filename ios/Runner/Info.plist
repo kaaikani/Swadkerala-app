@@ -44,27 +44,9 @@
 					<string>com.googleusercontent.apps.349081914352-3uu12ipvimkp3ptdbbqq4kou9cf1latf</string>
 				</array>
 			</dict>
-			<dict>
-				<key>CFBundleTypeRole</key>
-				<string>Editor</string>
-				<key>CFBundleURLName</key>
-				<string>Facebook</string>
-				<key>CFBundleURLSchemes</key>
-				<array>
-					<string>fb894049942524354</string>
-				</array>
-			</dict>
 		</array>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
-		<key>FacebookAppID</key>
-		<string>894049942524354</string>
-		<key>FacebookClientToken</key>
-		<string>7d618a40da95a992f525bf0b35b55faa</string>
-		<key>FacebookAdvertiserIDCollectionEnabled</key>
-		<true/>
-		<key>FacebookDisplayName</key>
-		<string>Swadkerala</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSLocalNetworkUsageDescription</key>

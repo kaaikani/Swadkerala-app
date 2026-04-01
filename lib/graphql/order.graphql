@@ -14,6 +14,7 @@ query ActiveOrder {
             }
 
             customFields {
+                invoiceNo
                 loyaltyPointsEarned
                 loyaltyPointsUsed
                 otherInstructions
@@ -167,6 +168,7 @@ query GetOrderByCode($code: String!) {
             transactionId
         }
         customFields {
+            invoiceNo
             loyaltyPointsEarned
             loyaltyPointsUsed
         }
@@ -360,6 +362,7 @@ fragment Cart on Order {
         __typename
     }
     customFields {
+        invoiceNo
         loyaltyPointsEarned
         loyaltyPointsUsed
         otherInstructions

@@ -199,6 +199,17 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                if (order.customFields?.invoiceNo != null) ...[
+                  SizedBox(height: ResponsiveUtils.rp(4)),
+                  Text(
+                    'Invoice No: ${order.customFields!.invoiceNo}',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.sp(14),
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
                 SizedBox(height: ResponsiveUtils.rp(24)),
 
               // Share Bill Button

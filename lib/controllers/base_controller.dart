@@ -12,13 +12,21 @@ abstract class BaseController extends GetxController {
   bool handleGraphQLError(QueryResult response, {String? customErrorMessage}) {
     if (response.hasException) {
       
-      // Early check: Suppress ResponseFormatException (JSON parsing errors) - don't show dialog
+      // Early check: Suppress non-actionable errors - don't show dialog
       final exceptionStr = response.exception.toString();
       if (exceptionStr.contains('ResponseFormatException') ||
           exceptionStr.contains('FormatException') ||
           exceptionStr.contains('Unexpected character') ||
           exceptionStr.contains('CacheMissException') ||
-          exceptionStr.contains('cache.readQuery')) {
+          exceptionStr.contains('cache.readQuery') ||
+          exceptionStr.contains('Bad request') ||
+          exceptionStr.contains('BadRequest') ||
+          exceptionStr.contains('bad request') ||
+          exceptionStr.contains('Too many requests') ||
+          exceptionStr.contains('TooManyRequests') ||
+          exceptionStr.contains('too many requests') ||
+          exceptionStr.contains('429') ||
+          exceptionStr.contains('400')) {
         return true;
       }
       // Don't show error dialog for timeout – no message in UI
@@ -138,7 +146,7 @@ abstract class BaseController extends GetxController {
       }
     }
 
-    // Don't show dialog for timeout / stream errors (no message in UI)
+    // Don't show dialog for timeout / stream / rate-limit errors (no message in UI)
     final isTimeout = exception is TimeoutException;
     if (isTimeout) return;
     final isUnknownTimeout = exception is UnknownException &&
@@ -146,7 +154,13 @@ abstract class BaseController extends GetxController {
     if (isUnknownTimeout) return;
     final exceptionStr = exception?.toString() ?? '';
     if (exceptionStr.contains('TimeoutException') ||
-        exceptionStr.contains('No stream event')) {
+        exceptionStr.contains('No stream event') ||
+        exceptionStr.contains('Bad request') ||
+        exceptionStr.contains('bad request') ||
+        exceptionStr.contains('Too many requests') ||
+        exceptionStr.contains('too many requests') ||
+        exceptionStr.contains('429') ||
+        exceptionStr.contains('400')) {
       return;
     }
 

@@ -5,7 +5,7 @@ import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 
 class HomeDeliveryAddressHeader extends StatelessWidget {
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final RxString channelName;
   final RxString postalCode;
 

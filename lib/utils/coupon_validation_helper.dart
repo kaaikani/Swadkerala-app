@@ -312,6 +312,8 @@ class CouponValidationHelper {
 
   /// Calculate effective subtotal excluding prices of free products added by coupon
   /// (contains_products and buy_x_get_y_free Y products).
+  /// We sum only non-free lines' linePriceWithTax to avoid double-subtracting
+  /// when the order-level discount is already reflected in subTotalWithTax.
   static int _getEffectiveSubTotal(
     cart_graphql.Fragment$Cart? cart,
     Set<String> freeProductVariantIds,
@@ -319,13 +321,13 @@ class CouponValidationHelper {
     if (cart == null) return 0;
     if (freeProductVariantIds.isEmpty) return cart.subTotalWithTax.toInt();
 
-    int freeProductTotal = 0;
+    int nonFreeTotal = 0;
     for (final line in cart.lines) {
-      if (freeProductVariantIds.contains(line.productVariant.id)) {
-        freeProductTotal += line.linePriceWithTax.toInt();
+      if (!freeProductVariantIds.contains(line.productVariant.id)) {
+        nonFreeTotal += line.linePriceWithTax.toInt();
       }
     }
-    return cart.subTotalWithTax.toInt() - freeProductTotal;
+    return nonFreeTotal;
   }
 
   /// Extract variant IDs of free products from coupon conditions

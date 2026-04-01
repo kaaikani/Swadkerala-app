@@ -2623,6 +2623,7 @@ type OrderAddress {
 type OrderCustomFields {
   platform: String
   deviceMedium: String
+  invoiceNo: Int
   otherInstructions: String
   loyaltyPointsUsed: Int
   loyaltyPointsEarned: Int

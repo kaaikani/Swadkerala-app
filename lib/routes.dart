@@ -19,6 +19,7 @@ import 'package:recipe.app/pages/connect_with_us_page.dart';
 import 'package:recipe.app/pages/help_support_page.dart';
 import 'package:recipe.app/pages/privacy_policy_page.dart';
 import 'package:recipe.app/pages/terms_conditions_page.dart';
+import 'package:recipe.app/pages/about_us_page.dart';
 
 import 'components/searchbarcomponent.dart';
 import 'controllers/banner/bannercontroller.dart';
@@ -55,6 +56,7 @@ class AppRoutes {
   static const String termsConditions = '/terms-conditions';
   static const String scratchCards = '/scratch-cards';
   static const String myReferrals = '/my-referrals';
+  static const String aboutUs = '/about-us';
 
   static List<GetPage> routes = [
     GetPage(
@@ -238,6 +240,11 @@ class AppRoutes {
       page: () => const MyReferralsPage(),
       transition: Transition.rightToLeft,
       middlewares: [AuthGuard()],
+    ),
+    GetPage(
+      name: aboutUs,
+      page: () => const AboutUsPage(),
+      transition: Transition.rightToLeft,
     ),
   ];
 }

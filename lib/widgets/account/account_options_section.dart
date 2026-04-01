@@ -85,6 +85,13 @@ class AccountSupportSection extends StatelessWidget {
       child: Column(
         children: [
           AccountListTile(
+            leadingIcon: Icons.info_outline,
+            title: 'About Us',
+            trailingIcon: Icons.arrow_forward_ios,
+            onTap: () => Get.toNamed('/about-us'),
+          ),
+          const AccountDivider(),
+          AccountListTile(
             leadingIcon: Icons.link_outlined,
             title: 'Connect with Us',
             trailingIcon: Icons.arrow_forward_ios,
@@ -117,7 +124,7 @@ class AccountSupportSection extends StatelessWidget {
           const AccountDivider(),
           AccountListTile(
             leadingIcon: Icons.privacy_tip_outlined,
-            title: 'Privacy & Policy',
+            title: 'Privacy Policy',
             trailingIcon: Icons.arrow_forward_ios,
             onTap: () => Get.toNamed('/privacy-policy'),
           ),

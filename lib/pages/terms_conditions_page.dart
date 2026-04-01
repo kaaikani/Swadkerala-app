@@ -37,84 +37,94 @@ class TermsConditionsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Introduction Section
+            // Introduction
             _buildSection(
-              title: 'About Kaaikani',
-              content: 'Kaaikani application is an online sales platform for fresh fruits and vegetables. Customers can place orders through the app a day in advance, with delivery made to their doorstep the next day. We prioritize privacy and security of your personal information.',
-              icon: Icons.info_outline,
+              title: 'Terms & Conditions',
+              content: 'Welcome to SwadKerala, your trusted source for authentic Kerala spices sourced directly from God\'s Own Country. Please read these terms carefully before using our services.\n\nLast Updated: November 2024',
+              icon: Icons.description_outlined,
               iconColor: AppColors.button,
             ),
-            
+
             ResponsiveSpacing.vertical(16),
-            
-            // Personnel Data Collection and Usage Section
+
+            // 1. Acceptance of Terms
             _buildSection(
-              title: 'Personal Data Collection and Usage',
-              content: 'Kaaikani Application collects and uses personal data to provide you with the best service experience.',
-              icon: Icons.security_outlined,
+              title: '1. Acceptance of Terms',
+              content: 'By accessing and using SwadKerala\'s razorpay-payment platform for authentic Kerala spices, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.',
+              icon: Icons.check_circle_outline,
               iconColor: AppColors.success,
             ),
-            
+
             ResponsiveSpacing.vertical(16),
-            
-            // Login and Password Section
+
+            // 2. Product Information
             _buildSection(
-              title: 'Login and Password',
-              content: 'Each customer creates an account with unique login credentials for security purposes.',
-              icon: Icons.lock_outline,
+              title: '2. Product Information',
+              content: 'We specialize in authentic Kerala spices sourced directly from God\'s Own Country, including:\n\n• Premium whole spices (cardamom, pepper, cinnamon, cloves, nutmeg)\n• Ground spices and spice blends\n• Traditional Kerala spice mixes and masalas\n• Organic and premium quality variants\n\nAll spices are handpicked from Kerala\'s finest farms, ensuring purity and authentic flavor. Product images are for reference only and actual products may vary slightly in appearance while maintaining the same premium quality.',
+              icon: Icons.spa_outlined,
               iconColor: AppColors.button,
             ),
-            
+
             ResponsiveSpacing.vertical(16),
-            
-            // Address Section
+
+            // 3. Orders & Payment
             _buildSection(
-              title: 'Address',
-              content: 'Kaaikani Application collects addresses to deliver products directly to customers.',
-              icon: Icons.location_on_outlined,
-              iconColor: AppColors.success,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Bank Details Section
-            _buildSection(
-              title: 'Bank Details',
-              content: 'Bank details are collected for online payment through credit/debit cards, Gpay, Phonepe, and internet banking. We do not share personal data with any third party without permission.',
-              icon: Icons.account_balance_outlined,
+              title: '3. Orders & Payment',
+              content: 'Payment Methods\nWe accept all major credit/debit cards, UPI payments, net banking, and digital wallets. All transactions are secured with SSL encryption.\n\nOrder Processing\nYour Kerala spice orders are processed within 24-48 hours during business days. Custom spice blends or bulk orders may require additional processing time. You will receive order confirmation via email/SMS along with tracking details once your order is dispatched.',
+              icon: Icons.payment_outlined,
               iconColor: AppColors.warning,
             ),
-            
+
             ResponsiveSpacing.vertical(16),
-            
-            // Children's Privacy Section
+
+            // 4. Delivery & Shipping
             _buildSection(
-              title: 'Children\'s Privacy',
-              content: 'The application does not target individuals under 13 years of age, and we do not collect personal information from children.',
-              icon: Icons.child_care_outlined,
+              title: '4. Delivery & Shipping',
+              content: 'We deliver authentic Kerala spices across major cities and towns in India. Delivery charges vary by location and order value. Enjoy free delivery on orders above Rs.500. Typical delivery time is 3-7 business days depending on your location.\n\nNote: All spices are packed in airtight, food-grade containers to maintain freshness and aroma during transit. We recommend storing in a cool, dry place to preserve quality and flavor.',
+              icon: Icons.local_shipping_outlined,
+              iconColor: AppColors.success,
+            ),
+
+            ResponsiveSpacing.vertical(16),
+
+            // 5. Returns & Refunds
+            _buildSection(
+              title: '5. Returns & Refunds',
+              content: 'We stand behind the quality of our spices. Our return policy ensures your satisfaction:\n\n• Returns accepted within 7 days of delivery\n• Products must be in original packaging and unopened\n• Quality issues will be addressed immediately with full refund or replacement\n• Refunds processed within 5-7 business days to the original payment method',
+              icon: Icons.assignment_return_outlined,
               iconColor: AppColors.error,
             ),
-            
+
             ResponsiveSpacing.vertical(16),
-            
-            // Complaint Policy Section
+
+            // 6. Customer Responsibilities
             _buildSection(
-              title: 'Complaint Policy',
-              content: 'For cut vegetables and cut fruits, complaints will be taken within 24 hours. For normal vegetables and fruits, complaints will be taken within 48 hours.',
-              icon: Icons.report_problem_outlined,
+              title: '6. Customer Responsibilities',
+              content: 'Customers are responsible for providing accurate delivery information, being available for delivery, and ensuring proper storage of products upon receipt.',
+              icon: Icons.person_outline,
+              iconColor: AppColors.info,
+            ),
+
+            ResponsiveSpacing.vertical(16),
+
+            // 7. Limitation of Liability
+            _buildSection(
+              title: '7. Limitation of Liability',
+              content: 'Our liability is limited to the value of the products purchased. We are not responsible for any indirect, incidental, or consequential damages arising from the use of our products or services.',
+              icon: Icons.gavel_outlined,
               iconColor: AppColors.warning,
             ),
-            
+
             ResponsiveSpacing.vertical(16),
-            
-            // Policy Updates Section
+
+            // 8. Modifications
             _buildSection(
-              title: 'Policy Updates',
-              content: 'We may update our policies periodically. Changes will be communicated by posting the updated policy on this page.',
+              title: '8. Modifications',
+              content: 'We reserve the right to modify these terms at any time. Changes will be posted on this page with an updated revision date. Continued use of our services constitutes acceptance of the modified terms.',
               icon: Icons.update_outlined,
               iconColor: AppColors.button,
             ),
-            
+
             ResponsiveSpacing.vertical(24),
           ],
         ),
@@ -134,7 +144,6 @@ class TermsConditionsPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title with Icon
           Row(
             children: [
               if (icon != null) ...[
@@ -162,10 +171,7 @@ class TermsConditionsPage extends StatelessWidget {
               ),
             ],
           ),
-          
           ResponsiveSpacing.vertical(16),
-          
-          // Content
           ResponsiveText(
             content,
             fontSize: 14,
@@ -178,170 +184,3 @@ class TermsConditionsPage extends StatelessWidget {
     );
   }
 }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0.5,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Terms & Conditions',
-          style: TextStyle(
-            fontSize: ResponsiveUtils.sp(18),
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(ResponsiveUtils.rp(16)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Introduction Section
-            _buildSection(
-              title: 'About Kaaikani',
-              content: 'Kaaikani application is an online sales platform for fresh fruits and vegetables. Customers can place orders through the app a day in advance, with delivery made to their doorstep the next day. We prioritize privacy and security of your personal information.',
-              icon: Icons.info_outline,
-              iconColor: AppColors.button,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Personnel Data Collection and Usage Section
-            _buildSection(
-              title: 'Personal Data Collection and Usage',
-              content: 'Kaaikani Application collects and uses personal data to provide you with the best service experience.',
-              icon: Icons.security_outlined,
-              iconColor: AppColors.success,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Login and Password Section
-            _buildSection(
-              title: 'Login and Password',
-              content: 'Each customer creates an account with unique login credentials for security purposes.',
-              icon: Icons.lock_outline,
-              iconColor: AppColors.button,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Address Section
-            _buildSection(
-              title: 'Address',
-              content: 'Kaaikani Application collects addresses to deliver products directly to customers.',
-              icon: Icons.location_on_outlined,
-              iconColor: AppColors.success,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Bank Details Section
-            _buildSection(
-              title: 'Bank Details',
-              content: 'Bank details are collected for online payment through credit/debit cards, Gpay, Phonepe, and internet banking. We do not share personal data with any third party without permission.',
-              icon: Icons.account_balance_outlined,
-              iconColor: AppColors.warning,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Children's Privacy Section
-            _buildSection(
-              title: 'Children\'s Privacy',
-              content: 'The application does not target individuals under 13 years of age, and we do not collect personal information from children.',
-              icon: Icons.child_care_outlined,
-              iconColor: AppColors.error,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Complaint Policy Section
-            _buildSection(
-              title: 'Complaint Policy',
-              content: 'For cut vegetables and cut fruits, complaints will be taken within 24 hours. For normal vegetables and fruits, complaints will be taken within 48 hours.',
-              icon: Icons.report_problem_outlined,
-              iconColor: AppColors.warning,
-            ),
-            
-            ResponsiveSpacing.vertical(16),
-            
-            // Policy Updates Section
-            _buildSection(
-              title: 'Policy Updates',
-              content: 'We may update our policies periodically. Changes will be communicated by posting the updated policy on this page.',
-              icon: Icons.update_outlined,
-              iconColor: AppColors.button,
-            ),
-            
-            ResponsiveSpacing.vertical(24),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSection({
-    required String title,
-    required String content,
-    IconData? icon,
-    Color? iconColor,
-  }) {
-    return PremiumCard(
-      padding: ResponsiveSpacing.padding(all: 20),
-      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title with Icon
-          Row(
-            children: [
-              if (icon != null) ...[
-                Container(
-                  padding: EdgeInsets.all(ResponsiveUtils.rp(8)),
-                  decoration: BoxDecoration(
-                    color: (iconColor ?? AppColors.button).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: iconColor ?? AppColors.button,
-                    size: ResponsiveUtils.rp(24),
-                  ),
-                ),
-                ResponsiveSpacing.horizontal(12),
-              ],
-              Expanded(
-                child: ResponsiveText(
-                  title,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          
-          ResponsiveSpacing.vertical(16),
-          
-          // Content
-          ResponsiveText(
-            content,
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-            color: AppColors.textSecondary,
-            height: 1.6,
-          ),
-        ],
-      ),
-    );
-  }

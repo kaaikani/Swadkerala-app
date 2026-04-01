@@ -7729,6 +7729,13 @@ const fragmentDefinitionCart = FragmentDefinitionNode(
       directives: [],
       selectionSet: SelectionSetNode(selections: [
         FieldNode(
+          name: NameNode(value: 'invoiceNo'),
+          alias: null,
+          arguments: [],
+          directives: [],
+          selectionSet: null,
+        ),
+        FieldNode(
           name: NameNode(value: 'loyaltyPointsEarned'),
           alias: null,
           arguments: [],
@@ -10721,6 +10728,7 @@ class _CopyWithStubImpl$Fragment$Cart$discounts<TRes>
 
 class Fragment$Cart$customFields {
   Fragment$Cart$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -10728,17 +10736,21 @@ class Fragment$Cart$customFields {
   });
 
   factory Fragment$Cart$customFields.fromJson(Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -10750,6 +10762,8 @@ class Fragment$Cart$customFields {
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -10763,11 +10777,13 @@ class Fragment$Cart$customFields {
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -10782,6 +10798,11 @@ class Fragment$Cart$customFields {
     }
     if (other is! Fragment$Cart$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -10827,6 +10848,7 @@ abstract class CopyWith$Fragment$Cart$customFields<TRes> {
       _CopyWithStubImpl$Fragment$Cart$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -10848,12 +10870,15 @@ class _CopyWithImpl$Fragment$Cart$customFields<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -10876,6 +10901,7 @@ class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -12052,6 +12078,13 @@ const documentNodeQueryActiveOrder = DocumentNode(definitions: [
                 arguments: [],
                 directives: [],
                 selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'invoiceNo'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
                   FieldNode(
                     name: NameNode(value: 'loyaltyPointsEarned'),
                     alias: null,
@@ -16031,6 +16064,7 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$discounts<TRes>
 class Query$ActiveOrder$activeOrder$customFields
     implements Fragment$Cart$customFields {
   Query$ActiveOrder$activeOrder$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -16039,17 +16073,21 @@ class Query$ActiveOrder$activeOrder$customFields
 
   factory Query$ActiveOrder$activeOrder$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Query$ActiveOrder$activeOrder$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -16061,6 +16099,8 @@ class Query$ActiveOrder$activeOrder$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -16074,11 +16114,13 @@ class Query$ActiveOrder$activeOrder$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -16093,6 +16135,11 @@ class Query$ActiveOrder$activeOrder$customFields
     }
     if (other is! Query$ActiveOrder$activeOrder$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -16139,6 +16186,7 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder$customFields<TRes> {
       _CopyWithStubImpl$Query$ActiveOrder$activeOrder$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -16160,12 +16208,15 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$customFields<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$ActiveOrder$activeOrder$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -16188,6 +16239,7 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$customFields<TRes>
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -21535,6 +21587,7 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$discount
 class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -21543,17 +21596,21 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
 
   factory Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -21565,6 +21622,8 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -21578,11 +21637,13 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -21598,6 +21659,11 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
     if (other
             is! Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -21648,6 +21714,7 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFi
       _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -21673,12 +21740,15 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -21705,6 +21775,7 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFi
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -26966,6 +27037,7 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
 class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -26974,17 +27046,21 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
 
   factory Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -26996,6 +27072,8 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -27009,11 +27087,13 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -27029,6 +27109,11 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
     if (other
             is! Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -27081,6 +27166,7 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
       _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -27108,6 +27194,7 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$cust
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
@@ -27115,6 +27202,8 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$cust
   }) =>
       _then(
           Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -27141,6 +27230,7 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -32487,6 +32577,7 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$discount
 class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -32495,17 +32586,21 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
 
   factory Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -32517,6 +32612,8 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -32530,11 +32627,13 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -32550,6 +32649,11 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
     if (other
             is! Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -32600,6 +32704,7 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFi
       _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -32625,12 +32730,15 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -32657,6 +32765,7 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFi
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -38466,6 +38575,7 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
 class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -38474,17 +38584,21 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
 
   factory Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -38496,6 +38610,8 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -38509,11 +38625,13 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -38529,6 +38647,11 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
     if (other
             is! Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -38581,6 +38704,7 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
       _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -38608,6 +38732,7 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$c
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
@@ -38615,6 +38740,8 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$c
   }) =>
       _then(
           Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -38641,6 +38768,7 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -44789,6 +44917,7 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
 class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -44797,17 +44926,21 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
 
   factory Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -44819,6 +44952,8 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -44832,11 +44967,13 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -44852,6 +44989,11 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
     if (other
             is! Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -44904,6 +45046,7 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
       _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -44931,6 +45074,7 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$cus
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
@@ -44938,6 +45082,8 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$cus
   }) =>
       _then(
           Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -44964,6 +45110,7 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -48104,6 +48251,13 @@ const documentNodeQueryGetOrderByCode = DocumentNode(definitions: [
             arguments: [],
             directives: [],
             selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'invoiceNo'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
               FieldNode(
                 name: NameNode(value: 'loyaltyPointsEarned'),
                 alias: null,
@@ -52267,6 +52421,7 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$discounts<TRes>
 class Query$GetOrderByCode$orderByCode$customFields
     implements Fragment$Cart$customFields {
   Query$GetOrderByCode$orderByCode$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -52275,17 +52430,21 @@ class Query$GetOrderByCode$orderByCode$customFields
 
   factory Query$GetOrderByCode$orderByCode$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Query$GetOrderByCode$orderByCode$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -52297,6 +52456,8 @@ class Query$GetOrderByCode$orderByCode$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -52310,11 +52471,13 @@ class Query$GetOrderByCode$orderByCode$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -52329,6 +52492,11 @@ class Query$GetOrderByCode$orderByCode$customFields
     }
     if (other is! Query$GetOrderByCode$orderByCode$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -52376,6 +52544,7 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
       _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -52397,12 +52566,15 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetOrderByCode$orderByCode$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -52425,6 +52597,7 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -58630,6 +58803,7 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$discounts<
 class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$AddPayment$addPaymentToOrder$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -58638,17 +58812,21 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
 
   factory Mutation$AddPayment$addPaymentToOrder$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -58660,6 +58838,8 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -58673,11 +58853,13 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -58692,6 +58874,11 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
     }
     if (other is! Mutation$AddPayment$addPaymentToOrder$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -58742,6 +58929,7 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customField
       _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -58767,12 +58955,15 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -58799,6 +58990,7 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customField
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -65229,6 +65421,7 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
 class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -65237,17 +65430,21 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
 
   factory Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -65259,6 +65456,8 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -65272,11 +65471,13 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -65292,6 +65493,11 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
     if (other
             is! Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -65344,6 +65550,7 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
       _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -65371,6 +65578,7 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
@@ -65378,6 +65586,8 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
   }) =>
       _then(
           Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -65404,6 +65614,7 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -71138,6 +71349,7 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
 class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields
     implements Fragment$Cart$customFields {
   Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields({
+    this.invoiceNo,
     this.loyaltyPointsEarned,
     this.loyaltyPointsUsed,
     this.otherInstructions,
@@ -71146,17 +71358,21 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
 
   factory Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields.fromJson(
       Map<String, dynamic> json) {
+    final l$invoiceNo = json['invoiceNo'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+      invoiceNo: (l$invoiceNo as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
       $__typename: (l$$__typename as String),
     );
   }
+
+  final int? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -71168,6 +71384,8 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
@@ -71181,11 +71399,13 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
 
   @override
   int get hashCode {
+    final l$invoiceNo = invoiceNo;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$otherInstructions = otherInstructions;
     final l$$__typename = $__typename;
     return Object.hashAll([
+      l$invoiceNo,
       l$loyaltyPointsEarned,
       l$loyaltyPointsUsed,
       l$otherInstructions,
@@ -71201,6 +71421,11 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
     if (other
             is! Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields ||
         runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
@@ -71253,6 +71478,7 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
       _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields;
 
   TRes call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -71280,6 +71506,7 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
   static const _undefined = <dynamic, dynamic>{};
 
   TRes call({
+    Object? invoiceNo = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? loyaltyPointsUsed = _undefined,
     Object? otherInstructions = _undefined,
@@ -71287,6 +71514,8 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
   }) =>
       _then(
           Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -71313,6 +71542,7 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
   TRes _res;
 
   call({
+    int? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,

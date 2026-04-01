@@ -168,7 +168,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Full-screen image, edge to edge (no white)
+          // Full-screen image, edge to edge
           Image.asset(
             'assets/images/update_fresh.png',
             fit: BoxFit.cover,
@@ -227,7 +227,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           ),
-          // Update button overlaid on image at bottom (no white strip below)
+          // Update button overlaid on image at bottom
           Positioned(
             left: ResponsiveUtils.rp(24),
             right: ResponsiveUtils.rp(24),
