@@ -345,21 +345,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         (selectedVariant!.featuredAsset != null || selectedVariant!.assets.isNotEmpty);
 
     if (variantHasImage) {
+      // Variant has its own image(s) — show only variant images
       if (selectedVariant!.featuredAsset != null) {
         urls.add(selectedVariant!.featuredAsset!.preview);
       }
       for (var asset in selectedVariant!.assets) {
         if (!urls.contains(asset.preview)) urls.add(asset.preview);
       }
-    }
-
-    // Product image: primary when variant has no image, else fallback
-    if (productDetail!.featuredAsset != null) {
-      final preview = productDetail!.featuredAsset!.preview;
-      if (!urls.contains(preview)) urls.insert(0, preview);
-    }
-    for (var asset in productDetail!.assets) {
-      if (!urls.contains(asset.preview)) urls.add(asset.preview);
+    } else {
+      // Variant has no image — fall back to product images
+      if (productDetail!.featuredAsset != null) {
+        urls.add(productDetail!.featuredAsset!.preview);
+      }
+      for (var asset in productDetail!.assets) {
+        if (!urls.contains(asset.preview)) urls.add(asset.preview);
+      }
     }
 
     return urls.isEmpty ? [''] : urls;
@@ -477,6 +477,77 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                     ),
                   ),
+                  // Left/Right arrow buttons
+                  if (images.length > 1) ...[
+                    // Left arrow
+                    Positioned(
+                      left: ResponsiveUtils.rp(8),
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_currentImageIndex > 0) {
+                              _imagePageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(ResponsiveUtils.rp(6)),
+                            decoration: BoxDecoration(
+                              color: _currentImageIndex > 0
+                                  ? Colors.black.withValues(alpha: 0.4)
+                                  : Colors.black.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.chevron_left,
+                              color: _currentImageIndex > 0
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.5),
+                              size: ResponsiveUtils.rp(24),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Right arrow
+                    Positioned(
+                      right: ResponsiveUtils.rp(8),
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_currentImageIndex < images.length - 1) {
+                              _imagePageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(ResponsiveUtils.rp(6)),
+                            decoration: BoxDecoration(
+                              color: _currentImageIndex < images.length - 1
+                                  ? Colors.black.withValues(alpha: 0.4)
+                                  : Colors.black.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.chevron_right,
+                              color: _currentImageIndex < images.length - 1
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.5),
+                              size: ResponsiveUtils.rp(24),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   // Image indicator dots
                   if (images.length > 1)
                     Positioned(
@@ -1649,6 +1720,75 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     );
                   },
                 ),
+                // Left/Right arrow buttons
+                if (images.length > 1) ...[
+                  Positioned(
+                    left: ResponsiveUtils.rp(8),
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (_currentImageIndex > 0) {
+                            _imagePageController.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(6)),
+                          decoration: BoxDecoration(
+                            color: _currentImageIndex > 0
+                                ? Colors.black.withValues(alpha: 0.4)
+                                : Colors.black.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.chevron_left,
+                            color: _currentImageIndex > 0
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.5),
+                            size: ResponsiveUtils.rp(24),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: ResponsiveUtils.rp(8),
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (_currentImageIndex < images.length - 1) {
+                            _imagePageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(ResponsiveUtils.rp(6)),
+                          decoration: BoxDecoration(
+                            color: _currentImageIndex < images.length - 1
+                                ? Colors.black.withValues(alpha: 0.4)
+                                : Colors.black.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.chevron_right,
+                            color: _currentImageIndex < images.length - 1
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.5),
+                            size: ResponsiveUtils.rp(24),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
                 // Page indicator dots
                 if (images.length > 1)
                   Positioned(

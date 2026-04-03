@@ -353,11 +353,19 @@ class AuthController extends BaseController {
 
       // Sign in with Google - this will show account picker
       GoogleSignInAccount? googleUser;
+      debugPrint('[GoogleSignIn] Starting sign-in...');
+      debugPrint('[GoogleSignIn] serverClientId: $googleClientId');
+      debugPrint('[GoogleSignIn] clientIdForPlatform: ${GoogleAuthEnv.clientIdForPlatform}');
+      debugPrint('[GoogleSignIn] Package: com.Swadkerala.Swadkerala');
       try {
         googleUser = await googleSignIn.signIn();
-      } catch (e) {
+        debugPrint('[GoogleSignIn] Sign-in successful: ${googleUser?.email}');
+      } catch (e, stackTrace) {
         // Handle cancellation or other sign-in errors
         final errorStr = e.toString().toLowerCase();
+        debugPrint('[GoogleSignIn] ❌ ERROR: $e');
+        debugPrint('[GoogleSignIn] Error type: ${e.runtimeType}');
+        debugPrint('[GoogleSignIn] Stack trace: $stackTrace');
 
         // Check for cancellation
         if (errorStr.contains('canceled') ||
@@ -365,6 +373,7 @@ class AuthController extends BaseController {
             errorStr.contains('sign_in_canceled') ||
             errorStr.contains('sign_in_cancelled') ||
             errorStr.contains('12501')) { // Error code 12501 = SIGN_IN_CANCELLED
+          debugPrint('[GoogleSignIn] User cancelled sign-in');
           return false;
         }
 
@@ -380,11 +389,19 @@ class AuthController extends BaseController {
             RegExp(r'apiexception.*10|error.*10').hasMatch(errorStr);
 
         if (hasError10) {
-          // Re-throw to show error dialog with helpful message
+          debugPrint('[GoogleSignIn] ❌ ERROR CODE 10 - Google Sign-In configuration error');
+          debugPrint('[GoogleSignIn] This means SHA1 fingerprint mismatch between:');
+          debugPrint('[GoogleSignIn]   1. The signing key used to build this APK/AAB');
+          debugPrint('[GoogleSignIn]   2. The SHA1 registered in Firebase Console & Google Cloud Console');
+          debugPrint('[GoogleSignIn] serverClientId used: $googleClientId');
+          debugPrint('[GoogleSignIn] Check: Firebase Console → Project Settings → Android app → SHA1 fingerprints');
+          debugPrint('[GoogleSignIn] Check: Google Cloud Console → OAuth 2.0 Client IDs → Android client → SHA1');
+          debugPrint('[GoogleSignIn] For Play Store builds, use the App Signing key SHA1 from Play Console → Setup → App signing');
           rethrow;
         }
 
         // Re-throw if it's not a cancellation
+        debugPrint('[GoogleSignIn] Unknown error, rethrowing');
         rethrow;
       }
 

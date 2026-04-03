@@ -1,5 +1,6 @@
 package com.Swadkerala.Swadkerala
 
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,6 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.widget.RemoteViews
@@ -27,6 +30,7 @@ class OfferTimerFcmService : FirebaseMessagingService() {
         private const val TAG = "OfferTimerFcmService"
         private const val OFFER_TIMER_CHANNEL_ID = "kaaikani_offer_timer"
         private const val OFFER_TIMER_NOTIFICATION_ID = 9999
+        private const val TIMER_ALARM_REQUEST_CODE = 9998
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -136,9 +140,37 @@ class OfferTimerFcmService : FirebaseMessagingService() {
             .setAutoCancel(false)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
+            .setTimeoutAfter(remaining) // Auto-dismiss at 00:00 — system-level, most reliable
             .build()
 
         nm.notify(OFFER_TIMER_NOTIFICATION_ID, notification)
+
+        // Cancel notification precisely at 00:00 using Handler (works while process is alive)
+        Handler(Looper.getMainLooper()).postDelayed({
+            Log.d(TAG, "Handler: timer reached 00:00 - cancelling notification")
+            nm.cancel(OFFER_TIMER_NOTIFICATION_ID)
+        }, remaining)
+
+        // Schedule alarm as backup (survives process death, but can be delayed by doze)
+        scheduleTimerAlarm(endTime)
+
         Log.d(TAG, "Timer notification shown - remaining: ${remaining / 1000}s")
+    }
+
+    private fun scheduleTimerAlarm(endTimeMillis: Long) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, TimerExpiredReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this, TIMER_ALARM_REQUEST_CODE, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endTimeMillis, pendingIntent)
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, endTimeMillis, pendingIntent)
+        }
+        Log.d(TAG, "Scheduled timer alarm at $endTimeMillis")
     }
 }

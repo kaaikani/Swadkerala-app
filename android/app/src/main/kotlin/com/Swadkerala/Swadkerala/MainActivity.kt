@@ -10,6 +10,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -26,6 +28,8 @@ class MainActivity : FlutterActivity() {
     private val OFFER_TIMER_NOTIFICATION_ID = 9999
     private val TIMER_ALARM_REQUEST_CODE = 9998
     private var timerMethodChannel: MethodChannel? = null
+    private val handler = Handler(Looper.getMainLooper())
+    private var timerCancelRunnable: Runnable? = null
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -218,11 +222,20 @@ class MainActivity : FlutterActivity() {
             .setAutoCancel(false)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
+            .setTimeoutAfter(remaining) // Auto-dismiss at 00:00 — system-level, most reliable
             .build()
 
         nm.notify(OFFER_TIMER_NOTIFICATION_ID, notification)
 
-        // Schedule alarm to cancel notification when timer expires (survives app death)
+        // Cancel notification precisely at 00:00 using Handler (works while process is alive)
+        timerCancelRunnable?.let { handler.removeCallbacks(it) }
+        timerCancelRunnable = Runnable {
+            Log.d(TAG, "Handler: timer reached 00:00 - cancelling notification")
+            nm.cancel(OFFER_TIMER_NOTIFICATION_ID)
+        }
+        handler.postDelayed(timerCancelRunnable!!, remaining)
+
+        // Schedule alarm as backup (survives app death, but can be delayed by doze)
         scheduleTimerAlarm(endTime)
     }
 
@@ -245,6 +258,11 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun cancelTimerAlarm() {
+        // Cancel Handler callback
+        timerCancelRunnable?.let { handler.removeCallbacks(it) }
+        timerCancelRunnable = null
+
+        // Cancel alarm
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, TimerExpiredReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(

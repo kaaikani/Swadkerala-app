@@ -165,6 +165,14 @@ class OrderController extends BaseController {
       }
 
       if (result is! Mutation$RemoveOrderLine$removeOrderLine$$Order) {
+        // Suppress "does not contain an orderline with the id" error —
+        // this is a race condition where the item was already removed
+        final errorMsg = _readOrderMutationMessage(result) ?? '';
+        if (errorMsg.toLowerCase().contains('does not contain an orderline')) {
+          debugPrint('[OrderController] Orderline already removed, refreshing cart');
+          await getActiveOrder();
+          return true;
+        }
         _handleOrderMutationError(result, 'Failed to remove item');
         return false;
       }
