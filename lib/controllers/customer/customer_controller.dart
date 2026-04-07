@@ -9,7 +9,6 @@ import '../../graphql/schema.graphql.dart';
 import '../../graphql/schema.graphql.dart' show Input$OrderFilterParameter, Input$StringOperators;
 import '../../services/graphql_client.dart';
 import '../../pages/orders_page.dart';
-import '../../services/postal_code_service.dart';
 import '../../services/channel_service.dart';
 import '../../services/notification_service.dart';
 import '../../utils/app_strings.dart';
@@ -1258,12 +1257,7 @@ class CustomerController extends BaseController {
   }
 
   final GetStorage _storage = GetStorage();
-  final PostalCodeService _postalCodeService = PostalCodeService();
 
-  /// Search postal codes by pincode
-  Future<List<PostalCodeData>> searchPostalCodes(String pincode) async {
-    return await _postalCodeService.searchPostalCode(pincode);
-  }
 
   /// Switch channel based on postal code
   /// If city is found in the channel and is available, use that channel

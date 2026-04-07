@@ -6,7 +6,6 @@ import '../controllers/order/ordercontroller.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/coupon/coupon_controller.dart';
 import '../controllers/customer/customer_controller.dart';
-import '../controllers/authentication/authenticationcontroller.dart';
 import '../utils/price_formatter.dart';
 import '../utils/responsive.dart';
 import '../utils/app_strings.dart';
@@ -14,13 +13,11 @@ import '../utils/navigation_helper.dart';
 import '../theme/colors.dart';
 import '../widgets/appbar.dart';
 import '../widgets/snackbar.dart';
-import '../widgets/cart/cart_coupon_section.dart';
-import '../widgets/cart/cart_coupon_bottom_sheet.dart';
 import '../widgets/cart/cart_loyalty_points_section.dart';
+import '../widgets/checkout/checkout_shipping_section.dart';
 import '../widgets/cart/cart_other_instructions_section.dart';
 import '../widgets/cart/cart_order_summary_section.dart';
 import '../services/analytics_service.dart';
-import '../services/notification_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart' as analytics;
 import '../graphql/order.graphql.dart';
 import '../graphql/Customer.graphql.dart';
@@ -55,12 +52,11 @@ class _OffersPageState extends State<OffersPage> {
   Future<void> _loadData() async {
     await Future.wait([
       _loadCustomerAddresses(),
-      couponController.getCouponCodeList(),
       bannerController.fetchLoyaltyPointsConfig(),
     ], eagerError: false);
 
-    _loadExistingCouponCodes();
     _loadExistingInstructions();
+    await _loadShippingMethods();
 
     if (mounted) {
       setState(() {
@@ -133,18 +129,63 @@ class _OffersPageState extends State<OffersPage> {
     });
   }
 
-  Future<void> _loadExistingCouponCodes() async {
+  String? _lastAppliedShippingMethodId;
+
+  Future<void> _loadShippingMethods() async {
+    await orderController.getEligibleShippingMethods();
+
+    if (orderController.shippingMethods.isEmpty) {
+      orderController.selectedShippingMethod.value = null;
+      _lastAppliedShippingMethodId = null;
+      return;
+    }
+
+    // Auto-select if only one shipping method
+    if (orderController.selectedShippingMethod.value == null &&
+        orderController.shippingMethods.length == 1) {
+      orderController.selectedShippingMethod.value =
+          orderController.shippingMethods.first;
+      await _applyShippingMethod();
+    }
+
+    // Load existing shipping method from order
+    _loadExistingShippingMethod();
+  }
+
+  void _loadExistingShippingMethod() {
     try {
-      final cart = cartController.cart.value;
-      if (cart != null && cart.couponCodes.isNotEmpty) {
-        for (final couponCode in cart.couponCodes) {
-          if (!couponController.appliedCouponCodes.contains(couponCode)) {
-            couponController.appliedCouponCodes.add(couponCode);
-          }
+      final order = orderController.currentOrder.value;
+      if (order != null && order.shippingLines.isNotEmpty) {
+        final shippingLine = order.shippingLines.first;
+        final shippingMethodId = shippingLine.shippingMethod.id;
+        final matchingMethod = orderController.shippingMethods.firstWhereOrNull(
+          (method) => method.id == shippingMethodId,
+        );
+        if (matchingMethod != null) {
+          orderController.selectedShippingMethod.value = matchingMethod;
+          _lastAppliedShippingMethodId = matchingMethod.id;
         }
       }
-    } catch (e) {
-      // silently ignore
+    } catch (_) {}
+  }
+
+  Future<void> _applyShippingMethod({bool showFeedback = false, bool force = false}) async {
+    final selected = orderController.selectedShippingMethod.value;
+    if (selected == null) return;
+
+    if (!force && _lastAppliedShippingMethodId == selected.id) return;
+
+    final success = await orderController.setShippingMethod(selected.id);
+
+    if (success) {
+      _lastAppliedShippingMethodId = selected.id;
+      if (showFeedback) {
+        showSuccessSnackbar(AppStrings.shippingMethodSelected);
+      }
+    } else {
+      if (showFeedback) {
+        showErrorSnackbar(AppStrings.failedToSetShippingMethod);
+      }
     }
   }
 
@@ -304,7 +345,7 @@ class _OffersPageState extends State<OffersPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBarWidget(
-        title: 'Address & Offers',
+        title: 'Delivery Details',
       ),
       body: _isInitialLoading
           ? const Center(child: CircularProgressIndicator())
@@ -327,8 +368,8 @@ class _OffersPageState extends State<OffersPage> {
                         await Future.wait([
                           cartController.getActiveOrder(),
                           _loadCustomerAddresses(),
-                          couponController.getCouponCodeList(),
                           bannerController.fetchLoyaltyPointsConfig(),
+                          _loadShippingMethods(),
                         ]);
                       },
                       color: AppColors.refreshIndicator,
@@ -355,33 +396,20 @@ class _OffersPageState extends State<OffersPage> {
 
                             SizedBox(height: ResponsiveUtils.rp(12)),
 
-                            // ── 2. Coupons ──
-                            Obx(() {
-                              final authController = Get.find<AuthController>();
-                              if (!authController.isLoggedIn) return const SizedBox.shrink();
-                              return Column(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                                    child: CartCouponSection(
-                                      bannerController: couponController,
-                                      cartController: cartController,
-                                      orderController: orderController,
-                                      onShowCouponBottomSheet: () {
-                                        CartCouponBottomSheet.show(
-                                          context: context,
-                                          bannerController: couponController,
-                                          cartController: cartController,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  // Coupon suggestion banner
-                                  _buildCouponSuggestion(),
-                                  SizedBox(height: ResponsiveUtils.rp(12)),
-                                ],
-                              );
-                            }),
+                            // ── 2. Shipping Method ──
+                            _buildSectionCard(
+                              title: 'Shipping Method',
+                              icon: Icons.local_shipping_rounded,
+                              iconColor: const Color(0xFF2196F3),
+                              child: CheckoutShippingSection(
+                                orderController: orderController,
+                                cartController: cartController,
+                                onShippingMethodSelected: () async {
+                                  await _applyShippingMethod(showFeedback: true, force: true);
+                                },
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveUtils.rp(12)),
 
                             // ── 3. Loyalty Points ──
                             Obx(() {
@@ -647,75 +675,4 @@ class _OffersPageState extends State<OffersPage> {
     );
   }
 
-  Widget _buildCouponSuggestion() {
-    return Obx(() {
-      final cart = cartController.cart.value;
-      if (cart == null) return const SizedBox.shrink();
-
-      if (couponController.appliedCouponCodes.isNotEmpty) return const SizedBox.shrink();
-
-      final hasOutOfStockItems = cart.lines.any((line) {
-        final stockLevel = line.productVariant.stockLevel.toUpperCase();
-        final isOutOfStock = stockLevel == 'OUT_OF_STOCK';
-        final isProductDisabled = line.productVariant.product.enabled == false;
-        return !line.isAvailable || isOutOfStock || isProductDisabled;
-      });
-
-      if (hasOutOfStockItems) return const SizedBox.shrink();
-
-      final subTotal = cart.subTotalWithTax.toInt();
-      final eligibleCoupons = couponController.getEligibleCoupons(subTotal);
-      if (eligibleCoupons.isEmpty) return const SizedBox.shrink();
-
-      final coupon = eligibleCoupons.first;
-      final requiredAmount = couponController.getRequiredAmount(coupon);
-      final difference = requiredAmount - subTotal;
-
-      if (difference <= 0 || difference >= 40000) return const SizedBox.shrink();
-
-      final differenceInRupees = difference / 100;
-
-      return Container(
-        margin: EdgeInsets.only(
-          left: ResponsiveUtils.rp(16),
-          right: ResponsiveUtils.rp(16),
-          top: ResponsiveUtils.rp(8),
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveUtils.rp(14),
-          vertical: ResponsiveUtils.rp(10),
-        ),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [const Color(0xFFFF6B35), const Color(0xFFFFA500)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(10)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.local_offer_rounded, color: Colors.white, size: ResponsiveUtils.rp(18)),
-            SizedBox(width: ResponsiveUtils.rp(10)),
-            Expanded(
-              child: RichText(
-                text: TextSpan(
-                  style: TextStyle(fontSize: ResponsiveUtils.sp(13), color: Colors.white, fontWeight: FontWeight.w500),
-                  children: [
-                    TextSpan(text: 'Add \u20B9${PriceFormatter.addCommas(differenceInRupees.toStringAsFixed(2))} more to unlock '),
-                    TextSpan(
-                      text: coupon.promotion.couponCode ?? '',
-                      style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.8),
-                    ),
-                  ],
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      );
-    });
-  }
 }

@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import '../../controllers/customer/customer_controller.dart';
-import '../../services/postal_code_service.dart';
-import '../../services/channel_service.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../utils/app_config.dart';
@@ -29,7 +29,6 @@ class HomePostalCodeSheet extends StatefulWidget {
 class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
   final box = GetStorage();
   final pincodeController = TextEditingController();
-  List<PostalCodeData> searchResults = [];
   bool isSearching = false;
   bool isGettingLocation = false;
   bool isServiceUnavailable = false;
@@ -116,32 +115,25 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                     onPressed: isGettingLocation ? null : () async {
                       setState(() {
                         isGettingLocation = true;
-                        searchResults = [];
+
                         isServiceUnavailable = false;
                       });
                       
-                      final postalCodeService = PostalCodeService();
-                      final locationData = await postalCodeService.getPostalCodeFromLocation();
-                      
-                      if (locationData != null) {
+                      final postalCode = await _getPostalCodeFromLocation();
+
+                      if (postalCode != null && postalCode.isNotEmpty) {
                         setState(() {
                           isGettingLocation = false;
-                          pincodeController.text = locationData.pincode;
+                          pincodeController.text = postalCode;
                           isSearching = true;
-                          searchResults = [];
+  
                           isServiceUnavailable = false;
                         });
 
-                        setState(() {
-                          isGettingLocation = false;
-                          pincodeController.text = locationData.pincode;
-                          isSearching = true;
-                        });
-
-                        // Step 1: Try to switch channel directly in Vendure
+                        // Try to switch channel directly in Vendure
                         final navigator = Navigator.of(context, rootNavigator: false);
                         final channelSwitched = await widget.customerController
-                            .switchChannelByPostalCode(locationData.pincode, showLoading: false);
+                            .switchChannelByPostalCode(postalCode, showLoading: false);
 
                         if (!mounted) return;
 
@@ -158,26 +150,12 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                           return;
                         }
 
-                        // Step 2: Not in Vendure — check Indian postal API
-                        final postalCodeResults = await widget.customerController
-                            .searchPostalCodes(locationData.pincode);
-
-                        if (!mounted) return;
-
-                        if (postalCodeResults.isNotEmpty) {
-                          setState(() {
-                            searchResults = postalCodeResults;
-                            isSearching = false;
-                            isServiceUnavailable = false;
-                          });
-                        } else {
-                          setState(() {
-                            searchResults = [];
-                            isSearching = false;
-                            isServiceUnavailable = false;
-                          });
-                          SnackBarWidget.showError('Service not available for this location. Please enter postal code manually.');
-                        }
+                        setState(() {
+  
+                          isSearching = false;
+                          isServiceUnavailable = false;
+                        });
+                        SnackBarWidget.showError('Service not available for this location.');
                       } else {
                         if (!mounted) return;
                         setState(() {
@@ -222,7 +200,7 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                       FocusScope.of(context).unfocus();
                       setState(() {
                         isSearching = true;
-                        searchResults = [];
+
                         isServiceUnavailable = false;
                       });
 
@@ -247,29 +225,16 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                         return;
                       }
 
-                      // Step 2: Not in Vendure — check Indian postal API to show area names
-                      final postalCodeResults =
-                          await widget.customerController.searchPostalCodes(value);
-
+                      // Not in Vendure — show service unavailable
                       if (!mounted) return;
+                      setState(() {
 
-                      if (postalCodeResults.isNotEmpty) {
-                        // Show list — tapping a result will show "Service Not Available"
-                        setState(() {
-                          searchResults = postalCodeResults;
-                          isSearching = false;
-                          isServiceUnavailable = false;
-                        });
-                      } else {
-                        setState(() {
-                          searchResults = [];
-                          isSearching = false;
-                          isServiceUnavailable = false;
-                        });
-                      }
+                        isSearching = false;
+                        isServiceUnavailable = true;
+                      });
                     } else {
                       setState(() {
-                        searchResults = [];
+
                         isServiceUnavailable = false;
                       });
                     }
@@ -378,8 +343,7 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                           ),
                         ],
                       )
-                    : searchResults.isEmpty
-                        ? Center(
+                    : Center(
                             child: Padding(
                               padding: EdgeInsets.all(ResponsiveUtils.rp(20)),
                               child: Text(
@@ -392,70 +356,44 @@ class _HomePostalCodeSheetState extends State<HomePostalCodeSheet> {
                                 ),
                               ),
                             ),
-                          )
-                        : ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
-                            itemCount: searchResults.length,
-                            itemBuilder: (context, index) {
-                              final result = searchResults[index];
-                              return ListTile(
-                                leading: Icon(Icons.location_city, color: AppColors.button),
-                                title: Text(
-                                  '${result.city}, ${result.district}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  '${result.state} - ${result.pincode}',
-                                  style: TextStyle(color: AppColors.textSecondary),
-                                ),
-                                onTap: () async {
-                                  // When postal code data is tapped: get channel by postal code, update location with channel name
-                                  debugPrint('[UpdateLocation] Postal code data tapped: pincode=${result.pincode}, city=${result.city}, district=${result.district}, state=${result.state}');
-                                  if (!mounted) return;
-                                  final navigator = Navigator.of(context, rootNavigator: false);
-                                  setState(() => isSearching = true);
-                                  debugPrint('[UpdateLocation] Calling switchChannelByPostalCode(postalCode=${result.pincode}, city=${result.city})');
-
-                                  final success = await widget.customerController.switchChannelByPostalCode(
-                                    result.pincode,
-                                    city: result.city,
-                                    showLoading: false,
-                                  );
-
-                                  debugPrint('[UpdateLocation] switchChannelByPostalCode returned success=$success');
-                                  if (!mounted) return;
-                                  setState(() => isSearching = false);
-
-                                  if (success) {
-                                    final channelName = ChannelService.getChannelName() ?? result.city;
-                                    debugPrint('[UpdateLocation] Success: channelName=$channelName, popping sheet and calling onPostalCodeSelected');
-                                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                                      if (mounted) {
-                                        try {
-                                          if (navigator.canPop()) navigator.pop();
-                                          widget.onPostalCodeSelected();
-                                          debugPrint('[UpdateLocation] Sheet closed, callback invoked, snackbar shown');
-                                        } catch (e) {
-                                          debugPrint('[UpdateLocation] PostFrameCallback error: $e');
-                                        }
-                                      }
-                                    });
-                                  } else {
-                                    debugPrint('[UpdateLocation] Failed: setting isServiceUnavailable=true');
-                                    setState(() => isServiceUnavailable = true);
-                                  }
-                                },
-                              );
-                            },
                           ),
           ),
         ],
       ),
       ),
     );
+  }
+
+  /// Get postal code from device location
+  Future<String?> _getPostalCodeFromLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        await Geolocator.openLocationSettings();
+        return null;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return null;
+      }
+      if (permission == LocationPermission.deniedForever) return null;
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isEmpty) return null;
+      return placemarks.first.postalCode;
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Launch phone call

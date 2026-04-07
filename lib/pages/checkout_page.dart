@@ -7,6 +7,7 @@ import '../controllers/utilitycontroller/utilitycontroller.dart';
 import '../controllers/customer/customer_controller.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/coupon/coupon_controller.dart';
+import '../controllers/authentication/authenticationcontroller.dart';
 import '../controllers/theme_controller.dart';
 import '../services/razorpay_service.dart';
 import '../services/analytics_service.dart';
@@ -21,7 +22,8 @@ import '../utils/app_config.dart';
 import '../utils/app_strings.dart';
 import '../routes.dart';
 import '../widgets/checkout/checkout_payment_section.dart';
-import '../widgets/checkout/checkout_shipping_section.dart';
+import '../widgets/cart/cart_coupon_section.dart';
+import '../widgets/cart/cart_coupon_bottom_sheet.dart';
 import '../widgets/checkout/checkout_app_bar.dart';
 import '../widgets/checkout/checkout_order_summary_section.dart';
 import '../widgets/checkout/checkout_place_order_button.dart';
@@ -1330,19 +1332,26 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
 
                                 SizedBox(height: ResponsiveUtils.rp(12)),
 
-                                // ── Shipping Method ──
-                                _buildCheckoutSectionCard(
-                                  title: 'Shipping Method',
-                                  icon: Icons.local_shipping_rounded,
-                                  iconColor: const Color(0xFF2196F3),
-                                  child: CheckoutShippingSection(
-                                    orderController: orderController,
-                                    cartController: cartController,
-                                    onShippingMethodSelected: () async {
-                                      await _applyShippingMethod(showFeedback: true, force: true);
-                                    },
-                                  ),
-                                ),
+                                // ── Coupons ──
+                                Obx(() {
+                                  final authController = Get.find<AuthController>();
+                                  if (!authController.isLoggedIn) return const SizedBox.shrink();
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.rp(16)),
+                                    child: CartCouponSection(
+                                      bannerController: couponController,
+                                      cartController: cartController,
+                                      orderController: orderController,
+                                      onShowCouponBottomSheet: () {
+                                        CartCouponBottomSheet.show(
+                                          context: context,
+                                          bannerController: couponController,
+                                          cartController: cartController,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }),
 
                                 SizedBox(height: ResponsiveUtils.rp(12)),
 
