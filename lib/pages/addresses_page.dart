@@ -925,6 +925,9 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
           if (streetLine1Controller.text.trim().isEmpty) {
             errors['streetLine1'] = 'Address line 1 is required';
           }
+          if (provinceController.text.trim().isEmpty) {
+            errors['province'] = 'State is required';
+          }
           if (postalCodeController.text.trim().isEmpty) {
             errors['postalCode'] = 'Postal code is required';
           }
@@ -1011,8 +1014,15 @@ class _AddAddressFormWidgetState extends State<_AddAddressFormWidget> {
               SizedBox(height: 16),
               _buildTextField(
                   provinceController, 'State', Icons.map_rounded,
-                  required: false,
-                  keyboardType: TextInputType.text),
+                  required: true,
+                  keyboardType: TextInputType.text,
+                  errorText: errors['province'],
+                  onChanged: () {
+                    if (errors.containsKey('province')) {
+                      errors.remove('province');
+                      setState(() {});
+                    }
+                  }),
               SizedBox(height: 16),
               _buildPostalCodeField(
                 postalCodeController,
@@ -1871,6 +1881,9 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
           if (streetLine1Controller.text.trim().isEmpty) {
             errors['streetLine1'] = 'Address line 1 is required';
           }
+          if (provinceController.text.trim().isEmpty) {
+            errors['province'] = 'State is required';
+          }
           if (postalCodeController.text.trim().isEmpty) {
             errors['postalCode'] = 'Postal code is required';
           }
@@ -1957,8 +1970,15 @@ class _EditAddressFormWidgetState extends State<_EditAddressFormWidget> {
               SizedBox(height: 16),
               _buildTextField(
                   provinceController, 'State', Icons.map_rounded,
-                  required: false,
-                  keyboardType: TextInputType.text),
+                  required: true,
+                  keyboardType: TextInputType.text,
+                  errorText: errors['province'],
+                  onChanged: () {
+                    if (errors.containsKey('province')) {
+                      errors.remove('province');
+                      setState(() {});
+                    }
+                  }),
               SizedBox(height: 16),
               _buildPostalCodeField(
                 postalCodeController,

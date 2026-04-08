@@ -64,7 +64,7 @@
 		<key>NSSpeechRecognitionUsageDescription</key>
 		<string>Allow speech recognition so you can use voice search</string>
 		<key>NSUserTrackingUsageDescription</key>
-		<string>We use this to improve your experience and provide personalized content</string>
+		<string>This identifier will be used to deliver personalized ads to you.</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIBackgroundModes</key>

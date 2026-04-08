@@ -328,9 +328,11 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       return;
     }
 
-    // Auto-select if only one shipping method and none is currently selected
-    if (orderController.selectedShippingMethod.value == null &&
-        orderController.shippingMethods.length == 1) {
+    // Auto-select the first eligible shipping method if none is currently
+    // selected. Previously this only ran when there was exactly one method,
+    // which left the order with no shipping line (and a Rs.0 delivery charge)
+    // whenever the channel offered more than one method.
+    if (orderController.selectedShippingMethod.value == null) {
       orderController.selectedShippingMethod.value =
           orderController.shippingMethods.first;
       await _applyShippingMethod();

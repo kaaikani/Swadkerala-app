@@ -147,9 +147,9 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
       );
     }
 
-    // Request notification permission after first frame so iOS shows the system "Allow Notifications" dialog
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _requestNotificationPermissionWhenReady();
+    // Request notification permission after first frame so iOS shows the system dialog.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _requestNotificationPermissionWhenReady();
     });
 
     // If main.dart set the flag (update required from startup check), open update screen

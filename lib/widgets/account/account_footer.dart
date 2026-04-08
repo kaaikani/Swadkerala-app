@@ -140,7 +140,7 @@ class AccountFooter extends StatelessWidget {
                         ),
                         SizedBox(height: ResponsiveUtils.rp(4)),
                         Text(
-                          '33BFHPS5919D2ZD',
+                          '32AASFG3196P1ZN',
                           style: TextStyle(
                             fontSize: ResponsiveUtils.sp(13),
                             fontWeight: FontWeight.w500,
@@ -173,25 +173,30 @@ class AccountFooter extends StatelessWidget {
                     ),
                   ),
                 )
-              : OutlinedButton(
-                  onPressed: () {
-                    _showLogoutDialog(context);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: BorderSide(color: Colors.red),
-                    padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+              : Column(
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        _showLogoutDialog(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: BorderSide(color: Colors.red),
+                        minimumSize: Size(double.infinity, 0),
+                        padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                        ),
+                      ),
+                      child: Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Logout',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.red,
-                    ),
-                  ),
+                  ],
                 ),
         ),
         SizedBox(height: ResponsiveUtils.rp(16)),

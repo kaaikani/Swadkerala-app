@@ -219,7 +219,7 @@ query GetActiveCustomer($orderStateFilter: OrderFilterParameter) {
                         loyaltyPointsUsed
                         loyaltyPointsEarned
                         otherInstructions
-                        
+                        invoiceNo
 
                     }
                 }
@@ -299,6 +299,7 @@ query GetCustomerOrders($skip: Int!, $take: Int!, $orderStateFilter: OrderFilter
                         loyaltyPointsUsed
                         loyaltyPointsEarned
                         otherInstructions
+                        invoiceNo
                     }
                 }
             }

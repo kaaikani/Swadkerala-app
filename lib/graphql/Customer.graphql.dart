@@ -6769,6 +6769,13 @@ const documentNodeQueryGetActiveCustomer = DocumentNode(definitions: [
                             selectionSet: null,
                           ),
                           FieldNode(
+                            name: NameNode(value: 'invoiceNo'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
                             name: NameNode(value: '__typename'),
                             alias: null,
                             arguments: [],
@@ -11501,6 +11508,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     this.loyaltyPointsUsed,
     this.loyaltyPointsEarned,
     this.otherInstructions,
+    this.invoiceNo,
     this.$__typename = 'OrderCustomFields',
   });
 
@@ -11509,11 +11517,13 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$otherInstructions = json['otherInstructions'];
+    final l$invoiceNo = json['invoiceNo'];
     final l$$__typename = json['__typename'];
     return Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       otherInstructions: (l$otherInstructions as String?),
+      invoiceNo: (l$invoiceNo as int?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -11523,6 +11533,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
   final int? loyaltyPointsEarned;
 
   final String? otherInstructions;
+
+  final int? invoiceNo;
 
   final String $__typename;
 
@@ -11534,6 +11546,8 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$otherInstructions = otherInstructions;
     _resultData['otherInstructions'] = l$otherInstructions;
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -11544,11 +11558,13 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$otherInstructions = otherInstructions;
+    final l$invoiceNo = invoiceNo;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$loyaltyPointsUsed,
       l$loyaltyPointsEarned,
       l$otherInstructions,
+      l$invoiceNo,
       l$$__typename,
     ]);
   }
@@ -11576,6 +11592,11 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
     final l$otherInstructions = otherInstructions;
     final lOther$otherInstructions = other.otherInstructions;
     if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -11615,6 +11636,7 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
+    int? invoiceNo,
     String? $__typename,
   });
 }
@@ -11641,6 +11663,7 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFi
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? otherInstructions = _undefined,
+    Object? invoiceNo = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetActiveCustomer$activeCustomer$orders$items$customFields(
@@ -11653,6 +11676,8 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFi
         otherInstructions: otherInstructions == _undefined
             ? _instance.otherInstructions
             : (otherInstructions as String?),
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -11673,6 +11698,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
+    int? invoiceNo,
     String? $__typename,
   }) =>
       _res;
@@ -12495,6 +12521,13 @@ const documentNodeQueryGetCustomerOrders = DocumentNode(definitions: [
                           ),
                           FieldNode(
                             name: NameNode(value: 'otherInstructions'),
+                            alias: null,
+                            arguments: [],
+                            directives: [],
+                            selectionSet: null,
+                          ),
+                          FieldNode(
+                            name: NameNode(value: 'invoiceNo'),
                             alias: null,
                             arguments: [],
                             directives: [],
@@ -15467,6 +15500,7 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
     this.loyaltyPointsUsed,
     this.loyaltyPointsEarned,
     this.otherInstructions,
+    this.invoiceNo,
     this.$__typename = 'OrderCustomFields',
   });
 
@@ -15475,11 +15509,13 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
     final l$loyaltyPointsUsed = json['loyaltyPointsUsed'];
     final l$loyaltyPointsEarned = json['loyaltyPointsEarned'];
     final l$otherInstructions = json['otherInstructions'];
+    final l$invoiceNo = json['invoiceNo'];
     final l$$__typename = json['__typename'];
     return Query$GetCustomerOrders$activeCustomer$orders$items$customFields(
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       otherInstructions: (l$otherInstructions as String?),
+      invoiceNo: (l$invoiceNo as int?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -15489,6 +15525,8 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
   final int? loyaltyPointsEarned;
 
   final String? otherInstructions;
+
+  final int? invoiceNo;
 
   final String $__typename;
 
@@ -15500,6 +15538,8 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
     _resultData['loyaltyPointsEarned'] = l$loyaltyPointsEarned;
     final l$otherInstructions = otherInstructions;
     _resultData['otherInstructions'] = l$otherInstructions;
+    final l$invoiceNo = invoiceNo;
+    _resultData['invoiceNo'] = l$invoiceNo;
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -15510,11 +15550,13 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
     final l$loyaltyPointsUsed = loyaltyPointsUsed;
     final l$loyaltyPointsEarned = loyaltyPointsEarned;
     final l$otherInstructions = otherInstructions;
+    final l$invoiceNo = invoiceNo;
     final l$$__typename = $__typename;
     return Object.hashAll([
       l$loyaltyPointsUsed,
       l$loyaltyPointsEarned,
       l$otherInstructions,
+      l$invoiceNo,
       l$$__typename,
     ]);
   }
@@ -15542,6 +15584,11 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
     final l$otherInstructions = otherInstructions;
     final lOther$otherInstructions = other.otherInstructions;
     if (l$otherInstructions != lOther$otherInstructions) {
+      return false;
+    }
+    final l$invoiceNo = invoiceNo;
+    final lOther$invoiceNo = other.invoiceNo;
+    if (l$invoiceNo != lOther$invoiceNo) {
       return false;
     }
     final l$$__typename = $__typename;
@@ -15581,6 +15628,7 @@ abstract class CopyWith$Query$GetCustomerOrders$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
+    int? invoiceNo,
     String? $__typename,
   });
 }
@@ -15607,6 +15655,7 @@ class _CopyWithImpl$Query$GetCustomerOrders$activeCustomer$orders$items$customFi
     Object? loyaltyPointsUsed = _undefined,
     Object? loyaltyPointsEarned = _undefined,
     Object? otherInstructions = _undefined,
+    Object? invoiceNo = _undefined,
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetCustomerOrders$activeCustomer$orders$items$customFields(
@@ -15619,6 +15668,8 @@ class _CopyWithImpl$Query$GetCustomerOrders$activeCustomer$orders$items$customFi
         otherInstructions: otherInstructions == _undefined
             ? _instance.otherInstructions
             : (otherInstructions as String?),
+        invoiceNo:
+            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -15639,6 +15690,7 @@ class _CopyWithStubImpl$Query$GetCustomerOrders$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
+    int? invoiceNo,
     String? $__typename,
   }) =>
       _res;

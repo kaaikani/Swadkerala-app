@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'dart:ui';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -463,29 +464,91 @@ void _setupErrorHandlers() {
   };
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final ThemeController themeController;
-  
+
   const MyApp({super.key, required this.themeController});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  bool _attRequested = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Schedule the ATT request as soon as the first frame is rendered.
+    // We require the app to be in `resumed` state for the prompt to appear
+    // on iOS 17+/iOS 26 — otherwise the system silently no-ops the request.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybeRequestTracking();
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Retry ATT when the app first becomes active in case the initial
+    // postFrame attempt was made before the window was fully active.
+    if (state == AppLifecycleState.resumed && !_attRequested) {
+      _maybeRequestTracking();
+    }
+  }
+
+  Future<void> _maybeRequestTracking() async {
+    if (kIsWeb || _attRequested) return;
+    if (defaultTargetPlatform != TargetPlatform.iOS) return;
+    _attRequested = true;
+    try {
+      // Give the system enough time after first frame so the app window is
+      // fully active. iOS will silently skip the prompt if requested while
+      // the application is not in UIApplicationStateActive.
+      await Future.delayed(const Duration(milliseconds: 1000));
+      final currentStatus =
+          await AppTrackingTransparency.trackingAuthorizationStatus;
+      debugPrint('[ATT] current status before request: $currentStatus');
+      if (currentStatus == TrackingStatus.notDetermined) {
+        final status =
+            await AppTrackingTransparency.requestTrackingAuthorization();
+        debugPrint('[ATT] requestTrackingAuthorization returned: $status');
+      } else {
+        debugPrint('[ATT] already determined: $currentStatus');
+      }
+    } catch (e) {
+      // Allow another retry on next resume if anything went wrong.
+      _attRequested = false;
+      debugPrint('[ATT] error requesting tracking authorization: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final analyticsObserver = AnalyticsService().observer;
-    
+
     return Obx(() {
       // Force theme update by rebuilding when theme changes
-      final isDark = themeController.isDarkMode;
-      
+      final isDark = widget.themeController.isDarkMode;
+
       return GetMaterialApp(
-      title: 'SwadKerala',
-      theme: AppTheme.lightTheme(),
-      darkTheme: AppTheme.darkTheme(),
+        title: 'SwadKerala',
+        theme: AppTheme.lightTheme(),
+        darkTheme: AppTheme.darkTheme(),
         themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-      debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.initial, // Start with initial route wrapper
-      getPages: AppRoutes.routes,
-      navigatorObservers: analyticsObserver != null ? [analyticsObserver] : [],
-      scrollBehavior: ScrollBehavior().copyWith(scrollbars: false),
+        debugShowCheckedModeBanner: false,
+        initialRoute: AppRoutes.initial,
+        getPages: AppRoutes.routes,
+        navigatorObservers:
+            analyticsObserver != null ? [analyticsObserver] : [],
+        scrollBehavior: ScrollBehavior().copyWith(scrollbars: false),
       );
     });
   }

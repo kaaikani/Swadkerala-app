@@ -541,17 +541,22 @@ class BillGenerator {
             ],
           ),
         ],
-        // Show loyalty points used if applied and discount is > 0
-        if (loyaltyPointsUsed > 0 && loyaltyDiscountRupees > 0) ...[
+        // Show loyalty points used whenever any were applied. Previously this row
+        // was hidden if the pointsPerRupee config failed to load (loyaltyDiscountRupees == 0),
+        // which meant past orders never showed the points the customer redeemed.
+        if (loyaltyPointsUsed > 0) ...[
           pw.SizedBox(height: 4),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.end,
             children: [
-              pw.Text('Points Applied: ',
+              pw.Text('Points Used ($loyaltyPointsUsed pts): ',
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.blue700)),
-              pw.Text('-${BillGenerator.formatPriceForPdf((loyaltyDiscountRupees * 100).toInt())}',
+              pw.Text(
+                  loyaltyDiscountRupees > 0
+                      ? '-${BillGenerator.formatPriceForPdf((loyaltyDiscountRupees * 100).toInt())}'
+                      : '$loyaltyPointsUsed pts',
                   style: pw.TextStyle(
                       fontSize: 12,
                       color: PdfColors.blue700,
