@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../services/app_image_cache_manager.dart';
 import '../theme/colors.dart';
 import '../utils/responsive.dart';
 import 'shimmers.dart';
@@ -42,10 +43,9 @@ class CachedAppImage extends StatelessWidget {
       height: height,
       memCacheWidth: cacheWidth,
       memCacheHeight: cacheHeight,
-      cacheKey: imageUrl,
+      cacheKey: AppImageCacheManager.normalizedCacheKey(imageUrl),
+      cacheManager: AppImageCacheManager.instance,
       httpHeaders: httpHeaders,
-      maxWidthDiskCache: cacheWidth != null ? cacheWidth! * 2 : null,
-      maxHeightDiskCache: cacheHeight != null ? cacheHeight! * 2 : null,
       placeholder: (context, url) =>
           placeholder ?? Skeletons.imageRect(
                 height: height ?? double.infinity,

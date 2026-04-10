@@ -119,6 +119,22 @@
                       android:pathPrefix="/products/kaaikani" />
             </intent-filter>
 
+            <!-- 5. Swad Kerala App Links - www.swadkerala.com -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="www.swadkerala.com" />
+            </intent-filter>
+
+            <!-- 6. Swad Kerala App Links - swadkerala.com (without www) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="swadkerala.com" />
+            </intent-filter>
+
 
         </activity>
 

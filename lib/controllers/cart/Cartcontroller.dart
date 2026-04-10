@@ -611,10 +611,6 @@ class CartController extends BaseController {
     if (cart.value == null) return false;
 
     final order = cart.value!;
-    // Check if shipping cost is 0
-    if (order.shipping == 0 && order.shippingWithTax == 0) {
-      return true;
-    }
 
     // Check promotions for free_shipping action
     for (final promotion in order.promotions) {
@@ -624,6 +620,15 @@ class CartController extends BaseController {
         }
       }
     }
+
+    // Only treat shipping as free if a shipping method is actually applied
+    // (shippingLines not empty) and the cost is genuinely 0.
+    // Without this check, shipping shows as "Free" before any method is set
+    // because shipping cost defaults to 0.
+    if (order.shippingLines.isNotEmpty && order.shipping == 0 && order.shippingWithTax == 0) {
+      return true;
+    }
+
     return false;
   }
 

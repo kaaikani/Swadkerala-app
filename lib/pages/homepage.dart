@@ -27,6 +27,7 @@ import '../components/home_components/home_postal_code_sheet.dart';
 import '../components/home_components/home_frequently_ordered_section.dart';
 import '../components/home_components/home_favorites_section.dart';
 import '../services/analytics_service.dart';
+import '../services/image_warmup_service.dart';
 import '../utils/analytics_helper.dart';
 import '../widgets/snackbar.dart';
 import '../services/graphql_client.dart';
@@ -469,6 +470,17 @@ class _MyHomePageState extends State<MyHomePage> {
         bannerController.getBannersForChannel(),
         bannerController.getFrequentlyOrderedProducts(),
       ], eagerError: false);
+
+      // Pre-warm disk cache for critical above-the-fold images
+      final warmupUrls = <String>[
+        ...bannerController.bannerList.expand(
+          (b) => b.assets.map((a) => a.source),
+        ),
+        ...bannerController.frequentlyOrderedProducts
+            .map((p) => p.product.featuredAsset?.preview)
+            .whereType<String>(),
+      ];
+      ImageWarmupService.warmup(warmupUrls);
     }
 
 

@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import '../services/app_image_cache_manager.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../controllers/banner/bannercontroller.dart';
 import '../controllers/cart/Cartcontroller.dart';
@@ -49,7 +51,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
       if (product != null && product.enabled) {
         final imageUrl = product.featuredAsset?.preview;
         if (imageUrl != null && imageUrl.isNotEmpty) {
-          precacheImage(NetworkImage(imageUrl), context);
+          precacheImage(
+            CachedNetworkImageProvider(
+              imageUrl,
+              cacheManager: AppImageCacheManager.instance,
+              cacheKey: AppImageCacheManager.normalizedCacheKey(imageUrl),
+            ),
+            context,
+          );
         }
       }
     }
@@ -138,7 +147,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
               crossAxisCount: 2,
               crossAxisSpacing: ResponsiveUtils.rp(14),
               mainAxisSpacing: ResponsiveUtils.rp(18),
-              childAspectRatio: ResponsiveUtils.rp(0.55),
+              childAspectRatio: 0.52,
             ),
             itemBuilder: (context, index) {
               final favoriteItem = enabledFavorites[index];
@@ -309,7 +318,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           crossAxisCount: 2,
           crossAxisSpacing: ResponsiveUtils.rp(14),
           mainAxisSpacing: ResponsiveUtils.rp(18),
-          childAspectRatio: ResponsiveUtils.rp(0.55),
+          childAspectRatio: 0.52,
         ),
         itemCount: 8,
         itemBuilder: (context, index) {

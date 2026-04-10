@@ -345,6 +345,10 @@ Future<void> main() async {
       // Initialize Flutter bindings inside the zone
       WidgetsFlutterBinding.ensureInitialized();
 
+      // Increase in-memory image cache for better performance
+      PaintingBinding.instance.imageCache.maximumSize = 300;
+      PaintingBinding.instance.imageCache.maximumSizeBytes = 200 << 20; // 200 MB
+
       // Initialize Firebase (Crashlytics + Messaging) only on mobile/desktop, not Web.
       await _initializeFirebase();
 

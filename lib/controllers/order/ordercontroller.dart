@@ -3,8 +3,10 @@ import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
 import '../../graphql/order.graphql.dart';
+import '../../graphql/cart.graphql.dart' as cart_graphql;
 import '../../graphql/schema.graphql.dart';
 import '../../services/graphql_client.dart';
+import '../cart/Cartcontroller.dart';
 import '../utilitycontroller/utilitycontroller.dart';
 import '../banner/bannercontroller.dart';
 import '../base_controller.dart';
@@ -302,6 +304,13 @@ class OrderController extends BaseController {
       if (result != null && result is Mutation$SetShippingMethod$setOrderShippingMethod$$Order) {
         currentOrder.value = result;
         selectedShippingMethod.value = shippingMethods.firstWhereOrNull((m) => m.id == methodId);
+        // Sync cart controller so totalWithTax reflects the updated shipping cost
+        try {
+          final cartController = Get.find<CartController>();
+          cartController.cart.value = cart_graphql.Fragment$Cart.fromJson(result.toJson());
+        } catch (_) {
+          // CartController may not be registered yet
+        }
         // Check if order needs shipping address, if so, set default shipping address
         // Note: Fragment$Cart doesn't include shippingAddress, so we check by trying to set it
         // The setShippingAddress will only succeed if address is needed

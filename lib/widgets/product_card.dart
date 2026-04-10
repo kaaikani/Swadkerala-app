@@ -178,7 +178,8 @@ class ProductCard extends StatelessWidget {
             ),
             
             // DETAILS SECTION
-            Padding(
+            Expanded(
+              child: Padding(
               padding: EdgeInsets.all(ResponsiveUtils.rp(10)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,6 +269,7 @@ class ProductCard extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             ),
           ],
         ),

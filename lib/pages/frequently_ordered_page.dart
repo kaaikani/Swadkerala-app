@@ -128,7 +128,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
               crossAxisCount: 2,
               crossAxisSpacing: ResponsiveUtils.rp(14),
               mainAxisSpacing: ResponsiveUtils.rp(18),
-              childAspectRatio: ResponsiveUtils.rp(0.55),
+              childAspectRatio: 0.52,
             ),
             itemBuilder: (context, index) {
               final item = enabledProducts[index];
@@ -178,7 +178,7 @@ class _FrequentlyOrderedPageState extends State<FrequentlyOrderedPage> {
           crossAxisCount: 2,
           crossAxisSpacing: ResponsiveUtils.rp(14),
           mainAxisSpacing: ResponsiveUtils.rp(18),
-          childAspectRatio: ResponsiveUtils.rp(0.55),
+          childAspectRatio: 0.52,
         ),
         itemCount: 8,
         itemBuilder: (context, index) {

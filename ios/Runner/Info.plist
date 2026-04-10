@@ -95,6 +95,8 @@
 		<key>com.apple.developer.associated-domains</key>
 		<array>
 			<string>applinks:kaaikani.co.in</string>
+			<string>applinks:www.swadkerala.com</string>
+			<string>applinks:swadkerala.com</string>
 		</array>
 	</dict>
 </plist>

@@ -404,11 +404,6 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       if (showFeedback) {
         showSuccessSnackbar(AppStrings.shippingMethodSelected);
       }
-      // Only refresh cart if method was actually changed
-      // Note: getActiveOrder() in cart controller doesn't show loading, so it's fine to call it
-      if (!skipIfAlreadySet) {
-        await cartController.getActiveOrder();
-      }
       await _refreshPaymentMethods();
     } else {
       showErrorSnackbar(AppStrings.failedToSetShippingMethod);

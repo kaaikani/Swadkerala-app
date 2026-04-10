@@ -61,8 +61,14 @@ class AccountEditProfileDialog {
     final emailController = TextEditingController(
       text: customer.emailAddress.isNotEmpty ? customer.emailAddress : '',
     );
+    // Sanitize phone: strip non-digits, then take last 10 digits
+    // Server may store phone with country code (e.g. "+919876543210")
+    // which bypasses inputFormatters set on the TextField
+    final rawPhone = customer.phoneNumber ?? '';
+    final digitsOnly = rawPhone.replaceAll(RegExp(r'[^0-9]'), '');
+    final sanitizedPhone = digitsOnly.length > 10 ? digitsOnly.substring(digitsOnly.length - 10) : digitsOnly;
     final phoneController = TextEditingController(
-      text: customer.phoneNumber ?? '',
+      text: sanitizedPhone,
     );
     const List<String> titleOptions = ['Mr.', 'Ms.', 'Miss'];
     String? selectedTitle;
@@ -219,7 +225,8 @@ class AccountEditProfileDialog {
                             error: firstNameError,
                             enabled: !isLoading,
                             onChanged: (_) {
-                              if (firstNameError != null) { firstNameError = null; setState(() {}); }
+                              firstNameError = null;
+                              setState(() {});
                             },
                           ),
                           SizedBox(height: ResponsiveUtils.rp(20)),
@@ -233,7 +240,8 @@ class AccountEditProfileDialog {
                             error: lastNameError,
                             enabled: !isLoading,
                             onChanged: (_) {
-                              if (lastNameError != null) { lastNameError = null; setState(() {}); }
+                              lastNameError = null;
+                              setState(() {});
                             },
                           ),
                           SizedBox(height: ResponsiveUtils.rp(20)),
@@ -249,7 +257,8 @@ class AccountEditProfileDialog {
                               enabled: !isLoading && !canEditOnlyName,
                               keyboardType: TextInputType.emailAddress,
                               onChanged: (_) {
-                                if (emailError != null) { emailError = null; setState(() {}); }
+                                emailError = null;
+                                setState(() {});
                               },
                             ),
                             if (customer.emailAddress.isEmpty ||
@@ -289,7 +298,8 @@ class AccountEditProfileDialog {
                             _buildFieldLabel('Phone Number', phoneController.text.trim().isEmpty),
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             _buildPhoneField(phoneController, phoneError, isLoading, (_) {
-                              if (phoneError != null) { phoneError = null; setState(() {}); }
+                              phoneError = null;
+                              setState(() {});
                             }),
                           ] else ...[
                             // Read-only email with Edit button
@@ -334,7 +344,8 @@ class AccountEditProfileDialog {
                             _buildFieldLabel('Phone Number', phoneController.text.trim().isEmpty),
                             SizedBox(height: ResponsiveUtils.rp(8)),
                             _buildPhoneField(phoneController, phoneError, isLoading, (_) {
-                              if (phoneError != null) { phoneError = null; setState(() {}); }
+                              phoneError = null;
+                              setState(() {});
                             }),
                           ],
                         ],
@@ -389,7 +400,16 @@ class AccountEditProfileDialog {
                                 else if (phone.length != 10) { phoneError = 'Must be exactly 10 digits'; hasError = true; }
                               }
 
-                              if (hasError) { setState(() {}); showErrorSnackbar('Please fill all required fields'); return; }
+                              if (hasError) {
+                                setState(() {});
+                                // Show specific error instead of generic message
+                                if (phoneError != null && phoneError != 'Required') {
+                                  showErrorSnackbar(phoneError!);
+                                } else {
+                                  showErrorSnackbar('Please fill all required fields');
+                                }
+                                return;
+                              }
 
                               setState(() { isLoading = true; });
 
