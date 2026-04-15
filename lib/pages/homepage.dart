@@ -30,6 +30,7 @@ import '../services/analytics_service.dart';
 import '../services/image_warmup_service.dart';
 import '../utils/analytics_helper.dart';
 import '../widgets/snackbar.dart';
+import '../widgets/next_offer_dialog.dart';
 import '../services/graphql_client.dart';
 import '../controllers/theme_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -481,6 +482,12 @@ class _MyHomePageState extends State<MyHomePage> {
             .whereType<String>(),
       ];
       ImageWarmupService.warmup(warmupUrls);
+
+      // Fetch and show next offer popup (once per day per offer)
+      final offer = await bannerController.fetchNextCustomOffer();
+      if (offer != null && mounted) {
+        NextOfferDialog.show(offer);
+      }
     }
 
 

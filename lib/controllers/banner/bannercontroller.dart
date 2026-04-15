@@ -29,6 +29,56 @@ class BannerController extends BaseController {
   final RxList<Query$customBanners$customBanners> bannerList = <Query$customBanners$customBanners>[].obs;
 
   // ============================================================================
+  // NEXT CUSTOM OFFER FUNCTIONALITY
+  // ============================================================================
+  final Rx<Query$NextOffer$nextBannerPopup?> nextCustomOffer =
+      Rx<Query$NextOffer$nextBannerPopup?>(null);
+  bool _isFetchingNextOffer = false;
+
+  /// Fetch the next custom offer for the current channel.
+  /// Returns null if there's no offer or if the request fails.
+  Future<Query$NextOffer$nextBannerPopup?> fetchNextCustomOffer() async {
+    if (_isFetchingNextOffer) {
+      return nextCustomOffer.value;
+    }
+    _isFetchingNextOffer = true;
+    try {
+      String channelToken = GraphqlService.channelToken;
+      if (channelToken.isEmpty) {
+        channelToken = ChannelService.getChannelToken()?.toString() ?? '';
+      }
+      if (channelToken.isEmpty) {
+        return null;
+      }
+
+      final headers = {'channel-token': channelToken};
+      final res = await GraphqlService.client.value.query$NextOffer(
+        Options$Query$NextOffer(
+          context: Context().withEntry(HttpLinkHeaders(headers: headers)),
+          fetchPolicy: graphql.FetchPolicy.networkOnly,
+        ),
+      );
+
+      if (res.hasException) {
+        return null;
+      }
+
+      final offer = res.parsedData?.nextBannerPopup;
+      if (offer == null) {
+        nextCustomOffer.value = null;
+        return null;
+      }
+
+      nextCustomOffer.value = offer;
+      return offer;
+    } catch (e) {
+      return null;
+    } finally {
+      _isFetchingNextOffer = false;
+    }
+  }
+
+  // ============================================================================
   // SEARCH FUNCTIONALITY
   // ============================================================================
   final RxList<Query$Search$search$items> searchResults = <Query$Search$search$items>[].obs;

@@ -489,7 +489,7 @@ extension ClientExtension$Fragment$OrderAddress on graphql.GraphQLClient {
 class Fragment$OrderAddress$customFields {
   Fragment$OrderAddress$customFields({
     this.area,
-    this.$__typename = 'OrderAddressCustomFields',
+    this.$__typename = 'AddressCustomFields',
   });
 
   factory Fragment$OrderAddress$customFields.fromJson(

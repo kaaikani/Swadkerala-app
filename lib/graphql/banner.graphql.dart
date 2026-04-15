@@ -941,6 +941,1577 @@ class _CopyWithStubImpl$Query$customBanners$customBanners$channels<TRes>
       _res;
 }
 
+class Query$NextOffer {
+  Query$NextOffer({
+    this.nextBannerPopup,
+    this.$__typename = 'Query',
+  });
+
+  factory Query$NextOffer.fromJson(Map<String, dynamic> json) {
+    final l$nextBannerPopup = json['nextBannerPopup'];
+    final l$$__typename = json['__typename'];
+    return Query$NextOffer(
+      nextBannerPopup: l$nextBannerPopup == null
+          ? null
+          : Query$NextOffer$nextBannerPopup.fromJson(
+              (l$nextBannerPopup as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final Query$NextOffer$nextBannerPopup? nextBannerPopup;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$nextBannerPopup = nextBannerPopup;
+    _resultData['nextBannerPopup'] = l$nextBannerPopup?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$nextBannerPopup = nextBannerPopup;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$nextBannerPopup,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$NextOffer || runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$nextBannerPopup = nextBannerPopup;
+    final lOther$nextBannerPopup = other.nextBannerPopup;
+    if (l$nextBannerPopup != lOther$nextBannerPopup) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$NextOffer on Query$NextOffer {
+  CopyWith$Query$NextOffer<Query$NextOffer> get copyWith =>
+      CopyWith$Query$NextOffer(
+        this,
+        (i) => i,
+      );
+}
+
+abstract class CopyWith$Query$NextOffer<TRes> {
+  factory CopyWith$Query$NextOffer(
+    Query$NextOffer instance,
+    TRes Function(Query$NextOffer) then,
+  ) = _CopyWithImpl$Query$NextOffer;
+
+  factory CopyWith$Query$NextOffer.stub(TRes res) =
+      _CopyWithStubImpl$Query$NextOffer;
+
+  TRes call({
+    Query$NextOffer$nextBannerPopup? nextBannerPopup,
+    String? $__typename,
+  });
+  CopyWith$Query$NextOffer$nextBannerPopup<TRes> get nextBannerPopup;
+}
+
+class _CopyWithImpl$Query$NextOffer<TRes>
+    implements CopyWith$Query$NextOffer<TRes> {
+  _CopyWithImpl$Query$NextOffer(
+    this._instance,
+    this._then,
+  );
+
+  final Query$NextOffer _instance;
+
+  final TRes Function(Query$NextOffer) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? nextBannerPopup = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$NextOffer(
+        nextBannerPopup: nextBannerPopup == _undefined
+            ? _instance.nextBannerPopup
+            : (nextBannerPopup as Query$NextOffer$nextBannerPopup?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$NextOffer$nextBannerPopup<TRes> get nextBannerPopup {
+    final local$nextBannerPopup = _instance.nextBannerPopup;
+    return local$nextBannerPopup == null
+        ? CopyWith$Query$NextOffer$nextBannerPopup.stub(_then(_instance))
+        : CopyWith$Query$NextOffer$nextBannerPopup(
+            local$nextBannerPopup, (e) => call(nextBannerPopup: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$NextOffer<TRes>
+    implements CopyWith$Query$NextOffer<TRes> {
+  _CopyWithStubImpl$Query$NextOffer(this._res);
+
+  TRes _res;
+
+  call({
+    Query$NextOffer$nextBannerPopup? nextBannerPopup,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$NextOffer$nextBannerPopup<TRes> get nextBannerPopup =>
+      CopyWith$Query$NextOffer$nextBannerPopup.stub(_res);
+}
+
+const documentNodeQueryNextOffer = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'NextOffer'),
+    variableDefinitions: [],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'nextBannerPopup'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'id'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'asset'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'id'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'source'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'preview'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          FieldNode(
+            name: NameNode(value: 'product'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'id'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'name'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          FieldNode(
+            name: NameNode(value: 'collection'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'id'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'name'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          FieldNode(
+            name: NameNode(value: 'productVariant'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: SelectionSetNode(selections: [
+              FieldNode(
+                name: NameNode(value: 'id'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'name'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'sku'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'productId'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'product'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: SelectionSetNode(selections: [
+                  FieldNode(
+                    name: NameNode(value: 'id'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: 'name'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                  FieldNode(
+                    name: NameNode(value: '__typename'),
+                    alias: null,
+                    arguments: [],
+                    directives: [],
+                    selectionSet: null,
+                  ),
+                ]),
+              ),
+              FieldNode(
+                name: NameNode(value: '__typename'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+            ]),
+          ),
+          FieldNode(
+            name: NameNode(value: '__typename'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      ),
+      FieldNode(
+        name: NameNode(value: '__typename'),
+        alias: null,
+        arguments: [],
+        directives: [],
+        selectionSet: null,
+      ),
+    ]),
+  ),
+]);
+Query$NextOffer _parserFn$Query$NextOffer(Map<String, dynamic> data) =>
+    Query$NextOffer.fromJson(data);
+typedef OnQueryComplete$Query$NextOffer = FutureOr<void> Function(
+  Map<String, dynamic>?,
+  Query$NextOffer?,
+);
+
+class Options$Query$NextOffer extends graphql.QueryOptions<Query$NextOffer> {
+  Options$Query$NextOffer({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$NextOffer? typedOptimisticResult,
+    Duration? pollInterval,
+    graphql.Context? context,
+    OnQueryComplete$Query$NextOffer? onComplete,
+    graphql.OnQueryError? onError,
+  })  : onCompleteWithParsed = onComplete,
+        super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          pollInterval: pollInterval,
+          context: context,
+          onComplete: onComplete == null
+              ? null
+              : (data) => onComplete(
+                    data,
+                    data == null ? null : _parserFn$Query$NextOffer(data),
+                  ),
+          onError: onError,
+          document: documentNodeQueryNextOffer,
+          parserFn: _parserFn$Query$NextOffer,
+        );
+
+  final OnQueryComplete$Query$NextOffer? onCompleteWithParsed;
+
+  @override
+  List<Object?> get properties => [
+        ...super.onComplete == null
+            ? super.properties
+            : super.properties.where((property) => property != onComplete),
+        onCompleteWithParsed,
+      ];
+}
+
+class WatchOptions$Query$NextOffer
+    extends graphql.WatchQueryOptions<Query$NextOffer> {
+  WatchOptions$Query$NextOffer({
+    String? operationName,
+    graphql.FetchPolicy? fetchPolicy,
+    graphql.ErrorPolicy? errorPolicy,
+    graphql.CacheRereadPolicy? cacheRereadPolicy,
+    Object? optimisticResult,
+    Query$NextOffer? typedOptimisticResult,
+    graphql.Context? context,
+    Duration? pollInterval,
+    bool? eagerlyFetchResults,
+    bool carryForwardDataOnException = true,
+    bool fetchResults = false,
+  }) : super(
+          operationName: operationName,
+          fetchPolicy: fetchPolicy,
+          errorPolicy: errorPolicy,
+          cacheRereadPolicy: cacheRereadPolicy,
+          optimisticResult: optimisticResult ?? typedOptimisticResult?.toJson(),
+          context: context,
+          document: documentNodeQueryNextOffer,
+          pollInterval: pollInterval,
+          eagerlyFetchResults: eagerlyFetchResults,
+          carryForwardDataOnException: carryForwardDataOnException,
+          fetchResults: fetchResults,
+          parserFn: _parserFn$Query$NextOffer,
+        );
+}
+
+class FetchMoreOptions$Query$NextOffer extends graphql.FetchMoreOptions {
+  FetchMoreOptions$Query$NextOffer({required graphql.UpdateQuery updateQuery})
+      : super(
+          updateQuery: updateQuery,
+          document: documentNodeQueryNextOffer,
+        );
+}
+
+extension ClientExtension$Query$NextOffer on graphql.GraphQLClient {
+  Future<graphql.QueryResult<Query$NextOffer>> query$NextOffer(
+          [Options$Query$NextOffer? options]) async =>
+      await this.query(options ?? Options$Query$NextOffer());
+  graphql.ObservableQuery<Query$NextOffer> watchQuery$NextOffer(
+          [WatchOptions$Query$NextOffer? options]) =>
+      this.watchQuery(options ?? WatchOptions$Query$NextOffer());
+  void writeQuery$NextOffer({
+    required Query$NextOffer data,
+    bool broadcast = true,
+  }) =>
+      this.writeQuery(
+        graphql.Request(
+            operation: graphql.Operation(document: documentNodeQueryNextOffer)),
+        data: data.toJson(),
+        broadcast: broadcast,
+      );
+  Query$NextOffer? readQuery$NextOffer({bool optimistic = true}) {
+    final result = this.readQuery(
+      graphql.Request(
+          operation: graphql.Operation(document: documentNodeQueryNextOffer)),
+      optimistic: optimistic,
+    );
+    return result == null ? null : Query$NextOffer.fromJson(result);
+  }
+}
+
+graphql_flutter.QueryHookResult<Query$NextOffer> useQuery$NextOffer(
+        [Options$Query$NextOffer? options]) =>
+    graphql_flutter.useQuery(options ?? Options$Query$NextOffer());
+graphql.ObservableQuery<Query$NextOffer> useWatchQuery$NextOffer(
+        [WatchOptions$Query$NextOffer? options]) =>
+    graphql_flutter.useWatchQuery(options ?? WatchOptions$Query$NextOffer());
+
+class Query$NextOffer$Widget extends graphql_flutter.Query<Query$NextOffer> {
+  Query$NextOffer$Widget({
+    widgets.Key? key,
+    Options$Query$NextOffer? options,
+    required graphql_flutter.QueryBuilder<Query$NextOffer> builder,
+  }) : super(
+          key: key,
+          options: options ?? Options$Query$NextOffer(),
+          builder: builder,
+        );
+}
+
+class Query$NextOffer$nextBannerPopup {
+  Query$NextOffer$nextBannerPopup({
+    required this.id,
+    required this.asset,
+    this.product,
+    this.collection,
+    this.productVariant,
+    this.$__typename = 'BannerPopup',
+  });
+
+  factory Query$NextOffer$nextBannerPopup.fromJson(Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$asset = json['asset'];
+    final l$product = json['product'];
+    final l$collection = json['collection'];
+    final l$productVariant = json['productVariant'];
+    final l$$__typename = json['__typename'];
+    return Query$NextOffer$nextBannerPopup(
+      id: (l$id as String),
+      asset: Query$NextOffer$nextBannerPopup$asset.fromJson(
+          (l$asset as Map<String, dynamic>)),
+      product: l$product == null
+          ? null
+          : Query$NextOffer$nextBannerPopup$product.fromJson(
+              (l$product as Map<String, dynamic>)),
+      collection: l$collection == null
+          ? null
+          : Query$NextOffer$nextBannerPopup$collection.fromJson(
+              (l$collection as Map<String, dynamic>)),
+      productVariant: l$productVariant == null
+          ? null
+          : Query$NextOffer$nextBannerPopup$productVariant.fromJson(
+              (l$productVariant as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final Query$NextOffer$nextBannerPopup$asset asset;
+
+  final Query$NextOffer$nextBannerPopup$product? product;
+
+  final Query$NextOffer$nextBannerPopup$collection? collection;
+
+  final Query$NextOffer$nextBannerPopup$productVariant? productVariant;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$asset = asset;
+    _resultData['asset'] = l$asset.toJson();
+    final l$product = product;
+    _resultData['product'] = l$product?.toJson();
+    final l$collection = collection;
+    _resultData['collection'] = l$collection?.toJson();
+    final l$productVariant = productVariant;
+    _resultData['productVariant'] = l$productVariant?.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$asset = asset;
+    final l$product = product;
+    final l$collection = collection;
+    final l$productVariant = productVariant;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$asset,
+      l$product,
+      l$collection,
+      l$productVariant,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$NextOffer$nextBannerPopup ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$asset = asset;
+    final lOther$asset = other.asset;
+    if (l$asset != lOther$asset) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
+      return false;
+    }
+    final l$collection = collection;
+    final lOther$collection = other.collection;
+    if (l$collection != lOther$collection) {
+      return false;
+    }
+    final l$productVariant = productVariant;
+    final lOther$productVariant = other.productVariant;
+    if (l$productVariant != lOther$productVariant) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$NextOffer$nextBannerPopup
+    on Query$NextOffer$nextBannerPopup {
+  CopyWith$Query$NextOffer$nextBannerPopup<Query$NextOffer$nextBannerPopup>
+      get copyWith => CopyWith$Query$NextOffer$nextBannerPopup(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$NextOffer$nextBannerPopup<TRes> {
+  factory CopyWith$Query$NextOffer$nextBannerPopup(
+    Query$NextOffer$nextBannerPopup instance,
+    TRes Function(Query$NextOffer$nextBannerPopup) then,
+  ) = _CopyWithImpl$Query$NextOffer$nextBannerPopup;
+
+  factory CopyWith$Query$NextOffer$nextBannerPopup.stub(TRes res) =
+      _CopyWithStubImpl$Query$NextOffer$nextBannerPopup;
+
+  TRes call({
+    String? id,
+    Query$NextOffer$nextBannerPopup$asset? asset,
+    Query$NextOffer$nextBannerPopup$product? product,
+    Query$NextOffer$nextBannerPopup$collection? collection,
+    Query$NextOffer$nextBannerPopup$productVariant? productVariant,
+    String? $__typename,
+  });
+  CopyWith$Query$NextOffer$nextBannerPopup$asset<TRes> get asset;
+  CopyWith$Query$NextOffer$nextBannerPopup$product<TRes> get product;
+  CopyWith$Query$NextOffer$nextBannerPopup$collection<TRes> get collection;
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant<TRes>
+      get productVariant;
+}
+
+class _CopyWithImpl$Query$NextOffer$nextBannerPopup<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup<TRes> {
+  _CopyWithImpl$Query$NextOffer$nextBannerPopup(
+    this._instance,
+    this._then,
+  );
+
+  final Query$NextOffer$nextBannerPopup _instance;
+
+  final TRes Function(Query$NextOffer$nextBannerPopup) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? asset = _undefined,
+    Object? product = _undefined,
+    Object? collection = _undefined,
+    Object? productVariant = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$NextOffer$nextBannerPopup(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        asset: asset == _undefined || asset == null
+            ? _instance.asset
+            : (asset as Query$NextOffer$nextBannerPopup$asset),
+        product: product == _undefined
+            ? _instance.product
+            : (product as Query$NextOffer$nextBannerPopup$product?),
+        collection: collection == _undefined
+            ? _instance.collection
+            : (collection as Query$NextOffer$nextBannerPopup$collection?),
+        productVariant: productVariant == _undefined
+            ? _instance.productVariant
+            : (productVariant
+                as Query$NextOffer$nextBannerPopup$productVariant?),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$NextOffer$nextBannerPopup$asset<TRes> get asset {
+    final local$asset = _instance.asset;
+    return CopyWith$Query$NextOffer$nextBannerPopup$asset(
+        local$asset, (e) => call(asset: e));
+  }
+
+  CopyWith$Query$NextOffer$nextBannerPopup$product<TRes> get product {
+    final local$product = _instance.product;
+    return local$product == null
+        ? CopyWith$Query$NextOffer$nextBannerPopup$product.stub(
+            _then(_instance))
+        : CopyWith$Query$NextOffer$nextBannerPopup$product(
+            local$product, (e) => call(product: e));
+  }
+
+  CopyWith$Query$NextOffer$nextBannerPopup$collection<TRes> get collection {
+    final local$collection = _instance.collection;
+    return local$collection == null
+        ? CopyWith$Query$NextOffer$nextBannerPopup$collection.stub(
+            _then(_instance))
+        : CopyWith$Query$NextOffer$nextBannerPopup$collection(
+            local$collection, (e) => call(collection: e));
+  }
+
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant<TRes>
+      get productVariant {
+    final local$productVariant = _instance.productVariant;
+    return local$productVariant == null
+        ? CopyWith$Query$NextOffer$nextBannerPopup$productVariant.stub(
+            _then(_instance))
+        : CopyWith$Query$NextOffer$nextBannerPopup$productVariant(
+            local$productVariant, (e) => call(productVariant: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$NextOffer$nextBannerPopup<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup<TRes> {
+  _CopyWithStubImpl$Query$NextOffer$nextBannerPopup(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    Query$NextOffer$nextBannerPopup$asset? asset,
+    Query$NextOffer$nextBannerPopup$product? product,
+    Query$NextOffer$nextBannerPopup$collection? collection,
+    Query$NextOffer$nextBannerPopup$productVariant? productVariant,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$NextOffer$nextBannerPopup$asset<TRes> get asset =>
+      CopyWith$Query$NextOffer$nextBannerPopup$asset.stub(_res);
+
+  CopyWith$Query$NextOffer$nextBannerPopup$product<TRes> get product =>
+      CopyWith$Query$NextOffer$nextBannerPopup$product.stub(_res);
+
+  CopyWith$Query$NextOffer$nextBannerPopup$collection<TRes> get collection =>
+      CopyWith$Query$NextOffer$nextBannerPopup$collection.stub(_res);
+
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant<TRes>
+      get productVariant =>
+          CopyWith$Query$NextOffer$nextBannerPopup$productVariant.stub(_res);
+}
+
+class Query$NextOffer$nextBannerPopup$asset {
+  Query$NextOffer$nextBannerPopup$asset({
+    required this.id,
+    required this.source,
+    required this.preview,
+    this.$__typename = 'Asset',
+  });
+
+  factory Query$NextOffer$nextBannerPopup$asset.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$source = json['source'];
+    final l$preview = json['preview'];
+    final l$$__typename = json['__typename'];
+    return Query$NextOffer$nextBannerPopup$asset(
+      id: (l$id as String),
+      source: (l$source as String),
+      preview: (l$preview as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String source;
+
+  final String preview;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$source = source;
+    _resultData['source'] = l$source;
+    final l$preview = preview;
+    _resultData['preview'] = l$preview;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$source = source;
+    final l$preview = preview;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$source,
+      l$preview,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$NextOffer$nextBannerPopup$asset ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$source = source;
+    final lOther$source = other.source;
+    if (l$source != lOther$source) {
+      return false;
+    }
+    final l$preview = preview;
+    final lOther$preview = other.preview;
+    if (l$preview != lOther$preview) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$NextOffer$nextBannerPopup$asset
+    on Query$NextOffer$nextBannerPopup$asset {
+  CopyWith$Query$NextOffer$nextBannerPopup$asset<
+          Query$NextOffer$nextBannerPopup$asset>
+      get copyWith => CopyWith$Query$NextOffer$nextBannerPopup$asset(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$NextOffer$nextBannerPopup$asset<TRes> {
+  factory CopyWith$Query$NextOffer$nextBannerPopup$asset(
+    Query$NextOffer$nextBannerPopup$asset instance,
+    TRes Function(Query$NextOffer$nextBannerPopup$asset) then,
+  ) = _CopyWithImpl$Query$NextOffer$nextBannerPopup$asset;
+
+  factory CopyWith$Query$NextOffer$nextBannerPopup$asset.stub(TRes res) =
+      _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$asset;
+
+  TRes call({
+    String? id,
+    String? source,
+    String? preview,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$NextOffer$nextBannerPopup$asset<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$asset<TRes> {
+  _CopyWithImpl$Query$NextOffer$nextBannerPopup$asset(
+    this._instance,
+    this._then,
+  );
+
+  final Query$NextOffer$nextBannerPopup$asset _instance;
+
+  final TRes Function(Query$NextOffer$nextBannerPopup$asset) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? source = _undefined,
+    Object? preview = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$NextOffer$nextBannerPopup$asset(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        source: source == _undefined || source == null
+            ? _instance.source
+            : (source as String),
+        preview: preview == _undefined || preview == null
+            ? _instance.preview
+            : (preview as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$asset<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$asset<TRes> {
+  _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$asset(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? source,
+    String? preview,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$NextOffer$nextBannerPopup$product {
+  Query$NextOffer$nextBannerPopup$product({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Product',
+  });
+
+  factory Query$NextOffer$nextBannerPopup$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$NextOffer$nextBannerPopup$product(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$NextOffer$nextBannerPopup$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$NextOffer$nextBannerPopup$product
+    on Query$NextOffer$nextBannerPopup$product {
+  CopyWith$Query$NextOffer$nextBannerPopup$product<
+          Query$NextOffer$nextBannerPopup$product>
+      get copyWith => CopyWith$Query$NextOffer$nextBannerPopup$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$NextOffer$nextBannerPopup$product<TRes> {
+  factory CopyWith$Query$NextOffer$nextBannerPopup$product(
+    Query$NextOffer$nextBannerPopup$product instance,
+    TRes Function(Query$NextOffer$nextBannerPopup$product) then,
+  ) = _CopyWithImpl$Query$NextOffer$nextBannerPopup$product;
+
+  factory CopyWith$Query$NextOffer$nextBannerPopup$product.stub(TRes res) =
+      _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$product;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$NextOffer$nextBannerPopup$product<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$product<TRes> {
+  _CopyWithImpl$Query$NextOffer$nextBannerPopup$product(
+    this._instance,
+    this._then,
+  );
+
+  final Query$NextOffer$nextBannerPopup$product _instance;
+
+  final TRes Function(Query$NextOffer$nextBannerPopup$product) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$NextOffer$nextBannerPopup$product(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$product<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$product<TRes> {
+  _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$product(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$NextOffer$nextBannerPopup$collection {
+  Query$NextOffer$nextBannerPopup$collection({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Collection',
+  });
+
+  factory Query$NextOffer$nextBannerPopup$collection.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$NextOffer$nextBannerPopup$collection(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$NextOffer$nextBannerPopup$collection ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$NextOffer$nextBannerPopup$collection
+    on Query$NextOffer$nextBannerPopup$collection {
+  CopyWith$Query$NextOffer$nextBannerPopup$collection<
+          Query$NextOffer$nextBannerPopup$collection>
+      get copyWith => CopyWith$Query$NextOffer$nextBannerPopup$collection(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$NextOffer$nextBannerPopup$collection<TRes> {
+  factory CopyWith$Query$NextOffer$nextBannerPopup$collection(
+    Query$NextOffer$nextBannerPopup$collection instance,
+    TRes Function(Query$NextOffer$nextBannerPopup$collection) then,
+  ) = _CopyWithImpl$Query$NextOffer$nextBannerPopup$collection;
+
+  factory CopyWith$Query$NextOffer$nextBannerPopup$collection.stub(TRes res) =
+      _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$collection;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$NextOffer$nextBannerPopup$collection<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$collection<TRes> {
+  _CopyWithImpl$Query$NextOffer$nextBannerPopup$collection(
+    this._instance,
+    this._then,
+  );
+
+  final Query$NextOffer$nextBannerPopup$collection _instance;
+
+  final TRes Function(Query$NextOffer$nextBannerPopup$collection) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$NextOffer$nextBannerPopup$collection(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$collection<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$collection<TRes> {
+  _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$collection(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
+class Query$NextOffer$nextBannerPopup$productVariant {
+  Query$NextOffer$nextBannerPopup$productVariant({
+    required this.id,
+    required this.name,
+    required this.sku,
+    required this.productId,
+    required this.product,
+    this.$__typename = 'ProductVariant',
+  });
+
+  factory Query$NextOffer$nextBannerPopup$productVariant.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$sku = json['sku'];
+    final l$productId = json['productId'];
+    final l$product = json['product'];
+    final l$$__typename = json['__typename'];
+    return Query$NextOffer$nextBannerPopup$productVariant(
+      id: (l$id as String),
+      name: (l$name as String),
+      sku: (l$sku as String),
+      productId: (l$productId as String),
+      product: Query$NextOffer$nextBannerPopup$productVariant$product.fromJson(
+          (l$product as Map<String, dynamic>)),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String sku;
+
+  final String productId;
+
+  final Query$NextOffer$nextBannerPopup$productVariant$product product;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$sku = sku;
+    _resultData['sku'] = l$sku;
+    final l$productId = productId;
+    _resultData['productId'] = l$productId;
+    final l$product = product;
+    _resultData['product'] = l$product.toJson();
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$sku = sku;
+    final l$productId = productId;
+    final l$product = product;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$sku,
+      l$productId,
+      l$product,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$NextOffer$nextBannerPopup$productVariant ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$sku = sku;
+    final lOther$sku = other.sku;
+    if (l$sku != lOther$sku) {
+      return false;
+    }
+    final l$productId = productId;
+    final lOther$productId = other.productId;
+    if (l$productId != lOther$productId) {
+      return false;
+    }
+    final l$product = product;
+    final lOther$product = other.product;
+    if (l$product != lOther$product) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$NextOffer$nextBannerPopup$productVariant
+    on Query$NextOffer$nextBannerPopup$productVariant {
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant<
+          Query$NextOffer$nextBannerPopup$productVariant>
+      get copyWith => CopyWith$Query$NextOffer$nextBannerPopup$productVariant(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$NextOffer$nextBannerPopup$productVariant<TRes> {
+  factory CopyWith$Query$NextOffer$nextBannerPopup$productVariant(
+    Query$NextOffer$nextBannerPopup$productVariant instance,
+    TRes Function(Query$NextOffer$nextBannerPopup$productVariant) then,
+  ) = _CopyWithImpl$Query$NextOffer$nextBannerPopup$productVariant;
+
+  factory CopyWith$Query$NextOffer$nextBannerPopup$productVariant.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$productVariant;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? sku,
+    String? productId,
+    Query$NextOffer$nextBannerPopup$productVariant$product? product,
+    String? $__typename,
+  });
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product<TRes>
+      get product;
+}
+
+class _CopyWithImpl$Query$NextOffer$nextBannerPopup$productVariant<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$productVariant<TRes> {
+  _CopyWithImpl$Query$NextOffer$nextBannerPopup$productVariant(
+    this._instance,
+    this._then,
+  );
+
+  final Query$NextOffer$nextBannerPopup$productVariant _instance;
+
+  final TRes Function(Query$NextOffer$nextBannerPopup$productVariant) _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? sku = _undefined,
+    Object? productId = _undefined,
+    Object? product = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$NextOffer$nextBannerPopup$productVariant(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        sku: sku == _undefined || sku == null ? _instance.sku : (sku as String),
+        productId: productId == _undefined || productId == null
+            ? _instance.productId
+            : (productId as String),
+        product: product == _undefined || product == null
+            ? _instance.product
+            : (product
+                as Query$NextOffer$nextBannerPopup$productVariant$product),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product<TRes>
+      get product {
+    final local$product = _instance.product;
+    return CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product(
+        local$product, (e) => call(product: e));
+  }
+}
+
+class _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$productVariant<TRes>
+    implements CopyWith$Query$NextOffer$nextBannerPopup$productVariant<TRes> {
+  _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$productVariant(this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? sku,
+    String? productId,
+    Query$NextOffer$nextBannerPopup$productVariant$product? product,
+    String? $__typename,
+  }) =>
+      _res;
+
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product<TRes>
+      get product =>
+          CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product.stub(
+              _res);
+}
+
+class Query$NextOffer$nextBannerPopup$productVariant$product {
+  Query$NextOffer$nextBannerPopup$productVariant$product({
+    required this.id,
+    required this.name,
+    this.$__typename = 'Product',
+  });
+
+  factory Query$NextOffer$nextBannerPopup$productVariant$product.fromJson(
+      Map<String, dynamic> json) {
+    final l$id = json['id'];
+    final l$name = json['name'];
+    final l$$__typename = json['__typename'];
+    return Query$NextOffer$nextBannerPopup$productVariant$product(
+      id: (l$id as String),
+      name: (l$name as String),
+      $__typename: (l$$__typename as String),
+    );
+  }
+
+  final String id;
+
+  final String name;
+
+  final String $__typename;
+
+  Map<String, dynamic> toJson() {
+    final _resultData = <String, dynamic>{};
+    final l$id = id;
+    _resultData['id'] = l$id;
+    final l$name = name;
+    _resultData['name'] = l$name;
+    final l$$__typename = $__typename;
+    _resultData['__typename'] = l$$__typename;
+    return _resultData;
+  }
+
+  @override
+  int get hashCode {
+    final l$id = id;
+    final l$name = name;
+    final l$$__typename = $__typename;
+    return Object.hashAll([
+      l$id,
+      l$name,
+      l$$__typename,
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! Query$NextOffer$nextBannerPopup$productVariant$product ||
+        runtimeType != other.runtimeType) {
+      return false;
+    }
+    final l$id = id;
+    final lOther$id = other.id;
+    if (l$id != lOther$id) {
+      return false;
+    }
+    final l$name = name;
+    final lOther$name = other.name;
+    if (l$name != lOther$name) {
+      return false;
+    }
+    final l$$__typename = $__typename;
+    final lOther$$__typename = other.$__typename;
+    if (l$$__typename != lOther$$__typename) {
+      return false;
+    }
+    return true;
+  }
+}
+
+extension UtilityExtension$Query$NextOffer$nextBannerPopup$productVariant$product
+    on Query$NextOffer$nextBannerPopup$productVariant$product {
+  CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product<
+          Query$NextOffer$nextBannerPopup$productVariant$product>
+      get copyWith =>
+          CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product(
+            this,
+            (i) => i,
+          );
+}
+
+abstract class CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product<
+    TRes> {
+  factory CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product(
+    Query$NextOffer$nextBannerPopup$productVariant$product instance,
+    TRes Function(Query$NextOffer$nextBannerPopup$productVariant$product) then,
+  ) = _CopyWithImpl$Query$NextOffer$nextBannerPopup$productVariant$product;
+
+  factory CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product.stub(
+          TRes res) =
+      _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$productVariant$product;
+
+  TRes call({
+    String? id,
+    String? name,
+    String? $__typename,
+  });
+}
+
+class _CopyWithImpl$Query$NextOffer$nextBannerPopup$productVariant$product<TRes>
+    implements
+        CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product<TRes> {
+  _CopyWithImpl$Query$NextOffer$nextBannerPopup$productVariant$product(
+    this._instance,
+    this._then,
+  );
+
+  final Query$NextOffer$nextBannerPopup$productVariant$product _instance;
+
+  final TRes Function(Query$NextOffer$nextBannerPopup$productVariant$product)
+      _then;
+
+  static const _undefined = <dynamic, dynamic>{};
+
+  TRes call({
+    Object? id = _undefined,
+    Object? name = _undefined,
+    Object? $__typename = _undefined,
+  }) =>
+      _then(Query$NextOffer$nextBannerPopup$productVariant$product(
+        id: id == _undefined || id == null ? _instance.id : (id as String),
+        name: name == _undefined || name == null
+            ? _instance.name
+            : (name as String),
+        $__typename: $__typename == _undefined || $__typename == null
+            ? _instance.$__typename
+            : ($__typename as String),
+      ));
+}
+
+class _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$productVariant$product<
+        TRes>
+    implements
+        CopyWith$Query$NextOffer$nextBannerPopup$productVariant$product<TRes> {
+  _CopyWithStubImpl$Query$NextOffer$nextBannerPopup$productVariant$product(
+      this._res);
+
+  TRes _res;
+
+  call({
+    String? id,
+    String? name,
+    String? $__typename,
+  }) =>
+      _res;
+}
+
 class Variables$Query$Search {
   factory Variables$Query$Search({required Input$SearchInput input}) =>
       Variables$Query$Search._({

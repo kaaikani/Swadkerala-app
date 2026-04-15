@@ -5,6 +5,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/authentication/authenticationcontroller.dart';
+import '../../services/graphql_client.dart';
+import '../../graphql/Customer.graphql.dart';
+import '../../services/analytics_service.dart';
 import '../../theme/colors.dart';
 import '../../utils/responsive.dart';
 import '../../routes.dart';
@@ -14,6 +17,139 @@ class AccountFooter extends StatelessWidget {
   final bool isGuest;
 
   const AccountFooter({super.key, this.isGuest = false});
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final reasonController = TextEditingController();
+    AnalyticsService().logScreenView(screenName: 'DeleteAccountDialog');
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ResponsiveUtils.rp(12)),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.delete_outline, color: AppColors.error, size: ResponsiveUtils.rp(24)),
+            SizedBox(width: ResponsiveUtils.rp(8)),
+            Expanded(
+              child: Text(
+                'Delete Account',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(18),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Are you sure you want to delete your account? This action cannot be undone after 3 days.',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(14),
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(8)),
+              Text(
+                'You can cancel this request by logging back in within 3 days.',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.sp(13),
+                  color: AppColors.textTertiary,
+                ),
+              ),
+              SizedBox(height: ResponsiveUtils.rp(16)),
+              TextField(
+                controller: reasonController,
+                decoration: InputDecoration(
+                  hintText: 'Reason for deletion (required)',
+                  hintStyle: TextStyle(color: AppColors.textTertiary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.rp(8)),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveUtils.rp(12),
+                    vertical: ResponsiveUtils.rp(12),
+                  ),
+                ),
+                maxLines: 3,
+                style: TextStyle(fontSize: ResponsiveUtils.sp(14), color: AppColors.textPrimary),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                reasonController.dispose();
+              });
+            },
+            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final reasonText = reasonController.text.trim();
+              if (reasonText.isEmpty) {
+                showErrorSnackbar('Please enter a reason for account deletion');
+                return;
+              }
+              Get.back();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                reasonController.dispose();
+              });
+              try {
+                final response = await GraphqlService.client.value.mutate$RequestAccountDeletion(
+                  Options$Mutation$RequestAccountDeletion(
+                    variables: Variables$Mutation$RequestAccountDeletion(reason: reasonText),
+                  ),
+                );
+                if (response.hasException) {
+                  final msg = response.exception?.graphqlErrors.firstOrNull?.message ??
+                      response.exception?.linkException?.toString() ??
+                      'Failed to request account deletion';
+                  showErrorSnackbar(msg.toString().replaceAll('Exception:', '').trim());
+                  return;
+                }
+                final data = response.parsedData?.requestAccountDeletion;
+                if (data == null) {
+                  showErrorSnackbar('Failed to request account deletion');
+                  return;
+                }
+                if (data.success) {
+                  SnackBarWidget.showSuccess(data.message);
+                  final authController = Get.find<AuthController>();
+                  final ctx = Get.context;
+                  if (ctx != null) {
+                    await authController.logout(ctx);
+                  } else {
+                    await GraphqlService.clearToken('auth');
+                    await GraphqlService.clearToken('channel');
+                    await GraphqlService.clearGuestSession();
+                    Get.offAllNamed(AppRoutes.home);
+                  }
+                } else {
+                  showErrorSnackbar(data.message);
+                }
+              } catch (e) {
+                showErrorSnackbar('Failed to request account deletion. Please try again.');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showLogoutDialog(BuildContext context) {
     final authController = Get.find<AuthController>();
@@ -193,6 +329,25 @@ class AccountFooter extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.rp(12)),
+                    TextButton(
+                      onPressed: () {
+                        _showDeleteAccountDialog(context);
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        minimumSize: Size(double.infinity, 0),
+                        padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.rp(12)),
+                      ),
+                      child: Text(
+                        'Delete Account',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: ResponsiveUtils.sp(13),
+                          color: AppColors.error,
                         ),
                       ),
                     ),
