@@ -72,15 +72,15 @@ class DeepLinkService {
       // Handle MissingPluginException for app_links
       if (e is MissingPluginException) {
         if (kDebugMode) {
-          debugPrint('ERROR: app_links plugin not available - MissingPluginException');
-          debugPrint('Error: ${e.message}');
-          debugPrint('Deep linking will not work. App will continue normally.');
+          // debugPrint('ERROR: app_links plugin not available - MissingPluginException');
+          // debugPrint('Error: ${e.message}');
+          // debugPrint('Deep linking will not work. App will continue normally.');
         }
         _isInitialized = false; // Mark as not initialized so we don't try again
       } else {
         // Other errors - log but don't crash
         if (kDebugMode) {
-          debugPrint('ERROR: DeepLinkService initialization failed: $e');
+          // debugPrint('ERROR: DeepLinkService initialization failed: $e');
         }
       }
     }
@@ -102,12 +102,12 @@ class DeepLinkService {
       // Handle MissingPluginException
       if (e is MissingPluginException) {
         if (kDebugMode) {
-          debugPrint('ERROR: app_links plugin not available - cannot get initial link');
-          debugPrint('Error: ${e.message}');
+          // debugPrint('ERROR: app_links plugin not available - cannot get initial link');
+          // debugPrint('Error: ${e.message}');
         }
       } else {
         if (kDebugMode) {
-          debugPrint('ERROR: Failed to get initial deep link: $e');
+          // debugPrint('ERROR: Failed to get initial deep link: $e');
         }
       }
     }
@@ -122,7 +122,7 @@ class DeepLinkService {
         },
         onError: (err) {
           if (kDebugMode) {
-            debugPrint('ERROR: Deep link stream error: $err');
+            // debugPrint('ERROR: Deep link stream error: $err');
           }
         },
       );
@@ -130,13 +130,13 @@ class DeepLinkService {
       // Handle MissingPluginException when trying to listen to stream
       if (e is MissingPluginException) {
         if (kDebugMode) {
-          debugPrint('ERROR: app_links plugin not available - cannot listen to deep links');
-          debugPrint('Error: ${e.message}');
-          debugPrint('Deep linking will not work. App will continue normally.');
+          // debugPrint('ERROR: app_links plugin not available - cannot listen to deep links');
+          // debugPrint('Error: ${e.message}');
+          // debugPrint('Deep linking will not work. App will continue normally.');
         }
       } else {
         if (kDebugMode) {
-          debugPrint('ERROR: Failed to listen to deep link stream: $e');
+          // debugPrint('ERROR: Failed to listen to deep link stream: $e');
         }
       }
     }
@@ -358,7 +358,7 @@ class DeepLinkService {
                   : Get.put(ReferralController());
               controller.registerReferral(referrerId);
             } catch (e) {
-              debugPrint('Error registering referral: $e');
+              // debugPrint('Error registering referral: $e');
             }
             Get.offAllNamed(AppRoutes.home);
           } else {

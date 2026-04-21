@@ -20,12 +20,11 @@ class CrashlyticsService {
     }
 
     try {
-      // Enable Crashlytics only for store builds (AAB/IPA with --dart-define=ANALYTICS_ENABLED=true)
-      const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
+      // Enable Crashlytics for release builds (Xcode Archive / flutter build apk|appbundle|ipa --release).
       await FirebaseCrashlytics.instance
-          .setCrashlyticsCollectionEnabled(analyticsEnabled);
+          .setCrashlyticsCollectionEnabled(kReleaseMode);
 
-      if (analyticsEnabled) {
+      if (kReleaseMode) {
         // Only register error handlers for store builds
         FlutterError.onError = (errorDetails) {
           FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -50,8 +49,7 @@ class CrashlyticsService {
     bool fatal = false,
     Map<String, dynamic>? additionalData,
   }) {
-    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
-    if (kIsWeb || !_initialized || !analyticsEnabled) return;
+    if (kIsWeb || !_initialized || !kReleaseMode) return;
 
     try {
       if (additionalData != null) {
@@ -76,8 +74,7 @@ class CrashlyticsService {
 
   /// Log a message
   void log(String message) {
-    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
-    if (kIsWeb || !_initialized || !analyticsEnabled) return;
+    if (kIsWeb || !_initialized || !kReleaseMode) return;
 
     try {
       FirebaseCrashlytics.instance.log(message);
@@ -87,8 +84,7 @@ class CrashlyticsService {
 
   /// Set user identifier
   void setUserId(String userId) {
-    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
-    if (kIsWeb || !_initialized || !analyticsEnabled) return;
+    if (kIsWeb || !_initialized || !kReleaseMode) return;
 
     try {
       FirebaseCrashlytics.instance.setUserIdentifier(userId);
@@ -98,8 +94,7 @@ class CrashlyticsService {
 
   /// Set custom key-value pair
   void setCustomKey(String key, dynamic value) {
-    const analyticsEnabled = bool.fromEnvironment('ANALYTICS_ENABLED', defaultValue: false);
-    if (kIsWeb || !_initialized || !analyticsEnabled) return;
+    if (kIsWeb || !_initialized || !kReleaseMode) return;
 
     try {
       if (value is String) {

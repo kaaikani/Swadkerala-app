@@ -19,11 +19,11 @@ class MetaEventsService {
       await _fb.activateApp();
       _enabled = true;
       if (kDebugMode) {
-        debugPrint('MetaEventsService: initialized');
+        // debugPrint('MetaEventsService: initialized');
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('MetaEventsService: init failed (check APP_ID/CLIENT_TOKEN): $e');
+        // debugPrint('MetaEventsService: init failed (check APP_ID/CLIENT_TOKEN): $e');
       }
     }
   }

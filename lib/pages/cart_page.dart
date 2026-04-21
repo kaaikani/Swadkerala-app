@@ -164,7 +164,7 @@ class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
       if (!success) {
         // If adjustOrderLine failed, ensure cart is refreshed to show correct quantity
         // This is especially important for OrderInterceptorError cases
-        print('[CartPage] adjustOrderLine failed, refreshing cart to ensure UI is in sync');
+        // print('[CartPage] adjustOrderLine failed, refreshing cart to ensure UI is in sync');
         await cartController.getActiveOrder();
       }
       // Note: When success is true, adjustOrderLine already updates cart.value

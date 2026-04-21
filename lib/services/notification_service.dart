@@ -103,7 +103,7 @@ class NotificationService {
         if (call.method == 'onTimerTap') {
           final payload = call.arguments as String? ?? '';
           if (payload.isNotEmpty) {
-            debugPrint('[OfferTimer] Native onTimerTap received: $payload');
+            // debugPrint('[OfferTimer] Native onTimerTap received: $payload');
             handleNotificationOpenFromPayload(payload);
           }
         }
@@ -218,7 +218,7 @@ class NotificationService {
           'payload': payload ?? '',
         });
       } catch (e) {
-        debugPrint('[OfferTimer] Native call failed, falling back to flutter_local_notifications: $e');
+        // debugPrint('[OfferTimer] Native call failed, falling back to flutter_local_notifications: $e');
         // Fallback to standard notification
         await _showFallbackTimerNotification(title, body, endTime, endsAtText, timeLeftText, colorHex, payload);
       }
@@ -290,11 +290,11 @@ class NotificationService {
     try {
       final payload = await _timerPlatform.invokeMethod<String>('getTimerPayload');
       if (payload != null && payload.isNotEmpty) {
-        debugPrint('[OfferTimer] Handling pending timer navigation: $payload');
+        // debugPrint('[OfferTimer] Handling pending timer navigation: $payload');
         handleNotificationOpenFromPayload(payload);
       }
     } catch (e) {
-      debugPrint('[OfferTimer] Error checking timer payload: $e');
+      // debugPrint('[OfferTimer] Error checking timer payload: $e');
     }
   }
 
@@ -319,7 +319,7 @@ class NotificationService {
     final data = message.data;
     final type = data['type']?.toString().toLowerCase() ?? '';
 
-    debugPrint('[OfferTimer] Received FCM - type: $type, data: $data');
+    // debugPrint('[OfferTimer] Received FCM - type: $type, data: $data');
 
     if (type != 'offer_timer') return;
 
@@ -327,10 +327,10 @@ class NotificationService {
     final endTime = int.tryParse(endTimeStr);
     final now = DateTime.now().millisecondsSinceEpoch;
 
-    debugPrint('[OfferTimer] endTime: $endTime, now: $now, isValid: ${endTime != null && endTime > now}');
+    // debugPrint('[OfferTimer] endTime: $endTime, now: $now, isValid: ${endTime != null && endTime > now}');
 
     if (endTime == null || endTime <= now) {
-      debugPrint('[OfferTimer] Skipped - offer expired or invalid endTime');
+      // debugPrint('[OfferTimer] Skipped - offer expired or invalid endTime');
       return;
     }
 
@@ -348,7 +348,7 @@ class NotificationService {
       } catch (_) {}
     }
 
-    debugPrint('[OfferTimer] Showing timer notification - title: $title, remaining: ${(endTime - now) ~/ 1000}s');
+    // debugPrint('[OfferTimer] Showing timer notification - title: $title, remaining: ${(endTime - now) ~/ 1000}s');
 
     await showOfferTimerNotification(
       title: title,
@@ -470,7 +470,7 @@ class NotificationService {
 
     if (page.isEmpty) return;
 
-    debugPrint('[Notification] Navigating to page: $page, data: $d');
+    // debugPrint('[Notification] Navigating to page: $page, data: $d');
 
     // Defer navigation to next frame to ensure navigator is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {

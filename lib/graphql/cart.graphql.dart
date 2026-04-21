@@ -16220,7 +16220,7 @@ class Mutation$AddToCart$addItemToOrder$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$AddToCart$addItemToOrder$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -16228,7 +16228,7 @@ class Mutation$AddToCart$addItemToOrder$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -16330,7 +16330,7 @@ abstract class CopyWith$Mutation$AddToCart$addItemToOrder$$Order$customFields<
       _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -16361,8 +16361,9 @@ class _CopyWithImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddToCart$addItemToOrder$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -16388,7 +16389,7 @@ class _CopyWithStubImpl$Mutation$AddToCart$addItemToOrder$$Order$customFields<
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,

@@ -65,7 +65,7 @@ class ReferralController extends BaseController {
         totalReferrals.value = data.totalItems;
       }
     } catch (e) {
-      debugPrint('Error fetching referrals: $e');
+      // debugPrint('Error fetching referrals: $e');
     } finally {
       isLoading.value = false;
     }
@@ -88,7 +88,7 @@ class ReferralController extends BaseController {
         totalEarnedCards.value = data.totalItems;
       }
     } catch (e) {
-      debugPrint('Error fetching earned cards: $e');
+      // debugPrint('Error fetching earned cards: $e');
     } finally {
       isLoading.value = false;
     }
@@ -109,7 +109,7 @@ class ReferralController extends BaseController {
         totalScratchedCards.value = data.totalItems;
       }
     } catch (e) {
-      debugPrint('Error fetching scratched cards: $e');
+      // debugPrint('Error fetching scratched cards: $e');
     }
   }
 
@@ -126,7 +126,7 @@ class ReferralController extends BaseController {
         channelPoints.value = data.points;
       }
     } catch (e) {
-      debugPrint('Error fetching channel points: $e');
+      // debugPrint('Error fetching channel points: $e');
     }
   }
 
@@ -143,13 +143,13 @@ class ReferralController extends BaseController {
       );
       if (response.hasException) {
         final errorMsg = response.exception?.graphqlErrors.firstOrNull?.message ?? 'Unknown error';
-        debugPrint('Referral registration error: $errorMsg');
+        // debugPrint('Referral registration error: $errorMsg');
         return false;
       }
       if (customerId != null) _markRedeemed(customerId);
       return true;
     } catch (e) {
-      debugPrint('Error registering referral: $e');
+      // debugPrint('Error registering referral: $e');
       return false;
     }
   }
@@ -191,7 +191,7 @@ class ReferralController extends BaseController {
       }
       return null;
     } catch (e) {
-      debugPrint('Error scratching card: $e');
+      // debugPrint('Error scratching card: $e');
       return null;
     } finally {
       isScratchLoading.value = false;

@@ -37,9 +37,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
           minV = rc.getMinVersion();
           latestV = rc.getLatestVersion();
         } catch (_) {}
-        debugPrint('[UpdateScreen] App version: ${info.version} (${info.buildNumber}) → $current');
-        debugPrint('[UpdateScreen] Firebase: min_version=$minV, latest_version=$latestV');
-        debugPrint('[UpdateScreen] Mandatory update: $_isMandatory (from Firebase Remote Config)');
+        // debugPrint('[UpdateScreen] App version: ${info.version} (${info.buildNumber}) → $current');
+        // debugPrint('[UpdateScreen] Firebase: min_version=$minV, latest_version=$latestV');
+        // debugPrint('[UpdateScreen] Mandatory update: $_isMandatory (from Firebase Remote Config)');
       });
     }
   }

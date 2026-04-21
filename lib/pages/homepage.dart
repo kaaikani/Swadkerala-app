@@ -483,10 +483,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ];
       ImageWarmupService.warmup(warmupUrls);
 
-      // Fetch and show next offer popup (once per day per offer)
-      final offer = await bannerController.fetchNextCustomOffer();
-      if (offer != null && mounted) {
-        NextOfferDialog.show(offer);
+      // Fetch and show next offer popup (once per day per offer) — guests only
+      if (!_isUserAuthenticated()) {
+        final offer = await bannerController.fetchNextCustomOffer();
+        if (offer != null && mounted) {
+          NextOfferDialog.show(offer);
+        }
       }
     }
 

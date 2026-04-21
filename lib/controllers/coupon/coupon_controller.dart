@@ -617,15 +617,15 @@ class CouponController extends BaseController {
 
       final result = res.parsedData?.applyCouponCode;
 
-      debugPrint('[CouponApply] result type: ${result.runtimeType}');
+      // debugPrint('[CouponApply] result type: ${result.runtimeType}');
       if (result != null && result is Mutation$ApplyCouponCode$applyCouponCode$$Order) {
         appliedCouponCodes.clear();
         appliedCouponCodes.add(couponCode);
 
-        debugPrint('[CouponApply] Applied "$couponCode" - couponCodes in order: ${result.couponCodes}');
-        debugPrint('[CouponApply] order discounts: ${result.discounts.map((d) => '${d.type}:${d.amountWithTax}').join(', ')}');
-        debugPrint('[CouponApply] line discounts: ${result.lines.map((l) => '${l.productVariant.id}:${l.discounts.map((d) => '${d.amountWithTax}').join(',')}').join(' | ')}');
-        debugPrint('[CouponApply] totalQuantity=${result.totalQuantity}, total=${result.total}, totalWithTax=${result.totalWithTax}');
+        // debugPrint('[CouponApply] Applied "$couponCode" - couponCodes in order: ${result.couponCodes}');
+        // debugPrint('[CouponApply] order discounts: ${result.discounts.map((d) => '${d.type}:${d.amountWithTax}').join(', ')}');
+        // debugPrint('[CouponApply] line discounts: ${result.lines.map((l) => '${l.productVariant.id}:${l.discounts.map((d) => '${d.amountWithTax}').join(',')}').join(' | ')}');
+        // debugPrint('[CouponApply] totalQuantity=${result.totalQuantity}, total=${result.total}, totalWithTax=${result.totalWithTax}');
 
         // Update controllers: set cart immediately from response, then do full refresh
         try {
@@ -642,7 +642,7 @@ class CouponController extends BaseController {
         // Verify coupon is actually in the order's couponCodes list
         final couponActuallyApplied = result.couponCodes.any(
           (c) => c.toString().toUpperCase() == couponCode.toUpperCase());
-        debugPrint('[CouponApply] couponActuallyApplied=$couponActuallyApplied');
+        // debugPrint('[CouponApply] couponActuallyApplied=$couponActuallyApplied');
 
         if (!couponActuallyApplied) {
           // Server silently rejected the coupon — it's not in the order
@@ -661,7 +661,7 @@ class CouponController extends BaseController {
         final hasLineDiscount = result.lines.any((line) =>
             line.discounts.any((d) => d.amountWithTax != 0));
         final hasPriceActions = CouponValidationHelper.hasPriceDiscountActions(coupon);
-        debugPrint('[CouponApply] hasPriceActions=$hasPriceActions, hasOrderDiscount=$hasOrderDiscount, hasLineDiscount=$hasLineDiscount');
+        // debugPrint('[CouponApply] hasPriceActions=$hasPriceActions, hasOrderDiscount=$hasOrderDiscount, hasLineDiscount=$hasLineDiscount');
 
         if (hasPriceActions && !hasOrderDiscount && !hasLineDiscount &&
             result.totalQuantity > 0) {

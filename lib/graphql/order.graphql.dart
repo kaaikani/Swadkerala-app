@@ -10742,7 +10742,7 @@ class Fragment$Cart$customFields {
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Fragment$Cart$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -10750,7 +10750,7 @@ class Fragment$Cart$customFields {
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -10848,7 +10848,7 @@ abstract class CopyWith$Fragment$Cart$customFields<TRes> {
       _CopyWithStubImpl$Fragment$Cart$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -10877,8 +10877,9 @@ class _CopyWithImpl$Fragment$Cart$customFields<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Cart$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -10901,7 +10902,7 @@ class _CopyWithStubImpl$Fragment$Cart$customFields<TRes>
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -16079,7 +16080,7 @@ class Query$ActiveOrder$activeOrder$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Query$ActiveOrder$activeOrder$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -16087,7 +16088,7 @@ class Query$ActiveOrder$activeOrder$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -16186,7 +16187,7 @@ abstract class CopyWith$Query$ActiveOrder$activeOrder$customFields<TRes> {
       _CopyWithStubImpl$Query$ActiveOrder$activeOrder$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -16215,8 +16216,9 @@ class _CopyWithImpl$Query$ActiveOrder$activeOrder$customFields<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Query$ActiveOrder$activeOrder$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -16239,7 +16241,7 @@ class _CopyWithStubImpl$Query$ActiveOrder$activeOrder$customFields<TRes>
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -21602,7 +21604,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -21610,7 +21612,7 @@ class Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -21714,7 +21716,7 @@ abstract class CopyWith$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFi
       _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -21747,8 +21749,9 @@ class _CopyWithImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$RemoveOrderLine$removeOrderLine$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -21775,7 +21778,7 @@ class _CopyWithStubImpl$Mutation$RemoveOrderLine$removeOrderLine$$Order$customFi
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -27052,7 +27055,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -27060,7 +27063,7 @@ class Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -27166,7 +27169,7 @@ abstract class CopyWith$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
       _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -27202,8 +27205,9 @@ class _CopyWithImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$cust
   }) =>
       _then(
           Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -27230,7 +27234,7 @@ class _CopyWithStubImpl$Mutation$RemoveAllOrderLines$removeAllOrderLines$$Order$
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -32592,7 +32596,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -32600,7 +32604,7 @@ class Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -32704,7 +32708,7 @@ abstract class CopyWith$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFi
       _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -32737,8 +32741,9 @@ class _CopyWithImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -32765,7 +32770,7 @@ class _CopyWithStubImpl$Mutation$AdjustOrderLine$adjustOrderLine$$Order$customFi
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -38590,7 +38595,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -38598,7 +38603,7 @@ class Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -38704,7 +38709,7 @@ abstract class CopyWith$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
       _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -38740,8 +38745,9 @@ class _CopyWithImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Order$c
   }) =>
       _then(
           Mutation$SetShippingAddress$setOrderShippingAddress$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -38768,7 +38774,7 @@ class _CopyWithStubImpl$Mutation$SetShippingAddress$setOrderShippingAddress$$Ord
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -44932,7 +44938,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -44940,7 +44946,7 @@ class Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -45046,7 +45052,7 @@ abstract class CopyWith$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
       _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -45082,8 +45088,9 @@ class _CopyWithImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order$cus
   }) =>
       _then(
           Mutation$SetShippingMethod$setOrderShippingMethod$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -45110,7 +45117,7 @@ class _CopyWithStubImpl$Mutation$SetShippingMethod$setOrderShippingMethod$$Order
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -52436,7 +52443,7 @@ class Query$GetOrderByCode$orderByCode$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Query$GetOrderByCode$orderByCode$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -52444,7 +52451,7 @@ class Query$GetOrderByCode$orderByCode$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -52544,7 +52551,7 @@ abstract class CopyWith$Query$GetOrderByCode$orderByCode$customFields<TRes> {
       _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -52573,8 +52580,9 @@ class _CopyWithImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Query$GetOrderByCode$orderByCode$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -52597,7 +52605,7 @@ class _CopyWithStubImpl$Query$GetOrderByCode$orderByCode$customFields<TRes>
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -58818,7 +58826,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -58826,7 +58834,7 @@ class Mutation$AddPayment$addPaymentToOrder$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -58929,7 +58937,7 @@ abstract class CopyWith$Mutation$AddPayment$addPaymentToOrder$$Order$customField
       _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -58962,8 +58970,9 @@ class _CopyWithImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customFields<
     Object? $__typename = _undefined,
   }) =>
       _then(Mutation$AddPayment$addPaymentToOrder$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -58990,7 +58999,7 @@ class _CopyWithStubImpl$Mutation$AddPayment$addPaymentToOrder$$Order$customField
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -65436,7 +65445,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -65444,7 +65453,7 @@ class Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -65550,7 +65559,7 @@ abstract class CopyWith$Mutation$TransitionOrderToState$transitionOrderToState$$
       _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -65586,8 +65595,9 @@ class _CopyWithImpl$Mutation$TransitionOrderToState$transitionOrderToState$$Orde
   }) =>
       _then(
           Mutation$TransitionOrderToState$transitionOrderToState$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -65614,7 +65624,7 @@ class _CopyWithStubImpl$Mutation$TransitionOrderToState$transitionOrderToState$$
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -71364,7 +71374,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
     final l$otherInstructions = json['otherInstructions'];
     final l$$__typename = json['__typename'];
     return Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       otherInstructions: (l$otherInstructions as String?),
@@ -71372,7 +71382,7 @@ class Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$custom
     );
   }
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final int? loyaltyPointsEarned;
 
@@ -71478,7 +71488,7 @@ abstract class CopyWith$Mutation$TransitionToArrangingPayment$transitionOrderToS
       _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields;
 
   TRes call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,
@@ -71514,8 +71524,9 @@ class _CopyWithImpl$Mutation$TransitionToArrangingPayment$transitionOrderToState
   }) =>
       _then(
           Mutation$TransitionToArrangingPayment$transitionOrderToState$$Order$customFields(
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         loyaltyPointsEarned: loyaltyPointsEarned == _undefined
             ? _instance.loyaltyPointsEarned
             : (loyaltyPointsEarned as int?),
@@ -71542,7 +71553,7 @@ class _CopyWithStubImpl$Mutation$TransitionToArrangingPayment$transitionOrderToS
   TRes _res;
 
   call({
-    int? invoiceNo,
+    String? invoiceNo,
     int? loyaltyPointsEarned,
     int? loyaltyPointsUsed,
     String? otherInstructions,

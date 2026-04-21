@@ -38,7 +38,7 @@ class RemoteConfigService extends GetxController {
       if (kDebugMode) {
         final minV = _remoteConfig!.getString('min_version$_platformSuffix').trim();
         final latestV = _remoteConfig!.getString('latest_version$_platformSuffix').trim();
-        debugPrint('[RemoteConfig] Fetched: updated=$updated, min_version="$minV", latest_version="$latestV" (platform: $_platformSuffix)');
+        // debugPrint('[RemoteConfig] Fetched: updated=$updated, min_version="$minV", latest_version="$latestV" (platform: $_platformSuffix)');
       }
     } catch (e, stackTrace) {
       CrashlyticsService.instance.recordError(

@@ -481,7 +481,7 @@ class BillGenerator {
     // Loyalty points: try order customFields first, fallback to bannerController (for active orders)
     int loyaltyPointsUsed = order.customFields?.loyaltyPointsUsed ?? 0;
     final loyaltyPointsEarned = order.customFields?.loyaltyPointsEarned ?? 0;
-    debugPrint('[BillGen] loyaltyPointsUsed from order: $loyaltyPointsUsed, loyaltyPointsEarned: $loyaltyPointsEarned, loyaltyConfig: ${loyaltyConfig != null}');
+    // debugPrint('[BillGen] loyaltyPointsUsed from order: $loyaltyPointsUsed, loyaltyPointsEarned: $loyaltyPointsEarned, loyaltyConfig: ${loyaltyConfig != null}');
     if (loyaltyPointsUsed == 0 && Get.isRegistered<BannerController>()) {
       final bc = Get.find<BannerController>();
       if (bc.loyaltyPointsApplied.value && bc.loyaltyPointsUsed.value > 0) {
@@ -502,12 +502,12 @@ class BillGenerator {
           pointsPerRupee = config.pointsPerRupee;
         }
       }
-      debugPrint('[BillGen] pointsPerRupee resolved: $pointsPerRupee');
+      // debugPrint('[BillGen] pointsPerRupee resolved: $pointsPerRupee');
       if (pointsPerRupee != null && pointsPerRupee > 0) {
         loyaltyDiscountRupees = loyaltyPointsUsed / pointsPerRupee.toDouble();
       }
     }
-    debugPrint('[BillGen] Final: loyaltyPointsUsed=$loyaltyPointsUsed, loyaltyDiscountRupees=$loyaltyDiscountRupees');
+    // debugPrint('[BillGen] Final: loyaltyPointsUsed=$loyaltyPointsUsed, loyaltyDiscountRupees=$loyaltyDiscountRupees');
 
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.end,

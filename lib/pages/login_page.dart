@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         await storage.write('channel_token', preservedChannelToken);
       }
     } catch (e) {
-      debugPrint('[LoginPage] Error clearing cache: $e');
+      // debugPrint('[LoginPage] Error clearing cache: $e');
     }
   }
 

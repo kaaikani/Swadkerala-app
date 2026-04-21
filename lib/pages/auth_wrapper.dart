@@ -25,7 +25,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    debugPrint('[AuthWrapper] initState called');
+    // debugPrint('[AuthWrapper] initState called');
     _checkTokensAfterInit();
   }
 
@@ -36,24 +36,24 @@ class _AuthWrapperState extends State<AuthWrapper> {
     try {
       final AuthController authController = Get.find();
 
-    debugPrint('[AuthWrapper] Starting token check...');
+    // debugPrint('[AuthWrapper] Starting token check...');
     try {
       // Add timeout to prevent blocking
       await authController.checkLoginStatusFromGraphqlService().timeout(
         const Duration(seconds: 2),
         onTimeout: () {
-          debugPrint('[AuthWrapper] Token check timed out');
+          // debugPrint('[AuthWrapper] Token check timed out');
           // If token check times out, assume not logged in
           authController.setLoggedIn(false);
         },
       );
-      debugPrint('[AuthWrapper] Token check completed');
+      // debugPrint('[AuthWrapper] Token check completed');
     } catch (e) {
-      debugPrint('[AuthWrapper] Token check error: $e');
+      // debugPrint('[AuthWrapper] Token check error: $e');
       authController.setLoggedIn(false);
     }
 
-    debugPrint('[AuthWrapper] Setting _hasCheckedTokens = true');
+    // debugPrint('[AuthWrapper] Setting _hasCheckedTokens = true');
     if (mounted) {
       setState(() {
         _hasCheckedTokens = true;
@@ -67,7 +67,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       });
     }
     } catch (e) {
-      debugPrint('[AuthWrapper] Error getting AuthController: $e');
+      // debugPrint('[AuthWrapper] Error getting AuthController: $e');
       // If Get.find() fails, set checked anyway to proceed
       if (mounted) {
         setState(() {
@@ -123,17 +123,17 @@ class _AuthWrapperState extends State<AuthWrapper> {
         // Show onboarding ONLY if both flags are false (first time ever)
         // If either flag is true, user has seen onboarding before - don't show again
         if (!onboardingComplete && !introShown) {
-          debugPrint('[AuthWrapper] First app launch - showing onboarding');
+          // debugPrint('[AuthWrapper] First app launch - showing onboarding');
           return const OnboardingPage();
         } else {
-          debugPrint('[AuthWrapper] Onboarding already shown - onboardingComplete: $onboardingComplete, introShown: $introShown');
+          // debugPrint('[AuthWrapper] Onboarding already shown - onboardingComplete: $onboardingComplete, introShown: $introShown');
         }
 
         // Not logged in → show Home with Guest/Sign up dialog once; checkout will ask for mandatory login (AuthGuard)
         return _GuestOrSignupGate(child: MyHomePage());
       });
     } catch (e) {
-      debugPrint('[AuthWrapper] Error in build: $e');
+      // debugPrint('[AuthWrapper] Error in build: $e');
       // Fallback to login page if anything fails
       return const LoginPage();
     }

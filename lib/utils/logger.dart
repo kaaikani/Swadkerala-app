@@ -50,7 +50,7 @@ class Logger {
         'DeviceMedium: $_deviceMedium',
       ];
       
-      debugPrint('[${parts.join(' | ')}]');
+      // debugPrint('[${parts.join(' | ')}]');
     }
   }
 
@@ -67,7 +67,7 @@ class Logger {
           .replaceAll('Error:', '')
           .trim();
       
-      debugPrint('[Function: $functionName | ErrorType: $type | ErrorMessage: $message]');
+      // debugPrint('[Function: $functionName | ErrorType: $type | ErrorMessage: $message]');
     }
   }
 }

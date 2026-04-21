@@ -49,28 +49,28 @@ class ChannelService {
     String? type,
     String? postalCode,
   }) async {
-    debugPrint('[UpdateLocation] ChannelService.setChannelInfo called: code=$code, name=$name, type=$type, postalCode=$postalCode, token=${token != null ? "***" : null}');
+    // debugPrint('[UpdateLocation] ChannelService.setChannelInfo called: code=$code, name=$name, type=$type, postalCode=$postalCode, token=${token != null ? "***" : null}');
     // Always enforce ind-Swadkerala channel token
     const enforcedToken = 'ind-Swadkerala';
     await _storage.write(_channelTokenKey, enforcedToken);
     await GraphqlService.setToken(key: 'channel', token: enforcedToken);
     if (code != null) {
       await _storage.write(_channelCodeKey, code);
-      debugPrint('[UpdateLocation] ChannelService: channel_code=$code written');
+      // debugPrint('[UpdateLocation] ChannelService: channel_code=$code written');
     }
     if (name != null) {
       await _storage.write(_channelNameKey, name);
-      debugPrint('[UpdateLocation] ChannelService: channel_name=$name written');
+      // debugPrint('[UpdateLocation] ChannelService: channel_name=$name written');
     }
     if (type != null) {
       await _storage.write(_channelTypeKey, type);
-      debugPrint('[UpdateLocation] ChannelService: channel_type=$type written');
+      // debugPrint('[UpdateLocation] ChannelService: channel_type=$type written');
     }
     if (postalCode != null) {
       await _storage.write(_postalCodeKey, postalCode);
-      debugPrint('[UpdateLocation] ChannelService: postal_code=$postalCode written');
+      // debugPrint('[UpdateLocation] ChannelService: postal_code=$postalCode written');
     }
-    debugPrint('[UpdateLocation] ChannelService.setChannelInfo done');
+    // debugPrint('[UpdateLocation] ChannelService.setChannelInfo done');
   }
 
   /// Check if channel is set (has token)

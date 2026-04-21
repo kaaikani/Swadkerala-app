@@ -569,7 +569,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
 
   /// Returns true if payment flow completed successfully (order placed), false if aborted or failed.
   Future<bool> _handlePayment() async {
-    debugPrint('[Checkout] _handlePayment: START');
+    // debugPrint('[Checkout] _handlePayment: START');
     if (orderController.selectedPaymentMethod.value == null) {
       showErrorSnackbar(AppStrings.pleaseSelectPaymentMethod);
       return false;
@@ -577,30 +577,30 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     final paymentMethod = orderController.selectedPaymentMethod.value!;
     final paymentCode = paymentMethod.code.toLowerCase();
     if (paymentCode.contains('razorpay') || paymentCode.contains('online')) {
-      debugPrint('[Checkout] _handlePayment: branch RAZORPAY -> _handleRazorpayPayment');
+      // debugPrint('[Checkout] _handlePayment: branch RAZORPAY -> _handleRazorpayPayment');
       final ok = await _handleRazorpayPayment();
-      debugPrint('[Checkout] _handlePayment: _handleRazorpayPayment returned success=$ok');
+      // debugPrint('[Checkout] _handlePayment: _handleRazorpayPayment returned success=$ok');
       return ok;
     } else {
-      debugPrint('[Checkout] _handlePayment: branch COD -> _handleCODPayment');
+      // debugPrint('[Checkout] _handlePayment: branch COD -> _handleCODPayment');
       final ok = await _handleCODPayment();
-      debugPrint('[Checkout] _handlePayment: _handleCODPayment returned success=$ok');
+      // debugPrint('[Checkout] _handlePayment: _handleCODPayment returned success=$ok');
       return ok;
     }
   }
 
   void _navigateToOrderConfirmation(String orderCode) {
-    debugPrint('[Checkout] _navigateToOrderConfirmation: orderCode=$orderCode (next frame)');
+    // debugPrint('[Checkout] _navigateToOrderConfirmation: orderCode=$orderCode (next frame)');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint('[Checkout] _navigateToOrderConfirmation: Get.offAllNamed(${AppRoutes.orderConfirmation})');
+      // debugPrint('[Checkout] _navigateToOrderConfirmation: Get.offAllNamed(${AppRoutes.orderConfirmation})');
       Get.offAllNamed(AppRoutes.orderConfirmation, arguments: orderCode);
     });
   }
 
   Future<void> _onPlaceOrder() async {
-    debugPrint('[Checkout] _onPlaceOrder: START (Slide to Pay triggered)');
+    // debugPrint('[Checkout] _onPlaceOrder: START (Slide to Pay triggered)');
     if (_selectedAddress == null) {
-      debugPrint('[Checkout] _onPlaceOrder: ABORT - no address selected');
+      // debugPrint('[Checkout] _onPlaceOrder: ABORT - no address selected');
       _triggerAddressBlink();
       showErrorSnackbar('Please select a delivery address');
       // Reset slider on error
@@ -612,7 +612,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     }
     
     if (!_validateCheckout()) {
-      debugPrint('[Checkout] _onPlaceOrder: ABORT - _validateCheckout failed');
+      // debugPrint('[Checkout] _onPlaceOrder: ABORT - _validateCheckout failed');
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),
@@ -621,7 +621,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     }
     
     if (orderController.selectedPaymentMethod.value == null) {
-      debugPrint('[Checkout] _onPlaceOrder: ABORT - no payment method selected');
+      // debugPrint('[Checkout] _onPlaceOrder: ABORT - no payment method selected');
       showErrorSnackbar(AppStrings.pleaseSelectPaymentMethod);
       // Reset slider on error
       Future.delayed(
@@ -632,7 +632,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     }
 
     if (_selectedAddress != null) {
-      debugPrint('[Checkout] _onPlaceOrder: calling setShippingAddress (currentOrder.code=${orderController.currentOrder.value?.code}, state=${orderController.currentOrder.value?.state})');
+      // debugPrint('[Checkout] _onPlaceOrder: calling setShippingAddress (currentOrder.code=${orderController.currentOrder.value?.code}, state=${orderController.currentOrder.value?.state})');
       final addressSet = await orderController.setShippingAddress(
         fullName: _selectedAddress!.fullName ?? '',
         phoneNumber: _selectedAddress!.phoneNumber ?? '',
@@ -644,9 +644,9 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         countryCode: _selectedAddress!.country.code,
         skipLoading: true,
       );
-      debugPrint('[Checkout] _onPlaceOrder: setShippingAddress returned addressSet=$addressSet');
+      // debugPrint('[Checkout] _onPlaceOrder: setShippingAddress returned addressSet=$addressSet');
       if (!addressSet) {
-        debugPrint('[Checkout] _onPlaceOrder: ABORT - setShippingAddress failed (may show "not authorized" if no active order)');
+        // debugPrint('[Checkout] _onPlaceOrder: ABORT - setShippingAddress failed (may show "not authorized" if no active order)');
         showErrorSnackbar(AppStrings.failedToSetShippingAddress);
         // Reset slider on error
         Future.delayed(
@@ -657,11 +657,11 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       }
     }
 
-    debugPrint('[Checkout] _onPlaceOrder: all validations passed, calling _handlePayment');
+    // debugPrint('[Checkout] _onPlaceOrder: all validations passed, calling _handlePayment');
     final paymentSuccess = await _handlePayment();
-    debugPrint('[Checkout] _onPlaceOrder: _handlePayment returned success=$paymentSuccess');
+    // debugPrint('[Checkout] _onPlaceOrder: _handlePayment returned success=$paymentSuccess');
     if (!paymentSuccess) {
-      debugPrint('[Checkout] _onPlaceOrder: FAILED - payment/place order did not complete. Check [OrderController] transitionToState / transitionToArrangingPayment and [Checkout] _handleCODPayment / _handleRazorpayPayment logs above for error detail.');
+      // debugPrint('[Checkout] _onPlaceOrder: FAILED - payment/place order did not complete. Check [OrderController] transitionToState / transitionToArrangingPayment and [Checkout] _handleCODPayment / _handleRazorpayPayment logs above for error detail.');
     }
   }
   
@@ -745,11 +745,11 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   }
 
   Future<bool> _handleRazorpayPayment() async {
-    debugPrint('[Checkout] _handleRazorpayPayment: START');
+    // debugPrint('[Checkout] _handleRazorpayPayment: START');
     final transitioned = await orderController.transitionToArrangingPayment();
-    debugPrint('[Checkout] _handleRazorpayPayment: transitionToArrangingPayment=$transitioned');
+    // debugPrint('[Checkout] _handleRazorpayPayment: transitionToArrangingPayment=$transitioned');
     if (!transitioned) {
-      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - transition failed. See [OrderController] transitionToArrangingPayment logs for detail.');
+      // debugPrint('[Checkout] _handleRazorpayPayment: ABORT - transition failed. See [OrderController] transitionToArrangingPayment logs for detail.');
       showErrorSnackbar('Could not proceed to payment. Please try again or contact support.');
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -773,7 +773,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       await cartController.getActiveOrder();
       final refreshedOrder = orderController.currentOrder.value;
       if (refreshedOrder?.state != 'ArrangingPayment') {
-        debugPrint('[Checkout] _handleRazorpayPayment: ABORT - order state not ArrangingPayment after refresh (state=${refreshedOrder?.state})');
+        // debugPrint('[Checkout] _handleRazorpayPayment: ABORT - order state not ArrangingPayment after refresh (state=${refreshedOrder?.state})');
         showErrorSnackbar('Order state error. Please try again.');
         return false;
       } else {
@@ -790,7 +790,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     final orderCode = currentOrderFromController?.code ?? cartOrder?.code;
     
     if (orderId == null) {
-      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - orderId=null (currentOrder=${currentOrderFromController?.code}, cart=${cartOrder?.code})');
+      // debugPrint('[Checkout] _handleRazorpayPayment: ABORT - orderId=null (currentOrder=${currentOrderFromController?.code}, cart=${cartOrder?.code})');
       showErrorSnackbar('Order not found');
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -812,7 +812,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     if (razorpayOrder == null ||
         razorpayOrder.razorpayOrderId == null ||
         razorpayOrder.keyId == null) {
-      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - razorpayOrder invalid (razorpayOrderId=${razorpayOrder?.razorpayOrderId}, keyId=${razorpayOrder?.keyId})');
+      // debugPrint('[Checkout] _handleRazorpayPayment: ABORT - razorpayOrder invalid (razorpayOrderId=${razorpayOrder?.razorpayOrderId}, keyId=${razorpayOrder?.keyId})');
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),
@@ -851,7 +851,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     }
 
     if (customerPhone.isEmpty) {
-      debugPrint('[Checkout] _handleRazorpayPayment: ABORT - no customer phone');
+      // debugPrint('[Checkout] _handleRazorpayPayment: ABORT - no customer phone');
       showErrorSnackbar('Phone number is required for payment. Please add a phone number to your address or profile.');
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -866,7 +866,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     // Use amount from response if available, otherwise use calculated amount
     final paymentAmount = razorpayOrder.amount ?? amount.toInt();
 
-    debugPrint('[Checkout] _handleRazorpayPayment: opening Razorpay gateway, orderCode=$orderCode');
+    // debugPrint('[Checkout] _handleRazorpayPayment: opening Razorpay gateway, orderCode=$orderCode');
     _razorpayService.openPaymentGateway(
       razorpayOrderId: razorpayOrder.razorpayOrderId!,
       razorpayKeyId: razorpayOrder.keyId!,
@@ -877,17 +877,17 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       customerPhone: customerPhone,
       description: 'Order #${orderCode ?? orderId}',
       onPaymentSuccess: (response) async {
-        debugPrint('[Checkout] Razorpay onPaymentSuccess: START (orderCode=$orderCode, orderId=$orderId)');
+        // debugPrint('[Checkout] Razorpay onPaymentSuccess: START (orderCode=$orderCode, orderId=$orderId)');
         try {
           _orderPlacedSuccessfully = true;
 
-          debugPrint('[Checkout] Razorpay onPaymentSuccess: calling getActiveOrder...');
+          // debugPrint('[Checkout] Razorpay onPaymentSuccess: calling getActiveOrder...');
           final hasActiveOrder = await orderController.getActiveOrder(skipLoading: true);
-        debugPrint('[Checkout] Razorpay after getActiveOrder: hasActiveOrder=$hasActiveOrder, currentOrder.code=${orderController.currentOrder.value?.code}, cart.code=${cartController.cart.value?.code}');
+        // debugPrint('[Checkout] Razorpay after getActiveOrder: hasActiveOrder=$hasActiveOrder, currentOrder.code=${orderController.currentOrder.value?.code}, cart.code=${cartController.cart.value?.code}');
 
         if (!hasActiveOrder) {
           final finalOrderCode = (orderCode ?? orderId).toString();
-          debugPrint('[Checkout] Razorpay no active order: finalOrderCode=$finalOrderCode, willNavigate=${finalOrderCode.isNotEmpty}');
+          // debugPrint('[Checkout] Razorpay no active order: finalOrderCode=$finalOrderCode, willNavigate=${finalOrderCode.isNotEmpty}');
           if (finalOrderCode.isNotEmpty) {
             _navigateToOrderConfirmation(finalOrderCode);
           }
@@ -898,7 +898,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         final cartOrder = cartController.cart.value;
         final finalOrderCode = orderModel?.code ?? cartOrder?.code ?? orderCode ?? orderId;
         final isStillArrangingPayment = orderModel?.state == 'ArrangingPayment';
-        debugPrint('[Checkout] Razorpay active order: orderModel.code=${orderModel?.code}, orderModel.state=${orderModel?.state}, cartOrder.code=${cartOrder?.code}, finalOrderCode=$finalOrderCode, isStillArrangingPayment=$isStillArrangingPayment');
+        // debugPrint('[Checkout] Razorpay active order: orderModel.code=${orderModel?.code}, orderModel.state=${orderModel?.state}, cartOrder.code=${cartOrder?.code}, finalOrderCode=$finalOrderCode, isStillArrangingPayment=$isStillArrangingPayment');
 
         if (isStillArrangingPayment) {
           orderController.skipPostPaymentRefresh = true; // Avoid getActiveCustomer / getEligibleShippingMethods after addPayment
@@ -916,7 +916,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
             _trackPaymentAnalytics(response, orderModel, cartOrder),
           ]);
           final paymentResult = results[0] as Map<String, dynamic>;
-          debugPrint('[Checkout] Razorpay addPayment result: success=${paymentResult['success']}, errorMessage=${paymentResult['errorMessage']}');
+          // debugPrint('[Checkout] Razorpay addPayment result: success=${paymentResult['success']}, errorMessage=${paymentResult['errorMessage']}');
           if (paymentResult['success'] != true) {
             orderController.skipPostPaymentRefresh = false;
             final errorMessage = paymentResult['errorMessage'] as String? ?? 'Payment failed';
@@ -933,7 +933,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
             return;
           }
           final code = finalOrderCode.toString();
-          debugPrint('[Checkout] Razorpay post-addPayment: code=$code, navigating=${code.isNotEmpty}');
+          // debugPrint('[Checkout] Razorpay post-addPayment: code=$code, navigating=${code.isNotEmpty}');
           if (code.isNotEmpty) {
             _navigateToOrderConfirmation(code);
           }
@@ -942,7 +942,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
             await orderController.transitionToNextState();
           } catch (_) {}
         } else {
-          debugPrint('[Checkout] Razorpay order not in ArrangingPayment, tracking analytics and navigating with code=$finalOrderCode');
+          // debugPrint('[Checkout] Razorpay order not in ArrangingPayment, tracking analytics and navigating with code=$finalOrderCode');
           await _trackPaymentAnalytics(response, orderModel, cartOrder);
           final code = finalOrderCode.toString();
           if (code.isNotEmpty) {
@@ -951,12 +951,12 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
           orderController.skipPostPaymentRefresh = false;
         }
         } catch (e, st) {
-          debugPrint('[Checkout] Razorpay onPaymentSuccess: EXCEPTION - $e');
-          debugPrint('[Checkout] Razorpay onPaymentSuccess: stackTrace - $st');
+          // debugPrint('[Checkout] Razorpay onPaymentSuccess: EXCEPTION - $e');
+          // debugPrint('[Checkout] Razorpay onPaymentSuccess: stackTrace - $st');
         }
       },
       onPaymentFailure: (_) {
-        debugPrint('[Checkout] Razorpay onPaymentFailure: user cancelled or payment failed');
+        // debugPrint('[Checkout] Razorpay onPaymentFailure: user cancelled or payment failed');
         Future.delayed(
           const Duration(milliseconds: 500),
           () => _slideActionKey.currentState?.reset(),
@@ -967,13 +967,13 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
   }
 
   Future<bool> _handleCODPayment() async {
-    debugPrint('[Checkout] _handleCODPayment: START');
+    // debugPrint('[Checkout] _handleCODPayment: START');
     final orderBefore = orderController.currentOrder.value;
-    debugPrint('[Checkout] _handleCODPayment: order before transition code=${orderBefore?.code} state=${orderBefore?.state}');
+    // debugPrint('[Checkout] _handleCODPayment: order before transition code=${orderBefore?.code} state=${orderBefore?.state}');
     final transitioned = await orderController.transitionToArrangingPayment();
-    debugPrint('[Checkout] _handleCODPayment: transitionToArrangingPayment=$transitioned (order.state after=${orderController.currentOrder.value?.state})');
+    // debugPrint('[Checkout] _handleCODPayment: transitionToArrangingPayment=$transitioned (order.state after=${orderController.currentOrder.value?.state})');
     if (!transitioned) {
-      debugPrint('[Checkout] _handleCODPayment: ABORT - transition failed. See [OrderController] transitionToArrangingPayment/transitionToState logs for GraphQL/error detail.');
+      // debugPrint('[Checkout] _handleCODPayment: ABORT - transition failed. See [OrderController] transitionToArrangingPayment/transitionToState logs for GraphQL/error detail.');
       showErrorSnackbar('Could not proceed to payment. Please try again or contact support.');
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -981,7 +981,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       );
       return false;
     }
-    debugPrint('[Checkout] _handleCODPayment: refreshing order and cart...');
+    // debugPrint('[Checkout] _handleCODPayment: refreshing order and cart...');
     await orderController.getActiveOrder(skipLoading: true);
     
     // Add a small delay to ensure server has processed the transition
@@ -995,7 +995,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       await cartController.getActiveOrder();
       final refreshedOrder = orderController.currentOrder.value;
       if (refreshedOrder?.state != 'ArrangingPayment') {
-        debugPrint('[Checkout] _handleCODPayment: ABORT - order state not ArrangingPayment after refresh (state=${refreshedOrder?.state})');
+        // debugPrint('[Checkout] _handleCODPayment: ABORT - order state not ArrangingPayment after refresh (state=${refreshedOrder?.state})');
         showErrorSnackbar('Order state error. Please try again.');
         return false;
       } else {
@@ -1024,7 +1024,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     final finalTotal = orderTotal + shippingCost;
     final paymentMethod = orderController.selectedPaymentMethod.value!;
     
-    debugPrint('[Checkout] _handleCODPayment: calling addPayment (orderCode=${orderModel?.code ?? cartOrder?.code})');
+    // debugPrint('[Checkout] _handleCODPayment: calling addPayment (orderCode=${orderModel?.code ?? cartOrder?.code})');
     final paymentResult = await orderController.addPayment(
       method: paymentMethod.code,
       metadata: {
@@ -1033,12 +1033,12 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
         'transaction_id': transactionId ?? 'N/A',
       },
     );
-    debugPrint('[Checkout] _handleCODPayment: addPayment result success=${paymentResult['success']}, errorMessage=${paymentResult['errorMessage']}');
+    // debugPrint('[Checkout] _handleCODPayment: addPayment result success=${paymentResult['success']}, errorMessage=${paymentResult['errorMessage']}');
 
     if (paymentResult['success'] != true) {
       // Payment failed - show error dialog and stay on checkout page
       final errorMessage = paymentResult['errorMessage'] as String? ?? 'Payment failed';
-      debugPrint('[Checkout] _handleCODPayment: ABORT - addPayment failed errorMessage=$errorMessage');
+      // debugPrint('[Checkout] _handleCODPayment: ABORT - addPayment failed errorMessage=$errorMessage');
       ErrorDialog.show(
         title: 'Payment Failed',
         message: errorMessage,
@@ -1054,7 +1054,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     }
 
     if (paymentResult['success'] == true) {
-      debugPrint('[Checkout] COD addPayment success: orderCode=${orderController.currentOrder.value?.code}, cartCode=${cartController.cart.value?.code}');
+      // debugPrint('[Checkout] COD addPayment success: orderCode=${orderController.currentOrder.value?.code}, cartCode=${cartController.cart.value?.code}');
       final cart = cartController.cart.value;
       if (cart != null) {
         final items = cart.lines.map((line) {
@@ -1087,11 +1087,11 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       final orderCodeForConfirmation = cart?.code ??
           orderController.currentOrder.value?.code ??
           '';
-      debugPrint('[Checkout] COD navigate: orderCodeForConfirmation=$orderCodeForConfirmation, willGoToConfirmation=${orderCodeForConfirmation.isNotEmpty}');
+      // debugPrint('[Checkout] COD navigate: orderCodeForConfirmation=$orderCodeForConfirmation, willGoToConfirmation=${orderCodeForConfirmation.isNotEmpty}');
       if (orderCodeForConfirmation.isNotEmpty) {
         _navigateToOrderConfirmation(orderCodeForConfirmation);
       } else {
-        debugPrint('[Checkout] COD no order code, navigating to home');
+        // debugPrint('[Checkout] COD no order code, navigating to home');
         Get.offAllNamed(AppRoutes.home);
       }
       Future.delayed(const Duration(milliseconds: 500), () {
@@ -1100,7 +1100,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
       return true;
     } else {
       showErrorSnackbar('Payment failed');
-      debugPrint('[Checkout] _handleCODPayment: ABORT - paymentResult success not true (fallback branch)');
+      // debugPrint('[Checkout] _handleCODPayment: ABORT - paymentResult success not true (fallback branch)');
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _slideActionKey.currentState?.reset(),

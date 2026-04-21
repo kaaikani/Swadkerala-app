@@ -179,23 +179,23 @@ Future<void> _initializeFirebase() async {
       final isIos = defaultTargetPlatform == TargetPlatform.iOS;
       if (token != null) {
         final platform = isIos ? 'iOS' : (defaultTargetPlatform == TargetPlatform.android ? 'Android' : 'other');
-        debugPrint('[FCM] Token ($platform): $token');
+        // debugPrint('[FCM] Token ($platform): $token');
         if (isIos) {
-          debugPrint('[FCM] Use this token in Firebase Console → Messaging → Send to single device');
+          // debugPrint('[FCM] Use this token in Firebase Console → Messaging → Send to single device');
         }
       } else {
-        debugPrint('[FCM] Token is null (e.g. permission denied or not yet granted)');
+        // debugPrint('[FCM] Token is null (e.g. permission denied or not yet granted)');
         if (defaultTargetPlatform == TargetPlatform.iOS) {
-          debugPrint('[FCM] iOS: Allow notifications when prompted, then restart app or wait for "[FCM] Token (after permission)"');
-          debugPrint('[FCM] iOS: Upload APNs .p8 key in Firebase → Project settings → Cloud Messaging → Apple app config');
+          // debugPrint('[FCM] iOS: Allow notifications when prompted, then restart app or wait for "[FCM] Token (after permission)"');
+          // debugPrint('[FCM] iOS: Upload APNs .p8 key in Firebase → Project settings → Cloud Messaging → Apple app config');
         }
       }
     } catch (e) {
       if (e.toString().contains('apns-token-not-set')) {
-        debugPrint('[FCM] iOS: FCM token will appear after you allow notifications on a physical device (simulator has no APNS).');
-        debugPrint('[FCM] iOS: Upload APNs key in Firebase Console → Project settings → Cloud Messaging');
+        // debugPrint('[FCM] iOS: FCM token will appear after you allow notifications on a physical device (simulator has no APNS).');
+        // debugPrint('[FCM] iOS: Upload APNs key in Firebase Console → Project settings → Cloud Messaging');
       } else {
-        debugPrint('[FCM] getToken error: $e');
+        // debugPrint('[FCM] getToken error: $e');
       }
     }
 
@@ -205,7 +205,7 @@ Future<void> _initializeFirebase() async {
         try {
           final token = await messaging.getToken();
           if (token != null && kDebugMode) {
-            debugPrint('[FCM] Token (iOS, after delay): $token');
+            // debugPrint('[FCM] Token (iOS, after delay): $token');
           }
         } catch (_) {}
       });
@@ -216,7 +216,7 @@ Future<void> _initializeFirebase() async {
       final platform = defaultTargetPlatform == TargetPlatform.iOS
           ? 'iOS'
           : (defaultTargetPlatform == TargetPlatform.android ? 'Android' : 'other');
-      debugPrint('[FCM] Token refreshed ($platform): $newToken');
+      // debugPrint('[FCM] Token refreshed ($platform): $newToken');
     });
 
     // Foreground: show notification banner + snackbar
@@ -260,23 +260,23 @@ Future<void> _initializeGetStorageSync() async {
     // Try to initialize GetStorage immediately
     await GetStorage.init();
     if (kDebugMode) {
-      debugPrint('✅ GetStorage initialized synchronously');
+      // debugPrint('✅ GetStorage initialized synchronously');
     }
   } catch (e) {
     // If it fails, try with a short delay (platform channels might not be ready)
     if (kDebugMode) {
-      debugPrint('⚠️ GetStorage sync init failed, retrying...');
+      // debugPrint('⚠️ GetStorage sync init failed, retrying...');
     }
     await Future.delayed(const Duration(milliseconds: 500));
     try {
       await GetStorage.init();
       if (kDebugMode) {
-        debugPrint('✅ GetStorage initialized on retry');
+        // debugPrint('✅ GetStorage initialized on retry');
       }
     } catch (e2) {
       // If still fails, log but continue - background retry will handle it
       if (kDebugMode) {
-        debugPrint('⚠️ GetStorage sync init failed, will retry in background');
+        // debugPrint('⚠️ GetStorage sync init failed, will retry in background');
       }
     }
   }
@@ -293,7 +293,7 @@ Future<void> _initializeGetStorageWithRetry() async {
     try {
       await GetStorage.init();
       if (kDebugMode) {
-        debugPrint('✅ GetStorage initialized successfully');
+        // debugPrint('✅ GetStorage initialized successfully');
       }
     } catch (e) {
       // Log error in debug mode (but don't spam)
@@ -301,10 +301,10 @@ Future<void> _initializeGetStorageWithRetry() async {
         if (e is PlatformException && 
             e.code == 'channel-error' && 
             e.message?.contains('path_provider') == true) {
-          debugPrint('⚠️ GetStorage initialization failed - path_provider not ready');
-          debugPrint('   App will continue. Storage will be available after platform channels are ready.');
+          // debugPrint('⚠️ GetStorage initialization failed - path_provider not ready');
+          // debugPrint('   App will continue. Storage will be available after platform channels are ready.');
         } else {
-          debugPrint('⚠️ GetStorage initialization failed: $e');
+          // debugPrint('⚠️ GetStorage initialization failed: $e');
         }
       }
       // Record to Crashlytics if available
@@ -323,11 +323,11 @@ Future<void> _initializeGetStorageWithRetry() async {
         try {
           await GetStorage.init();
           if (kDebugMode) {
-            debugPrint('✅ GetStorage initialized successfully on retry');
+            // debugPrint('✅ GetStorage initialized successfully on retry');
           }
         } catch (e2) {
           if (kDebugMode) {
-            debugPrint('⚠️ GetStorage retry also failed. Storage may not be available.');
+            // debugPrint('⚠️ GetStorage retry also failed. Storage may not be available.');
           }
         }
       });
@@ -513,18 +513,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       await Future.delayed(const Duration(milliseconds: 1000));
       final currentStatus =
           await AppTrackingTransparency.trackingAuthorizationStatus;
-      debugPrint('[ATT] current status before request: $currentStatus');
+      // debugPrint('[ATT] current status before request: $currentStatus');
       if (currentStatus == TrackingStatus.notDetermined) {
         final status =
             await AppTrackingTransparency.requestTrackingAuthorization();
-        debugPrint('[ATT] requestTrackingAuthorization returned: $status');
+        // debugPrint('[ATT] requestTrackingAuthorization returned: $status');
       } else {
-        debugPrint('[ATT] already determined: $currentStatus');
+        // debugPrint('[ATT] already determined: $currentStatus');
       }
     } catch (e) {
       // Allow another retry on next resume if anything went wrong.
       _attRequested = false;
-      debugPrint('[ATT] error requesting tracking authorization: $e');
+      // debugPrint('[ATT] error requesting tracking authorization: $e');
     }
   }
 

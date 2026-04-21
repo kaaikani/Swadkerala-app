@@ -232,10 +232,10 @@ class GraphqlService {
   static Future<void> setGuestOrderCode(String code) async {
     if (code.trim().isEmpty) {
       await _storage.remove(_guestOrderCodeKey);
-      debugPrint('[GuestOrderCode] cleared (empty)');
+      // debugPrint('[GuestOrderCode] cleared (empty)');
     } else {
       await _storage.write(_guestOrderCodeKey, code.trim());
-      debugPrint('[GuestOrderCode] saved code="${code.trim()}"');
+      // debugPrint('[GuestOrderCode] saved code="${code.trim()}"');
     }
   }
   static Future<void> clearGuestOrderCode() async => _storage.remove(_guestOrderCodeKey);

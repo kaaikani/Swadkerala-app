@@ -11523,7 +11523,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       otherInstructions: (l$otherInstructions as String?),
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -11534,7 +11534,7 @@ class Query$GetActiveCustomer$activeCustomer$orders$items$customFields {
 
   final String? otherInstructions;
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final String $__typename;
 
@@ -11636,7 +11636,7 @@ abstract class CopyWith$Query$GetActiveCustomer$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
-    int? invoiceNo,
+    String? invoiceNo,
     String? $__typename,
   });
 }
@@ -11676,8 +11676,9 @@ class _CopyWithImpl$Query$GetActiveCustomer$activeCustomer$orders$items$customFi
         otherInstructions: otherInstructions == _undefined
             ? _instance.otherInstructions
             : (otherInstructions as String?),
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -11698,7 +11699,7 @@ class _CopyWithStubImpl$Query$GetActiveCustomer$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
-    int? invoiceNo,
+    String? invoiceNo,
     String? $__typename,
   }) =>
       _res;
@@ -15515,7 +15516,7 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
       loyaltyPointsUsed: (l$loyaltyPointsUsed as int?),
       loyaltyPointsEarned: (l$loyaltyPointsEarned as int?),
       otherInstructions: (l$otherInstructions as String?),
-      invoiceNo: (l$invoiceNo as int?),
+      invoiceNo: (l$invoiceNo as String?),
       $__typename: (l$$__typename as String),
     );
   }
@@ -15526,7 +15527,7 @@ class Query$GetCustomerOrders$activeCustomer$orders$items$customFields {
 
   final String? otherInstructions;
 
-  final int? invoiceNo;
+  final String? invoiceNo;
 
   final String $__typename;
 
@@ -15628,7 +15629,7 @@ abstract class CopyWith$Query$GetCustomerOrders$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
-    int? invoiceNo,
+    String? invoiceNo,
     String? $__typename,
   });
 }
@@ -15668,8 +15669,9 @@ class _CopyWithImpl$Query$GetCustomerOrders$activeCustomer$orders$items$customFi
         otherInstructions: otherInstructions == _undefined
             ? _instance.otherInstructions
             : (otherInstructions as String?),
-        invoiceNo:
-            invoiceNo == _undefined ? _instance.invoiceNo : (invoiceNo as int?),
+        invoiceNo: invoiceNo == _undefined
+            ? _instance.invoiceNo
+            : (invoiceNo as String?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -15690,7 +15692,7 @@ class _CopyWithStubImpl$Query$GetCustomerOrders$activeCustomer$orders$items$cust
     int? loyaltyPointsUsed,
     int? loyaltyPointsEarned,
     String? otherInstructions,
-    int? invoiceNo,
+    String? invoiceNo,
     String? $__typename,
   }) =>
       _res;

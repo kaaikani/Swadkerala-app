@@ -31,15 +31,15 @@ Future<void> _requestNotificationPermissionWhenReady() async {
       try {
         final token = await FirebaseMessaging.instance.getToken();
         if (token != null) {
-          debugPrint('[FCM] Token (after permission): $token');
+          // debugPrint('[FCM] Token (after permission): $token');
         } else {
-          debugPrint('[FCM] Token null after permission (use a physical device; simulator has no APNS).');
+          // debugPrint('[FCM] Token null after permission (use a physical device; simulator has no APNS).');
         }
       } catch (e) {
         if (e.toString().contains('apns-token-not-set')) {
-          debugPrint('[FCM] APNS not set: use a physical device for push — simulator does not support APNS.');
+          // debugPrint('[FCM] APNS not set: use a physical device for push — simulator does not support APNS.');
         } else {
-          debugPrint('[FCM] getToken after permission error: $e');
+          // debugPrint('[FCM] getToken after permission error: $e');
         }
       }
     }
@@ -62,7 +62,7 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
   @override
   void initState() {
     super.initState();
-    debugPrint('[InitialRouteWrapper] initState called');
+    // debugPrint('[InitialRouteWrapper] initState called');
     _checkUpdateSettings();
   }
 
@@ -85,18 +85,18 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
 
       // Check Play Store for updates directly (GraphQL query disabled)
       // Add timeout to prevent blocking
-      debugPrint('[InitialRouteWrapper] Starting update check...');
+      // debugPrint('[InitialRouteWrapper] Starting update check...');
       try {
         await updateService.checkForUpdatesAndDetermineType().timeout(
           const Duration(seconds: 3),
           onTimeout: () {
-            debugPrint('[InitialRouteWrapper] Update check timed out');
+            // debugPrint('[InitialRouteWrapper] Update check timed out');
             // If update check times out, continue anyway
           },
         );
-        debugPrint('[InitialRouteWrapper] Update check completed');
+        // debugPrint('[InitialRouteWrapper] Update check completed');
       } catch (e) {
-        debugPrint('[InitialRouteWrapper] Update check error: $e');
+        // debugPrint('[InitialRouteWrapper] Update check error: $e');
         // Continue even if update check fails
       }
 
@@ -108,11 +108,11 @@ class _InitialRouteWrapperState extends State<InitialRouteWrapper> {
       }
 
     } catch (e) {
-      debugPrint('[InitialRouteWrapper] Update check error: $e');
+      // debugPrint('[InitialRouteWrapper] Update check error: $e');
       _shouldCheckImmediateUpdate = false;
     } finally {
       if (mounted) {
-        debugPrint('[InitialRouteWrapper] Setting _isLoading = false');
+        // debugPrint('[InitialRouteWrapper] Setting _isLoading = false');
         setState(() {
           _isLoading = false;
         });

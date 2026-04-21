@@ -441,7 +441,7 @@ class AddressComponent extends StatelessWidget {
 
         // Fetch areas for a postal code
         void fetchAreasForCode(String code) {
-          debugPrint('[Areas] fetchAreasForCode called: code=$code, alreadyLoaded=${areasState.loadedForPostalCode}');
+          // debugPrint('[Areas] fetchAreasForCode called: code=$code, alreadyLoaded=${areasState.loadedForPostalCode}');
           if (code.isEmpty) return;
           // Reset state for new fetch
           areasState.isLoadingAreas = true;
@@ -452,9 +452,9 @@ class AddressComponent extends StatelessWidget {
             try { dialogSetState!(() {}); } catch (_) {}
           }
           customerController.fetchAreasForPostalCode(code).then((areas) {
-            debugPrint('[Areas] Fetched ${areas.length} areas for $code');
+            // debugPrint('[Areas] Fetched ${areas.length} areas for $code');
             for (final a in areas) {
-              debugPrint('[Areas]   ${a.id}: ${a.name} (enabled=${a.enabled})');
+              // debugPrint('[Areas]   ${a.id}: ${a.name} (enabled=${a.enabled})');
             }
             areasState.areasList = areas;
             areasState.isLoadingAreas = false;
@@ -462,7 +462,7 @@ class AddressComponent extends StatelessWidget {
               try { dialogSetState!(() {}); } catch (_) {}
             }
           }).catchError((e) {
-            debugPrint('[Areas] Error fetching areas: $e');
+            // debugPrint('[Areas] Error fetching areas: $e');
             areasState.isLoadingAreas = false;
             if (dialogSetState != null) {
               try { dialogSetState!(() {}); } catch (_) {}
@@ -515,24 +515,24 @@ class AddressComponent extends StatelessWidget {
             postalCodesState.setStateCallback = setState;
 
             // Fetch areas for postal code (edit mode or after selection)
-            debugPrint('[Areas] Builder: postalCode=$selectedPostalCode, loadedFor=${areasState.loadedForPostalCode}, isLoading=${areasState.isLoadingAreas}, areas=${areasState.areasList.length}');
+            // debugPrint('[Areas] Builder: postalCode=$selectedPostalCode, loadedFor=${areasState.loadedForPostalCode}, isLoading=${areasState.isLoadingAreas}, areas=${areasState.areasList.length}');
             if (selectedPostalCode.isNotEmpty && areasState.loadedForPostalCode != selectedPostalCode) {
-              debugPrint('[Areas] Will fetch areas for: $selectedPostalCode');
+              // debugPrint('[Areas] Will fetch areas for: $selectedPostalCode');
               final codeToFetch = selectedPostalCode;
               areasState.loadedForPostalCode = codeToFetch;
               areasState.isLoadingAreas = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                debugPrint('[Areas] PostFrameCallback: fetching areas for $codeToFetch');
+                // debugPrint('[Areas] PostFrameCallback: fetching areas for $codeToFetch');
                 customerController.fetchAreasForPostalCode(codeToFetch).then((areas) {
-                  debugPrint('[Areas] Got ${areas.length} areas for $codeToFetch');
+                  // debugPrint('[Areas] Got ${areas.length} areas for $codeToFetch');
                   for (final a in areas) {
-                    debugPrint('[Areas]   ${a.id}: ${a.name} (enabled=${a.enabled})');
+                    // debugPrint('[Areas]   ${a.id}: ${a.name} (enabled=${a.enabled})');
                   }
                   areasState.areasList = areas;
                   areasState.isLoadingAreas = false;
                   setState(() {});
                 }).catchError((e) {
-                  debugPrint('[Areas] Fetch error: $e');
+                  // debugPrint('[Areas] Fetch error: $e');
                   areasState.isLoadingAreas = false;
                   setState(() {});
                 });
@@ -646,7 +646,7 @@ class AddressComponent extends StatelessWidget {
                             postalCodesState.postalCodesList,
                             postalCodesState.isLoadingPostalCodes,
                             (value) {
-                              debugPrint('[Address] Postal code selected: $value');
+                              // debugPrint('[Address] Postal code selected: $value');
                               setState(() {
                                 postalController.text = value ?? '';
                                 selectedPostalCode = value ?? '';
@@ -1167,7 +1167,7 @@ class AddressComponent extends StatelessWidget {
     String? selectedArea,
     ValueChanged<String?> onAreaChanged,
   ) {
-    debugPrint('[Areas] _buildLandmarkFieldFromQuery: isLoading=${areasState.isLoadingAreas}, areas=${areasState.areasList.length}, selectedArea=$selectedArea, loadedFor=${areasState.loadedForPostalCode}');
+    // debugPrint('[Areas] _buildLandmarkFieldFromQuery: isLoading=${areasState.isLoadingAreas}, areas=${areasState.areasList.length}, selectedArea=$selectedArea, loadedFor=${areasState.loadedForPostalCode}');
     if (areasState.isLoadingAreas) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,

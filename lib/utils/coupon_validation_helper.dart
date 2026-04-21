@@ -291,17 +291,6 @@ class CouponValidationHelper {
     final effectiveSubTotal = _getEffectiveSubTotal(cart, freeProductVariantIds);
     final isMet = effectiveSubTotal >= requiredAmount;
 
-    // Debug: log comparison values to diagnose validation issues
-    assert(() {
-      print('[CouponValidation] minimum_order_amount: '
-          'required=$requiredAmount (${PriceFormatter.formatPrice(requiredAmount)}), '
-          'effectiveSubTotal=$effectiveSubTotal (${PriceFormatter.formatPrice(effectiveSubTotal)}), '
-          'cartNull=${cart == null}, '
-          'freeIds=${freeProductVariantIds.length}, '
-          'isMet=$isMet');
-      return true;
-    }());
-
     return CouponConditionInfo(
       code: 'minimum_order_amount',
       displayText:

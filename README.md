@@ -31,6 +31,37 @@ flutter run
 flutter build apk --release
 ```
 
+## Analytics (Firebase + Meta)
+
+Analytics and Crashlytics collection is gated on `kReleaseMode` — **auto-enabled for any release build** (Xcode Archive, `flutter build apk|appbundle|ipa --release`) and off for debug/profile runs. No flag needed.
+
+```bash
+# Release APK (Play Store)
+flutter build apk --release
+
+# Release App Bundle (Play Store)
+flutter build appbundle --release
+
+# Release IPA (App Store) — or just Product > Archive in Xcode
+flutter build ipa --release
+```
+
+Gate defined in [lib/services/analytics_service.dart](lib/services/analytics_service.dart) and [lib/services/crashlytics_service.dart](lib/services/crashlytics_service.dart).
+
+## Toggle Debug Prints
+
+Comment out every `print(...)` / `debugPrint(...)` in `lib/` with one command (macOS):
+
+```bash
+# Comment all prints
+find lib -name "*.dart" -exec sed -i '' -E 's|^([[:space:]]*)(print\()|\1// \2|; s|^([[:space:]]*)(debugPrint\()|\1// \2|' {} +
+
+# Uncomment all prints
+find lib -name "*.dart" -exec sed -i '' -E 's|^([[:space:]]*)// (print\()|\1\2|; s|^([[:space:]]*)// (debugPrint\()|\1\2|' {} +
+```
+
+On Linux, drop the `''` after `-i` (use `sed -i -E ...`). Only affects statement-start `print`/`debugPrint` lines — prints embedded mid-expression are left alone.
+
 ## Complete Documentation
 
 For detailed documentation including:

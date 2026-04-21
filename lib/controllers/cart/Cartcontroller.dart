@@ -151,11 +151,11 @@ class CartController extends BaseController {
   /// Get active order (current cart)
   Future<bool> getActiveOrder() async {
     Logger.logFunction(functionName: 'getActiveOrder', queryName: 'ActiveOrder');
-    debugPrint('[CartController] getActiveOrder() called');
+    // debugPrint('[CartController] getActiveOrder() called');
 
     // Prevent concurrent calls
     if (_isFetchingActiveOrder) {
-      debugPrint('[CartController] getActiveOrder() skipped - already fetching');
+      // debugPrint('[CartController] getActiveOrder() skipped - already fetching');
       return false;
     }
 
@@ -163,11 +163,11 @@ class CartController extends BaseController {
     try {
       // Restore guest token from storage before fetch (ensures cart persists across app restart)
       if (GraphqlService.authToken.isEmpty) {
-        debugPrint('[CartController] getActiveOrder: restoring guest session');
+        // debugPrint('[CartController] getActiveOrder: restoring guest session');
         await GraphqlService.ensureGuestSessionForLogin();
       }
 
-      debugPrint('[CartController] getActiveOrder: fetching from network...');
+      // debugPrint('[CartController] getActiveOrder: fetching from network...');
       final response = await GraphqlService.client.value.query$ActiveOrder(
         Options$Query$ActiveOrder(
           fetchPolicy: graphql.FetchPolicy.networkOnly,
@@ -177,11 +177,11 @@ class CartController extends BaseController {
 
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to load cart')) {
-        debugPrint('[CartController] getActiveOrder: response has errors');
+        // debugPrint('[CartController] getActiveOrder: response has errors');
         if (response.exception != null) {
-          debugPrint('[CartController] getActiveOrder: exception=${response.exception}');
+          // debugPrint('[CartController] getActiveOrder: exception=${response.exception}');
           for (final error in response.exception!.graphqlErrors) {
-            debugPrint('[CartController] getActiveOrder: graphqlError=${error.message}');
+            // debugPrint('[CartController] getActiveOrder: graphqlError=${error.message}');
           }
         }
         return false;
@@ -192,7 +192,7 @@ class CartController extends BaseController {
       final orderData = response.parsedData?.activeOrder;
       if (orderData != null) {
         if (kDebugMode) {
-          debugPrint('[CartController] getActiveOrder: hasOrder=true, code=${orderData.code}, linesCount=${orderData.lines.length}, totalQuantity=${orderData.totalQuantity}');
+          // debugPrint('[CartController] getActiveOrder: hasOrder=true, code=${orderData.code}, linesCount=${orderData.lines.length}, totalQuantity=${orderData.totalQuantity}');
         }
         if (GraphqlService.authToken.isEmpty && orderData.code.isNotEmpty) {
           await GraphqlService.setGuestOrderCode(orderData.code);
@@ -299,7 +299,7 @@ class CartController extends BaseController {
           return true;
         } else {
           if (kDebugMode) {
-            debugPrint('[CartController] getActiveOrder: order has no lines/total, clearing cart');
+            // debugPrint('[CartController] getActiveOrder: order has no lines/total, clearing cart');
           }
           cart.value = null;
           _updateAppBadge();
@@ -315,18 +315,18 @@ class CartController extends BaseController {
       }
 
       if (kDebugMode) {
-        debugPrint('[CartController] getActiveOrder: hasOrder=false (activeOrder null), clearing cart');
+        // debugPrint('[CartController] getActiveOrder: hasOrder=false (activeOrder null), clearing cart');
       }
       cart.value = null;
       _updateAppBadge();
       return true;
     } catch (e) {
-      debugPrint('[CartController] getActiveOrder: ERROR - $e');
+      // debugPrint('[CartController] getActiveOrder: ERROR - $e');
       handleException(e, customErrorMessage: 'Failed to load cart', functionName: 'getActiveOrder');
       return false;
     } finally {
       _isFetchingActiveOrder = false;
-      debugPrint('[CartController] getActiveOrder() completed, cart=${cart.value != null ? "has data (${cart.value!.lines.length} lines)" : "null"}');
+      // debugPrint('[CartController] getActiveOrder() completed, cart=${cart.value != null ? "has data (${cart.value!.lines.length} lines)" : "null"}');
     }
   }
 
@@ -389,7 +389,7 @@ class CartController extends BaseController {
           }
         }
       }
-      print('[adjustOrderLine] Calling GraphQL mutation with orderLineId: $orderLineId, quantity: $quantity');
+      // print('[adjustOrderLine] Calling GraphQL mutation with orderLineId: $orderLineId, quantity: $quantity');
       final response = await GraphqlService.client.value.mutate$AdjustOrderLine(
         Options$Mutation$AdjustOrderLine(
           variables: Variables$Mutation$AdjustOrderLine(
@@ -399,69 +399,69 @@ class CartController extends BaseController {
         ),
       );
       
-      print('[adjustOrderLine] Response received - hasException: ${response.hasException}');
-      print('[adjustOrderLine] Response parsedData: ${response.parsedData != null ? "exists" : "null"}');
+      // print('[adjustOrderLine] Response received - hasException: ${response.hasException}');
+      // print('[adjustOrderLine] Response parsedData: ${response.parsedData != null ? "exists" : "null"}');
       
       // Check for GraphQL errors in exception first
       if (response.hasException && response.exception?.graphqlErrors.isNotEmpty == true) {
-        print('[adjustOrderLine] GraphQL errors in exception: ${response.exception!.graphqlErrors.length}');
+        // print('[adjustOrderLine] GraphQL errors in exception: ${response.exception!.graphqlErrors.length}');
         for (final error in response.exception!.graphqlErrors) {
-          print('[adjustOrderLine] GraphQL error: ${error.message}');
-          print('[adjustOrderLine] GraphQL error extensions: ${error.extensions}');
+          // print('[adjustOrderLine] GraphQL error: ${error.message}');
+          // print('[adjustOrderLine] GraphQL error extensions: ${error.extensions}');
         }
       }
       
       // Check for OrderInterceptorError specifically before general error check
       final result = response.parsedData?.adjustOrderLine;
-      print('[adjustOrderLine] Result type: ${result != null ? result.$__typename : "null"}');
+      // print('[adjustOrderLine] Result type: ${result != null ? result.$__typename : "null"}');
       
       if (result != null && 
           result is Mutation$AdjustOrderLine$adjustOrderLine$$OrderInterceptorError) {
-        print('[adjustOrderLine] OrderInterceptorError detected!');
-        print('[adjustOrderLine] Error code: ${result.errorCode}');
-        print('[adjustOrderLine] Message: ${result.message}');
-        print('[adjustOrderLine] InterceptorError: ${result.interceptorError}');
+        // print('[adjustOrderLine] OrderInterceptorError detected!');
+        // print('[adjustOrderLine] Error code: ${result.errorCode}');
+        // print('[adjustOrderLine] Message: ${result.message}');
+        // print('[adjustOrderLine] InterceptorError: ${result.interceptorError}');
         _handleAdjustOrderError(result);
         // Refresh cart to ensure UI shows correct quantity after error
-        print('[adjustOrderLine] Refreshing cart after error...');
+        // print('[adjustOrderLine] Refreshing cart after error...');
         final refreshSuccess = await getActiveOrder();
-        print('[adjustOrderLine] Cart refresh completed: $refreshSuccess');
+        // print('[adjustOrderLine] Cart refresh completed: $refreshSuccess');
         if (refreshSuccess && cart.value != null) {
           // Find the order line to verify quantity
           try {
             final orderLine = cart.value!.lines.firstWhere(
               (line) => line.id == orderLineId,
             );
-            print('[adjustOrderLine] Order line quantity after refresh: ${orderLine.quantity}');
+            // print('[adjustOrderLine] Order line quantity after refresh: ${orderLine.quantity}');
           } catch (e) {
-            print('[adjustOrderLine] Order line not found after refresh: $e');
+            // print('[adjustOrderLine] Order line not found after refresh: $e');
           }
         }
         return false;
       }
       
-      print('[adjustOrderLine] Checking for general errors...');
+      // print('[adjustOrderLine] Checking for general errors...');
       if (checkResponseForErrors(response,
           customErrorMessage: 'Failed to update cart item')) {
-        print('[adjustOrderLine] General error check returned true');
+        // print('[adjustOrderLine] General error check returned true');
         return false;
       }
 
       if (result == null) {
-        print('[adjustOrderLine] ERROR: Result is null');
+        // print('[adjustOrderLine] ERROR: Result is null');
         return false;
       }
 
       if (result is! Mutation$AdjustOrderLine$adjustOrderLine$$Order) {
-        print('[adjustOrderLine] ERROR: Result is not Order type, type: ${result.$__typename}');
+        // print('[adjustOrderLine] ERROR: Result is not Order type, type: ${result.$__typename}');
         _handleAdjustOrderError(result);
         // Refresh cart to ensure UI shows correct state after error
-        print('[adjustOrderLine] Refreshing cart after error...');
+        // print('[adjustOrderLine] Refreshing cart after error...');
         await getActiveOrder();
         return false;
       }
 
-      print('[adjustOrderLine] Success! Result is Order type');
+      // print('[adjustOrderLine] Success! Result is Order type');
 
       // Convert result to JSON and parse as Fragment$Cart to avoid type mismatch
       final orderJson = result.toJson();
@@ -700,9 +700,9 @@ class CartController extends BaseController {
 
   void _handleAdjustOrderError(
       Mutation$AdjustOrderLine$adjustOrderLine result) {
-    print('[_handleAdjustOrderError] Handling error of type: ${result.$__typename}');
+    // print('[_handleAdjustOrderError] Handling error of type: ${result.$__typename}');
     final message = _mapAdjustOrderErrorMessage(result);
-    print('[_handleAdjustOrderError] Mapped message: $message');
+    // print('[_handleAdjustOrderError] Mapped message: $message');
     _setCartError(result.$__typename, message);
   }
 
@@ -737,44 +737,44 @@ class CartController extends BaseController {
 
   String _mapAdjustOrderErrorMessage(
       Mutation$AdjustOrderLine$adjustOrderLine result) {
-    print('[_mapAdjustOrderErrorMessage] Error type: ${result.$__typename}');
+    // print('[_mapAdjustOrderErrorMessage] Error type: ${result.$__typename}');
     
     switch (result.$__typename) {
       case 'InsufficientStockError':
         final error = result
             as Mutation$AdjustOrderLine$adjustOrderLine$$InsufficientStockError;
-        print('[_mapAdjustOrderErrorMessage] InsufficientStockError message: ${error.message}');
+        // print('[_mapAdjustOrderErrorMessage] InsufficientStockError message: ${error.message}');
         return error.message;
       case 'OrderModificationError':
         final error = result
             as Mutation$AdjustOrderLine$adjustOrderLine$$OrderModificationError;
-        print('[_mapAdjustOrderErrorMessage] OrderModificationError message: ${error.message}');
+        // print('[_mapAdjustOrderErrorMessage] OrderModificationError message: ${error.message}');
         return error.message;
       case 'OrderLimitError':
         final error = result as Mutation$AdjustOrderLine$adjustOrderLine$$OrderLimitError;
-        print('[_mapAdjustOrderErrorMessage] OrderLimitError message: ${error.message}');
+        // print('[_mapAdjustOrderErrorMessage] OrderLimitError message: ${error.message}');
         return error.message;
       case 'NegativeQuantityError':
         final error = result
             as Mutation$AdjustOrderLine$adjustOrderLine$$NegativeQuantityError;
-        print('[_mapAdjustOrderErrorMessage] NegativeQuantityError message: ${error.message}');
+        // print('[_mapAdjustOrderErrorMessage] NegativeQuantityError message: ${error.message}');
         return error.message;
       case 'OrderInterceptorError':
         final error = result
             as Mutation$AdjustOrderLine$adjustOrderLine$$OrderInterceptorError;
-        print('[_mapAdjustOrderErrorMessage] OrderInterceptorError detected');
-        print('[_mapAdjustOrderErrorMessage] errorCode: ${error.errorCode}');
-        print('[_mapAdjustOrderErrorMessage] message: ${error.message}');
-        print('[_mapAdjustOrderErrorMessage] interceptorError: ${error.interceptorError}');
-        print('[_mapAdjustOrderErrorMessage] interceptorError.isEmpty: ${error.interceptorError.isEmpty}');
+        // print('[_mapAdjustOrderErrorMessage] OrderInterceptorError detected');
+        // print('[_mapAdjustOrderErrorMessage] errorCode: ${error.errorCode}');
+        // print('[_mapAdjustOrderErrorMessage] message: ${error.message}');
+        // print('[_mapAdjustOrderErrorMessage] interceptorError: ${error.interceptorError}');
+        // print('[_mapAdjustOrderErrorMessage] interceptorError.isEmpty: ${error.interceptorError.isEmpty}');
         // Use interceptorError if available, otherwise fall back to message
         final finalMessage = error.interceptorError.isNotEmpty 
             ? error.interceptorError 
             : error.message;
-        print('[_mapAdjustOrderErrorMessage] Final message: $finalMessage');
+        // print('[_mapAdjustOrderErrorMessage] Final message: $finalMessage');
         return finalMessage;
       default:
-        print('[_mapAdjustOrderErrorMessage] Unknown error type: ${result.$__typename}');
+        // print('[_mapAdjustOrderErrorMessage] Unknown error type: ${result.$__typename}');
         return 'Unable to update this cart item right now.';
     }
   }

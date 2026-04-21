@@ -179,7 +179,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         width: double.infinity,
         height: double.infinity,
         errorBuilder: (context, error, stackTrace) {
-          debugPrint('[OnboardingPage] Error loading image: $imagePath');
+          // debugPrint('[OnboardingPage] Error loading image: $imagePath');
           return Container(
             width: double.infinity,
             height: double.infinity,

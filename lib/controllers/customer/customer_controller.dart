@@ -571,7 +571,7 @@ class CustomerController extends BaseController {
   Future<bool> updateCustomerLocation(String channelName) async {
     final customer = activeCustomer.value;
     if (customer == null) {
-      debugPrint('[UpdateLocation] updateCustomerLocation skipped: no active customer');
+      // debugPrint('[UpdateLocation] updateCustomerLocation skipped: no active customer');
       return false;
     }
     try {
@@ -597,12 +597,12 @@ class CustomerController extends BaseController {
       }
       if (response.parsedData?.updateCustomer != null) {
         await getActiveCustomer();
-        debugPrint('[UpdateLocation] updateCustomerLocation success: location=$channelName');
+        // debugPrint('[UpdateLocation] updateCustomerLocation success: location=$channelName');
         return true;
       }
       return false;
     } catch (e) {
-      debugPrint('[UpdateLocation] updateCustomerLocation error: $e');
+      // debugPrint('[UpdateLocation] updateCustomerLocation error: $e');
       return false;
     }
   }
@@ -612,31 +612,31 @@ class CustomerController extends BaseController {
   Future<void> syncCustomerLocationFromStoredPostalCode() async {
     final storedPostalCode = _storage.read('postal_code');
     if (storedPostalCode == null || storedPostalCode.toString().trim().isEmpty) {
-      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no postal_code in storage');
+      // debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no postal_code in storage');
       return;
     }
     if (activeCustomer.value == null) {
-      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no active customer');
+      // debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no active customer');
       return;
     }
     final postalCode = storedPostalCode.toString().trim();
     final channels = await getAvailableChannels(postalCode);
     if (channels.isEmpty) {
-      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no channels for postalCode=$postalCode');
+      // debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no channels for postalCode=$postalCode');
       return;
     }
     final availableCity = channels
         .where((c) => c.type == Enum$ChannelType.CITY && c.isAvailable == true)
         .toList();
     if (availableCity.isEmpty) {
-      debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no available CITY channel');
+      // debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: no available CITY channel');
       return;
     }
     final currentCode = ChannelService.getChannelCode();
     final selected = currentCode != null
         ? availableCity.firstWhereOrNull((c) => c.code == currentCode) ?? availableCity.first
         : availableCity.first;
-    debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: postalCode=$postalCode -> channelName=${selected.name}');
+    // debugPrint('[UpdateLocation] syncCustomerLocationFromStoredPostalCode: postalCode=$postalCode -> channelName=${selected.name}');
     await updateCustomerLocation(selected.name);
   }
 
@@ -1263,63 +1263,63 @@ class CustomerController extends BaseController {
   /// If city is found in the channel and is available, use that channel
   /// If not available, show dialog
   Future<bool> switchChannelByPostalCode(String postalCode, {String? city, bool showLoading = true}) async {
-    debugPrint('[UpdateLocation] switchChannelByPostalCode START: postalCode=$postalCode, city=$city, showLoading=$showLoading');
+    // debugPrint('[UpdateLocation] switchChannelByPostalCode START: postalCode=$postalCode, city=$city, showLoading=$showLoading');
     Logger.logFunction(functionName: 'switchChannelByPostalCode', queryName: 'GetAvailableChannels');
 
     try {
       if (showLoading) {
         LoadingDialog.show(message: 'Checking availability...');
       }
-      debugPrint('[UpdateLocation] GetAvailableChannels QUERY START');
-      debugPrint('[UpdateLocation]   operationName: GetAvailableChannels');
-      debugPrint('[UpdateLocation]   variables: { postalCode: "$postalCode" }');
+      // debugPrint('[UpdateLocation] GetAvailableChannels QUERY START');
+      // debugPrint('[UpdateLocation]   operationName: GetAvailableChannels');
+      // debugPrint('[UpdateLocation]   variables: { postalCode: "$postalCode" }');
       final response = await GraphqlService.client.value.query$GetAvailableChannels(
         Options$Query$GetAvailableChannels(
           variables: Variables$Query$GetAvailableChannels(postalCode: postalCode),
         ),
       );
 
-      debugPrint('[UpdateLocation] GetAvailableChannels QUERY RESPONSE');
-      debugPrint('[UpdateLocation]   hasException: ${response.hasException}');
+      // debugPrint('[UpdateLocation] GetAvailableChannels QUERY RESPONSE');
+      // debugPrint('[UpdateLocation]   hasException: ${response.hasException}');
       final exc = response.exception;
       if (exc != null) {
-        debugPrint('[UpdateLocation]   exception: $exc');
+        // debugPrint('[UpdateLocation]   exception: $exc');
         final gqlErrors = exc.graphqlErrors;
         if (gqlErrors.isNotEmpty) {
           for (int i = 0; i < gqlErrors.length; i++) {
             final err = gqlErrors[i];
-            debugPrint('[UpdateLocation]   graphqlError[$i]: message=${err.message}, locations=${err.locations}');
+            // debugPrint('[UpdateLocation]   graphqlError[$i]: message=${err.message}, locations=${err.locations}');
           }
         }
         if (exc.linkException != null) {
-          debugPrint('[UpdateLocation]   linkException: ${exc.linkException}');
+          // debugPrint('[UpdateLocation]   linkException: ${exc.linkException}');
         }
       }
-      debugPrint('[UpdateLocation]   response.data present: ${response.data != null}');
+      // debugPrint('[UpdateLocation]   response.data present: ${response.data != null}');
       if (response.data != null) {
-        debugPrint('[UpdateLocation]   response.data keys: ${response.data!.keys.toList()}');
+        // debugPrint('[UpdateLocation]   response.data keys: ${response.data!.keys.toList()}');
         if (response.data!.containsKey('getAvailableChannels')) {
           final list = response.data!['getAvailableChannels'];
-          debugPrint('[UpdateLocation]   getAvailableChannels type: ${list.runtimeType}, length: ${list is List ? list.length : "n/a"}');
+          // debugPrint('[UpdateLocation]   getAvailableChannels type: ${list.runtimeType}, length: ${list is List ? list.length : "n/a"}');
         }
       }
-      debugPrint('[UpdateLocation]   parsedData present: ${response.parsedData != null}');
+      // debugPrint('[UpdateLocation]   parsedData present: ${response.parsedData != null}');
 
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
-        debugPrint('[UpdateLocation] GetAvailableChannels checkResponseForErrors=true, returning false');
+        // debugPrint('[UpdateLocation] GetAvailableChannels checkResponseForErrors=true, returning false');
         if (showLoading) LoadingDialog.hide();
         return false;
       }
 
       final channels = response.parsedData?.getAvailableChannels ?? [];
-      debugPrint('[UpdateLocation] GetAvailableChannels parsed ${channels.length} channel(s)');
+      // debugPrint('[UpdateLocation] GetAvailableChannels parsed ${channels.length} channel(s)');
       for (int i = 0; i < channels.length; i++) {
         final ch = channels[i];
-        debugPrint('[UpdateLocation]   channel[$i]: code=${ch.code}, name=${ch.name}, type=${ch.type}, isAvailable=${ch.isAvailable}, token=${ch.token != null ? "***" : null}');
+        // debugPrint('[UpdateLocation]   channel[$i]: code=${ch.code}, name=${ch.name}, type=${ch.type}, isAvailable=${ch.isAvailable}, token=${ch.token != null ? "***" : null}');
       }
 
       if (channels.isEmpty) {
-        debugPrint('[UpdateLocation] No channels returned, showing error');
+        // debugPrint('[UpdateLocation] No channels returned, showing error');
         if (showLoading) {
           LoadingDialog.hide();
           ErrorDialog.show(
@@ -1331,15 +1331,15 @@ class CustomerController extends BaseController {
       }
 
       final cityChannels = channels.where((c) => c.type == Enum$ChannelType.CITY).toList();
-      debugPrint('[UpdateLocation] CITY-type channels: ${cityChannels.length}');
+      // debugPrint('[UpdateLocation] CITY-type channels: ${cityChannels.length}');
 
       final availableCityChannels = channels.where(
         (channel) => channel.type == Enum$ChannelType.CITY && channel.isAvailable == true,
       ).toList();
-      debugPrint('[UpdateLocation] Available CITY channels: ${availableCityChannels.length}');
+      // debugPrint('[UpdateLocation] Available CITY channels: ${availableCityChannels.length}');
 
       if (availableCityChannels.isEmpty) {
-        debugPrint('[UpdateLocation] No available CITY channel, showing error');
+        // debugPrint('[UpdateLocation] No available CITY channel, showing error');
         if (showLoading) {
           LoadingDialog.hide();
           ErrorDialog.show(
@@ -1358,17 +1358,17 @@ class CustomerController extends BaseController {
                        channel.name.toLowerCase() == city.toLowerCase(),
         );
         if (selectedChannel != null) {
-          debugPrint('[UpdateLocation] Selected channel by city match: code=${selectedChannel.code}, name=${selectedChannel.name}');
+          // debugPrint('[UpdateLocation] Selected channel by city match: code=${selectedChannel.code}, name=${selectedChannel.name}');
         } else {
           selectedChannel = availableCityChannels.first;
-          debugPrint('[UpdateLocation] No city match, using first available: code=${selectedChannel.code}, name=${selectedChannel.name}');
+          // debugPrint('[UpdateLocation] No city match, using first available: code=${selectedChannel.code}, name=${selectedChannel.name}');
         }
       } else {
         selectedChannel = availableCityChannels.first;
-        debugPrint('[UpdateLocation] No city provided, using first available: code=${selectedChannel.code}, name=${selectedChannel.name}');
+        // debugPrint('[UpdateLocation] No city provided, using first available: code=${selectedChannel.code}, name=${selectedChannel.name}');
       }
 
-      debugPrint('[UpdateLocation] Calling ChannelService.setChannelInfo: token=***, code=${selectedChannel.code}, name=${selectedChannel.name}, type=${selectedChannel.type}, postalCode=$postalCode');
+      // debugPrint('[UpdateLocation] Calling ChannelService.setChannelInfo: token=***, code=${selectedChannel.code}, name=${selectedChannel.name}, type=${selectedChannel.type}, postalCode=$postalCode');
       await ChannelService.setChannelInfo(
         token: selectedChannel.token ?? '',
         code: selectedChannel.code,
@@ -1376,7 +1376,7 @@ class CustomerController extends BaseController {
         type: selectedChannel.type.toString(),
         postalCode: postalCode,
       );
-      debugPrint('[UpdateLocation] setChannelInfo done, calling refreshAllDataAfterChannelChange');
+      // debugPrint('[UpdateLocation] setChannelInfo done, calling refreshAllDataAfterChannelChange');
       // Clear guest channel preservation flag since user is explicitly changing location
       await _storage.remove('preserve_guest_channel');
       await refreshAllDataAfterChannelChange();
@@ -1386,11 +1386,11 @@ class CustomerController extends BaseController {
       await updateCustomerLocation(selectedChannel.name);
       await Future.delayed(Duration(milliseconds: 100));
       if (showLoading) LoadingDialog.hide();
-      debugPrint('[UpdateLocation] switchChannelByPostalCode SUCCESS, returning true');
+      // debugPrint('[UpdateLocation] switchChannelByPostalCode SUCCESS, returning true');
       return true;
     } catch (e, stack) {
-      debugPrint('[UpdateLocation] switchChannelByPostalCode EXCEPTION: $e');
-      debugPrint('[UpdateLocation] stackTrace: $stack');
+      // debugPrint('[UpdateLocation] switchChannelByPostalCode EXCEPTION: $e');
+      // debugPrint('[UpdateLocation] stackTrace: $stack');
       if (showLoading) LoadingDialog.hide();
       handleException(e, customErrorMessage: 'Failed to switch channel');
       return false;
@@ -1419,7 +1419,7 @@ class CustomerController extends BaseController {
 
   /// Get available channels for a postal code
   Future<List<Query$GetAvailableChannels$getAvailableChannels>> getAvailableChannels(String postalCode) async {
-    debugPrint('[UpdateLocation] getAvailableChannels QUERY START: postalCode=$postalCode');
+    // debugPrint('[UpdateLocation] getAvailableChannels QUERY START: postalCode=$postalCode');
     Logger.logFunction(functionName: 'getAvailableChannels', queryName: 'GetAvailableChannels');
 
     try {
@@ -1429,36 +1429,36 @@ class CustomerController extends BaseController {
         ),
       );
 
-      debugPrint('[UpdateLocation] getAvailableChannels QUERY RESPONSE: hasException=${response.hasException}, dataPresent=${response.data != null}, parsedPresent=${response.parsedData != null}');
+      // debugPrint('[UpdateLocation] getAvailableChannels QUERY RESPONSE: hasException=${response.hasException}, dataPresent=${response.data != null}, parsedPresent=${response.parsedData != null}');
       final exc2 = response.exception;
       if (exc2 != null) {
-        debugPrint('[UpdateLocation] getAvailableChannels exception: $exc2');
+        // debugPrint('[UpdateLocation] getAvailableChannels exception: $exc2');
         final gqlErrors2 = exc2.graphqlErrors;
         if (gqlErrors2.isNotEmpty) {
           for (int i = 0; i < gqlErrors2.length; i++) {
-            debugPrint('[UpdateLocation] getAvailableChannels graphqlError[$i]: ${gqlErrors2[i].message}');
+            // debugPrint('[UpdateLocation] getAvailableChannels graphqlError[$i]: ${gqlErrors2[i].message}');
           }
         }
         if (exc2.linkException != null) {
-          debugPrint('[UpdateLocation] getAvailableChannels linkException: ${exc2.linkException}');
+          // debugPrint('[UpdateLocation] getAvailableChannels linkException: ${exc2.linkException}');
         }
       }
       if (response.data != null && response.data!.containsKey('getAvailableChannels')) {
         final raw = response.data!['getAvailableChannels'];
-        debugPrint('[UpdateLocation] getAvailableChannels raw list length: ${raw is List ? raw.length : "n/a"}');
+        // debugPrint('[UpdateLocation] getAvailableChannels raw list length: ${raw is List ? raw.length : "n/a"}');
       }
 
       if (checkResponseForErrors(response, customErrorMessage: 'Failed to get available channels')) {
-        debugPrint('[UpdateLocation] getAvailableChannels checkResponseForErrors=true, returning []');
+        // debugPrint('[UpdateLocation] getAvailableChannels checkResponseForErrors=true, returning []');
         return [];
       }
 
       final channels = response.parsedData?.getAvailableChannels ?? [];
-      debugPrint('[UpdateLocation] getAvailableChannels returning ${channels.length} channel(s)');
+      // debugPrint('[UpdateLocation] getAvailableChannels returning ${channels.length} channel(s)');
       return channels;
     } catch (e, stack) {
-      debugPrint('[UpdateLocation] getAvailableChannels EXCEPTION: $e');
-      debugPrint('[UpdateLocation] getAvailableChannels stackTrace: $stack');
+      // debugPrint('[UpdateLocation] getAvailableChannels EXCEPTION: $e');
+      // debugPrint('[UpdateLocation] getAvailableChannels stackTrace: $stack');
       handleException(e, customErrorMessage: 'Failed to fetch available channels');
       return [];
     }
@@ -1600,9 +1600,9 @@ class CustomerController extends BaseController {
 
   /// Fetch areas for a specific postal code
   Future<List<Query$AreasForPostalCode$areasForPostalCode>> fetchAreasForPostalCode(String code) async {
-    debugPrint('[Areas] fetchAreasForPostalCode() called with code=$code');
-    debugPrint('[Areas] channelToken=${GraphqlService.channelToken}');
-    debugPrint('[Areas] authToken=${GraphqlService.authToken.isNotEmpty ? "present" : "empty"}');
+    // debugPrint('[Areas] fetchAreasForPostalCode() called with code=$code');
+    // debugPrint('[Areas] channelToken=${GraphqlService.channelToken}');
+    // debugPrint('[Areas] authToken=${GraphqlService.authToken.isNotEmpty ? "present" : "empty"}');
     try {
       final response = await GraphqlService.client.value.query$AreasForPostalCode(
         Options$Query$AreasForPostalCode(
@@ -1610,24 +1610,24 @@ class CustomerController extends BaseController {
           fetchPolicy: FetchPolicy.networkOnly,
         ),
       );
-      debugPrint('[Areas] response: hasException=${response.hasException}, data=${response.data}');
+      // debugPrint('[Areas] response: hasException=${response.hasException}, data=${response.data}');
       if (response.hasException) {
-        debugPrint('[Areas] exception: ${response.exception}');
+        // debugPrint('[Areas] exception: ${response.exception}');
         if (response.exception?.graphqlErrors != null) {
           for (final err in response.exception!.graphqlErrors) {
-            debugPrint('[Areas] graphqlError: ${err.message}');
+            // debugPrint('[Areas] graphqlError: ${err.message}');
           }
         }
         return [];
       }
       final areas = response.parsedData?.areasForPostalCode ?? [];
-      debugPrint('[Areas] parsed ${areas.length} areas');
+      // debugPrint('[Areas] parsed ${areas.length} areas');
       for (final a in areas) {
-        debugPrint('[Areas]   id=${a.id}, name=${a.name}, enabled=${a.enabled}');
+        // debugPrint('[Areas]   id=${a.id}, name=${a.name}, enabled=${a.enabled}');
       }
       return areas;
     } catch (e) {
-      debugPrint('[Areas] EXCEPTION: $e');
+      // debugPrint('[Areas] EXCEPTION: $e');
       return [];
     }
   }
@@ -1638,7 +1638,7 @@ class CustomerController extends BaseController {
     try {
       final preserveGuestChannel = _storage.read('preserve_guest_channel') == true;
       if (preserveGuestChannel) {
-        debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: SKIP (guest cart claimed, preserve channel)');
+        // debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: SKIP (guest cart claimed, preserve channel)');
         return;
       }
 
@@ -1649,11 +1649,11 @@ class CustomerController extends BaseController {
         // If channel token is missing (e.g., after login), we need to set it from the postal code
         final channelToken = ChannelService.getChannelToken();
         if (channelToken != null && channelToken.toString().isNotEmpty) {
-          debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: postal code and channel already set, skipping');
+          // debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: postal code and channel already set, skipping');
           return;
         }
         // Postal code exists but no channel token - switch channel using stored postal code
-        debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: postal code exists ($storedPostalCode) but no channel token, switching channel');
+        // debugPrint('[UpdateLocation] checkAndSetPostalCodeFromShippingAddress: postal code exists ($storedPostalCode) but no channel token, switching channel');
         final defaultAddr = addresses.firstWhereOrNull(
           (address) => address.defaultShippingAddress == true,
         );

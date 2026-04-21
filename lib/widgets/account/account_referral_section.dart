@@ -38,7 +38,7 @@ class AccountReferralSection extends StatelessWidget {
         sharePositionOrigin: _shareOrigin(shareReferralKey),
       );
     } catch (e) {
-      debugPrint('Error sharing referral: $e');
+      // debugPrint('Error sharing referral: $e');
     }
   }
 
